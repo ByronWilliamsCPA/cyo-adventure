@@ -29,6 +29,7 @@ import {
   resolveConflict,
   saveProgress,
 } from '../offline/sync'
+import { Mascot } from '../kid/Mascot'
 import { startContinuation } from '../player/engine'
 import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
@@ -455,7 +456,14 @@ export function ReaderPage({
   }, [api, conflict, deviceId, profileId, storybookId])
 
   if (pageState.phase === 'loading') {
-    return <p data-testid="loading">Loading...</p>
+    // Branded, kid-facing loading state (mirrors the library's role="status"
+    // loading pattern); data-testid="loading" is pinned by ReaderPage tests.
+    return (
+      <div data-testid="loading" className="reader-loading" role="status" aria-live="polite">
+        <Mascot size={96} className="reader-loading__mascot" />
+        <p className="reader-loading__text">Opening your story...</p>
+      </div>
+    )
   }
   if (pageState.phase === 'not-found') {
     return (

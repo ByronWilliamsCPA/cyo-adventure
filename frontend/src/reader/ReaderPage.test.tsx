@@ -48,13 +48,25 @@ function renderPage(fetchStory: (id: string, v: number) => Promise<Storybook>, a
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
+  // jsdom's window.scrollTo exists but only logs "Not implemented"; the
+  // Reader scrolls on every passage change, so stub it to keep tests quiet.
+  vi.stubGlobal('scrollTo', vi.fn())
 })
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 describe('ReaderPage', () => {
+  it('shows the branded loading state while the story is being opened', () => {
+    // A fetch that never settles keeps the page in its loading phase.
+    renderPage(() => new Promise<Storybook>(() => {}))
+    const loading = screen.getByTestId('loading')
+    expect(loading).toHaveTextContent('Opening your story...')
+    expect(loading.getAttribute('role')).toBe('status')
+  })
+
   it('fetches and caches the story, then plays it to an ending', async () => {
     const fetchStory = vi.fn(() => Promise.resolve(lantern))
     render(

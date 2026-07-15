@@ -26,16 +26,17 @@ export interface ReaderChromeProps {
 }
 
 /**
- * The reader's slim sticky top bar: always-visible connection status and reading
- * progress. Chrome is intentionally persistent (offline reading is a core
- * feature, so connection status stays visible) per the phase-4a wireframes.
+ * The reader's slim sticky top bar: reading progress plus a connection badge
+ * that appears only while offline. Being online is the unremarkable normal,
+ * so no badge renders then; going offline shows a kid-readable "No internet"
+ * so the change of state is the thing that gets named.
  */
 export function ReaderChrome({ percent, label, showLabel = false, back }: ReaderChromeProps) {
   const online = useOnlineStatus()
   return (
     <header className="reader-chrome">
       {back}
-      <StatusBadge status={online ? 'connected' : 'offline'} />
+      {online ? null : <StatusBadge status="offline" label="No internet" />}
       <ProgressBar value={percent} label={label} showLabel={showLabel} />
     </header>
   )

@@ -5,9 +5,17 @@
  * same story. Modal and blocking: the reader must choose, so no progress is lost
  * without a decision. The two actions map to the server-contract options
  * `continue_from_this_device` and `use_newer_progress`.
+ *
+ * Not built on the design-system Dialog: that component dismisses on Escape and
+ * backdrop click, and this dialog is deliberately undismissable. The overlay and
+ * card are styled locally (reader.css) on the same parchment tokens instead.
  */
 
 import { useEffect, useRef } from 'react'
+
+import { Button } from '@ds/components/Button'
+
+import './reader.css'
 
 export interface ConflictDialogProps {
   onKeepThisDevice: () => void
@@ -16,14 +24,15 @@ export interface ConflictDialogProps {
 
 export function ConflictDialog({ onKeepThisDevice, onUseNewest }: ConflictDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
-  const firstButtonRef = useRef<HTMLButtonElement>(null)
 
   // Focus management for a blocking modal: focus the first action on open, trap
   // Tab within the dialog, and restore focus to the trigger on close. The reader
-  // must choose, so the dialog deliberately does not dismiss on Escape.
+  // must choose, so the dialog deliberately does not dismiss on Escape. The
+  // first action is found by query (not a ref) because the design-system Button
+  // does not expose a ref to its underlying element.
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null
-    firstButtonRef.current?.focus()
+    dialogRef.current?.querySelector<HTMLElement>('button')?.focus()
 
     function onKeyDown(event: KeyboardEvent): void {
       if (event.key !== 'Tab') return
@@ -48,31 +57,35 @@ export function ConflictDialog({ onKeepThisDevice, onUseNewest }: ConflictDialog
   }, [])
 
   return (
-    <div
-      ref={dialogRef}
-      data-testid="conflict-dialog"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="conflict-title"
-      className="conflict-dialog"
-    >
-      <h2 id="conflict-title">You were reading on another device</h2>
-      <p>
-        Your place in this story is different here than on your other device. Which one do you want
-        to keep?
-      </p>
-      <div className="conflict-actions">
-        <button
-          ref={firstButtonRef}
-          type="button"
-          data-testid="conflict-keep"
-          onClick={onKeepThisDevice}
-        >
-          Keep this device
-        </button>
-        <button type="button" data-testid="conflict-use-newest" onClick={onUseNewest}>
-          Use the newest place
-        </button>
+    <div className="conflict-overlay">
+      <div
+        ref={dialogRef}
+        data-testid="conflict-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="conflict-title"
+        className="conflict-dialog"
+      >
+        <h2 id="conflict-title" className="conflict-dialog__title">
+          You were reading on another device
+        </h2>
+        <p className="conflict-dialog__body">
+          Your place in this story is different here than on your other device. Which one do you
+          want to keep?
+        </p>
+        <div className="conflict-actions">
+          <Button
+            variant="primary"
+            size="lg"
+            data-testid="conflict-keep"
+            onClick={onKeepThisDevice}
+          >
+            Keep this device
+          </Button>
+          <Button variant="ghost" size="lg" data-testid="conflict-use-newest" onClick={onUseNewest}>
+            Use the newest place
+          </Button>
+        </div>
       </div>
     </div>
   )

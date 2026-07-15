@@ -506,8 +506,10 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
     await waitFor(() => expect(revision1Calls).toBe(2))
     await waitFor(() => expect(screen.getByRole('alert')).toBeTruthy())
     expect(screen.getByRole('alert').textContent).toContain(
-      'Some offline progress could not be saved.'
+      "We couldn't save some of your reading."
     )
+    // The banner's only control reads "OK", not "Dismiss": young kids read it.
+    expect(screen.getByRole('button', { name: 'OK' })).toBeTruthy()
 
     window.removeEventListener('unhandledrejection', onUnhandledRejection)
     expect(unhandledRejection).toBeUndefined()

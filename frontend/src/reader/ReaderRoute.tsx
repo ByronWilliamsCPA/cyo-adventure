@@ -183,9 +183,17 @@ export function ReaderRoute() {
       )}
       {replayFailedCount > 0 && (
         <div role="alert" className="replay-failed-banner">
-          <span>Some offline progress could not be saved.</span>
-          <button type="button" onClick={dismissReplayFailedBanner} aria-label="Dismiss">
-            Dismiss
+          <span>
+            {"We couldn't save some of your reading. Ask a grown-up if this keeps happening."}
+          </span>
+          {/* "OK", not "Dismiss": young kids read this button too (same rule
+              as the toast's OK in ToastProvider.tsx). */}
+          <button
+            type="button"
+            className="replay-failed-banner__ok"
+            onClick={dismissReplayFailedBanner}
+          >
+            OK
           </button>
         </div>
       )}

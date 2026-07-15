@@ -98,6 +98,27 @@ export function Reader({
     send({ type: 'CHOOSE', choiceId })
   }
 
+  // After a choice, bring the new passage into view from its top and move
+  // focus to it so a screen reader announces the passage from its start. Keyed
+  // on the last-seen node (not a first-run flag) so the initial mount never
+  // steals focus, and the StrictMode double-invoke of this effect stays a
+  // no-op (the ref already matches on the second run).
+  const passageRef = useRef<HTMLDivElement>(null)
+  const lastNodeRef = useRef(reading.current_node)
+  useEffect(() => {
+    if (lastNodeRef.current === reading.current_node) {
+      return
+    }
+    lastNodeRef.current = reading.current_node
+    // #EDGE: browser-compat: jsdom implements neither matchMedia nor a real
+    // scrollTo; optional-call both (same guard as scrollIntoView elsewhere)
+    // and treat a missing matchMedia as "no reduced-motion preference".
+    const reduceMotion =
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    window.scrollTo?.({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
+    passageRef.current?.focus?.({ preventScroll: true })
+  }, [reading.current_node])
+
   // An always-visible exit: a child can leave a story at any point, not only
   // from the ending screen. It reads as "Leave" rather than a bare arrow so the
   // action is unmistakable to a young reader. When the owner passes onLeave it
@@ -127,16 +148,19 @@ export function Reader({
   // showLabel is left at its default (hidden): the percent's denominator is all
   // of the story's nodes, not the reachable subset for this branch, so it can
   // never hit 100% on a real playthrough. The bar's fill and aria-label still
-  // convey progress; only the misleading numeric text is withheld.
+  // convey progress; only the misleading numeric text is withheld. On an
+  // ending the bar is forced full: the story is done, and a finished story
+  // must never look unfinished to the child who just finished it.
+  const ended = snapshot.matches('ended')
   const chrome = (
     <ReaderChrome
-      percent={readerProgressPercent(story, reading)}
-      label={readerProgressLabel(story, reading)}
+      percent={ended ? 100 : readerProgressPercent(story, reading)}
+      label={ended ? 'You finished this story!' : readerProgressLabel(story, reading)}
       back={leaveButton}
     />
   )
 
-  if (snapshot.matches('ended')) {
+  if (ended) {
     const ending = node?.ending
     const meta = seriesMeta(story)
     const showContinue =
@@ -144,13 +168,45 @@ export function Reader({
       meta !== null &&
       !meta.isFinal &&
       SATISFYING_ENDING_KINDS.has(ending?.kind ?? '')
+    // Positive and neutral endings get the animated star burst (pure CSS,
+    // stilled under prefers-reduced-motion); a sad or cliffhanger ending
+    // (negative valence) keeps the same warm static stars without the pop so
+    // the screen stays kind rather than gleeful. An ending without valence
+    // data celebrates: finishing a story is a win by default.
+    const celebrate = ending?.valence !== 'negative'
     return (
       <div className="reader-shell">
         {chrome}
         <section data-testid="ending-screen" className="reader-ending">
-          <Mascot size={112} className="reader-ending__mascot" />
+          <div
+            data-testid="ending-celebration"
+            className={
+              celebrate
+                ? 'reader-ending__stars reader-ending__stars--celebrate'
+                : 'reader-ending__stars'
+            }
+            aria-hidden="true"
+          >
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+          </div>
+          <Mascot
+            size={112}
+            className={
+              celebrate
+                ? 'reader-ending__mascot reader-ending__mascot--celebrate'
+                : 'reader-ending__mascot'
+            }
+          />
           <h2 className="reader-ending__title">{ending?.title ?? 'The End'}</h2>
-          <div data-testid="passage-body" className="reader-ending__body" aria-live="polite">
+          <div
+            ref={passageRef}
+            tabIndex={-1}
+            data-testid="passage-body"
+            className="reader-ending__body"
+            aria-live="polite"
+          >
             <PassageText text={node?.body ?? ''} />
           </div>
           <p data-testid="ending-id" hidden>
@@ -185,7 +241,13 @@ export function Reader({
     <div className="reader-shell">
       {chrome}
       <section data-testid="reader" className="reader">
-        <div data-testid="passage-body" aria-live="polite">
+        <div
+          ref={passageRef}
+          tabIndex={-1}
+          data-testid="passage-body"
+          className="reader-passage"
+          aria-live="polite"
+        >
           <PassageText text={node?.body ?? ''} />
         </div>
         <ul className="reader-choices">
