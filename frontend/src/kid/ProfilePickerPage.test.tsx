@@ -75,6 +75,9 @@ describe('ProfilePickerPage', () => {
         ],
       },
     })
+    // A signed-in guardian is viewing the picker (auth_token present), so the
+    // grown-up-only "Add Child" tile is shown.
+    localStorage.setItem('auth_token', 'guardian-jwt')
     renderPicker()
     const tile = await screen.findByRole('link', { name: /Reader A/ })
     expect(tile).toHaveAttribute('href', '/library/p1')
@@ -83,6 +86,53 @@ describe('ProfilePickerPage', () => {
     expect(screen.getByRole('link', { name: /Add Child/i })).toHaveAttribute(
       'href',
       '/guardian/profiles'
+    )
+  })
+
+  it('hides the Add Child tile on a device-grant-only (kid) device', async () => {
+    // No auth_token: this device holds only a device grant, so a child is
+    // using it. The guardian-only "Add Child" tile must not appear (tapping it
+    // would bounce the child to the guardian sign-in page). The child's own
+    // profile tiles still render.
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    renderPicker()
+    expect(await screen.findByRole('link', { name: /Reader A/ })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Add Child/i })).not.toBeInTheDocument()
+  })
+
+  it('reveals the Add Child tile when a guardian signs in from another tab', async () => {
+    // Starts as a kid-only device (no auth_token), so the tile is hidden.
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    renderPicker()
+    await screen.findByRole('link', { name: /Reader A/ })
+    expect(screen.queryByRole('link', { name: /Add Child/i })).not.toBeInTheDocument()
+
+    // A grown-up signs in in ANOTHER tab: localStorage gains the token and the
+    // browser fires a `storage` event in this tab. The tile must appear without
+    // a remount.
+    localStorage.setItem('auth_token', 'guardian-jwt')
+    fireEvent(window, new StorageEvent('storage', { key: 'auth_token' }))
+
+    expect(await screen.findByRole('link', { name: /Add Child/i })).toHaveAttribute(
+      'href',
+      '/guardian/profiles'
+    )
+  })
+
+  it('hides the Add Child tile when a guardian signs out from another tab', async () => {
+    // A guardian is signed in when the picker mounts, so the tile shows.
+    localStorage.setItem('auth_token', 'guardian-jwt')
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    renderPicker()
+    expect(await screen.findByRole('link', { name: /Add Child/i })).toBeInTheDocument()
+
+    // Cross-tab sign-out clears the token and fires a `storage` event; the
+    // grown-up affordance must disappear so a handed-off child cannot reach it.
+    localStorage.removeItem('auth_token')
+    fireEvent(window, new StorageEvent('storage', { key: 'auth_token' }))
+
+    await waitFor(() =>
+      expect(screen.queryByRole('link', { name: /Add Child/i })).not.toBeInTheDocument()
     )
   })
 
@@ -373,6 +423,9 @@ describe('ProfilePickerPage with a device grant and no guardian session (ADR-014
     renderPicker()
 
     const tile = await screen.findByRole('link', { name: /Reader A/ })
+    // With only a device grant (no guardian session), the guardian-only
+    // "Add Child" tile stays hidden.
+    expect(screen.queryByRole('link', { name: /Add Child/i })).not.toBeInTheDocument()
     await user.click(tile)
 
     await waitFor(() =>
