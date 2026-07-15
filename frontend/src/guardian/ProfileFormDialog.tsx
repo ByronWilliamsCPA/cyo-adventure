@@ -114,7 +114,8 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
         classifyApiError(err, {
           forbidden: 'Only a guardian can add child profiles.',
           transient: 'We could not save this profile. Please try again.',
-        }).message,
+          server: 'We could not save this profile. Please try again.',
+        }).message
       )
       setSaving(false)
     }
@@ -127,8 +128,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   // caught before the request rather than surfacing as a 422.
   const pinValid = pinChoice !== 'set' || PIN_SHAPE.test(pinValue)
   const nameMissing = displayName.trim().length === 0
-  const capInvalid =
-    cap.trim() === '' || !Number.isFinite(capNum) || capNum < 0 || capNum > 99
+  const capInvalid = cap.trim() === '' || !Number.isFinite(capNum) || capNum < 0 || capNum > 99
   const valid = !nameMissing && !capInvalid && pinValid
 
   // Names what still blocks Save while it is disabled for missing/invalid
@@ -139,9 +139,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   if (capInvalid) missingInputs.push('a reading level from 0 to 99')
   if (!pinValid) missingInputs.push('a 4-8 digit PIN')
   const saveHint =
-    !saving && missingInputs.length > 0
-      ? `Enter ${missingInputs.join(' and ')} to save.`
-      : null
+    !saving && missingInputs.length > 0 ? `Enter ${missingInputs.join(' and ')} to save.` : null
 
   return (
     <Dialog
@@ -208,8 +206,8 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
           />
         </label>
         <p id="reading-level-cap-help" className="profile-form__hint">
-          Rough reading grade level for stories (2 = early reader, 5 =
-          confident reader). 99 means no limit.
+          Rough reading grade level for stories (2 = early reader, 5 = confident reader). 99 means
+          no limit.
         </p>
         <fieldset className="profile-form__avatars">
           <legend>Avatar</legend>
@@ -292,17 +290,13 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
                   autoComplete="off"
                   maxLength={8}
                   value={pinValue}
-                  onChange={(e) =>
-                    setPinValue(e.target.value.replace(/[^0-9]/g, ''))
-                  }
+                  onChange={(e) => setPinValue(e.target.value.replace(/[^0-9]/g, ''))}
                 />
               </label>
             ) : null}
           </fieldset>
         ) : null}
-        {saveHint !== null ? (
-          <p className="profile-form__hint cyo-text-muted">{saveHint}</p>
-        ) : null}
+        {saveHint !== null ? <p className="profile-form__hint cyo-text-muted">{saveHint}</p> : null}
       </form>
     </Dialog>
   )

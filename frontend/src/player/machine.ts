@@ -24,6 +24,18 @@ import type { ReadingState, Storybook } from './types'
 export interface ReaderContext {
   story: Storybook
   reading: ReadingState
+  // Set when a transition could not be applied (a structurally invalid
+  // choice: a dangling target or corrupted cached state). choose()/back()
+  // throw on that by contract (shared with the Python conformance corpus),
+  // and XState's actor runtime catches an assign() throw internally and
+  // permanently stops the actor rather than letting it propagate to the
+  // caller of send() (there is no way to recover an actor once that
+  // happens), so the throw MUST be caught here, inside the action, before
+  // XState's outer machinery ever sees it.
+  // #CRITICAL: data-integrity: never let choose()/back() throw escape an
+  // assign() action; the actor would die and even RESTART could stop working.
+  // #VERIFY: machine.test.ts "recovers from a throwing transition".
+  error: boolean
 }
 
 export type ReaderEvent =
@@ -45,7 +57,12 @@ export const readerMachine = setup({
   actions: {
     applyChoice: assign(({ context, event }) => {
       if (event.type !== 'CHOOSE') return {}
-      return { reading: choose(context.story, context.reading, event.choiceId) }
+      try {
+        return { reading: choose(context.story, context.reading, event.choiceId), error: false }
+      } catch (err) {
+        console.error('reader: choice transition failed', err)
+        return { error: true }
+      }
     }),
     applyBack: assign(({ context }) => {
       const previous = back(context.story, context.reading)
@@ -53,7 +70,7 @@ export const readerMachine = setup({
       // no-op branch means a raw BACK can never corrupt the reading state.
       return previous === null ? {} : { reading: previous }
     }),
-    reset: assign(({ context }) => ({ reading: start(context.story) })),
+    reset: assign(({ context }) => ({ reading: start(context.story), error: false })),
   },
   guards: {
     reachedEnding: ({ context }) => isEnding(context.story, context.reading),
@@ -64,6 +81,7 @@ export const readerMachine = setup({
   context: ({ input }) => ({
     story: input.story,
     reading: input.reading ?? start(input.story),
+    error: false,
   }),
   initial: 'reading',
   states: {

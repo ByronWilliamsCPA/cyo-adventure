@@ -63,7 +63,7 @@ export function Reader({
   const [snapshot, send] = useMachine(readerMachine, {
     input: { story, reading: initialReading },
   })
-  const { reading } = snapshot.context
+  const { reading, error: choiceError } = snapshot.context
   const node = story.nodes.find((n) => n.id === reading.current_node)
 
   // Report progress whenever the reading state changes (drives WP7 persistence).
@@ -94,6 +94,13 @@ export function Reader({
     onComplete?.(endingId)
   }, [snapshot, story, reading, onComplete])
 
+  // choose() throws on a structurally invalid transition (dangling choice
+  // target, corrupted cached state); that is deliberate engine behavior
+  // shared with the Python conformance corpus, not something to silently
+  // swallow inside the engine itself. The machine's applyChoice action
+  // catches it (machine.ts) and surfaces it as context.error instead: XState
+  // catches an assign() throw internally and permanently stops the actor,
+  // so catching it here, after send() returns, would be too late.
   const choose = (choiceId: string): void => {
     send({ type: 'CHOOSE', choiceId })
   }
@@ -183,6 +190,31 @@ export function Reader({
       back={leaveButton}
     />
   )
+
+  if (choiceError) {
+    return (
+      <div className="reader-shell">
+        {chrome}
+        <section className="reader-error" role="alert">
+          <Mascot size={96} className="reader-error__mascot" />
+          <h2 className="reader-error__title">Hmm, that page got stuck.</h2>
+          <p className="reader-error__body">
+            Let&apos;s start this story over so it works right.
+          </p>
+          <div className="reader-error__actions">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => send({ type: 'RESTART' })}
+            >
+              Start over
+            </Button>
+            <BackToLibrary profileId={profileId} />
+          </div>
+        </section>
+      </div>
+    )
+  }
 
   if (ended) {
     const ending = node?.ending

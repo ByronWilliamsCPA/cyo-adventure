@@ -17,10 +17,7 @@ import { AGE_BANDS, LENGTHS, TEEN_BANDS, ageBandLabel } from './storyRequestOpti
 type LoadState = { kind: 'loading' } | { kind: 'error' } | { kind: 'ready' }
 
 type SubmitResult =
-  | { kind: 'idle' }
-  | { kind: 'success' }
-  | { kind: 'blocked' }
-  | { kind: 'error'; message: string }
+  { kind: 'idle' } | { kind: 'success' } | { kind: 'blocked' } | { kind: 'error'; message: string }
 
 interface RequestStoryFormProps {
   mode: 'guardian' | 'admin'
@@ -220,6 +217,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         kind: 'error',
         message: classifyApiError(err, {
           transient: 'We could not send this request. Please try again.',
+          server: 'We could not send this request. Please try again.',
         }).message,
       })
     } finally {

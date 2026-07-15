@@ -6,8 +6,19 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { choose } from '../player/engine'
 import type { Storybook } from '../player/types'
 import { Reader } from './Reader'
+
+// choose() wraps the real implementation by default (every existing test
+// below exercises genuine transitions); only the corrupted-transition test
+// overrides it once to simulate a structurally invalid choice (a dangling
+// target in corrupted cached data), which the real engine would reject with
+// a throw. See "Reader corrupted-transition recovery" below.
+vi.mock('../player/engine', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../player/engine')>()
+  return { ...actual, choose: vi.fn(actual.choose) }
+})
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const tracesPath = path.resolve(here, '../../../schema/conformance/player_traces.json')
@@ -370,5 +381,53 @@ describe('Reader ending progress and celebration', () => {
     const stars = screen.getByTestId('ending-celebration')
     expect(stars.className).toBe('reader-ending__stars')
     expect(stars.className).not.toContain('--celebrate')
+  })
+})
+
+describe('Reader corrupted-transition recovery', () => {
+  it('recovers from a corrupted transition instead of crashing the reader', () => {
+    // engine.choose() throws by contract on a structurally invalid choice (a
+    // dangling target in corrupted cached data); this must never reach the
+    // child as an uncaught exception mid-story.
+    vi.mocked(choose).mockImplementationOnce(() => {
+      throw new Error('dangling choice target')
+    })
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      render(
+        <MemoryRouter>
+          <Reader story={lantern} profileId="p1" />
+        </MemoryRouter>
+      )
+      fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+
+      expect(screen.getByRole('alert')).toHaveTextContent(/stuck/i)
+      expect(screen.queryByTestId('passage-body')).not.toBeInTheDocument()
+
+      // "Start over" clears the error and resets to the start passage.
+      fireEvent.click(screen.getByRole('button', { name: /start over/i }))
+      expect(screen.getByTestId('passage-body').textContent).toContain('lantern')
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    } finally {
+      logSpy.mockRestore()
+    }
+  })
+
+  it('still offers a way back to the library from the corrupted-transition screen', () => {
+    vi.mocked(choose).mockImplementationOnce(() => {
+      throw new Error('dangling choice target')
+    })
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      render(
+        <MemoryRouter>
+          <Reader story={lantern} profileId="p1" />
+        </MemoryRouter>
+      )
+      fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+      expect(screen.getByRole('button', { name: /back to my books/i })).toBeInTheDocument()
+    } finally {
+      logSpy.mockRestore()
+    }
   })
 })

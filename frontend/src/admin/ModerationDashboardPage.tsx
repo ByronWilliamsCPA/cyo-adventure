@@ -124,6 +124,7 @@ export function ModerationDashboardPage() {
             setRefreshError(
               classifyApiError(err, {
                 transient: 'We could not refresh the dashboard; showing the last loaded data.',
+                server: 'We could not refresh the dashboard; showing the last loaded data.',
               }).message
             )
           } else {
@@ -131,6 +132,7 @@ export function ModerationDashboardPage() {
               kind: 'error',
               message: classifyApiError(err, {
                 transient: 'We could not load the moderation dashboard. Please reload.',
+                server: 'We could not load the moderation dashboard. Please reload.',
               }).message,
             })
           }
@@ -165,6 +167,7 @@ export function ModerationDashboardPage() {
       setActionError(
         classifyApiError(err, {
           transient: `We could not apply the suggestion for ${suggestion.category} in ${suggestion.age_band}. Please try again.`,
+          server: `We could not apply the suggestion for ${suggestion.category} in ${suggestion.age_band}. Please try again.`,
         }).message
       )
     } finally {
@@ -268,7 +271,9 @@ export function ModerationDashboardPage() {
       <section aria-labelledby="insights-heading">
         <h2 id="insights-heading">Override evidence</h2>
         {dashboard.insights.length === 0 ? (
-          <p className="console__muted cyo-text-muted">No moderated books with advisory or flag findings yet.</p>
+          <p className="console__muted cyo-text-muted">
+            No moderated books with advisory or flag findings yet.
+          </p>
         ) : (
           <table>
             <thead>
@@ -288,8 +293,7 @@ export function ModerationDashboardPage() {
                 // At or above the gate that generates suggestions: emphasize
                 // the row so gate-crossing evidence stands out at a glance.
                 const atGate =
-                  row.override_rate != null &&
-                  row.override_rate >= suggestions.min_override_rate
+                  row.override_rate != null && row.override_rate >= suggestions.min_override_rate
                 const rate =
                   row.override_rate == null ? 'n/a' : `${Math.round(row.override_rate * 100)}%`
                 return (

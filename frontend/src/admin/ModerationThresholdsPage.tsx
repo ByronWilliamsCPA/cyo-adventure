@@ -88,6 +88,7 @@ export function ModerationThresholdsPage() {
             kind: 'error',
             message: classifyApiError(err, {
               transient: 'We could not load moderation thresholds. Please reload.',
+              server: 'We could not load moderation thresholds. Please reload.',
             }).message,
           })
         }
@@ -113,6 +114,8 @@ export function ModerationThresholdsPage() {
       setActionError(
         classifyApiError(err, {
           transient:
+            'That override saved, but the list could not refresh. Reload to see the latest changes.',
+          server:
             'That override saved, but the list could not refresh. Reload to see the latest changes.',
         }).message
       )
@@ -164,6 +167,7 @@ export function ModerationThresholdsPage() {
       setActionError(
         classifyApiError(err, {
           transient: 'We could not save that override. Please try again.',
+          server: 'We could not save that override. Please try again.',
         }).message
       )
     } finally {
@@ -185,6 +189,7 @@ export function ModerationThresholdsPage() {
       setActionError(
         classifyApiError(err, {
           transient: 'We could not remove that override. Please try again.',
+          server: 'We could not remove that override. Please try again.',
         }).message
       )
     } finally {
@@ -207,6 +212,7 @@ export function ModerationThresholdsPage() {
       setActionError(
         classifyApiError(err, {
           transient: 'We could not save the noise floor. Please try again.',
+          server: 'We could not save the noise floor. Please try again.',
         }).message
       )
     } finally {
@@ -229,8 +235,8 @@ export function ModerationThresholdsPage() {
       <section>
         <h2>Admin noise floor</h2>
         <p id="noise-floor-help" className="console__muted cyo-text-muted">
-          Advisory findings scoring below this value are hidden from the admin review surface.
-          Flag and block findings always show.
+          Advisory findings scoring below this value are hidden from the admin review surface. Flag
+          and block findings always show.
         </p>
         <label>
           Noise floor (0-1)
@@ -254,9 +260,7 @@ export function ModerationThresholdsPage() {
         <button
           type="button"
           disabled={!canSaveFloor}
-          onClick={() =>
-            setPendingConfirm({ kind: 'noise-floor', value: Number(noiseFloorInput) })
-          }
+          onClick={() => setPendingConfirm({ kind: 'noise-floor', value: Number(noiseFloorInput) })}
         >
           Save noise floor
         </button>
@@ -399,8 +403,8 @@ export function ModerationThresholdsPage() {
           }
         >
           <p>
-            {pendingConfirm.row.category} findings for {pendingConfirm.row.age_band} revert to
-            the default surfacing level: <strong>{data.default_min_verdict}</strong>.
+            {pendingConfirm.row.category} findings for {pendingConfirm.row.age_band} revert to the
+            default surfacing level: <strong>{data.default_min_verdict}</strong>.
           </p>
         </Dialog>
       ) : null}
@@ -427,8 +431,8 @@ export function ModerationThresholdsPage() {
           }
         >
           <p>
-            Advisory findings scoring below {pendingConfirm.value} will be hidden from reviewers
-            on the review surface.
+            Advisory findings scoring below {pendingConfirm.value} will be hidden from reviewers on
+            the review surface.
           </p>
           {pendingConfirm.value > NOISE_FLOOR_WARN_ABOVE ? (
             <p className="cyo-text-error">

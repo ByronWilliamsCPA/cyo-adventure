@@ -37,8 +37,7 @@ const PREMISE_WARN_AT = PREMISE_MAX * 0.9
 const LOAD_ERROR_TRANSIENT = 'We could not load your requests and profiles.'
 const SUBMIT_ERROR_TRANSIENT = 'We could not send this request. Please try again.'
 
-const SUBMIT_SUCCESS_NOTICE =
-  'Request sent! Your story is being made; watch My Requests below.'
+const SUBMIT_SUCCESS_NOTICE = 'Request sent! Your story is being made; watch My Requests below.'
 
 // A Failed row leads with this friendly cause; the short technical error
 // field is kept visible below it (demoted) for debugging.
@@ -48,8 +47,7 @@ const FAILED_FRIENDLY_CAUSE = 'This story could not be made.'
 // is not left waiting blind on generation or review.
 const EXPECTATION_COPY: Partial<Record<StatusPill, string>> = {
   Generating: 'Usually ready in a few minutes.',
-  'Waiting for review':
-    'A grown-up reviewer checks every story before kids can read it.',
+  'Waiting for review': 'A grown-up reviewer checks every story before kids can read it.',
 }
 
 function isActive(job: GenerationJobSummary): boolean {
@@ -116,17 +114,17 @@ export function IntakePage() {
   // #VERIFY: IntakePage.test.tsx initial-load-failure test.
   const loadData = useCallback(async () => {
     try {
-      const [rows, jobRows] = await Promise.all([
-        profilesApi.list(),
-        intakeApi.listJobs(),
-      ])
+      const [rows, jobRows] = await Promise.all([profilesApi.list(), intakeApi.listJobs()])
       setProfiles(rows)
       setJobs(jobRows)
       setJobsSyncedAt(Date.now())
       setLoadError(null)
     } catch (err) {
       console.error('intake load failed', err)
-      setLoadError(classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT }).message)
+      setLoadError(
+        classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT, server: LOAD_ERROR_TRANSIENT })
+          .message
+      )
     }
   }, [profilesApi, intakeApi])
 
@@ -147,7 +145,10 @@ export function IntakePage() {
     const id = setInterval(() => {
       void refreshJobs().catch((err) => {
         console.error('poll failed', err)
-        setLoadError(classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT }).message)
+        setLoadError(
+          classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT, server: LOAD_ERROR_TRANSIENT })
+            .message
+        )
       })
     }, POLL_MS)
     return () => clearInterval(id)
@@ -197,7 +198,10 @@ export function IntakePage() {
       submitted = true
     } catch (err) {
       console.error('story request failed', err)
-      setError(classifyApiError(err, { transient: SUBMIT_ERROR_TRANSIENT }).message)
+      setError(
+        classifyApiError(err, { transient: SUBMIT_ERROR_TRANSIENT, server: SUBMIT_ERROR_TRANSIENT })
+          .message
+      )
     } finally {
       setSaving(false)
     }
@@ -209,7 +213,10 @@ export function IntakePage() {
       setSubmitSuccess(true)
       await refreshJobs().catch((err) => {
         console.error('post-submit refresh failed', err)
-        setLoadError(classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT }).message)
+        setLoadError(
+          classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT, server: LOAD_ERROR_TRANSIENT })
+            .message
+        )
       })
     }
   }
@@ -241,11 +248,7 @@ export function IntakePage() {
       {loadError ? (
         <div role="alert" className="intake-form__error cyo-text-error">
           {loadError}{' '}
-          <button
-            type="button"
-            className="intake-retry"
-            onClick={() => void loadData()}
-          >
+          <button type="button" className="intake-retry" onClick={() => void loadData()}>
             Retry
           </button>
         </div>
@@ -333,10 +336,7 @@ export function IntakePage() {
         </p>
       ) : null}
       {jobs.length === 0 ? (
-        <EmptyState
-          title="No requests yet"
-          description="Request a story above to see it here."
-        />
+        <EmptyState title="No requests yet" description="Request a story above to see it here." />
       ) : (
         <ul className="intake-requests">
           {jobs.map((job) => {
@@ -362,9 +362,7 @@ export function IntakePage() {
                     </span>
                   ) : null}
                   {expectation !== undefined ? (
-                    <span className="intake-request__hint cyo-text-muted">
-                      {expectation}
-                    </span>
+                    <span className="intake-request__hint cyo-text-muted">{expectation}</span>
                   ) : null}
                   {/* Any Failed row (pipeline failure OR gate-failed
                       needs_review) leads with a friendly cause; the short

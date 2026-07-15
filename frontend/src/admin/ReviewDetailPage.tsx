@@ -335,6 +335,7 @@ export function ReviewDetailPage() {
             kind: 'error',
             message: classifyApiError(err, {
               transient: 'We could not load this story for review. Please reload.',
+              server: 'We could not load this story for review. Please reload.',
             }).message,
           })
         }

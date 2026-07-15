@@ -3,7 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { createActor } from 'xstate'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { readerMachine } from './machine'
 import type { Storybook } from './types'
@@ -163,5 +163,61 @@ describe('reader machine BACK', () => {
     expect(snapshot.context.reading.current_node).toBe('n_entrance')
     expect(snapshot.context.reading.var_state).toEqual({ has_lantern: false })
     expect(snapshot.context.reading.path).toEqual(['n_entrance'])
+  })
+})
+
+describe('reader machine error recovery', () => {
+  // engine.ts's choose() throws by contract on a structurally invalid choice
+  // (dangling target, corrupted cached state). XState's actor runtime catches
+  // any throw from inside an assign() action internally and permanently stops
+  // the actor before it would ever reach a caller's try/catch around send();
+  // applyChoice (machine.ts) must therefore catch it itself and surface
+  // context.error, leaving the actor alive and still able to transition.
+  it('surfaces context.error instead of dying when a choice does not exist on the node', () => {
+    const actor = createActor(readerMachine, { input: { story: lantern } })
+    actor.start()
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      actor.send({ type: 'CHOOSE', choiceId: 'c_does_not_exist' })
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.status).toBe('active')
+      expect(snapshot.value).toBe('reading')
+      expect(snapshot.context.error).toBe(true)
+      // Unchanged: the failed transition must not have moved the reading state.
+      expect(snapshot.context.reading.current_node).toBe('n_entrance')
+    } finally {
+      logSpy.mockRestore()
+    }
+  })
+
+  it('stays usable after a failed choice: a valid choice still works', () => {
+    const actor = createActor(readerMachine, { input: { story: lantern } })
+    actor.start()
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      actor.send({ type: 'CHOOSE', choiceId: 'c_does_not_exist' })
+      actor.send({ type: 'CHOOSE', choiceId: 'c_ignore_lantern' })
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.context.error).toBe(false)
+      expect(snapshot.context.reading.current_node).not.toBe('n_entrance')
+    } finally {
+      logSpy.mockRestore()
+    }
+  })
+
+  it('clears context.error on RESTART', () => {
+    const actor = createActor(readerMachine, { input: { story: lantern } })
+    actor.start()
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      actor.send({ type: 'CHOOSE', choiceId: 'c_does_not_exist' })
+      expect(actor.getSnapshot().context.error).toBe(true)
+      actor.send({ type: 'RESTART' })
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.context.error).toBe(false)
+      expect(snapshot.context.reading.current_node).toBe('n_entrance')
+    } finally {
+      logSpy.mockRestore()
+    }
   })
 })

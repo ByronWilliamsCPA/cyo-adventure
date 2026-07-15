@@ -519,7 +519,7 @@ describe('router: guardian surface', () => {
 })
 
 describe('App', () => {
-  // App.tsx itself only wires <ToastProvider> around
+  // App.tsx wires <ToastProvider> and <AppErrorBoundary> around
   // <RouterProvider router={router} />, using the real singleton `router`
   // (createBrowserRouter) rather than the createMemoryRouter used above;
   // jsdom's default test URL is http://localhost:3000/, which resolves to the
