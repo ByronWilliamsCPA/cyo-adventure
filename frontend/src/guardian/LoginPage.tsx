@@ -1,5 +1,6 @@
 import { isAuthApiError } from '@supabase/supabase-js'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { RefObject } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
 import { hasValidDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
@@ -45,6 +46,41 @@ function isReachableForPrincipal(pathname: string, principal: Principal): boolea
 }
 
 /**
+ * Whether a login return path (`location.state.from.pathname`, the contract
+ * ProtectedRoute and DeviceAuthorizedRoute share via `state={{ from: location }}`)
+ * stays inside this app.
+ *
+ * #CRITICAL: security: `state.from` rides in history state, which is
+ * script-writable (a crafted link or a compromised page can plant it), so
+ * honoring it blindly would turn the post-login redirect into an open-redirect
+ * vector. Only a same-app path is followed: it must start with '/' (rejects
+ * absolute URLs such as 'https://evil.example') and must not start with '//'
+ * or '/\' (both become scheme-relative URLs once they reach the History API /
+ * URL parser, which treats a backslash like a forward slash). Anything else
+ * falls back to the role-based console default.
+ * #VERIFY: LoginPage.test.tsx "open-redirect guard" cases (absolute URL,
+ * '//host', and '/\host' state.from all fall back to the default).
+ */
+function isSameAppPath(pathname: string): boolean {
+  return pathname.startsWith('/') && !pathname.startsWith('//') && !pathname.startsWith('/\\')
+}
+
+/**
+ * How long the form waits, after a successful password submit, for
+ * AuthProvider to resolve /me out-of-band (status -> signed-in, or authError)
+ * before the watchdog re-enables it. Exported for the fake-timer tests.
+ */
+export const SIGN_IN_WATCHDOG_MS = 10_000
+
+/** Cancel a pending sign-in watchdog, if one is armed. */
+function clearWatchdog(ref: RefObject<number | null>): void {
+  if (ref.current !== null) {
+    window.clearTimeout(ref.current)
+    ref.current = null
+  }
+}
+
+/**
  * Distinguishes a genuine bad-credentials failure from an operational one
  * (network down, rate-limited, 5xx). Supabase returns the SAME
  * `invalid_credentials` code for both a wrong password and an unknown email, so
@@ -81,6 +117,11 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [formError, setFormError] = useState<'credentials' | 'connection' | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  // True once the sign-in watchdog fired: the post-submit resolution stalled
+  // (neither signed-in nor authError arrived in time), the form has been
+  // re-enabled, and the transient "taking longer than expected" note shows.
+  const [stalled, setStalled] = useState(false)
+  const watchdogRef = useRef<number | null>(null)
   // A failed recovery link (expired/already-used) means there is nothing to
   // recover into, so pre-open the reset-request panel instead of leaving the
   // guardian to rediscover "Forgot your password?" on their own.
@@ -93,11 +134,12 @@ export function LoginPage() {
   const navigate = useNavigate()
   const api = useApi()
   const state = location.state as { from?: { pathname?: string } } | null
-  // ADR-014 section 5: the Kids door sends a signed-out visitor here with
-  // ?intent=authorize-device when this device has no valid device grant. Once
-  // that guardian resolves to a signed-in principal, the effect below mints a
-  // grant for THIS device instead of following the normal role-based redirect,
-  // then drops the guardian back to the kid picker they came from.
+  // ADR-014 section 5: the Kids door (and DeviceAuthorizedRoute, for a kid
+  // deep link) sends a signed-out visitor here with ?intent=authorize-device
+  // when this device has no valid device grant. Once that guardian resolves
+  // to a signed-in principal, the effect below mints a grant for THIS device
+  // instead of following the normal role-based redirect, then drops the
+  // guardian back to the kid surface they came from (deviceReturnPath).
   const authorizeDeviceIntent =
     new URLSearchParams(location.search).get(AUTHORIZE_DEVICE_INTENT_PARAM) ===
     AUTHORIZE_DEVICE_INTENT_VALUE
@@ -111,10 +153,19 @@ export function LoginPage() {
   // would reject.
   const home = principal?.role === 'admin' ? ADMIN_CONSOLE_PATH : GUARDIAN_CONSOLE_PATH
   const requestedFrom = state?.from?.pathname
+  // The same-app screen (isSameAppPath's open-redirect guard) applies first;
+  // only a surviving path is then checked for principal reachability.
+  const safeFrom = requestedFrom && isSameAppPath(requestedFrom) ? requestedFrom : undefined
   const from =
-    requestedFrom && principal && isReachableForPrincipal(requestedFrom, principal)
-      ? requestedFrom
-      : home
+    safeFrom && principal && isReachableForPrincipal(safeFrom, principal) ? safeFrom : home
+  // Where the authorize-device flow drops the guardian after minting: the
+  // kid-surface location the child was originally heading for
+  // (DeviceAuthorizedRoute's state.from, e.g. a /read/... deep link), or the
+  // picker when the Kids door was entered directly. Beyond the same-app
+  // guard the path is deliberately not pre-validated here: a kid route still
+  // crosses DeviceAuthorizedRoute on arrival, which re-gates it against the
+  // freshly minted grant.
+  const deviceReturnPath = safeFrom ?? KID_PICKER_PATH
 
   // Apple sign-in is hidden until it is actually configured in Supabase (it
   // needs a paid Apple Developer account and a signed, expiring client secret).
@@ -149,9 +200,9 @@ export function LoginPage() {
       // Defensive: a grant already covers this device (e.g. a second tab
       // completed the mint first). Still shed the guardian session before
       // continuing, for the same reason the mint path does (see the #CRITICAL
-      // below): a signed-in guardian landing on the kid picker must not leave a
-      // live auth_token behind on a kid device.
-      void navigate(KID_PICKER_PATH, { replace: true })
+      // below): a signed-in guardian landing on the kid surface must not leave
+      // a live auth_token behind on a kid device.
+      void navigate(deviceReturnPath, { replace: true })
       void signOut().catch((err: unknown) => {
         logApiError('sign-out after device authorization failed', err)
       })
@@ -169,11 +220,12 @@ export function LoginPage() {
           familyId: view.family_id,
           id: view.id,
         })
-        // Hand the now kid-authorized device to the picker BEFORE signing the
-        // guardian out: signOut() flips status to 'signed-out', which trips
-        // this effect's cleanup (cancelled = true), so anything gated on
+        // Hand the now kid-authorized device back to the kid surface (the
+        // deep link the child was heading for, or the picker) BEFORE signing
+        // the guardian out: signOut() flips status to 'signed-out', which
+        // trips this effect's cleanup (cancelled = true), so anything gated on
         // `cancelled` after it would never run. Navigate first, clean up after.
-        void navigate(KID_PICKER_PATH, { replace: true })
+        void navigate(deviceReturnPath, { replace: true })
         // #CRITICAL: security: the device now holds a durable, revocable device
         // grant, so the guardian's live Supabase session (and its auth_token)
         // must NOT linger on what is henceforth a kid device. If it did, the
@@ -201,7 +253,7 @@ export function LoginPage() {
     return () => {
       cancelled = true
     }
-  }, [authorizeDeviceIntent, status, principal, recovery, api, navigate, signOut])
+  }, [authorizeDeviceIntent, status, principal, recovery, api, navigate, signOut, deviceReturnPath])
 
   // #ASSUME: security: a submitted password leaves `submitting` true on success
   // because sign-in completes out-of-band (status -> signed-in fires the
@@ -215,6 +267,19 @@ export function LoginPage() {
   // cause a cascading render).
   // #VERIFY: LoginPage.test.tsx renders the unresolved message when authError is set.
   const busy = submitting && !authError
+
+  // The watchdog only guards the out-of-band wait after a successful submit;
+  // once authError lands, the derived `busy` above has already re-enabled the
+  // form on the same render, so the pending timer is obsolete. Clearing (not
+  // firing) it keeps the transient stall note from stacking on the authError
+  // alert. No setState here, so no cascading render.
+  useEffect(() => {
+    if (authError) clearWatchdog(watchdogRef)
+  }, [authError])
+
+  // A late watchdog must never fire into an unmounted page: in the happy path
+  // the status -> signed-in redirect unmounts this component mid-wait.
+  useEffect(() => () => clearWatchdog(watchdogRef), [])
 
   // #EDGE: external-resources: signInWithOAuth rejects when Supabase cannot
   // start the OAuth redirect (network down, misconfigured provider). Without
@@ -241,11 +306,24 @@ export function LoginPage() {
   // #VERIFY: LoginPage.test.tsx covers the generic and connection error messages.
   async function submitPassword() {
     setFormError(null)
+    setStalled(false)
+    clearWatchdog(watchdogRef)
     setSubmitting(true)
     try {
       await signInWithPassword({ email, password })
       // Leave submitting true: success is signalled out-of-band (status ->
-      // signed-in triggers the redirect, or authError triggers the effect).
+      // signed-in triggers the redirect, or authError re-enables the form).
+      // #ASSUME: timing dependencies: if NEITHER signal ever arrives (a hung
+      // /me lookup, a dropped connection AuthProvider never surfaces), the
+      // button would read "Signing in..." forever. The watchdog re-enables
+      // the form after SIGN_IN_WATCHDOG_MS with a transient note so the
+      // guardian can retry instead of being stranded.
+      // #VERIFY: LoginPage.test.tsx "sign-in watchdog" cases.
+      watchdogRef.current = window.setTimeout(() => {
+        watchdogRef.current = null
+        setSubmitting(false)
+        setStalled(true)
+      }, SIGN_IN_WATCHDOG_MS)
     } catch (err) {
       setFormError(isInvalidCredentials(err) ? 'credentials' : 'connection')
       setSubmitting(false)
@@ -305,7 +383,12 @@ export function LoginPage() {
         </div>
       )
     }
-    return <Navigate to={from} replace />
+    // A failed mint deliberately ignores `from`: in the device flow it points
+    // back into the kid surface, which still lacks the grant that just failed
+    // to mint, so DeviceAuthorizedRoute would bounce straight back here and
+    // retry the mint forever. Land on the role-based console instead, where
+    // the guardian can set the device up manually.
+    return <Navigate to={authorizeDeviceIntent ? home : from} replace />
   }
 
   return (
@@ -390,6 +473,11 @@ export function LoginPage() {
         {!busy && !formError && authError ? (
           <p role="alert" className="guardian-login__error cyo-text-error">
             You&apos;re signed in, but we couldn&apos;t load your account. Please try again.
+          </p>
+        ) : null}
+        {!busy && stalled && !formError && !authError ? (
+          <p role="status" aria-live="polite" className="guardian-login__note">
+            This is taking longer than expected. Please try again.
           </p>
         ) : null}
       </form>

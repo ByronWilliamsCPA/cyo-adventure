@@ -1,13 +1,13 @@
 import { AuthApiError } from '@supabase/supabase-js'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { InitialEntry } from 'react-router-dom'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { AuthContextValue } from '../auth/authContext'
 import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import type { Principal } from '../auth/types'
-import { LoginPage } from './LoginPage'
+import { LoginPage, SIGN_IN_WATCHDOG_MS } from './LoginPage'
 
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
@@ -62,9 +62,9 @@ vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
 
-/** Renders the login page plus stand-in targets so a redirect is observable. */
-function renderLogin(initialEntries: InitialEntry[] = ['/guardian/login']) {
-  return render(
+/** The login page plus stand-in targets so a redirect is observable. */
+function loginUi(initialEntries: InitialEntry[] = ['/guardian/login']) {
+  return (
     <MemoryRouter initialEntries={initialEntries}>
       <Routes>
         <Route path="/guardian/login" element={<LoginPage />} />
@@ -73,9 +73,14 @@ function renderLogin(initialEntries: InitialEntry[] = ['/guardian/login']) {
         <Route path="/admin" element={<div>admin landing</div>} />
         <Route path="/admin/moderation-dashboard" element={<div>admin moderation landing</div>} />
         <Route path="/kids" element={<div>kid picker landing</div>} />
+        <Route path="/read/:profileId/:storybookId/:version" element={<div>reader landing</div>} />
       </Routes>
     </MemoryRouter>
   )
+}
+
+function renderLogin(initialEntries?: InitialEntry[]) {
+  return render(loginUi(initialEntries))
 }
 
 function fillCredentials(email: string, password: string) {
@@ -288,6 +293,99 @@ describe('LoginPage password form', () => {
       expect(screen.getByText('console landing')).toBeInTheDocument()
       expect(screen.queryByText('admin moderation landing')).not.toBeInTheDocument()
     })
+
+    describe('open-redirect guard (isSameAppPath)', () => {
+      it.each([
+        ['an absolute URL', 'https://evil.example/phish'],
+        ['a scheme-relative "//host" path', '//evil.example/phish'],
+        ['a backslash-scheme "/\\\\host" path', '/\\evil.example/phish'],
+      ])('falls back to the default when state.from is %s', (_label, badPath) => {
+        authStatus = 'signed-in'
+        principalValue = principal('guardian')
+        renderLogin([
+          { pathname: '/guardian/login', state: { from: { pathname: badPath } } },
+        ])
+        expect(screen.getByText('console landing')).toBeInTheDocument()
+      })
+    })
+  })
+})
+
+describe('LoginPage sign-in watchdog', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('re-enables the form and shows a stall note if resolution never arrives', async () => {
+    // signInWithPassword resolves (a session exists) but neither status nor
+    // authError ever changes: a hung /me lookup that AuthProvider never
+    // surfaces. Without the watchdog the button reads "Signing in..." forever.
+    vi.useFakeTimers()
+    mockSignInWithPassword.mockResolvedValue(undefined)
+    renderLogin()
+    fillCredentials('parent@example.com', 'test-password')
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(screen.getByRole('button', { name: /signing in/i })).toBeDisabled()
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(SIGN_IN_WATCHDOG_MS)
+    })
+
+    const button = screen.getByRole('button', { name: 'Sign in' })
+    expect(button).not.toBeDisabled()
+    expect(screen.getByRole('status')).toHaveTextContent(/taking longer than expected/i)
+  })
+
+  it('does not fire the stall note once authError resolves before the watchdog', async () => {
+    // authError already un-busies the form on the same render (the `busy`
+    // derivation), so a watchdog that later fires anyway must not stack a
+    // second, contradictory message on top of the real failure.
+    vi.useFakeTimers()
+    mockSignInWithPassword.mockResolvedValue(undefined)
+    const { rerender } = render(loginUi())
+    fillCredentials('parent@example.com', 'test-password')
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0)
+    })
+
+    // Simulate AuthProvider's real state (unlike this plain mock variable)
+    // flipping authError, which re-renders LoginPage with the new value; the
+    // effect keyed on authError then clears the pending watchdog.
+    authErrorValue = 'principal-unresolved'
+    rerender(loginUi())
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(SIGN_IN_WATCHDOG_MS)
+    })
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent(/couldn't load your account/i)
+  })
+
+  it('never fires into an unmounted page', async () => {
+    // The happy path unmounts LoginPage via the signed-in redirect while the
+    // watchdog is still pending; the cleanup must cancel it so setState never
+    // runs against a torn-down component.
+    vi.useFakeTimers()
+    mockSignInWithPassword.mockResolvedValue(undefined)
+    const { unmount } = renderLogin()
+    fillCredentials('parent@example.com', 'test-password')
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    unmount()
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(SIGN_IN_WATCHDOG_MS)
+    })
+    // No assertion beyond "did not throw": React logs a setState-after-unmount
+    // warning as a test failure via the shared console-error guard in
+    // test/setup.ts, so reaching this line at all is the pass condition.
   })
 })
 
