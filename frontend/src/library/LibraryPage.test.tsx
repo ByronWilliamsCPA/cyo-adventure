@@ -142,13 +142,13 @@ describe('LibraryPage', () => {
       },
     })
     renderLibrary()
-    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+    fireEvent.click(await screen.findByRole('button', { name: /rate 5 stars/i }))
     expect(mockPost).toHaveBeenCalledWith('/v1/ratings', {
       profile_id: 'p1',
       storybook_id: 's3',
       value: 5,
     })
-    const five = await screen.findByRole('button', { name: /5 stars/i })
+    const five = await screen.findByRole('button', { name: /rate 5 stars/i })
     expect(five).toHaveAttribute('aria-pressed', 'true')
   })
 
@@ -158,22 +158,25 @@ describe('LibraryPage', () => {
     mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
     mockPost.mockRejectedValueOnce(new Error('rate boom'))
     renderLibrary()
-    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+    fireEvent.click(await screen.findByRole('button', { name: /rate 5 stars/i }))
     expect(mockPost).toHaveBeenCalledWith('/v1/ratings', {
       profile_id: 'p1',
       storybook_id: 's3',
       value: 5,
     })
-    const five = await screen.findByRole('button', { name: /5 stars/i })
+    const five = await screen.findByRole('button', { name: /rate 5 stars/i })
     expect(five).toHaveAttribute('aria-pressed', 'false')
-    expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /rate 3 stars/i })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
   })
 
   it('a 401 on the rating POST surfaces the ask-a-grown-up gate', async () => {
     mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
     mockPost.mockRejectedValueOnce({ isAxiosError: true, response: { status: 401 } })
     renderLibrary()
-    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+    fireEvent.click(await screen.findByRole('button', { name: /rate 5 stars/i }))
 
     expect(await screen.findByText(/Time to find your grown-up/i)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /stars/i })).not.toBeInTheDocument()
@@ -183,11 +186,14 @@ describe('LibraryPage', () => {
     mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
     mockPost.mockRejectedValueOnce({ isAxiosError: true, response: { status: 500 } })
     renderLibrary()
-    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+    fireEvent.click(await screen.findByRole('button', { name: /rate 5 stars/i }))
 
-    const five = await screen.findByRole('button', { name: /5 stars/i })
+    const five = await screen.findByRole('button', { name: /rate 5 stars/i })
     expect(five).toHaveAttribute('aria-pressed', 'false')
-    expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /rate 3 stars/i })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
     expect(screen.queryByText(/Time to find your grown-up/i)).not.toBeInTheDocument()
   })
 
@@ -256,12 +262,15 @@ describe('LibraryPage', () => {
     mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
     mockPost.mockRejectedValueOnce('rate socket hangup')
     renderLibrary()
-    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+    fireEvent.click(await screen.findByRole('button', { name: /rate 5 stars/i }))
 
     await waitFor(() =>
       expect(errorSpy).toHaveBeenCalledWith('rating save failed', 'rate socket hangup')
     )
-    expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /rate 3 stars/i })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
     errorSpy.mockRestore()
   })
 
@@ -275,7 +284,7 @@ describe('LibraryPage', () => {
         })
     )
     const { unmount } = renderLibrary()
-    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+    fireEvent.click(await screen.findByRole('button', { name: /rate 5 stars/i }))
     unmount()
     rejectRate({ isAxiosError: true, response: { status: 401 } })
 
@@ -298,8 +307,8 @@ describe('LibraryPage', () => {
 
     // First rating hangs in flight; the second hits a 401 and swaps the page
     // to the ask-a-grown-up gate before the first resolves.
-    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
-    fireEvent.click(screen.getByRole('button', { name: /4 stars/i }))
+    fireEvent.click(await screen.findByRole('button', { name: /rate 5 stars/i }))
+    fireEvent.click(screen.getByRole('button', { name: /rate 4 stars/i }))
     expect(await screen.findByText(/Time to find your grown-up/i)).toBeInTheDocument()
 
     resolveFirst({
@@ -329,10 +338,10 @@ describe('LibraryPage', () => {
     })
     renderLibrary()
     const shelf = await screen.findByRole('region', { name: /more to explore/i })
-    fireEvent.click(within(shelf).getByRole('button', { name: /5 stars/i }))
+    fireEvent.click(within(shelf).getByRole('button', { name: /rate 5 stars/i }))
 
     await waitFor(() =>
-      expect(within(shelf).getByRole('button', { name: /5 stars/i })).toHaveAttribute(
+      expect(within(shelf).getByRole('button', { name: /rate 5 stars/i })).toHaveAttribute(
         'aria-pressed',
         'true'
       )
@@ -352,13 +361,13 @@ describe('LibraryPage', () => {
     expect(within(shelf).queryByText(/of \d+ pages explored/i)).not.toBeInTheDocument()
   })
 
-  it('tapping Continue this story on a series book opens the request form anchored to it', async () => {
+  it('tapping Ask for the next book on a series book opens the request form anchored to it', async () => {
     mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, SERIES_BOOK] } })
     mockPost.mockResolvedValue({ data: { id: 'req1', status: 'pending' } })
     renderLibrary()
 
     const shelf = await screen.findByRole('region', { name: /more to explore/i })
-    fireEvent.click(within(shelf).getByRole('button', { name: /continue this story/i }))
+    fireEvent.click(within(shelf).getByRole('button', { name: /ask for the next book/i }))
 
     expect(await screen.findByText(/continuing: the fox returns/i)).toBeInTheDocument()
     // Anchor mode replaces the series-name input with the continuing chip.

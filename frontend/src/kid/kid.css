@@ -115,6 +115,7 @@
 }
 
 .picker-tile {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -142,6 +143,16 @@
 
 .picker-tile__name {
   font-size: var(--text-lg, 1.25rem);
+}
+
+/* P6-07: corner padlock on a PIN-locked profile tile, so the PIN prompt is
+   anticipated. Absolutely positioned so the tile's flex layout is untouched. */
+.picker-tile__pin {
+  position: absolute;
+  top: var(--space-2, 0.5rem);
+  right: var(--space-2, 0.5rem);
+  font-size: var(--text-base, 1rem);
+  line-height: 1;
 }
 
 .picker-tile--add {

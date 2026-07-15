@@ -31,7 +31,7 @@ export interface ContinueAnchor {
  * (K3); this component only needs a profileId.
  *
  * WS-B PR 3: an optional `anchor` (a series-tagged book the child tapped
- * "Continue this story" on) opens the form pre-set to request a continuation
+ * "Ask for the next book" on) opens the form pre-set to request a continuation
  * of that book instead of a new series name.
  */
 export function RequestStory({
@@ -52,24 +52,27 @@ export function RequestStory({
   const [error, setError] = useState<SendError | null>(null)
   const [requests, setRequests] = useState<KidStoryRequest[]>([])
 
-  // #ASSUME: UI state: the child can tap "Continue this story" on the library
-  // page while this form is closed (or already open on a different idea);
-  // the parent hands a fresh anchor object on every tap, including a repeat
-  // tap on the same book. A title typed before the anchor was set (or after
-  // it was cleared) must not silently survive the switch into continuation
-  // mode and get submitted as an unintended proposed_series_title.
+  // #ASSUME: UI state: the child can tap "Ask for the next book" on the
+  // library page while this form is closed (or already open on a different
+  // idea); the parent hands a fresh anchor object on every tap, including a
+  // repeat tap on the same book. A title typed before the anchor was set (or
+  // after it was cleared) must not silently survive the switch into
+  // continuation mode and get submitted as an unintended
+  // proposed_series_title; likewise an error from an earlier attempt must not
+  // greet the child on this fresh open (debt U1).
   // #VERIFY: comparing against the previous anchor reference during render
   // (React's documented "adjusting state" escape hatch) opens the form and
-  // clears any pending seriesTitle on every new non-null anchor, without a
-  // setState-in-effect cascade; a fresh object reference from the parent, not
-  // a fresh book id, is what drives this, so tapping the same book twice in a
-  // row still reopens a closed form.
+  // clears any pending seriesTitle and stale error on every new non-null
+  // anchor, without a setState-in-effect cascade; a fresh object reference
+  // from the parent, not a fresh book id, is what drives this, so tapping the
+  // same book twice in a row still reopens a closed form.
   const [lastAnchor, setLastAnchor] = useState<ContinueAnchor | null>(null)
   if (anchor !== lastAnchor) {
     setLastAnchor(anchor)
     if (anchor !== null) {
       setOpen(true)
       setSeriesTitle('')
+      setError(null)
     }
   }
 
@@ -231,7 +234,16 @@ export function RequestStory({
           </div>
         </div>
       ) : (
-        <Button size="lg" onClick={() => setOpen(true)}>
+        <Button
+          size="lg"
+          onClick={() => {
+            // Debt U1: a rejection that lands after the form has closed can
+            // re-arm `error`; opening always starts from a clean slate so a
+            // stale message never greets the child (debt T3 pins this).
+            setError(null)
+            setOpen(true)
+          }}
+        >
           Request a story
         </Button>
       )}

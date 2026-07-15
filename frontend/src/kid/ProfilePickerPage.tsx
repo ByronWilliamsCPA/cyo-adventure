@@ -374,6 +374,12 @@ export function ProfilePickerPage() {
             <Link
               className="picker-tile"
               to={`/library/${profile.id}`}
+              // P6-07: a PIN-locked tile announces the gate up front. The
+              // label starts with the visible name so voice-control users
+              // can still say the name they see; PIN-less tiles keep their
+              // contents-derived name (AvatarCircle is aria-hidden, so that
+              // is just the display name).
+              aria-label={profile.has_pin ? `${profile.display_name} needs a PIN` : undefined}
               // A profile pick must mint a child session BEFORE navigating
               // (see pickProfile above), so the default immediate Link
               // navigation is suppressed in favor of the async flow; `to`
@@ -400,6 +406,15 @@ export function ProfilePickerPage() {
             >
               <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
               <span className="picker-tile__name">{profile.display_name}</span>
+              {/* P6-07: a PIN-locked profile shows a corner padlock so the
+                  PIN prompt is anticipated, not a surprise. The glyph is
+                  decorative (aria-hidden); the aria-label above carries the
+                  "needs a PIN" hint for assistive tech. */}
+              {profile.has_pin ? (
+                <span className="picker-tile__pin" aria-hidden="true">
+                  🔒
+                </span>
+              ) : null}
             </Link>
           </li>
         ))}
