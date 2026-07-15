@@ -17,12 +17,23 @@ const SURFACE = {
   version: 1,
   status: 'in_review',
   screened: true,
-  summary: { count: 1, hard_block: false, soft_flag: true, repaired: false, reviewer_independent: true },
+  summary: {
+    count: 1,
+    hard_block: false,
+    soft_flag: true,
+    repaired: false,
+    reviewer_independent: true,
+  },
   blob: {
     title: 'The Cave',
+    start_node: 'n1',
     nodes: [
-      { id: 'n1', body: 'A dark cave yawned ahead.' },
-      { id: 'n2', body: 'The path forked left and right.' },
+      {
+        id: 'n1',
+        body: 'A dark cave yawned ahead.',
+        choices: [{ label: 'Step inside', target: 'n2' }],
+      },
+      { id: 'n2', body: 'The path forked left and right.', choices: [] },
     ],
   },
   flagged_passages: [
@@ -30,11 +41,77 @@ const SURFACE = {
       node_id: 'n1',
       prose: 'A dark cave yawned ahead.',
       findings: [
-        { stage: 1, source: 'llm_safety', category: 'safety', node_id: 'n1', verdict: 'flag', score: null, message: 'possibly scary' },
+        {
+          stage: 1,
+          source: 'llm_safety',
+          category: 'safety',
+          node_id: 'n1',
+          verdict: 'flag',
+          score: null,
+          message: 'possibly scary',
+        },
       ],
     },
   ],
   story_level_findings: [],
+}
+
+/**
+ * Branching fixture for the traversal-ordered read-through: the blob stores
+ * nodes deliberately OUT of read order, includes an ending with kind/valence,
+ * a choice whose target does not exist ('ghost'), and a node unreachable from
+ * the start ('orphan'). Depth-first from 'start' following choice order gives
+ * start, left, end-a; orphan must still render, labeled unreachable.
+ */
+const TRAVERSAL_SURFACE = {
+  ...SURFACE,
+  blob: {
+    title: 'The Cave',
+    start_node: 'start',
+    nodes: [
+      { id: 'orphan', body: 'A forgotten grotto sparkles.', choices: [] },
+      {
+        id: 'end-a',
+        body: 'You find the treasure.',
+        choices: [],
+        is_ending: true,
+        ending: { kind: 'success', valence: 'positive' },
+      },
+      {
+        id: 'start',
+        body: 'A dark cave yawned ahead.',
+        choices: [
+          { label: 'Go left', target: 'left' },
+          { label: 'Go right', target: 'end-a' },
+        ],
+      },
+      {
+        id: 'left',
+        body: 'The left path narrows.',
+        choices: [
+          { label: 'Squeeze through', target: 'end-a' },
+          { label: 'Peek into the crack', target: 'ghost' },
+        ],
+      },
+    ],
+  },
+  flagged_passages: [
+    {
+      node_id: 'left',
+      prose: 'The left path narrows.',
+      findings: [
+        {
+          stage: 1,
+          source: 'llm_safety',
+          category: 'safety',
+          node_id: 'left',
+          verdict: 'flag',
+          score: null,
+          message: 'tight spaces',
+        },
+      ],
+    },
+  ],
 }
 
 function renderAt(storybookId: string) {
@@ -61,9 +138,136 @@ describe('ReviewDetailPage', () => {
     expect(screen.getByText(/The path forked/)).toBeInTheDocument()
   })
 
+  it('orders the read-through depth-first from start_node, unreachable passages last', async () => {
+    mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })
+    renderAt('s1')
+    await screen.findByRole('heading', { name: 'Full story' })
+    const fullStory = document.getElementById('full-story')
+    expect(fullStory).not.toBeNull()
+    const bodies = Array.from(fullStory?.querySelectorAll('.review-node') ?? []).map(
+      (el) => el.textContent ?? ''
+    )
+    // All four blob nodes render exactly once: nothing drops out.
+    expect(bodies).toHaveLength(4)
+    // Blob order was orphan, end-a, start, left; read order must be the
+    // depth-first walk (start, left via first choice, end-a) with the
+    // unreachable orphan at the end.
+    expect(bodies[0]).toContain('A dark cave yawned ahead.')
+    expect(bodies[1]).toContain('The left path narrows.')
+    expect(bodies[2]).toContain('You find the treasure.')
+    expect(bodies[3]).toContain('A forgotten grotto sparkles.')
+    // The unreachable section is clearly labeled and holds the orphan.
+    const heading = screen.getByRole('heading', { name: 'Unreachable passages', level: 3 })
+    expect(heading).toBeInTheDocument()
+    expect(screen.getByText(/no choice path from the start/i)).toBeInTheDocument()
+  })
+
+  it('renders choice labels with jump buttons, and a missing-target note for dead links', async () => {
+    mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })
+    renderAt('s1')
+    expect(await screen.findByText('Go left')).toBeInTheDocument()
+    expect(screen.getByText('Go right')).toBeInTheDocument()
+    expect(screen.getByText('Squeeze through')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Go to left' })).toBeInTheDocument()
+    // Two choices target end-a (from start and from left).
+    expect(screen.getAllByRole('button', { name: 'Go to end-a' })).toHaveLength(2)
+    // 'Peek into the crack' targets 'ghost', which is not in the blob: the
+    // label still renders, with a note instead of a dead jump link.
+    expect(screen.getByText('Peek into the crack')).toBeInTheDocument()
+    expect(screen.getByText('missing target')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Go to ghost' })).not.toBeInTheDocument()
+  })
+
+  it('moves focus to the target passage when a choice jump button is clicked', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })
+    renderAt('s1')
+    await user.click(await screen.findByRole('button', { name: 'Go to left' }))
+    const passage = document.getElementById('passage-left')
+    expect(passage).not.toBeNull()
+    expect(document.activeElement).toBe(passage)
+  })
+
+  it('badges the start passage and endings with their kind and valence', async () => {
+    mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })
+    renderAt('s1')
+    const startBadge = await screen.findByText('Start')
+    expect(document.getElementById('passage-start')).toContainElement(startBadge)
+    const endingBadge = screen.getByText('Ending: success, positive')
+    expect(document.getElementById('passage-end-a')).toContainElement(endingBadge)
+  })
+
+  it('shows the coverage line: total, reachable, and ending counts', async () => {
+    mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })
+    renderAt('s1')
+    expect(
+      await screen.findByText('4 passages, 3 reachable from the start, 1 ending')
+    ).toBeInTheDocument()
+  })
+
+  it('renders the moderation summary header with soft flags and independent review', async () => {
+    renderAt('s1')
+    expect(await screen.findByText('1 finding')).toBeInTheDocument()
+    expect(screen.getByText('Soft flags')).toBeInTheDocument()
+    expect(screen.getByText('Independent review')).toBeInTheDocument()
+    expect(screen.queryByText('Hard block')).not.toBeInTheDocument()
+    expect(screen.queryByText('Repaired')).not.toBeInTheDocument()
+  })
+
+  it('renders hard-block and repaired badges when the summary carries them', async () => {
+    mockGet.mockResolvedValue({
+      data: {
+        ...SURFACE,
+        summary: {
+          count: 3,
+          hard_block: true,
+          soft_flag: false,
+          repaired: true,
+          reviewer_independent: false,
+        },
+      },
+    })
+    renderAt('s1')
+    expect(await screen.findByText('3 findings')).toBeInTheDocument()
+    expect(screen.getByText('Hard block')).toBeInTheDocument()
+    expect(screen.getByText('Repaired')).toBeInTheDocument()
+    expect(screen.getByText('Not independently reviewed')).toBeInTheDocument()
+    expect(screen.queryByText('Soft flags')).not.toBeInTheDocument()
+  })
+
+  it('jumps from a flagged card to its passage in the read-through and highlights it', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })
+    renderAt('s1')
+    await user.click(await screen.findByRole('button', { name: 'Show in story' }))
+    const passage = document.getElementById('passage-left')
+    expect(passage).not.toBeNull()
+    expect(document.activeElement).toBe(passage)
+    expect(passage).toHaveClass('review-node--highlight')
+  })
+
+  it('shows a note instead of a jump link when a flagged node id is not in the blob', async () => {
+    mockGet.mockResolvedValue({
+      data: {
+        ...SURFACE,
+        flagged_passages: [{ node_id: 'vanished', prose: 'Ghost passage prose.', findings: [] }],
+      },
+    })
+    renderAt('s1')
+    expect(await screen.findByText('Ghost passage prose.')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Show in story' })).not.toBeInTheDocument()
+    expect(screen.getByText(/not found in the story below/i)).toBeInTheDocument()
+  })
+
   it('warns when the version was never screened', async () => {
     mockGet.mockResolvedValue({
-      data: { ...SURFACE, screened: false, summary: null, flagged_passages: [], story_level_findings: [] },
+      data: {
+        ...SURFACE,
+        screened: false,
+        summary: null,
+        flagged_passages: [],
+        story_level_findings: [],
+      },
     })
     renderAt('s1')
     expect(await screen.findByText(/never screened/i)).toBeInTheDocument()
@@ -233,11 +437,18 @@ describe('ReviewDetailPage', () => {
       },
     })
     renderAt('s1')
-    expect(
-      await screen.findByRole('heading', { name: 's1', level: 1 })
-    ).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 's1', level: 1 })).toBeInTheDocument()
     expect(screen.getByText('Prose with a malformed id survives.')).toBeInTheDocument()
     expect(screen.getByText('A normal closing passage.')).toBeInTheDocument()
+    // No start_node in this blob: the walk falls back to the first kept node,
+    // and the other node still renders in the unreachable section, so the
+    // coverage line accounts for every kept node.
+    expect(
+      screen.getByText('2 passages, 1 reachable from the start, 0 endings')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Unreachable passages', level: 3 })
+    ).toBeInTheDocument()
   })
 
   it('renders no read-through nodes when the blob has a non-array nodes field', async () => {
@@ -254,6 +465,11 @@ describe('ReviewDetailPage', () => {
     const fullStory = document.getElementById('full-story')
     expect(fullStory).not.toBeNull()
     expect(fullStory?.querySelectorAll('.review-node')).toHaveLength(0)
+    // A safety surface must say so out loud, not render an empty section.
+    expect(screen.getByRole('alert')).toHaveTextContent(/no readable passages/i)
+    expect(
+      screen.getByText('0 passages, 0 reachable from the start, 0 endings')
+    ).toBeInTheDocument()
   })
 
   it('does not bleed a prior action error into the other dialog', async () => {

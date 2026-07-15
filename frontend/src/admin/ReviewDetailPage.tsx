@@ -8,11 +8,60 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeCoverApi, type CoverStatusView } from '../guardian/coverApi'
 import { FlagBadge, verdictTone } from '../guardian/FlagBadge'
-import { makeReviewApi, type FindingView, type ReviewSurface, type Visibility } from '../guardian/reviewApi'
+import {
+  makeReviewApi,
+  type FindingView,
+  type ReviewSurface,
+  type Visibility,
+} from '../guardian/reviewApi'
 
-interface StoryNode {
+interface ChoiceView {
+  label: string
+  target: string
+}
+
+interface EndingView {
+  kind: string | null
+  valence: string | null
+}
+
+interface StoryNodeView {
+  /** Position in the blob's nodes array: a unique React key even when ids collide. */
+  blobIndex: number
   id: string
   body: string
+  choices: ChoiceView[]
+  isEnding: boolean
+  ending: EndingView | null
+}
+
+/**
+ * Read a node's choices from the loosely typed blob. Non-object entries are
+ * skipped; a kept entry keeps whatever label/target strings it has (either may
+ * be '', rendered as "(missing label)" / a "missing target" note).
+ */
+function readChoices(raw: unknown): ChoiceView[] {
+  if (!Array.isArray(raw)) return []
+  const choices: ChoiceView[] = []
+  for (const entry of raw) {
+    if (typeof entry !== 'object' || entry === null) continue
+    const record = entry as Record<string, unknown>
+    const label = typeof record.label === 'string' ? record.label : ''
+    const target = typeof record.target === 'string' ? record.target : ''
+    if (!label && !target) continue
+    choices.push({ label, target })
+  }
+  return choices
+}
+
+/** Read the ending descriptor; kind/valence survive only when they are strings. */
+function readEnding(raw: unknown): EndingView | null {
+  if (typeof raw !== 'object' || raw === null) return null
+  const record = raw as Record<string, unknown>
+  return {
+    kind: typeof record.kind === 'string' ? record.kind : null,
+    valence: typeof record.valence === 'string' ? record.valence : null,
+  }
 }
 
 /**
@@ -25,20 +74,105 @@ interface StoryNode {
  * synthetic id simply won't match flagged-node highlighting; flagged content
  * still appears in the server-driven flagged-passages section regardless. Only
  * entries that are not objects, or have neither an id nor prose, are skipped.
+ * Choices and ending metadata are read defensively too: a node missing or
+ * mangling those fields still renders with whatever it has.
  */
-function readNodes(blob: Record<string, unknown>): StoryNode[] {
+function readNodes(blob: Record<string, unknown>): StoryNodeView[] {
   const raw = blob.nodes
   if (!Array.isArray(raw)) return []
-  const nodes: StoryNode[] = []
+  const nodes: StoryNodeView[] = []
   raw.forEach((entry, index) => {
     if (typeof entry !== 'object' || entry === null) return
     const record = entry as Record<string, unknown>
     const id = typeof record.id === 'string' ? record.id : ''
     const body = typeof record.body === 'string' ? record.body : ''
     if (!id && !body) return
-    nodes.push({ id: id || `node-${index}`, body })
+    const ending = readEnding(record.ending)
+    nodes.push({
+      blobIndex: index,
+      id: id || `node-${index}`,
+      body,
+      choices: readChoices(record.choices),
+      isEnding: record.is_ending === true || ending !== null,
+      ending,
+    })
   })
   return nodes
+}
+
+interface ReadThrough {
+  /** Passages in read order: depth-first from the start node, choice order first. */
+  reachable: StoryNodeView[]
+  /** Kept passages no choice path from the start reaches (rendered last, labeled). */
+  unreachable: StoryNodeView[]
+  /** Node ids present in the read-through, for jump-target existence checks. */
+  knownIds: Set<string>
+  endingCount: number
+}
+
+/**
+ * Order the read-through by playing the story: depth-first from the blob's
+ * start_node, following each node's choices in order and skipping nodes
+ * already visited.
+ *
+ * #CRITICAL: data integrity: every kept node must appear exactly once in
+ * reachable + unreachable; a passage dropped from the read-through could let
+ * unreviewed prose reach a child.
+ * #VERIFY: ReviewDetailPage.test.tsx traversal, unreachable-section, and
+ * malformed-node tests assert the two lists cover all kept nodes.
+ */
+function buildReadThrough(blob: Record<string, unknown>): ReadThrough {
+  const nodes = readNodes(blob)
+  // First node with each id wins the traversal slot; a duplicate-id node can
+  // never be visited, so it lands in the unreachable section instead of
+  // silently vanishing.
+  const byId = new Map<string, StoryNodeView>()
+  for (const node of nodes) {
+    if (!byId.has(node.id)) byId.set(node.id, node)
+  }
+  const declaredStart = typeof blob.start_node === 'string' ? blob.start_node : ''
+  // #EDGE: data integrity: a missing or dangling start_node (a blob the
+  // validator would reject) still needs an ordered read-through, so fall back
+  // to the first kept node; everything then renders reachable-or-unreachable.
+  // #VERIFY: malformed-node test renders a start_node-less blob end to end.
+  const start = byId.get(declaredStart) ?? nodes[0] ?? null
+  const visited = new Set<StoryNodeView>()
+  const reachable: StoryNodeView[] = []
+  if (start) {
+    const stack: StoryNodeView[] = [start]
+    while (stack.length > 0) {
+      const node = stack.pop()
+      if (!node || visited.has(node)) continue
+      visited.add(node)
+      reachable.push(node)
+      // Push in reverse so the pop order follows the node's choice order.
+      for (const choice of [...node.choices].reverse()) {
+        const target = byId.get(choice.target)
+        if (target && !visited.has(target)) stack.push(target)
+      }
+    }
+  }
+  return {
+    reachable,
+    unreachable: nodes.filter((node) => !visited.has(node)),
+    knownIds: new Set(byId.keys()),
+    endingCount: nodes.filter((node) => node.isEnding).length,
+  }
+}
+
+/**
+ * DOM id for a passage container. encodeURIComponent keeps the id free of
+ * whitespace (node ids are arbitrary strings on this defensive surface) while
+ * staying deterministic from both a blob node id and a finding's node_id.
+ * Duplicate node ids share a DOM id; a jump lands on the first (reachable)
+ * copy, and the duplicate still renders in the unreachable section.
+ */
+function passageDomId(nodeId: string): string {
+  return `passage-${encodeURIComponent(nodeId)}`
+}
+
+function pluralize(count: number, noun: string): string {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`
 }
 
 type LoadState =
@@ -55,6 +189,68 @@ function Finding({ finding }: { finding: FindingView }) {
       <span className="review-finding__category">{finding.category}</span>
       <span className="review-finding__message">{finding.message}</span>
     </li>
+  )
+}
+
+interface PassageProps {
+  node: StoryNodeView
+  isStart: boolean
+  flagged: boolean
+  highlighted: boolean
+  knownIds: Set<string>
+  onJump: (nodeId: string) => void
+}
+
+/**
+ * One passage of the read-through: structure badges (Start / Ending with
+ * kind and valence), the prose, then the kid-facing choice labels with a jump
+ * button per resolvable target. tabIndex={-1} lets a jump move real focus
+ * here; badges carry text, never color alone.
+ */
+function Passage({ node, isStart, flagged, highlighted, knownIds, onJump }: PassageProps) {
+  const classes = ['review-node']
+  if (flagged) classes.push('review-node--flagged')
+  if (highlighted) classes.push('review-node--highlight')
+  const endingDetail = node.ending
+    ? [node.ending.kind, node.ending.valence]
+        .filter((part): part is string => part !== null)
+        .join(', ')
+    : ''
+  return (
+    <div id={passageDomId(node.id)} tabIndex={-1} className={classes.join(' ')}>
+      {isStart || node.isEnding ? (
+        <p className="review-node__badges">
+          {isStart ? (
+            <span className="review-node__badge review-node__badge--start">Start</span>
+          ) : null}
+          {node.isEnding ? (
+            <span className="review-node__badge review-node__badge--ending">
+              {endingDetail ? `Ending: ${endingDetail}` : 'Ending'}
+            </span>
+          ) : null}
+        </p>
+      ) : null}
+      <PassageText text={node.body} />
+      {node.choices.length > 0 ? (
+        <ul className="review-choices">
+          {node.choices.map((choice, index) => (
+            // Choices are static per render; index key is stable here.
+            <li key={index} className="review-choice">
+              <span className="review-choice__label">{choice.label || '(missing label)'}</span>
+              {knownIds.has(choice.target) ? (
+                <button type="button" className="review-jump" onClick={() => onJump(choice.target)}>
+                  Go to {choice.target}
+                </button>
+              ) : (
+                // A dead link would 404 the reviewer's attention; name the
+                // defect instead so it can be sent back with a reason.
+                <span className="review-choice__missing cyo-text-error">missing target</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
   )
 }
 
@@ -96,6 +292,32 @@ export function ReviewDetailPage() {
     return () => {
       isMountedRef.current = false
     }
+  }, [])
+
+  // Briefly tint the passage a jump landed on so the reviewer's eye finds it
+  // after the scroll; cleared by a timer (and on unmount), not by blur, so
+  // keyboard users keep the highlight while reading.
+  const [highlightedId, setHighlightedId] = useState<string | null>(null)
+  const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(
+    () => () => {
+      if (highlightTimer.current !== null) clearTimeout(highlightTimer.current)
+    },
+    []
+  )
+
+  const jumpToPassage = useCallback((nodeId: string) => {
+    const el = document.getElementById(passageDomId(nodeId))
+    if (!el) return
+    // Focus first (the container carries tabIndex={-1}): assistive tech
+    // announces the passage and the next Tab starts from it; preventScroll
+    // leaves the scrolling to scrollIntoView. Optional-call scrollIntoView:
+    // it is absent under jsdom (test env) and always present in real browsers.
+    el.focus({ preventScroll: true })
+    el.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+    setHighlightedId(nodeId)
+    if (highlightTimer.current !== null) clearTimeout(highlightTimer.current)
+    highlightTimer.current = setTimeout(() => setHighlightedId(null), 1800)
   }, [])
 
   useEffect(() => {
@@ -233,7 +455,9 @@ export function ReviewDetailPage() {
   }
 
   const { surface } = state
-  const nodes = readNodes(surface.blob)
+  const readThrough = buildReadThrough(surface.blob)
+  const totalPassages = readThrough.reachable.length + readThrough.unreachable.length
+  const coverage = `${pluralize(totalPassages, 'passage')}, ${readThrough.reachable.length} reachable from the start, ${pluralize(readThrough.endingCount, 'ending')}`
   const flaggedIds = new Set(surface.flagged_passages.map((passage) => passage.node_id))
   const title =
     typeof surface.blob.title === 'string' && surface.blob.title
@@ -247,9 +471,31 @@ export function ReviewDetailPage() {
 
       {!surface.screened ? (
         <p role="alert" className="review-detail__unscreened">
-          This version was never screened by moderation. Approving it will be rejected
-          until it has been screened.
+          This version was never screened by moderation. Approving it will be rejected until it has
+          been screened.
         </p>
+      ) : null}
+
+      {surface.summary ? (
+        // Moderation verdict strip the reviewer scans before any prose.
+        // hard_block gets the danger tone; every badge carries text, never
+        // color alone.
+        <div className="review-summary">
+          <span className="review-summary__count">
+            {pluralize(surface.summary.count, 'finding')}
+          </span>
+          {surface.summary.hard_block ? <FlagBadge tone="block" label="Hard block" /> : null}
+          {surface.summary.soft_flag ? <FlagBadge tone="flag" label="Soft flags" /> : null}
+          {surface.summary.repaired ? <FlagBadge tone="flag" label="Repaired" /> : null}
+          <FlagBadge
+            tone={surface.summary.reviewer_independent ? 'clean' : 'advisory'}
+            label={
+              surface.summary.reviewer_independent
+                ? 'Independent review'
+                : 'Not independently reviewed'
+            }
+          />
+        </div>
       ) : null}
 
       {surface.flagged_passages.length > 0 ? (
@@ -264,11 +510,29 @@ export function ReviewDetailPage() {
                   <Finding key={index} finding={finding} />
                 ))}
               </ul>
+              {readThrough.knownIds.has(passage.node_id) ? (
+                <button
+                  type="button"
+                  className="review-jump review-card__jump"
+                  onClick={() => jumpToPassage(passage.node_id)}
+                >
+                  Show in story
+                </button>
+              ) : (
+                // A finding's node_id misses the read-through when the blob
+                // node's id was malformed and got a synthetic one; the prose
+                // above is still the full flagged content, so nothing hides.
+                <span className="review-card__missing-node cyo-text-muted">
+                  This passage id was not found in the story below.
+                </span>
+              )}
             </article>
           ))}
         </div>
       ) : surface.screened ? (
-        <p className="console__muted cyo-text-muted">No flagged passages. This story screened clean.</p>
+        <p className="console__muted cyo-text-muted">
+          No flagged passages. This story screened clean.
+        </p>
       ) : null}
 
       {surface.story_level_findings.length > 0 ? (
@@ -285,16 +549,47 @@ export function ReviewDetailPage() {
 
       <div className="review-group" id="full-story">
         <h2>Full story</h2>
-        {nodes.map((node) => (
-          <div
-            key={node.id}
-            className={
-              flaggedIds.has(node.id) ? 'review-node review-node--flagged' : 'review-node'
-            }
-          >
-            <PassageText text={node.body} />
-          </div>
+        <p className="review-coverage cyo-text-muted">{coverage}</p>
+        {totalPassages === 0 ? (
+          <p role="alert" className="cyo-text-error">
+            No readable passages were found in this version. Do not approve it until the story
+            content can be reviewed.
+          </p>
+        ) : null}
+        {readThrough.reachable.map((node, index) => (
+          // The traversal root is always reachable[0]; it gets the Start badge.
+          <Passage
+            key={node.blobIndex}
+            node={node}
+            isStart={index === 0}
+            flagged={flaggedIds.has(node.id)}
+            highlighted={highlightedId === node.id}
+            knownIds={readThrough.knownIds}
+            onJump={jumpToPassage}
+          />
         ))}
+        {readThrough.unreachable.length > 0 ? (
+          <section className="review-unreachable" aria-labelledby="review-unreachable-heading">
+            <h3 id="review-unreachable-heading" className="review-unreachable__heading">
+              Unreachable passages
+            </h3>
+            <p className="review-unreachable__note cyo-text-muted">
+              No choice path from the start reaches these passages. They are listed here so every
+              passage still gets reviewed.
+            </p>
+            {readThrough.unreachable.map((node) => (
+              <Passage
+                key={node.blobIndex}
+                node={node}
+                isStart={false}
+                flagged={flaggedIds.has(node.id)}
+                highlighted={highlightedId === node.id}
+                knownIds={readThrough.knownIds}
+                onJump={jumpToPassage}
+              />
+            ))}
+          </section>
+        ) : null}
       </div>
 
       {/*
@@ -311,9 +606,7 @@ export function ReviewDetailPage() {
           onClick={() => void generateCover()}
           disabled={coverBusy || (coverStatus === 'generating' && !coverTimedOut)}
         >
-          {coverStatus === 'generating' && !coverTimedOut
-            ? 'Generating cover…'
-            : 'Generate cover'}
+          {coverStatus === 'generating' && !coverTimedOut ? 'Generating cover…' : 'Generate cover'}
         </Button>
         {coverStatus === 'failed' ? (
           <span className="review-cover-error" role="alert">
