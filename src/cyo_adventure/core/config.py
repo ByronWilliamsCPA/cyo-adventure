@@ -763,6 +763,56 @@ class Settings(BaseSettings):
         return self
 
     @model_validator(mode="after")
+    def _require_explicit_environment_when_deployed(self) -> Settings:
+        """Fail fast when ENVIRONMENT is unset but deployment markers are present.
+
+        ``environment`` defaults to ``"local"``, and every ``_require_*_outside_local``
+        guard above (plus the rate-limiter gate in ``app.py``) treats ``"local"``
+        as "relax the production control": the dev auth stub is trusted
+        (api/deps.py trusts the bearer string as its subject only when
+        ``environment == "local"``) and the in-memory rate limiter is disabled.
+        A deployed tier that forgets to set ENVIRONMENT therefore does not fail;
+        it silently boots with those safeguards off. The other guards cannot
+        catch this because they short-circuit on ``environment == "local"``,
+        including a *defaulted* local.
+
+        Detect the fail-open case directly: if ENVIRONMENT was never explicitly
+        provided (absent from ``model_fields_set``) yet OIDC verification config
+        is present, the process is a real deployment silently defaulting to
+        "local". OIDC config is the safe marker: local dev, CI, and the
+        integration/e2e suites never set it, so there is no false-positive
+        surface, while every deployed tier must set it (see
+        ``_require_oidc_config_outside_local``). An operator who genuinely wants
+        a local process still sets nothing and is unaffected; one who explicitly
+        sets ``ENVIRONMENT=local`` is honoured (the field is then in
+        ``model_fields_set``), since that is a deliberate choice, not a silent
+        default.
+
+        #CRITICAL: security: a deployment defaulting to "local" trusts the dev
+        auth stub and disables the rate limiter; refusing to boot converts that
+        silent fail-open into a startup error.
+        #VERIFY: tests/unit/test_config.py::TestExplicitEnvironmentWhenDeployed
+        covers the raise, the explicit-local pass, and the local-dev pass.
+
+        Raises:
+            ConfigurationError: when ENVIRONMENT was not explicitly set but
+                ``oidc_issuer`` or ``oidc_jwks_url`` is configured, which marks a
+                real deployment silently defaulting to ``"local"``.
+        """
+        if "environment" not in self.model_fields_set and (
+            self.oidc_issuer or self.oidc_jwks_url
+        ):
+            msg = (
+                "ENVIRONMENT is unset but OIDC verification config is present, so "
+                "the process is a deployment silently defaulting to 'local' (dev "
+                "auth stub trusted, in-memory rate limiter disabled). Set "
+                "ENVIRONMENT explicitly to 'dev', 'staging', or 'production'; "
+                "refusing to start."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
     def _require_classifier_when_reviewing(self) -> Settings:
         """Require at least one Stage-0 classifier whenever real review runs.
 

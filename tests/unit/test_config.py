@@ -595,6 +595,75 @@ class TestValidatorRequireOidcConfigOutsideLocal:
         assert settings.oidc_jwks_url is None
 
 
+class TestExplicitEnvironmentWhenDeployed:
+    """Tests for the _require_explicit_environment_when_deployed validator.
+
+    A deployment that sets OIDC config but forgets ENVIRONMENT would default to
+    "local", silently trusting the dev auth stub and disabling the in-memory
+    rate limiter. The validator converts that fail-open into a startup error,
+    keyed on OIDC config as the deployment marker (never set by local dev, CI,
+    or the integration/e2e suites).
+    """
+
+    _OIDC_ISSUER = "https://project.supabase.co/auth/v1"
+    _OIDC_JWKS_URL = "https://project.supabase.co/auth/v1/.well-known/jwks.json"
+
+    @pytest.mark.unit
+    def test_unset_environment_with_oidc_config_raises(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """OIDC configured but ENVIRONMENT never set raises ConfigurationError."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        # The field must be genuinely unset: an inherited shell ENVIRONMENT would
+        # land in model_fields_set and mask the fail-open this guard exists for.
+        monkeypatch.delenv("ENVIRONMENT", raising=False)
+        monkeypatch.delenv("CYO_ADVENTURE_ENVIRONMENT", raising=False)
+
+        with pytest.raises(ConfigurationError) as exc_info:
+            Settings(
+                oidc_issuer=self._OIDC_ISSUER,
+                oidc_jwks_url=self._OIDC_JWKS_URL,
+            )
+        assert "ENVIRONMENT" in str(exc_info.value)
+
+    @pytest.mark.unit
+    def test_explicit_local_with_oidc_config_is_valid(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Explicitly setting ENVIRONMENT=local is honoured even with OIDC set."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("ENVIRONMENT", raising=False)
+        monkeypatch.delenv("CYO_ADVENTURE_ENVIRONMENT", raising=False)
+
+        # Must not raise: explicit local is a deliberate choice, not a silent
+        # default, so environment lands in model_fields_set and the guard passes.
+        settings = Settings(
+            environment="local",
+            oidc_issuer=self._OIDC_ISSUER,
+            oidc_jwks_url=self._OIDC_JWKS_URL,
+        )
+        assert settings.environment == "local"
+
+    @pytest.mark.unit
+    def test_unset_environment_without_oidc_config_is_valid(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Plain local dev (no ENVIRONMENT, no OIDC markers) is unaffected."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("ENVIRONMENT", raising=False)
+        monkeypatch.delenv("CYO_ADVENTURE_ENVIRONMENT", raising=False)
+        monkeypatch.delenv("OIDC_ISSUER", raising=False)
+        monkeypatch.delenv("OIDC_JWKS_URL", raising=False)
+
+        settings = Settings()
+        assert settings.environment == "local"
+        assert settings.oidc_issuer is None
+
+
 def _non_local_settings(**overrides: object) -> object:
     """Build a non-local Settings with valid OIDC + db, overriding as needed.
 
