@@ -12,6 +12,7 @@ import {
 } from '../api/readerApi'
 import { useApi } from '../hooks/useApi'
 import { useReplayOnReconnect } from '../hooks/useReplayOnReconnect'
+import { useToast } from '../notifications/useToast'
 import type { QueuedWrite } from '../offline/db'
 import { resolveConflict, saveProgress, type ReplayOutcome } from '../offline/sync'
 import { parseContinuation } from '../player/series'
@@ -52,10 +53,21 @@ export function ReaderRoute() {
 
   const [replayConflicts, setReplayConflicts] = useState<QueuedWrite[]>([])
   const [replayFailedCount, setReplayFailedCount] = useState(0)
-  const handleReplayOutcome = useCallback((o: ReplayOutcome) => {
-    if (o.conflicts.length > 0) setReplayConflicts(o.conflicts)
-    if (o.failed.length > 0) setReplayFailedCount(o.failed.length)
-  }, [])
+  const { showToast } = useToast()
+  const handleReplayOutcome = useCallback(
+    (o: ReplayOutcome) => {
+      if (o.conflicts.length > 0) setReplayConflicts(o.conflicts)
+      if (o.failed.length > 0) setReplayFailedCount(o.failed.length)
+      // A clean reconnect replay (queued progress reached the server with
+      // nothing held back) finally gets a positive confirmation; conflicts
+      // and failures keep their existing surfaces (dialog + banner) above
+      // and suppress the toast so the two never contradict each other.
+      if (o.replayed > 0 && o.conflicts.length === 0 && o.failed.length === 0) {
+        showToast('All caught up! Your reading is saved.', { tone: 'success' })
+      }
+    },
+    [showToast]
+  )
   useReplayOnReconnect(syncApi, handleReplayOutcome)
 
   // #CRITICAL: concurrency: resolveKeepThisDevice resends each story's furthest

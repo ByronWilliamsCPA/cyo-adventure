@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App'
 import { setDeviceGrant } from '../auth/deviceGrant'
 import { clearAdultGate, warmAdultGate } from '../auth/parentalGateState'
+import { ToastProvider } from '../notifications/ToastProvider'
 import { _resetDbHandle } from '../offline/db'
 import { routes } from '../router'
 
@@ -91,11 +92,18 @@ vi.mock('../auth/supabaseClient', () => ({
 function renderAt(initialPath: string) {
   // No <AuthProvider> wrapper here: it is scoped to the guardian subtree via
   // the lazy GuardianAuthLayout in `routes`, mirroring production (App.tsx
-  // renders only <RouterProvider>). The kid-surface tests below therefore
-  // exercise routes that never mount AuthProvider, which is the point of
-  // scoping it; the guardian tests get it through the route tree.
+  // renders <ToastProvider> around <RouterProvider>, nothing else). The
+  // kid-surface tests below therefore exercise routes that never mount
+  // AuthProvider, which is the point of scoping it; the guardian tests get it
+  // through the route tree. ToastProvider IS here for the same
+  // mirror-production reason: it wraps the router in App.tsx, and ReaderRoute
+  // calls useToast() unconditionally.
   const router = createMemoryRouter(routes, { initialEntries: [initialPath] })
-  return render(<RouterProvider router={router} />)
+  return render(
+    <ToastProvider>
+      <RouterProvider router={router} />
+    </ToastProvider>
+  )
 }
 
 /**
@@ -492,7 +500,11 @@ describe('router: guardian surface', () => {
       })
     })
     const router = createMemoryRouter(routes, { initialEntries: ['/guardian'] })
-    render(<RouterProvider router={router} />)
+    render(
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    )
     expect(await screen.findByText(/Family console/)).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Grown-ups only' })).not.toBeInTheDocument()
 
@@ -507,11 +519,11 @@ describe('router: guardian surface', () => {
 })
 
 describe('App', () => {
-  // App.tsx itself only wires <RouterProvider router={router} />, using the
-  // real singleton `router` (createBrowserRouter) rather than the
-  // createMemoryRouter used above; jsdom's default test URL is
-  // http://localhost:3000/, which resolves to the same kid-surface landing
-  // route exercised by the memory-router test above.
+  // App.tsx itself only wires <ToastProvider> around
+  // <RouterProvider router={router} />, using the real singleton `router`
+  // (createBrowserRouter) rather than the createMemoryRouter used above;
+  // jsdom's default test URL is http://localhost:3000/, which resolves to the
+  // same kid-surface landing route exercised by the memory-router test above.
   it('mounts and renders the landing page at the default browser URL', async () => {
     render(<App />)
     expect(await screen.findByRole('link', { name: /grown-ups/i })).toHaveAttribute(

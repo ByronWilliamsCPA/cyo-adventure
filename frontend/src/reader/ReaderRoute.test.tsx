@@ -9,6 +9,7 @@ import { IDBFactory } from 'fake-indexeddb'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { ToastProvider } from '../notifications/ToastProvider'
 import { _resetDbHandle, enqueueWrite, type QueuedWrite } from '../offline/db'
 import type { ReadingState, Storybook } from '../player/types'
 import { ReaderRoute } from './ReaderRoute'
@@ -44,13 +45,18 @@ vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
 
+// ToastProvider wraps the router in every render helper, mirroring App.tsx's
+// production mounting: ReaderRoute calls useToast() unconditionally, so a
+// bare render would throw its outside-provider error.
 function renderAt(path: string) {
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="/read/:profileId/:storybookId/:version" element={<ReaderRoute />} />
-      </Routes>
-    </MemoryRouter>
+    <ToastProvider>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route path="/read/:profileId/:storybookId/:version" element={<ReaderRoute />} />
+        </Routes>
+      </MemoryRouter>
+    </ToastProvider>
   )
 }
 
@@ -58,11 +64,13 @@ function renderAt(path: string) {
 // "params are missing" guard a routing config mismatch would trigger for real.
 function renderAtIncompleteRoute(path: string) {
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="/read/:profileId" element={<ReaderRoute />} />
-      </Routes>
-    </MemoryRouter>
+    <ToastProvider>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route path="/read/:profileId" element={<ReaderRoute />} />
+        </Routes>
+      </MemoryRouter>
+    </ToastProvider>
   )
 }
 
@@ -81,12 +89,14 @@ describe('ReaderRoute guards', () => {
 
   it('missing-params fallback navigates to the profile picker', async () => {
     render(
-      <MemoryRouter initialEntries={['/read/p1']}>
-        <Routes>
-          <Route path="/read/:profileId" element={<ReaderRoute />} />
-          <Route path="/kids" element={<div>picker-stub</div>} />
-        </Routes>
-      </MemoryRouter>
+      <ToastProvider>
+        <MemoryRouter initialEntries={['/read/p1']}>
+          <Routes>
+            <Route path="/read/:profileId" element={<ReaderRoute />} />
+            <Route path="/kids" element={<div>picker-stub</div>} />
+          </Routes>
+        </MemoryRouter>
+      </ToastProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Back to start' }))
     expect(await screen.findByText('picker-stub')).toBeTruthy()
@@ -152,20 +162,22 @@ describe('ReaderRoute wiring (T5)', () => {
     })
 
     render(
-      <MemoryRouter
-        initialEntries={[
-          {
-            pathname: `/read/p_cont/${lantern.id}/${lantern.version}`,
-            state: {
-              continuation: { entryNode: 'n_cave_fork', varState: { has_lantern: true } },
+      <ToastProvider>
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: `/read/p_cont/${lantern.id}/${lantern.version}`,
+              state: {
+                continuation: { entryNode: 'n_cave_fork', varState: { has_lantern: true } },
+              },
             },
-          },
-        ]}
-      >
-        <Routes>
-          <Route path="/read/:profileId/:storybookId/:version" element={<ReaderRoute />} />
-        </Routes>
-      </MemoryRouter>
+          ]}
+        >
+          <Routes>
+            <Route path="/read/:profileId/:storybookId/:version" element={<ReaderRoute />} />
+          </Routes>
+        </MemoryRouter>
+      </ToastProvider>
     )
 
     await screen.findByTestId('reader')
@@ -250,6 +262,10 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
 
     await screen.findByTestId('reader')
     await screen.findByTestId('conflict-dialog')
+
+    // A conflicted replay is not "all caught up": the success toast must not
+    // appear alongside (and contradict) the conflict dialog.
+    expect(screen.queryByText('All caught up! Your reading is saved.')).toBeNull()
 
     function putBodies(): { current_node: string; state_revision: number }[] {
       return mockPut.mock.calls.map(
@@ -495,5 +511,70 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
 
     window.removeEventListener('unhandledrejection', onUnhandledRejection)
     expect(unhandledRejection).toBeUndefined()
+  })
+})
+
+describe('ReaderRoute replay success toast', () => {
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('shows a kid-safe success toast when a reconnect replay lands cleanly', async () => {
+    const profileId = 'p_replay_success'
+    const queuedState: ReadingState = {
+      current_node: lantern.nodes[0].id,
+      var_state: {},
+      path: [lantern.nodes[0].id],
+      visit_set: [lantern.nodes[0].id],
+      version: lantern.version,
+      state_revision: 1,
+      save_slots: {},
+    }
+    await enqueueWrite({
+      event_id: 'evt-replay-success-1',
+      profile_id: profileId,
+      storybook_id: lantern.id,
+      base_revision: 1,
+      state: queuedState,
+      device_id: 'device-a',
+      queued_at: Date.now(),
+    })
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+
+    // Every save succeeds: the mount-time flush replays the queued write
+    // (revision 1) cleanly, giving replayed > 0 with no conflicts and no
+    // failures. ReaderPage's own live save (revision 0) shares this mock but
+    // has no bearing on the replay outcome.
+    mockPut.mockImplementation((_url: string, body: { state_revision: number }) =>
+      Promise.resolve({ data: { ...body, state_revision: body.state_revision + 1 } })
+    )
+
+    renderAt(`/read/${profileId}/${lantern.id}/${lantern.version}`)
+
+    await screen.findByTestId('reader')
+    expect(await screen.findByText('All caught up! Your reading is saved.')).toBeTruthy()
+    // Success means success: neither failure surface is up beside the toast.
+    expect(screen.queryByTestId('conflict-dialog')).toBeNull()
+    expect(screen.queryByRole('alert')).toBeNull()
+
+    // The kid-readable manual dismissal: "OK" clears it without waiting for
+    // the auto-dismiss window.
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+    expect(screen.queryByText('All caught up! Your reading is saved.')).toBeNull()
   })
 })

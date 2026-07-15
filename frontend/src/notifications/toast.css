@@ -1,0 +1,95 @@
+/* src/notifications/toast.css - global toast viewport and cards.
+   Design-system promotion candidate: tokens only, no raw palette values
+   beyond the var() fallbacks (mirroring kid.css). */
+
+.toast-viewport {
+  position: fixed;
+  bottom: var(--space-4, 1rem);
+  left: 50%;
+  transform: translateX(-50%);
+  /* Above the design-system Dialog backdrop (z-index 1000, Dialog.css): a
+     confirmation must stay visible even while a dialog is up. */
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  width: min(28rem, calc(100vw - 2 * var(--space-4, 1rem)));
+  /* The always-mounted (usually empty) live region must never swallow taps
+     meant for the page beneath it; the cards re-enable pointer events. */
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 0.75rem);
+  width: 100%;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border-radius: var(--radius-lg, 12px);
+  border: 2px solid;
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+  font-family: var(--font-sans, 'Segoe UI', sans-serif);
+  /* Kid-safe: base is already 18px in this app's scale; ink on a light tone
+     wash keeps the message comfortably readable. */
+  font-size: var(--text-base, 1.125rem);
+  font-weight: var(--weight-semibold, 600);
+  line-height: var(--leading-tight, 1.3);
+  color: var(--color-ink, #2c1a0e);
+  animation: toast-in var(--duration-normal, 220ms) var(--easing-default, ease-in-out);
+}
+
+.toast--success {
+  background: var(--color-success-light, #d4eddf);
+  border-color: var(--color-forest, #2d5a3d);
+}
+
+.toast--info {
+  background: var(--color-sky-light, #daeaf7);
+  border-color: var(--color-sky, #4a7fb5);
+}
+
+.toast__message {
+  min-width: 0;
+}
+
+.toast__ok {
+  font: inherit;
+  font-family: var(--font-sans, 'Segoe UI', sans-serif);
+  font-weight: var(--weight-bold, 700);
+  flex-shrink: 0;
+  /* 44px tap target, matching the kid surface's buttons (kid.css). */
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border-radius: var(--radius-full, 9999px);
+  border: 2px solid currentColor;
+  background: var(--surface-raised, rgb(255 255 255 / 55%));
+  color: var(--color-ink, #2c1a0e);
+  cursor: pointer;
+}
+
+.toast__ok:hover,
+.toast__ok:focus-visible {
+  background: var(--color-parchment, #f8f3e8);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-2, 0.5rem));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
