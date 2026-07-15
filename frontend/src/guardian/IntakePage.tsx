@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
@@ -11,9 +11,11 @@ import { AssignChildrenDialog } from './AssignChildrenDialog'
 import {
   TONES,
   buildBrief,
+  formatRelativeTime,
   makeIntakeApi,
   statusPill,
   type GenerationJobSummary,
+  type StatusPill,
   type ToneValue,
 } from './intakeApi'
 
@@ -27,8 +29,27 @@ const POLL_MS = 8000
 const LOAD_ERROR_TRANSIENT = 'We could not load your requests and profiles.'
 const SUBMIT_ERROR_TRANSIENT = 'We could not send this request. Please try again.'
 
+const SUBMIT_SUCCESS_NOTICE =
+  'Request sent! Your story is being made; watch My Requests below.'
+
+// A Failed row leads with this friendly cause; the short technical error
+// field is kept visible below it (demoted) for debugging.
+const FAILED_FRIENDLY_CAUSE = 'This story could not be made.'
+
+// What-to-expect sublines for the non-terminal pill states, so a busy parent
+// is not left waiting blind on generation or review.
+const EXPECTATION_COPY: Partial<Record<StatusPill, string>> = {
+  Generating: 'Usually ready in a few minutes.',
+  'Waiting for review':
+    'A grown-up reviewer checks every story before kids can read it.',
+}
+
 function isActive(job: GenerationJobSummary): boolean {
   return job.status === 'queued' || job.status === 'running'
+}
+
+function assignedNotice(count: number): string {
+  return `Assigned to ${count} ${count === 1 ? 'child' : 'children'}.`
 }
 
 /**
@@ -36,9 +57,10 @@ function isActive(job: GenerationJobSummary): boolean {
  *
  * "Who's it for?" child chips constrain the age band / reading level; a premise
  * textarea and a tone chip row complete the request. Submitting posts the
- * concept then immediately enqueues generation. The request list polls while
- * anything is generating and shows a status pill per row. Assignment ("Assign
- * more") is C4a-6 and is intentionally not built here.
+ * concept then immediately enqueues generation and confirms inline. The
+ * request list polls while anything is generating and shows, per row, a
+ * status pill, the request's age, and a what-to-expect subline; Failed rows
+ * offer a Try again prefill and Approved rows open the assign dialog (C4a-6).
  */
 export function IntakePage() {
   const api = useApi()
@@ -52,6 +74,19 @@ export function IntakePage() {
   const [jobs, setJobs] = useState<GenerationJobSummary[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Explicit post-submit confirmation near the form (RequestStoryForm's
+  // success-notice pattern); cleared on the next submit attempt or Try again.
+  const [submitSuccess, setSubmitSuccess] = useState(false)
+  // Inline confirmation after the assign dialog saves ("Assigned to N
+  // children."); cleared when the dialog is reopened.
+  const [assignNotice, setAssignNotice] = useState<string | null>(null)
+  // "Now" for the "Requested N minutes ago" lines, stamped whenever the job
+  // list is (re)fetched. Each 8s poll tick refreshes it, so active lists stay
+  // current without a dedicated clock timer (and render stays pure; the
+  // react-hooks/purity rule forbids Date.now() during render). Rows only
+  // exist after a fetch has stamped it, so the 0 initial value never shows.
+  const [jobsSyncedAt, setJobsSyncedAt] = useState(0)
+  const premiseRef = useRef<HTMLTextAreaElement>(null)
   // The storybook id whose "Assign to children" dialog is open, or null when
   // closed. Approved request rows carry a non-null storybook_id (see statusPill).
   const [assigning, setAssigning] = useState<string | null>(null)
@@ -63,6 +98,7 @@ export function IntakePage() {
   const refreshJobs = useCallback(async () => {
     const rows = await intakeApi.listJobs()
     setJobs(rows)
+    setJobsSyncedAt(Date.now())
     setLoadError(null)
   }, [intakeApi])
 
@@ -78,6 +114,7 @@ export function IntakePage() {
       ])
       setProfiles(rows)
       setJobs(jobRows)
+      setJobsSyncedAt(Date.now())
       setLoadError(null)
     } catch (err) {
       console.error('intake load failed', err)
@@ -115,6 +152,7 @@ export function IntakePage() {
     if (selected === null) return
     setSaving(true)
     setError(null)
+    setSubmitSuccess(false)
     // #CRITICAL: data-integrity: createConcept + generate create durable rows
     // (and downstream generation cost). The success/failure of the request is
     // decided by these two POSTs ALONE. The trailing job-list refresh is a
@@ -139,15 +177,38 @@ export function IntakePage() {
     } finally {
       setSaving(false)
     }
-    // Only after the durable POSTs succeed: clear the input and refresh the
-    // list. A failed refresh surfaces as loadError, never as a submit failure.
+    // Only after the durable POSTs succeed: clear the input, confirm inline,
+    // and refresh the list. A failed refresh surfaces as loadError, never as
+    // a submit failure.
     if (submitted) {
       setPremise('')
+      setSubmitSuccess(true)
       await refreshJobs().catch((err) => {
         console.error('post-submit refresh failed', err)
         setLoadError(classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT }).message)
       })
     }
+  }
+
+  // "Try again" on a Failed row prefills the form from that job's summary and
+  // hands control back to the guardian; it must NEVER auto-submit (a re-run
+  // creates a new concept + generation job with real cost, so the parent
+  // confirms). The list payload carries only a premise snippet (the backend
+  // truncates to 120 chars, api/generation.py) and the age band; tone and the
+  // originally selected child are not in the payload, so tone keeps its
+  // current selection and the child chip is set only when the band matches
+  // exactly one profile (anything else would be a guess).
+  // #ASSUME: data-integrity: premise_snippet can be a truncated prefix of the
+  // original premise. #VERIFY: the guardian reviews the prefilled form before
+  // submitting; IntakePage.test.tsx asserts Try again fires no POST.
+  function tryAgain(job: GenerationJobSummary) {
+    setSubmitSuccess(false)
+    if (job.premise_snippet) setPremise(job.premise_snippet)
+    const bandMatches = profiles.filter((p) => p.age_band === job.age_band)
+    if (bandMatches.length === 1) setSelectedId(bandMatches[0].id)
+    // Optional call: jsdom (Vitest) does not implement scrollIntoView.
+    premiseRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'center' })
+    premiseRef.current?.focus()
   }
 
   return (
@@ -172,6 +233,11 @@ export function IntakePage() {
           if (canSubmit) void submit()
         }}
       >
+        {submitSuccess ? (
+          <p role="status" className="intake-form__notice">
+            {SUBMIT_SUCCESS_NOTICE}
+          </p>
+        ) : null}
         {error ? (
           <p role="alert" className="intake-form__error cyo-text-error">
             {error}
@@ -201,6 +267,7 @@ export function IntakePage() {
         <label className="intake-form__field cyo-field">
           What&apos;s it about?
           <textarea
+            ref={premiseRef}
             className="cyo-field__control"
             value={premise}
             onChange={(e) => setPremise(e.target.value)}
@@ -225,6 +292,11 @@ export function IntakePage() {
       </form>
 
       <h2>My Requests</h2>
+      {assignNotice ? (
+        <p role="status" className="intake-assign-notice">
+          {assignNotice}
+        </p>
+      ) : null}
       {jobs.length === 0 ? (
         <EmptyState
           title="No requests yet"
@@ -234,6 +306,8 @@ export function IntakePage() {
         <ul className="intake-requests">
           {jobs.map((job) => {
             const pill = statusPill(job)
+            const requestedAgo = formatRelativeTime(job.created_at, jobsSyncedAt)
+            const expectation = EXPECTATION_COPY[pill]
             return (
               <li
                 key={job.id}
@@ -244,11 +318,34 @@ export function IntakePage() {
                   <span className="intake-request__title">
                     {job.title ?? (job.premise_snippet || 'Untitled request')}
                   </span>
+                  {requestedAgo !== null ? (
+                    <span
+                      className="intake-request__age cyo-text-muted"
+                      title={new Date(job.created_at).toLocaleString()}
+                    >
+                      Requested {requestedAgo}
+                    </span>
+                  ) : null}
+                  {expectation !== undefined ? (
+                    <span className="intake-request__hint cyo-text-muted">
+                      {expectation}
+                    </span>
+                  ) : null}
                   {/* Any Failed row (pipeline failure OR gate-failed
-                      needs_review) shows the short error field if present;
+                      needs_review) leads with a friendly cause; the short
+                      error field stays visible but demoted for debugging;
                       the raw report is never fetched or rendered. */}
-                  {pill === 'Failed' && job.error ? (
-                    <span className="intake-request__error cyo-text-error">{job.error}</span>
+                  {pill === 'Failed' ? (
+                    <>
+                      <span className="intake-request__error cyo-text-error">
+                        {FAILED_FRIENDLY_CAUSE}
+                      </span>
+                      {job.error ? (
+                        <span className="intake-request__error-detail cyo-text-muted">
+                          {job.error}
+                        </span>
+                      ) : null}
+                    </>
                   ) : null}
                 </div>
                 <span
@@ -265,9 +362,21 @@ export function IntakePage() {
                   <button
                     type="button"
                     className="intake-request__assign"
-                    onClick={() => setAssigning(job.storybook_id)}
+                    onClick={() => {
+                      setAssignNotice(null)
+                      setAssigning(job.storybook_id)
+                    }}
                   >
                     Assign more
+                  </button>
+                ) : null}
+                {pill === 'Failed' ? (
+                  <button
+                    type="button"
+                    className="intake-request__retry"
+                    onClick={() => tryAgain(job)}
+                  >
+                    Try again
                   </button>
                 ) : null}
               </li>
@@ -280,6 +389,11 @@ export function IntakePage() {
           key={assigning}
           storybookId={assigning}
           onClose={() => setAssigning(null)}
+          // onAssigned receives the storybook's full post-save assignment
+          // list (assignApi.add returns the server's complete profile_ids),
+          // so the count reads "assigned to N total". Nothing else on this
+          // page renders assignments, so the notice is the whole refresh.
+          onAssigned={(profileIds) => setAssignNotice(assignedNotice(profileIds.length))}
         />
       ) : null}
     </section>

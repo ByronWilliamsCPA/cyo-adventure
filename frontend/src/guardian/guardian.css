@@ -292,6 +292,29 @@
   font-size: 0.875rem;
 }
 
+/* Demoted technical detail under the friendly failure line: kept visible
+   for debugging but smaller; color comes from cyo-text-muted in
+   IntakePage.tsx. */
+.intake-request__error-detail {
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+/* "Requested N minutes ago" age line and the per-status expectation
+   subline; color comes from cyo-text-muted in IntakePage.tsx. */
+.intake-request__age,
+.intake-request__hint {
+  font-size: 0.8125rem;
+}
+
+/* Inline success confirmations (request sent, story assigned); same forest
+   tone as .request-form__notice below. */
+.intake-form__notice,
+.intake-assign-notice {
+  color: var(--color-forest, #2d5a3d);
+  margin: 0;
+}
+
 /* color comes from the cyo-text-muted class added alongside this one in
    IntakePage.tsx; font-size/margin stay local. */
 .intake-form__hint {
@@ -438,8 +461,10 @@
 /* This pill's text can't clear 4.5:1 with amber-deep at any font weight
    without growing past its compact inline size, so it uses an amber-deep
    fill with ink text (4.86:1) instead of the white-on-amber-deep pairing
-   used where text can be sized large (see .intake-chip--on above). */
-.intake-request__assign {
+   used where text can be sized large (see .intake-chip--on above). The
+   Failed-row "Try again" prefill button shares the treatment. */
+.intake-request__assign,
+.intake-request__retry {
   border: 1px solid var(--color-amber-deep, #c17b2a);
   background: var(--color-amber-deep, #c17b2a);
   color: var(--color-ink, #2c1a0e);
@@ -451,12 +476,14 @@
   white-space: nowrap;
 }
 
-.intake-request__assign:hover {
+.intake-request__assign:hover,
+.intake-request__retry:hover {
   background: var(--color-amber-hover, #c4681c);
   border-color: var(--color-amber-hover, #c4681c);
 }
 
-.intake-request__assign:focus-visible {
+.intake-request__assign:focus-visible,
+.intake-request__retry:focus-visible {
   outline: 2px solid var(--color-amber-deep, #c17b2a);
   outline-offset: 2px;
 }

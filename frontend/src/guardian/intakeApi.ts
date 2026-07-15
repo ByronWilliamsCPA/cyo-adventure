@@ -179,6 +179,32 @@ export function statusPill(job: {
   return 'Waiting for review'
 }
 
+/**
+ * Coarse relative age of an ISO timestamp for the "Requested ..." line under
+ * each request row: "just now", "4 minutes ago", "2 hours ago", "3 days ago".
+ * Minutes/hours/days granularity only; the caller re-renders on each poll
+ * tick, which keeps active rows fresh without a dedicated timer.
+ *
+ * Returns null for an unparseable timestamp so callers can skip the line.
+ *
+ * #EDGE: timing-dependencies: the client clock can sit behind the server
+ * clock that stamped created_at, yielding a "future" timestamp.
+ * #VERIFY: negative elapsed time clamps to "just now"; intakeApi.test.ts
+ * future-timestamp case.
+ */
+export function formatRelativeTime(iso: string, nowMs: number): string | null {
+  const thenMs = Date.parse(iso)
+  if (Number.isNaN(thenMs)) return null
+  const elapsedMs = Math.max(0, nowMs - thenMs)
+  const minutes = Math.floor(elapsedMs / 60_000)
+  if (minutes < 1) return 'just now'
+  if (minutes < 60) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return hours === 1 ? '1 hour ago' : `${hours} hours ago`
+  const days = Math.floor(hours / 24)
+  return days === 1 ? '1 day ago' : `${days} days ago`
+}
+
 export interface ConceptCreated {
   concept_id: string
 }
