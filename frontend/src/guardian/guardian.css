@@ -1199,4 +1199,35 @@
     display: block;
     overflow-x: auto;
   }
+
+  /* Device actions (ConsolePage.tsx): each action's width is otherwise
+     driven by its own hint paragraph's wrapped width, so a hint-less
+     button (Re-authorize) renders far narrower than its hint-bearing
+     siblings (Hand device to a child, Remove from this device) and looks
+     broken stacked next to them at phone widths. Match every device
+     button to the full row width instead, the same treatment
+     .console-row__actions gets above. */
+  .console-device__action {
+    width: 100%;
+  }
+
+  .console-device > .cyo-btn {
+    width: 100%;
+  }
+
+  /* "My Requests" rows (IntakePage.tsx): the pill and, on an Approved or
+     Failed row, the assign/retry button never shrink (both are
+     white-space: nowrap), so at phone-to-intermediate widths the title
+     column was squeezed down to a few characters per line to make room
+     for them on the same line. Letting the row wrap, with a floor on the
+     title column, moves the pill/button to their own line instead of
+     crushing the title; a pill-only row still fits on one line whenever
+     it has room and is untouched. */
+  .intake-request {
+    flex-wrap: wrap;
+  }
+
+  .intake-request__body {
+    min-width: 12rem;
+  }
 }
