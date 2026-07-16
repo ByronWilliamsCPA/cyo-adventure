@@ -135,19 +135,28 @@ Phase 4b: Editor + UX   ░░░░░░░░░░░░░░░░░░�
 Phase 5: Hardening      ░░░░░░░░░░░░░░░░░░░░░░██  (2-3 wks)  - Deploy, backups, restore drill
 ```
 
-## Milestones
+## Milestones (re-anchored 2026-07-16 to the capability register)
 
-| Milestone | Target | Status | Dependencies |
-|-----------|--------|--------|--------------|
-| M0: Phase 0 exit gate (decisions locked, CI green) | Wk 1-2 | ✅ Delivered | None |
-| M1: Reader plays hand-authored stories offline | Wk 5-7 (internal demo) | ✅ Delivered | M0 |
-| M2: Concept-to-story pipeline passes the full gate | Wk 9-12 | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) | M1 |
-| M3: Parent approval gate enforced end to end | Wk 11-14 | ✅ Delivered (Phase 3 backend #34/#36/#45; guardian console #76 merged, reachable end to end) | M2 |
-| M4: R1 internal release (generation + library) | Wk 11-16 | ✅ R1 feature-complete 2026-07-03 (Phases 3 + 4a delivered; pending release-readiness) | M3 |
-| M4b: Editor + engagement complete (edit, tracker, TTS, controls, kid flag) | +3-4 wks after start | ⏸️ Not started | M4, Now queue |
-| M4c: Family loops live (notifications, visibility, budget consent) | +2-3 wks | ⏸️ Not started | M4b (K15) |
-| M4d: Cousin recommendations under dual-guardian consent | +2-3 wks (can overlap 4c) | ⏸️ Not started | PR #267 merged |
-| M5: Hardened, deployed, restore-tested v1 | Wk 16-25 | ⏸️ Not started | M4b-M4d |
+The register review exposed a naming problem: what this roadmap historically called "R1"
+is the **core loop** working (request -> generate -> gate -> admin approve -> assign ->
+offline read), which shipped and is live. It is not the register's bar for "the web app
+functions properly": the family-tier capability set. The ladder below renames the
+delivered rung **R1-alpha** and defines **R1 (full)** as the register-complete web app.
+The old wording stands in historical sections above; this table governs.
+
+| Milestone | Definition (register exit criteria) | Est | Status / Dependencies |
+|-----------|--------------------------------------|-----|------------------------|
+| M0-M3 | Foundations through enforced approval gate | done | ✅ Delivered |
+| M4 = **R1-alpha** | Core loop live internally, web only (Phases 0-3 + 4a; historic "R1") | done | ✅ Feature-complete 2026-07-03, live 2026-07-05 |
+| M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4 | ~1 wk | ⏸️ Next up |
+| M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ⏸️ After M4.1 |
+| M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ⏸️ Needs M4b's K15 |
+| M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ⏸️ Needs PR #267 merged |
+| M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | ⏸️ After M4b-M4d |
+| **M5 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | ⏸️ The line this register review was about |
+| M6 = R2: TestFlight iOS | Phase 6 (public auth/multi-tenancy) + Phase 8 (Capacitor shell, IAP); R2-gate debt items closed (G1 child-session scoping is already substantially closed by ADR-014; verify and mark) | 6-9 wks | ⏸️ After R1 (full) |
+| M7 = R3: Public launch | Phase 7 (ADR-018 D1-D4 executed and Accepted, G11/G12/A12/A14) + Phase 9 (catalog ops, hosted infra, A7/A8 ops levers, submission) | 5-8 wks, partial overlap with M6 | ⏸️ Counsel engagement should start now (long lead) |
+| Completion | Register fully delivered except the post-launch backlog (S12 ring-3, A11 corpus tooling) and parked no-design-element items | - | - |
 
 ## Release ladder (R1/R2/R3) and later phases
 
