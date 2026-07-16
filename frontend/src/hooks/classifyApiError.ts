@@ -50,11 +50,13 @@ const DEFAULT_MESSAGES: Record<ApiErrorKind, string> = {
  * Pass `overrides` to supply page-specific copy for a kind while keeping the
  * classification shared; an omitted kind falls back to its default message.
  *
- * #ASSUME: data-integrity: only 401, 403, offline (no response), and 429/5xx
- * are distinguished. Every other HTTP status (404, 422, ...) and a timeout
- * still map to `transient`, preserving prior behavior for those cases.
+ * #ASSUME: data-integrity: only 401, 403, offline (no response, including a
+ * timeout: axios surfaces ECONNABORTED with no `response`), and 429/5xx are
+ * distinguished. Every other HTTP status that did get a response (404, 422,
+ * ...) still maps to `transient`, preserving prior behavior for those cases.
  * #VERIFY: classifyApiError.test.ts covers 401 / 403 / 429 / 5xx / no-response
- * (offline) / other-status / non-axios and the override precedence.
+ * (offline) / timeout (offline) / other-status / non-axios and the override
+ * precedence.
  */
 export function classifyApiError(
   error: unknown,
