@@ -20,27 +20,29 @@ relate to the Supabase project constraints.
 ## Cross-cutting checks (not tied to one journey)
 
 - **Accessibility**: `frontend/e2e/a11y.spec.ts` — axe-core, scoped to WCAG
-  2.1 A/AA, across every top-level page: landing, kid picker, kid library
-  (populated/empty), reader, guardian login/console/intake/requests/
-  books/profiles, and admin console/requests/moderation-thresholds/
-  moderation-dashboard (`/admin/review/:id` excluded, same reasoning as
-  `e2e-prod/guardian-admin-smoke.spec.ts`: it needs a real storybook id and
-  a dynamic heading). First run (2026-07-16) found six real contrast
-  failures across two passes, all traced to two design-system tokens
+  2.1 A/AA, across every top-level page (landing, kid picker, kid library
+  populated/empty, reader, guardian login/console/intake/requests/
+  books/profiles, admin console/requests/moderation-thresholds/
+  moderation-dashboard) and every modal/dialog surface (ConflictDialog,
+  AssignChildrenDialog, ProfileFormDialog). `/admin/review/:id` is excluded,
+  same reasoning as `e2e-prod/guardian-admin-smoke.spec.ts`: it needs a real
+  storybook id and a dynamic heading. Across two passes (2026-07-16) found
+  six real contrast failures, all traced to two design-system tokens
   (`--color-amber-deep`, `--color-ink-muted`) used against a darker
   background than their documented contrast math assumed; fixed the same
   day (see `--color-amber-deep-text` in `design-system/src/tokens.css`, the
   `.cyo-btn--primary`/`.cyo-btn--ghost` fixes in `Button.css`, and the
   `--color-ink-secondary` swaps in `guardian.css`/`kid.css`/`library.css`/
-  `landing.css`). Not yet covering modal/dialog surfaces (ConflictDialog,
-  AssignChildrenDialog, ProfileFormDialog) or any populated/error state of
-  the pages above beyond what's listed.
+  `landing.css`). The dialog pass found no new violations. Remaining gap:
+  only one fixed mock state per page/dialog is checked, not every
+  populated/error/loading variant.
 - **Visual regression**: `frontend/e2e/visual.spec.ts` — screenshot
-  baselines for landing, kid picker, reader, library, guardian console, and
-  admin console (`visual.spec.ts-snapshots/`). Not yet covering guardian
-  sub-pages (intake/requests/books/profiles), admin sub-pages
-  (requests/moderation-thresholds/moderation-dashboard), or any
-  modal/dialog surface.
+  baselines for every top-level page and every modal/dialog surface:
+  landing, kid picker, reader (+ conflict dialog), library, guardian
+  console/intake/requests/books (+ assign dialog)/profiles (+ profile-form
+  dialog), and admin console/requests/moderation-thresholds/moderation-
+  dashboard (`visual.spec.ts-snapshots/`). Same remaining-gap caveat as
+  accessibility above: one state per surface, not every variant.
 
 ---
 
