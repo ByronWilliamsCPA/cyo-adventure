@@ -130,7 +130,32 @@ relate to the Supabase project constraints.
 
 ## Admin: provider allowlist management
 
-- **NONE FOUND** at any layer (E2E-mocked, E2E-real, E2E-prod, or Vitest). No `ProviderAllowlist` page exists under `frontend/src/admin/`; the only "allowlist" references in `frontend/src` are inside the generated API client (`frontend/src/client/types.gen.ts`, `sdk.gen.ts`, `index.ts`) and `frontend/src/hooks/useApi.ts`. See Gaps section, this may be a missing UI rather than a missing test.
+Built 2026-07-16, closing the gap this matrix previously flagged as "no coverage found, no UI exists." A 2026-07-16 audit confirmed the backend (full CRUD + audit trail, `src/cyo_adventure/api/provider_allowlist.py`, `tests/integration/test_provider_allowlist_api.py`) had no frontend page, and no ADR/roadmap/tech-spec ever explicitly deferred one; `AllowlistCreateBody.display_name`'s docstring ("for a future admin UI") implied it was anticipated. `ProviderAllowlistPage.tsx` is a general settings page (global, not tied to any one story): add/enable/disable/remove `(provider, model_id)` rows.
+
+- E2E-mocked: `frontend/e2e/provider-allowlist.spec.ts` (add, disable, remove a real row against the routed app)
+- Component: `frontend/src/admin/ProviderAllowlistPage.test.tsx`, `frontend/src/admin/providerAllowlistApi.test.ts`
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+
+## Admin: authoring plan (method/mechanism/model selection)
+
+New journey, not previously in this matrix: the step between a guardian/admin
+approving a story *request* (`StoryRequestQueue`, which sets age_band/length/
+narrative_style) and generation actually starting. `POST /story-requests/{id}/
+authoring-plan` had a full backend implementation and a working generated
+client method but **no frontend UI at all** until this feature landed
+(2026-07-16 admin-role audit); the only way to advance an approved request
+into generation was a raw API call. `AuthoringQueuePage.tsx` lists approved
+requests; `AuthoringPlanDialog.tsx` is the admin's method/mechanism/model
+picker, reading available models from the provider allowlist above and
+showing the request's already-locked-in age_band/length/narrative_style as
+read-only context (they cannot be re-edited at this step, matching the
+2026-07-16 audit's finding that no second edit point exists anywhere).
+
+- E2E-mocked: `frontend/e2e/authoring-queue.spec.ts` (skill-mechanism plan, automated-provider plan constrained to the allowlist, fresh-generation forcing automated-provider)
+- E2E-real: `frontend/e2e-real/authoring-plan-real.spec.ts` (both mechanisms against a freshly submitted-and-approved real request; caught a real bug live, see below)
+- Component: `frontend/src/admin/AuthoringQueuePage.test.tsx`, `frontend/src/admin/AuthoringPlanDialog.test.tsx`, `frontend/src/admin/authoringPlanApi.test.ts`
+- **Real bug found and fixed during this build**: `prep_model` is unconstrained free text for `mechanism='automated_provider'` but is validated against a fixed set of Claude Code session model aliases (`SKILL_MECHANISM_MODELS`) for `mechanism='skill'`; a free-text field for both would have shipped a confusing live 422 ("prep_model 'x' is not a recognized Claude Code session model") for any real admin using the skill path. Caught only by running `e2e-real/authoring-plan-real.spec.ts` against a real backend, not by any mocked test. Fixed by rendering a constrained `<select>` for `mechanism='skill'` and free text only for `mechanism='automated_provider'`.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage yet. `review_stage1_model`/`review_stage2_model` (optional Stage 1/2 overrides, skeleton_fill only) are deliberately not exposed in the UI at all, a v1 scoping decision, not a test gap.
 
 ## Kid: profile picker
 
@@ -203,19 +228,13 @@ when is preserved, per the policy at the bottom of this file.
    the live API, verified twice for idempotency). See that journey's
    section above for the one path still not covered: a real suggestion
    actually appearing, which needs a bigger seed-data addition.
-3. **Provider allowlist management**: no coverage found at any layer; no
-   admin UI page exists in the frontend. Confirmed via code/docs audit
-   (2026-07-16): it's a real, tested backend feature (`src/cyo_adventure/api/
-   provider_allowlist.py`, full CRUD + audit trail, `tests/integration/
-   test_provider_allowlist_api.py`), gating which (provider, model_id) pairs
-   the generation pipeline may call, i.e. a billing/cost-control and
-   supply-chain gate, not a display/cosmetic setting. No ADR, roadmap entry,
-   or tech-spec mention plans a frontend UI for it either way; the
-   `AllowlistCreateBody.display_name` docstring says "for a future admin
-   UI," implying one was anticipated but never scheduled. Still a product
-   decision, not an engineering one: build the missing admin page (and then
-   test it), or confirm it stays operator/CLI-only. Not addressed in this
-   pass pending that decision.
+3. **Provider allowlist management** — Closed. Built `ProviderAllowlistPage.tsx`
+   (general CRUD settings page) plus, since the real user need turned out to
+   span two related gaps, the previously-nonexistent `AuthoringQueuePage.tsx`/
+   `AuthoringPlanDialog.tsx` (the actual per-story model picker that reads
+   from this allowlist). See the two journey sections above for full detail,
+   including a real bug (a confusing 422 for the skill mechanism) caught only
+   by the real-backend E2E spec and fixed before shipping.
 4. **Ratings** — Closed for the real-backend tier.
    `frontend/e2e-real/ratings-real.spec.ts` now confirms a tapped rating
    survives a reload against the real backend. Still no `e2e-staging` or

@@ -373,3 +373,73 @@ test('the admin moderation dashboard matches its visual baseline', async ({ page
     animations: 'disabled',
   })
 })
+
+test('the admin provider allowlist page matches its visual baseline', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/admin/provider-allowlist', (route) =>
+    route.fulfill({ json: { rows: [] } })
+  )
+  await page.goto('/admin/provider-allowlist')
+  await expect(page.getByRole('heading', { name: 'Provider allowlist' })).toBeVisible()
+  await expect(page).toHaveScreenshot('admin-provider-allowlist-page.png', {
+    animations: 'disabled',
+  })
+})
+
+const AUTHORING_QUEUE_REQUEST = {
+  id: 'req-1',
+  profile_id: 'p1',
+  status: 'approved',
+  request_text: 'A story about a friendly dragon',
+  moderation_flags: [],
+  created_at: '2026-07-04T10:00:00Z',
+  initiator_role: 'child',
+  age_band: '8-11',
+  length: 'short',
+  narrative_style: 'prose',
+  series_id: null,
+  proposed_series_title: null,
+  anchor_storybook_id: null,
+}
+
+const AUTHORING_QUEUE_ALLOWLIST = {
+  rows: [
+    {
+      id: 'a1',
+      provider: 'anthropic',
+      model_id: 'claude-sonnet-4-6',
+      enabled: true,
+      display_name: 'Claude Sonnet 4.6 (direct)',
+    },
+  ],
+}
+
+test('the admin authoring queue page matches its visual baseline', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/admin/story-requests?status=approved', (route) =>
+    route.fulfill({ json: { requests: [AUTHORING_QUEUE_REQUEST] } })
+  )
+  await page.route('**/api/v1/admin/provider-allowlist', (route) =>
+    route.fulfill({ json: AUTHORING_QUEUE_ALLOWLIST })
+  )
+  await page.goto('/admin/authoring-queue')
+  await expect(page.getByRole('heading', { name: 'Authoring queue' })).toBeVisible()
+  await expect(page).toHaveScreenshot('admin-authoring-queue-page.png', { animations: 'disabled' })
+})
+
+test('the authoring plan dialog matches its visual baseline', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/admin/story-requests?status=approved', (route) =>
+    route.fulfill({ json: { requests: [AUTHORING_QUEUE_REQUEST] } })
+  )
+  await page.route('**/api/v1/admin/provider-allowlist', (route) =>
+    route.fulfill({ json: AUTHORING_QUEUE_ALLOWLIST })
+  )
+  await page.goto('/admin/authoring-queue')
+  await page.getByRole('button', { name: 'Build authoring plan' }).click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await expect(page).toHaveScreenshot('authoring-plan-dialog.png', { animations: 'disabled' })
+})

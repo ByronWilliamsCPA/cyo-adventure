@@ -42,6 +42,10 @@ describe('AdminShell', () => {
       'href',
       '/admin/requests'
     )
+    expect(screen.getByRole('link', { name: 'Authoring queue' })).toHaveAttribute(
+      'href',
+      '/admin/authoring-queue'
+    )
     expect(screen.getByRole('link', { name: 'Moderation dashboard' })).toHaveAttribute(
       'href',
       '/admin/moderation-dashboard'
@@ -49,6 +53,10 @@ describe('AdminShell', () => {
     expect(screen.getByRole('link', { name: 'Moderation thresholds' })).toHaveAttribute(
       'href',
       '/admin/moderation-thresholds'
+    )
+    expect(screen.getByRole('link', { name: 'Provider allowlist' })).toHaveAttribute(
+      'href',
+      '/admin/provider-allowlist'
     )
     expect(screen.getByText('Admin')).toBeInTheDocument()
   })

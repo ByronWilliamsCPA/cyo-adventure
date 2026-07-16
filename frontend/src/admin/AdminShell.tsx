@@ -51,8 +51,10 @@ export function AdminShell() {
           Review queue
         </NavLink>
         <NavLink to="/admin/requests">Story requests</NavLink>
+        <NavLink to="/admin/authoring-queue">Authoring queue</NavLink>
         <NavLink to="/admin/moderation-dashboard">Moderation dashboard</NavLink>
         <NavLink to="/admin/moderation-thresholds">Moderation thresholds</NavLink>
+        <NavLink to="/admin/provider-allowlist">Provider allowlist</NavLink>
         {principal?.role === 'guardian' ? (
           <NavLink to={GUARDIAN_CONSOLE_PATH}>Guardian console</NavLink>
         ) : null}

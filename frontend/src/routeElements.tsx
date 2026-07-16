@@ -111,6 +111,16 @@ export const ModerationDashboardPage = lazyWithReload('ModerationDashboardPage',
     default: m.ModerationDashboardPage,
   }))
 )
+export const ProviderAllowlistPage = lazyWithReload('ProviderAllowlistPage', () =>
+  import('./admin/ProviderAllowlistPage').then((m) => ({
+    default: m.ProviderAllowlistPage,
+  }))
+)
+export const AuthoringQueuePage = lazyWithReload('AuthoringQueuePage', () =>
+  import('./admin/AuthoringQueuePage').then((m) => ({
+    default: m.AuthoringQueuePage,
+  }))
+)
 export const ReaderRoute = lazyWithReload('ReaderRoute', () =>
   import('./reader/ReaderRoute').then((m) => ({ default: m.ReaderRoute }))
 )
