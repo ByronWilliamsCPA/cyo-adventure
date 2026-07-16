@@ -33,6 +33,9 @@ exists today plus the shape a `dev` addition would take.
 | staging | already-deployed staging URL | staging project | pre-production gate, migration validation, E2E-staging tier |
 | production | production URL | production project | live |
 
+See `docs/planning/handoff-homelab-infra-dev-environment-2026-07-16.md` for
+the concrete spec handed to the homelab-infra team to build this out.
+
 **This repo has no frontend deploy workflow.** The frontend image is built
 and shipped by a separate repository, `homelab-infra`, via a
 `repository_dispatch` on merges to `main`
