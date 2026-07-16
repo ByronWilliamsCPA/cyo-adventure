@@ -17,6 +17,21 @@ relate to the Supabase project constraints.
 - "NONE FOUND" means no test at that layer touches this journey. It does not
   necessarily mean the journey is unimplemented, only untested at that layer.
 
+## Cross-cutting checks (not tied to one journey)
+
+- **Accessibility**: `frontend/e2e/a11y.spec.ts` — axe-core, scoped to WCAG
+  2.1 A/AA, across landing, kid picker, kid library (populated/empty),
+  guardian console, and admin console. First run (2026-07-16) found four
+  real contrast failures traced to two design-system tokens
+  (`--color-amber-deep`, `--color-ink-muted`) used against a darker
+  background than their documented contrast math assumed; fixed the same
+  day (see `--color-amber-deep-text` in `design-system/src/tokens.css` and
+  the `.cyo-btn--primary`/`.cyo-btn--ghost` fixes in `Button.css`). Not yet
+  covering the reader page or any modal/dialog surface.
+- **Visual regression**: `frontend/e2e/visual.spec.ts` — screenshot
+  baselines for the reader and library pages (`visual.spec.ts-snapshots/`).
+  Not yet covering guardian/admin consoles or the kid picker.
+
 ---
 
 ## Landing page / marketing
