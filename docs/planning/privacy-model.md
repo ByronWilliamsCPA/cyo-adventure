@@ -128,6 +128,26 @@ child data.
 
 ---
 
+## Cross-Family Recommendation Flow (ADR-016)
+
+Ring-2 recommendation sharing (guardian-connected families, the cousins case) is a new
+child-linked data flow: a recommendation visible to a connected family carries the
+recommending child's display name and a reading signal (book plus rating) into another
+household. Controls, binding per
+[ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md):
+
+- Visibility exists only along a directional, revocable `family_connection` with active
+  guardian consent on both sides; revocation removes visibility immediately.
+- Payloads are structured data only (book reference, display name, rating); never free
+  text, reading progress, request text, or profile attributes beyond the display name.
+- Ring-3 global aggregation (future) must be anonymized: no per-child or per-family
+  identifier may reach or be inferable from a global recommendation, with a
+  minimum-population threshold before aggregates surface.
+- Deletion-readiness: recommendations and connections are family-linked rows in known
+  tables and must be included in family erasure.
+
+---
+
 ## Deletion Readiness
 
 A full deletion subsystem is a later deliverable. The requirement at Phase 0 is that the

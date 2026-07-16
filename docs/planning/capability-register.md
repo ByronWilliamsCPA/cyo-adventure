@@ -15,7 +15,7 @@ source: "Fresh-look capability review session, 2026-07-16"
 
 # Capability Register
 
-> **Status**: Active | **Version**: 1.2 | **Created**: 2026-07-16 | **Updated**: 2026-07-16
+> **Status**: Active | **Version**: 1.3 | **Created**: 2026-07-16 | **Updated**: 2026-07-16
 
 > **Delivery-state review (2026-07-16, open PRs and working docs)**: the Docs column below
 > measures *foundational-doc* coverage, but a review of
@@ -62,6 +62,13 @@ vision doc (v1.2):
    actually sees (K15, feeding G10 and A1).
 5. **Guardian visibility and notifications exist.** Engagement visibility (G9) and a
    digest-plus-alerts notification surface (G10, S9) are in scope.
+6. **The social boundary is three rings, not a flat exclusion** (ruled 2026-07-16, recorded
+   in [ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md)): recommendations
+   flow within a family (ring 1) and between guardian-approved connected families, the
+   cousins case (ring 2, structured data only, dual-guardian consent, no
+   receive-from-everyone option); globally only the system recommends, from anonymized
+   aggregate scores (ring 3, future); never kid to kid beyond ring 2, and no messaging,
+   discovery, or contact outside active parental approval (K17, G17, A15, S11, S12).
 
 The resulting canonical request flow (S8):
 
@@ -94,6 +101,7 @@ initiate (K11 | G4 | A10)
 | K14 | Safe room: no ads, no purchases, no external links, no contact with strangers, no dark patterns in the kid context | ✅ | Permanent exclusions in vision; parental gate in ADR-008 |
 | K15 | Feedback signal: "I didn't like this / this scared me", routed to a grown-up who actually sees it | ❌ | Ratified 2026-07-16 (decision 4); feeds G10 alerts and A1 queue |
 | K16 | Pick "me" from a picker: name and avatar, no password or email; sibling shelves and progress never collide | ✅ | Profile picker, per-profile PIN, ADR-014 device grants, IDOR suite |
+| K17 | Give and receive structured book recommendations within the family and across guardian-connected families (cousins); a recommendation is a book pointer plus rating, never a message | 🟡 | ADR-016 records the policy; only the connection substrate exists (PR #267); no recommendation surfaces yet |
 
 ## G: Guardian capabilities
 
@@ -115,6 +123,7 @@ initiate (K11 | G4 | A10)
 | G14 | Standard adult auth; multi-guardian households (two parents, a grandparent) | 🟡 | Supabase OIDC solid; multi-guardian implied by the data model, never specced |
 | G15 | Device management: authorize and revoke devices, see which books are downloaded where, storage use | 🟡 | ADR-014 grants list/revoke ✅; download/storage visibility ❌ |
 | G16 | Browse the curated catalog and assign books to their own children | ✅ | WS-E catalog visibility + assignment gate |
+| G17 | Approve, decline, and revoke family connections for their own family, in each direction (share out and receive in); connections activate nothing without this consent | 🟡 | ADR-016 requires dual-guardian consent; PR #267 is admin-managed only, so no connection may activate child-facing visibility until this flow exists |
 
 ## A: Admin capabilities
 
@@ -134,6 +143,7 @@ initiate (K11 | G4 | A10)
 | A12 | Account support ops: lockouts, deletion requests, abuse handling (an adult misusing generation) | 🟡 | PR #267 (open) delivers user/family lifecycle management: invites, edit, deactivate with auth-boundary enforcement and self-lockout guard; deletion-request and abuse workflows still ❌ |
 | A13 | Admin action audit trail: admins touching child-related data leave a trail | 🟡 | Approver stamps and `acting_role` audit stamps ✅; no audit view/report |
 | A14 | Compliance and platform ops: retention enforcement, compliance reporting, backups and tested restore | 🟡 | ADR-007 retention, backups live, restore drill planned; compliance reporting ❌ |
+| A15 | Administer family connections: broker, list, and remove connection records on request; admin action never substitutes for guardian consent | 🟡 | Console shipped in PR #267 (open); ADR-016 subordinates it to G17 consent |
 
 ## S: System capabilities (cross-cutting)
 
@@ -149,6 +159,8 @@ initiate (K11 | G4 | A10)
 | S8 | End-to-end request flow: initiate (K/G/A) -> guardian cost gate -> generation -> validation/moderation -> admin gate -> shelf, with honest async status | 🟡 | Flow shipped end to end (WS-A..G: request -> guardian approve -> admin authoring plan -> pipeline -> admin release) except budget accounting at consent and kid-facing status; ADR-015 is the foundational record |
 | S9 | Notification/event delivery infrastructure underlying K12, G10, and admin alerts | ❌ | Append-only pipeline event log exists in code; no delivery capability in foundational docs |
 | S10 | Privacy architecture: no child PII to providers, data minimization, deletion-readiness, no third-party trackers in the kid context | ✅ | Privacy model, PII guard, ADR-007/008/009 |
+| S11 | Social boundary enforcement: no messaging or free text between users, no user/family discovery, no kid contact outside active parental approval; cross-family flows exist only through ring-2 connections | ✅ | ADR-016 + vision v1.3; enforcement is structural (no such surfaces exist) plus the ADR-016 validation criteria |
+| S12 | System recommendations from anonymized aggregate book scores (ring 3): no identity in or inferable from a global recommendation; minimum-population threshold before aggregates surface | 🟡 | Named as permitted future scope in ADR-016; no design |
 
 ## Known doc debt this register supersedes or exposes
 
@@ -166,21 +178,18 @@ All three items below were resolved in the 2026-07-16 alignment pass; kept for t
   explicitly and refines ADR-008's "children never trigger generation" phrasing to the
   enforceable invariant (no spend or provider egress without adult consent).
 
-## Unregistered scope awaiting an owner ruling
+## Unregistered scope: rulings
 
 Per maintenance rule 3, work serving no register ID gets a conscious call. Found in the
-2026-07-16 open-PR review:
+2026-07-16 open-PR review; both now ruled:
 
-- **Cross-family recommendation connections** (PR #267, open): a directional
-  `family_connection` allowlist ("family A views family B's recommendations") built as
-  substrate for a future recommendation feature. No register ID covers it, no ADR or
-  foundational doc mentions it, and it sits adjacent to the vision's "no social features"
-  exclusion (the curated catalog was the deliberately narrow answer to cross-family
-  sharing). Needs an owner decision: register it as a new G/S capability with an ADR, or
-  cut it from the PR.
-- **Provider allowlist admin UI** (PR #268, open): serves A8 and is now cited there; the
-  PR itself notes no prior ADR/roadmap decision existed. Covered going forward by A8; no
-  separate ruling needed.
+- **Cross-family recommendation connections** (PR #267): RULED 2026-07-16 (decision 6).
+  Registered as K17/G17/A15/S11/S12 and recorded in
+  [ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md). The PR's substrate
+  stands; the binding constraint is that no connection activates child-facing visibility
+  until the dual-guardian consent flow (G17) exists.
+- **Provider allowlist admin UI** (PR #268): serves A8 and is cited there; no separate
+  ruling needed.
 
 ## Maintenance rules
 

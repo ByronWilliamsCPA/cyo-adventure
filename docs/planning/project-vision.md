@@ -13,7 +13,7 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Project Vision & Scope: CYO Adventure
 
-> **Status**: Active | **Version**: 1.2 | **Updated**: 2026-07-16
+> **Status**: Active | **Version**: 1.3 | **Updated**: 2026-07-16
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 
 ## TL;DR
@@ -136,6 +136,10 @@ beyond the MVP framing above. These are scope, sequenced separately from the MVP
    grown-up actually sees (K15).
 5. **Guardian visibility and notifications**: reading-engagement visibility plus a
    digest-and-alerts surface (G9, G10, S9).
+6. **A three-ring social boundary** replacing the flat exclusion: family recommendations,
+   guardian-connected-family recommendations (cousins), and future anonymized system
+   recommendations; everything else social stays excluded (K17, G17, A15, S11, S12,
+   [ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md)).
 
 ## Scope Definition
 
@@ -156,8 +160,14 @@ beyond the MVP framing above. These are scope, sequenced separately from the MVP
 - ❌ **Dice combat and skill/luck checks (Tier 3)**: randomness turns "every path
   reaches an ending" from a guarantee into a probability the deterministic gate
   cannot certify. Revisit only if the kids ask for it.
-- ❌ **Any social, chat, or user-to-user feature**: a children's app has no reason
-  to carry one.
+- ❌ **General social features**: no messaging, chat, comments, or any free-text channel
+  between users; no user or family discovery; no follower/friend mechanics; no way for a
+  child to come into contact with anyone outside active parental approval. Refined
+  2026-07-16 from the earlier flat "no social features" exclusion: structured book
+  recommendations are allowed within a family and between guardian-approved connected
+  families (the cousins case), and the system may eventually recommend from anonymized
+  aggregate scores; never kid to kid beyond those rings. See
+  [ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md).
 - ❌ **Ads, and any telemetry on minors.** This is a permanent hard exclusion on
   every rung, not just v1.
 - 🔄 **Full visual story editor (graph canvas)**: a lightweight node editor lands in
