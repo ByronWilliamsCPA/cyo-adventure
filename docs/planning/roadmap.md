@@ -13,7 +13,8 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Development Roadmap: CYO Adventure
 
-> **Status**: Active | **Updated**: 2026-07-10
+> **Status**: Active | **Updated**: 2026-07-16 (register-driven replan; see the
+> "2026-07-16 replan" section)
 > **Codename**: Ariadne
 
 ## TL;DR
@@ -56,8 +57,10 @@ full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).
 | 2b Live providers + yield | ✅ Delivered | OpenRouter + Ollama adapters; 70% live yield recorded |
 | 3 Safety + Review | ✅ Delivered (backend) | moderation pipeline (#36), publish state machine + approval/send-back + core invariant (#34), review-surface API + save-state integrity (#45); guardian console UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (R1 feature-complete) | app shell/auth #56, profiles #60, library #68, guardian console #76, intake #69, assign #75 (all merged 2026-07-03) |
-| 4b Editor + UX | ⏸️ Not started | post-release |
-| 5 Hardening | ⏸️ Not started | in-memory rate limiter, backups, restore drill outstanding |
+| 4b Editor + Engagement | ⏸️ Not started | post-release; scope expanded 2026-07-16 (register-driven) |
+| 4c Family Loops (NEW 2026-07-16) | ⏸️ Not started | notifications, visibility, budget consent (S9/G10/G9/G7) |
+| 4d Connections (NEW 2026-07-16) | ⏸️ Not started | ADR-016 delivery: consent flow + recommendation surfaces |
+| 5 Hardening | ⏸️ Not started | scope expanded 2026-07-16; rate limiter, backups, restore drill, purge job, revocation |
 
 ## Story-Lifecycle Redesign (2026-07-06 to 2026-07-10, post-R1)
 
@@ -81,6 +84,45 @@ orthogonal to the Phase 0-5 ladder above, refining capabilities already shipped 
 WS-G's "PR3" (`AnchorContext` declared variable names + continuation prompts, #194)
 merged 2026-07-10, completing all seven workstreams.
 
+## 2026-07-16 Replan: staging the register-driven remaining work
+
+A fresh-look capability review produced the
+[capability register](./capability-register.md) (stable K/G/A/S IDs), a
+[full traceability review](./traceability-review-2026-07-16.md) of code, open PRs, and
+backlog, and a [test traceability matrix](./test-traceability-matrix.md), plus ADRs
+015-018. This section stages every remaining register gap; every item below cites its
+register ID, per the register's maintenance rule. Phases 4c and 4d are new; 4b and 5 are
+expanded in place below.
+
+### Now queue (days, before Phase 4b starts)
+
+1. Review and merge **PR #268** (testing infrastructure, allowlist/authoring-queue admin
+   UI; A8) and **PR #267** (user management; A12/A13) with the two review conditions from
+   the traceability review: name the admin child-PIN authority in A12 with an ADR-014
+   cross-reference, and add the new admin endpoints to the authorization matrix.
+2. Set the three `staging` environment secrets so the daily staging E2E actually runs
+   (test matrix action 1).
+3. Add on-failure alerting (pinned `e2e-alert` issue) to scheduled E2E workflows and
+   create the scheduled `e2e-prod.yml` (matrix actions 2-3).
+4. Doc chores: PL-22 entry in `validator-rules.md`; authorization-matrix rows for the
+   already-shipped admin surfaces (traceability review 3.8).
+5. Start the ADR-018 counsel engagement (D1 consent mechanism, D2 audience, D3
+   geography); long lead time, blocks Phase 7, not Phase 4b.
+
+### Where every open register item lands
+
+| Register items | Phase |
+|----------------|-------|
+| K5/K8 test pins, K6 tracker, K7 TTS, G6 editor, G5 skim aids, G2 controls UI, G3 permissions, K15 feedback flag, G15 storage view | 4b |
+| S9 delivery infra, G10 digest/alerts, G9 visibility, K12 kid generation status, G7 budget consent + G13 interim quota balance | 4c |
+| G17 consent flow, K17 recommendation surfaces, A15 enforcement guard | 4d |
+| ADR-007 purge, G8/A5 offline revocation, A13 audit view, A4 re-screen tooling, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
+| ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12 abuse workflow, A14 compliance reporting | 7 |
+| G13 full credits/IAP | 8 |
+| A9 curation surface, A7 ops dashboards, A8 runtime levers, A4 full catalog re-screen | 9 |
+| S12 ring-3 recommendations, A11 corpus quality tooling | Post-launch backlog |
+| Android, web direct billing, education persona, i18n | Parked: each needs its design element first (no ADR/register ID) |
+
 ## Timeline Overview
 
 ```text
@@ -102,7 +144,10 @@ Phase 5: Hardening      ░░░░░░░░░░░░░░░░░░�
 | M2: Concept-to-story pipeline passes the full gate | Wk 9-12 | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) | M1 |
 | M3: Parent approval gate enforced end to end | Wk 11-14 | ✅ Delivered (Phase 3 backend #34/#36/#45; guardian console #76 merged, reachable end to end) | M2 |
 | M4: R1 internal release (generation + library) | Wk 11-16 | ✅ R1 feature-complete 2026-07-03 (Phases 3 + 4a delivered; pending release-readiness) | M3 |
-| M5: Hardened, deployed, restore-tested v1 | Wk 16-25 | ⏸️ Not started | M4 |
+| M4b: Editor + engagement complete (edit, tracker, TTS, controls, kid flag) | +3-4 wks after start | ⏸️ Not started | M4, Now queue |
+| M4c: Family loops live (notifications, visibility, budget consent) | +2-3 wks | ⏸️ Not started | M4b (K15) |
+| M4d: Cousin recommendations under dual-guardian consent | +2-3 wks (can overlap 4c) | ⏸️ Not started | PR #267 merged |
+| M5: Hardened, deployed, restore-tested v1 | Wk 16-25 | ⏸️ Not started | M4b-M4d |
 
 ## Release ladder (R1/R2/R3) and later phases
 
@@ -119,8 +164,11 @@ rungs, each an overlay on the phases below rather than a new phase:
 Phases 6 through 9 and the full rung definitions are not detailed here; they live in
 [`PROJECT-PLAN.md`](./PROJECT-PLAN.md) (Sections 1 and 5) and in
 [ADR-008](./adr/adr-008-public-app-store-launch.md) (public App Store launch) and
-[ADR-009](./adr/adr-009-supabase-platform.md) (Supabase public tier). Phase 4b and Phase 5
-below are post-R1 family-tier quality and hardening work.
+[ADR-009](./adr/adr-009-supabase-platform.md) (Supabase public tier). Phases 4b, 4c, 4d,
+and 5 below are post-R1 family-tier work; the 2026-07-16 replan added register-tagged
+items to Phases 7 (ADR-018 compliance execution, G11/G12/A12/A14), 8 (G13 full
+credits/IAP), and 9 (A9 curation, A7 ops dashboards, A8 runtime levers, A4 full catalog
+re-screen), detailed in PROJECT-PLAN.md.
 
 ---
 
@@ -373,22 +421,109 @@ Make authoring and reading pleasant. Split by the release cut: 4a ships in R1, 4
 - [x] The minimal guardian path to view, approve, publish, and assign a generated story to
       a profile.
 
-### Deliverables (4b, after R1)
+### Deliverables (4b, after R1; scope expanded 2026-07-16, register IDs cited)
 
-- [ ] Lightweight node editor (read as a playthrough and a node list, edit a passage,
-      re-roll a single branch, re-run validation).
-- [ ] Ending tracker ("3 of 7 endings found"), bookmarks, and read-aloud (TTS).
+- [ ] Lightweight node editor: read as playthrough and node list, edit a passage, re-roll
+      a branch, re-run validation, re-review on edit (G6).
+- [ ] Ending tracker "3 of 7 endings found" (K6, UI over the shipped completion rows),
+      bookmarks (K5), and read-aloud/TTS for the youngest bands (K7, per-profile
+      `tts_enabled` already modeled).
+- [ ] Guardian review skim aids: content summary and branch-structure view (G5).
+- [ ] Per-child content controls UI: banned themes / phobia exclusions on the profile
+      form, and wire `content_nogo`/`themes_allowed` through intake instead of the
+      hardcoded empty lists (G2).
+- [ ] Per-child permissions: story-request on/off and the ADR-015 pre-authorization
+      envelope settings (G3; screen-time norms stay deferred).
+- [ ] Kid feedback flag: "I didn't like this / this scared me", routed into the admin
+      queue and stored for the Phase 4c alert surface (K15, feeds A1/G10).
+- [ ] Guardian device/storage view: which books are downloaded on which device (G15
+      remainder).
+- [ ] Test pins for the two shipped-but-unasserted surfaces: Go Back returns to the prior
+      node with intact state (K5), cover render plus letter-tile fallback and the admin
+      generate flow (K8/A16); test matrix action 7.
 
 ### Success Criteria
 
 - ✅ R1: a child sees only stories permitted for their profile; a guardian can
   assign an approved generated story to one or more children.
-- ✅ 4b: concept to published through the UI alone including a small edit, and read-aloud
-  works for the youngest band.
+- ✅ 4b: concept to published through the UI alone including a small edit; read-aloud
+  works for the youngest band; a guardian can actually exclude a theme for a child and
+  see it honored in generation; a kid can flag a story and an admin sees the flag.
 
 ### Dependencies
 
 - 4a requires Phases 2 and 3. 4b can follow R1.
+
+---
+
+## Phase 4c: Family loops: notifications, visibility, budget (NEW 2026-07-16; 2-3 weeks)
+
+### Objective
+
+Close the interaction loops that make the creation flow feel alive for a family: honest
+status for the kid, awareness for the guardian, and the ADR-015 budget consent made real.
+This is the highest-leverage gap the capability review found after initiation itself.
+
+### Deliverables
+
+- [ ] Notification delivery infrastructure over the existing `pipeline_event` log:
+      in-app surface first, digest scheduling; the transport that K12/G10/A-alerts all
+      consume (S9).
+- [ ] Guardian notifications: story awaiting consent, story ready, kid flagged content
+      (safety alerts immediate, the rest digest; G10).
+- [ ] Guardian engagement visibility: per-child reading time, books finished, endings
+      found, re-reads, over the existing `reading_state`/`completion` data (G9).
+- [ ] Kid-facing generation status: "your story is being written" inside the kid surface,
+      completing K12.
+- [ ] Budget consent (ADR-015 delta): guardian approve debits a family quota, per-child
+      pre-auth envelopes enforce their budget, and the guardian sees a remaining-balance
+      figure (G7 complete, G13 interim; full credits/IAP stays Phase 8).
+
+### Success Criteria
+
+- ✅ A kid who requests a story can watch its honest status through to the shelf without
+  asking an adult.
+- ✅ A guardian learns about a waiting consent, a ready story, and a kid flag without
+  opening the app on a hunch.
+- ✅ No generation spend occurs beyond the family quota, provably at the provider seam.
+
+### Dependencies
+
+- Requires 4b's K15 flag (for the alert type) but can start on S9/G9 in parallel with
+  late 4b.
+
+---
+
+## Phase 4d: Connections and recommendations (NEW 2026-07-16; 2-3 weeks)
+
+### Objective
+
+Deliver ADR-016 ring 2: cousins exchange book recommendations under dual-guardian
+consent. PR #267's admin-managed `family_connection` substrate plus family provisioning
+makes this feasible on the family tier (admin-created cousin families), before Track 2.
+
+### Deliverables
+
+- [ ] Dual-guardian consent flow: each side approves share-out and receive-in per
+      direction; revocation immediate (G17).
+- [ ] Enforced consent guard at the read path, so a connection without both consents
+      activates nothing; this replaces the current holds-by-omission state (A15/ADR-016
+      constraint).
+- [ ] Recommendation surfaces: kid sees "made for you by / cousin X loved this"
+      (structured payload only: book, name, rating; K17, riding K18 ratings).
+- [ ] Privacy-model erasure coverage: connections and recommendations in family deletion
+      (per ADR-016).
+
+### Success Criteria
+
+- ✅ ADR-016 validation criteria pass: visibility only with both consents, revocation
+  removes it immediately, no free-text anywhere, no cross-family enumeration beyond
+  active connections' payloads.
+
+### Dependencies
+
+- Requires PR #267 merged (substrate) and K18 ratings (shipped). Ring 3 (S12) is
+  post-launch backlog, not this phase.
 
 ---
 
@@ -400,7 +535,7 @@ Production readiness on the homelab (or Azure) for the family tier. The public t
 runs on Supabase-managed infrastructure instead of the homelab; see
 [ADR-009](./adr/adr-009-supabase-platform.md).
 
-### Deliverables
+### Deliverables (scope expanded 2026-07-16, register IDs cited)
 
 - [ ] Performance pass, offline-edge hardening, accessibility (WCAG AA basics: contrast,
       focus order, scalable text).
@@ -410,6 +545,21 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       deployments. The current in-memory implementation is single-process only
       (documented in SECURITY.md Known Infrastructure Limitations).
 - [ ] Operator runbook and a short authoring guide for non-technical use.
+- [ ] ADR-007 retention purge: the pg_cron job nulling `generation_job.report` 30 days
+      post-completion or on publish (raw output currently persists indefinitely; S10).
+- [ ] Offline-copy revocation: archived/pulled books are removed from device caches at
+      next connection, completing the kill switch and the incident pull-everywhere path
+      (G8, A5).
+- [ ] Admin audit view over the pipeline event log: who did what to child-linked data,
+      filterable (A13 view half).
+- [ ] Policy re-screen tooling: re-run moderation/policy over published family-tier books
+      after a threshold or band-policy change (A4 first cut; full public-catalog re-screen
+      lands with Phase 9).
+- [ ] Test hardening per the test matrix: nightly `e2e-real` CI job (Postgres service +
+      seed), the real-backend S2 conflict-race spec from the handoff doc, and staging
+      golden-journey coverage for GJ2/GJ3/GJ5 (matrix actions 4-6).
+- [ ] The live-model adversarial safety run carried as Phase 3 debt (safety evaluation
+      doc's model-dependent classes).
 
 ### Success Criteria
 
