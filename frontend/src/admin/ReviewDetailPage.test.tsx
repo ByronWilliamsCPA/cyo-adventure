@@ -624,6 +624,33 @@ describe('ReviewDetailPage', () => {
       expect(await screen.findByText('1 passage added, 1 changed, 1 removed')).toBeInTheDocument()
     })
 
+    it('retries the comparison fetch after closing and reopening past a transient error', async () => {
+      const user = userEvent.setup()
+      let callCount = 0
+      mockGet.mockImplementation((url: string, config?: { params?: { version?: number } }) => {
+        if (typeof url === 'string' && url.endsWith('/cover')) {
+          return Promise.resolve({ data: { cover_status: 'none', cover_url: null } })
+        }
+        const version = config?.params?.version
+        if (version === undefined) return Promise.resolve({ data: CURRENT_SURFACE })
+        callCount += 1
+        // First attempt fails with a non-404 (transient) error; a retry
+        // after closing and reopening the panel succeeds.
+        return callCount === 1
+          ? Promise.reject(new Error('network blip'))
+          : Promise.resolve({ data: BASE_SURFACE })
+      })
+      renderAt('s1')
+      const toggle = await screen.findByRole('button', { name: 'Compare with version 1' })
+      await user.click(toggle)
+      expect(
+        await screen.findByText('We could not load the previous version for comparison.')
+      ).toBeInTheDocument()
+      await user.click(toggle) // close
+      await user.click(toggle) // reopen: must retry, not stay stuck on the cached error
+      expect(await screen.findByText('1 passage added, 1 changed, 1 removed')).toBeInTheDocument()
+    })
+
     it('shows a graceful message when the previous version is no longer available (404)', async () => {
       const user = userEvent.setup()
       mockGet.mockImplementation((url: string, config?: { params?: { version?: number } }) => {
@@ -641,6 +668,71 @@ describe('ReviewDetailPage', () => {
       expect(await screen.findByText('Version 1 is no longer available.')).toBeInTheDocument()
       // Fails gracefully, not by crashing the page.
       expect(screen.getByRole('heading', { name: 'The Cave', level: 1 })).toBeInTheDocument()
+    })
+
+    it('does not flag a passage as changed when only its choice order changed', async () => {
+      // n1 has the exact same two choices (same labels, same targets) in both
+      // versions, only reordered; n2 and n3 are untouched. diffNodes must
+      // match diffChoices' order-insensitive semantics, so this must show as
+      // zero changes, not a false-positive "changed" with an empty detail.
+      const reorderBase = {
+        ...BASE_SURFACE,
+        blob: {
+          title: 'The Cave',
+          start_node: 'n1',
+          nodes: [
+            {
+              id: 'n1',
+              body: 'Opening.',
+              choices: [
+                { label: 'Go on', target: 'n2' },
+                { label: 'Finish', target: 'n3' },
+              ],
+            },
+            { id: 'n2', body: 'Middle passage.', choices: [] },
+            {
+              id: 'n3',
+              body: 'The ending.',
+              choices: [],
+              is_ending: true,
+              ending: { kind: 'success', valence: 'positive' },
+            },
+          ],
+        },
+      }
+      const reorderCurrent = {
+        ...reorderBase,
+        version: 2,
+        blob: {
+          ...reorderBase.blob,
+          nodes: [
+            {
+              id: 'n1',
+              body: 'Opening.',
+              choices: [
+                { label: 'Finish', target: 'n3' },
+                { label: 'Go on', target: 'n2' },
+              ],
+            },
+            reorderBase.blob.nodes[1],
+            reorderBase.blob.nodes[2],
+          ],
+        },
+      }
+      const user = userEvent.setup()
+      mockGet.mockImplementation((url: string, config?: { params?: { version?: number } }) => {
+        if (typeof url === 'string' && url.endsWith('/cover')) {
+          return Promise.resolve({ data: { cover_status: 'none', cover_url: null } })
+        }
+        const version = config?.params?.version
+        if (version === undefined) return Promise.resolve({ data: reorderCurrent })
+        if (version === 1) return Promise.resolve({ data: reorderBase })
+        return Promise.reject(notFoundError())
+      })
+      renderAt('s1')
+      const toggle = await screen.findByRole('button', { name: 'Compare with version 1' })
+      await user.click(toggle)
+      expect(await screen.findByText('0 passages added, 0 changed, 0 removed')).toBeInTheDocument()
     })
 
     it('renders the auto-repaired hint when the summary carries repaired: true', async () => {

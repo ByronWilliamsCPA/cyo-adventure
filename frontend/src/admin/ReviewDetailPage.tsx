@@ -226,7 +226,13 @@ function diffNodes(previousBlob: Record<string, unknown>, currentBlob: Record<st
       continue
     }
     const bodyChanged = prior.body !== node.body
-    const choicesChanged = JSON.stringify(prior.choices) !== JSON.stringify(node.choices)
+    // Order-insensitive, matching diffChoices below (which the detail panel
+    // renders from): choices are matched by target, not position, so a
+    // reorder with no other change must not flag this passage as changed,
+    // and any real add/remove/reword must always be counted as one.
+    const choiceDiff = diffChoices(prior.choices, node.choices)
+    const choicesChanged =
+      choiceDiff.added.length > 0 || choiceDiff.removed.length > 0 || choiceDiff.reworded.length > 0
     if (bodyChanged || choicesChanged) {
       changed.push({ id, previous: prior, current: node, bodyChanged, choicesChanged })
     }
@@ -632,17 +638,20 @@ export function ReviewDetailPage() {
     [reviewApi, storybookId]
   )
 
-  // Toggling closed just hides the panel; the fetched (or failed) comparison
-  // stays cached so reopening does not refetch. Only the first open for a
-  // given page load triggers loadCompare, since compareState starts 'idle'
-  // and never resets back to it afterward.
+  // Toggling closed just hides the panel. A successful ('ready') or
+  // permanent (404 'unavailable') outcome stays cached so reopening does not
+  // refetch; a transient 'error' is retried on reopen instead, so a network
+  // blip does not permanently block comparison for the rest of the page's
+  // lifetime the way caching it forever would.
   function toggleCompare(previousVersion: number) {
     if (compareOpen) {
       setCompareOpen(false)
       return
     }
     setCompareOpen(true)
-    if (compareState.kind === 'idle') void loadCompare(previousVersion)
+    if (compareState.kind === 'idle' || compareState.kind === 'error') {
+      void loadCompare(previousVersion)
+    }
   }
 
   async function runAction(action: () => Promise<unknown>) {
