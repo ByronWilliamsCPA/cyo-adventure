@@ -130,6 +130,35 @@ describe('ToastProvider', () => {
     expect(screen.queryByTestId('toast')).not.toBeInTheDocument()
   })
 
+  it('stays paused when hover ends while focus remains', () => {
+    // A keyboard user who hovers the toast then tabs to its OK button is
+    // both hovered and focused; if the mouse then moves away, the timer must
+    // stay paused (not resume) because the button still holds focus.
+    vi.useFakeTimers()
+    renderWithProvider('Overlap pause')
+    fireEvent.click(screen.getByRole('button', { name: 'show toast' }))
+
+    fireEvent.mouseEnter(screen.getByTestId('toast'))
+    const okButton = screen.getByRole('button', { name: 'OK' })
+    act(() => {
+      okButton.focus()
+    })
+    fireEvent.mouseLeave(screen.getByTestId('toast'))
+    act(() => {
+      vi.advanceTimersByTime(10000)
+    })
+    // Well past the auto-dismiss window, but still focused: must still be here.
+    expect(screen.getByTestId('toast')).toBeInTheDocument()
+
+    act(() => {
+      okButton.blur()
+    })
+    act(() => {
+      vi.advanceTimersByTime(5000)
+    })
+    expect(screen.queryByTestId('toast')).not.toBeInTheDocument()
+  })
+
   it('stacks multiple toasts and dismisses them independently', () => {
     renderWithProvider('First of two')
     const show = screen.getByRole('button', { name: 'show toast' })

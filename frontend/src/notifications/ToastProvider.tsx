@@ -69,7 +69,21 @@ function ToastCard({ toast, onDismiss }: { toast: ToastEntry; onDismiss: (id: nu
   // reader mid-sentence must not have the message vanish under the pointer).
   // Un-pausing restarts the full window rather than resuming a remainder:
   // simpler, and it only ever grants MORE reading time, never less.
-  const [paused, setPaused] = useState(false)
+  //
+  // Hover and focus are tracked independently, not as one shared boolean: a
+  // keyboard user who hovers the toast and then tabs to its OK button is
+  // still hovering AND focused; if the mouse then moves away, a single
+  // shared flag would clear on mouseleave and resume the dismiss timer out
+  // from under their still-focused button. Pause holds as long as either is
+  // true, and only clears once both let go.
+  // #CRITICAL: timing dependencies: never resume the dismiss timer while the
+  // toast still holds keyboard focus, or a focused control can vanish under
+  // the reader mid-interaction.
+  // #VERIFY: ToastProvider.test.tsx "stays paused when hover ends while focus
+  // remains" (hover then focus then mouse-leave must not resume the timer).
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const paused = hovered || focused
 
   useEffect(() => {
     if (paused) return undefined
@@ -85,10 +99,10 @@ function ToastCard({ toast, onDismiss }: { toast: ToastEntry; onDismiss: (id: nu
     <div
       className={`toast toast--${toast.tone}`}
       data-testid="toast"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
     >
       <span className="toast__message">{toast.message}</span>
       {/* "OK", not "Dismiss": young kids read this button too. */}
