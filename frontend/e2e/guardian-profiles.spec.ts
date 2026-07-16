@@ -56,7 +56,7 @@ test('edits a profile reading cap', async ({ page }) => {
   await page.getByLabel(/Reading level cap/).fill('4.5')
   await page.getByRole('button', { name: 'Save' }).click()
 
-  await expect(page.getByText(/Reading cap 4.5/)).toBeVisible()
+  await expect(page.getByText(/Reading level 4.5/)).toBeVisible()
   expect(patched).toMatchObject({ reading_level_cap: 4.5 })
 })
 

@@ -1,17 +1,33 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GuardianShell } from './GuardianShell'
+import { STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 
 const mockUseAuth = vi.fn()
 vi.mock('../auth/useAuth', () => ({
   useAuth: (): unknown => mockUseAuth(),
 }))
 
+// The shell's pending-count nav badge reads the family queue on mount; the
+// default (rejected) implementation keeps the badge hidden in every
+// pre-existing test, matching the shell's silent-failure behavior.
+const mockGet = vi.fn()
+const fakeApi = { get: mockGet }
+vi.mock('../hooks/useApi', () => ({
+  useApi: () => fakeApi,
+}))
+
 function principal(role: 'guardian' | 'admin' | 'child', isAdmin = role === 'admin') {
   return { subject: 's', role, isAdmin, familyId: 'f', profileIds: [] }
+}
+
+function pendingRequests(count: number) {
+  return {
+    data: { requests: Array.from({ length: count }, (_, i) => ({ id: `req-${i + 1}` })) },
+  }
 }
 
 function renderShell() {
@@ -20,6 +36,7 @@ function renderShell() {
       <Routes>
         <Route path="/guardian" element={<GuardianShell />}>
           <Route index element={<div>console content</div>} />
+          <Route path="intake" element={<div>intake content</div>} />
         </Route>
       </Routes>
     </MemoryRouter>
@@ -31,6 +48,8 @@ const mockSignOut = vi.fn()
 beforeEach(() => {
   mockUseAuth.mockReset()
   mockSignOut.mockReset()
+  mockGet.mockReset()
+  mockGet.mockRejectedValue(new Error('no queue backend in this test'))
 })
 
 describe('GuardianShell', () => {
@@ -137,5 +156,76 @@ describe('GuardianShell', () => {
     renderShell()
     expect(screen.queryByText('Admin')).not.toBeInTheDocument()
     expect(screen.queryByText('Guardian')).not.toBeInTheDocument()
+  })
+
+  describe('pending story-request nav badge', () => {
+    beforeEach(() => {
+      mockUseAuth.mockReturnValue({ principal: principal('guardian'), signOut: mockSignOut })
+    })
+
+    it('renders the pending count with an accessible link name', async () => {
+      mockGet.mockResolvedValue(pendingRequests(3))
+      renderShell()
+      const link = await screen.findByRole('link', { name: 'Story requests, 3 waiting' })
+      expect(within(link).getByText('3')).toBeInTheDocument()
+      expect(mockGet).toHaveBeenCalledWith('/v1/story-requests?status=pending')
+    })
+
+    it('hides the badge when there are zero pending requests', async () => {
+      mockGet.mockResolvedValue(pendingRequests(0))
+      renderShell()
+      // Wait for the fetch to settle before asserting absence.
+      await waitFor(() =>
+        expect(mockGet).toHaveBeenCalledWith('/v1/story-requests?status=pending')
+      )
+      const link = screen.getByRole('link', { name: 'Story requests' })
+      expect(link).not.toHaveAttribute('aria-label')
+      expect(within(link).queryByText('0')).not.toBeInTheDocument()
+    })
+
+    it('hides the badge when the fetch fails (silent progressive enhancement)', async () => {
+      mockGet.mockRejectedValue(new Error('backend down'))
+      renderShell()
+      await waitFor(() =>
+        expect(mockGet).toHaveBeenCalledWith('/v1/story-requests?status=pending')
+      )
+      const link = screen.getByRole('link', { name: 'Story requests' })
+      expect(link).not.toHaveAttribute('aria-label')
+    })
+
+    it('skips the fetch entirely when there is no principal', () => {
+      mockUseAuth.mockReturnValue({ principal: null, signOut: mockSignOut })
+      renderShell()
+      expect(screen.getByText('console content')).toBeInTheDocument()
+      expect(mockGet).not.toHaveBeenCalled()
+    })
+
+    it('refetches when the queue signals a change (approve/decline landed)', async () => {
+      mockGet.mockResolvedValueOnce(pendingRequests(2))
+      renderShell()
+      await screen.findByRole('link', { name: 'Story requests, 2 waiting' })
+
+      mockGet.mockResolvedValueOnce(pendingRequests(1))
+      act(() => {
+        window.dispatchEvent(new Event(STORY_REQUESTS_CHANGED_EVENT))
+      })
+      expect(
+        await screen.findByRole('link', { name: 'Story requests, 1 waiting' })
+      ).toBeInTheDocument()
+    })
+
+    it('refetches when the route changes between guardian pages', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValueOnce(pendingRequests(1))
+      renderShell()
+      await screen.findByRole('link', { name: 'Story requests, 1 waiting' })
+
+      mockGet.mockResolvedValueOnce(pendingRequests(4))
+      await user.click(screen.getByRole('link', { name: 'Request a story' }))
+      await screen.findByText('intake content')
+      expect(
+        await screen.findByRole('link', { name: 'Story requests, 4 waiting' })
+      ).toBeInTheDocument()
+    })
   })
 })

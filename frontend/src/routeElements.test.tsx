@@ -1,16 +1,36 @@
 import { render, screen } from '@testing-library/react'
-import { RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MockInstance } from 'vitest'
 
-import { NotFoundPage, RouteError } from './routeElements'
+import { NotFoundPage, RouteError, RouteFallback } from './routeElements'
+import { routes } from './router'
 
 describe('NotFoundPage', () => {
-  it('renders a 404 message for an unmatched route', () => {
-    render(<NotFoundPage />)
-    const alert = screen.getByRole('alert')
-    expect(alert).toHaveTextContent('Page not found')
-    expect(alert).toHaveTextContent('does not exist')
+  it('renders friendly 404 copy with a way home for both audiences', () => {
+    // NotFoundPage renders outside every shell, so it must carry its own
+    // framing and exits: the landing page and the kid profile picker.
+    render(
+      <MemoryRouter>
+        <NotFoundPage />
+      </MemoryRouter>
+    )
+    expect(
+      screen.getByRole('heading', { level: 1, name: /we can't find that page/i })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to the start' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: "Who's reading?" })).toHaveAttribute('href', '/kids')
+  })
+})
+
+describe('RouteFallback', () => {
+  it('announces itself as a status region with kid-neutral copy', () => {
+    // The Suspense fallback renders on every surface (kid tablets included),
+    // so the copy stays friendly and the region is announced politely.
+    render(<RouteFallback />)
+    const status = screen.getByRole('status')
+    expect(status).toHaveTextContent('Just a sec...')
+    expect(status).toHaveAttribute('aria-live', 'polite')
   })
 })
 
@@ -64,5 +84,27 @@ describe('RouteError', () => {
 
     expect(screen.getByRole('alert')).toHaveTextContent('Something went wrong')
     expect(consoleErrorSpy).not.toHaveBeenCalledWith('Route error:', expect.anything())
+  })
+})
+
+describe('router catch-all (router.tsx)', () => {
+  it('renders the styled 404 for an unmatched URL', async () => {
+    const router = createMemoryRouter(routes, {
+      initialEntries: ['/definitely/not/a/page'],
+    })
+    render(<RouterProvider router={router} />)
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: /we can't find that page/i })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: "Who's reading?" })).toHaveAttribute('href', '/kids')
+  })
+
+  it('declares an errorElement on the catch-all route', () => {
+    // A throw on the unmatched-URL path must degrade to the styled RouteError
+    // boundary, same as the two main route trees.
+    const catchAll = routes.find((route) => 'path' in route && route.path === '*')
+    expect(catchAll).toBeDefined()
+    expect(catchAll && 'errorElement' in catchAll && catchAll.errorElement).toBeTruthy()
   })
 })

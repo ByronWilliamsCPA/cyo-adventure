@@ -31,6 +31,10 @@
      parchment (white 3.42:1, on-parchment 3.09:1; the bright amber fails
      both at 2.90/2.62 vs the 3:1 WCAG 1.4.11 minimum). */
   --color-amber-deep:      #c17b2a;
+  /* AA-safe amber for TEXT on parchment surfaces (4.52:1 on parchment,
+     4.55:1 on amber-subtle); amber-deep only reaches 3.09:1, fine for
+     borders and large fills but below the 4.5:1 normal-text minimum. */
+  --color-amber-text:      #a35f11;
 
   /* Forest: secondary (success, connected) */
   --color-forest:          #2d5a3d;
@@ -117,4 +121,110 @@
   --duration-normal: 220ms;
   --duration-slow:   380ms;
   --easing-default:  ease-in-out;
+}
+
+/* ── Dark mode: follows the OS `prefers-color-scheme`, no manual toggle ──
+   Same custom property names as :root above; only the values change, so no
+   component needs to change. Warm dark palette (deep browns, not pure
+   black/gray) to keep the parchment/storybook feel at night.
+
+   Several tokens double as both a foreground (text/border) color on the new
+   dark backgrounds and a solid fill color behind --color-ink text (primary
+   buttons, chip "on" state, ChoiceButton hover/selected). Those two roles
+   pull the value in opposite directions, so --color-amber-deep,
+   --color-amber-hover, and --color-amber-light are deliberately compressed
+   into a narrow mid-tone band; verified contrast ratios are recorded next
+   to each token below.
+
+   Not overridden here: --color-berry, --color-berry-light, --color-gold
+   (reserved, not yet consumed by any component) and the --cover-* gradients
+   (book-spine art; a "picture" element like a cover image, not re-themed by
+   dark mode any more than an <img> would be). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Parchment: deep warm brown-black backgrounds, ascending lightness
+       (parchment < parchment-dark < parchment-deeper) so parchment-deeper
+       still reads as a border against either background tier. */
+    --color-parchment:       #1a130d;
+    --color-parchment-dark:  #20180f;
+    --color-parchment-deeper: #8a6d4c;
+
+    /* Ink: warm cream/tan text, brightest tier first.
+       ink on parchment: 14.93:1. ink on parchment-dark: 14.23:1.
+       ink-secondary on parchment: 9.72:1. ink-muted on parchment: 5.65:1
+       (an improvement on the light palette's own ~4.20:1, which the
+       utilities.css comment already documents as below AA). */
+    --color-ink:             #f3e6d2;
+    --color-ink-secondary:   #d3b98f;
+    --color-ink-muted:       #a68a67;
+
+    /* Border: same ink-tinted hairline, lightened relative to the new dark
+       background (was a low-opacity darkening tint on light parchment). */
+    --color-border-soft:     rgb(243 230 210 / 16%);
+
+    /* Surface: a faint lightening wash for a card raised off the dark
+       parchment (was a faint white wash raising a card off light
+       parchment; full 55% white would wash out the dark aesthetic, so the
+       tint stays warm and the opacity drops). */
+    --surface-raised:        rgb(255 244 224 / 8%);
+
+    /* Amber: primary interactive accent.
+       amber (border/decorative only, never a text fill) on parchment:
+       8.16:1; on parchment-dark: 7.78:1.
+       amber-deep, amber-hover, and amber-light all sit under
+       --color-ink text on their solid-fill states (primary button, hover,
+       ChoiceButton selected) AND serve as text/border color elsewhere, so
+       each is tuned to a narrow band that clears both roles:
+       ink-on-amber-deep 4.57:1, ink-on-amber-hover 4.53:1,
+       ink-on-amber-light 4.58:1 (all >= the 4.5:1 AA normal-text
+       minimum: the primary button's headline pairing named in the design
+       review); amber-deep on parchment 3.27:1, on parchment-dark 3.12:1,
+       on amber-subtle 3.04:1 (>= the 3:1 non-text/large-text minimum, the
+       same threshold the light palette's own amber-deep relies on). */
+    --color-amber:           #eb9b4c;
+    --color-amber-hover:     #8f5d27;
+    --color-amber-light:     #86602d;
+    --color-amber-subtle:    #241a10;
+    --color-amber-deep:      #905c1f;
+    /* amber-text on amber-subtle: 8.51:1; on parchment: 9.17:1 (both clear
+       the 4.5:1 AA normal-text minimum the light palette documents). */
+    --color-amber-text:      #f0a860;
+
+    /* Forest: secondary (success, connected). Reads as text (guardian
+       console "connected" labels) on parchment (5.25:1) and, in one place
+       (the landing page's guardian door icon), as a solid fill under a
+       hardcoded white icon glyph (3.50:1, clears the 3:1 non-text
+       minimum); tuned to a mid-tone that satisfies both. */
+    --color-forest:          #4c9867;
+    --color-forest-light:    #1a2f20;
+
+    /* Sky: tertiary (informational). sky on parchment: 7.23:1; ink on
+       sky-light (toast--info body text): 12.04:1. */
+    --color-sky:             #6fa8d8;
+    --color-sky-light:       #17293b;
+
+    /* Semantic: error and success are read as TEXT on their own "-light"
+       wash (StatusBadge), the pairing called out for verification.
+       error on error-light: 6.18:1. error on parchment: 7.29:1.
+       success on success-light: 6.97:1. success on parchment: 9.33:1.
+       warning on warning-light: 6.77:1. warning on parchment: 9.17:1.
+       (Button.css's danger fill, background: error / color: parchment,
+       stays >= 4.5:1 too: 7.29:1, since dark-mode parchment is near-black
+       and error is kept light enough to read as text elsewhere.) */
+    --color-error:           #e58a8a;
+    --color-error-light:     #3b1a1a;
+    --color-success:         #7bc99a;
+    --color-success-light:   #17331f;
+    --color-warning:         #e0b04c;
+    --color-warning-light:   #3a2c10;
+
+    /* Shadows bake in a color, not just alpha: the light palette tints them
+       with ink so they read on a pale background. On a near-black
+       background that same warm-brown tint would barely register, so dark
+       mode switches to a plain black tint at higher opacity for the same
+       visible depth. */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.40);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.50);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.60);
+  }
 }

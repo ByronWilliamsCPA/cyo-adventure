@@ -42,7 +42,7 @@ describe('ProfilesPage', () => {
     renderPage()
     expect(await screen.findByText('Reader A')).toBeInTheDocument()
     expect(screen.getByText(/Ages 10-13/)).toBeInTheDocument()
-    expect(screen.getByText(/Ages 10-13 · Reading cap 99/)).toBeInTheDocument()
+    expect(screen.getByText(/Ages 10-13 · No reading limit/)).toBeInTheDocument()
   })
 
   it('creates a profile through the dialog', async () => {
@@ -108,7 +108,7 @@ describe('ProfilesPage', () => {
     await user.click(await screen.findByRole('button', { name: /Edit Reader A/i }))
     await user.click(screen.getByRole('button', { name: /Save/i }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not save/i)
-    expect(screen.getByText(/Ages 10-13 · Reading cap 99/)).toBeInTheDocument()
+    expect(screen.getByText(/Ages 10-13 · No reading limit/)).toBeInTheDocument()
   })
 
   it('sends the picked avatar id from the radio group', async () => {
@@ -127,20 +127,25 @@ describe('ProfilesPage', () => {
     )
   })
 
-  it('sends the read-aloud toggle state', async () => {
+  // The read-aloud toggle is hidden until the reader ships read-aloud
+  // support: no checkbox in the dialog, no card badge, and an edit passes the
+  // stored tts_enabled value through unchanged.
+  it('hides read-aloud UI and passes tts_enabled through unchanged on edit', async () => {
     const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: { profiles: [{ ...readerA, tts_enabled: true }] } })
     mockPatch.mockResolvedValue({
       data: { ...readerA, tts_enabled: true },
     })
     renderPage()
-    await user.click(await screen.findByRole('button', { name: /Edit Reader A/i }))
-    await user.click(screen.getByRole('checkbox', { name: /Read-aloud/i }))
+    expect(await screen.findByText('Reader A')).toBeInTheDocument()
+    expect(screen.queryByText(/Read-aloud on/)).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /Edit Reader A/i }))
+    expect(screen.queryByRole('checkbox', { name: /Read-aloud/i })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /Save/i }))
     expect(mockPatch).toHaveBeenCalledWith(
       '/v1/profiles/p1',
       expect.objectContaining({ tts_enabled: true })
     )
-    expect(await screen.findByText(/Read-aloud on/)).toBeInTheDocument()
   })
 
   it('disables Save while the reading cap field is empty', async () => {

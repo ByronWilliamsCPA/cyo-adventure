@@ -462,6 +462,41 @@ describe('ProfilePickerPage PIN gate (P6-07)', () => {
     return screen.getByLabelText(/secret pin/i)
   }
 
+  it('marks a locked tile with a padlock badge and "needs a PIN" in its accessible name', async () => {
+    mockGet.mockResolvedValue({
+      data: {
+        profiles: [
+          ...PIN_PROFILE.profiles,
+          {
+            id: 'p2',
+            display_name: 'Nova',
+            age_band: '5-8',
+            reading_level_cap: 99,
+            avatar: null,
+            tts_enabled: false,
+            has_pin: false,
+            created_at: '2026-07-02T00:00:00Z',
+          },
+        ],
+      },
+    })
+    renderPicker()
+
+    // The hint text extends the tile link's accessible name so the PIN gate
+    // is announced before the tap, not discovered after it.
+    const locked = await screen.findByRole('link', { name: /Reader A needs a PIN/i })
+    expect(locked).toHaveAttribute('href', '/library/p1')
+    // The padlock glyph itself is decorative and hidden from the tree.
+    const badge = locked.querySelector('.picker-tile__pin')
+    expect(badge).toHaveAttribute('aria-hidden', 'true')
+    expect(badge).toHaveTextContent('🔒')
+
+    // A PIN-less profile gets neither the badge nor the hint.
+    const unlocked = screen.getByRole('link', { name: /Nova/ })
+    expect(unlocked).not.toHaveAccessibleName(/needs a PIN/i)
+    expect(unlocked.querySelector('.picker-tile__pin')).toBeNull()
+  })
+
   it('shows the PIN prompt instead of minting when the profile has a PIN', async () => {
     const user = userEvent.setup()
     mockGet.mockResolvedValue({ data: PIN_PROFILE })

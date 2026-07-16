@@ -212,10 +212,56 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
     renderPage()
 
     await user.click(await screen.findByRole('button', { name: /remove from this device/i }))
+    await user.click(await screen.findByRole('button', { name: /^remove device$/i }))
 
     await waitFor(() => expect(mockDelete).toHaveBeenCalledWith('/v1/device-grants/grant-1'))
     expect(await screen.findByRole('button', { name: /set up this device for your kids/i })).toBeInTheDocument()
     expect(getDeviceGrant()).toBeNull()
+  })
+
+  it('asks for confirmation before removing the device grant', async () => {
+    // A misclick on a one-step revoke would lock kids out of reading on this
+    // device until a guardian re-authorizes it; the confirm step must appear
+    // and the revoke must not fire until it is accepted.
+    const user = userEvent.setup()
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    mockDelete.mockResolvedValue({ data: undefined })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /remove from this device/i }))
+
+    expect(await screen.findByRole('dialog', { name: /remove this device/i })).toBeInTheDocument()
+    expect(mockDelete).not.toHaveBeenCalled()
+  })
+
+  it('does not revoke when the confirmation is cancelled', async () => {
+    const user = userEvent.setup()
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    mockDelete.mockResolvedValue({ data: undefined })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /remove from this device/i }))
+    await user.click(await screen.findByRole('button', { name: /^cancel$/i }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(mockDelete).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: /remove from this device/i })).toBeInTheDocument()
+    expect(getDeviceGrant()).toEqual({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
   })
 
   it('does not offer to hand the device to a child when no grant exists yet', async () => {
@@ -354,6 +400,7 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
     renderPage()
 
     await user.click(await screen.findByRole('button', { name: /remove from this device/i }))
+    await user.click(await screen.findByRole('button', { name: /^remove device$/i }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/didn't work/i)
     // The grant must still be present, both in the UI and in storage: the

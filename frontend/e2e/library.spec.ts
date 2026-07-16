@@ -105,13 +105,13 @@ test('rating a book posts the upsert and fills the stars', async ({ page }) => {
   })
   await page.goto('/library/p1')
   const shelf = page.getByRole('region', { name: 'More to Explore' })
-  await shelf.getByRole('button', { name: '5 stars' }).click()
+  await shelf.getByRole('button', { name: 'Rate 5 stars' }).click()
   await expect.poll(() => ratingBody).toEqual({
     profile_id: 'p1',
     storybook_id: 's3',
     value: 5,
   })
-  await expect(shelf.getByRole('button', { name: '5 stars' })).toHaveAttribute(
+  await expect(shelf.getByRole('button', { name: 'Rate 5 stars' })).toHaveAttribute(
     'aria-pressed',
     'true'
   )

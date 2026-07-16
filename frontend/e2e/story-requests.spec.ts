@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 /**
  * Guardian story-request review (Task 3.0/G4) e2e: two pending requests
  * render, Approve removes the approved row (posting to its approve
- * endpoint), and Decline then empties the list.
+ * endpoint), and Decline (through its confirm dialog) then empties the list.
  *
  * Like assignments.spec.ts, the guardian surface mounts GuardianAuthLayout ->
  * AuthProvider, which resolves the principal from a real Supabase
@@ -128,6 +128,9 @@ test('approve removes the approved row, then decline empties the list', async ({
   await expect(page.getByText('A story about a friendly dragon')).toBeVisible()
   await expect(page.getByText('A pirate adventure')).toBeVisible()
 
+  // The shell's nav badge counts the same pending list.
+  await expect(page.getByRole('link', { name: 'Story requests, 2 waiting' })).toBeVisible()
+
   const dragonRow = page.getByTestId('request-req-1')
   await dragonRow.getByLabel('Story length').selectOption('medium')
   await dragonRow.getByRole('button', { name: 'Approve' }).click()
@@ -137,10 +140,27 @@ test('approve removes the approved row, then decline empties the list', async ({
   await expect(page.getByText('A story about a friendly dragon')).toHaveCount(0)
   await expect(page.getByText('A pirate adventure')).toBeVisible()
 
+  // A confirmed approve toasts (the guardian call site's family-scoped copy)
+  // and the badge refetches down to the one remaining pending request.
+  await expect(
+    page.getByText('Approved! The story is being made; track it under Story requests.')
+  ).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Story requests, 1 waiting' })).toBeVisible()
+
   const pirateRow = page.getByTestId('request-req-2')
   await pirateRow.getByRole('button', { name: 'Decline' }).click()
 
+  // Decline confirms first: the dialog quotes the request so the reviewer
+  // knows exactly what they are declining.
+  const confirmDialog = page.getByRole('dialog', { name: 'Decline this request?' })
+  await expect(confirmDialog.getByText('A pirate adventure')).toBeVisible()
+  await confirmDialog.getByRole('button', { name: 'Decline request' }).click()
+
   await expect(page.getByText('No requests to review')).toBeVisible()
+  // Confirmed decline gets its own closure toast; the emptied queue also
+  // hides the badge (accessible name falls back to the plain link text).
+  await expect(page.getByText('Request declined.')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Story requests', exact: true })).toBeVisible()
 })
 
 test('approving a proposed-series request includes the prefilled series title', async ({

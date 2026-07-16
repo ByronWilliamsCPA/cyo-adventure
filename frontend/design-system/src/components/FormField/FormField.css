@@ -15,9 +15,15 @@
   padding: 0.6rem var(--space-3);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-soft);
-  background: rgb(255 255 255 / 70%);
+  /* --surface-raised (not a bare literal): a raw white wash here would stay
+     bright in dark mode and wash out --color-ink's light cream text on top
+     of it. The token is already tuned per-theme (a faint warm-cream wash at
+     low opacity on the dark palette, matching every other raised surface). */
+  background: var(--surface-raised, rgb(255 255 255 / 70%));
   font: inherit;
   color: var(--color-ink);
+  /* Touch-target floor; a multi-line textarea is already taller than this. */
+  min-height: 44px;
 }
 
 .cyo-field__control:focus-visible {

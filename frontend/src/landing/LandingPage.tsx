@@ -40,11 +40,14 @@ export function LandingPage() {
   // sync-then-hydrate pattern DeviceAuthorizedRoute uses) runs once after
   // mount and upgrades the door target if it finds a valid grant localStorage
   // lost (private-mode eviction, a fresh clear).
-  // #ASSUME: timing dependencies: a device that gains a valid grant WHILE the
-  // landing page is already mounted (e.g. a second tab authorizes it) is not
-  // picked up until the door is followed and DeviceAuthorizedRoute re-checks;
-  // this page does not poll or listen for storage events.
-  // #VERIFY: LandingPage.test.tsx "kids door" sync + post-hydrate cases.
+  // #ASSUME: timing dependencies: a device whose grant changes WHILE the
+  // landing page is already mounted (e.g. a second tab authorizes it, or the
+  // guardian console in another window removes it) is picked up by the
+  // 'storage' listener below; the grant is device-local, so connectivity
+  // changes never affect the door and no 'online' listener is needed. Either
+  // way DeviceAuthorizedRoute re-checks when the door is followed.
+  // #VERIFY: LandingPage.test.tsx "kids door" sync + post-hydrate +
+  // storage-event cases.
   const [kidsDoorPath, setKidsDoorPath] = useState(() =>
     hasValidDeviceGrant() ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH
   )
@@ -60,6 +63,23 @@ export function LandingPage() {
       cancelled = true
     }
   }, [kidsDoorPath])
+
+  // Cross-tab freshness: 'storage' fires in THIS tab when ANOTHER tab or
+  // window changes localStorage (minting a grant via the authorize-device
+  // flow, or removing one from the guardian console), so re-derive the door
+  // target from the same reader the mount-time state used. The grant's
+  // storage key is private to deviceGrant.ts, so rather than duplicating it
+  // here we re-derive on every storage event: hasValidDeviceGrant is a cheap
+  // synchronous read, and setState with an unchanged value is a no-op.
+  useEffect(() => {
+    function rederiveKidsDoor() {
+      setKidsDoorPath(hasValidDeviceGrant() ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH)
+    }
+    window.addEventListener('storage', rederiveKidsDoor)
+    return () => {
+      window.removeEventListener('storage', rederiveKidsDoor)
+    }
+  }, [])
 
   return (
     <main className="landing">

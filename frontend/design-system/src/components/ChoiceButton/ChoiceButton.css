@@ -30,8 +30,10 @@
   transform: translateX(4px);
 }
 
+/* Focus indicators are non-text UI (3:1 minimum): bright amber only reaches
+   2.62:1 on parchment, amber-deep clears it at 3.09:1. */
 .cyo-choice:focus-visible {
-  outline: 3px solid var(--color-amber);
+  outline: 3px solid var(--color-amber-deep);
   outline-offset: 3px;
 }
 
@@ -69,4 +71,20 @@
 .cyo-choice__label {
   flex: 1;
   min-width: 0;
+}
+
+/* Reduced motion: still the hover/press slides (button and marker); the
+   background, border, and shadow changes still mark hover and selection. */
+@media (prefers-reduced-motion: reduce) {
+  .cyo-choice,
+  .cyo-choice__marker {
+    transition: none;
+  }
+
+  .cyo-choice:hover:not(:disabled),
+  .cyo-choice:active:not(:disabled),
+  .cyo-choice:hover:not(:disabled) .cyo-choice__marker,
+  .cyo-choice--selected .cyo-choice__marker {
+    transform: none;
+  }
 }

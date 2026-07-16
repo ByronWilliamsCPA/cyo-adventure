@@ -1,0 +1,69 @@
+/* Framing for the router-level standalone screens (routeElements.tsx).
+   These render on every surface and OUTSIDE every shell, so the styles stay
+   self-contained: design-system parchment tokens with literal fallbacks
+   (matching landing.css's pattern), no shell chrome, no surface-specific
+   imports. */
+
+.route-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  text-align: center;
+  background: var(--color-parchment, #f8f3e8);
+  color: var(--color-ink-secondary, #5a3e28);
+  font-size: 1.125rem;
+}
+
+.route-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 100vh;
+  padding: 1.5rem;
+  text-align: center;
+  background:
+    radial-gradient(130% 90% at 50% 0%, var(--color-amber-subtle, #fdf3e6) 0%, transparent 55%),
+    var(--color-parchment, #f8f3e8);
+  color: var(--color-ink, #2c1a0e);
+}
+
+.route-not-found__title {
+  margin: 0;
+  font-family: var(--font-serif, Georgia, 'Times New Roman', serif);
+  font-size: clamp(1.6rem, 6vw, 2.25rem);
+}
+
+.route-not-found__hint {
+  margin: 0;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.route-not-found__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.route-not-found__link {
+  padding: 0.75rem 1.25rem;
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  border-radius: var(--radius-xl, 20px);
+  background: var(--color-parchment-dark, #ede6d0);
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.route-not-found__link:hover,
+.route-not-found__link:focus-visible {
+  border-color: var(--color-amber, #e07f2e);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+}

@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Comprehensive UX pass across the app. Kid readers can undo their last
+  choice (go back one page), see clearer library actions with PIN badges
+  and rating feedback, and get kid-safe polish for loading, conflicts, and
+  endings. Guardians get responsive intake forms with hints and counters,
+  request-age and recovery context on pending requests, confirm-before
+  dialogs for approve and decline, and a pending-request badge. Admins get
+  a severity/search/refresh review queue, a navigable story-graph
+  read-through, guarded moderation-config changes with readable history,
+  and a side-by-side compare view against a story's previous version. A
+  global toast channel confirms actions, including synced reading, across
+  the app. The app is installable as a PWA, and the design system supports
+  dark mode via `prefers-color-scheme`.
+
+### Fixed
+
+- Distinguish offline, rate-limit, and server errors in the error boundary
+  instead of a single generic failure message.
+- Honor the login return path after sign-in, style dead-end states, and
+  add a sign-in watchdog.
+- Give permanently lost reading-progress saves honest copy distinct from a
+  save that is still retrying.
+- Hide the read-aloud toggle until the reader ships text-to-speech.
+- Fix two real phone-width layout bugs in the guardian console found by
+  measurement.
+- Meet AA contrast, 44px touch targets, and reduced motion in the design
+  system.
+- Fix cross-origin service worker caching so the app installs and updates
+  correctly as a PWA.
+
 ## [0.5.2] - 2026-07-15
 
 ### Fixed

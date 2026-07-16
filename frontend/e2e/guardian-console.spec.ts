@@ -89,7 +89,7 @@ test.describe('signed-in admin console', () => {
       'Ready to review',
       'Still processing',
     ])
-    await expect(page.getByText('2 flagged')).toBeVisible()
+    await expect(page.getByText('2 flags')).toBeVisible()
     await expect(page.getByText('Clean')).toBeVisible()
     await expect(page.getByText('Processing…')).toBeVisible()
     await expect(page.getByText('Brewing a Tale')).toBeVisible()

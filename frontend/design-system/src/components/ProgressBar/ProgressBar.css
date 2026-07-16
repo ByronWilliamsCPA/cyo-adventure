@@ -26,3 +26,10 @@
   color: var(--color-ink-muted);
   text-align: right;
 }
+
+/* Reduced motion: the fill jumps to its new width instead of animating. */
+@media (prefers-reduced-motion: reduce) {
+  .cyo-progress__fill {
+    transition: none;
+  }
+}

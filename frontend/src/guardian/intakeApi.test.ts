@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { buildBrief, makeIntakeApi, statusPill } from './intakeApi'
+import { buildBrief, formatRelativeTime, makeIntakeApi, statusPill } from './intakeApi'
 
 function fakeAxios() {
   return { get: vi.fn(), post: vi.fn() }
@@ -94,6 +94,40 @@ describe('buildBrief', () => {
       protagonistName: 'Captain Rosa',
     })
     expect(brief.protagonist.name).toBe('Captain Rosa')
+  })
+})
+
+describe('formatRelativeTime', () => {
+  const NOW = Date.parse('2026-07-04T12:00:00Z')
+
+  it('renders minute granularity with singular/plural forms', () => {
+    expect(formatRelativeTime('2026-07-04T11:56:00Z', NOW)).toBe('4 minutes ago')
+    expect(formatRelativeTime('2026-07-04T11:59:00Z', NOW)).toBe('1 minute ago')
+    expect(formatRelativeTime('2026-07-04T11:01:00Z', NOW)).toBe('59 minutes ago')
+  })
+
+  it('renders sub-minute ages as just now', () => {
+    expect(formatRelativeTime('2026-07-04T11:59:30Z', NOW)).toBe('just now')
+    expect(formatRelativeTime('2026-07-04T12:00:00Z', NOW)).toBe('just now')
+  })
+
+  it('clamps a future timestamp (client clock behind server) to just now', () => {
+    expect(formatRelativeTime('2026-07-04T12:05:00Z', NOW)).toBe('just now')
+  })
+
+  it('renders hour granularity between one hour and one day', () => {
+    expect(formatRelativeTime('2026-07-04T11:00:00Z', NOW)).toBe('1 hour ago')
+    expect(formatRelativeTime('2026-07-04T01:00:00Z', NOW)).toBe('11 hours ago')
+    expect(formatRelativeTime('2026-07-03T12:30:00Z', NOW)).toBe('23 hours ago')
+  })
+
+  it('renders day granularity beyond 24 hours', () => {
+    expect(formatRelativeTime('2026-07-03T11:00:00Z', NOW)).toBe('1 day ago')
+    expect(formatRelativeTime('2026-06-30T12:00:00Z', NOW)).toBe('4 days ago')
+  })
+
+  it('returns null for an unparseable timestamp', () => {
+    expect(formatRelativeTime('not-a-date', NOW)).toBeNull()
   })
 })
 
