@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuthContextValue } from '../auth/authContext'
 import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import type { Principal } from '../auth/types'
-import { LoginPage, SIGN_IN_WATCHDOG_MS } from './LoginPage'
+import { DEVICE_MINT_WATCHDOG_MS, LoginPage, SIGN_IN_WATCHDOG_MS } from './LoginPage'
 
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
@@ -634,5 +634,79 @@ describe('LoginPage authorize-device intent (ADR-014 section 5)', () => {
 
     resolveMint(mintResponse)
     expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+  })
+
+  describe('device-mint watchdog', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('falls back to the normal redirect if the mint never settles', async () => {
+      // mint() never resolves or rejects (a hung request, or a dropped
+      // connection the client never surfaces as a rejection). Without the
+      // watchdog the guardian would be stuck on "Setting up this device..."
+      // forever.
+      vi.useFakeTimers()
+      mockPost.mockReturnValue(new Promise(() => {}))
+      authStatus = 'signed-in'
+      principalValue = principal('guardian')
+      renderLogin(['/guardian/login?intent=authorize-device'])
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0)
+      })
+      expect(screen.getByRole('status')).toHaveTextContent(/setting up this device/i)
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(DEVICE_MINT_WATCHDOG_MS)
+      })
+
+      expect(screen.getByText('console landing')).toBeInTheDocument()
+      expect(mockSignOut).not.toHaveBeenCalled()
+    })
+
+    it('does not override a mint that resolves before the watchdog fires', async () => {
+      // A late-firing watchdog must not stomp a deviceAuthState the successful
+      // mint already moved past 'authorizing'.
+      vi.useFakeTimers()
+      mockPost.mockResolvedValue(mintResponse)
+      authStatus = 'signed-in'
+      principalValue = principal('guardian')
+      renderLogin(['/guardian/login?intent=authorize-device'])
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0)
+      })
+      expect(screen.getByText('kid picker landing')).toBeInTheDocument()
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(DEVICE_MINT_WATCHDOG_MS)
+      })
+
+      expect(screen.getByText('kid picker landing')).toBeInTheDocument()
+    })
+
+    it('never fires into an unmounted page', async () => {
+      // The happy and failure paths both unmount LoginPage (navigate, or the
+      // fallback <Navigate>) while the watchdog may still be pending; the
+      // effect cleanup must cancel it so setState never runs against a
+      // torn-down component.
+      vi.useFakeTimers()
+      mockPost.mockReturnValue(new Promise(() => {}))
+      authStatus = 'signed-in'
+      principalValue = principal('guardian')
+      const { unmount } = renderLogin(['/guardian/login?intent=authorize-device'])
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0)
+      })
+      unmount()
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(DEVICE_MINT_WATCHDOG_MS)
+      })
+      // No assertion beyond "did not throw": React logs a setState-after-unmount
+      // warning as a test failure via the shared console-error guard in
+      // test/setup.ts, so reaching this line at all is the pass condition.
+    })
   })
 })

@@ -72,6 +72,12 @@ function isSameAppPath(pathname: string): boolean {
  */
 export const SIGN_IN_WATCHDOG_MS = 10_000
 
+/**
+ * How long the device-authorization effect waits for the grant mint to
+ * settle before giving up. Exported for the fake-timer tests.
+ */
+export const DEVICE_MINT_WATCHDOG_MS = 10_000
+
 /** Cancel a pending sign-in watchdog, if one is armed. */
 function clearWatchdog(ref: RefObject<number | null>): void {
   if (ref.current !== null) {
@@ -130,6 +136,7 @@ export function LoginPage() {
   const [resetStatus, setResetStatus] = useState<'idle' | 'sent' | 'error'>('idle')
   const [resetSubmitting, setResetSubmitting] = useState(false)
   const [deviceAuthState, setDeviceAuthState] = useState<'idle' | 'authorizing' | 'failed'>('idle')
+  const deviceWatchdogRef = useRef<number | null>(null)
   const location = useLocation()
   const navigate = useNavigate()
   const api = useApi()
@@ -211,8 +218,22 @@ export function LoginPage() {
     let cancelled = false
     async function authorizeThisDevice() {
       setDeviceAuthState('authorizing')
+      // #ASSUME: timing dependencies: if mint() never settles (a hung
+      // request, or a dropped connection the client never surfaces as a
+      // rejection), the guardian would be stuck on "Setting up this
+      // device..." forever with no way out. The watchdog forces
+      // deviceAuthState to 'failed' after DEVICE_MINT_WATCHDOG_MS so the
+      // render below falls through to the normal role-based redirect,
+      // mirroring the sign-in form's SIGN_IN_WATCHDOG_MS.
+      // #VERIFY: LoginPage.test.tsx "device-mint watchdog" cases.
+      deviceWatchdogRef.current = window.setTimeout(() => {
+        deviceWatchdogRef.current = null
+        if (cancelled) return
+        setDeviceAuthState('failed')
+      }, DEVICE_MINT_WATCHDOG_MS)
       try {
         const view = await makeDeviceGrantApi(api).mint()
+        clearWatchdog(deviceWatchdogRef)
         if (cancelled) return
         setDeviceGrant({
           token: view.token,
@@ -244,6 +265,7 @@ export function LoginPage() {
           logApiError('sign-out after device authorization failed', err)
         })
       } catch (err) {
+        clearWatchdog(deviceWatchdogRef)
         if (cancelled) return
         logApiError('device grant mint failed', err)
         setDeviceAuthState('failed')
@@ -252,6 +274,7 @@ export function LoginPage() {
     void authorizeThisDevice()
     return () => {
       cancelled = true
+      clearWatchdog(deviceWatchdogRef)
     }
   }, [authorizeDeviceIntent, status, principal, recovery, api, navigate, signOut, deviceReturnPath])
 
