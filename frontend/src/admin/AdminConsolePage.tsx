@@ -35,6 +35,14 @@ function isFlagged(item: ReviewQueueItem): boolean {
  * is the count key: the backend guarantees flagged_count counts exactly the
  * findings the floored review detail will show (review_surface.py), while
  * summary.count includes sub-floor advisory noise.
+ *
+ * #ASSUME: data-integrity: flagged_count on the queue item matches the count
+ * of findings the review detail page will actually render for that story
+ * (both keyed off review_surface.py's floor), so sorting by it here reflects
+ * the same severity order the reviewer will see after opening the item.
+ * #VERIFY: if review_surface.py's floor logic and the queue endpoint's
+ * flagged_count ever diverge, this sort order stops matching what Send
+ * Back/Approve act on; cover with a queue-vs-detail parity test.
  */
 function bySeverity(a: ReviewQueueItem, b: ReviewQueueItem): number {
   const aBlock = a.summary?.hard_block === true
