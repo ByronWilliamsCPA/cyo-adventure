@@ -2849,10 +2849,10 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 <tbody>
 <tr>
 <td>U1</td>
-<td>Kid RequestStory: a late rejection after Cancel re-arms the error, which is shown on next dialog open (Cancel is disabled while sending, which narrows but does not close this)</td>
-<td>PR #111 K2 ledger</td>
+<td><strong>[Resolved]</strong> Kid RequestStory: a late rejection after Cancel re-arms the error, which is shown on next dialog open (Cancel is disabled while sending, which narrows but does not close this). Resolved by the 2026-07-15 UX-improvements pass: the error state now clears on every dialog open (both the button-driven and anchor-driven open paths), pinned by a T3 regression test.</td>
+<td>PR #111 K2 ledger; resolved 2026-07-15</td>
 <td>Low</td>
-<td>Clear error state on dialog open, or abort the in-flight request on cancel</td>
+<td>Closed; no further action</td>
 </tr>
 <tr>
 <td>U2</td>
@@ -2874,6 +2874,69 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 <td>PR #106 final review</td>
 <td>Low</td>
 <td>Fold into the next guardian-console refactor</td>
+</tr>
+<tr>
+<td>U5</td>
+<td>No guardian-facing reading tracker: <code>POST /completions</code> records a finish but no endpoint reads completions back, so a guardian has zero visibility into what a child has actually read. This is Phase 4b scope, not fixed in the 2026-07-15 UX pass because it needs a new backend read endpoint (and likely a schema/index decision) before any frontend page is worth building.</td>
+<td>2026-07-15 UX-improvements pass (comprehensive review)</td>
+<td>Medium</td>
+<td>Design and add a <code>GET</code> completions/reading-history endpoint scoped per family, then build the guardian tracker page against it</td>
+</tr>
+<tr>
+<td>U6</td>
+<td>Star ratings cannot be cleared once set (tapping the same star re-saves the same value): <code>POST /ratings</code> requires <code>value: int = Field(ge=1, le=5)</code> with no DELETE endpoint, so the frontend correctly declines to fake clearing.</td>
+<td>2026-07-15 UX-improvements pass</td>
+<td>Low</td>
+<td>Add a <code>DELETE /v1/ratings/{profile_id}/{storybook_id}</code> (or accept a null value) and wire a clear affordance into <code>StarRating.tsx</code></td>
+</tr>
+<tr>
+<td>U7</td>
+<td>The "Recent threshold changes" audit feed (<code>ModerationDashboardPage.tsx</code>) now renders human-readable before/after values from <code>payload</code>, but still cannot show WHO made a change: <code>ThresholdChangeView</code> carries no actor field.</td>
+<td>2026-07-15 UX-improvements pass</td>
+<td>Low</td>
+<td>Add an actor/admin-id column to the threshold-change event and surface it in the feed</td>
+</tr>
+<tr>
+<td>U8</td>
+<td><strong>[Resolved]</strong> Admin story review (<code>ReviewDetailPage.tsx</code>) had no version picker or passage-level diff. Resolved 2026-07-15: a "Compare with version N-1" toggle fetches the previous version and renders an added/removed/changed passage diff (old vs. new body, a choices-changed note), gracefully handling a missing previous version; the repaired badge now hints at it. Deliberately "compare with the immediately prior version," not a full version-history picker, since no backend endpoint enumerates a storybook's existing versions.</td>
+<td>2026-07-15 UX-improvements pass; resolved 2026-07-15</td>
+<td>Medium</td>
+<td>Closed; a true version-history picker still needs a backend enumeration endpoint if ever wanted</td>
+</tr>
+<tr>
+<td>U9</td>
+<td>No i18n readiness (all copy is inline JSX, no string catalog), and no push channel (WebSocket/SSE): every long-running status (generation, moderation review) is poll-only. Dark mode was resolved 2026-07-15 (see below); i18n and the push channel remain out of scope (product/architecture decisions, not frontend polish).</td>
+<td>2026-07-15 UX-improvements pass</td>
+<td>Low (i18n) / Medium (push channel, as usage scales)</td>
+<td>i18n: extract strings to a catalog while the surface is still small. Push channel: revisit if polling load becomes a real cost.</td>
+</tr>
+<tr>
+<td>U9a</td>
+<td><strong>[Resolved]</strong> No dark mode. Resolved 2026-07-15: a full dark palette behind <code>@media (prefers-color-scheme: dark)</code> in <code>tokens.css</code>, overriding every color token under the same custom-property names (contrast-verified), plus <code>index.html</code>'s <code>color-scheme</code> meta set to <code>"light dark"</code>. Two real contrast regressions the new palette would otherwise have shipped were fixed in the same pass: the admin hard-block badge's white-on-error fill (pinned to the light-mode error tone, since <code>--color-error</code> is now brighter for its foreground-text role) and every text input's background (<code>FormField.css</code> routed through the already-per-theme <code>--surface-raised</code> token instead of a bare white literal).</td>
+<td>2026-07-15 UX-improvements pass; resolved 2026-07-15</td>
+<td>Low</td>
+<td>Closed; see U9b for the dark-mode polish gap this surfaced</td>
+</tr>
+<tr>
+<td>U9b</td>
+<td>About a dozen low-opacity decorative background washes in <code>guardian.css</code> (flag badges, flagged/highlighted passage tints, the at-gate insight row) are hand-encoded <code>rgb(r g b / X%)</code> literals rather than token references, so they will not re-tint for dark mode (found while verifying U9a). Each sits behind separately color-tokened text, so this is a polish gap, not a contrast failure.</td>
+<td>2026-07-15 UX-improvements pass (dark-mode verification)</td>
+<td>Low</td>
+<td>Route each wash through its underlying token (e.g. <code>--color-error</code>, <code>--color-forest</code>, <code>--color-amber</code>) at low opacity via <code>color-mix()</code> or a dedicated <code>-wash</code> token per family</td>
+</tr>
+<tr>
+<td>U10</td>
+<td><strong>[Resolved]</strong> <code>docs/architecture/diagrams/journey-kid.puml</code>/<code>.svg</code> showed the old "Continue this story" label. Resolved 2026-07-15: both updated to "Ask for the next book"; the <code>.svg</code> was hand-patched (exact text run plus its container width recalculated) rather than regenerated, since no PlantUML renderer producing output consistent with the file's existing layout was available in that session (only an old bundled 2019 jar with markedly different output dimensions/style). A note in the <code>.puml</code> source flags this for the next real layout change, which should regenerate properly.</td>
+<td>2026-07-15 UX-improvements pass; resolved 2026-07-15</td>
+<td>Low</td>
+<td>Closed; regenerate with a current PlantUML on the next real layout change to this diagram</td>
+</tr>
+<tr>
+<td>U11</td>
+<td><strong>[Resolved]</strong> The guardian responsive pass (2026-07-15) covered the review-queue action row, profile/book cards, and tables; a follow-up screenshot-driven audit (real Chromium renders at 360-800px, not just CSS review) of <code>ConsolePage.tsx</code>'s device-management section and <code>IntakePage.tsx</code>'s "My Requests" rows found and fixed two genuine flexbox intrinsic-sizing bugs only visible below ~640px (device buttons sized inconsistently by their own hint paragraph's wrapped width; request rows with both a status pill and an assign/retry button crushed the title column). Resolved 2026-07-15.</td>
+<td>2026-07-15 UX-improvements pass; resolved 2026-07-15</td>
+<td>Low</td>
+<td>Closed; a broader per-page audit can still follow once real usage data shows which guardian pages matter most on mobile</td>
 </tr>
 </tbody>
 </table>
@@ -3115,7 +3178,7 @@ merged feature set; all are R2-planning inputs.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 18:45:48 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 16, 2026 08:34:13 UTC">July 16, 2026</span>
   </span>
 
     
