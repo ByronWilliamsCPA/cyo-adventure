@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Security, Authorization, API Specif
 
 # Authorization Matrix
 
-> **Status**: Active | **Version**: 0.7 | **Updated**: 2026-07-16
+> **Status**: Active | **Version**: 0.8 | **Updated**: 2026-07-16
 
 > **Planned amendment ([ADR-015](./adr/adr-015-story-request-initiation-and-gating.md),
 > accepted 2026-07-16)**: the three initiator flows below are already implemented (WS-B,
@@ -109,6 +109,11 @@ Device is a flat 403.
 | Access another family's data | Yes (admin, cross-family) | No (403) | No (403) | No (403) | Family ownership is checked on every non-admin resource access; cross-family 403 |
 | Edit a passage (Phase 4b) | Yes | Yes | No (403) | No (403) | Guardian role required; `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}` |
 | Browse / assign a catalog book (cross-family, WS-E) | No (403; browse and assignment endpoints are guardian-only) | Any `visibility='catalog'` book, any family | No (403) | No (403) | `visibility='catalog'` widens guardian browse and assignment eligibility past own-family; browse and assignment endpoints are guardian-only, so a child or device token gets 403 regardless of `profile_id`; the `StorybookAssignment` gate is unchanged for child read/write paths |
+| List families (`GET /admin/families`) | Yes (all families, name-ordered, capped at 50) | No (403) | No (403) | No (403) | `ctx.principal.is_admin` checked before any query (`api/families.py::list_families`); powers the admin authored-request family selector |
+| Provider allowlist CRUD (`GET`/`POST`/`PUT`/`DELETE /admin/provider-allowlist[/{entry_id}]`) | Yes (list; add, toggle enabled/display_name, and delete a (provider, model_id) pair; every write audited) | No (403) | No (403) | No (403) | `_require_admin` gates every verb before any read or write (`api/provider_allowlist.py`); this allowlist is the control keeping free-string model ids out of billing |
+| Moderation thresholds + noise floor (`GET`/`PUT`/`DELETE /admin/moderation-thresholds/{age_band}`, `GET`/`PUT /admin/moderation/noise-floor`) | Yes (list/upsert/delete per-band overrides; read/update the global noise floor; every write audited and emits a pipeline event) | No (403) | No (403) | No (403) | `_require_admin` gates every verb before any read or write (`api/moderation_thresholds.py`); threshold edits change what every family's guardians see on the review surface |
+| Moderation dashboard (`GET /admin/moderation/dashboard`, `GET /admin/moderation/suggestions`) | Yes (read-only aggregated override evidence, recent threshold-change feed, and computed threshold suggestions) | No (403) | No (403) | No (403) | `_require_admin` gates both routes (`api/moderation_dashboard.py`); the aggregates describe moderation posture across every family |
+| Cover generate / status (`POST`/`GET /storybooks/{storybook_id}/versions/{version}/cover`) | Yes (enqueue AI cover generation; poll status and URL) | No (403) | No (403) | No (403) | `_require_admin` gates both routes (`api/covers.py`); a non-admin must never learn whether a cover exists or is in flight for a given story version |
 
 Key implementation rules:
 
@@ -119,6 +124,22 @@ Key implementation rules:
   same restriction independently (defense in depth).
 - Family ownership is checked on every resource access, not only on listing endpoints.
   A story that belongs to family A is inaccessible to a guardian from family B.
+
+### Arriving with PR #267 (not yet merged)
+
+PR #267 (branch `claude/admin-user-management-rk111f`) adds a WS-J admin user-management
+console: four new admin-only route modules. None of this has merged to `main`; the rows
+below are verified directly against the PR branch's code (`git show FETCH_HEAD:...`), not
+assumed from the PR title. Every route gates on the same `_require_admin` pattern
+(`ctx.principal.is_admin`, checked before any read or write) as the rest of this
+document; no new authorization primitive is introduced.
+
+| Action | Admin | Guardian | Child (own profile) | Device (own family) | Enforcement |
+|--------|-------|----------|---------------------|----------------------|-------------|
+| Admin users CRUD (`GET/POST /admin/users`, `PATCH /admin/users/{user_id}`) | Yes (list/filter guardian+admin accounts across every family; invite a new `status='pending'` account; reassign family, re-role, toggle `is_admin`, or activate/deactivate an existing one) | No (403) | No (403) | No (403) | `_require_admin` (`api/admin_users.py`); `role='child'` rows are always excluded from every read; an admin may not edit their own row through `PATCH` (self-lockout guard, `AuthorizationError` regardless of which field changed); a `status` transition into or out of `'pending'` is rejected (422, that state is onboarding-owned) |
+| Admin child-profile CRUD, incl. PIN set/reset (`GET/POST /admin/profiles`, `PATCH /admin/profiles/{profile_id}`) | Yes (list/filter child profiles across every family; create one in any family; update any field including `pin` -- an explicit `pin` sets or, if `null`, clears the profile's picker PIN) | No (403) | No (403) | No (403) | `_require_admin` (`api/admin_profiles.py`); kept deliberately separate from the guardian-scoped `api/profiles.py` (own-family-only) so the two authorization models cannot blend; `pin_hash` is never serialized back, only the derived `has_pin` boolean |
+| Family create / rename / deactivate (`POST /admin/families`, `PATCH /admin/families/{family_id}`) | Yes (create a family; rename it; deactivate it, which cascades to deactivate every member `User` and `ChildProfile` in the same transaction; reactivating the family does not auto-reactivate its members) | No (403) | No (403) | No (403) | `_require_admin` (`api/families.py`, same module as the already-shipped `GET /admin/families` listing above) |
+| Family-connection CRUD (`GET/POST /admin/family-connections`, `DELETE /admin/family-connections/{connection_id}`) | Yes (list every directional connection with both family names; create a directional opt-in; hard-delete one) | No (403) | No (403) | No (403) | `_require_admin` (`api/family_connections.py`); a connection is a permission edge, not identity data, so deletion is a real `DELETE`, not a soft-deactivate (mirrors `provider_allowlist`); per the capability register (G17/A15, [ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md)) this admin console is not itself sufficient consent -- nothing yet reads this table to widen child-facing visibility |
 
 ### Catalog visibility (WS-E)
 

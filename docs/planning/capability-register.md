@@ -15,12 +15,13 @@ source: "Fresh-look capability review session, 2026-07-16"
 
 # Capability Register
 
-> **Status**: Active | **Version**: 1.5 | **Created**: 2026-07-16 | **Updated**: 2026-07-16
+> **Status**: Active | **Version**: 1.6 | **Created**: 2026-07-16 | **Updated**: 2026-07-16
 > (v1.4: note corrections and ruling queue from the full traceability review, see
 > [traceability-review-2026-07-16.md](./traceability-review-2026-07-16.md);
 > v1.5: owner rulings applied: K18 and A16 minted, back button ratified, ADR-007
 > admin-first sequencing, repair re-gate and band fail-closed fixes ordered, G2 build
-> confirmed)
+> confirmed; v1.6: A12 note extended to name the admin child-PIN set/reset authority
+> explicitly, with an ADR-014 cross-reference, per the 2026-07-16 review condition)
 
 > **Delivery-state review (2026-07-16, open PRs and working docs)**: the Docs column below
 > measures *foundational-doc* coverage, but a review of
@@ -146,7 +147,7 @@ initiate (K11 | G4 | A10)
 | A9 | Curated/seed catalog management so a new child never sees an empty shelf | 🟡 | Catalog visibility + "curated starter library" (ADR-008); management surface thin |
 | A10 | Admin-initiated story generation (seeding the catalog, testing the pipeline) | ✅ | Shipped (WS-B): `POST /story-requests/authored`, admin catalog-targeted with no family; ADR-015 names it foundationally |
 | A11 | Structural quality tools across the corpus: broken graphs, reading-level drift, repetitive or template-y output | 🟡 | Per-story validator is world-class; corpus-level drift/repetition tooling ❌ |
-| A12 | Account support ops: lockouts, deletion requests, abuse handling (an adult misusing generation) | 🟡 | PR #267 (open) delivers user/family lifecycle management: invites, edit, deactivate with auth-boundary enforcement and self-lockout guard; deletion-request and abuse workflows still ❌ |
+| A12 | Account support ops: lockouts, deletion requests, abuse handling (an adult misusing generation) | 🟡 | PR #267 (open) delivers user/family lifecycle management: invites, edit, deactivate with auth-boundary enforcement and self-lockout guard; deletion-request and abuse workflows still ❌. Per the 2026-07-16 review condition: PR #267 also grants the admin console authority to set and reset a child profile's picker PIN (`PATCH /admin/profiles/{profile_id}`, `api/admin_profiles.py`), named here explicitly as an A12 admin-support capability rather than left implicit in the CRUD description; cross-reference [ADR-014](./adr/adr-014-device-authorized-kid-access.md), which defines the picker PIN as a convenience lock behind an already-authenticated guardian/admin bearer, not a security boundary in its own right |
 | A13 | Admin action audit trail: admins touching child-related data leave a trail | 🟡 | Approver stamps and `acting_role` audit stamps ✅; no audit view/report |
 | A14 | Compliance and platform ops: retention enforcement, compliance reporting, backups and tested restore | 🟡 | ADR-007 retention, backups live, restore drill planned; compliance reporting ❌ |
 | A15 | Administer family connections: broker, list, and remove connection records on request; admin action never substitutes for guardian consent | 🟡 | Console shipped in PR #267 (open); ADR-016 subordinates it to G17 consent |
