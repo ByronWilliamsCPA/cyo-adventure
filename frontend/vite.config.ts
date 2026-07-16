@@ -79,6 +79,35 @@ export default defineConfig({
               // so it cannot grow without limit.
               networkTimeoutSeconds: 5,
               expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              // #CRITICAL: security: these are authenticated GETs (/v1/me,
+              // /v1/profiles, /v1/story_requests, /v1/families). Workbox keys
+              // its cache by request URL alone, so on a shared or hand-me-down
+              // family device the NetworkFirst fallback (offline, or past the
+              // 5s timeout) could otherwise serve one child's or family's
+              // cached response to whoever asks for the same URL next, even
+              // after a sign-out or profile switch on the same device.
+              // #VERIFY: cacheKeyWillBeUsed folds a hash of the request's
+              // Authorization bearer token into the cache key, so distinct
+              // sessions on the same device never share a cache entry for the
+              // same URL. Hashed, not stored raw, so the token itself is not
+              // duplicated into an inspectable Cache Storage key.
+              plugins: [
+                {
+                  cacheKeyWillBeUsed: async ({ request }) => {
+                    const auth = request.headers.get('Authorization') ?? ''
+                    const digest = await crypto.subtle.digest(
+                      'SHA-256',
+                      new TextEncoder().encode(auth)
+                    )
+                    const authHash = Array.from(new Uint8Array(digest))
+                      .map((byte) => byte.toString(16).padStart(2, '0'))
+                      .join('')
+                    const url = new URL(request.url)
+                    url.searchParams.set('_auth', authHash)
+                    return url.toString()
+                  },
+                },
+              ],
             },
           },
         ],
