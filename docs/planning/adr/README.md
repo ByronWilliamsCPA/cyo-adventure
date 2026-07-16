@@ -41,6 +41,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-014](./adr-014-device-authorized-kid-access.md) | Device-authorized kid access | Accepted | 2026-07-13 |
 | [ADR-015](./adr-015-story-request-initiation-and-gating.md) | Universal story initiation with a guardian cost gate and an admin safety gate | Accepted | 2026-07-16 |
 | [ADR-016](./adr-016-recommendation-sharing-social-boundary.md) | Recommendation sharing and the social boundary (three rings) | Accepted | 2026-07-16 |
+| [ADR-017](./adr-017-ai-cover-art.md) | AI cover art per storybook version | Accepted | 2026-07-16 |
 
 ## Creating ADRs
 

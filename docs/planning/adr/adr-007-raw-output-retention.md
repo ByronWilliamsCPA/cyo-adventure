@@ -13,8 +13,28 @@ tags:
 
 # ADR-007: Raw LLM output retention policy for `GenerationJob.report`
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-16; see Amendment below)
 > **Date**: 2026-06-29
+
+## Amendment (2026-07-16): access-control ruling and code reconciliation
+
+The 2026-07-16 traceability review found the code had drifted from this ADR:
+`GET /generation-jobs/{id}` returned the full `report` to any guardian in the owning
+family, and the privacy model had been updated to document that reality rather than this
+ADR's admin-only rule. The owner ruled the same day: **the admin reviews generated output
+first, then it reaches the parent**, with a dual-role adult covered by the admin
+capability. The parent may ultimately receive unedited LLM output when the admin approves
+without changes; that is accepted, because by then it has passed the automated gates and
+admin review. Consequences:
+
+- The single-job endpoint is tightened so `report` is returned only to principals with
+  the admin capability; guardians keep status, stage log, and error information.
+  Implemented on branch `claude/app-capabilities-review-wm6gt3`.
+- Guardians see generated content through the normal post-approval surfaces, never
+  through raw job output.
+- The privacy model's guardian-visibility wording is corrected back to admin-only.
+- The 30-day/on-publish purge below remains decided and remains unbuilt (Phase 5); raw
+  output currently persists until that job ships, which is tracked as a known gap.
 
 ## TL;DR
 

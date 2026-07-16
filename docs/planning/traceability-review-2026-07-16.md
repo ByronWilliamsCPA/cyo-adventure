@@ -151,6 +151,13 @@ verified against roadmap/PROJECT-PLAN):
 
 ## 5. Owner decision queue (condensed)
 
+> **Rulings received 2026-07-16 (same day)**: 1 yes (K18 minted), 2 yes (K8 updated, A16
+> minted, ADR-017 written), 3 ratify (tech spec amended), 4 open until PR #267 review,
+> 5 tighten the endpoint (admin-first; ADR-007 amended, code fixed), 6 yes (both fixes
+> implemented), 7 deferred as a batch. G2 build confirmed, scheduling open. The register
+> (v1.5) carries the applied state; the list below is preserved as the record of what was
+> asked.
+
 1. U-1 ratings: mint K18? (recommended yes)
 2. U-2 cover art: update K8, mint A16, short ADR? (recommended yes)
 3. U-3 back button: ratify reversal of no-backtracking, or remove? (recommended ratify)

@@ -45,9 +45,11 @@ child. The following are classified as child-linked:
 - `completion` rows: `ending_id`, `found_at`, keyed by `child_profile_id`.
 - Raw LLM generation outputs stored in `generation_job.report` (a Postgres JSONB
   column), if they were generated in a context where a concept brief containing profile
-  attributes was used. `GET /generation-jobs/{id}` exposes this field to the job's own
-  family guardian (family-scoped, guardian-gated, not admin-only); the list endpoint and
-  every child-facing endpoint exclude it.
+  attributes was used. Per ADR-007 as amended 2026-07-16, `GET /generation-jobs/{id}`
+  exposes this field only to principals with the admin capability (a dual-role adult
+  qualifies via that capability); guardians receive job status, stage log, and error
+  information without `report`. The list endpoint and every child-facing endpoint
+  exclude it entirely.
 
 The following are not child-linked on their own (they link to a family or a story, not
 to an individual child):
@@ -96,8 +98,7 @@ counterparties for child-typed text as well as for generated prose.
 ## Raw LLM Outputs and Prompt Text
 
 Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are guardian-visible (family-scoped, via the single-job GET
-endpoint only) and short-lived:
+text sent to the provider are admin-only (ADR-007 as amended 2026-07-16) and short-lived:
 
 - **Prompt text**: store the prompt template version and a hash, not the full rendered
   prompt, where the rendered text could carry child-specific detail. The hash allows
@@ -116,10 +117,11 @@ endpoint only) and short-lived:
   #          confirm report stays off child-facing endpoints and the job-list endpoint.
   ```
 
-- **Access control**: `generation_job.report` is guardian-visible via
-  `GET /generation-jobs/{id}` (family-scoped, guardian-gated), not admin-only. It is
-  excluded from the list endpoint (job status only) and every child-facing endpoint, and
-  is not accessible via the story-serving path.
+- **Access control**: `generation_job.report` is returned by `GET /generation-jobs/{id}`
+  only to principals with the admin capability (ADR-007 as amended 2026-07-16; the
+  admin reviews first, then the parent receives content through post-approval surfaces).
+  It is excluded from the list endpoint (job status only) and every child-facing
+  endpoint, and is not accessible via the story-serving path.
 
 Moderation reports (the per-node flags and the moderation API response) persist with the
 `storybook_version` record for audit. They contain node IDs and flag categories, not raw
