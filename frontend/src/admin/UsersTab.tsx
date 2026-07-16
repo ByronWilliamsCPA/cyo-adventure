@@ -173,9 +173,15 @@ export function UsersTab({ api, families, users, onChanged }: UsersTabProps) {
                   {editingId === user.id && edit ? (
                     <select
                       value={edit.role}
-                      onChange={(e) =>
-                        setEdit({ ...edit, role: e.target.value as (typeof ROLES)[number] })
-                      }
+                      onChange={(e) => {
+                        const role = e.target.value as (typeof ROLES)[number]
+                        // Keep the submitted payload consistent with the
+                        // force-checked+disabled checkbox below: switching to
+                        // 'admin' sets isAdmin in state immediately, not just
+                        // visually (the backend also re-forces this, but the
+                        // UI should never send a payload it isn't showing).
+                        setEdit({ ...edit, role, isAdmin: role === 'admin' ? true : edit.isAdmin })
+                      }}
                       aria-label={`Role for ${user.email ?? user.id}`}
                     >
                       {ROLES.map((r) => (

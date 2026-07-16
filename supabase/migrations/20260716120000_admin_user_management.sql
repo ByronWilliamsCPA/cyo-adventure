@@ -59,6 +59,9 @@ alter table only "public"."family_connection"
     add constraint "family_connection_connected_family_id_fkey" foreign key ("connected_family_id") references "public"."family"("id");
 
 alter table only "public"."family_connection"
+    add constraint "family_connection_created_by_fkey" foreign key ("created_by") references "public"."user"("id");
+
+alter table only "public"."family_connection"
     add constraint "uq_family_connection_pair" unique ("family_id", "connected_family_id");
 
 alter table only "public"."family_connection"
