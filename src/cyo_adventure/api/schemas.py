@@ -233,7 +233,15 @@ class GenerationEnqueuedResponse(BaseModel):
 
 
 class GenerationJobResponse(BaseModel):
-    """Full status payload for a generation job."""
+    """Status payload for a single generation job.
+
+    ``report`` is the raw multi-stage LLM output (ADR-007: admin/system
+    only). Per the 2026-07-16 ruling, ``GET /generation-jobs/{id}``
+    (api/generation.py::get_generation_job) populates it only when the
+    calling principal holds the admin capability (``Principal.is_admin``,
+    which covers a dual-role guardian+admin); a plain guardian always gets
+    ``None`` here, same as the list view.
+    """
 
     id: str
     status: JobStatusLiteral

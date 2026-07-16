@@ -114,14 +114,21 @@ class _FakeSession:
         self.flush_count += 1
 
 
-def _principal(role: str, family_id: uuid.UUID, user_id: uuid.UUID) -> Principal:
-    """Build a Principal for the given role and family."""
+def _principal(
+    role: str,
+    family_id: uuid.UUID,
+    user_id: uuid.UUID,
+    *,
+    is_admin: bool = False,
+) -> Principal:
+    """Build a Principal for the given role, family, and admin capability."""
     return Principal(
         subject="sub",
         user_id=user_id,
         role=role,
         family_id=family_id,
         profile_ids=frozenset(),
+        is_admin=is_admin,
     )
 
 
@@ -309,6 +316,70 @@ async def test_get_generation_job_returns_status() -> None:
     assert resp.status == "passed"
     assert resp.storybook_id == "s_abc"
     assert resp.version == 1
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_get_generation_job_report_hidden_from_plain_guardian() -> None:
+    """A plain guardian (no admin capability) never sees the raw report.
+
+    ADR-007 marks ``report`` admin/system-only; the 2026-07-16 ruling narrowed
+    the single-job GET to match the list endpoint on this point.
+    """
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    job = GenerationJob(concept_id=uuid.uuid4(), status="passed")
+    job.report = {"stage_1": "raw model output", "leak_marker": "should-not-leak"}
+    session = _FakeSession(results={GenerationJob: job, Concept: concept})
+    ctx = RequestContext(
+        principal=_principal("guardian", family_id, uuid.uuid4(), is_admin=False),
+        session=session,
+    )
+
+    resp = await get_generation_job(str(uuid.uuid4()), ctx)
+
+    assert resp.report is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_get_generation_job_report_visible_to_dual_role_guardian_admin() -> None:
+    """A guardian who also holds the admin capability sees the raw report.
+
+    Per the 2026-07-16 ruling, a dual-role adult is covered by the admin
+    side of the gate (``Principal.is_admin``), not by ``is_guardian``.
+    """
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    job = GenerationJob(concept_id=uuid.uuid4(), status="passed")
+    job.report = {"stage_1": "raw model output"}
+    session = _FakeSession(results={GenerationJob: job, Concept: concept})
+    ctx = RequestContext(
+        principal=_principal("guardian", family_id, uuid.uuid4(), is_admin=True),
+        session=session,
+    )
+
+    resp = await get_generation_job(str(uuid.uuid4()), ctx)
+
+    assert resp.report == {"stage_1": "raw model output"}
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_get_generation_job_admin_role_only_still_forbidden() -> None:
+    """A pure admin-role principal (not a guardian) still gets 403 here.
+
+    This endpoint's caller gate is unchanged by the report restriction: only
+    ``is_guardian`` principals may call it at all. A ``role="admin"``
+    principal (without also being a guardian) is not a guardian, so it never
+    reaches the report-visibility check.
+    """
+    session = _FakeSession()
+    ctx = RequestContext(
+        principal=_principal("admin", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+    with pytest.raises(AuthorizationError):
+        await get_generation_job(str(uuid.uuid4()), ctx)
 
 
 @pytest.mark.unit

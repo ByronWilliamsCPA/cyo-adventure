@@ -3,10 +3,14 @@
 When Stage 1 flags or Stages 2-3 raise a soft gate, the pipeline tries a single
 repair: it asks the generation provider to revise the prose to address the soft
 findings while preserving structure, then returns the revised blob (or None on
-failure). The pipeline schema-validates and re-moderates the revised result before
-adopting it; it does NOT currently re-run the deterministic structural/policy gate
-(``validator.gate.run_gate``) on the revision. Re-gating the repaired blob is a
-documented follow-up (the human guardian remains the final gate per ADR-005).
+failure). This module only produces the candidate revision; it does not decide
+whether to adopt it. The caller (``moderation/pipeline.py``) schema-validates
+and re-moderates the revised result, then re-runs the deterministic structural/
+policy gate (``validator.gate.run_gate``) on it before it is allowed to replace
+the pre-repair blob: a repair that fails the gate is discarded exactly like a
+schema-invalid one, so a repaired blob's structure is re-proven, not merely
+trusted, before it ever reaches the human guardian who remains the final gate
+per ADR-005.
 """
 
 from __future__ import annotations

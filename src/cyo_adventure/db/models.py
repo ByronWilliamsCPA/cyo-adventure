@@ -1049,14 +1049,19 @@ class GenerationJob(Base):
     prompt_version: Mapped[str | None] = mapped_column(String(120), default=None)
     # #CRITICAL: privacy: raw multi-stage LLM outputs; purge per ADR-007 after
     # 30 days or when the linked storybook version reaches "published" status.
+    # ADR-007 designates this column admin/system-only. Per the 2026-07-16
+    # ruling, GET /generation-jobs/{id} (api/generation.py::get_generation_job)
+    # returns it only when the caller holds the admin capability
+    # (Principal.is_admin, which covers a dual-role guardian+admin); a plain
+    # guardian gets None. The admin reviews generation output first, and the
+    # guardian reaches the result through the normal post-approval surfaces
+    # instead. The list endpoint (GenerationJobListView) never selects this
+    # column at all, for any principal.
     # #VERIFY: Phase 5 scheduled pg_cron job nulls this column (ADR-009 moved the
-    # ADR-007 retention purge from RQ to pg_cron); GET /generation-jobs/{id}
-    # (api/generation.py::get_generation_job) returns this field to the job's
-    # own family guardian, family-scoped and guardian-gated, not admin-only;
-    # only the list endpoint (GenerationJobListView) excludes it, and it is
-    # never exposed to a child principal. There is no separate stage_log
-    # column today; persisting a redacted stage log for post-purge
-    # auditability is a Phase 5 task (see ADR-007).
+    # ADR-007 retention purge from RQ to pg_cron); this field is never exposed
+    # to a child principal. There is no separate stage_log column today;
+    # persisting a redacted stage log for post-purge auditability is a Phase 5
+    # task (see ADR-007).
     # #ASSUME: data integrity: ``report`` schema is determined by
     # GenerationOutcome at the application layer; no DB-level constraint
     # enforces its shape.

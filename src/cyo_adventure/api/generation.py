@@ -396,14 +396,16 @@ async def get_generation_job(
     job_id: str,
     ctx: Context,
 ) -> GenerationJobResponse:
-    """Return the status and report for a generation job.
+    """Return the status for a generation job, and the report for admins only.
 
     Args:
         job_id: The UUID string of the job to fetch.
         ctx: The request context (principal and session).
 
     Returns:
-        GenerationJobResponse: Status, report, storybook link, and error.
+        GenerationJobResponse: Status, storybook link, and error for any
+        family-scoped guardian; ``report`` is populated only when the
+        principal also holds the admin capability, and is ``None`` otherwise.
 
     Raises:
         AuthorizationError: If the principal is not a guardian (-> 403) or if
@@ -448,10 +450,23 @@ async def get_generation_job(
     # #VERIFY: JobStatusLiteral's five values match
     # db/models.py's _GENERATION_JOB_STATUS_VALUES exactly (see
     # tests/unit/test_schemas.py::test_job_status_literal_matches_db_constraint).
+    #
+    # #CRITICAL: security: the raw ``report`` JSON is admin/system-only
+    # (ADR-007). The 2026-07-16 ruling narrowed the single-job GET to match
+    # the list endpoint: the admin reviews generation output first, and a
+    # guardian sees the fill-in-the-blank result only through the normal
+    # post-approval surfaces (library/reading), never the raw multi-stage
+    # report. A dual-role adult (guardian with the admin capability) is
+    # covered by the admin side, so gate on ``is_admin``, not on
+    # ``is_guardian`` (which every caller here already satisfies).
+    # #VERIFY: test_get_generation_job_report_hidden_from_plain_guardian and
+    # test_get_generation_job_report_visible_to_admin /
+    # test_get_generation_job_report_visible_to_dual_role_guardian_admin.
+    report = job.report if ctx.principal.is_admin else None
     return GenerationJobResponse(
         id=str(job.id),
         status=cast("JobStatusLiteral", job.status),
-        report=job.report,
+        report=report,
         storybook_id=job.storybook_id,
         version=job.version,
         error=job.error,

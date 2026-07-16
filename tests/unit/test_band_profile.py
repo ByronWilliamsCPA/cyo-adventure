@@ -23,11 +23,15 @@ def test_every_band_has_a_profile():
 
 
 def test_profiles_match_age_band_enum_exactly():
-    """Every AgeBand has a profile and vice versa (guards the fail-open gate).
+    """Every AgeBand has a profile and vice versa (defense in depth).
 
-    validate_policy fails open (skips all PL-15/16/17 checks) for a band with
-    no profile; this lockstep assertion makes that branch unreachable for any
-    valid, enum-constrained age_band.
+    validate_policy now fails CLOSED (emits a blocking PL-22 finding instead
+    of silently skipping PL-15/16/17) for a band with no profile, so an
+    unconfigured band can never reach a human reviewer unvalidated. This
+    lockstep assertion is kept as a second, independent guard: it makes the
+    PL-22 branch unreachable for any valid, enum-constrained age_band in the
+    first place. See test_policy.py::test_validate_policy_fails_closed_when_profile_is_none
+    for the runtime proof of the fail-closed behavior itself.
     """
     assert set(_PROFILES) == {band.value for band in AgeBand}
     for band in AgeBand:
