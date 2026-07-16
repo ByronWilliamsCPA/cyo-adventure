@@ -220,12 +220,14 @@ when is preserved, per the policy at the bottom of this file.
    pass.
 6. **Offline sync/conflict resolution has no real-backend, staging, or prod
    coverage.** Mocked-tier and component coverage is strong, but reproducing
-   a genuine 409 against a real backend requires fabricating a stale
-   `state_revision` out-of-band (a second direct API write between the
-   page's read and its save) with no existing real-backend precedent to
-   follow, unlike the other additions in this pass. Deliberately not
-   attempted without being able to execute and verify it against a live
-   backend first; see the note below.
+   a genuine 409 against a real backend means fabricating a real race
+   between two devices, not just one more request/response case. Handed off
+   with exact mechanics (the reading.py conflict logic, the two-
+   BrowserContext recipe using `real-stack.ts`'s existing `authorizeDevice`,
+   and why production is explicitly out of scope for this one) in
+   `docs/planning/handoff-offline-conflict-real-backend-2026-07-16.md` for a
+   team with local access to implement and iterate on directly, rather than
+   landing a first cut nobody watched pass or fail.
 
 `#ASSUME: external-resources: gaps 2, 4, and (if attempted) 6 above were
 authored without access to a running browser or a live backend/Postgres
