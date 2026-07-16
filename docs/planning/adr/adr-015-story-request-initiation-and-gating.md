@@ -35,6 +35,24 @@ generation budget until its family's guardian consents (G7), and no generated ou
 child until the global admin approves and publishes it (A6, ADR-005 unchanged). Initiation is
 opened up; both gates stay closed by default.
 
+## Amendment note (2026-07-16, same day): prior ratification and shipped mechanism
+
+A same-day review of open PRs and working documents found that the three initiator flows were
+already ratified by the owner on 2026-07-06 (decision 7 in
+[story-lifecycle-redesign.md](../story-lifecycle-redesign.md)) and shipped in workstream B
+(merged by 2026-07-10): `POST /story-requests` accepts a child token for its own profile
+(screened at intake, per-profile pending cap, `initiator_role='child'`, status `pending`);
+guardian approval confirms band/length/style before any concept or generation exists;
+`POST /story-requests/authored` creates pre-approved guardian/admin requests, admin ones
+optionally catalog-targeted with no family. The Context section's claim that no decision was
+ever recorded is therefore true only of the foundational documents; the working doc recorded
+it, and this ADR elevates it to ADR level. What remains genuinely new in this ADR: the
+explicit budget/credit consent semantics at the guardian gate (approval today is content
+consent; spend accounting is not wired to it), per-child pre-authorization envelopes (G3),
+kid-facing request status and notifications shipping with the flow (K12, G10, S9), and the
+ADR-008 phrasing refinement. Implementation and Testing sections below should be read with
+the intake mechanism already existing.
+
 ## Context
 
 ### Problem

@@ -13,16 +13,14 @@ source: "docs/planning/tech-spec.md sections Security, Authorization, API Specif
 
 # Authorization Matrix
 
-> **Status**: Active | **Version**: 0.6 | **Updated**: 2026-07-16
+> **Status**: Active | **Version**: 0.7 | **Updated**: 2026-07-16
 
 > **Planned amendment ([ADR-015](./adr/adr-015-story-request-initiation-and-gating.md),
-> accepted 2026-07-16, not yet implemented)**: the child token allowlist widens by exactly
-> one route, a rate-limited create-story-request endpoint scoped to the token's own profile,
-> and guardians gain a consent action that gates generation spend. When implemented, the
-> Action-by-Role table gains those rows and the IDOR suite gains the negatives: child A
-> cannot create or read a request for profile B; a child token still receives 403 on
-> generate, consent, approve, and every guardian/admin surface; a device token receives 403
-> on all request routes.
+> accepted 2026-07-16)**: the three initiator flows below are already implemented (WS-B,
+> story-lifecycle redesign). The remaining ADR-015 delta is consent-time budget semantics:
+> the guardian approve action additionally debits family quota/credits, and per-child
+> pre-authorization envelopes (register G3) can auto-consent within a guardian-set budget.
+> No further token-scope widening is planned.
 
 ## Overview
 
@@ -94,6 +92,10 @@ Device is a flat 403.
 
 | Action | Admin | Guardian | Child (own profile) | Device (own family) | Enforcement |
 |--------|-------|----------|---------------------|----------------------|-------------|
+| Create a story request (`POST /story-requests`) | No (no profile; use `/authored`) | Own family profile | Own profile only | No (403) | `authorize_profile` on the token subject; intake text screened (PII vs family child names + safety) before persist; per-profile pending cap (409) |
+| Create an authored request (`POST /story-requests/authored`) | Yes (any family, or catalog-targeted with no family; `family_id` required) | Own family (created `approved`) | No (403) | No (403) | Guardian/admin only; screening still runs; blocked rows persist with no concept |
+| Approve / decline a request | Yes | Own family | No (403) | No (403) | Guardian or admin; approval confirms band/length/style (422 on band-style mismatch); a child never approves its own request |
+| Build an authoring plan (`POST /story-requests/{id}/authoring-plan`) | Yes | No (403) | No (403) | No (403) | Admin only; assigns method, mechanism, provider, and model against the server-side allowlist; this is what creates the GenerationJob |
 | List story requests (`GET /story-requests`) | Own family only | Own family only | Own profile via filter | No (403) | Family-scoped for every caller; the global queue is the admin surface below |
 | Global request queue (`GET /admin/story-requests`) | Yes (all families) | No (403) | No (403) | No (403) | Admin capability required; surfaces every moderation flag (no threshold filtering) |
 | List profiles (`GET /profiles`) | Any family | Own family | No (403) | Own family only | Device is family-scoped, never cross-family, and carries no `profile_ids` of its own |

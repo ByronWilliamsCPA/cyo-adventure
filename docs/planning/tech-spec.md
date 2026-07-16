@@ -18,10 +18,14 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 > **Codename**: Ariadne
 >
 > Persona-level scope is tracked in the [capability register](./capability-register.md).
-> [ADR-015](./adr/adr-015-story-request-initiation-and-gating.md) (accepted 2026-07-16) adds
-> a not-yet-designed request lifecycle upstream of the pipeline described here: universal
-> initiation (child/guardian/admin) behind a guardian cost gate. Sections below describe the
-> current design; the planned-amendment notes mark where ADR-015 will change them.
+> A story-request lifecycle sits upstream of the concept/generation pipeline described here:
+> universal initiation (child/guardian/admin) with guardian approval before any concept or
+> generation exists, shipped in the story-lifecycle redesign (WS-A through WS-G, merged
+> 2026-07-10; see [story-lifecycle-redesign.md](./story-lifecycle-redesign.md)) and recorded
+> at ADR level in [ADR-015](./adr/adr-015-story-request-initiation-and-gating.md). ADR-015's
+> outstanding delta is budget-consent semantics at the guardian approval step. This spec has
+> not yet absorbed the request-lifecycle endpoints into its API table; see the
+> authorization matrix for the current per-role contract.
 
 ## TL;DR
 
@@ -444,11 +448,12 @@ and library endpoints. The token subject maps to a set of allowed profiles; `pro
 is never trusted on its own. Inputs are validated against the published story
 (`ending_id` must belong to the cited version; `current_node` must exist in it).
 
-> **Planned amendment (ADR-015)**: the child-session scope will widen by exactly one route,
-> a rate-limited create-story-request endpoint for the token's own profile, and the intake
-> gains a guardian consent step (`awaiting_guardian` before any generation spend). Concept
-> and generation endpoints below are otherwise unchanged; no child path triggers generation
-> directly.
+> **Story requests (implemented, not yet in the table below)**: a child session additionally
+> holds one authoring-adjacent route, `POST /story-requests` (own profile only, intake
+> screening, pending cap); guardian/admin request approval and the admin authoring plan sit
+> between a request and any concept or GenerationJob. See the authorization matrix for the
+> per-role rows. ADR-015's planned delta wires family quota/credit debiting into the guardian
+> approve action. No child path triggers generation directly.
 
 | Method | Path | Purpose | Auth |
 |--------|------|---------|------|

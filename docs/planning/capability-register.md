@@ -15,7 +15,14 @@ source: "Fresh-look capability review session, 2026-07-16"
 
 # Capability Register
 
-> **Status**: Active | **Version**: 1.1 | **Created**: 2026-07-16 | **Updated**: 2026-07-16
+> **Status**: Active | **Version**: 1.2 | **Created**: 2026-07-16 | **Updated**: 2026-07-16
+
+> **Delivery-state review (2026-07-16, open PRs and working docs)**: the Docs column below
+> measures *foundational-doc* coverage, but a review of
+> [story-lifecycle-redesign.md](./story-lifecycle-redesign.md) (owner-ratified 2026-07-06,
+> workstreams A-G merged 2026-07-10) and open PRs #267/#268 found several items further
+> along in working docs and code than foundational coverage suggested. Affected rows carry
+> delivery notes; treat the Notes column as the current truth.
 
 ## Purpose and method
 
@@ -81,7 +88,7 @@ initiate (K11 | G4 | A10)
 | K8 | Picture support at lower bands: covers at minimum; per-passage illustrations as an explicit decision | ❌ | Per-passage art explicitly out of scope; cover art absent from foundational docs |
 | K9 | Visual library shelf with covers: what's new, in progress, finished | 🟡 | Library API exists; shelf presentation not specced |
 | K10 | Offline is invisible: identical experience offline; never a connectivity error; at most "this book isn't downloaded yet" | 🟡 | Offline reading fully specced; kid-facing connectivity UX not |
-| K11 | Express interests and initiate a story request in kid terms (picking interests, typing a wish) | 🟡 | ADR-015 (accepted 2026-07-16) records the decision and flow; detailed design and implementation pending |
+| K11 | Express interests and initiate a story request in kid terms (picking interests, typing a wish) | 🟡 | Mechanism shipped (WS-B): `POST /story-requests`, child own-profile, intake screening, pending cap; ADR-015 is the foundational record; kid-terms UX and status visibility (K12) still open |
 | K12 | Kid-friendly waiting and error states: "your story is being written", sync conflicts, and failures presented in kid terms | ❌ | Job status exists as a guardian polling endpoint only; the 409 conflict dialog is not kid-appropriate |
 | K13 | Age-band content guarantee: themes, scariness, and ending intensity land within the band (e.g. no death endings in young bands) | ✅ | ADR-011 per-band allowances, content flags, moderation by band |
 | K14 | Safe room: no ads, no purchases, no external links, no contact with strangers, no dark patterns in the kid context | ✅ | Permanent exclusions in vision; parental gate in ADR-008 |
@@ -98,7 +105,7 @@ initiate (K11 | G4 | A10)
 | G4 | Initiate story requests themselves, including personalized stories ("one about our camping trip for Maya") | ✅ | Concept-brief intake; PII rules keep real names out of prompts |
 | G5 | Fast review of a generated story without reading every path: summary, themes, flagged passages, branch structure | 🟡 | Review surface named; skim aids (summary, branch view) not specced; approval itself moved to admin |
 | G6 | Edit or reject a generated story (prose tweaks, veto) with re-review on edit | 🟡 | `PATCH .../nodes/{id}` + re-review specced for Phase 4b; `needs_revision` exists |
-| G7 | Cost gate: a story request spends generation budget only with guardian consent; per-child auto-allow is a guardian setting | 🟡 | ADR-015 records the consent-before-spend rule; implementation pending |
+| G7 | Cost gate: a story request spends generation budget only with guardian consent; per-child auto-allow is a guardian setting | 🟡 | Consent step shipped (guardian request approval precedes any concept/GenerationJob, WS-B); budget/credit debiting at consent and pre-auth envelopes (G3) remain per ADR-015 |
 | G8 | Kill switch: pull any published book off a child's shelf immediately, including offline copies at next connection | 🟡 | `archived` state exists; offline-copy revocation unaddressed |
 | G9 | Engagement visibility: what each child is reading, how much, endings found, re-reads; literacy signals, not surveillance | ❌ | Ratified 2026-07-16 (decision 5); raw data (`reading_state`, `completion`) exists with no reporting capability |
 | G10 | Notifications that matter: child flagged content, a story awaiting action, a story ready; digest by default, alert on safety | ❌ | Ratified 2026-07-16 (decision 5); no notification surface anywhere |
@@ -113,18 +120,18 @@ initiate (K11 | G4 | A10)
 
 | ID | Capability | Docs | Notes |
 |----|------------|------|-------|
-| A1 | Moderation queue: flagged, uncertain, and reader/guardian-reported items, each showing why; decisions feed back into automated rules | 🟡 | `needs_review` routing and global queue ✅; kid/guardian reports (K15) and the feedback-into-rules loop ❌ |
+| A1 | Moderation queue: flagged, uncertain, and reader/guardian-reported items, each showing why; decisions feed back into automated rules | 🟡 | `needs_review` routing and global queue ✅; feedback-into-rules shipped as the WS-F propose-and-ratify suggestion dashboard over `pipeline_event`; kid/guardian reports (K15) still ❌ |
 | A2 | Sample audits: random re-review of anything published without direct human review (becomes real if any auto-publish tier ever exists) | ❌ | Moot while A6 gates everything; register it so it survives any future gating change |
-| A3 | Global policy levers: age-band definitions, theme taxonomy, classifier thresholds, banned-content lists | 🟡 | Band profiles and thresholds exist as config; admin-facing management surface partial |
+| A3 | Global policy levers: age-band definitions, theme taxonomy, classifier thresholds, banned-content lists | 🟡 | Per-band moderation thresholds are DB-backed, admin-editable with an audit trail (WS-A); band definitions and taxonomy remain code-level |
 | A4 | Policy re-evaluation: re-screen the already-published catalog when policy or thresholds change | ❌ | Nothing specced |
 | A5 | Incident path: trace how content reached a child (prompt, model, gate version), pull it everywhere including offline, notify affected guardians | 🟡 | Provenance supports trace ✅; pull-everywhere and guardian notification ❌ |
 | A6 | AI safety gate: the admin's recorded approval is the only path from generated content to a child (approve-and-publish) | ✅ | ADR-005 as amended; state machine with no bypass; ratified 2026-07-16 (decision 3) |
-| A7 | Pipeline observability: success/failure rates, queue depth and latency, rejection reasons by stage, cost per story, per-provider quality | ❌ | Measured ad hoc in ADRs (yield harness, cost probes); no operational dashboard capability |
-| A8 | Pipeline levers: switch or disable providers, tune prompts/templates, set rate limits and cost caps, kill a runaway job | 🟡 | Config-pinned provider swap and fallback cascade ✅; runtime levers (kill job, caps surface) ❌ |
+| A7 | Pipeline observability: success/failure rates, queue depth and latency, rejection reasons by stage, cost per story, per-provider quality | 🟡 | `pipeline_event` captures every transition and the WS-F dashboard aggregates moderation outcomes; cost/latency/yield operational views still ❌ |
+| A8 | Pipeline levers: switch or disable providers, tune prompts/templates, set rate limits and cost caps, kill a runaway job | 🟡 | Config-pinned swap + fallback cascade ✅; per-request provider/model against a server-side allowlist shipped (WS-C), with allowlist + authoring-queue admin UI in PR #268; kill-job and caps surfaces still ❌ |
 | A9 | Curated/seed catalog management so a new child never sees an empty shelf | 🟡 | Catalog visibility + "curated starter library" (ADR-008); management surface thin |
-| A10 | Admin-initiated story generation (seeding the catalog, testing the pipeline) | 🟡 | Authorization matrix already allows admin concept submission; named as a capability in ADR-015 (platform-funded, bypasses the family cost gate) |
+| A10 | Admin-initiated story generation (seeding the catalog, testing the pipeline) | ✅ | Shipped (WS-B): `POST /story-requests/authored`, admin catalog-targeted with no family; ADR-015 names it foundationally |
 | A11 | Structural quality tools across the corpus: broken graphs, reading-level drift, repetitive or template-y output | 🟡 | Per-story validator is world-class; corpus-level drift/repetition tooling ❌ |
-| A12 | Account support ops: lockouts, deletion requests, abuse handling (an adult misusing generation) | ❌ | Rate limiting named once as a mitigation; no support capability |
+| A12 | Account support ops: lockouts, deletion requests, abuse handling (an adult misusing generation) | 🟡 | PR #267 (open) delivers user/family lifecycle management: invites, edit, deactivate with auth-boundary enforcement and self-lockout guard; deletion-request and abuse workflows still ❌ |
 | A13 | Admin action audit trail: admins touching child-related data leave a trail | 🟡 | Approver stamps and `acting_role` audit stamps ✅; no audit view/report |
 | A14 | Compliance and platform ops: retention enforcement, compliance reporting, backups and tested restore | 🟡 | ADR-007 retention, backups live, restore drill planned; compliance reporting ❌ |
 
@@ -139,7 +146,7 @@ initiate (K11 | G4 | A10)
 | S5 | Age-banding as the system-wide spine: reading level, theme intensity, safety thresholds keyed off one per-child band | ✅ | ADR-011 |
 | S6 | Human-legible provenance per story: who or what created it, checks passed, approver, when | ✅ | Per-version model/provider/prompt/approver stamps |
 | S7 | Independent safety pipeline: moderation independent of the generator; no path to a child bypasses the automated gates plus the human gate | ✅ | ADR-005, ADR-010, prompt-injection defenses |
-| S8 | End-to-end request flow: initiate (K/G/A) -> guardian cost gate -> generation -> validation/moderation -> admin gate -> shelf, with honest async status | 🟡 | ADR-015 records the canonical flow; the request lifecycle states and surfaces are not yet designed |
+| S8 | End-to-end request flow: initiate (K/G/A) -> guardian cost gate -> generation -> validation/moderation -> admin gate -> shelf, with honest async status | 🟡 | Flow shipped end to end (WS-A..G: request -> guardian approve -> admin authoring plan -> pipeline -> admin release) except budget accounting at consent and kid-facing status; ADR-015 is the foundational record |
 | S9 | Notification/event delivery infrastructure underlying K12, G10, and admin alerts | ❌ | Append-only pipeline event log exists in code; no delivery capability in foundational docs |
 | S10 | Privacy architecture: no child PII to providers, data minimization, deletion-readiness, no third-party trackers in the kid context | ✅ | Privacy model, PII guard, ADR-007/008/009 |
 
@@ -158,6 +165,22 @@ All three items below were resolved in the 2026-07-16 alignment pass; kept for t
   by [ADR-015](./adr/adr-015-story-request-initiation-and-gating.md), which reverses it
   explicitly and refines ADR-008's "children never trigger generation" phrasing to the
   enforceable invariant (no spend or provider egress without adult consent).
+
+## Unregistered scope awaiting an owner ruling
+
+Per maintenance rule 3, work serving no register ID gets a conscious call. Found in the
+2026-07-16 open-PR review:
+
+- **Cross-family recommendation connections** (PR #267, open): a directional
+  `family_connection` allowlist ("family A views family B's recommendations") built as
+  substrate for a future recommendation feature. No register ID covers it, no ADR or
+  foundational doc mentions it, and it sits adjacent to the vision's "no social features"
+  exclusion (the curated catalog was the deliberately narrow answer to cross-family
+  sharing). Needs an owner decision: register it as a new G/S capability with an ADR, or
+  cut it from the PR.
+- **Provider allowlist admin UI** (PR #268, open): serves A8 and is now cited there; the
+  PR itself notes no prior ADR/roadmap decision existed. Covered going forward by A8; no
+  separate ruling needed.
 
 ## Maintenance rules
 
