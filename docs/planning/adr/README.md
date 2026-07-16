@@ -42,6 +42,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-015](./adr-015-story-request-initiation-and-gating.md) | Universal story initiation with a guardian cost gate and an admin safety gate | Accepted | 2026-07-16 |
 | [ADR-016](./adr-016-recommendation-sharing-social-boundary.md) | Recommendation sharing and the social boundary (three rings) | Accepted | 2026-07-16 |
 | [ADR-017](./adr-017-ai-cover-art.md) | AI cover art per storybook version | Accepted | 2026-07-16 |
+| [ADR-018](./adr-018-childrens-privacy-compliance.md) | Children's-privacy compliance architecture (COPPA, GDPR-K, AADC) | Proposed | 2026-07-16 |
 
 ## Creating ADRs
 

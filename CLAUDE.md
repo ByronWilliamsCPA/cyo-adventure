@@ -422,12 +422,13 @@ for current status and review the relevant planning documents and
 - [project-vision.md](docs/planning/project-vision.md) - Problem, solution, scope, success metrics (codename "Ariadne")
 - [tech-spec.md](docs/planning/tech-spec.md) - Architecture, data model, APIs, security
 - [roadmap.md](docs/planning/roadmap.md) - Phased implementation plan and current status
-- [adr/](docs/planning/adr/) - 17 architecture decision records (story format, client PWA,
+- [adr/](docs/planning/adr/) - 18 architecture decision records (story format, client PWA,
   frontier LLM generation, homelab-first deployment, mandatory human approval, in-house
   condition evaluator, raw-output retention, public App Store launch, Supabase platform,
   Modal review + gated generation, story-scale framework, Supabase CLI migrations,
   hybrid PQC readiness, device-authorized kid access, story request initiation and gating,
-  recommendation sharing and the three-ring social boundary, AI cover art)
+  recommendation sharing and the three-ring social boundary, AI cover art,
+  children's-privacy compliance)
 - [capability-register.md](docs/planning/capability-register.md) - Persona capability
   contract with stable K/G/A/S IDs; the scope checkoff sheet and acceptance-testing basis.
   New feature proposals must cite the register ID(s) they serve.
