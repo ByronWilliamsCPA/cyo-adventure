@@ -1,17 +1,16 @@
 import { expect, test } from '@playwright/test'
 
-import { seedDeviceGrant } from './support/auth'
+import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from './support/auth'
 import { loadLanternStory } from './support/fixtures'
 
 /**
- * Visual regression baselines for the two highest-value pages named in the
- * original testing-infrastructure proposal: the reader and the library.
- * Screenshots are viewport-only (not full-page) and use fixed, mocked data
- * with no cover_url (falls back to a deterministic CSS gradient rather than
- * loading an external image), so a rerun with unchanged UI produces a
- * pixel-identical result. Animations are disabled via the `animations:
- * 'disabled'` screenshot option, which freezes CSS transitions/animations at
- * their end state.
+ * Visual regression baselines across every top-level shell: landing, kid
+ * picker, kid library, reader, guardian console, admin console. Screenshots
+ * are viewport-only (not full-page) and use fixed, mocked data with no
+ * cover_url (falls back to a deterministic CSS gradient rather than loading
+ * an external image), so a rerun with unchanged UI produces a pixel-identical
+ * result. Animations are disabled via the `animations: 'disabled'` screenshot
+ * option, which freezes CSS transitions/animations at their end state.
  *
  * Baselines live in visual.spec.ts-snapshots/ (Playwright's default
  * location), keyed by project name and platform, and must be regenerated
@@ -19,6 +18,55 @@ import { loadLanternStory } from './support/fixtures'
  * deliberate visual change lands; a diff here on an unrelated change is a
  * regression signal, not noise to suppress.
  */
+
+test('the landing page matches its visual baseline', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('link', { name: /Grown-ups/ })).toBeVisible()
+  await expect(page).toHaveScreenshot('landing-page.png', { animations: 'disabled' })
+})
+
+const PICKER_PROFILES = {
+  profiles: [
+    {
+      id: 'child-fox',
+      display_name: 'Remy',
+      age_band: '5-8',
+      reading_level_cap: 3,
+      avatar: 'fox',
+      tts_enabled: false,
+      created_at: '2026-01-01T00:00:00Z',
+    },
+  ],
+}
+
+test('the kid picker page matches its visual baseline', async ({ page, context }) => {
+  await context.addInitScript(() => {
+    window.localStorage.setItem('auth_token', 'child-fox')
+  })
+  await seedDeviceGrant(context)
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PICKER_PROFILES }))
+  await page.goto('/kids')
+  await expect(page.getByRole('heading', { name: "Who's reading?" })).toBeVisible()
+  await expect(page).toHaveScreenshot('kid-picker-page.png', { animations: 'disabled' })
+})
+
+test('the guardian console matches its visual baseline', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'guardian' })
+  await mockEmptyConsole(page)
+  await page.goto('/guardian')
+  await expect(page.getByRole('heading', { name: 'Family console' })).toBeVisible()
+  await expect(page).toHaveScreenshot('guardian-console-page.png', { animations: 'disabled' })
+})
+
+test('the admin console matches its visual baseline', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await mockEmptyConsole(page)
+  await page.goto('/admin')
+  await expect(page.getByRole('heading', { name: 'Review queue' })).toBeVisible()
+  await expect(page).toHaveScreenshot('admin-console-page.png', { animations: 'disabled' })
+})
 
 const lantern = loadLanternStory()
 

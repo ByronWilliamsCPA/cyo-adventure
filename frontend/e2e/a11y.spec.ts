@@ -2,15 +2,22 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 
 import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from './support/auth'
+import { loadLanternStory } from './support/fixtures'
 
 /**
- * Automated accessibility smoke, WCAG 2.1 A/AA rules via axe-core, across one
- * representative page per surface (landing, kid picker, kid library
- * populated/empty, guardian console, admin console). This is a floor, not a
- * substitute for manual testing: axe catches programmatically detectable
- * issues (missing labels, contrast, ARIA misuse) but not things like
- * keyboard-trap logic or whether an alternative text is actually meaningful.
+ * Automated accessibility smoke, WCAG 2.1 A/AA rules via axe-core, across
+ * every top-level page: landing, kid picker, kid library (populated/empty),
+ * reader, guardian login/console/intake/requests/books/profiles, and admin
+ * console/requests/moderation-thresholds/moderation-dashboard. This is a
+ * floor, not a substitute for manual testing: axe catches programmatically
+ * detectable issues (missing labels, contrast, ARIA misuse) but not things
+ * like keyboard-trap logic or whether an alternative text is actually
+ * meaningful. `/admin/review/:id` is deliberately excluded, same reasoning
+ * as e2e-prod/guardian-admin-smoke.spec.ts: it needs a real storybook id and
+ * its heading is the dynamic story title, not a fixed one to assert on.
  */
+
+const lantern = loadLanternStory()
 
 const TWO_PROFILES = {
   profiles: [
@@ -109,5 +116,120 @@ test('admin console has no detectable accessibility violations', async ({ page, 
   await mockEmptyConsole(page)
   await page.goto('/admin')
   await expect(page.getByRole('heading', { name: 'Review queue' })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+test('the reader page has no detectable accessibility violations', async ({ page, context }) => {
+  await context.addInitScript(() => {
+    window.localStorage.setItem('auth_token', 'child-a')
+  })
+  await seedDeviceGrant(context)
+  await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
+  await page.route('**/api/v1/reading-state/**', (route) => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ status: 404, json: { error: 'not found' } })
+    }
+    return route.fulfill({ status: 200, json: { current_node: 'n_entrance', state_revision: 1 } })
+  })
+  await page.goto('/read/child-a/s_lantern_cave/1')
+  await expect(page.getByTestId('reader')).toBeVisible()
+  await assertNoViolations(page)
+})
+
+test('the guardian login page has no detectable accessibility violations', async ({ page }) => {
+  await page.goto('/guardian/login')
+  await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+test('the guardian intake page has no detectable accessibility violations', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page)
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: TWO_PROFILES }))
+  await page.goto('/guardian/intake')
+  await expect(page.getByRole('heading', { name: 'Request a story' })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+test('the guardian requests page has no detectable accessibility violations', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page)
+  await page.route('**/api/v1/story-requests?status=pending', (route) =>
+    route.fulfill({ json: { requests: [] } })
+  )
+  await page.goto('/guardian/requests')
+  await expect(page.getByRole('heading', { name: 'Story requests' })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+test('the guardian books page has no detectable accessibility violations', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page)
+  await page.route('**/api/v1/guardian/books', (route) => route.fulfill({ json: { books: [] } }))
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: TWO_PROFILES }))
+  await page.goto('/guardian/books')
+  // exact: true, else this also matches the empty state's "No published
+  // books yet" heading (substring match on role name).
+  await expect(page.getByRole('heading', { name: 'Books', exact: true })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+test('the guardian profiles page has no detectable accessibility violations', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page)
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: TWO_PROFILES }))
+  await page.goto('/guardian/profiles')
+  await expect(page.getByRole('heading', { name: 'Profiles' })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+test('the admin requests page has no detectable accessibility violations', async ({ page, context }) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/admin/story-requests?status=pending', (route) =>
+    route.fulfill({ json: { requests: [] } })
+  )
+  await page.goto('/admin/requests')
+  await expect(page.getByRole('heading', { name: 'Story requests' })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+const EMPTY_THRESHOLDS = {
+  default_min_verdict: 'flag',
+  rows: [] as { age_band: string; category: string; min_verdict: string; min_score: number | null }[],
+  known_categories: ['violence', 'language'],
+}
+
+test('the admin moderation thresholds page has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/admin/moderation-thresholds', (route) =>
+    route.fulfill({ json: EMPTY_THRESHOLDS })
+  )
+  await page.route('**/api/v1/admin/moderation/noise-floor', (route) =>
+    route.fulfill({ json: { value: 0.2 } })
+  )
+  await page.goto('/admin/moderation-thresholds')
+  await expect(page.getByRole('heading', { name: 'Moderation thresholds' })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+test('the admin moderation dashboard has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/admin/moderation/dashboard', (route) =>
+    route.fulfill({ json: { insights: [], recent_changes: [] } })
+  )
+  await page.route('**/api/v1/admin/moderation/suggestions', (route) =>
+    route.fulfill({ json: { min_decided_versions: 5, min_override_rate: 0.5, suggestions: [] } })
+  )
+  await page.goto('/admin/moderation-dashboard')
+  await expect(page.getByRole('heading', { name: 'Moderation dashboard' })).toBeVisible()
   await assertNoViolations(page)
 })

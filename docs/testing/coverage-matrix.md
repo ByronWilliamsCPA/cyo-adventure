@@ -20,17 +20,27 @@ relate to the Supabase project constraints.
 ## Cross-cutting checks (not tied to one journey)
 
 - **Accessibility**: `frontend/e2e/a11y.spec.ts` — axe-core, scoped to WCAG
-  2.1 A/AA, across landing, kid picker, kid library (populated/empty),
-  guardian console, and admin console. First run (2026-07-16) found four
-  real contrast failures traced to two design-system tokens
+  2.1 A/AA, across every top-level page: landing, kid picker, kid library
+  (populated/empty), reader, guardian login/console/intake/requests/
+  books/profiles, and admin console/requests/moderation-thresholds/
+  moderation-dashboard (`/admin/review/:id` excluded, same reasoning as
+  `e2e-prod/guardian-admin-smoke.spec.ts`: it needs a real storybook id and
+  a dynamic heading). First run (2026-07-16) found six real contrast
+  failures across two passes, all traced to two design-system tokens
   (`--color-amber-deep`, `--color-ink-muted`) used against a darker
   background than their documented contrast math assumed; fixed the same
-  day (see `--color-amber-deep-text` in `design-system/src/tokens.css` and
-  the `.cyo-btn--primary`/`.cyo-btn--ghost` fixes in `Button.css`). Not yet
-  covering the reader page or any modal/dialog surface.
+  day (see `--color-amber-deep-text` in `design-system/src/tokens.css`, the
+  `.cyo-btn--primary`/`.cyo-btn--ghost` fixes in `Button.css`, and the
+  `--color-ink-secondary` swaps in `guardian.css`/`kid.css`/`library.css`/
+  `landing.css`). Not yet covering modal/dialog surfaces (ConflictDialog,
+  AssignChildrenDialog, ProfileFormDialog) or any populated/error state of
+  the pages above beyond what's listed.
 - **Visual regression**: `frontend/e2e/visual.spec.ts` — screenshot
-  baselines for the reader and library pages (`visual.spec.ts-snapshots/`).
-  Not yet covering guardian/admin consoles or the kid picker.
+  baselines for landing, kid picker, reader, library, guardian console, and
+  admin console (`visual.spec.ts-snapshots/`). Not yet covering guardian
+  sub-pages (intake/requests/books/profiles), admin sub-pages
+  (requests/moderation-thresholds/moderation-dashboard), or any
+  modal/dialog surface.
 
 ---
 
