@@ -81,8 +81,12 @@ test.describe('guardian console "This device" (ADR-014)', () => {
       deviceSection.getByRole('button', { name: 'Hand device to a child' })
     ).toBeVisible()
 
-    // DELETE /v1/device-grants/:id (mocked 204) revokes and returns to the CTA.
+    // The button now opens a confirm dialog rather than revoking directly
+    // (I13: a misclick would otherwise lock kids out until re-authorized).
+    // DELETE /v1/device-grants/:id (mocked 204) revokes and returns to the CTA
+    // only after the confirm click.
     await deviceSection.getByRole('button', { name: 'Remove from this device' }).click()
+    await page.getByRole('button', { name: 'Remove device' }).click()
     await expect(
       deviceSection.getByRole('button', { name: 'Set up this device for your kids' })
     ).toBeVisible()
