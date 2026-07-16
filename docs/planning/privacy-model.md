@@ -87,10 +87,9 @@ likely to contain the child's own name or friends' names. Current behavior, veri
 names and for safety, and a blocked wish persists as a `blocked` row that proceeds nowhere.
 The wish reaches the **generation** provider only after guardian approval converts it into a
 concept, and the PII guard runs on the resulting brief before that egress. Note, however,
-that the intake **screening** step itself sends the wish text to external moderation
-services (OpenAI moderation and Google Perspective, when configured), so those services are
-data-handling counterparties for child-typed text and belong in the same provider
-data-handling review as the generation and review legs (Blocker 1 above).
+that the intake **screening** step itself sends the wish text to the external moderation
+classifiers described in the next section, so those services are data-handling
+counterparties for child-typed text as well as for generated prose.
 
 ---
 
@@ -128,7 +127,30 @@ child data.
 
 ---
 
-## Cross-Family Recommendation Flow (ADR-016)
+## External Moderation Classifiers (Stage 0, first-line filter)
+
+This is a deliberate design decision, not an incidental integration: **all AI-generated
+story prose** runs through external moderation classifiers as the first-line safety filter,
+precisely so that safety does not depend on a parent reading every path in detail. The
+human gates (guardian oversight, admin approval per ADR-005) sit on top of this floor, not
+in place of it.
+
+Current mechanism (`moderation/classifiers.py`, wired in `moderation/pipeline.py`): when
+keys are configured, every generated node's prose is sent per-node to the **OpenAI
+Moderation API** and **Google Perspective API** during Stage 0 of the moderation pipeline.
+The same classifiers screen child-typed story-request text at intake
+(`story_requests/screening.py`). Both services are therefore standing data-handling
+counterparties for two data categories:
+
+- **Generated story prose** (family-linked content produced by the pipeline; the PII guard
+  keeps real child detail out of the prompts that produce it).
+- **Child-typed request text** (child-provided free text, screened before storage).
+
+Consequences for the provider data-handling review (Blocker 1 below): OpenAI and Google
+(Perspective) must be included alongside the generation leg (OpenRouter) and the LLM
+review leg when confirming retention terms. Classifier calls should remain content-only:
+no child identifier, profile id, or family id accompanies the text, and failures are
+logged by node id only.
 
 Ring-2 recommendation sharing (guardian-connected families, the cousins case) is a new
 child-linked data flow: a recommendation visible to a connected family carries the
@@ -210,8 +232,10 @@ counterparty for the generation leg (not the direct Anthropic API). OpenRouter a
 downstream model providers retain inputs and outputs per their terms unless a
 zero-data-retention (ZDR) path applies. Because concept briefs may carry age-band data
 and fictional content derived from a child's interests, the applicable terms must be
-confirmed before dispatch. The moderation / review provider on the safety leg is subject
-to the same data-handling review.
+confirmed before dispatch. The safety leg is subject to the same data-handling review, and
+it has three counterparties, not one: the Stage-0 external classifiers (OpenAI Moderation
+and Google Perspective, which receive all generated prose and child-typed request text;
+see the External Moderation Classifiers section above) and the LLM review provider.
 
 **Required action**: confirm whether the standard OpenRouter retention path or a ZDR path
 applies to this use case for both the generation leg and the review / moderation
