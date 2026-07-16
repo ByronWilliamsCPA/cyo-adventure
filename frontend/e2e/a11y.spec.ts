@@ -146,6 +146,10 @@ test('the guardian intake page has no detectable accessibility violations', asyn
   await seedGuardianSession(context)
   await mockMe(page)
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: TWO_PROFILES }))
+  // IntakePage loads profiles AND jobs concurrently (Promise.all); a missing
+  // jobs mock rejects and replaces the page with its error state a moment
+  // after the initial render, racing with when axe scans the page.
+  await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: { jobs: [] } }))
   await page.goto('/guardian/intake')
   await expect(page.getByRole('heading', { name: 'Request a story' })).toBeVisible()
   await assertNoViolations(page)
@@ -157,6 +161,10 @@ test('the guardian requests page has no detectable accessibility violations', as
   await page.route('**/api/v1/story-requests?status=pending', (route) =>
     route.fulfill({ json: { requests: [] } })
   )
+  // RequestsPage also embeds RequestStoryForm (guardian mode), which fetches
+  // /v1/profiles on its own; a missing mock here races the same way the
+  // jobs fetch does on the intake page above.
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: { profiles: [] } }))
   await page.goto('/guardian/requests')
   await expect(page.getByRole('heading', { name: 'Story requests' })).toBeVisible()
   await assertNoViolations(page)
@@ -189,6 +197,10 @@ test('the admin requests page has no detectable accessibility violations', async
   await page.route('**/api/v1/admin/story-requests?status=pending', (route) =>
     route.fulfill({ json: { requests: [] } })
   )
+  // AdminRequestsPage also embeds RequestStoryForm (admin mode), which
+  // fetches /v1/admin/families on its own; a missing mock here races the
+  // same way the jobs/profiles fetches do on the guardian pages above.
+  await page.route('**/api/v1/admin/families', (route) => route.fulfill({ json: { families: [] } }))
   await page.goto('/admin/requests')
   await expect(page.getByRole('heading', { name: 'Story requests' })).toBeVisible()
   await assertNoViolations(page)

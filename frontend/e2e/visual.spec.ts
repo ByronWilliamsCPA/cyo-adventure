@@ -198,6 +198,10 @@ test('the guardian intake page matches its visual baseline', async ({ page, cont
   await seedGuardianSession(context)
   await mockMe(page)
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: INTAKE_PROFILE }))
+  // IntakePage loads profiles AND jobs concurrently (Promise.all); a missing
+  // jobs mock rejects and replaces the page with its error state a moment
+  // after the initial render, racing with when the screenshot is taken.
+  await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: { jobs: [] } }))
   await page.goto('/guardian/intake')
   await expect(page.getByRole('heading', { name: 'Request a story' })).toBeVisible()
   await expect(page).toHaveScreenshot('guardian-intake-page.png', { animations: 'disabled' })
@@ -209,6 +213,10 @@ test('the guardian requests page matches its visual baseline', async ({ page, co
   await page.route('**/api/v1/story-requests?status=pending', (route) =>
     route.fulfill({ json: { requests: [] } })
   )
+  // RequestsPage also embeds RequestStoryForm (guardian mode), which fetches
+  // /v1/profiles on its own; a missing mock here races the same way the
+  // jobs fetch does on the intake page above.
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: { profiles: [] } }))
   await page.goto('/guardian/requests')
   await expect(page.getByRole('heading', { name: 'Story requests' })).toBeVisible()
   await expect(page).toHaveScreenshot('guardian-requests-page.png', { animations: 'disabled' })
@@ -316,6 +324,10 @@ test('the admin requests page matches its visual baseline', async ({ page, conte
   await page.route('**/api/v1/admin/story-requests?status=pending', (route) =>
     route.fulfill({ json: { requests: [] } })
   )
+  // AdminRequestsPage also embeds RequestStoryForm (admin mode), which
+  // fetches /v1/admin/families on its own; a missing mock here races the
+  // same way the jobs/profiles fetches do on the guardian pages above.
+  await page.route('**/api/v1/admin/families', (route) => route.fulfill({ json: { families: [] } }))
   await page.goto('/admin/requests')
   await expect(page.getByRole('heading', { name: 'Story requests' })).toBeVisible()
   await expect(page).toHaveScreenshot('admin-requests-page.png', { animations: 'disabled' })

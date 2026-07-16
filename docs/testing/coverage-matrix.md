@@ -121,11 +121,12 @@ relate to the Supabase project constraints.
 
 ## Admin: moderation dashboard/thresholds
 
-- E2E-mocked: `frontend/e2e/moderation.spec.ts` (add/remove a threshold override, save the admin noise floor, apply a dashboard suggestion end to end against the routed app)
+- E2E-mocked: `frontend/e2e/moderation.spec.ts` (add/remove a threshold override, save the admin noise floor, apply a dashboard suggestion end to end against the routed app). Verified against a real browser and passing (2026-07-16).
+- E2E-real: `frontend/e2e-real/moderation-real.spec.ts` (add/remove a real threshold override, update and reload-persist the real noise floor, confirm the real dashboard genuinely has no qualifying suggestions on the current seed data)
 - E2E-staging: `frontend/e2e-staging/guardian-admin-smoke.spec.ts` (render smoke only)
 - E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render smoke only)
 - Component: `frontend/src/admin/ModerationDashboardPage.test.tsx`, `frontend/src/admin/ModerationThresholdsPage.test.tsx`, `frontend/src/admin/AdminShell.test.tsx` (nav link only)
-- **Note**: `frontend/e2e/moderation.spec.ts` was authored and passes `tsc -b`/ESLint/`playwright --list`, but could not be executed against a real browser in the environment this was written in (no network access to download Chromium); run it once locally or in CI before treating it as fully proven. Still no `e2e-real` spec against the real backend's threshold-suggestion computation.
+- **Remaining gap**: `moderation-real.spec.ts` deliberately does NOT cover the "a suggestion actually appears" path. Per `src/cyo_adventure/moderation/insights.py`, that needs at least 5 decided (released/sent-back) versions with an overridable finding in the same (age_band, category); neither `scripts/seed_dev_data.py` nor `seed_staging.py` create that corpus, so proving it against a real backend means seeding 5+ qualifying storybook versions first, a separate, larger addition (see `tests/integration/test_moderation_dashboard_api.py`'s `_seed_high_override_corpus` for the exact shape that data needs to take). Not attempted in this pass.
 
 ## Admin: provider allowlist management
 
@@ -194,18 +195,27 @@ when is preserved, per the policy at the bottom of this file.
    the shared anchored-request component its own dedicated unit coverage
    (see the journey section above); there was never a separate frontend
    screening/anchoring module to test, that logic lives server-side.
-2. **Moderation dashboard/thresholds** — Closed for the mocked tier.
-   `frontend/e2e/moderation.spec.ts` now exercises adding/removing a
-   threshold override, saving the noise floor, and applying a dashboard
-   suggestion end to end. Written but not executed against a live browser
-   in the environment that authored it (see the caveat in that journey's
-   section); confirm it passes on its first real CI run. Still no
-   `e2e-real` spec against the real backend's suggestion computation.
+2. **Moderation dashboard/thresholds** — Closed for the mocked tier
+   (`frontend/e2e/moderation.spec.ts`, adding/removing a threshold
+   override, saving the noise floor, applying a dashboard suggestion,
+   verified against a real browser) and for the real-backend tier
+   (`frontend/e2e-real/moderation-real.spec.ts`, same CRUD workflow against
+   the live API, verified twice for idempotency). See that journey's
+   section above for the one path still not covered: a real suggestion
+   actually appearing, which needs a bigger seed-data addition.
 3. **Provider allowlist management**: no coverage found at any layer; no
-   admin UI page appears to exist in the frontend for this at all. Priority:
-   needs confirmation, first determine with the team whether this is
-   intentionally backend/CLI-only or a missing page before treating it as a
-   test gap. Not addressed in this pass pending that confirmation.
+   admin UI page exists in the frontend. Confirmed via code/docs audit
+   (2026-07-16): it's a real, tested backend feature (`src/cyo_adventure/api/
+   provider_allowlist.py`, full CRUD + audit trail, `tests/integration/
+   test_provider_allowlist_api.py`), gating which (provider, model_id) pairs
+   the generation pipeline may call, i.e. a billing/cost-control and
+   supply-chain gate, not a display/cosmetic setting. No ADR, roadmap entry,
+   or tech-spec mention plans a frontend UI for it either way; the
+   `AllowlistCreateBody.display_name` docstring says "for a future admin
+   UI," implying one was anticipated but never scheduled. Still a product
+   decision, not an engineering one: build the missing admin page (and then
+   test it), or confirm it stays operator/CLI-only. Not addressed in this
+   pass pending that decision.
 4. **Ratings** — Closed for the real-backend tier.
    `frontend/e2e-real/ratings-real.spec.ts` now confirms a tapped rating
    survives a reload against the real backend. Still no `e2e-staging` or
