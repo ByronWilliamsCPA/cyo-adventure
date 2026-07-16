@@ -58,8 +58,10 @@ test.describe('moderation thresholds', () => {
     await page.getByLabel('Surfaces at').selectOption('block')
     await page.getByRole('button', { name: 'Save override' }).click()
 
-    await expect(page.getByRole('cell', { name: 'violence' })).toBeVisible()
-    await expect(page.getByRole('cell', { name: 'block' })).toBeVisible()
+    // exact: true, else this also matches the row's "Remove violence
+    // override for ..." button cell (substring match on role name).
+    await expect(page.getByRole('cell', { name: 'violence', exact: true })).toBeVisible()
+    await expect(page.getByRole('cell', { name: 'block', exact: true })).toBeVisible()
     await expect(page.getByLabel('Category')).toHaveValue('')
   })
 
@@ -81,7 +83,7 @@ test.describe('moderation thresholds', () => {
     )
 
     await page.goto('/admin/moderation-thresholds')
-    await expect(page.getByRole('cell', { name: 'violence' })).toBeVisible()
+    await expect(page.getByRole('cell', { name: 'violence', exact: true })).toBeVisible()
     await page.getByRole('button', { name: 'Remove violence override for 5-8' }).click()
     await expect(page.getByText('No overrides yet.')).toBeVisible()
   })
