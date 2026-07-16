@@ -15,7 +15,9 @@ source: "Fresh-look capability review session, 2026-07-16"
 
 # Capability Register
 
-> **Status**: Active | **Version**: 1.3 | **Created**: 2026-07-16 | **Updated**: 2026-07-16
+> **Status**: Active | **Version**: 1.4 | **Created**: 2026-07-16 | **Updated**: 2026-07-16
+> (v1.4: note corrections and new ruling-queue entries from the full traceability review,
+> see [traceability-review-2026-07-16.md](./traceability-review-2026-07-16.md))
 
 > **Delivery-state review (2026-07-16, open PRs and working docs)**: the Docs column below
 > measures *foundational-doc* coverage, but a review of
@@ -89,14 +91,14 @@ initiate (K11 | G4 | A10)
 | K2 | Choices are obvious, tappable, impossible to get mechanically wrong; locked (state-gated) choices are hidden, never shown-and-disabled | ✅ | Tech spec runtime semantics |
 | K3 | Choices are consequential: paths genuinely differ, endings vary, the story remembers state (items, flags, counters) | ✅ | Storybook format, Tier 2 state, ADR-011 clocks |
 | K4 | Resume exactly where they left off, on any device, with no understanding of sync required | ✅ | Revision-based sync, version pinning |
-| K5 | Restart and re-read freely; replay is first-class. Backtracking (a "back" button) is an explicit product decision, currently excluded in v1 | 🟡 | Replay supported; no-backtracking decided in tech spec; cheap restart UX implicit only |
-| K6 | Endings tracker as a replay motivator ("found 3 of 7 endings") | ✅ | `completion` rows on stable `ending.id`; tracker in E2E plan |
+| K5 | Restart and re-read freely; replay is first-class. Backtracking (a "back" button) is an explicit product decision | 🟡 | CONTRADICTION: the shipped Reader has a replay-based "Go back" undo, but the tech spec still forbids backtracking; owner ruling pending (traceability review U-3) |
+| K6 | Endings tracker as a replay motivator ("found 3 of 7 endings") | ✅ | `completion` rows shipped (write path); NO tracker UI exists yet, delivery pending Phase 4b |
 | K7 | Read-aloud / narration for pre-readers and emerging readers | 🟡 | Scoped (Web Speech API, per-profile `tts_enabled`) but deferred to Phase 4b while the vision's own persona needs it |
 | K8 | Picture support at lower bands: covers at minimum; per-passage illustrations as an explicit decision | ❌ | Per-passage art explicitly out of scope; cover art absent from foundational docs |
 | K9 | Visual library shelf with covers: what's new, in progress, finished | 🟡 | Library API exists; shelf presentation not specced |
 | K10 | Offline is invisible: identical experience offline; never a connectivity error; at most "this book isn't downloaded yet" | 🟡 | Offline reading fully specced; kid-facing connectivity UX not |
-| K11 | Express interests and initiate a story request in kid terms (picking interests, typing a wish) | 🟡 | Mechanism shipped (WS-B): `POST /story-requests`, child own-profile, intake screening, pending cap; ADR-015 is the foundational record; kid-terms UX and status visibility (K12) still open |
-| K12 | Kid-friendly waiting and error states: "your story is being written", sync conflicts, and failures presented in kid terms | ❌ | Job status exists as a guardian polling endpoint only; the 409 conflict dialog is not kid-appropriate |
+| K11 | Express interests and initiate a story request in kid terms (picking interests, typing a wish) | 🟡 | Shipped end to end: `POST /story-requests` plus a kid-terms request UI (idea box, series continuation, own-status list in kid language); ADR-015 is the foundational record |
+| K12 | Kid-friendly waiting and error states: "your story is being written", sync conflicts, and failures presented in kid terms | ❌ | Substantially built despite the ❌ doc status: kid-language request statuses, plain-language conflict dialog, mascot error/empty states, honest save-retry banner; remaining gap is generation progress inside the kid surface |
 | K13 | Age-band content guarantee: themes, scariness, and ending intensity land within the band (e.g. no death endings in young bands) | ✅ | ADR-011 per-band allowances, content flags, moderation by band |
 | K14 | Safe room: no ads, no purchases, no external links, no contact with strangers, no dark patterns in the kid context | ✅ | Permanent exclusions in vision; parental gate in ADR-008 |
 | K15 | Feedback signal: "I didn't like this / this scared me", routed to a grown-up who actually sees it | ❌ | Ratified 2026-07-16 (decision 4); feeds G10 alerts and A1 queue |
@@ -108,7 +110,7 @@ initiate (K11 | G4 | A10)
 | ID | Capability | Docs | Notes |
 |----|------------|------|-------|
 | G1 | One account, multiple child profiles; each profile's age band and reading level actually changes what the child sees | ✅ | `child_profile` caps enforced in library filtering |
-| G2 | Per-child content controls: allowed and banned themes, content flags, family-specific exclusions (phobias, no-magic, no-weapons) | ✅ | `allowed_content_flags`, brief-level `content_nogo` |
+| G2 | Per-child content controls: allowed and banned themes, content flags, family-specific exclusions (phobias, no-magic, no-weapons) | ✅ | Schema-deep only: `allowed_content_flags` and `content_nogo` exist in the data model, but the intake UI hardcodes empty lists and the profile form has no theme controls; no guardian can exercise this today |
 | G3 | Per-child permissions and limits: whether the child may initiate story requests (including pre-authorized auto-allow), screen-time norms if any | 🟡 | ADR-015 defines the pre-authorization envelope semantics; screen-time norms still unspecced |
 | G4 | Initiate story requests themselves, including personalized stories ("one about our camping trip for Maya") | ✅ | Concept-brief intake; PII rules keep real names out of prompts |
 | G5 | Fast review of a generated story without reading every path: summary, themes, flagged passages, branch structure | 🟡 | Review surface named; skim aids (summary, branch view) not specced; approval itself moved to admin |
@@ -123,7 +125,7 @@ initiate (K11 | G4 | A10)
 | G14 | Standard adult auth; multi-guardian households (two parents, a grandparent) | 🟡 | Supabase OIDC solid; multi-guardian implied by the data model, never specced |
 | G15 | Device management: authorize and revoke devices, see which books are downloaded where, storage use | 🟡 | ADR-014 grants list/revoke ✅; download/storage visibility ❌ |
 | G16 | Browse the curated catalog and assign books to their own children | ✅ | WS-E catalog visibility + assignment gate |
-| G17 | Approve, decline, and revoke family connections for their own family, in each direction (share out and receive in); connections activate nothing without this consent | 🟡 | ADR-016 requires dual-guardian consent; PR #267 is admin-managed only, so no connection may activate child-facing visibility until this flow exists |
+| G17 | Approve, decline, and revoke family connections for their own family, in each direction (share out and receive in); connections activate nothing without this consent | 🟡 | ADR-016 requires dual-guardian consent; PR #267 is admin-managed only, and the constraint currently holds BY OMISSION (nothing reads the table yet); the first consumer of `family_connection` must add an enforced consent guard, not rely on this note |
 
 ## A: Admin capabilities
 
@@ -152,7 +154,7 @@ initiate (K11 | G4 | A10)
 | S1 | Offline as a first-class mode: reading, choices, progress, and flags all work offline and reconcile later | ✅ | ADR-002, sync rules, offline queue with idempotent replay |
 | S2 | Multi-device conflict resolution that never silently loses a child's progress | ✅ | Revision-based 409 model; kid-facing presentation tracked as K12 |
 | S3 | Story representation that supports the format: branching graph, state, conditions, multiple ending types | ✅ | ADR-001, ADR-006, ADR-011; deeper than the expectation |
-| S4 | Deterministic pre-publication validation that a story is playable (no dead ends, orphans, traps, unsatisfiable paths) | ✅ | Two-layer gate incl. state-space walk |
+| S4 | Deterministic pre-publication validation that a story is playable (no dead ends, orphans, traps, unsatisfiable paths) | ✅ | Two-layer gate incl. state-space walk; KNOWN GAP: the moderation repair path does not re-run the gate on repaired content, and the band policy fails open on an unconfigured band (fixes queued, traceability review section 3) |
 | S5 | Age-banding as the system-wide spine: reading level, theme intensity, safety thresholds keyed off one per-child band | ✅ | ADR-011 |
 | S6 | Human-legible provenance per story: who or what created it, checks passed, approver, when | ✅ | Per-version model/provider/prompt/approver stamps |
 | S7 | Independent safety pipeline: moderation independent of the generator; no path to a child bypasses the automated gates plus the human gate | ✅ | ADR-005, ADR-010, prompt-injection defenses |
@@ -190,6 +192,23 @@ Per maintenance rule 3, work serving no register ID gets a conscious call. Found
   until the dual-guardian consent flow (G17) exists.
 - **Provider allowlist admin UI** (PR #268): serves A8 and is cited there; no separate
   ruling needed.
+
+Added by the full traceability review (2026-07-16, see
+[traceability-review-2026-07-16.md](./traceability-review-2026-07-16.md) section 2),
+AWAITING RULING:
+
+- **Star ratings** (shipped: kid widget, `Rating` table, `api/ratings.py`): no register
+  ID. Recommended: mint K18 (child rates a finished book), noting it as substrate for
+  K17 payloads and S12 aggregates.
+- **AI cover-art subsystem** (shipped: covers/ module, Gemini generation, R2 storage,
+  admin trigger, kid-visible covers): no ADR or register text beyond K8's own gap note.
+  Recommended: update K8, mint A16 (admin generates/manages cover art), short ADR.
+- **Reader "Go back" button** (shipped): contradicts the tech spec's no-backtracking
+  rule. Recommended: ratify the reversal and amend tech spec + K5, or remove it.
+- **Admin child-PIN set/reset** (PR #267): new admin authority over child auth material.
+  Recommended: name it in A12's scope with an ADR-014 cross-reference.
+- **Planned items lacking a design element** (not schedulable until one exists): Android
+  release, web direct-billing channel, education/teacher persona, i18n catalog.
 
 ## Maintenance rules
 
