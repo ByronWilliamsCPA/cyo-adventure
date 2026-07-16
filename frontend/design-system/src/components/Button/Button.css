@@ -108,8 +108,9 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Reduced motion: still the press nudge and the animated state changes;
-   color, border, and shadow feedback remain via the instant transition. */
+/* Reduced motion: remove the press nudge (transform) and the animated
+   transition duration; color, border, and shadow feedback still apply,
+   just as an instant change instead of an animated one. */
 @media (prefers-reduced-motion: reduce) {
   .cyo-btn {
     transition: none;
