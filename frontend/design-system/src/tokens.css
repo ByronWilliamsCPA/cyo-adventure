@@ -31,6 +31,17 @@
      parchment (white 3.42:1, on-parchment 3.09:1; the bright amber fails
      both at 2.90/2.62 vs the 3:1 WCAG 1.4.11 minimum). */
   --color-amber-deep:      #c17b2a;
+  /* Text-safe amber: same hue as --color-amber-deep, darkened until it clears
+     the 4.5:1 WCAG 1.4.3 normal-text minimum against BOTH parchment shades
+     (5.62:1 on --color-parchment, 4.98:1 on --color-parchment-dark).
+     --color-amber-deep only clears the relaxed 3:1 non-text/large-text
+     minimum (2026-07-16 accessibility audit, e2e/a11y.spec.ts); use this
+     token wherever amber renders as actual text (ghost-button labels,
+     outlined text/icon buttons), not --color-amber-deep. For a solid
+     amber-deep FILL with light foreground text, prefer ink text on the fill
+     instead (4.86:1; see guardian.css's .intake-request__assign /
+     .flag-badge--flag precedent) over this token. */
+  --color-amber-deep-text: #87561d;
 
   /* Forest: secondary (success, connected) */
   --color-forest:          #2d5a3d;

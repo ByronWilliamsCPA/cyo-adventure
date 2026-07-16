@@ -54,9 +54,13 @@
   text-overflow: ellipsis;
 }
 
+/* --color-ink-secondary, not --color-ink-muted: this renders on
+   --color-parchment-dark (KidNav's header background), where ink-muted only
+   clears 3.72:1 against the 4.5:1 AA minimum (2026-07-16 accessibility
+   audit, e2e/a11y.spec.ts). */
 .kid-nav__label span {
   font-size: var(--text-xs, 0.75rem);
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-secondary, #5a3e28);
   font-weight: var(--weight-semibold, 600);
 }
 
