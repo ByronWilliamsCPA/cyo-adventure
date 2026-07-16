@@ -220,4 +220,38 @@ describe('reader machine error recovery', () => {
       logSpy.mockRestore()
     }
   })
+
+  // start() throws by the same contract as choose()/back() when start_node is
+  // dangling. It has no prior reading state to fall back on, so both the
+  // initial-context factory and reset (RESTART) must surface context.error
+  // instead of letting the throw escape (a synchronous render-time crash for
+  // the factory, an actor-killing assign() throw for reset).
+  const corrupted: Storybook = { ...lantern, start_node: 'n_does_not_exist' }
+
+  it('surfaces context.error instead of crashing when start_node is dangling', () => {
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      const actor = createActor(readerMachine, { input: { story: corrupted } })
+      actor.start()
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.status).toBe('active')
+      expect(snapshot.context.error).toBe(true)
+    } finally {
+      logSpy.mockRestore()
+    }
+  })
+
+  it('stays alive on RESTART even when the same dangling start_node fails again', () => {
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      const actor = createActor(readerMachine, { input: { story: corrupted } })
+      actor.start()
+      actor.send({ type: 'RESTART' })
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.status).toBe('active')
+      expect(snapshot.context.error).toBe(true)
+    } finally {
+      logSpy.mockRestore()
+    }
+  })
 })
