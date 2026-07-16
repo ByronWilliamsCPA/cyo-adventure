@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-16
+
 ### Added
 
 - Comprehensive UX pass across the app. Kid readers can undo their last
@@ -1733,7 +1735,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.4.0...v0.5.0
