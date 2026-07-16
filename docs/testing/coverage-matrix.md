@@ -45,8 +45,8 @@ relate to the Supabase project constraints.
 ## Guardian: screening/anchoring flow
 
 - E2E-mocked: `frontend/e2e/intake.spec.ts` (poll to "Waiting for review"), `frontend/e2e/story-requests-authored.spec.ts` (blocked-content response), `frontend/e2e/story-requests-kid.spec.ts` (anchor via `anchor_storybook_id`)
-- Component: incidental only, no dedicated module test. `frontend/src/guardian/RequestsPage.test.tsx` has one test for the anchored-row continuation note; `screened`/`flagged_count` fields ride along in `ReviewDetailPage.test.tsx`, `AdminConsolePage.test.tsx`, `AssignChildrenDialog.test.tsx`, `FlagBadge.test.tsx`, `BooksPage.test.tsx`
-- **Gap**: no standalone unit test for screening/anchoring logic itself, only E2E and incidental fixture assertions. See Gaps section.
+- Component: `frontend/src/guardian/StoryRequestQueue.test.tsx` (dedicated coverage of the shared queue component's anchored-row branching: disabled/aria-linked age-band select, hidden series-title input, continuation note, teen-only narrative style field, series_title trimming in the approve payload, moderation-flag rendering, blocked-request text fallback); `frontend/src/guardian/RequestsPage.test.tsx` (one anchored-row continuation-note case at the page level); `screened`/`flagged_count` fields also ride along in `ReviewDetailPage.test.tsx`, `AdminConsolePage.test.tsx`, `AssignChildrenDialog.test.tsx`, `FlagBadge.test.tsx`, `BooksPage.test.tsx`
+- **Closed**: there is no separate frontend `screening.ts`/`anchoring.ts` module (that logic lives in the backend's `story_requests/`); the actual gap was that `StoryRequestQueue.tsx`, the shared component both adult surfaces embed, had no test file of its own. `StoryRequestQueue.test.tsx` closes that.
 
 ## Guardian: review family requests queue
 
@@ -94,11 +94,11 @@ relate to the Supabase project constraints.
 
 ## Admin: moderation dashboard/thresholds
 
-- E2E-mocked: **NONE FOUND**
+- E2E-mocked: `frontend/e2e/moderation.spec.ts` (add/remove a threshold override, save the admin noise floor, apply a dashboard suggestion end to end against the routed app)
 - E2E-staging: `frontend/e2e-staging/guardian-admin-smoke.spec.ts` (render smoke only)
 - E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render smoke only)
 - Component: `frontend/src/admin/ModerationDashboardPage.test.tsx`, `frontend/src/admin/ModerationThresholdsPage.test.tsx`, `frontend/src/admin/AdminShell.test.tsx` (nav link only)
-- **Gap**: solid component coverage and now a staging render smoke, but no dedicated mocked or real-backend E2E spec exercises the actual thresholds-editing or dashboard-filtering workflow end-to-end. See Gaps section.
+- **Note**: `frontend/e2e/moderation.spec.ts` was authored and passes `tsc -b`/ESLint/`playwright --list`, but could not be executed against a real browser in the environment this was written in (no network access to download Chromium); run it once locally or in CI before treating it as fully proven. Still no `e2e-real` spec against the real backend's threshold-suggestion computation.
 
 ## Admin: provider allowlist management
 
@@ -151,42 +151,62 @@ relate to the Supabase project constraints.
 ## Ratings (star rating on completed stories)
 
 - E2E-mocked: `frontend/e2e/library.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts` (double-rating keeps latest)
+- E2E-real: `frontend/e2e-real/ratings-real.spec.ts` (tap a star against the real backend, reload, confirm the rating persisted server-side rather than only in client state)
 - Component: `frontend/src/library/StarRating.test.tsx`, `frontend/src/library/LibraryPage.test.tsx` (rate POST + optimistic/revert), `frontend/src/library/libraryApi.test.ts` (`rate()`)
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage.
+- **Remaining gap**: still no `e2e-staging` or `e2e-prod` coverage; low priority given the real-backend and component coverage now in place.
 
 ---
 
 ## Known gaps (as of this audit)
 
-1. **Screening/anchoring**: no standalone unit-tested module; coverage is
-   incidental (data-fixture assertions inside page tests) plus a few E2E
-   scenarios. Priority: Medium, this is core intake logic but currently
-   protected transitively by intake/request E2E specs.
-2. **Moderation dashboard/thresholds**: strong component coverage, but no
-   dedicated mocked-tier (`frontend/e2e/`) or real-backend (`frontend/e2e-real/`)
-   spec that actually exercises editing thresholds or filtering the
-   dashboard, only render-only smoke on staging and prod. Priority: High,
-   this gates what content reaches production and has no workflow-level
-   regression coverage.
+Gaps 1, 2, and 4 below were closed in a follow-up pass; entries are kept
+(marked Closed) rather than deleted so the audit trail of what was fixed and
+when is preserved, per the policy at the bottom of this file.
+
+1. **Screening/anchoring** — Closed. `StoryRequestQueue.test.tsx` now gives
+   the shared anchored-request component its own dedicated unit coverage
+   (see the journey section above); there was never a separate frontend
+   screening/anchoring module to test, that logic lives server-side.
+2. **Moderation dashboard/thresholds** — Closed for the mocked tier.
+   `frontend/e2e/moderation.spec.ts` now exercises adding/removing a
+   threshold override, saving the noise floor, and applying a dashboard
+   suggestion end to end. Written but not executed against a live browser
+   in the environment that authored it (see the caveat in that journey's
+   section); confirm it passes on its first real CI run. Still no
+   `e2e-real` spec against the real backend's suggestion computation.
 3. **Provider allowlist management**: no coverage found at any layer; no
    admin UI page appears to exist in the frontend for this at all. Priority:
    needs confirmation, first determine with the team whether this is
    intentionally backend/CLI-only or a missing page before treating it as a
-   test gap.
-4. **Ratings**: no `e2e-real`/`e2e-staging`/`e2e-prod` coverage, mocked-tier
-   and component coverage only. Priority: Low, low-risk UI action, component
-   coverage is adequate for now.
-5. **The new E2E-staging tier is smoke-only, not full-journey.** It covers
-   only render checks (`guardian-admin-smoke.spec.ts`) and one populated-
-   library check via device grant (`kid-library-smoke.spec.ts`); it does not
+   test gap. Not addressed in this pass pending that confirmation.
+4. **Ratings** — Closed for the real-backend tier.
+   `frontend/e2e-real/ratings-real.spec.ts` now confirms a tapped rating
+   survives a reload against the real backend. Still no `e2e-staging` or
+   `e2e-prod` coverage; low priority.
+5. **The E2E-staging tier is smoke-only, not full-journey.** It covers only
+   render checks (`guardian-admin-smoke.spec.ts`) and one populated-library
+   check via device grant (`kid-library-smoke.spec.ts`); it does not
    exercise intake, screening, approval, assignments, or moderation
    workflows end to end the way `e2e-real` does locally. There is also still
    no `dev`-tier environment (see `docs/testing/README.md`); that requires a
-   frontend deploy pipeline this repo does not own.
+   frontend deploy pipeline this repo does not own. Not addressed in this
+   pass.
 6. **Offline sync/conflict resolution has no real-backend, staging, or prod
-   coverage.** Mocked-tier and component coverage is strong, but the
-   conflict-resolution path has never been exercised against a real
-   database.
+   coverage.** Mocked-tier and component coverage is strong, but reproducing
+   a genuine 409 against a real backend requires fabricating a stale
+   `state_revision` out-of-band (a second direct API write between the
+   page's read and its save) with no existing real-backend precedent to
+   follow, unlike the other additions in this pass. Deliberately not
+   attempted without being able to execute and verify it against a live
+   backend first; see the note below.
+
+`#ASSUME: external-resources: gaps 2, 4, and (if attempted) 6 above were
+authored without access to a running browser or a live backend/Postgres
+instance in the environment that wrote them, only `tsc -b`, ESLint, and
+`playwright --list` verified them. #VERIFY: run each new spec for real (CI
+or a local `npm run test:e2e` / `test:e2e:real`) before trusting it as
+proven, and fix on sight if the live run disagrees with what static
+analysis could check.`
 
 ## Keeping this matrix current
 
