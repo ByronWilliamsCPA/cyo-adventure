@@ -270,6 +270,7 @@ class TestRequirePrincipal:
             role="child",
             authn_subject="my-token",
             child_profile_id=profile_id,
+            status="active",
         )
         session = _FakeDepSession(scalar_return=user)
         result = await deps.require_principal(
@@ -296,6 +297,7 @@ class TestRequirePrincipal:
             family_id=family_id,
             role="guardian",
             authn_subject="g-token",
+            status="active",
         )
         session = _FakeDepSession(scalar_return=user, scalars_items=[p1, p2])
         result = await deps.require_principal(
@@ -324,6 +326,7 @@ class TestRequirePrincipal:
             role="guardian",
             is_admin=True,
             authn_subject="dual-token",
+            status="active",
         )
         session = _FakeDepSession(scalar_return=user, scalars_items=[p1])
         result = await deps.require_principal(

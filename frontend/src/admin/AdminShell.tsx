@@ -53,6 +53,7 @@ export function AdminShell() {
         <NavLink to="/admin/requests">Story requests</NavLink>
         <NavLink to="/admin/moderation-dashboard">Moderation dashboard</NavLink>
         <NavLink to="/admin/moderation-thresholds">Moderation thresholds</NavLink>
+        <NavLink to="/admin/users">User management</NavLink>
         {principal?.role === 'guardian' ? (
           <NavLink to={GUARDIAN_CONSOLE_PATH}>Guardian console</NavLink>
         ) : null}
