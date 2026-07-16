@@ -14,8 +14,14 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 # Technical Implementation Spec: CYO Adventure
 
 > **Status**: Active
-> **Version**: 1.1 | **Updated**: 2026-07-10
+> **Version**: 1.2 | **Updated**: 2026-07-16
 > **Codename**: Ariadne
+>
+> Persona-level scope is tracked in the [capability register](./capability-register.md).
+> [ADR-015](./adr/adr-015-story-request-initiation-and-gating.md) (accepted 2026-07-16) adds
+> a not-yet-designed request lifecycle upstream of the pipeline described here: universal
+> initiation (child/guardian/admin) behind a guardian cost gate. Sections below describe the
+> current design; the planned-amendment notes mark where ADR-015 will change them.
 
 ## TL;DR
 
@@ -438,6 +444,12 @@ and library endpoints. The token subject maps to a set of allowed profiles; `pro
 is never trusted on its own. Inputs are validated against the published story
 (`ending_id` must belong to the cited version; `current_node` must exist in it).
 
+> **Planned amendment (ADR-015)**: the child-session scope will widen by exactly one route,
+> a rate-limited create-story-request endpoint for the token's own profile, and the intake
+> gains a guardian consent step (`awaiting_guardian` before any generation spend). Concept
+> and generation endpoints below are otherwise unchanged; no child path triggers generation
+> directly.
+
 | Method | Path | Purpose | Auth |
 |--------|------|---------|------|
 | GET | /api/v1/library?profile_id={id} | List published stories the profile may see | Yes |
@@ -632,5 +644,6 @@ cap.
 ## Related Documents
 
 - [Project Vision](./project-vision.md)
+- [Capability Register](./capability-register.md)
 - [Architecture Decisions](./adr/README.md)
 - [Development Roadmap](./roadmap.md)

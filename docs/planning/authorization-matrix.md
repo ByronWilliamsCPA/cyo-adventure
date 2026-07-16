@@ -13,7 +13,16 @@ source: "docs/planning/tech-spec.md sections Security, Authorization, API Specif
 
 # Authorization Matrix
 
-> **Status**: Active | **Version**: 0.5 | **Updated**: 2026-07-13
+> **Status**: Active | **Version**: 0.6 | **Updated**: 2026-07-16
+
+> **Planned amendment ([ADR-015](./adr/adr-015-story-request-initiation-and-gating.md),
+> accepted 2026-07-16, not yet implemented)**: the child token allowlist widens by exactly
+> one route, a rate-limited create-story-request endpoint scoped to the token's own profile,
+> and guardians gain a consent action that gates generation spend. When implemented, the
+> Action-by-Role table gains those rows and the IDOR suite gains the negatives: child A
+> cannot create or read a request for profile B; a child token still receives 403 on
+> generate, consent, approve, and every guardian/admin surface; a device token receives 403
+> on all request routes.
 
 ## Overview
 

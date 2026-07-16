@@ -80,6 +80,14 @@ must be fictional), `point_of_view` (default 2nd person), `age_band`, `reading_l
 "13-16", "16+"); it identifies a generation target, not an individual child. The backend must validate that the concept brief does not
 contain free-text fields with real names before dispatching to the provider.
 
+**Child-initiated requests (ADR-015, accepted 2026-07-16, not yet implemented)**: a
+child-typed story wish is child-provided free text and is likely to contain the child's own
+name or friends' names. Wish text is stored family-scoped like brief text, is shown to the
+guardian at the consent step before it goes anywhere, and is subject to the same PII guard,
+length limits, and control-character stripping as guardian briefs before any provider
+egress. A wish never reaches a provider directly; it becomes a concept brief only through
+guardian consent (with edit-before-consent), and the PII guard runs on the resulting brief.
+
 ---
 
 ## Raw LLM Outputs and Prompt Text

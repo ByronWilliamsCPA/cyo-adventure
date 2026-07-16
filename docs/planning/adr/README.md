@@ -39,6 +39,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-012](./adr-012-supabase-cli-migrations.md) | Supabase CLI SQL migrations replace Alembic | Accepted | 2026-07-10 |
 | [ADR-013](./adr-013-hybrid-pqc-readiness.md) | Hybrid post-quantum cryptography readiness | Accepted | 2026-07-11 |
 | [ADR-014](./adr-014-device-authorized-kid-access.md) | Device-authorized kid access | Accepted | 2026-07-13 |
+| [ADR-015](./adr-015-story-request-initiation-and-gating.md) | Universal story initiation with a guardian cost gate and an admin safety gate | Accepted | 2026-07-16 |
 
 ## Creating ADRs
 
