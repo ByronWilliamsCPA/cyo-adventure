@@ -1,0 +1,1175 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_locked_carousel",
+  "version": 1,
+  "title": "The Locked Carousel",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "heritage",
+      "community",
+      "courage",
+      "mystery"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 13,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "moderate",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=105 beats='Nell Marlow cannot sleep; that afternoon she saw a padlocked chain and a white council notice on the pier carousel, the one whose wooden horses her grandmother Edith carved, and Gran has been gone a year now; on Nell's bedside table sits Gran's old brass key ring with its worn rose charm, kept safe since she passed; the moon is up, the tide is out, and the funfair on the pier stands dark; Nell decides someone who loves that carousel should find out what is wrong with it, tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_out",
+          "label": "Pull on your coat, pocket Gran's key ring, and slip out into the moonlight.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "<<FILL role=setup words=95 beats='along the empty seafront to the funfair fence and through the loose plank Nell has known since she was small; inside, the shut fair by moonlight is another country, storm canvas snapping, guy ropes ticking, painted faces of the rides half lit and strange, the sea breathing slow under the boards; spooky in the delicious way, not the dangerous way; the midway stretches ahead toward the carousel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gate_midway",
+          "label": "Head down the midway to the carousel.",
+          "target": "n_notice"
+        }
+      ]
+    },
+    {
+      "id": "n_notice",
+      "body": "<<FILL role=setup words=110 beats='the carousel wrapped in storm canvas, wound with a heavy chain and padlock; a white council notice zip-tied to the chain reads CLOSED BY ORDER OF THE TOWN COUNCIL, UNSAFE STRUCTURE; through a gap in the canvas the shadowed shapes of Gran's horses wait mid-gallop; Nell's chest goes tight, then stubborn; unsafe how, and says who, and can it be mended; the answers must be somewhere in the sleeping fair around her, whose corners spread out from the crossroads behind her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_notice_hub",
+          "label": "Step back to the midway crossroads and choose where to search.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL role=choice words=100 beats='the midway crossroads under the dead lamppost at the heart of the fair; around Nell in the moonlight stand the shuttered ticket booth, the doorway of the hall of mirrors, the lean-to workshop that was Gran's, the wooden steps down under the boardwalk, a soft glow of lamplight behind the ghost train where the caretaker's caravan sits, and the narrow stairs up to the organ loft; at the center of everything the chained carousel waits; keep this scene general so it reads naturally on a first visit or on any return trip between corners'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_booth",
+          "label": "Try the shuttered ticket booth.",
+          "target": "tb_booth"
+        },
+        {
+          "id": "c_hub_mirrors",
+          "label": "Slip into the hall of mirrors.",
+          "target": "hm_door"
+        },
+        {
+          "id": "c_hub_workshop",
+          "label": "Unlock Gran's carousel workshop.",
+          "target": "ws_door"
+        },
+        {
+          "id": "c_hub_boardwalk",
+          "label": "Take the steps down under the boardwalk.",
+          "target": "bw_steps"
+        },
+        {
+          "id": "c_hub_caravan",
+          "label": "Follow the lamplight to the caretaker's caravan.",
+          "target": "cv_door"
+        },
+        {
+          "id": "c_hub_organ",
+          "label": "Climb toward the organ loft.",
+          "target": "ol_stairs"
+        },
+        {
+          "id": "c_hub_carousel",
+          "label": "Go straight to the chained carousel.",
+          "target": "fin_approach"
+        }
+      ]
+    },
+    {
+      "id": "tb_booth",
+      "body": "<<FILL role=choice words=95 beats='the ticket booth shutter hangs ajar; inside it smells of old paper, brass polish, and ancient peppermints; behind the counter a shelf of tall ledgers stands in a row, and a narrow door leads to a little back office; Nell decides whether to slide behind the counter to the ledgers or ease open the office door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_ledgers",
+          "label": "Slide behind the counter to the ledger shelf.",
+          "target": "tb_ledgers"
+        },
+        {
+          "id": "c_tb_office",
+          "label": "Ease open the little back office.",
+          "target": "tb_office"
+        }
+      ]
+    },
+    {
+      "id": "tb_ledgers",
+      "body": "<<FILL role=choice words=95 beats='the ledgers stand spine out, one per year, going back and back; the newest has a paper tongue sticking from its pages like a bookmark left in a hurry; the oldest is stamped 1968, the year the carousel first turned; Nell weighs which book will tell her more, the newest or the oldest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_recent",
+          "label": "Open the newest ledger at the paper bookmark.",
+          "target": "tb_recent"
+        },
+        {
+          "id": "c_tb_old",
+          "label": "Take down the 1968 ledger.",
+          "target": "tb_old"
+        }
+      ]
+    },
+    {
+      "id": "tb_recent",
+      "body": "<<FILL role=choice words=105 beats='the newest ledger tells a sad honest story in figures: carousel repairs deferred, deferred again, deferred; the bookmark is a folded letter from the town surveyor, cracked kingpost, rot in two sweeps, repair estimate larger than a whole summer of ticket takings; so the carousel is not haunted or condemned out of spite, it is hurt, and the fair simply cannot afford the mending; Nell copies the words cracked kingpost onto her hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_recent_hub",
+          "label": "Take what you've learned back to the crossroads.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tb_recent_fin",
+          "label": "Go look at the carousel itself with new eyes.",
+          "target": "fin_approach"
+        }
+      ]
+    },
+    {
+      "id": "tb_old",
+      "body": "<<FILL role=choice words=105 beats='the 1968 ledger opens in looping fountain-pen ink: payments to E. Marlow, carver, week after week, the summer the horses were born; in the margin, in Gran's own hand, a note that makes Nell's breath catch, a carousel should keep its own memory, my measures stay with the herd; measures, meaning her working drawings, staying with the herd, meaning the horses themselves; Nell reads it three times'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_old_hub",
+          "label": "Carry the clue back to the crossroads.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tb_old_fin",
+          "label": "If the measures stay with the herd, go to the horses.",
+          "target": "fin_approach"
+        }
+      ]
+    },
+    {
+      "id": "tb_office",
+      "body": "<<FILL role=choice words=100 beats='the back office holds a desk, a spike of receipts, and a cash tin that suddenly rattles by itself; Nell's heart slams, then a small brown mouse whisks out of the tin and away, and she laughs the fright out; on the wall hangs a framed opening-day photograph, a young woman beside the lead carousel horse, holding a rolled paper tube under one arm, and the young woman is unmistakably Gran; a big soft chair sits by a drawer of loose papers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_photo",
+          "label": "Hold your torch close to the photograph.",
+          "target": "tb_photo"
+        },
+        {
+          "id": "c_tb_chair",
+          "label": "Sink into the big chair and sort through the drawer papers.",
+          "target": "e_set_doze"
+        }
+      ]
+    },
+    {
+      "id": "tb_photo",
+      "body": "<<FILL role=choice words=95 beats='up close under the torch the rolled tube in young Gran's arm has a label just readable, ONDINE, MEASURES; and Gran's other hand rests on the lead horse's saddle with one finger touching the carved rose there, the exact gesture of someone keeping a secret and smiling about it; the drawings were real, and Gran and that horse were in on something together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_photo_hub",
+          "label": "Head back to the crossroads to search on.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tb_photo_fin",
+          "label": "Go straight to the lead horse and her carved rose.",
+          "target": "fin_approach"
+        }
+      ]
+    },
+    {
+      "id": "e_set_doze",
+      "body": "<<FILL role=ending words=95 beats='the chair is deep, the sea drones soft, the papers blur; Nell wakes to gray morning light and her dad's voice calling through the fence, more relieved than cross, with the old caretaker beside him unlocking the gate; porridge, a long talk, and a promise to explore with permission next time; the fair keeps its secret one more day, but Nell knows exactly which shelf and which photograph she is coming back to; a gentle stumble, nobody hurt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_doze",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Chair That Was Too Comfortable"
+      }
+    },
+    {
+      "id": "hm_door",
+      "body": "<<FILL role=choice words=100 beats='the hall of mirrors door creaks under a faded painted jester; inside, Nell's torch becomes forty torches, her face becomes a crowd; two passages lead off, the left lined with tall stretching mirrors, the right with bent wobbling ones, and the dark between them swallows sound; she can take the tall mirrors, take the bent mirrors, or call a brave hello into the dark first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_tall",
+          "label": "Take the left passage of tall mirrors.",
+          "target": "hm_tall"
+        },
+        {
+          "id": "c_hm_bent",
+          "label": "Take the right passage of bent mirrors.",
+          "target": "hm_bent"
+        },
+        {
+          "id": "c_hm_hello",
+          "label": "Call a brave hello into the dark.",
+          "target": "hm_echo"
+        }
+      ]
+    },
+    {
+      "id": "hm_echo",
+      "body": "<<FILL role=rising words=90 beats='her hello comes back doubled, then a third voice answers that is not hers; Nell's skin prickles, until a gull bursts from the rafters in a clatter of wings and feathers and moonlight, the loudest and most ordinary answer in the world; she breathes again and laughs at herself; deep in the maze her settling torchlight has caught something, a steady glint far in among the reflections'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_echo_glint",
+          "label": "Follow the glint deeper in.",
+          "target": "hm_rotunda"
+        }
+      ]
+    },
+    {
+      "id": "hm_tall",
+      "body": "<<FILL role=choice words=95 beats='the tall mirrors stretch Nell into a giantess; then behind her forty reflections a pale figure looms, and she spins with her heart in her ears, and it is a dust-sheeted fortune-teller dummy on a trolley, reflected over and over; relief turns into a giggle she has to sit down for; the corridor bends onward toward a round mirrored chamber, and back the other way the door to the midway still glows faint'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_tall_rotunda",
+          "label": "Follow the bend to the mirrored rotunda.",
+          "target": "hm_rotunda"
+        },
+        {
+          "id": "c_hm_tall_hub",
+          "label": "Slip back out to the midway crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "hm_bent",
+      "body": "<<FILL role=choice words=90 beats='the bent mirrors squash Nell tiny then stretch her tall as the ceiling; halfway along, a floor plank tilts under her boot with a creak like a question; she can steady herself and keep on toward the rotunda glowing ahead, or kneel down and lift the loose plank to see why it sits proud'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_bent_steady",
+          "label": "Steady yourself and keep on toward the rotunda.",
+          "target": "hm_rotunda"
+        },
+        {
+          "id": "c_hm_bent_plank",
+          "label": "Kneel and lift the loose plank.",
+          "target": "hm_plank"
+        }
+      ]
+    },
+    {
+      "id": "hm_plank",
+      "body": "<<FILL role=choice words=95 beats='under the plank, wedged against a joist, lie a rusted chalk tin and old chalk letters drawn on the wood, E.M. and A.S. inside a lopsided heart, and beside it a tiny chalked carousel horse; E.M. is Edith Marlow; Gran was young in this fair once, and somebody with the initials A.S. loved it beside her; Nell sets the plank back like a lid on a treasure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_plank_rotunda",
+          "label": "Go on to the mirrored rotunda.",
+          "target": "hm_rotunda"
+        },
+        {
+          "id": "c_hm_plank_hub",
+          "label": "Head back out to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "hm_rotunda",
+      "body": "<<FILL role=choice words=105 beats='the heart of the maze is a round chamber of mirrors where Nell stands in a circle of herselves; one mirror hangs crooked and reflects wrongly, showing a slice of darkness behind it instead of the room; high up, a flicker of movement slides between the reflections, there and gone; painted arrows on the floor promise a way out for anyone in a hurry; three pulls at once, the crooked mirror, the flicker above, the arrows underfoot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_swing",
+          "label": "Swing the crooked mirror aside.",
+          "target": "hm_behind"
+        },
+        {
+          "id": "c_hm_flicker",
+          "label": "Track the flicker moving up high.",
+          "target": "hm_flicker"
+        },
+        {
+          "id": "c_hm_dash",
+          "label": "Hurry along the painted arrows the way you hope is out.",
+          "target": "e_set_lost"
+        }
+      ]
+    },
+    {
+      "id": "hm_behind",
+      "body": "<<FILL role=choice words=100 beats='behind the crooked mirror runs a narrow maintenance passage smelling of dust and glue; pinned to its wall a yellowed poster, ONDINE THE SEA MARE, CARVED BY E. MARLOW, HEART OF THE PIER, showing the lead horse in her painted glory; and beneath the poster, in chalk newer than everything around it, four words, the mare keeps her own secrets; Nell's scalp tingles in the good way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_behind_fin",
+          "label": "Go ask the sea mare her secret yourself.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_hm_behind_hub",
+          "label": "Return to the crossroads first.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "hm_flicker",
+      "body": "<<FILL role=choice words=95 beats='the flicker turns out to be moonlight swinging through a torn flap of roof canvas, swaying with the sea wind, nothing alive at all; but from the high window slit beside the tear Nell can see straight down onto the chained carousel, and the moonlight lies along the lead horse's saddle in a thin bright line, like light finding a seam in the wood that daylight never shows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_flicker_fin",
+          "label": "Climb down and go to that saddle.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_hm_flicker_hub",
+          "label": "Climb down and go back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_set_lost",
+      "body": "<<FILL role=ending words=90 beats='the painted arrows were painted for daylight; Nell takes her turns too fast, meets herself coming back three times, and stumbles out the entrance just as her torch browns down to an ember; a mirror maze is no place without a good light; she pats the jester on the way past and promises to come back with fresh batteries and a ball of string, then walks home under paling stars planning tomorrow; a fair defeat, cheerfully taken'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_lost",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Fresh Batteries and a Ball of String"
+      }
+    },
+    {
+      "id": "ws_door",
+      "body": "<<FILL role=choice words=100 beats='the lean-to workshop crouches behind the carousel housing, and the small brass key on Gran's ring turns its padlock as if it were oiled yesterday; inside, the smells of linseed oil and sawdust wrap around Nell like a hug she was not expecting; her torch finds a long tool chest, a horse-sized shape under a dust sheet, and a drafting bench deep in papers; three places to look, and all of them Gran's'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_tools",
+          "label": "Open the long tool chest.",
+          "target": "ws_tools"
+        },
+        {
+          "id": "c_ws_horse",
+          "label": "Lift the dust sheet from the horse-sized shape.",
+          "target": "ws_horse"
+        },
+        {
+          "id": "c_ws_bench",
+          "label": "Search the paper-strewn drafting bench.",
+          "target": "ws_bench"
+        }
+      ]
+    },
+    {
+      "id": "ws_tools",
+      "body": "<<FILL role=choice words=95 beats='chisels laid in oiled cloth, every handle stamped E.M.; the smallest is a rose chisel worn to fit a hand exactly Nell's size, and carved into its butt is a tiny rose, twin to the brass rose charm on the key ring in her pocket; Gran marked her things with roses; Nell pockets the little chisel next to the keys, where it seems to belong'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_tools_fin",
+          "label": "Carry the little rose chisel to the carousel itself.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ws_tools_hub",
+          "label": "Close the chest and head back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ws_horse",
+      "body": "<<FILL role=choice words=100 beats='under the sheet stands an unfinished colt, all bare pale wood, mane half carved, no paint yet and now maybe never; on its flank in soft pencil, in Gran's hand, measure twice, love always, E.M.; Nell stands with her palm on the wooden neck for a long moment, sad and proud in one breath; the drafting bench waits across the room, and the midway waits outside'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_horse_bench",
+          "label": "Look over the drafting bench.",
+          "target": "ws_bench"
+        },
+        {
+          "id": "c_ws_horse_hub",
+          "label": "Cover the colt gently and go back out.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ws_bench",
+      "body": "<<FILL role=choice words=105 beats='the drafting bench holds templates of horse legs and mane curls, but the tall tube rack labeled PLANS stands empty, and on the wall a pale rectangle shows where a frame once hung; whatever Gran drew, it is not kept here; then, in the pencil drawer, a scrap in her handwriting, three words, safe with O.; O for whom, or for what; the offcut crate under the bench might say more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_bench_fin",
+          "label": "O is for Ondine. Go find the lead horse.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ws_bench_crate",
+          "label": "Dig through the crate of offcuts.",
+          "target": "ws_crate"
+        },
+        {
+          "id": "c_ws_bench_hub",
+          "label": "Go back to the crossroads to think.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ws_crate",
+      "body": "<<FILL role=choice words=95 beats='the crate holds rejected saddle panels, practice pieces; one of them, when Nell turns it in the torchlight, has a carved rose at its center and a hidden dovetail seam around the rose, and when she presses the rose the little panel pops open on a shallow secret hollow; a rehearsal; Gran practiced building hiding places into her carving, which means somewhere there is a finished one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_crate_fin",
+          "label": "Go find the finished hiding place on the carousel.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ws_crate_hub",
+          "label": "Head back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "bw_steps",
+      "body": "<<FILL role=choice words=100 beats='wooden steps drop from the midway down to hard wet sand; the underside of the pier is a barnacled forest of timber legs, dark and dripping, and though the tide is out the sea keeps whispering that it is coming back; the carousel stands over the oldest part of the pier, straight ahead through the pilings; halfway up the legs clings a dry maintenance catwalk with a ladder; Nell can pick her way between the pilings or climb to the catwalk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_pilings",
+          "label": "Pick your way between the pilings.",
+          "target": "bw_pilings"
+        },
+        {
+          "id": "c_bw_catwalk",
+          "label": "Climb up to the dry catwalk.",
+          "target": "bw_catwalk"
+        }
+      ]
+    },
+    {
+      "id": "bw_pilings",
+      "body": "<<FILL role=choice words=105 beats='ankle-deep pools flash cold into Nell's boots; drips tick all around like a hundred slow clocks; then a knock, knock, knock from the dark ahead stops her heart until her torch finds a mooring buoy bumping a rusty ladder in the swell, just the sea fidgeting; ahead rises the great center footing under the carousel; further out, deeper arches breathe cold and black where the pier meets open water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_footing",
+          "label": "Wade on to the carousel's center footing.",
+          "target": "bw_footing"
+        },
+        {
+          "id": "c_bw_ladder",
+          "label": "Climb the rusty ladder up to the catwalk.",
+          "target": "bw_catwalk"
+        },
+        {
+          "id": "c_bw_arches",
+          "label": "Explore out toward the dark arches.",
+          "target": "e_set_tide"
+        }
+      ]
+    },
+    {
+      "id": "bw_catwalk",
+      "body": "<<FILL role=choice words=95 beats='the catwalk is dry planking strung with long-dead fairy lights; stenciled letters on the beams read LOAD POINT with painted arrows; directly overhead spreads the carousel's underbelly, a wheel of great timber sweeps meeting at one mighty center beam; the catwalk also runs on and out toward the pier head and the open night; Nell can inspect the big center beam or follow the walk out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_beam",
+          "label": "Shine your torch on the big center beam.",
+          "target": "bw_footing"
+        },
+        {
+          "id": "c_bw_pierhead",
+          "label": "Follow the catwalk toward the pier head.",
+          "target": "bw_pierhead"
+        }
+      ]
+    },
+    {
+      "id": "bw_footing",
+      "body": "<<FILL role=choice words=105 beats='there it is; a long dark crack runs up the carousel's great kingpost beam, old and tired; but wedged all along the crack sit fresh pale timber shims, cut neat, hammered snug, some so new they still smell of sawn wood; somebody has been coming down here quietly, night after night, propping the old beam with careful hands; the fair is not haunted, it is hurt, and someone loves it enough to nurse it in secret'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_footing_fin",
+          "label": "Climb back up and look at the carousel with new eyes.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_bw_footing_hub",
+          "label": "Head back up to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "bw_pierhead",
+      "body": "<<FILL role=choice words=95 beats='the catwalk ends at the pier head with the whole dark sea beyond; looking back along the deck rail above, Nell sees a lantern bobbing near the carousel, and behind it a stooped figure moving slow; every ghost story the town tells about the pier arrives in her head at once; she can hold still and watch what the figure does, or cup her hands and call out across the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_watch",
+          "label": "Keep still and watch the figure.",
+          "target": "bw_watch"
+        },
+        {
+          "id": "c_bw_call",
+          "label": "Call out across the water.",
+          "target": "bw_call"
+        }
+      ]
+    },
+    {
+      "id": "bw_watch",
+      "body": "<<FILL role=choice words=95 beats='the lantern stops at the carousel; the figure pats the chained rail twice, the way you pat an old friend's shoulder, tucks a loose corner of storm canvas back in, and shuffles away toward a caravan glow behind the ghost train; not a ghost then, an old man who checks on the carousel in the middle of the night because he cannot help it; the pier feels suddenly friendlier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_watch_fin",
+          "label": "Go to the carousel he cares for so much.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_bw_watch_hub",
+          "label": "Head up to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "bw_call",
+      "body": "<<FILL role=choice words=100 beats='her shout scatters gulls off the rail; the lantern swings around and a warm gravelly voice rolls down, tide's turning, lass, up you come before your boots drown; a strong knuckly hand helps her up the last rungs to the deck; the lantern lights an old man's face, amused and kind, not one bit angry, with a caravan's glow waiting behind the ghost train at his back; he nods toward it, kettle's warm, or the midway is that way if your night is not done'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_call_caravan",
+          "label": "Follow the bobbing lantern toward the caravan.",
+          "target": "cv_door"
+        },
+        {
+          "id": "c_bw_call_hub",
+          "label": "Thank him and head for the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_set_tide",
+      "body": "<<FILL role=ending words=95 beats='the dark arches are farther than they looked and the sea knows it; a cold pool tops Nell's boots, and when she turns, the returning tide is already claiming the sand behind her; she backtracks fast and sensibly, splashing from dry patch to dry patch, and reaches the steps soaked to the knees and perfectly safe; a squelching walk home, dry socks, hot milk, and a tide table borrowed from the kitchen drawer; the pier keeps its secret for one more low tide'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_tide",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Soaked to the Knees"
+      }
+    },
+    {
+      "id": "cv_door",
+      "body": "<<FILL role=choice words=95 beats='the caretaker's caravan sits snug behind the ghost train, lamplight warm in its curtained window at this impossible hour, wind chimes made of old brass carousel rings ringing soft; keep the arrival general so it reads naturally whether Nell has wandered over on her own or come this way with the lantern light ahead of her; at the little painted door she can knock, or first peep through the gap in the curtains'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_knock",
+          "label": "Knock on the caravan door.",
+          "target": "cv_knock"
+        },
+        {
+          "id": "c_cv_window",
+          "label": "Peep through the curtain gap first.",
+          "target": "cv_window"
+        }
+      ]
+    },
+    {
+      "id": "cv_window",
+      "body": "<<FILL role=choice words=100 beats='through the curtain gap: an old man at a fold-down table covered with newspaper clippings about the fair, a tin of brass polish, and a framed photograph of the carousel in its glory; as Nell watches he takes out a big handkerchief and wipes his eyes; whatever she expected to find at the fair tonight, it was not a grown man crying quietly over a merry-go-round; her own throat goes tight; not a villain, a mourner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_window_knock",
+          "label": "Knock, gently.",
+          "target": "cv_knock"
+        },
+        {
+          "id": "c_cv_window_slip",
+          "label": "Slip away to the crossroads and think.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "cv_knock",
+      "body": "<<FILL role=rising words=90 beats='the door opens before her knuckles land twice; the caretaker, wiry and white-whiskered, looks down at the girl on his step at midnight and does not even blink; well now, he says, you have Edith Marlow's chin; he introduces himself as Mr. Sorrel, and the name tugs at something; the kettle is already singing behind him and the caravan smells of cocoa and brass polish'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_sit",
+          "label": "Sit down at his little table.",
+          "target": "cv_table"
+        }
+      ]
+    },
+    {
+      "id": "cv_table",
+      "body": "<<FILL role=choice words=115 beats='over cocoa Mr. Sorrel lays the whole truth on the table like cards: the surveyor found a crack in the kingpost, the repair quote is more than the fair earns in a year, the council chained the carousel to keep people safe, and at season's end she is to be taken apart and sold off horse by horse unless a proper certified repair happens first; he has been shimming the beam himself at night but he is no engineer without the original drawings, and Edith, he says, always joked her horses kept her measures safe, he thought it was just her way of talking; three threads to pull, her favorite horse, those midnight shims, or every story about Gran he has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_favorite",
+          "label": "Ask which horse was Gran's favorite.",
+          "target": "cv_ondine"
+        },
+        {
+          "id": "c_cv_shims",
+          "label": "Ask about the shims under the pier.",
+          "target": "cv_shims"
+        },
+        {
+          "id": "c_cv_stories",
+          "label": "Ask for every story about Gran, all of them.",
+          "target": "e_disc_stories"
+        }
+      ]
+    },
+    {
+      "id": "cv_shims",
+      "body": "<<FILL role=choice words=95 beats='Mr. Sorrel confesses the lantern rounds with a guilty grin; the pier ghost the town whispers about, the pale light drifting under the boards at midnight, is a stiff old caretaker checking his braces and shims; they laugh together until the brass chimes ring along; a hurt machine and one faithful friend, that is the entire haunting of the pier; which still leaves the real riddle, where Edith would hide her measures'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_shims_ondine",
+          "label": "So where would Edith hide her measures? Ask about her horses.",
+          "target": "cv_ondine"
+        },
+        {
+          "id": "c_cv_shims_hub",
+          "label": "Say goodnight and go back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "cv_ondine",
+      "body": "<<FILL role=choice words=100 beats='Ondine, he says at once, the lead sea mare, first one Edith ever carved, her whole heart in that one; then he goes quiet in the middle of the sentence, and his eyes widen exactly as Nell's do; the saddle rose, he murmurs, Edith polished that rose with her thumb every single season, said she was keeping it company; they stare at each other over the cooling cocoa; he reaches for his lantern with a shaking hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_go",
+          "label": "Go to Ondine together, lantern and all.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_cv_think",
+          "label": "Step out to the crossroads to steady yourself first.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_disc_stories",
+      "body": "<<FILL role=ending words=95 beats='the stories run until the window goes pale gray: Edith racing the paint before opening day, the seagull that rode the sea mare for a week and would not be shooed, the winter the organ froze and she thawed the pipes with hot water bottles; Nell falls asleep mid-laugh in the armchair under a blanket that smells of brass polish; at dawn they shake hands on a plan, to hunt for Edith's hidden measures together, properly, starting tomorrow; the night ends short of the secret but rich in everything else'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_disc_stories",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Night of Stories"
+      }
+    },
+    {
+      "id": "ol_stairs",
+      "body": "<<FILL role=choice words=90 beats='narrow wooden stairs bolted to the side of the carousel housing climb toward the band organ loft above; from up there drifts a long low moan that swells, fades, and swells again, exactly the sound a story would give a ghost; the hair on Nell's neck stands up even while her feet want to climb; she can climb toward the sound or stop on the bottom step and just listen first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_climb",
+          "label": "Climb toward the sound.",
+          "target": "ol_loft"
+        },
+        {
+          "id": "c_ol_listen",
+          "label": "Stop on the bottom step and just listen.",
+          "target": "ol_listen"
+        }
+      ]
+    },
+    {
+      "id": "ol_listen",
+      "body": "<<FILL role=rising words=90 beats='Nell holds her breath and listens properly; the moan rises exactly when the gusts come off the sea and sinks exactly when they die; it is wind breathing through the organ's bellows and humming in the pipes, the instrument sighing along with the weather like a sleeping animal; a machine dreaming, not a spirit moaning; knowing the trick of it, the stairs look shorter, though the midway behind her is still an option'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_up",
+          "label": "Climb up, braver now.",
+          "target": "ol_loft"
+        },
+        {
+          "id": "c_ol_down",
+          "label": "Leave the organ to its humming and go back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ol_loft",
+      "body": "<<FILL role=choice words=105 beats='the loft holds the fairground organ, a wall of painted panels, gilded pipes, and carved curls, one pipe still sighing with the wind; a cabinet beside it is racked with paper music rolls; and up on the organ's crest, small and unmistakable, a carved wooden rose, Gran's mark, here too, high above the midway; three invitations at once, the yellowed keys of the keyboard, the roll cabinet, and that crest panel with the rose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_key",
+          "label": "Press one yellowed key.",
+          "target": "ol_key"
+        },
+        {
+          "id": "c_ol_rolls",
+          "label": "Open the music roll cabinet.",
+          "target": "ol_rolls"
+        },
+        {
+          "id": "c_ol_crest",
+          "label": "Lift the crest panel with the carved rose.",
+          "target": "ol_crest"
+        }
+      ]
+    },
+    {
+      "id": "ol_key",
+      "body": "<<FILL role=choice words=100 beats='the key sinks and one enormous brass note booms out across the whole dark fair, rolls off the ghost train, and dies away over the sea for what feels like a year; Nell stands frozen, the maker of the loudest sound in town; far off a dog starts barking and her heart tries to leave through her ears; she can freeze and count slowly to fifty while the night settles, or bolt down the stairs and away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_freeze",
+          "label": "Freeze and count slowly to fifty.",
+          "target": "ol_after"
+        },
+        {
+          "id": "c_ol_bolt",
+          "label": "Bolt down the stairs and away.",
+          "target": "e_set_bolt"
+        }
+      ]
+    },
+    {
+      "id": "ol_after",
+      "body": "<<FILL role=choice words=95 beats='by thirty the dog gives up; by fifty the silence has settled back over the fair like dust; pigeons resettle in the rafters above, and their shuffling knocks something loose, a paper that seesaws down through the torchlight into Nell's hands: an old printed program, ONDINE LEADS THE HERD across the cover, the artwork signed in the corner E.M.; the fair, having taken her loud note, seems to have handed back a gift with the lead horse's name on it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_after_fin",
+          "label": "Take the hint and go to Ondine.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ol_after_hub",
+          "label": "Pocket the program and return to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ol_rolls",
+      "body": "<<FILL role=choice words=105 beats='the cabinet rolls are labeled in Gran's handwriting, waltzes and gallops and marches; one case is heavier than all the others, and its label stops Nell cold, ONDINE'S WALTZ, FOR THE MARE WHO KEEPS MY MEASURES; inside, wound with the paper roll, is a slip of tracing paper bearing a careful drawing of a saddle rose with a fine dotted seam traced all the way around it, like instructions drawn for someone Gran trusted to come looking'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_rolls_fin",
+          "label": "Take the tracing straight to the lead horse.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ol_rolls_home",
+          "label": "Carry the waltz roll home to learn its story first.",
+          "target": "e_disc_waltz"
+        },
+        {
+          "id": "c_ol_rolls_hub",
+          "label": "Put the roll back carefully and go down to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ol_crest",
+      "body": "<<FILL role=choice words=95 beats='the crest panel lifts on stiff hinges to reveal wiring, dust, and one abandoned wren's nest, a dead end that somehow still makes Nell smile; but as she lowers the panel she catches the view from the loft's little window: the carousel directly below, and through a gap in the storm canvas the moonlight lying along the lead horse's saddle in a hair-fine bright line, like a seam in the wood winking up at her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_crest_fin",
+          "label": "Go down to that winking seam.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ol_crest_hub",
+          "label": "Go down and back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bolt",
+      "body": "<<FILL role=ending words=95 beats='down the stairs two at a time, across the midway, through the loose plank, along the seafront with her heart drumming louder than the organ note ever was; on her own doorstep Nell finally stops, bends double, catches her breath, and starts to laugh; nothing chased her except her own echo; she tiptoes up to bed with her ears still ringing and a plan already forming, to go back tomorrow, apologize to the organ, and this time press the whole chord; a fright, not a failure'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bolt",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Loudest Note in Town"
+      }
+    },
+    {
+      "id": "e_disc_waltz",
+      "body": "<<FILL role=ending words=95 beats='at home under the lamp Nell winds the roll gently through her fingers and hums the tune straight off its punched holes, a waltz she has never heard and somehow already knows, the way you know a grandmother's hands; she falls asleep with the roll on the pillow beside her, certain now that Gran left a trail on purpose, for the mare who keeps my measures can only mean one horse; tomorrow, Ondine; tonight, the waltz plays on in her dreams'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_disc_waltz",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Ondine's Waltz"
+      }
+    },
+    {
+      "id": "fin_approach",
+      "body": "<<FILL role=choice words=120 beats='the chained carousel up close, at last; the council notice says it plainly right there on the chain, UNSAFE STRUCTURE, CLOSED PENDING REPAIRS, so the lock is a bandage, not a punishment; through the gap in the storm canvas the moonlight finds the lead sea mare, Ondine, Gran's masterpiece, mane carved mid-toss; and on her saddle skirt sits a carved rose, twin to the worn brass rose charm on Gran's key ring that has ridden in Nell's pocket all night, with a hair-fine seam circling the rose in the wood; write this so the pull toward Ondine reads naturally whether this is the first stop of the night or the last, whatever corners of the fair have already been searched'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_climb",
+          "label": "Duck under the chain and climb up to Ondine.",
+          "target": "fin_climb"
+        },
+        {
+          "id": "c_fin_notice",
+          "label": "Circle the platform and read the notice properly first.",
+          "target": "fin_notice"
+        }
+      ]
+    },
+    {
+      "id": "fin_notice",
+      "body": "<<FILL role=choice words=100 beats='the notice in full, by torchlight: cracked main support, closed pending certified repairs, and a final line that lands like a stone, structure scheduled for dismantling at season's end if repairs are not certified; dismantled, sold, scattered, Gran's whole galloping herd; the chain is protecting people from a hurt machine, but nobody seems able to heal the machine itself; unless somebody finds another way, starting with the horse the moonlight keeps pointing at'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_notice_climb",
+          "label": "Climb up to Ondine.",
+          "target": "fin_climb"
+        },
+        {
+          "id": "c_fin_notice_hub",
+          "label": "Step back to the crossroads first.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "fin_climb",
+      "body": "<<FILL role=choice words=105 beats='under the chain, up onto the still platform, boards breathing softly with the sea below; Ondine towers over Nell, then is exactly at eye level once she climbs onto the running board; the carved saddle rose sits under her torch, its center petal worn glass-smooth, polished by a thumb over years and years, and the seam around it is joinery so fine you would never see it unless you already believed in it; press the smooth rose, or try the seam with the little blade on Gran's key ring'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_press",
+          "label": "Press the smooth center of the carved rose.",
+          "target": "fin_press"
+        },
+        {
+          "id": "c_fin_pry",
+          "label": "Try to pry the seam open with the key ring's little blade.",
+          "target": "fin_pry"
+        }
+      ]
+    },
+    {
+      "id": "fin_pry",
+      "body": "<<FILL role=choice words=100 beats='the little blade skates off the seam and leaves a hairline scratch in the varnish; the panel does not budge a whisker, because Gran built too well for force, she always did; Nell whispers sorry to the sea mare and makes herself breathe and look again like a carver's granddaughter; the rose's center petal is worn smooth as a sea pebble, thumb-polished, a button politely waiting all these years; she can press it the way Gran must have, or leave it for daylight and rested hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pry_press",
+          "label": "Press it with your thumb, the way Gran must have.",
+          "target": "fin_press"
+        },
+        {
+          "id": "c_fin_pry_home",
+          "label": "Whisper sorry to Ondine and save it for daylight.",
+          "target": "e_set_home"
+        }
+      ]
+    },
+    {
+      "id": "fin_press",
+      "body": "<<FILL role=rising words=105 beats='the rose sinks under her thumb with a soft old click, and the whole panel swings open on a hidden dovetail hinge, smooth as the day it was made; inside the saddle is a shallow hollow lined with oilcloth, dry as a biscuit tin, holding one sealed tube; the label, in Gran's steadiest hand, reads ONDINE, FULL MEASURES AND REPAIRS, E. MARLOW, and beneath it, smaller, for whoever loves her enough to look; Nell's hands shake so much the torchlight dances'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_open",
+          "label": "Unroll the drawings right there by torchlight.",
+          "target": "fin_drawings"
+        }
+      ]
+    },
+    {
+      "id": "fin_drawings",
+      "body": "<<FILL role=choice words=120 beats='unrolled across Ondine's saddle: every beam, sweep, and joint of the carousel in Gran's careful ink, each measurement written twice; the kingpost drawn once whole and once with a splint repair around it, labeled in her hand, when the old bone tires, mend it so; a materials list broken into small honest pieces a town could gather, and at the bottom one line, many hands make this light; the sky over the sea is going gray at the edge; drawings this precious need the right eyes at first light, and Nell weighs whose: the caretaker in his caravan, her own family at home, or the town hall when it opens'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_caretaker",
+          "label": "Knock at the caretaker's caravan with the tube.",
+          "target": "r_caretaker"
+        },
+        {
+          "id": "c_fin_family",
+          "label": "Run home and wake your family.",
+          "target": "r_family"
+        },
+        {
+          "id": "c_fin_town",
+          "label": "Wait for morning and carry it to the town hall.",
+          "target": "r_townhall"
+        }
+      ]
+    },
+    {
+      "id": "e_set_home",
+      "body": "<<FILL role=ending words=95 beats='Nell pats Ondine's wooden neck, tucks the canvas back over her, and walks home along the seafront as the stars fade; halfway there she stops dead in the middle of the pavement and says out loud, thumb-polished, it wanted pressing, not prying; too tired to turn back tonight, she plans tomorrow evening down to the minute, torch, low tide, warm gloves, gentle thumb; the seam kept its secret one more day, but only one; a stumble on the doorstep of the answer, not a defeat'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_home",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Prying When You Should Press"
+      }
+    },
+    {
+      "id": "r_caretaker",
+      "body": "<<FILL role=choice words=105 beats='the caretaker opens his caravan door to a girl holding a tube like a torch of victory; when the drawings unroll across his table his hands tremble on the paper edges, and he says, Edith, you marvel, you kept them in the mare all along; he can read every line, splint, brace, bolt and block, and between his hands and her drawings a proper certified repair is truly possible, but it will take far more than two people; Nell can help call the whole town to a meeting at the fair, or go with him to the town surveyor the moment her office opens'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_meeting",
+          "label": "Call the town to a meeting at the fair itself.",
+          "target": "r_meeting"
+        },
+        {
+          "id": "c_r_inspector",
+          "label": "Go with him to the town surveyor at opening time.",
+          "target": "r_inspector"
+        }
+      ]
+    },
+    {
+      "id": "r_meeting",
+      "body": "<<FILL role=rising words=100 beats='two evenings later the drawings hang pinned across the ticket booth like treasure maps and half the seafront crowds the midway, fisherfolk, shopkeepers, the school, the lifeboat crew; a pledge board goes up and starts to fill, seasoned timber from the yard, the harbor crane for a weekend, a paint club, three bake sales and counting; read aloud in Gran's small honest pieces, the impossible repair quote turns into a list of jobs for neighbors'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_meeting_end",
+          "label": "Watch the pledge board fill to the bottom.",
+          "target": "e_festival"
+        }
+      ]
+    },
+    {
+      "id": "r_inspector",
+      "body": "<<FILL role=rising words=100 beats='at opening time the town surveyor braces herself to repeat sad news to an old caretaker and a child, then goes very quiet over the unrolled drawings; original carver's measures, she murmurs, engineer-neat, with the splint repair already designed; she signs a conditional permit on the spot, repairs exactly as drawn, qualified supervision, volunteers welcome, and stamps it twice; the first official stamp of hope the carousel has had in years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_inspector_end",
+          "label": "Shake on it and start that same week.",
+          "target": "e_permit"
+        }
+      ]
+    },
+    {
+      "id": "r_family",
+      "body": "<<FILL role=choice words=105 beats='the kitchen at dawn, kettle on, tube unrolled between the marmalade and the milk; Nell's mother goes still, recognizing her own mother's drafting hand, and laughs and cries in the same breath; her father is already on the phone to the fair's old caretaker, who apparently answers at dawn on the first ring; by the second pot of tea the rescue of the carousel has a headquarters, a teapot, and a family at the heart of it; two ways to rally the town from here, a penny drive at school or the family signing on as repair crew'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_fund",
+          "label": "Start a Pennies for Ondine drive at school.",
+          "target": "r_fund"
+        },
+        {
+          "id": "c_r_crew",
+          "label": "Sign the whole family up as repair crew.",
+          "target": "r_crew"
+        }
+      ]
+    },
+    {
+      "id": "r_fund",
+      "body": "<<FILL role=rising words=95 beats='jam jars labeled PENNIES FOR ONDINE appear on every counter in town, and a giant thermometer poster on the pier gate climbs week by week, painted higher every Friday by whoever raised the most; the council, astonished at a town emptying its pockets for a wooden horse, unlocks a heritage grant to match every penny; small coins, gathered by many hands, slowly turn into big timber'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_fund_end",
+          "label": "Paint the thermometer to the top.",
+          "target": "e_fund"
+        }
+      ]
+    },
+    {
+      "id": "r_crew",
+      "body": "<<FILL role=rising words=95 beats='a summer of sawdust: Nell passing clamps and learning the names of joints, her parents hauling and priming and painting, the old caretaker teaching with Gran's drawings pinned above the bench like sheet music; the workshop windows burn warm every single evening, the way they must have burned in Gran's day, and the fair starts to smell of fresh wood and new paint instead of rust'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_crew_end",
+          "label": "Carve the finishing touch.",
+          "target": "e_crew"
+        }
+      ]
+    },
+    {
+      "id": "r_townhall",
+      "body": "<<FILL role=choice words=105 beats='morning on the town hall steps, the tube under Nell's arm and her heart in her throat; the fair's old caretaker arrives breathless to stand beside her, he spotted her torchlight at the carousel in the night and has been hoping ever since; inside, the heritage officer listens with polite patience that dissolves completely when the drawings spread across her counter like treasure maps; original plans change everything, she says, and there are two strong ways to use them, the public council session, or the local paper first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_council",
+          "label": "Present the drawings at the public council session.",
+          "target": "r_council"
+        },
+        {
+          "id": "c_r_paper",
+          "label": "Show the story to the local paper first.",
+          "target": "r_paper"
+        }
+      ]
+    },
+    {
+      "id": "r_council",
+      "body": "<<FILL role=rising words=100 beats='the council chamber goes hushed as the kingpost pages glow on the big screen, drawn once whole, once splinted, in a carver's steady ink; a councillor who rode Ondine as a boy proposes the motion with a wobble in his voice; seconded, carried, unanimous: restoration as an official heritage project, funds released, and the notice on the chain to be rewritten, the word UNSAFE traded for the word PROTECTED'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_council_end",
+          "label": "Watch the vote go up.",
+          "target": "e_council"
+        }
+      ]
+    },
+    {
+      "id": "r_paper",
+      "body": "<<FILL role=rising words=100 beats='the front page runs Friday: THE CAROUSEL'S SECRET KEEPER, with the old opening-day photograph of Gran beside the sea mare and a new one of Nell holding the tube; letters and donations pour in from everyone who ever rode Ondine, from three streets away and from across the sea; by the time the council meets, saying no to the repairs would mean saying no to the entire town at once, and no councillor alive is that brave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_paper_end",
+          "label": "Pin the front page to the ticket booth.",
+          "target": "e_paper"
+        }
+      ]
+    },
+    {
+      "id": "e_festival",
+      "body": "<<FILL role=completion words=105 beats='weeks later the chain comes off to a brass-band cheer and the carousel turns again, kingpost splinted exactly as Gran drew, the new timber signed in pencil by every neighbor who helped; first ride free for the whole town, Nell up on Ondine with the organ playing and the caretaker proud at the lever; the rose panel in the saddle is left in working order, a secret no longer hidden but still hers to show; Gran's herd gallops on, carried by many hands, just as she wrote'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_festival",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Carousel Turns Again"
+      }
+    },
+    {
+      "id": "e_permit",
+      "body": "<<FILL role=completion words=100 beats='the white notice comes down within the month, and the new sign painted over the ticket booth reads REOPENING SOON, MENDED BY MANY HANDS; the splint goes in exactly as the drawings order, checked and certified, the surveyor herself turning up on Saturdays in overalls; on reopening day a small brass plaque appears at Ondine's hoof, horses carved by E. Marlow, saved by her granddaughter and this town; Nell polishes the saddle rose with her thumb, keeping it company, the way it is done in her family'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_permit",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Mended by Many Hands"
+      }
+    },
+    {
+      "id": "e_fund",
+      "body": "<<FILL role=completion words=100 beats='the painted thermometer tops out on a windy Friday to cheering from the whole school, the grant matches every jar of pennies, and the repairs begin on schedule; at the summer fete the mayor cuts the ribbon and the carousel turns for the first time in a year, lights blazing; in the ticket booth the newest ledger gets a brand-new page in Nell's handwriting, every jam-jar penny listed small and honest, the way Gran kept accounts, the old book's happiest entry ever'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fund",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Pennies for Ondine"
+      }
+    },
+    {
+      "id": "e_crew",
+      "body": "<<FILL role=completion words=100 beats='on the last day of the repairs the caretaker clears the bench and sets the smallest of Gran's rose-stamped chisels in Nell's hand; guided stroke by stroke, she carves the repair date and one small rose into the new splint timber, her first real carving in the family trade; the carousel passes its inspection the same week and turns again with the whole crew aboard for the first circuit; somewhere in the woodgrain, Nell is sure, measure twice, love always, is smiling'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_crew",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Measure Twice, Love Always"
+      }
+    },
+    {
+      "id": "e_council",
+      "body": "<<FILL role=completion words=100 beats='the carousel is declared a protected town landmark, restoration funded in full, and the chain is retired to the museum case in the town hall lobby with the old notice beside it, UNSAFE crossed out and PROTECTED written above in gold; on reopening day the mayor lifts the ribbon scissors, then hands them to Nell instead, to the loudest cheer the pier has heard in years; Ondine leads the herd out into the music, secret panel, splinted bones, thumb-polished rose and all'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_council",
+        "valence": "positive",
+        "kind": "success",
+        "title": "From Unsafe to Protected"
+      }
+    },
+    {
+      "id": "e_paper",
+      "body": "<<FILL role=completion words=100 beats='the story travels farther than the paper ever has, and help arrives from grown-ups who rode Ondine as children and never forgot her; on reopening day the queue runs the whole length of the pier and the organ plays until dark; the front page goes up in a frame beside the ticket window, and in the workshop Gran's opening-day photograph finally hangs in the pale rectangle on the wall that was always shaped exactly like it; the fair is full, the herd is home, and the secret keeper takes the first ride'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_paper",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Front Page for the Sea Mare"
+      }
+    }
+  ]
+}
