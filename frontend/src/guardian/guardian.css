@@ -437,6 +437,40 @@
   font-weight: 400;
 }
 
+.cyo-field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 400;
+}
+
+/* G2: per-child content-flag caps and banned-themes exclusions. */
+.profile-form__content-controls {
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-form__theme-input {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.profile-form__theme-input .cyo-field__control {
+  flex: 1;
+}
+
+.profile-form__theme-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 .intake-form {
   display: flex;
   flex-direction: column;
@@ -1041,6 +1075,115 @@
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* ============================================================================
+   StoryStructureSummary (G5 skim aid): shared between ReviewDetailPage
+   (admin, full) and AssignChildrenDialog (guardian, compact).
+   ============================================================================ */
+.story-structure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.story-structure__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  margin: 0;
+}
+
+.story-structure__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 6rem;
+}
+
+.story-structure__stat dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.story-structure__stat dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.story-structure__label {
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.story-structure__themes,
+.story-structure__content-flags {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.story-structure__endings {
+  margin: 0;
+}
+
+.story-structure__endings h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.story-structure__endings ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.story-structure__flags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.story-structure--compact .story-structure__stats {
+  gap: 0.75rem 1.25rem;
+}
+
+/* Collapsible overview panel above the admin passage list
+   (ReviewDetailPage.tsx): the skim entry point before flagged passages. */
+.review-overview {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 0.5rem;
+}
+
+.review-overview > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.review-overview__body {
+  margin-top: 0.75rem;
+}
+
+/* Story overview block inside the guardian assign dialog, sitting alongside
+   .assign__content-summary. */
+.assign__story-overview {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+.assign__story-overview h3 {
+  margin: 0 0 0.5rem;
 }
 
 .assign__content-summary {

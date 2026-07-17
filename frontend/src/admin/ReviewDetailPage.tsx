@@ -15,6 +15,7 @@ import {
   type ReviewSurface,
   type Visibility,
 } from '../guardian/reviewApi'
+import { StoryStructureSummary } from '../guardian/StoryStructureSummary'
 
 interface ChoiceView {
   label: string
@@ -706,6 +707,10 @@ export function ReviewDetailPage() {
   const totalPassages = readThrough.reachable.length + readThrough.unreachable.length
   const coverage = `${pluralize(totalPassages, 'passage')}, ${readThrough.reachable.length} reachable from the start, ${pluralize(readThrough.endingCount, 'ending')}`
   const flaggedIds = new Set(surface.flagged_passages.map((passage) => passage.node_id))
+  const allFindings = [
+    ...surface.flagged_passages.flatMap((passage) => passage.findings),
+    ...surface.story_level_findings,
+  ]
   const title =
     typeof surface.blob.title === 'string' && surface.blob.title
       ? surface.blob.title
@@ -782,6 +787,24 @@ export function ReviewDetailPage() {
           ) : null}
         </div>
       ) : null}
+
+      {/*
+        G5 skim aid: the structure/branch overview a reviewer scans before
+        deciding whether to read every passage or jump straight to the
+        flagged ones below. Open by default since this IS the skim entry
+        point; <details> lets it collapse out of the way once read.
+      */}
+      <details className="review-overview" open>
+        <summary>Story overview</summary>
+        <div className="review-overview__body">
+          <StoryStructureSummary
+            blob={surface.blob}
+            screened={surface.screened}
+            flaggedCount={allFindings.length}
+            findings={allFindings}
+          />
+        </div>
+      </details>
 
       {surface.flagged_passages.length > 0 ? (
         <div className="review-group">

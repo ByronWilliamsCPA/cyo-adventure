@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -746,6 +746,35 @@ describe('ReviewDetailPage', () => {
           'This story was auto-repaired. Compare with the previous version to see what changed.'
         )
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('story-overview skim panel (G5)', () => {
+    it('shows a collapsible overview above the flagged passages with a flagged-count badge', async () => {
+      renderAt('s1')
+      const overviewSummary = await screen.findByText('Story overview')
+      const details = overviewSummary.closest('details.review-overview')
+      expect(details).not.toBeNull()
+      // Open by default: this IS the skim entry point, read before the
+      // flagged-passages/full-story sections below it.
+      expect(details).toHaveAttribute('open')
+      const overview = within(details as HTMLElement)
+      // SURFACE has one flagged passage with one 'flag'-verdict finding.
+      expect(overview.getByText('1 flagged')).toBeInTheDocument()
+    })
+
+    it('derives node/ending counts and branch shape from the blob', async () => {
+      mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })
+      renderAt('s1')
+      const overviewSummary = await screen.findByText('Story overview')
+      const details = overviewSummary.closest('details.review-overview')
+      const overview = within(details as HTMLElement)
+      // TRAVERSAL_SURFACE's blob has 4 kept nodes and one ending (end-a).
+      expect(overview.getByText('4')).toBeInTheDocument()
+      expect(overview.getByText('1')).toBeInTheDocument()
+      // start has two choices (a decision point) and end-a is one hop away.
+      expect(overview.getByText(/Starts at "start"/)).toBeInTheDocument()
+      expect(overview.getByText(/1 decision point/)).toBeInTheDocument()
     })
   })
 })
