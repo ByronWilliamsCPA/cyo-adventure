@@ -62,6 +62,14 @@ chunks needed, repair cycles, findings density, and cost vs the low-end sibling.
 | 35 | 16+ / long / gamebook | the-pale-road | gauntlet | 1 | 475-520 (dagger: LOW end) | 37 | many fails | A pilgrimage across a salt desert that unmakes the unprepared; canonical long gauntlet at the envelope floor. |
 | 36 | 16+ / long / gamebook | the-tenfold-siege | gauntlet | 2 | 600-680 (dagger: CEILING CHALLENGER) | 37 | many fails | Hold a fortress through ten escalating assaults; supplies and morale state. Deliberately far above the ceiling to stress-test it. |
 
+CLASSIFIER RULE (discovered in brief #11, applies to every sorting_hat brief:
+#13, #17, #19, #25, #33): PL-18 admits sorting_hat only for an acyclic graph with
+ZERO reconvergence anywhere (any in-degree >= 2 reclassifies to
+branch_and_bottleneck/gauntlet). A sorting_hat skeleton must therefore be a pure
+tree; endings equal leaves, so decisions-per-path couples to the ending budget
+(~4-6 decisions at 28-36 endings over three tracks). Briefs mentioning
+"within-track reconvergence" are superseded by this rule.
+
 Ending-count targets follow the ADR-011 master table for the cell; gamebook cells
 are "few wins + many fails" with ~25-35% of nodes as terminals. Every brief also
 carries the constants: decisions per path ~4-8, choices per decision 2-3, ~2-3 setup

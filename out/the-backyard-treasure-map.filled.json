@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Nina and Theo are best friends. One sunny afternoon they were playing in Grandpa's backyard. Under the big oak tree, they found something special. It was a dusty old jar. Inside was a rolled-up map! Someone had drawn it by hand. A dotted line twisted across the yard to a red X. The line brushed the big oak. It looped past the little shed. Then it dipped down toward the stream. Which landmark should they follow first? Nina grinned. Theo grinned too.",
+      "body": "Nina and Theo were best friends. One sunny afternoon they were playing in Grandpa's backyard. Under the big oak tree, they found something special. It was a dusty old jar. Inside was a rolled-up map! Someone had drawn it by hand. A dotted line twisted across the yard to a red X. The line brushed the big oak. It looped past the little shed. Then it dipped down toward the stream. Which landmark should they follow first? Nina grinned. Theo grinned too.",
       "is_ending": false,
       "choices": [
         {
@@ -488,7 +488,7 @@
     },
     {
       "id": "e_set_rock",
-      "body": "The gap between the mossy boulders was not a treasure spot. It was a snug little home for ants! A busy line of them marched along. They carried crumbs to and fro. There was no red X here. There was no treasure either. Nina and Theo said a polite hello to the ants. Then they rolled up the map. They wandered back to the porch. A cool glass of lemonade was waiting there.",
+      "body": "The gap between the mossy boulders was not a treasure spot. It was a snug little home for ants! A busy line of them marched along. They carried crumbs to and fro. No treasure was hiding between those stones after all. Nina and Theo said a polite hello to the ants. Then they rolled up the map. They wandered back to the porch. A cool glass of lemonade was waiting there.",
       "is_ending": true,
       "ending": {
         "id": "end_set_rock",
