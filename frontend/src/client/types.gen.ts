@@ -530,6 +530,34 @@ export type AuthoringPlanResponse = {
 };
 
 /**
+ * BookVerdictView
+ *
+ * One published storybook's re-screen outcome, on the wire.
+ */
+export type BookVerdictView = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Outcome
+     */
+    outcome: string;
+    /**
+     * Reasons
+     */
+    reasons: Array<string>;
+    /**
+     * Error
+     */
+    error: string | null;
+};
+
+/**
  * CategoryInsightView
  *
  * Override evidence for one (age_band, category) pair (WS-F).
@@ -2597,6 +2625,52 @@ export type RecommendationsView = {
      * Items
      */
     items: Array<RecommendationItem>;
+};
+
+/**
+ * RescreenRequest
+ *
+ * POST body: an optional scope for the sweep.
+ *
+ * Attributes:
+ * storybook_ids: When given, restrict the sweep to these ids (ids that
+ * are not currently published are silently skipped, matching an
+ * ordinary filtered list). ``None`` (the default) screens every
+ * published storybook.
+ */
+export type RescreenRequest = {
+    /**
+     * Storybook Ids
+     */
+    storybook_ids?: Array<string> | null;
+};
+
+/**
+ * RescreenSummaryView
+ *
+ * The sweep's aggregate result, on the wire.
+ */
+export type RescreenSummaryView = {
+    /**
+     * Checked
+     */
+    checked: number;
+    /**
+     * Passed
+     */
+    passed: number;
+    /**
+     * Flagged
+     */
+    flagged: number;
+    /**
+     * Errored
+     */
+    errored: number;
+    /**
+     * Results
+     */
+    results: Array<BookVerdictView>;
 };
 
 /**
@@ -4975,6 +5049,37 @@ export type ListAuditEventsApiV1AdminAuditGetResponses = {
 };
 
 export type ListAuditEventsApiV1AdminAuditGetResponse = ListAuditEventsApiV1AdminAuditGetResponses[keyof ListAuditEventsApiV1AdminAuditGetResponses];
+
+export type TriggerRescreenApiV1AdminRescreenPostData = {
+    body: RescreenRequest;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/rescreen';
+};
+
+export type TriggerRescreenApiV1AdminRescreenPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TriggerRescreenApiV1AdminRescreenPostError = TriggerRescreenApiV1AdminRescreenPostErrors[keyof TriggerRescreenApiV1AdminRescreenPostErrors];
+
+export type TriggerRescreenApiV1AdminRescreenPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: RescreenSummaryView;
+};
+
+export type TriggerRescreenApiV1AdminRescreenPostResponse = TriggerRescreenApiV1AdminRescreenPostResponses[keyof TriggerRescreenApiV1AdminRescreenPostResponses];
 
 export type ListAllowlistApiV1AdminProviderAllowlistGetData = {
     body?: never;

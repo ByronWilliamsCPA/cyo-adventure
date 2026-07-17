@@ -496,6 +496,12 @@ _ROUTE_SPECS: list[RouteSpec] = [
     ),
     RouteSpec("GET", "/api/v1/admin/moderation/dashboard", frozenset({Role.ADMIN})),
     RouteSpec("GET", "/api/v1/admin/audit", frozenset({Role.ADMIN})),
+    RouteSpec(
+        "POST",
+        "/api/v1/admin/rescreen",
+        frozenset({Role.ADMIN}),
+        json_body=lambda _seed: {},
+    ),
     RouteSpec("GET", "/api/v1/admin/moderation/noise-floor", frozenset({Role.ADMIN})),
     RouteSpec(
         "PUT",

@@ -562,9 +562,9 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       (G8, A5).
 - [ ] Admin audit view over the pipeline event log: who did what to child-linked data,
       filterable (A13 view half).
-- [ ] Policy re-screen tooling: re-run moderation/policy over published family-tier books
-      after a threshold or band-policy change (A4 first cut; full public-catalog re-screen
-      lands with Phase 9).
+- [x] Policy re-screen tooling: re-run moderation/policy over published family-tier books
+      after a threshold or band-policy change (A4 first cut, delivered 2026-07-17; full
+      public-catalog re-screen lands with Phase 9).
 - [ ] Test hardening per the test matrix: nightly `e2e-real` CI job (Postgres service +
       seed), the real-backend S2 conflict-race spec from the handoff doc, and staging
       golden-journey coverage for GJ2/GJ3/GJ5 (matrix actions 4-6).

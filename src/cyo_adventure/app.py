@@ -41,6 +41,7 @@ from cyo_adventure.api import (
     reading,
     reading_history,
     recommendations,
+    rescreen,
     story_requests,
 )
 from cyo_adventure.core.config import settings
@@ -247,6 +248,7 @@ def create_app() -> FastAPI:
     app.include_router(moderation_thresholds.router)
     app.include_router(moderation_dashboard.router)
     app.include_router(audit.router)
+    app.include_router(rescreen.router)
     app.include_router(provider_allowlist.router)
     app.include_router(me.router)
     app.include_router(story_requests.router)
