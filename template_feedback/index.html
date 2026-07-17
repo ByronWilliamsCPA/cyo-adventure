@@ -2526,6 +2526,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#testsclaudemd-claims-basedpyright-strict-checks-tests-but-the-templates-pyprojecttoml-never-includes-that-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/CLAUDE.md claims BasedPyright strict-checks tests/, but the template's pyproject.toml never includes that path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#semantic-release-baseline-pins-an-invalid-commit_parser-value-for-python-semantic-release-v10" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3045,6 +3056,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#testsclaudemd-claims-basedpyright-strict-checks-tests-but-the-templates-pyprojecttoml-never-includes-that-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/CLAUDE.md claims BasedPyright strict-checks tests/, but the template's pyproject.toml never includes that path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#semantic-release-baseline-pins-an-invalid-commit_parser-value-for-python-semantic-release-v10" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3426,6 +3448,38 @@
 <h2 id="feedback-items">Feedback Items<a class="headerlink" href="#feedback-items" title="Permanent link">&para;</a></h2>
 <!-- Add your feedback below this line -->
 
+<h3 id="testsclaudemd-claims-basedpyright-strict-checks-tests-but-the-templates-pyprojecttoml-never-includes-that-path"><code>tests/CLAUDE.md</code> claims BasedPyright strict-checks <code>tests/</code>, but the template's <code>pyproject.toml</code> never includes that path<a class="headerlink" href="#testsclaudemd-claims-basedpyright-strict-checks-tests-but-the-templates-pyprojecttoml-never-includes-that-path" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: Low</li>
+<li><strong>Category</strong>: Documentation</li>
+<li><strong>Discovered</strong>: 2026-07-16</li>
+</ul>
+<p><strong>Issue</strong>: <code>tests/CLAUDE.md</code>'s "Ruff and type checking in tests" section states
+"BasedPyright runs in strict mode over <code>tests/</code>; type annotations are required
+on all fixtures and helpers." The generated <code>[tool.basedpyright]</code> block,
+however, sets <code>include = ["src"]</code> only (<code>pyproject.toml</code>), and the <code>typecheck</code>
+nox session (<code>noxfile.py</code>) runs <code>basedpyright src</code> with no <code>tests</code> argument.
+Running <code>basedpyright</code> against an explicit test-file path (overriding
+<code>include</code>) surfaces real strict-mode errors in existing test helpers (e.g.
+<code>tests/unit/test_api_deps.py</code>'s hand-rolled fake session/context helpers
+predating this feature, which mismatch <code>AsyncSession</code>/<code>Role</code> in ways the
+project's own <code># pyright: ignore[arg-type]</code> comments already work around),
+confirming the project has never actually run BasedPyright over <code>tests/</code> in
+CI. A contributor who follows the docstring's claim literally would spend
+time chasing type errors CI never checks, or waste time turning off warnings
+that are already silently out of scope.</p>
+<p><strong>Context</strong>: Discovered while adding WS-J (admin user management) integration
+tests and running <code>basedpyright</code> against the new/changed test files directly
+to sanity-check them before committing; the explicit-path invocation type-checks
+files the configured <code>include</code> normally excludes, exposing the doc/config gap.</p>
+<p><strong>Suggested Fix</strong>: Either add <code>tests</code> to <code>[tool.basedpyright].include</code> (and fix
+the resulting strict-mode fallout project-wide, which is a larger one-time
+cost), or correct <code>tests/CLAUDE.md</code> to describe the actual policy (e.g.
+"BasedPyright is not run over <code>tests/</code> in CI; keep annotations reasonable but
+don't expect strict-mode enforcement here").</p>
+<p><strong>Affected Files</strong>: template <code>tests/CLAUDE.md</code> (or template <code>pyproject.toml</code>'s
+<code>[tool.basedpyright]</code> block, whichever direction the fix should take)</p>
+<hr />
 <h3 id="semantic-release-baseline-pins-an-invalid-commit_parser-value-for-python-semantic-release-v10">Semantic Release baseline pins an invalid <code>commit_parser</code> value for python-semantic-release v10<a class="headerlink" href="#semantic-release-baseline-pins-an-invalid-commit_parser-value-for-python-semantic-release-v10" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Priority</strong>: Critical</li>
@@ -4100,7 +4154,7 @@ and the <code>pyjwt</code> hint to cover asymmetric-only allowlists. See this re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 14:28:04 UTC">July 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 01:06:30 UTC">July 17, 2026</span>
   </span>
 
     
