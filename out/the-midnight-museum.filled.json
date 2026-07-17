@@ -155,7 +155,7 @@
     },
     {
       "id": "b_egypt1",
-      "body": "The Egyptian Wing was all long shadows and painted eyes, rows of carved faces watching from every wall. In the center of the room stood a great sarcophagus, its lid propped open at an angle that did not look right for something meant to stay shut. Nearby, a faded wall map showed the museum as it looked a hundred years ago, with wings and halls that no longer existed anywhere Nadia had walked. She stood between the two, the open lid and the old map. Both of them dared her to look closer before she chose a way.",
+      "body": "The Egyptian Wing was full of long shadows and painted eyes. Rows of carved faces watched her from every wall. In the center of the room stood a great sarcophagus. Its lid sat propped open at an odd angle, wrong for something meant to stay shut. Nearby, a faded wall map showed the museum from a hundred years ago. It showed wings and halls that no longer stood anywhere Nadia had walked. She stood between the two, the open lid and the old map. Both dared her to look closer before she picked a way.",
       "is_ending": false,
       "choices": [
         {
@@ -189,7 +189,7 @@
     },
     {
       "id": "b_egypt_lid",
-      "body": "Nadia eased the heavy lid up another inch and slid her hand into the gap. Tucked in a nest of yellowed cotton, her fingers found something small and hard: a brass symbol, a circle crossed by two lines, the twin of the one on her half-torn map. She pulled it free and let the lid settle back down. A thin draught brushed her cheek, cool and steady, tugging at her hair from somewhere behind the wing. It smelled faintly of dust and open space, like a hallway that had not felt fresh air in years.",
+      "body": "Nadia eased the heavy lid up another inch and slid her hand into the gap. Tucked in a nest of yellowed cotton, her fingers found something small and hard. It was a brass symbol, a circle crossed by two lines, the twin of the mark on her half-torn map. She pulled it free and let the lid settle back down. A thin draught brushed her cheek, cool and steady, tugging at her hair from somewhere behind the wing. It smelled faintly of dust and open space, like a hallway that had not felt fresh air in years.",
       "is_ending": false,
       "choices": [
         {
@@ -225,7 +225,7 @@
     },
     {
       "id": "b_egypt_map",
-      "body": "Nadia traced a finger across the old wall map. She followed a wing that did not exist on any floor plan she had ever seen at the museum. It ended somewhere behind the sarcophagus hall, in a space the building did not seem to have anymore. A torch hung on a bracket nearby, unlit but meant to be carried. Past a sagging rope, a dim, roped-off gallery stretched away into shadow, the kind of space nobody official ever mentioned. It looked forgotten. Exactly the sort of place a founder might hide something worth hiding.",
+      "body": "Nadia traced a finger across the old wall map. She followed a wing that did not exist on any floor plan she had ever seen. It ended somewhere behind the sarcophagus hall. That was a space the building did not seem to have anymore. A torch hung on a bracket nearby, unlit but ready to carry. Past a low rope, a dim, closed-off room stretched into shadow. Nobody ever talked about a space like that. It looked forgotten, just the sort of place a founder might hide something worth hiding.",
       "is_ending": false,
       "choices": [
         {
@@ -254,7 +254,7 @@
     },
     {
       "id": "c_archive1",
-      "body": "The Archive smelled of old paper and older dust, the kind of smell that meant nobody had opened a window down here in years. A visitor ledger lay open on a wooden stand, its pages soft and curling at the edges. Beyond the small pool of light from two reading lamps, the back stacks faded into a darkness so complete Nadia could not see where they ended. She stood between the two, the small honest ledger and the huge unlit stacks. The quiet room seemed to wait and see which one she would choose first.",
+      "body": "The Archive smelled of old paper and older dust. It was the kind of smell that meant nobody had opened a window down here in years. A visitor ledger lay open on a wooden stand. Its pages were soft and curling at the edges. Beyond the small pool of light from two reading lamps, the back stacks faded into darkness. It was so deep that Nadia could not see where the stacks ended. She stood between the two, the small honest ledger and the huge unlit stacks. The quiet room seemed to wait and see which one she would choose first.",
       "is_ending": false,
       "choices": [
         {
@@ -312,7 +312,7 @@
     },
     {
       "id": "c_archive_stack",
-      "body": "Deep in the stacks, past shelf after shelf of forgotten titles, Nadia found the low cabinet right where it should be. Its keyhole was cut in the same shape as the mark on her map. And just as before, no key waited in sight. She ran her hand along the shelf above it, a row of thick old dictionaries nobody had opened in years. Behind them she felt a shallow gap, just wide enough to fit her fingers if she pushed her arm in sideways and did not think too hard about what might be waiting there.",
+      "body": "Deep in the stacks, past shelf after shelf of forgotten titles, Nadia found the low cabinet right where it should be. Its keyhole was cut in the same shape as the mark on her map. Just as before, no key waited in sight. She ran her hand along the shelf above it. It held a row of thick old dictionaries nobody had opened in years. Behind them she felt a shallow gap. It was just wide enough to fit her fingers if she pushed her arm in sideways, and did not think too hard about what might be waiting there.",
       "is_ending": false,
       "choices": [
         {
@@ -324,7 +324,7 @@
     },
     {
       "id": "c_archive_dark",
-      "body": "The back stacks swallowed the light from the reading lamps almost all the way. Nadia stood at the edge of true dark, shelves stretching away on either side like they had no end. Somewhere to her left, her eyes caught the faint shape of something hanging from a hook, round and heavy, about the size of an old battery lantern. She could feel her way along the shelves instead, one hand trailing the spines of books she could not read. She would trust the dark to lead her forward, without ever really showing her the way.",
+      "body": "The back stacks swallowed the light from the reading lamps almost completely. Nadia stood at the edge of true dark. Shelves stretched away on either side like they had no end. Somewhere to her left, her eyes caught the faint shape of something hanging from a hook. It was round and heavy, about the size of an old battery lantern. She could feel her way along the shelves instead. One hand trailed the spines of books she could not read. She would trust the dark to lead her forward, without ever really showing her the way.",
       "is_ending": false,
       "choices": [
         {
@@ -445,7 +445,7 @@
     },
     {
       "id": "k_cabinet",
-      "body": "The coded lines in the ledger matched the note tied to her key almost exactly, the same careful rows of letters and numbers. Nadia closed the ledger and looked around the study. Near the window stood a small reading table, a green-shaded lamp waiting on it, unlit but ready. It looked as if the room had been set up for this exact moment. It seemed like the right place to spread everything out and start making sense of what she had found.",
+      "body": "The coded lines in the ledger matched the note tied to her key. The same careful rows of letters and numbers ran through both. Nadia closed the ledger and looked around the study. Near the window stood a small reading table. A green-shaded lamp waited on it, unlit but ready. It looked as if the room had been set up for this exact moment. It seemed like the right place to spread everything out and start making sense of what she had found.",
       "is_ending": false,
       "choices": [
         {
@@ -457,7 +457,7 @@
     },
     {
       "id": "k_display_force",
-      "body": "Nadia leaned her weight against the stubborn latch. The old glass answered with a long, low creak that made her freeze. It was a warning sound, the kind glass makes right before it decides whether to bend or break. She could feel the lid give a little under the push, stiff but not quite stuck for good. She could ease off now and try something gentler. Or she could give it one firm yank and hope the glass held. Either way, she had only a second or two left before her arms gave out.",
+      "body": "Nadia leaned her weight against the stubborn latch, and the old glass answered with a long, low creak that made her freeze. It was a warning sound, the kind glass makes right before it decides whether to bend or break. She could feel the lid give a little under the push, stiff but not quite stuck for good. She could ease off now and try something gentler, or give it one firm yank and hope the glass held. Either way, she had only a second or two left before her arms gave out.",
       "is_ending": false,
       "choices": [
         {
@@ -503,7 +503,7 @@
     },
     {
       "id": "k_stairs_up",
-      "body": "Nadia climbed the narrow stairs, one careful step at a time. Until they opened onto a small landing she had not expected. A reading table stood there, its green lamp somehow still glowing after all these years, casting a warm circle of light. Beside the lamp sat a folded coded note and a small brass wheel, laid out together. It looked as if someone, long ago, had meant for them to be found exactly like that, side by side, waiting for the right person to arrive.",
+      "body": "Nadia climbed the narrow stairs, one careful step at a time. The stairs opened onto a small landing she had not expected. A reading table stood there. Its green lamp somehow still glowed after all these years, casting a warm circle of light. Beside the lamp sat a folded coded note and a small brass wheel, laid out together. It looked as if someone, long ago, had meant for them to be found exactly like that, side by side, waiting for the right person to arrive.",
       "is_ending": false,
       "choices": [
         {
@@ -527,7 +527,7 @@
     },
     {
       "id": "k_study",
-      "body": "Whatever the night had given her seemed to belong on the small reading table under the green lamp. Nadia set it down among the note's careful rows of letters, already smoothed flat and waiting. She pulled the chair close and looked at everything gathered there: the code from her pocket. And whatever tools or clues her search had turned up along the way. In that quiet room, it felt like walking the same path the founder must have walked himself, years before she was born. She leaned into the lamplight and began to read the first line.",
+      "body": "Whatever the night had given her seemed to belong on the small reading table under the green lamp. Nadia set it down among the note's careful rows of letters, already smoothed flat and waiting. She pulled the chair close and looked at everything gathered there. There was the code from her pocket, and whatever tools or clues her search had turned up along the way. In that quiet room, it felt like walking the same path the founder must have walked. He had done it, she thought, years before she was born. She leaned into the lamplight and began to read the first line.",
       "is_ending": false,
       "choices": [
         {
@@ -578,7 +578,7 @@
     },
     {
       "id": "ci_stars_dome",
-      "body": "Nadia climbed the spiral stairs until she stood right beneath the painted dome, close enough to see brush strokes in the gold. One shape of stars stood out from the rest, its points joined by a faint painted line that matched the cipher's clue exactly. Below it, tucked into the curved wall, a small marked door waited, easy to miss unless you knew to look. She pushed it open and found a passage sloping gently down. Clearly leading back toward the round hall at the heart of the museum.",
+      "body": "Nadia climbed the spiral stairs until she stood right beneath the painted dome, close enough to see brush strokes in the gold. One shape of stars stood out from the rest. Its points were joined by a faint painted line that matched the cipher's clue exactly. Below it, tucked into the curved wall, a small marked door waited, easy to miss unless you knew to look. She pushed it open and found a passage sloping gently down. It clearly led back toward the round hall at the heart of the museum.",
       "is_ending": false,
       "choices": [
         {
@@ -590,7 +590,7 @@
     },
     {
       "id": "ci_stars_ladder",
-      "body": "The metal ladder rose higher than Nadia expected, its rungs cold and slightly rusted under her palms. At the top, a narrow walkway stretched across the hall, high above the painted floor. A steady walk along it led toward a small door on the far side, solid and easy to reach if she kept her balance and her nerve. But above the walkway, the dome's shadowed upper reaches climbed further still, dark and unexplored. Some small reckless part of her wanted to see how far up this ladder would take her.",
+      "body": "The metal ladder rose higher than Nadia expected. Its rungs felt cold and slightly rusted under her palms. At the top, a narrow walkway stretched across the hall, high above the painted floor. A steady walk along it led toward a small door on the far side. It looked solid and easy to reach if she kept her balance and her nerve. But above the walkway, the dome's shadowed upper reaches climbed further still, dark and unexplored. Some small reckless part of her wanted to see how far up this ladder would take her.",
       "is_ending": false,
       "choices": [
         {
@@ -619,7 +619,7 @@
     },
     {
       "id": "ci_map",
-      "body": "The Map Room was lined floor to ceiling with old charts, their colors faded to soft browns and blues. In the center stood a great floor globe, taller than Nadia herself, set on shining brass rails that let it turn with a touch. Nearby, a giant bound atlas lay open on a slanted wooden stand, its pages nearly as wide as she was tall. The cipher's line still echoed in her head: follow the stars. Somewhere between the globe's painted lines and the atlas's careful ink, she guessed, the room held its own kind of sky.",
+      "body": "The Map Room was lined floor to ceiling with old charts. Their colors had faded to soft browns and blues. In the center stood a great floor globe, taller than Nadia herself. It sat on shining brass rails that let it turn with a touch. Nearby, a giant bound atlas lay open on a slanted wooden stand, its pages nearly as wide as she was tall. The cipher's line still echoed in her head: follow the stars. Somewhere between the globe's painted lines and the atlas's careful ink, the room held its own kind of sky.",
       "is_ending": false,
       "choices": [
         {
@@ -648,7 +648,7 @@
     },
     {
       "id": "ci_map_atlas",
-      "body": "Nadia turned the atlas's huge pages slowly. Near the back, one page fell open on its own to a hand-drawn map that did not match the printed pages around it. It was the founder's own work, she was almost sure, added long after the atlas was bound. A route ran across it in faded red ink, winding past rooms she knew and some she did not, all of it aimed toward the very center of the museum. She traced the line with one finger, learning every turn before she closed the heavy book.",
+      "body": "Nadia turned the atlas's huge pages slowly. Near the back, one page fell open on its own. It was a hand-drawn map that did not match the printed pages around it. It was the founder's own work, she was almost sure, added long after the atlas was bound. A route ran across it in faded red ink. It wound past rooms she knew and some she did not, all of it aimed toward the very center of the museum. She traced the line with one finger, learning every turn before she closed the heavy book.",
       "is_ending": false,
       "choices": [
         {
@@ -730,7 +730,7 @@
     },
     {
       "id": "n_rotunda",
-      "body": "Whichever passage had carried her there, all of them opened, in the end, onto the same room: the central rotunda, its glass dome arching high overhead and the night sky faintly showing through the grime. In the middle stood a great clockwork globe built from rings of brass, gears nested inside gears, silent and huge. The cipher had promised that the founder's real collection waited somewhere in this very room, not hidden in some far wing but right at the heart of everything. Nadia walked once around the globe, taking in its stand and the dark doorway marked as the night guard's records room. And began to plan.",
+      "body": "Whichever passage had carried her there, all of them opened, in the end, onto the same room: the central rotunda. Its glass dome arched high overhead, and the night sky showed faintly through the grime. In the middle stood a great clockwork globe built from rings of brass, gears nested inside gears, silent and huge. The cipher had promised that the founder's real collection waited somewhere in this very room. It was not hidden in some far wing, but right at the heart of everything. Nadia walked once around the globe, taking in its stand and the dark doorway marked as the night guard's records room. Then she began to plan.",
       "is_ending": false,
       "choices": [
         {
@@ -769,7 +769,7 @@
     },
     {
       "id": "ro_align_set",
-      "body": "One by one, Nadia set each ring to its decoded mark, checking each number against the cipher before she let go. When the last ring clicked into place, the whole globe seemed to sigh, gears meshing somewhere deep inside its brass frame. A section of the marble floor beneath the stand shuddered, then slid back, showing a narrow stair that spiraled down into the dark. Cool air rose to meet her, carrying the faint smell of old stone and something else she could not quite name.",
+      "body": "One by one, Nadia set each ring to its decoded mark. She checked each number against the cipher before she let go. When the last ring clicked into place, the whole globe seemed to sigh. Gears meshed somewhere deep inside its brass frame. A section of the marble floor beneath the stand shuddered, then slid back. It showed a narrow stair that spiraled down into the dark. Cool air rose to meet her, carrying the faint smell of old stone and something else she could not quite name.",
       "is_ending": false,
       "choices": [
         {
@@ -827,7 +827,7 @@
     },
     {
       "id": "ro_panel_solve",
-      "body": "Nadia slid the tiles patiently, one at a time, matching each faint symbol until they formed the same shape scratched onto her half-torn map, a circle crossed by two lines. The last tile clicked home. Somewhere beneath the stand, a hidden catch let go with a soft, satisfying snap. The marble floor around the base shifted and drew back, opening onto a narrow stair that curled away into the dark. Exactly the kind of hidden path the whole night had been leading her toward.",
+      "body": "Nadia slid the tiles patiently, one at a time. She matched each faint symbol until they formed the same shape scratched onto her half-torn map, a circle crossed by two lines. The last tile clicked home. Somewhere beneath the stand, a hidden catch let go with a soft, satisfying snap. The marble floor around the base shifted and drew back. It opened onto a narrow stair that curled away into the dark, exactly the kind of hidden path the whole night had been leading her toward.",
       "is_ending": false,
       "choices": [
         {
@@ -851,7 +851,7 @@
     },
     {
       "id": "ro_workshop",
-      "body": "This, Nadia slowly knew, was the founder's own workshop, sealed up and forgotten long before she was born. Long benches ran along every wall, crowded with half-finished machines frozen mid-gesture, tiny brass birds and clockwork animals labeled in his same thin hand. It was not the hidden treasure the cipher had promised her, no gold, no vault of jewels. But standing among all those half-finished wonders, gathering dust in the dark for a hundred years, felt like its own kind of find, quieter than gold. And just as rare.",
+      "body": "This, Nadia slowly knew, was the founder's own workshop, sealed up and forgotten long before she was born. Long benches ran along every wall. They were crowded with half-finished machines frozen mid-gesture, tiny brass birds and clockwork animals labeled in his same thin hand. It was not the hidden treasure the cipher had promised her. There was no gold, no vault of jewels. But standing among all those half-finished wonders, gathering dust in the dark for a hundred years, felt like its own kind of find. It was quieter than gold, and just as rare.",
       "is_ending": false,
       "choices": [
         {
@@ -863,7 +863,7 @@
     },
     {
       "id": "ro_records",
-      "body": "The night guard's records room hummed softly with a bank of old screens, flickering gray over empty halls. A rounds log lay open on the desk, its pages filled with tidy writing and times stretching back weeks. Beside it sat a heavy black phone, its cord coiled and its receiver close enough to reach without moving. Nadia glanced between the log and the phone, the whole museum's quiet routine laid out in front of her. She wondered which one held more of what she needed tonight.",
+      "body": "The night guard's records room hummed softly with a bank of old screens. They flickered gray over empty halls. A rounds log lay open on the desk. Its pages were filled with tidy writing and times stretching back weeks. Beside it sat a heavy black phone. Its cord was coiled, and its receiver sat close enough to reach without moving. Nadia glanced between the log and the phone, the whole museum's quiet routine laid out in front of her. She wondered which one held more of what she needed tonight.",
       "is_ending": false,
       "choices": [
         {
@@ -948,7 +948,7 @@
     },
     {
       "id": "v_letter_reveal",
-      "body": "Following the letter's last line, Nadia pressed against the shelf it described. A false panel gave way, swinging outward to show a thick, leather-bound book tucked behind it. Inside, page after page, the founder had listed every single piece in his hidden collection. And beside each one, carefully noted. Exactly where it truly belonged. It was not just a list of treasures anymore. It was the whole mystery, solved and laid out and waiting, resting now in her own two hands under the room's dim light.",
+      "body": "Following the letter's last line, Nadia pressed against the shelf it described. A false panel gave way, swinging outward to show a thick, leather-bound book tucked behind it. Inside, page after page, the founder had listed every single piece in his hidden collection. Beside each one, he had noted exactly where it truly belonged. It was not just a list of treasures anymore. It was the whole mystery, solved and laid out and waiting. It rested now in her own two hands under the room's dim light.",
       "is_ending": false,
       "choices": [
         {
@@ -984,7 +984,7 @@
     },
     {
       "id": "v_map",
-      "body": "The old treasure map, unrolled fully, marked a walled-up wing Nadia had never once seen on any tour, a whole hidden part of the museum sealed away behind plaster and time. She could follow it right now. While the trail was fresh and her nerve was still up. She could take a picture of it instead and bring proof back to someone who could do this the right way in daylight. Or she could simply sit here a while longer, tracing every faded line with her finger, learning a mystery that had waited this long already and could wait a little more.",
+      "body": "The old treasure map, unrolled fully, marked a walled-up wing Nadia had never once seen on any tour. It was a whole hidden part of the museum, sealed away behind plaster and time. She could follow it right now, while the trail was fresh and her nerve was still up. She could take a picture of it instead and bring proof back to someone who could do this the right way in daylight. Or she could simply sit here a while longer, tracing every faded line with her finger. The mystery had waited this long already, and it could wait a little more.",
       "is_ending": false,
       "choices": [
         {
@@ -1006,7 +1006,7 @@
     },
     {
       "id": "v_map_follow",
-      "body": "Nadia followed the map's careful lines behind a section of plaster that gave way more easily than she expected, opening onto a small, sealed gallery. Paintings lined the walls, canvases the town had long thought were lost forever, their colors dim but still clearly beautiful under her phone's light. She marked the way back with a line of chalk and took a picture of every frame she could reach. Whatever happened next, she was sure no one would ever be able to say this room had not existed.",
+      "body": "Nadia followed the map's careful lines behind a section of plaster. It gave way more easily than she expected, opening onto a small, sealed gallery. Paintings lined the walls, canvases the town had long thought were lost forever. Their colors were dim but still clearly beautiful under her phone's light. She marked the way back with a line of chalk. She took a picture of every frame she could reach. Whatever happened next, she was sure no one would ever be able to say this room had not existed.",
       "is_ending": false,
       "choices": [
         {
@@ -1018,7 +1018,7 @@
     },
     {
       "id": "v_map_photo",
-      "body": "Nadia laid the old map flat and took pictures of it corner to corner, careful to catch every faded line and label clearly. Then she rolled it back up exactly as she had found it and set it down on the same shelf, leaving the whole room untouched behind her. Whatever happened next was not fully her choice to make alone, she thought. But she would have proof enough, safe on her phone, to make sure the right people believed her when she finally told them everything.",
+      "body": "Nadia laid the old map flat and took pictures of it corner to corner. She was careful to catch every faded line and label clearly. Then she rolled it back up exactly as she had found it. She set it down on the same shelf, leaving the whole room untouched behind her. Whatever happened next was not fully her choice to make alone, she thought. But she would have proof enough, safe on her phone, to make sure the right people believed her when she finally told them everything.",
       "is_ending": false,
       "choices": [
         {
@@ -1030,7 +1030,7 @@
     },
     {
       "id": "v_share",
-      "body": "With the letter and the book both safe in her hands, Nadia sat with the bigger question a while longer: who should actually know about all this? The curator, she guessed, would do right by the founder's memory and make sure everything was handled well. Her closest friends would keep the secret thrilling and private, a wonder shared only among themselves. Or she could simply leave everything exactly as it lay, trusting the museum to stumble onto its own history eventually, the way it probably should have years ago.",
+      "body": "With the letter and the book both safe in her hands, Nadia sat with the bigger question a while longer. Who should actually know about all this? The curator, she guessed, would do right by the founder's memory. She would make sure everything was handled well. Her closest friends would keep the secret thrilling and private, a wonder shared only among themselves. Or she could simply leave everything exactly as it lay. She could trust the museum to find its own history on its own, the way it probably should have years ago.",
       "is_ending": false,
       "choices": [
         {
@@ -1052,7 +1052,7 @@
     },
     {
       "id": "v_share_curator",
-      "body": "Nadia gathered the letter and the book under one arm and waited by the staff door until the first gray light of morning crept across the rotunda floor. When the curator finally arrived, keys jingling, Nadia held everything out at once and simply started talking. The curator's shock slowly turned to wonder as she turned the book's pages herself, seeing exactly what a school trip and one locked door had somehow managed to find overnight.",
+      "body": "Nadia gathered the letter and the book under one arm. She waited by the staff door until the first gray light of morning crept across the rotunda floor. The curator finally arrived, her keys jingling. Nadia held everything out at once and simply started talking. The whole strange story spilled out in a rush. The curator's shock slowly turned to wonder. She turned the book's pages herself and saw exactly what a school trip and one locked door had found overnight.",
       "is_ending": false,
       "choices": [
         {
@@ -1076,7 +1076,7 @@
     },
     {
       "id": "v_share_museum",
-      "body": "Nadia carried the founder's own map back up to the guard's desk and set it open where it could not be missed. A short note tucked beside it explained just enough to point the way, without saying who had written it. She trusted the museum to follow the trail the right way from there, with all its careful experts and proper tools. And finish what the founder himself had started so long ago. Some finds, she decided, were better handed over quietly than claimed.",
+      "body": "Nadia carried the founder's own map back up to the guard's desk. She set it open where it could not be missed. A short note tucked beside it explained just enough to point the way, without saying who had written it. She trusted the museum to follow the trail the right way from there. It had all the careful experts and proper tools it needed. That team, she was sure, would finish what the founder himself had started so long ago. Some finds, she decided, were better handed over quietly than claimed.",
       "is_ending": false,
       "choices": [
         {
@@ -1105,7 +1105,7 @@
     },
     {
       "id": "v_grab_run",
-      "body": "Nadia slipped the little owl into her bag and turned to go, already picturing the look on everyone's face when she showed them proof. She had barely reached the bottom step when a soft chime of bells rang out behind her. The shelf's weight had quietly reset the moment the owl left it. She kept climbing anyway, faster now, the gentle ringing trailing her the whole way up the stair and out into the hall, telling anyone who cared to listen exactly what she had done.",
+      "body": "Nadia slipped the little owl into her bag and turned to go. She was already picturing the look on everyone's face when she showed them proof. She had barely reached the bottom step when a soft chime of bells rang out behind her. The shelf's weight had quietly reset the moment the owl left it. She kept climbing anyway, faster now. The gentle ringing trailed her the whole way up the stair and out into the hall, telling anyone who cared to listen exactly what she had done.",
       "is_ending": false,
       "choices": [
         {
@@ -1117,7 +1117,7 @@
     },
     {
       "id": "v_grab_return",
-      "body": "Nadia set the little owl back down onto its velvet, right where it had rested. The small weight of the choice settled more easily than she expected. The truth, she decided, was worth more than any one trophy, however much proof it might have offered. She climbed back up the hidden stair with nothing in her bag but her own scribbled notes and a clear mind, ready to explain everything honestly to whoever asked, without needing an owl to back her up.",
+      "body": "Nadia set the little owl back down onto its velvet, right where it had rested. The small weight of the choice settled more easily than she expected. The truth, she decided, was worth more than any one trophy, however much proof it might have offered. She climbed back up the hidden stair with nothing in her bag but her own scribbled notes. Her mind felt clear. She was ready to explain everything honestly to whoever asked, without needing an owl to back her up.",
       "is_ending": false,
       "choices": [
         {
@@ -1206,7 +1206,7 @@
     },
     {
       "id": "e_set_caught",
-      "body": "The ringing bells led the guard straight to Nadia before she had even reached the lobby, his torch catching her mid-stride with the little owl still chiming softly in her bag. Red-faced, she handed it back and put everything right as best she could, telling the whole strange night in a rush of words that somehow, mostly, made sense to him. He let her off with a stern word and a promise that she would come back the right way, by daylight, to finish this the right way. The treasure stayed safe. The lesson, she suspected, would stay with her much longer.",
+      "body": "The ringing bells led the guard straight to Nadia before she had even reached the lobby. His torch caught her mid-stride, the little owl still chiming softly in her bag. Red-faced, she handed it back and put everything right as best she could. She told the whole strange night in a rush of words that somehow, mostly, made sense to him. He let her off with a stern word and a promise that she would come back the right way, by daylight, to finish this properly. The treasure stayed safe. The lesson, she suspected, would stay with her much longer.",
       "is_ending": true,
       "ending": {
         "id": "e_caught",
@@ -1217,7 +1217,7 @@
     },
     {
       "id": "e_set_dawn",
-      "body": "Nadia lost herself all the way in the old map's faded lines, tracing each faint mark until she nearly forgot where she was. When she finally looked up, the sky beyond the rotunda's glass dome had already gone gray with early morning. Somewhere below, she could hear the first staff arriving for the day. She slipped out quietly through a side door before anyone noticed her, the mystery only half traced, half knew. She promised herself, walking home in the pale light, that she would come back and finish this the right way, very soon.",
+      "body": "Nadia lost herself completely in the old map's faded lines. She traced each faint mark until she nearly forgot where she was. When she finally looked up, the sky beyond the rotunda's glass dome had already gone gray with early morning. Somewhere below, she could hear the first staff arriving for the day. She slipped out quietly through a side door before anyone noticed her. The mystery stayed only half traced, half known. She promised herself, walking home in the pale light, that she would come back and finish this the right way, very soon.",
       "is_ending": true,
       "ending": {
         "id": "e_dawn",
@@ -1228,7 +1228,7 @@
     },
     {
       "id": "e_win_secret_workshop",
-      "body": "The founder's forgotten workshop became Nadia's own quiet triumph. She took pictures of every half-built machine with care, leaving each one right where it stood, disturbing nothing. By the time morning light crept through the rotunda's dome, she was waiting to tell the curator about a whole lost room nobody alive had known still existed, tucked behind a hidden panel for a hundred years. It was not gold or jewels she carried out with her, just proof of a marvel no one had dared hope had survived. And that felt like more than enough.",
+      "body": "The founder's forgotten workshop became Nadia's own quiet triumph. She took pictures of every half-built machine with care. She left each one right where it stood, disturbing nothing. By the time morning light crept through the rotunda's dome, she was waiting to tell the curator about a whole lost room. Nobody alive had known it still existed, tucked behind a hidden panel for a hundred years. It was not gold or jewels she carried out with her, just proof of a marvel no one had dared hope had survived. That felt like more than enough.",
       "is_ending": true,
       "ending": {
         "id": "e_secret_workshop",
@@ -1239,7 +1239,7 @@
     },
     {
       "id": "e_win_mystery_solved",
-      "body": "With the letter in one hand and the book in the other, Nadia climbed the last stair and walked out into a morning brighter than any she remembered. She handed the founder's whole story back to the town that had half forgotten him, page by careful page. Until his name was cleared and his hidden collection finally, the right way found. The museum would never be quite the same again. And neither, she suspected, would she. A school trip that had left without her had somehow given her back a whole piece of history nobody else had known was missing.",
+      "body": "With the letter in one hand and the book in the other, Nadia climbed the last stair. She walked out into a morning brighter than any she remembered. She handed the founder's whole story back to the town that had half forgotten him, page by careful page. His name was cleared at last, and his hidden collection was finally, properly found. The museum would never be quite the same again, and neither, she suspected, would she. A school trip had left without her that night. But it had somehow given her back a whole piece of history nobody else had known was missing.",
       "is_ending": true,
       "ending": {
         "id": "e_mystery_solved",
@@ -1250,7 +1250,7 @@
     },
     {
       "id": "e_win_quiet_keeper",
-      "body": "Nadia left the room with nothing but the founder's letter folded carefully in her coat. And a quiet promise to herself about how she meant to honor it. Over the weeks that followed, she found small, careful ways to nudge the curator toward the truth: a dropped hint here, a gentle question there, never quite explaining how she knew. Without ever asking for the role, she had become keeper of a trust the founder had left behind. And she meant to carry it as gently as he once had.",
+      "body": "Nadia left the room with nothing but the founder's letter folded carefully in her coat. She made a quiet promise to herself about how she meant to honor it. Over the weeks that followed, she found small, careful ways to nudge the curator toward the truth. A dropped hint here, a gentle question there, and she never quite explained how she knew. Without ever asking for the role, she had become keeper of a trust the founder had left behind. She meant to carry it as gently as he once had.",
       "is_ending": true,
       "ending": {
         "id": "e_quiet_keeper",
@@ -1261,7 +1261,7 @@
     },
     {
       "id": "e_win_lost_wing",
-      "body": "The walled-up wing of lost paintings became Nadia's discovery to give. And give it she did. Her careful pictures brought experts first, then reporters. And soon the whole town was crowding through doors that had stayed sealed for a hundred years, marveling at pictures nobody alive had ever expected to see again. Standing at the edge of the crowd, watching strangers gasp at what she had found in the dark, Nadia felt something warm and proud settle over her, quiet and fully her own.",
+      "body": "The walled-up wing of lost paintings became Nadia's discovery to give, and give it she did. Her careful pictures brought experts first, then reporters. Soon the whole town was crowding through doors that had stayed sealed for a hundred years. They marveled at pictures nobody alive had ever expected to see again. Nadia stood at the edge of the crowd, watching strangers gasp at what she had found in the dark. Something warm and proud settled over her. It was quiet, and entirely her own.",
       "is_ending": true,
       "ending": {
         "id": "e_lost_wing",
@@ -1272,7 +1272,7 @@
     },
     {
       "id": "e_win_hero_curator",
-      "body": "At first light, the curator listened to Nadia's whole story with her mouth slightly open. Then, without wasting another minute, she gathered a careful team to follow the girl down the hidden stair. By midmorning, word had spread through the whole museum staff about the girl who had somehow given the founder's gift back to everyone. Exactly as he had always wished it. Nadia stood a little apart from the fuss, tired and dusty and fully content, having finally finished something that had waited a hundred years for her.",
+      "body": "At first light, the curator listened to Nadia's whole story with her mouth slightly open. Then she wasted no time. She gathered a careful team to follow the girl down the hidden stair. By midmorning, word had spread through the whole museum staff. Everyone had heard about the girl who gave the founder's gift back to everyone, just as he had always wished it. Nadia stood a little apart from the fuss, tired and dusty and quite happy. She had finished something that had waited a hundred years for her.",
       "is_ending": true,
       "ending": {
         "id": "e_hero_curator",
@@ -1283,7 +1283,7 @@
     },
     {
       "id": "e_win_secret_kept",
-      "body": "The hidden room became the treasured secret of Nadia and her closest friends, a wonder they visited quietly and guarded together, just the three of them. They never told another soul, not yet. And the not-telling became its own kind of bond, a promise stitched between them that felt every bit as valuable as anything on those dusty shelves. It was theirs alone for now, tucked safely under the museum's oldest floor. And Nadia found she did not mind waiting to share it the right way.",
+      "body": "The hidden room became the treasured secret of Nadia and her closest friends. It was a wonder the three of them visited quietly and guarded together. They never told another soul, not yet. The not-telling became its own kind of bond. It was a promise stitched between them, one that felt as valuable as anything on those dusty shelves. It was theirs alone for now, tucked safely under the museum's oldest floor. Nadia found she did not mind waiting to share it the right way.",
       "is_ending": true,
       "ending": {
         "id": "e_secret_kept",
@@ -1294,7 +1294,7 @@
     },
     {
       "id": "e_win_donate",
-      "body": "Nadia left the founder's own map propped open on the guard's desk, a careful note tucked beside it. And slipped away into the gray morning before anyone arrived. Days later, the museum followed the trail just as she had hoped, finding the whole hidden collection at last. They never learned whose small, careful hands had set them on the path in the first place. Nadia kept that quietly to herself, content to know the founder's gift had finally reached the people he always meant to have it.",
+      "body": "Nadia left the founder's own map propped open on the guard's desk. A careful note sat tucked beside it. She slipped away into the gray morning before anyone arrived. Days later, the museum followed the trail just as she had hoped. It found the whole hidden collection at last. They never learned whose small, careful hands had set them on the path in the first place. Nadia kept that quietly to herself, glad to know the founder's gift had finally reached the people he always meant to have it.",
       "is_ending": true,
       "ending": {
         "id": "e_donate",
@@ -1327,7 +1327,7 @@
     },
     {
       "id": "e_neutral_wiser",
-      "body": "Nadia left the treasures right where they belonged and climbed back up into the ordinary museum with nothing but her own scribbled notes for company. She had not solved everything, not quite. And some questions would probably stay unanswered for a while yet. But she had learned something about herself in that dark room, about what she was willing to do and what she was not. She walked home as the sky lightened, tired, a little cold. And genuinely wiser than the girl who had walked in.",
+      "body": "Nadia left the treasures right where they belonged. She climbed back up into the ordinary museum with nothing but her own scribbled notes for company. She had not solved everything, not quite. Some questions would probably stay unanswered for a while yet. But she had learned something about herself in that dark room, about what she was willing to do and what she was not. She walked home as the sky lightened, tired and a little cold. She felt truly wiser than the girl who had walked in.",
       "is_ending": true,
       "ending": {
         "id": "e_wiser",

@@ -285,7 +285,7 @@
     },
     {
       "id": "e_owl_oops",
-      "body": "Clover shakes the branch hard. Leaves fall down so many! Crunchy dry leaves. They fall on her head. She is buried in a leaf pile! A giggly pile! Owl snores louder. She can still hear him. She brushes off leaves. She goes back.",
+      "body": "Clover shakes the branch hard. So many leaves fall down! Crunchy dry leaves. They fall on her head. She is buried in a leaf pile! A giggly pile! Owl snores louder. She can still hear him. She brushes off leaves. She goes back.",
       "is_ending": true,
       "ending": {
         "id": "end_owl_oops",
@@ -443,7 +443,7 @@
     },
     {
       "id": "e_nap",
-      "body": "Full of snacks. Full of happy times. All the bears curl up together. They make a soft heap. On the warm blanket. The sun is soft on their fur. The picnic she built is good. Everything is cozy.",
+      "body": "Full of snacks. Full of happy times. All the bears curl up together. They make a soft heap on the warm blanket. The sun is soft on their fur. The picnic she built is good. Everything is cozy.",
       "is_ending": true,
       "ending": {
         "id": "end_nap",
