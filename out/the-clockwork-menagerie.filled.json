@@ -1415,7 +1415,7 @@
     },
     {
       "id": "p_c1",
-      "body": "Nia read Keeper Fettle's letter last. Near the bottom she found a curious note. It spoke of an old shortcut lever, stiff and rusted. That lever could send a loaded cart speeding straight back to the spring-room. It would save all the heavy carrying. She looked at the lever across the workshop, red with rust. Then she looked at the great spring she must move. She could throw that lever and let the cart rush the spring back. Or she could carry the spring herself, the long slow safe way, in her own two arms. Nia weighed her choice.",
+      "body": "Nia read Keeper Fettle's letter last, and near the bottom she found a curious note. It spoke of an old shortcut lever, stiff and rusted with age. That lever could send a loaded cart speeding straight back to the spring-room, saving all the heavy carrying. She looked at the rusted lever across the workshop, and then at the great heavy spring she must move. She could throw the lever and let the cart rush the spring back in a hurry. Or she could carry the spring herself, the long slow safe way, in her own two tired arms. Nia thought it over and weighed her difficult choice.",
       "is_ending": false,
       "choices": [
         {
@@ -1814,7 +1814,7 @@
     },
     {
       "id": "e_win_fly",
-      "body": "The crystal butterfly lifted from its glass fern. It began to flutter in slow, bright circles beneath the starry dome, scattering color as it flew. Nia laughed with delight. One by one she wound a few more. Soon a little cloud of drifting color floated softly through the conservatory. When the children came at dawn, they would chase the bright butterflies with shining eyes. They would reach up on tiptoe to follow them round the room. It was a delicate, magical ending, gentle as the flutter of foil wings. Nia thought it about the loveliest sight she had ever made.",
+      "body": "The crystal butterfly lifted from its glass fern. It began to flutter in slow, bright circles beneath the starry dome, scattering color as it flew. Nia laughed with delight. One by one she wound a few more. Soon a little cloud of drifting color floated softly through the conservatory. When the children came at dawn, they would chase the bright butterflies with shining eyes. They would reach up on tiptoe to follow them round the room. It was a delicate, magical ending, gentle as the flutter of foil wings. Nia thought it just about the loveliest sight she had ever made.",
       "is_ending": true,
       "ending": {
         "id": "e_win_fly",
