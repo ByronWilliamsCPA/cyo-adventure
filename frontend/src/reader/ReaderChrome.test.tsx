@@ -97,4 +97,22 @@ describe('ReaderChrome', () => {
       expect(button.className).toContain('reader-tts-toggle--speaking')
     })
   })
+
+  describe('flag slot (K15)', () => {
+    it('is not rendered when the flag prop is omitted', () => {
+      render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
+      expect(screen.queryByRole('button')).toBeNull()
+    })
+
+    it('renders the caller-supplied flag node', () => {
+      render(
+        <ReaderChrome
+          percent={40}
+          label="2 of 5 pages explored"
+          flag={<button type="button">Tell a grown-up</button>}
+        />
+      )
+      expect(screen.getByRole('button', { name: 'Tell a grown-up' })).toBeTruthy()
+    })
+  })
 })

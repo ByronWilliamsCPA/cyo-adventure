@@ -2,12 +2,16 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { choose } from '../player/engine'
 import type { Storybook } from '../player/types'
+import { clearChildSession, setChildSession } from '../auth/childSession'
+import type { SubmitFlagParams } from '../api/readerApi'
+import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
+import { ToastProvider } from '../notifications/ToastProvider'
 import { Reader } from './Reader'
 
 // choose() wraps the real implementation by default (every existing test
@@ -381,6 +385,113 @@ describe('Reader ending progress and celebration', () => {
     const stars = screen.getByTestId('ending-celebration')
     expect(stars.className).toBe('reader-ending__stars')
     expect(stars.className).not.toContain('--celebrate')
+  })
+})
+
+type FetchReadingHistoryMock = (profileId: string) => Promise<ReadingHistoryItem[]>
+type SubmitFlagMock = (params: SubmitFlagParams) => Promise<KidFlagCreatedView>
+
+describe('Reader K6 endings tracker', () => {
+  function reachLanternEnding(fetchReadingHistory?: FetchReadingHistoryMock) {
+    render(
+      <MemoryRouter>
+        <Reader
+          story={lantern}
+          profileId="p1"
+          fetchReadingHistory={fetchReadingHistory}
+        />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+  }
+
+  it('shows the tracker after the celebration when total_endings > 1', async () => {
+    const fetchReadingHistory = vi.fn<FetchReadingHistoryMock>().mockResolvedValue([
+      {
+        storybook_id: lantern.id,
+        title: lantern.title,
+        endings_found: 2,
+        ending_ids: ['e_treasure_found', 'e_other'],
+        total_endings: 4,
+        in_progress: false,
+        last_activity_at: '2026-07-01T00:00:00Z',
+      },
+    ])
+    reachLanternEnding(fetchReadingHistory)
+    expect(
+      await screen.findByTestId('endings-tracker')
+    ).toHaveTextContent('You found ending 2 of 4! Read again to find more.')
+    expect(fetchReadingHistory).toHaveBeenCalledWith('p1')
+  })
+
+  it('renders nothing when total_endings is 1 or fewer', async () => {
+    const fetchReadingHistory = vi.fn<FetchReadingHistoryMock>().mockResolvedValue([
+      {
+        storybook_id: lantern.id,
+        title: lantern.title,
+        endings_found: 1,
+        ending_ids: ['e_treasure_found'],
+        total_endings: 1,
+        in_progress: false,
+        last_activity_at: '2026-07-01T00:00:00Z',
+      },
+    ])
+    reachLanternEnding(fetchReadingHistory)
+    await waitFor(() => expect(fetchReadingHistory).toHaveBeenCalled())
+    expect(screen.queryByTestId('endings-tracker')).not.toBeInTheDocument()
+  })
+
+  it('renders nothing (no fetch attempted) when fetchReadingHistory is omitted', () => {
+    reachLanternEnding()
+    expect(screen.queryByTestId('endings-tracker')).not.toBeInTheDocument()
+  })
+
+  it('renders nothing on a lookup failure', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const fetchReadingHistory = vi.fn<FetchReadingHistoryMock>().mockRejectedValue(new Error('boom'))
+    reachLanternEnding(fetchReadingHistory)
+    await waitFor(() => expect(fetchReadingHistory).toHaveBeenCalled())
+    expect(screen.queryByTestId('endings-tracker')).not.toBeInTheDocument()
+    errorSpy.mockRestore()
+  })
+})
+
+describe('Reader K15 flag button', () => {
+  afterEach(() => {
+    clearChildSession()
+  })
+
+  it('does not render the flag button when submitFlag is omitted', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" />
+      </MemoryRouter>
+    )
+    expect(screen.queryByRole('button', { name: /tell a grown-up/i })).not.toBeInTheDocument()
+  })
+
+  it('does not render the flag button without a valid child session, even with submitFlag wired', () => {
+    render(
+      <MemoryRouter>
+        <ToastProvider>
+          <Reader story={lantern} profileId="p1" submitFlag={vi.fn<SubmitFlagMock>()} />
+        </ToastProvider>
+      </MemoryRouter>
+    )
+    expect(screen.queryByRole('button', { name: /tell a grown-up/i })).not.toBeInTheDocument()
+  })
+
+  it('renders the flag button in the chrome once a valid child session exists', () => {
+    setChildSession({ token: 't', expiresAt: '2100-01-01T00:00:00Z', profileId: 'p1' })
+    render(
+      <MemoryRouter>
+        <ToastProvider>
+          <Reader story={lantern} profileId="p1" submitFlag={vi.fn<SubmitFlagMock>()} />
+        </ToastProvider>
+      </MemoryRouter>
+    )
+    expect(screen.getByRole('button', { name: /tell a grown-up/i })).toBeInTheDocument()
   })
 })
 

@@ -4,10 +4,12 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { EmptyState } from '@ds/components/EmptyState'
 import { Button } from '@ds/components/Button'
 import {
+  makeFetchReadingHistory,
   makeFetchServerState,
   makeFetchSeriesNext,
   makeFetchStory,
   makeRecordCompletion,
+  makeSubmitFlag,
   makeSyncApi,
 } from '../api/readerApi'
 import { useApi } from '../hooks/useApi'
@@ -48,6 +50,8 @@ export function ReaderRoute() {
   const fetchServerState = useMemo(() => makeFetchServerState(api), [api])
   const recordCompletion = useMemo(() => makeRecordCompletion(api), [api])
   const fetchSeriesNext = useMemo(() => makeFetchSeriesNext(api), [api])
+  const fetchReadingHistory = useMemo(() => makeFetchReadingHistory(api), [api])
+  const submitFlag = useMemo(() => makeSubmitFlag(api), [api])
   const navigate = useNavigate()
   const location = useLocation()
   const continuation = useMemo(() => parseContinuation(location.state), [location.state])
@@ -186,6 +190,8 @@ export function ReaderRoute() {
         storybookId={storybookId}
         version={parsedVersion}
         ttsEnabled={ttsEnabled}
+        fetchReadingHistory={fetchReadingHistory}
+        submitFlag={submitFlag}
       />
       {replayConflicts.length > 0 && (
         <ConflictDialog

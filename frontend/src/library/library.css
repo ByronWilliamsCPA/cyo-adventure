@@ -119,6 +119,34 @@
   white-space: nowrap;
 }
 
+/* K6 endings tracker: a quiet line under the cover/title link, never inside
+   it (it must not compete with the "open this book" tap target). */
+.endings-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--text-xs);
+}
+
+.endings-badge__dots {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.endings-badge__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-parchment-deeper);
+}
+
+.endings-badge__dot--filled {
+  background: var(--color-amber-deep);
+}
+
 .star-rating {
   display: flex;
   gap: var(--space-1);
@@ -284,4 +312,60 @@
   background: var(--color-parchment-dark);
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-3);
+}
+
+/* K12: "Your story is being written..." with a gentle three-dot pulse.
+   Decorative only; the text carries the meaning on its own. */
+.request-story__generating {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.request-story__generating-dots {
+  display: inline-flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.request-story__generating-dots > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-amber-deep);
+  animation: request-story-dot-bounce 1.2s var(--easing-default) infinite;
+}
+
+.request-story__generating-dots > span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.request-story__generating-dots > span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes request-story-dot-bounce {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .request-story__generating-dots > span {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+.request-story__item[data-status='published'] {
+  color: var(--color-amber-text, var(--color-ink));
+  font-weight: var(--weight-semibold);
 }

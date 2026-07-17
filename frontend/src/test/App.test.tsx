@@ -56,6 +56,12 @@ vi.mock('../api/readerApi', () => ({
   makeFetchServerState: () => () => Promise.resolve(null),
   makeRecordCompletion: () => () => Promise.resolve(),
   makeFetchSeriesNext: () => () => Promise.resolve(null),
+  // K6/K15: ReaderRoute wires these unconditionally; the endings tracker and
+  // flag button are exercised by their own suites (Reader.test.tsx,
+  // FlagButton.test.tsx, EndingsProgress.test.tsx), here they just need to
+  // resolve so the wired route mounts without a backend.
+  makeFetchReadingHistory: () => () => Promise.resolve([]),
+  makeSubmitFlag: () => () => Promise.resolve({ id: 'flag', reason: 'confusing' }),
 }))
 
 const mockGet = vi.fn()

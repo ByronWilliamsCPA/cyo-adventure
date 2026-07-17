@@ -204,3 +204,49 @@ test('shelf grid does not overflow the viewport on a phone screen', async ({ pag
     expect(box!.x + box!.width).toBeLessThanOrEqual(390)
   }
 })
+
+test('shows the endings tracker on a started book once reading-history resolves (K6)', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/reading-history/*', (route) =>
+    route.fulfill({
+      json: {
+        profile_id: 'p1',
+        books: [
+          {
+            storybook_id: 's1',
+            title: 'The Lantern',
+            endings_found: 2,
+            ending_ids: ['e1', 'e2'],
+            total_endings: 5,
+            in_progress: true,
+            last_activity_at: '2026-07-01T10:00:00Z',
+          },
+        ],
+      },
+    })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(hero.getByText('2 of 5 endings found')).toBeVisible()
+  // Acorn Detectives (not started, no completion yet) has no history row and
+  // shows no badge: absence, not an error, for the not-yet-tracked case.
+  const shelf = page.getByRole('region', { name: 'More to Explore' })
+  const acorn = shelf.locator('.book-card', { hasText: 'Acorn Detectives' })
+  await expect(acorn.getByText(/endings found/i)).toHaveCount(0)
+})
+
+test('shows no endings tracker (never an error) when the reading-history fetch fails', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/reading-history/*', (route) =>
+    route.fulfill({ status: 500, json: { detail: 'boom' } })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(page.getByText(/endings found/i)).toHaveCount(0)
+})

@@ -19,7 +19,9 @@ import {
   UnauthenticatedError,
   type CompletionRequest,
   type SeriesNextBookInfo,
+  type SubmitFlagParams,
 } from '../api/readerApi'
+import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { cacheStorybook, getCachedStorybook, getReadingState, putReadingState } from '../offline/db'
 import {
@@ -57,6 +59,10 @@ export interface ReaderPageProps {
   /** The profile's `tts_enabled` flag (K7 / Phase 4b read-aloud), forwarded
    * straight to the Reader. See `ReaderRoute` for where this is resolved. */
   ttsEnabled?: boolean
+  /** Forwarded straight to the Reader's ending screen (K6 endings tracker). */
+  fetchReadingHistory?: (profileId: string) => Promise<ReadingHistoryItem[]>
+  /** Forwarded straight to the Reader's chrome (K15 flag button). */
+  submitFlag?: (params: SubmitFlagParams) => Promise<KidFlagCreatedView>
 }
 
 type FetchServerState = (profileId: string, storybookId: string) => Promise<ReadingState | null>
@@ -123,6 +129,8 @@ export function ReaderPage({
   continuation,
   fetchSeriesNext,
   ttsEnabled,
+  fetchReadingHistory,
+  submitFlag,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
   const [conflict, setConflict] = useState<ConflictState | null>(null)
@@ -552,6 +560,8 @@ export function ReaderPage({
         onLeave={handleLeave}
         fetchSeriesNext={fetchSeriesNext}
         ttsEnabled={ttsEnabled}
+        fetchReadingHistory={fetchReadingHistory}
+        submitFlag={submitFlag}
       />
       {conflict ? (
         <ConflictDialog

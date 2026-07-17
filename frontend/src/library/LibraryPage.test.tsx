@@ -384,6 +384,62 @@ describe('LibraryPage', () => {
       })
     )
   })
+
+  describe('K6 endings tracker', () => {
+    // Routes mockGet by URL so the library list and reading-history calls
+    // (both GETs, fired from the same load()) can be answered differently.
+    function mockLibraryAndHistory(stories: unknown[], books: unknown[]) {
+      mockGet.mockImplementation((url: string) => {
+        if (url.startsWith('/v1/reading-history/')) {
+          return Promise.resolve({ data: { profile_id: 'p1', books } })
+        }
+        return Promise.resolve({ data: { stories } })
+      })
+    }
+
+    it('shows the endings badge on a shelf card once the history call resolves', async () => {
+      // IN_PROGRESS is the hero (most recent activity); OLDER_IN_PROGRESS is
+      // the shelf card this test targets.
+      mockLibraryAndHistory(
+        [OLDER_IN_PROGRESS, IN_PROGRESS],
+        [{ storybook_id: OLDER_IN_PROGRESS.id, endings_found: 2, total_endings: 5 }]
+      )
+      renderLibrary()
+      const shelf = await screen.findByRole('region', { name: /more to explore/i })
+      expect(await within(shelf).findByText('2 of 5 endings found')).toBeInTheDocument()
+    })
+
+    it('shows the endings badge on the hero card', async () => {
+      mockLibraryAndHistory(
+        [IN_PROGRESS],
+        [{ storybook_id: IN_PROGRESS.id, endings_found: 1, total_endings: 3 }]
+      )
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      expect(await within(hero).findByText('1 of 3 endings found')).toBeInTheDocument()
+    })
+
+    it('shows no badge (never crashes) when the history fetch fails', async () => {
+      mockGet.mockImplementation((url: string) => {
+        if (url.startsWith('/v1/reading-history/')) {
+          return Promise.reject(new Error('history boom'))
+        }
+        return Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+      })
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
+      errorSpy.mockRestore()
+    })
+
+    it('shows no badge for a book with no matching history row', async () => {
+      mockLibraryAndHistory([IN_PROGRESS], [])
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
+    })
+  })
 })
 
 describe('percentComplete', () => {

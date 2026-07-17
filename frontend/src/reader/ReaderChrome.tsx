@@ -40,6 +40,15 @@ export interface ReaderChromeProps {
     /** Tapping the toggle: starts speaking, or stops if already speaking. */
     onToggle: () => void
   }
+  /**
+   * "Tell a grown-up" flag affordance (K15). A full ReactNode, not a
+   * speaking/onToggle shape like readAloud: the caller (Reader.tsx via
+   * FlagButton) owns its own open/submit state and, unlike the read-aloud
+   * toggle, ReaderChrome has no reason to know any of it. Omitted entirely
+   * (not a disabled button) when the caller has decided the affordance
+   * should not render, e.g. no child session for this profile.
+   */
+  flag?: ReactNode
 }
 
 /**
@@ -54,11 +63,13 @@ export function ReaderChrome({
   showLabel = false,
   back,
   readAloud,
+  flag,
 }: ReaderChromeProps) {
   const online = useOnlineStatus()
   return (
     <header className="reader-chrome">
       {back}
+      {flag}
       {readAloud ? (
         <button
           type="button"

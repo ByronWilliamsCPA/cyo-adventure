@@ -143,6 +143,37 @@ test('records a completion when the story reaches an ending', async ({ page }) =
   })
 })
 
+test('shows the endings tracker on the ending screen once reading-history resolves (K6)', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/reading-history/**', (route) =>
+    route.fulfill({
+      json: {
+        profile_id: 'child-a',
+        books: [
+          {
+            storybook_id: 's_lantern_cave',
+            title: 'The Lantern Cave',
+            endings_found: 2,
+            ending_ids: ['e_treasure_found', 'e_other'],
+            total_endings: 4,
+            in_progress: false,
+            last_activity_at: new Date().toISOString(),
+          },
+        ],
+      },
+    })
+  )
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('reader')).toBeVisible()
+  await page.getByTestId('choice-c_take_lantern').click()
+  await page.getByTestId('choice-c_dark_passage').click()
+  await expect(page.getByTestId('ending-screen')).toBeVisible()
+  await expect(page.getByTestId('endings-tracker')).toHaveText(
+    'You found ending 2 of 4! Read again to find more.'
+  )
+})
+
 test('resumes from server state when the local cache is empty (cross-device)', async ({
   page,
 }) => {

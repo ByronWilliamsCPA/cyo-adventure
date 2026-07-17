@@ -15,7 +15,8 @@ import { ChoiceButton } from '@ds/components/ChoiceButton'
 import { PassageText } from '@ds/components/PassageText'
 import { useMachine } from '@xstate/react'
 
-import type { SeriesNextBookInfo } from '../api/readerApi'
+import type { SeriesNextBookInfo, SubmitFlagParams } from '../api/readerApi'
+import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
 import { canGoBack, currentEndingId, visibleChoices } from '../player/engine'
 import { Mascot } from '../kid/Mascot'
 import { readerMachine } from '../player/machine'
@@ -23,6 +24,8 @@ import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
 import { ContinueSeries } from './ContinueSeries'
+import { EndingsProgress } from './EndingsProgress'
+import { FlagButton } from './FlagButton'
 import { ReaderChrome } from './ReaderChrome'
 import { readerProgressLabel, readerProgressPercent } from './readerProgress'
 import { useReadAloud } from './useReadAloud'
@@ -58,6 +61,16 @@ export interface ReaderProps {
    * render.
    */
   ttsEnabled?: boolean
+  /** Resolves the profile's endings-tracker data (K6); when provided, the
+   * ending screen shows "You found ending N of M" once total_endings > 1.
+   * Omitted entirely (no fetch attempted) when the caller has none to offer. */
+  fetchReadingHistory?: (profileId: string) => Promise<ReadingHistoryItem[]>
+  /** Submits a child's structured content flag (K15). When provided, the
+   * chrome offers a "Tell a grown-up" affordance; FlagButton itself hides
+   * when no valid child session exists for this profile, so omitting this
+   * prop (e.g. a caller with no wiring for it) is not the only way the
+   * affordance can be absent. */
+  submitFlag?: (params: SubmitFlagParams) => Promise<KidFlagCreatedView>
 }
 
 export function Reader({
@@ -69,6 +82,8 @@ export function Reader({
   onLeave,
   fetchSeriesNext,
   ttsEnabled = false,
+  fetchReadingHistory,
+  submitFlag,
 }: ReaderProps) {
   const navigate = useNavigate()
   const [snapshot, send] = useMachine(readerMachine, {
@@ -245,6 +260,17 @@ export function Reader({
           ? { speaking: readAloud.speaking, onToggle: handleToggleSpeak }
           : undefined
       }
+      flag={
+        submitFlag ? (
+          <FlagButton
+            profileId={profileId}
+            storybookId={story.id}
+            version={story.version}
+            getNodeId={() => reading.current_node}
+            submitFlag={submitFlag}
+          />
+        ) : undefined
+      }
     />
   )
 
@@ -328,6 +354,13 @@ export function Reader({
           <p data-testid="ending-id" hidden>
             {currentEndingId(story, reading) ?? ''}
           </p>
+          {fetchReadingHistory ? (
+            <EndingsProgress
+              profileId={profileId}
+              storybookId={story.id}
+              fetchReadingHistory={fetchReadingHistory}
+            />
+          ) : null}
           <div className="reader-ending__actions">
             <Button
               variant="primary"

@@ -84,4 +84,45 @@ describe('BookCard', () => {
     expect(screen.getByText('Z')).toBeInTheDocument()
     expect(screen.queryByRole('presentation', { hidden: true })).not.toBeInTheDocument()
   })
+
+  describe('K6 endings tracker', () => {
+    function renderCardWithEndings(
+      item: LibraryItemView,
+      endings?: { found: number; total: number }
+    ) {
+      return render(
+        <MemoryRouter>
+          <BookCard item={item} profileId="p1" onRate={() => {}} endings={endings} />
+        </MemoryRouter>
+      )
+    }
+
+    it('shows the badge for a started book with a matching history row', () => {
+      const started = {
+        ...BASE_ITEM,
+        progress: { current_node: 'n2', nodes_visited: 3, updated_at: '2026-07-01T10:00:00Z' },
+      }
+      renderCardWithEndings(started, { found: 2, total: 5 })
+      expect(screen.getByText('2 of 5 endings found')).toBeInTheDocument()
+    })
+
+    it('shows the badge for a not-started book that already has a found ending (a restarted book)', () => {
+      renderCardWithEndings(BASE_ITEM, { found: 1, total: 3 })
+      expect(screen.getByText('1 of 3 endings found')).toBeInTheDocument()
+    })
+
+    it('renders no badge for a never-started book with no endings found', () => {
+      renderCardWithEndings(BASE_ITEM, { found: 0, total: 3 })
+      expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
+    })
+
+    it('renders no badge when the endings prop is not provided (history still loading or failed)', () => {
+      const started = {
+        ...BASE_ITEM,
+        progress: { current_node: 'n2', nodes_visited: 3, updated_at: '2026-07-01T10:00:00Z' },
+      }
+      renderCardWithEndings(started, undefined)
+      expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
+    })
+  })
 })
