@@ -601,9 +601,7 @@ def test_validate_policy_fails_closed_when_profile_is_none(
     assert "8-11" in finding.message
 
 
-@pytest.mark.parametrize(
-    "band", ["3-5", "5-8", "8-11", "10-13", "13-16", "16+"]
-)
+@pytest.mark.parametrize("band", ["3-5", "5-8", "8-11", "10-13", "13-16", "16+"])
 def test_validate_policy_never_emits_pl22_for_a_configured_band(band: str) -> None:
     """Every real, configured band must validate exactly as before: no PL-22.
 

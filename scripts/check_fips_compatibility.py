@@ -94,6 +94,18 @@ NON_FIPS_CIPHERS = {
     "seed",
 }
 
+# Cipher names that are also common English identifiers. `random.seed()`,
+# `faker.seed()`, or a module's own `seed()` helper are not the SEED block
+# cipher, and "idea" appears in ordinary prose-handling code. For these
+# names a bare attribute-call match is not evidence of crypto use; require
+# either the uppercase algorithm spelling (SEED, IDEA) or a receiver chain
+# that names a crypto namespace before flagging.
+AMBIGUOUS_CIPHER_NAMES = {"seed", "idea"}
+
+# Receiver-chain identifiers that mark a call as crypto-library usage
+# (e.g. Crypto.Cipher.SEED.new, cryptography ciphers/algorithms modules).
+CRYPTO_NAMESPACE_HINTS = {"crypto", "cryptography", "cipher", "ciphers", "algorithms"}
+
 # NIST-finalized post-quantum algorithms (FIPS 203/204/205) and the hybrid TLS
 # key-exchange group built on them. These are FIPS-approved (ADR-013) and must
 # never be flagged, including by any future substring or name-list matching.
@@ -233,6 +245,10 @@ class FipsCodeVisitor(ast.NodeVisitor):
             return
         if func_name not in NON_FIPS_CIPHERS:
             return
+        if func_name in AMBIGUOUS_CIPHER_NAMES and not (
+            node.func.attr.isupper() or self._has_crypto_receiver(node.func)
+        ):
+            return
         self.issues.append(
             FipsIssue(
                 file_path=self.file_path,
@@ -243,6 +259,25 @@ class FipsCodeVisitor(ast.NodeVisitor):
                 fix_hint="Use AES, ChaCha20-Poly1305, or other FIPS-approved algorithms",
             )
         )
+
+    @staticmethod
+    def _has_crypto_receiver(func: ast.Attribute) -> bool:
+        """Return True when the attribute chain names a crypto namespace.
+
+        Walks the receiver of an attribute call (`a.b.c.seed()` -> a, b, c)
+        and reports whether any segment is a known crypto-library name, so
+        ambiguous cipher names only flag in actual crypto contexts.
+        """
+        value: ast.expr = func.value
+        while True:
+            if isinstance(value, ast.Attribute):
+                if value.attr.lower() in CRYPTO_NAMESPACE_HINTS:
+                    return True
+                value = value.value
+                continue
+            if isinstance(value, ast.Name):
+                return value.id.lower() in CRYPTO_NAMESPACE_HINTS
+            return False
 
     def _check_new_algorithm_call(self, node: ast.Call) -> None:
         """Detect .new("algoname") calls (pycryptodome pattern) using non-FIPS algos.

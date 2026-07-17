@@ -1230,9 +1230,12 @@ class NodeEditBody(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    body: Annotated[str, StringConstraints(min_length=1, max_length=20000)] | None = None
+    body: Annotated[str, StringConstraints(min_length=1, max_length=20000)] | None = (
+        None
+    )
     choice_labels: (
-        dict[str, Annotated[str, StringConstraints(min_length=1, max_length=500)]] | None
+        dict[str, Annotated[str, StringConstraints(min_length=1, max_length=500)]]
+        | None
     ) = None
 
     @model_validator(mode="after")

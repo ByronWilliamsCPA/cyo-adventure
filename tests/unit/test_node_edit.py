@@ -105,8 +105,12 @@ def _wire_session(
     session.scalars = AsyncMock(return_value=_scalars_result(child_names or []))
 
 
-def _ctx(role: str, session: AsyncMock, *, family_id: uuid.UUID = _FAMILY_A) -> RequestContext:
-    return RequestContext(principal=_principal(role, family_id=family_id), session=session)
+def _ctx(
+    role: str, session: AsyncMock, *, family_id: uuid.UUID = _FAMILY_A
+) -> RequestContext:
+    return RequestContext(
+        principal=_principal(role, family_id=family_id), session=session
+    )
 
 
 def _safe_review_provider() -> MockProvider:
@@ -165,7 +169,10 @@ def review_seam(monkeypatch: pytest.MonkeyPatch) -> Callable[[MockProvider], Non
 
     def _install(provider: MockProvider) -> None:
         def _build(
-            settings: Settings, *, generator_provider: str | None, generator_model: str | None
+            settings: Settings,
+            *,
+            generator_provider: str | None,
+            generator_model: str | None,
         ) -> tuple[MockProvider, bool]:
             del settings, generator_provider, generator_model
             return provider, True
@@ -387,11 +394,14 @@ async def test_prose_edit_applies_body_and_choice_label() -> None:
         for f in findings
     )
     assert any(
-        f["node_id"] == "n_clearing_fork" and f["message"] == "unrelated node, must survive"
+        f["node_id"] == "n_clearing_fork"
+        and f["message"] == "unrelated node, must survive"
         for f in findings
     )
     assert any(f["message"] == "whole-story note" for f in findings)
-    assert any(f["node_id"] == _NODE_ID and f["source"] == "llm_safety" for f in findings)
+    assert any(
+        f["node_id"] == _NODE_ID and f["source"] == "llm_safety" for f in findings
+    )
 
     # The response surface reflects the edit.
     assert result.storybook_id == "s1"

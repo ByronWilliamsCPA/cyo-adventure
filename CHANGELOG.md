@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Capability register (K/G/A/S IDs) as the project's scope contract, with
+  ADR-015 (story initiation and gating), ADR-016 (three-ring social
+  boundary), ADR-017 (AI cover art), and ADR-018 (children's privacy
+  compliance, Proposed), plus the traceability review, test traceability
+  matrix, and re-anchored roadmap milestones.
+- M4b editor and engagement wave: read-aloud, endings tracker, kid feedback
+  flag, enforced content controls, per-child permissions, review skim aids,
+  and a prose-only passage editor that re-runs the validation gate and
+  moderation on every edit.
+- M4c family loops: notification infrastructure with a guardian bell,
+  guardian reading-visibility page, kid-friendly generation status, and the
+  ADR-015 budget consent gate with per-child auto-approve envelopes and a
+  balance surface.
+- M4d connections: dual-guardian connection consent, an enforced ring-2
+  recommendation boundary guard, and cousin recommendation chips on the kid
+  shelf.
+- Daily production E2E workflow with pinned-issue alerting.
+
+### Fixed
+
+- Moderation repair now re-runs the full validation gate on every adopted
+  repair, and the band-policy validator (PL-22) fails closed.
+- Generation quota is now debited on the legacy intake path, and the
+  generation report is restricted to admins.
+- The FIPS checker no longer flags ordinary `seed()`/`idea()` method calls
+  outside crypto contexts.
+
 ## [0.7.0] - 2026-07-17
 
 ### Added

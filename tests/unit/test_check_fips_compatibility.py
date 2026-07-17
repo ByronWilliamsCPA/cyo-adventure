@@ -138,3 +138,44 @@ def test_pre_standard_match_is_substring_and_warn_only(tmp_path: Path) -> None:
 
     clean = _issues_for(tmp_path, "def use(factory):\n    factory.ed25519_sign()\n")
     assert clean == []
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "source",
+    [
+        "import random\nrandom.seed(42)\n",
+        "from app import seed_staging\n\n\nasync def go():\n    await seed_staging.seed()\n",
+        "def use(faker):\n    faker.seed(7)\n",
+        "def brainstorm(notebook):\n    notebook.idea('plot twist')\n",
+    ],
+)
+def test_ambiguous_cipher_names_not_flagged_outside_crypto_context(
+    tmp_path: Path, source: str
+) -> None:
+    """`seed`/`idea` as ordinary method names report nothing.
+
+    These are common English identifiers (random.seed, a seeding script's
+    own seed() entry point); only crypto-context usage is a finding.
+    """
+    assert _issues_for(tmp_path, source) == []
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "source",
+    [
+        "def enc(algorithms, key):\n    algorithms.SEED(key)\n",
+        "def enc(crypto, key):\n    crypto.SEED(key)\n",
+        "def enc(ciphers, key):\n    ciphers.seed(key)\n",
+    ],
+)
+def test_seed_cipher_still_flagged_in_crypto_context(
+    tmp_path: Path, source: str
+) -> None:
+    """Uppercase SEED or a crypto-namespace receiver still errors."""
+    issues = _issues_for(tmp_path, source)
+    assert any(
+        issue.severity == "error" and "seed" in issue.message.lower()
+        for issue in issues
+    )

@@ -268,7 +268,9 @@ def _age_band(blob: dict[str, object]) -> str:
     return band if isinstance(band, str) else ""
 
 
-async def _family_child_names(session: AsyncSession, family_id: object) -> frozenset[str]:
+async def _family_child_names(
+    session: AsyncSession, family_id: object
+) -> frozenset[str]:
     """Return the real display names of a family's child profiles.
 
     Args:
@@ -323,9 +325,9 @@ def _merge_moderation_report(
         if not isinstance(entry, dict):
             continue
         typed = cast("dict[str, object]", entry)
-        is_stale_for_node = typed.get("node_id") == node_id and typed.get(
-            "source"
-        ) in {s.value for s in _REFRESHED_SOURCES}
+        is_stale_for_node = typed.get("node_id") == node_id and typed.get("source") in {
+            s.value for s in _REFRESHED_SOURCES
+        }
         if not is_stale_for_node:
             kept.append(typed)
     merged = [*kept, *(f.to_dict() for f in fresh_findings)]
@@ -334,9 +336,9 @@ def _merge_moderation_report(
         f.get("verdict") == Verdict.FLAG.value for f in merged
     )
     old_summary = stored.get("summary") if isinstance(stored, dict) else None
-    old_summary_dict = cast("dict[str, object]", old_summary) if isinstance(
-        old_summary, dict
-    ) else {}
+    old_summary_dict = (
+        cast("dict[str, object]", old_summary) if isinstance(old_summary, dict) else {}
+    )
     old_repaired = old_summary_dict.get("repaired")
     old_independent = old_summary_dict.get("reviewer_independent")
     return {
@@ -507,7 +509,9 @@ async def edit_node(
         payload={"node_id": node_id},
     )
 
-    floor = await load_admin_noise_floor(ctx.session) if ctx.principal.is_admin else None
+    floor = (
+        await load_admin_noise_floor(ctx.session) if ctx.principal.is_admin else None
+    )
     return build_review_surface(
         status=book.status,
         storybook_id=storybook_id,

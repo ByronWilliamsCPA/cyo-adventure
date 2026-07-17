@@ -146,7 +146,9 @@ def _profile(
     )
 
 
-def _version(storybook_id: str, version: int, title: str = "A Story") -> StorybookVersion:
+def _version(
+    storybook_id: str, version: int, title: str = "A Story"
+) -> StorybookVersion:
     row = StorybookVersion(
         storybook_id=storybook_id, version=version, blob={"title": title}
     )
@@ -166,7 +168,9 @@ def _connection(
     sharer_consented: bool = False,
 ) -> FamilyConnection:
     row = FamilyConnection(
-        id=uuid.uuid4(), family_id=viewer_family_id, connected_family_id=sharer_family_id
+        id=uuid.uuid4(),
+        family_id=viewer_family_id,
+        connected_family_id=sharer_family_id,
     )
     if viewer_consented:
         row.consented_by_viewer_user_id = uuid.uuid4()
@@ -297,9 +301,7 @@ async def test_admin_bypasses_ownership_and_gets_empty_feed_for_isolated_profile
     family_id = uuid.uuid4()
     profile_id = uuid.uuid4()
     principal = _admin_principal()
-    session = _FakeSession(
-        profile=_profile(profile_id, family_id), execute_rows=[]
-    )
+    session = _FakeSession(profile=_profile(profile_id, family_id), execute_rows=[])
     result = await get_recommendations(str(profile_id), principal, session)
     assert result.items == []
 

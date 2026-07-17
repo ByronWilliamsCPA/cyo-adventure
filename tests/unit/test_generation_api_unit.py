@@ -147,9 +147,7 @@ def _quota_gate_noop(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyP
     async def _noop(*_args: object, **_kwargs: object) -> None:
         return None
 
-    monkeypatch.setattr(
-        "cyo_adventure.api.generation.enforce_family_quota", _noop
-    )
+    monkeypatch.setattr("cyo_adventure.api.generation.enforce_family_quota", _noop)
 
 
 def _request() -> ConceptCreateRequest:

@@ -427,15 +427,11 @@ class FamilyConnection(Base):
     consented_by_viewer_user_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER), default=None
     )
-    consented_by_viewer_at: Mapped[datetime | None] = mapped_column(
-        _TS, default=None
-    )
+    consented_by_viewer_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     consented_by_sharer_user_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER), default=None
     )
-    consented_by_sharer_at: Mapped[datetime | None] = mapped_column(
-        _TS, default=None
-    )
+    consented_by_sharer_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
 class Storybook(Base):

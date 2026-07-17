@@ -206,9 +206,7 @@ async def test_mine_lists_both_directions_with_counterpart_and_consent_state() -
         other_family: Family(id=other_family, name="Smith Family"),
         my_family: Family(id=my_family, name="My Family"),
     }
-    session = _FakeSession(
-        families=families, list_rows=[as_viewer, as_sharer]
-    )
+    session = _FakeSession(families=families, list_rows=[as_viewer, as_sharer])
     principal = _principal(my_family)
     ctx = RequestContext(principal=principal, session=session)
 
@@ -243,9 +241,7 @@ async def test_consent_as_viewer_sets_viewer_columns_and_stamps_user() -> None:
     my_family, other_family = uuid.uuid4(), uuid.uuid4()
     row = _connection(my_family, other_family)
     other = Family(id=other_family, name="Smith Family")
-    session = _FakeSession(
-        connections={row.id: row}, families={other_family: other}
-    )
+    session = _FakeSession(connections={row.id: row}, families={other_family: other})
     principal = _principal(my_family)
     ctx = RequestContext(principal=principal, session=session)
 
