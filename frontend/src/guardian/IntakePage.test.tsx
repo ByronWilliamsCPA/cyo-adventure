@@ -93,6 +93,48 @@ describe('IntakePage', () => {
     expect(mockPost).toHaveBeenCalledWith('/v1/concepts/c1/generate')
   })
 
+  // G2: per-child content controls set on the Profiles page must actually
+  // reach the generated brief for the guardian-authored intake flow, not
+  // just the profile-linked (child-initiated) path.
+  it('shows the selected child excluded themes and folds them into content_nogo', async () => {
+    const user = userEvent.setup()
+    const withThemes = { ...PROFILE, banned_themes: ['spiders', 'magic'] }
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [withThemes] } })
+      if (url === '/v1/generation-jobs') return Promise.resolve({ data: { jobs: [] } })
+      throw new Error(`unexpected GET ${url}`)
+    })
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/concepts') return Promise.resolve({ data: { concept_id: 'c1' } })
+      if (url === '/v1/concepts/c1/generate')
+        return Promise.resolve({ data: { job_id: 'j1', status: 'queued' } })
+      throw new Error(`unexpected POST ${url}`)
+    })
+    renderPage()
+
+    expect(
+      screen.queryByTestId('intake-excluded-themes')
+    ).not.toBeInTheDocument()
+
+    await user.click(await screen.findByRole('button', { name: /Reader A/i }))
+
+    expect(screen.getByTestId('intake-excluded-themes')).toHaveTextContent(
+      'Excluded for this child: spiders, magic'
+    )
+
+    await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
+    await user.click(screen.getByRole('button', { name: /Request Story/i }))
+
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/concepts', expect.anything())
+    )
+    const conceptCall = mockPost.mock.calls.find((c) => c[0] === '/v1/concepts')
+    const conceptBody = conceptCall?.[1] as
+      | { brief: { content_nogo: string[] } }
+      | undefined
+    expect(conceptBody?.brief.content_nogo).toEqual(['spiders', 'magic'])
+  })
+
   it('renders each pill state and a failed job error', async () => {
     mockGet.mockImplementation((url: string) => {
       if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })

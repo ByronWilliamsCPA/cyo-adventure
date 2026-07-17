@@ -37,6 +37,11 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     EventType.NOISE_FLOOR_CHANGED: frozenset({"value"}),
     EventType.BOOK_ASSIGNED: frozenset({"child_profile_id"}),
     EventType.RATED: frozenset({"value", "is_update"}),
+    # K15: a structured, no-free-text child signal (ADR-016). Only the closed
+    # vocabulary reason and the storybook id are ever recorded here; the flag
+    # itself carries no free text and neither does this event.
+    EventType.KID_FLAGGED: frozenset({"reason", "storybook_id"}),
+    EventType.FLAG_RESOLVED: frozenset({"resolution"}),
 }
 
 

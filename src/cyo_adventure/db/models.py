@@ -89,19 +89,22 @@ _COVER_STATUS_VALUES = "'none', 'generating', 'ready', 'failed'"
 # (see _AGE_BAND_VALUES for that pattern), but cyo_adventure.events.__init__
 # imports events.writer, which imports db.models, so importing
 # cyo_adventure.events.models from here creates a circular import; the
-# fourteen values are listed verbatim instead and must be kept in sync with
-# cyo_adventure.events.models.EventType by hand.
+# sixteen values are listed verbatim instead and must be kept in sync with
+# cyo_adventure.events.models.EventType by hand (see
+# tests/unit/test_pipeline_event_check_vocab.py, the drift guard for this
+# list).
 _PIPELINE_EVENT_TYPE_VALUES = (
     "'request_created', 'request_approved', 'request_declined', "
     "'plan_assigned', 'generation_started', 'generation_finished', "
     "'moderation_completed', 'repair_applied', 'sent_back', 'released', "
-    "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated'"
+    "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated', "
+    "'kid_flagged', 'flag_resolved'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
     "'story_request', 'generation_job', 'storybook', 'storybook_version', "
     "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
-    "'moderation_setting'"
+    "'moderation_setting', 'kid_flag'"
 )
 
 
@@ -234,9 +237,26 @@ class ChildProfile(Base):
     display_name: Mapped[str] = mapped_column(String(120))
     age_band: Mapped[str] = mapped_column(String(16))
     reading_level_cap: Mapped[float] = mapped_column(default=99.0)
+    # #ASSUME: data integrity: keys are a subset of {"violence", "scariness",
+    # "peril"} mapping to a ContentFlagLevel value (api/schemas.py
+    # ContentFlagCaps); a missing key means "no override, defer to the
+    # band's own ceiling" (validator/band_profile.py), never "no limit". The
+    # column itself carries no CHECK constraint on shape; api/profiles.py is
+    # the only writer and validates every value before it lands here.
+    # #VERIFY: tests/integration/test_profiles.py content-flag-cap tests;
+    # tests/unit/test_story_requests.py brief-derivation tests read this dict
+    # back through brief_from_request.
     allowed_content_flags: Mapped[dict[str, object]] = mapped_column(
         JSONB, default=dict
     )
+    # G2: guardian-set free-list theme exclusions for this child (e.g.
+    # "spiders", "magic"), distinct from the band-derived content-flag
+    # ceilings above. Nullable: unset means no additional exclusions, not an
+    # empty-list default, so a profile created before this column existed
+    # reads back as None rather than a spurious []. api/profiles.py is the
+    # only writer; each entry is lowercased, control-character-stripped, and
+    # length-capped there before it reaches this column.
+    banned_themes: Mapped[list[str] | None] = mapped_column(JSONB, default=None)
     tts_enabled: Mapped[bool] = mapped_column(default=False)
     avatar: Mapped[str | None] = mapped_column(String(255), default=None)
     # #CRITICAL: security: write-only PIN credential material (P6-07), encoded
@@ -1129,3 +1149,94 @@ class DeviceGrant(Base):
     jti: Mapped[uuid.UUID] = mapped_column(Uuid, unique=True)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     revoked_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+
+
+# The two closed vocabularies for KidFlag, named once for their CHECK
+# constraints (mirrors the _STORY_REQUEST_*_VALUES pattern above).
+_KID_FLAG_REASON_VALUES = "'did_not_like', 'scared_me', 'confusing'"
+_KID_FLAG_RESOLUTION_VALUES = "'dismissed', 'archived_book', 'noted'"
+
+
+class KidFlag(Base):
+    """A child's structured "I didn't like this / this scared me" signal (K15).
+
+    Feeds the admin moderation queue (A1) directly via this table, and,
+    downstream, the guardian alert feed (G10) as a ``pipeline_event``
+    projection built separately (this table does not itself notify a
+    guardian). ``family_id`` is denormalized from the flagging profile
+    (mirrors ``StoryRequest.family_id``) so the admin queue stays
+    single-table.
+
+    # #CRITICAL: privacy: ADR-016's no-free-text principle -- a kid flag
+    # carries NO child-authored free text, by design. ``reason`` is a closed
+    # vocabulary (see ``ck_kid_flag_reason``) and ``node_id`` is a story-graph
+    # node identifier, not prose; this table has no text column a child could
+    # write into, so there is nothing here for a human to moderate before a
+    # grown-up sees it.
+    # #VERIFY: api/schemas.py::KidFlagCreateBody has no free-text field and
+    # forbids extra keys (``extra="forbid"``); tests/unit/test_flags_api.py
+    # asserts an injected free-text field is rejected.
+
+    Attributes:
+        id: Surrogate primary key.
+        family_id: Owning family; all admin/guardian access is scoped to this.
+        profile_id: The flagging child's profile.
+        storybook_id: The storybook being read when the flag was raised.
+        version: The storybook version being read when the flag was raised.
+        reason: Closed-vocabulary flag reason: did_not_like, scared_me, or
+            confusing.
+        node_id: The passage (story graph node id) being read when flagged,
+            or ``None`` if the client could not resolve one.
+        created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+        resolved_by: The admin who resolved this flag, or ``None`` while open.
+        resolved_at: When the flag was resolved, or ``None`` while open.
+        resolution: The admin's resolution (dismissed, archived_book, noted),
+            or ``None`` while open.
+    """
+
+    __tablename__ = "kid_flag"
+    # #CRITICAL: data integrity: ``reason``/``resolution`` are closed
+    # vocabularies; these CHECKs are the at-rest backstop (mirroring
+    # ck_story_request_status) so no write path persists a value outside
+    # them. The resolved-pairing CHECK keeps resolved_by/resolved_at
+    # consistent so the admin "open" filter (resolved_at IS NULL) never
+    # silently disagrees with resolved_by.
+    # #VERIFY: api/schemas.py coerces reason/resolution to the closed Literal
+    # at the API boundary before insert; api/flags.py's resolve handler
+    # always sets resolved_by/resolved_at/resolution together, never
+    # partially.
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["storybook_id", "version"],
+            ["storybook_version.storybook_id", "storybook_version.version"],
+        ),
+        CheckConstraint(
+            f"reason IN ({_KID_FLAG_REASON_VALUES})",
+            name="ck_kid_flag_reason",
+        ),
+        CheckConstraint(
+            f"resolution IS NULL OR resolution IN ({_KID_FLAG_RESOLUTION_VALUES})",
+            name="ck_kid_flag_resolution",
+        ),
+        CheckConstraint(
+            "(resolved_by IS NULL) = (resolved_at IS NULL)",
+            name="ck_kid_flag_resolved_pairing",
+        ),
+        Index("ix_kid_flag_resolved_created", "resolved_at", "created_at"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE), index=True
+    )
+    storybook_id: Mapped[str] = mapped_column(String(120), ForeignKey(_FK_STORYBOOK))
+    version: Mapped[int] = mapped_column()
+    reason: Mapped[str] = mapped_column(String(16))
+    node_id: Mapped[str | None] = mapped_column(String(120), default=None)
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    resolved_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    resolved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    resolution: Mapped[str | None] = mapped_column(String(16), default=None)

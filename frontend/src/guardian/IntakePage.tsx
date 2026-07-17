@@ -155,6 +155,11 @@ export function IntakePage() {
   }, [jobs, refreshJobs])
 
   const selected = profiles.find((p) => p.id === selectedId) ?? null
+  // #ASSUME: data-integrity: banned_themes is always present on a ProfileView
+  // fetched from the current API, but a stale/mocked profile object may omit
+  // it; the fallback keeps this read-only display (and the buildBrief call
+  // above) from throwing on such a shape.
+  const selectedBannedThemes = selected?.banned_themes ?? []
   const canSubmit = selected !== null && premise.trim().length > 0 && !saving
 
   // Names what still blocks Request Story while it is disabled for missing
@@ -192,6 +197,9 @@ export function IntakePage() {
         tone,
         ageBand: selected.age_band,
         readingLevelCap: selected.reading_level_cap,
+        // G2: fold the selected child's guardian-set theme exclusions into
+        // the brief instead of the previously hardcoded empty list.
+        bannedThemes: selectedBannedThemes,
       })
       const { concept_id } = await intakeApi.createConcept(brief)
       await intakeApi.generate(concept_id)
@@ -290,6 +298,15 @@ export function IntakePage() {
             ))
           )}
         </fieldset>
+
+        {/* G2: read-only proof that the per-child content controls (set on
+            the Profiles page) actually apply to this request; content_nogo
+            is derived from these themes in buildBrief above. */}
+        {selectedBannedThemes.length > 0 ? (
+          <p className="intake-form__hint cyo-text-muted" data-testid="intake-excluded-themes">
+            Excluded for this child: {selectedBannedThemes.join(', ')}
+          </p>
+        ) : null}
 
         <label className="intake-form__field cyo-field">
           What&apos;s it about?

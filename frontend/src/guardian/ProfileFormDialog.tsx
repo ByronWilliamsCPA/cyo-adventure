@@ -1,16 +1,31 @@
 import { useState } from 'react'
 
 import { Button } from '@ds/components/Button'
+import { Chip } from '@ds/components/Chip'
 import { Dialog } from '@ds/components/Dialog'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { AVATARS } from '../profiles/avatars'
 import {
   AGE_BANDS,
+  CONTENT_FLAG_LEVELS,
   type AgeBandValue,
+  type ContentFlagCaps,
+  type ContentFlagLevelValue,
   type ProfileCreateBody,
   type ProfileView,
 } from '../profiles/profilesApi'
 import { ageBandLabel } from './storyRequestOptions'
+
+// Mirrors api/schemas.py's _BANNED_THEMES_MAX / BannedTheme constraints:
+// up to 20 themes, each 1-40 characters after trim/lowercase.
+const BANNED_THEMES_MAX = 20
+const BANNED_THEME_MAX_LENGTH = 40
+
+const CONTENT_FLAG_LABELS: Record<'violence' | 'scariness' | 'peril', string> = {
+  violence: 'Violence',
+  scariness: 'Scariness',
+  peril: 'Peril',
+}
 
 /**
  * Create-mode submit payload: exactly the create fields. `pin` is
@@ -69,6 +84,25 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   const [ageBand, setAgeBand] = useState(initial?.age_band ?? '5-8')
   const [cap, setCap] = useState(String(initial?.reading_level_cap ?? 99))
   const [avatar, setAvatar] = useState<string | null>(initial?.avatar ?? null)
+  const [ttsEnabled, setTtsEnabled] = useState(initial?.tts_enabled ?? false)
+  // G2 content controls: '' means "no override" for a flag (defer to the
+  // child's age-band ceiling); a set value can only ever tighten that
+  // ceiling, never loosen it (enforced server-side in story_requests/brief.py).
+  // #ASSUME: data-integrity: content_flag_caps is always present on a
+  // ProfileView fetched from the current API, but a stale/mocked profile
+  // object may omit it; the extra optional-chain link keeps this dialog from
+  // throwing on such a shape (mirrors IntakePage's banned_themes fallback).
+  const [violenceCap, setViolenceCap] = useState<ContentFlagLevelValue | ''>(
+    initial?.content_flag_caps?.violence ?? ''
+  )
+  const [scarinessCap, setScarinessCap] = useState<ContentFlagLevelValue | ''>(
+    initial?.content_flag_caps?.scariness ?? ''
+  )
+  const [perilCap, setPerilCap] = useState<ContentFlagLevelValue | ''>(
+    initial?.content_flag_caps?.peril ?? ''
+  )
+  const [bannedThemes, setBannedThemes] = useState<string[]>(initial?.banned_themes ?? [])
+  const [themeInput, setThemeInput] = useState('')
   // Picker-PIN controls (edit mode only). `keep` leaves the stored PIN (or
   // its absence) untouched; the typed value is held only in this state and
   // discarded with the dialog; it is never echoed back by the server.
@@ -81,19 +115,42 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   // which is misleading because retrying can never succeed for this account.
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
+  // Adds the trimmed/lowercased theme-input value as a new banned theme.
+  // Mirrors the backend's normalization (api/schemas.py::_normalize_theme)
+  // client-side so the chip shown here matches what is actually stored;
+  // the server still re-validates and is the source of truth.
+  function addTheme() {
+    const normalized = themeInput.trim().toLowerCase()
+    if (normalized === '' || bannedThemes.includes(normalized)) {
+      setThemeInput('')
+      return
+    }
+    if (bannedThemes.length >= BANNED_THEMES_MAX) return
+    setBannedThemes((themes) => [...themes, normalized])
+    setThemeInput('')
+  }
+
+  function removeTheme(theme: string) {
+    setBannedThemes((themes) => themes.filter((t) => t !== theme))
+  }
+
   async function save() {
     setSaving(true)
     setErrorMsg(null)
     try {
+      const contentFlagCaps: ContentFlagCaps = {
+        violence: violenceCap || undefined,
+        scariness: scarinessCap || undefined,
+        peril: perilCap || undefined,
+      }
       const base: ProfileFormCreateBody = {
         display_name: displayName,
         age_band: ageBand,
         reading_level_cap: Number(cap),
         avatar,
-        // No form control backs this field (see the note near the removed
-        // checkbox below): edits pass the stored value through unchanged;
-        // creates default to off.
-        tts_enabled: initial?.tts_enabled ?? false,
+        tts_enabled: ttsEnabled,
+        content_flag_caps: contentFlagCaps,
+        banned_themes: bannedThemes,
       }
       // Narrow on the discriminant so create mode structurally cannot emit
       // a pin; only edit mode builds the wider body.
@@ -238,10 +295,86 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
             </label>
           ))}
         </fieldset>
-        {/* The read-aloud (TTS) checkbox that lived here is hidden until the
-            reader actually ships read-aloud support; the tts_enabled field
-            stays in the payload (pass-through on edit, false on create) so
-            re-adding the toggle later needs no API change. */}
+        <label className="cyo-field cyo-field--checkbox">
+          <input
+            type="checkbox"
+            checked={ttsEnabled}
+            onChange={(e) => setTtsEnabled(e.target.checked)}
+          />
+          Read-aloud
+        </label>
+        <fieldset className="profile-form__content-controls">
+          <legend>Content limits</legend>
+          <p className="profile-form__hint">
+            Leave a limit as &quot;No extra limit&quot; to use the age band&apos;s default; a
+            chosen limit can only make stories gentler for this child, never less gentle than the
+            age band already allows.
+          </p>
+          {(['violence', 'scariness', 'peril'] as const).map((flag) => {
+            const value = flag === 'violence' ? violenceCap : flag === 'scariness' ? scarinessCap : perilCap
+            const setValue =
+              flag === 'violence' ? setViolenceCap : flag === 'scariness' ? setScarinessCap : setPerilCap
+            return (
+              <label key={flag} className="cyo-field">
+                {CONTENT_FLAG_LABELS[flag]}
+                <select
+                  className="cyo-field__control"
+                  value={value}
+                  onChange={(e) => setValue(e.target.value as ContentFlagLevelValue | '')}
+                >
+                  <option value="">No extra limit</option>
+                  {CONTENT_FLAG_LEVELS.map((level) => (
+                    <option key={level} value={level}>
+                      {level}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )
+          })}
+          <label className="cyo-field">
+            Excluded themes
+            <div className="profile-form__theme-input">
+              <input
+                className="cyo-field__control"
+                value={themeInput}
+                maxLength={BANNED_THEME_MAX_LENGTH}
+                placeholder="e.g. spiders"
+                onChange={(e) => setThemeInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    addTheme()
+                  }
+                }}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={addTheme}
+                disabled={themeInput.trim() === '' || bannedThemes.length >= BANNED_THEMES_MAX}
+              >
+                Add
+              </Button>
+            </div>
+          </label>
+          {bannedThemes.length > 0 ? (
+            <ul className="profile-form__theme-chips">
+              {bannedThemes.map((theme) => (
+                <li key={theme}>
+                  <Chip
+                    aria-label={`Remove ${theme}`}
+                    onClick={() => removeTheme(theme)}
+                  >
+                    {theme} ✕
+                  </Chip>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="profile-form__hint cyo-text-muted">No excluded themes yet.</p>
+          )}
+        </fieldset>
         {initial ? (
           <fieldset className="profile-form__pin">
             <legend>Picker PIN</legend>

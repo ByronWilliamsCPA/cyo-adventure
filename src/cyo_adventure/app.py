@@ -21,17 +21,20 @@ from cyo_adventure.api import (
     covers,
     device_grants,
     families,
+    flags,
     generation,
     health,
     library,
     me,
     moderation_dashboard,
     moderation_thresholds,
+    notifications,
     onboarding,
     profiles,
     provider_allowlist,
     ratings,
     reading,
+    reading_history,
     story_requests,
 )
 from cyo_adventure.core.config import settings
@@ -224,6 +227,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(library.router)
     app.include_router(reading.router)
+    app.include_router(reading_history.router)
     app.include_router(generation.router)
     app.include_router(profiles.router)
     app.include_router(families.router)
@@ -239,6 +243,8 @@ def create_app() -> FastAPI:
     app.include_router(child_sessions.router)
     app.include_router(device_grants.router)
     app.include_router(onboarding.router)
+    app.include_router(flags.router)
+    app.include_router(notifications.router)
     return app
 
 

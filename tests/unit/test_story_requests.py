@@ -178,6 +178,82 @@ def test_brief_from_request_anchor_context_defaults_to_none() -> None:
     assert brief.anchor_context is None
 
 
+def test_brief_from_request_banned_themes_become_content_nogo() -> None:
+    """G2: a profile's banned_themes flow into the brief's content_nogo verbatim."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    profile = _profile("8-11")
+    profile.banned_themes = ["spiders", "magic"]
+    brief = brief_from_request(request, profile)
+    assert brief.content_nogo == ["spiders", "magic"]
+
+
+def test_brief_from_request_content_flag_cap_stricter_than_band_is_carried() -> None:
+    """G2: a cap stricter than the 8-11 band's ceiling (violence=mild) is kept as-is."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    profile = _profile("8-11")
+    profile.allowed_content_flags = {"violence": "none"}
+    brief = brief_from_request(request, profile)
+    assert brief.special_constraints == ["Keep violence at or below 'none'."]
+
+
+def test_brief_from_request_content_flag_cap_looser_than_band_is_clamped() -> None:
+    """G2: a guardian cannot loosen a cap past the band ceiling (PL-16 still applies).
+
+    band 8-11's scariness ceiling is 'moderate'; requesting 'intense' clamps
+    down to the ceiling rather than passing 'intense' to the generator.
+    """
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    profile = _profile("8-11")
+    profile.allowed_content_flags = {"scariness": "intense"}
+    brief = brief_from_request(request, profile)
+    assert brief.special_constraints == ["Keep scariness at or below 'moderate'."]
+
+
+def test_brief_from_request_profile_with_no_g2_controls_is_unaffected() -> None:
+    """G2: a profile with no banned themes or flag caps set yields empty lists."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    brief = brief_from_request(request, _profile("8-11"))
+    assert brief.content_nogo == []
+    assert brief.special_constraints == []
+
+
+def test_brief_from_request_without_profile_has_no_content_controls() -> None:
+    """G2: a profile-less request has no per-child controls to apply."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        request_text="a space story",
+        status="pending",
+        age_band="8-11",
+    )
+    brief = brief_from_request(request, None)
+    assert brief.content_nogo == []
+    assert brief.special_constraints == []
+
+
 @pytest.mark.asyncio
 async def test_screen_blocks_on_pii_match() -> None:
     """A request naming a real child is blocked before any classifier call."""

@@ -20,6 +20,8 @@ const readerA = {
   reading_level_cap: 99,
   avatar: 'fox',
   tts_enabled: false,
+  content_flag_caps: {},
+  banned_themes: [],
   created_at: '2026-07-02T00:00:00Z',
 }
 
@@ -130,7 +132,7 @@ describe('ProfilesPage', () => {
   // The read-aloud toggle is hidden until the reader ships read-aloud
   // support: no checkbox in the dialog, no card badge, and an edit passes the
   // stored tts_enabled value through unchanged.
-  it('hides read-aloud UI and passes tts_enabled through unchanged on edit', async () => {
+  it('preselects the read-aloud checkbox and passes tts_enabled through unchanged on edit', async () => {
     const user = userEvent.setup()
     mockGet.mockResolvedValue({ data: { profiles: [{ ...readerA, tts_enabled: true }] } })
     mockPatch.mockResolvedValue({
@@ -138,9 +140,8 @@ describe('ProfilesPage', () => {
     })
     renderPage()
     expect(await screen.findByText('Reader A')).toBeInTheDocument()
-    expect(screen.queryByText(/Read-aloud on/)).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /Edit Reader A/i }))
-    expect(screen.queryByRole('checkbox', { name: /Read-aloud/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /Read-aloud/i })).toBeChecked()
     await user.click(screen.getByRole('button', { name: /Save/i }))
     expect(mockPatch).toHaveBeenCalledWith(
       '/v1/profiles/p1',

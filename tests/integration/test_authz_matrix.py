@@ -163,6 +163,19 @@ def _rating_body(seed: Seed) -> dict[str, Any]:
     }
 
 
+def _flag_body(seed: Seed) -> dict[str, Any]:
+    return {
+        "profile_id": str(seed.child_profile_id),
+        "storybook_id": seed.storybook_id,
+        "version": seed.version,
+        "reason": "did_not_like",
+    }
+
+
+def _flag_resolve_body(_seed: Seed) -> dict[str, Any]:
+    return {"resolution": "dismissed"}
+
+
 def _reading_state_body(seed: Seed) -> dict[str, Any]:
     return {
         "version": seed.version,
@@ -431,12 +444,45 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN, Role.CHILD}),
         path_params=_child_profile_path,
     ),
+    # -- flags.py: K15 kid flag, ownership-scoped like ratings.py -------------
+    RouteSpec(
+        "POST",
+        "/api/v1/flags",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        json_body=_flag_body,
+    ),
+    RouteSpec("GET", "/api/v1/admin/flags", frozenset({Role.ADMIN})),
+    RouteSpec(
+        "POST",
+        "/api/v1/admin/flags/{flag_id}/resolve",
+        frozenset({Role.ADMIN}),
+        path_params=_random_uuid_path("flag_id"),
+        json_body=_flag_resolve_body,
+    ),
+    # -- notifications.py: guardian-only feed (S9/G10), same shape as
+    # generation-jobs above: no path params, family-scoped via
+    # ctx.principal.family_id, admin rejected too (not a family-scoped role).
+    RouteSpec("GET", "/api/v1/notifications", frozenset({Role.GUARDIAN})),
     # -- reading.py: reading-state (ownership-scoped) ------------------------
     RouteSpec(
         "GET",
         "/api/v1/reading-state/{profile_id}/{storybook_id}",
         frozenset({Role.GUARDIAN, Role.CHILD}),
         path_params=_reading_state_path,
+    ),
+    # -- reading_history.py: ownership-scoped, admin bypass (register K6/G9) -
+    RouteSpec(
+        "GET",
+        "/api/v1/reading-history/{profile_id}",
+        frozenset({Role.GUARDIAN, Role.CHILD, Role.ADMIN}),
+        path_params=_child_profile_path,
+    ),
+    # -- reading_history.py: guardian-or-admin, always the caller's own
+    # family (no path/query id, so there is no cross-family surface here) --
+    RouteSpec(
+        "GET",
+        "/api/v1/families/me/reading-summary",
+        frozenset({Role.GUARDIAN, Role.ADMIN}),
     ),
     RouteSpec(
         "PUT",
@@ -795,6 +841,7 @@ async def test_dual_role_token_passes_guardian_and_admin_gates(
 _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("GET", "/api/v1/ratings/{profile_id}"),
     ("POST", "/api/v1/ratings"),
+    ("POST", "/api/v1/flags"),
     ("GET", "/api/v1/library"),
     ("PATCH", "/api/v1/profiles/{profile_id}"),
     ("GET", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
@@ -804,6 +851,7 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("GET", "/api/v1/storybooks/{storybook_id}/assignments"),
     ("POST", "/api/v1/storybooks/{storybook_id}/assignments"),
     ("GET", "/api/v1/storybooks/{storybook_id}/content-summary"),
+    ("GET", "/api/v1/reading-history/{profile_id}"),
 ]
 
 # Every key referenced above must actually be an authorized (guardian-eligible)
@@ -874,11 +922,13 @@ async def test_cross_family_guardian_is_rejected(
 _CROSS_FAMILY_CHILD_ROUTE_KEYS: list[tuple[str, str]] = [
     ("GET", "/api/v1/ratings/{profile_id}"),
     ("POST", "/api/v1/ratings"),
+    ("POST", "/api/v1/flags"),
     ("GET", "/api/v1/library"),
     ("GET", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
     ("PUT", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
     ("GET", "/api/v1/series-next/{profile_id}/{storybook_id}"),
     ("POST", "/api/v1/completions"),
+    ("GET", "/api/v1/reading-history/{profile_id}"),
 ]
 
 # Every key referenced above must actually be a child-eligible route in

@@ -55,6 +55,8 @@ class EventType(StrEnum):
     NOISE_FLOOR_CHANGED = "noise_floor_changed"
     BOOK_ASSIGNED = "book_assigned"
     RATED = "rated"
+    KID_FLAGGED = "kid_flagged"
+    FLAG_RESOLVED = "flag_resolved"
 
 
 SYSTEM_ACTOR_ROLE = "system"

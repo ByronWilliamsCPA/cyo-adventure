@@ -14,6 +14,8 @@ function existingProfile(hasPin: boolean): ProfileView {
     avatar: null,
     tts_enabled: false,
     has_pin: hasPin,
+    content_flag_caps: {},
+    banned_themes: [],
     created_at: '2026-07-02T00:00:00Z',
   }
 }
@@ -147,15 +149,16 @@ describe('ProfileFormDialog', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  // The read-aloud (TTS) toggle is hidden until the reader ships read-aloud
-  // support; tts_enabled still travels in the payload (false on create, the
-  // stored value passed through unchanged on edit).
-  it('renders no read-aloud checkbox and defaults tts_enabled to false on create', async () => {
+  // G2: the read-aloud (TTS) toggle is a real checkbox again (it was hidden
+  // pending reader read-aloud support); tts_enabled still travels in the
+  // payload (unchecked/false on create by default, the stored value
+  // preselected on edit).
+  it('renders an unchecked read-aloud checkbox and defaults tts_enabled to false on create', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockResolvedValue(undefined)
     render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
 
-    expect(screen.queryByRole('checkbox', { name: /read-aloud/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /read-aloud/i })).not.toBeChecked()
 
     await user.type(screen.getByLabelText(/name/i), 'Robin')
     await user.click(screen.getByRole('button', { name: /save/i }))
@@ -165,7 +168,7 @@ describe('ProfileFormDialog', () => {
     )
   })
 
-  it('passes an edited profile tts_enabled value through unchanged', async () => {
+  it('preselects an edited profile tts_enabled value and lets it be toggled', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockResolvedValue(undefined)
     render(
@@ -177,11 +180,14 @@ describe('ProfileFormDialog', () => {
       />
     )
 
-    expect(screen.queryByRole('checkbox', { name: /read-aloud/i })).not.toBeInTheDocument()
+    const checkbox = screen.getByRole('checkbox', { name: /read-aloud/i })
+    expect(checkbox).toBeChecked()
+    await user.click(checkbox)
+    expect(checkbox).not.toBeChecked()
     await user.click(screen.getByRole('button', { name: /save/i }))
 
     await waitFor(() =>
-      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ tts_enabled: true }))
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ tts_enabled: false }))
     )
   })
 
@@ -332,5 +338,107 @@ describe('ProfileFormDialog picker PIN controls (P6-07)', () => {
     const input = screen.getByLabelText(/new pin/i)
     await user.type(input, '1a2b3c4d')
     expect(input).toHaveValue('1234')
+  })
+})
+
+describe('ProfileFormDialog G2 content controls', () => {
+  it('defaults every content-flag select to "No extra limit" on create', () => {
+    render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+
+    expect(screen.getByLabelText(/violence/i)).toHaveValue('')
+    expect(screen.getByLabelText(/scariness/i)).toHaveValue('')
+    expect(screen.getByLabelText(/^peril/i)).toHaveValue('')
+  })
+
+  it('submits a chosen content-flag cap and omits the untouched ones', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    await user.selectOptions(screen.getByLabelText(/violence/i), 'none')
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+    const body = onSubmit.mock.calls[0][0] as { content_flag_caps: Record<string, unknown> }
+    expect(body.content_flag_caps.violence).toBe('none')
+    expect(body.content_flag_caps.scariness).toBeUndefined()
+    expect(body.content_flag_caps.peril).toBeUndefined()
+  })
+
+  it('preselects an edited profile stored content-flag caps', () => {
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={{
+          ...existingProfile(false),
+          content_flag_caps: { violence: 'none', scariness: 'mild' },
+        }}
+        onSubmit={vi.fn()}
+        onClose={vi.fn()}
+      />
+    )
+
+    expect(screen.getByLabelText(/violence/i)).toHaveValue('none')
+    expect(screen.getByLabelText(/scariness/i)).toHaveValue('mild')
+    expect(screen.getByLabelText(/^peril/i)).toHaveValue('')
+  })
+
+  it('adds a typed theme as a chip and submits it in banned_themes', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    await user.type(screen.getByPlaceholderText(/e\.g\. spiders/i), '  Spiders  ')
+    await user.click(screen.getByRole('button', { name: /^add$/i }))
+
+    expect(screen.getByText('spiders ✕')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /save/i }))
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ banned_themes: ['spiders'] }))
+    )
+  })
+
+  it('removes a theme chip when clicked', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={{ ...existingProfile(false), banned_themes: ['spiders', 'magic'] }}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    expect(screen.getByText('spiders ✕')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /remove spiders/i }))
+    expect(screen.queryByText('spiders ✕')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /save/i }))
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ banned_themes: ['magic'] }))
+    )
+  })
+
+  it('does not add an empty or duplicate theme', async () => {
+    const user = userEvent.setup()
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={{ ...existingProfile(false), banned_themes: ['spiders'] }}
+        onSubmit={vi.fn()}
+        onClose={vi.fn()}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: /^add$/i })).toBeDisabled()
+
+    await user.type(screen.getByPlaceholderText(/e\.g\. spiders/i), 'spiders')
+    await user.click(screen.getByRole('button', { name: /^add$/i }))
+
+    expect(screen.getAllByText('spiders ✕')).toHaveLength(1)
   })
 })

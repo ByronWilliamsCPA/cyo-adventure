@@ -8,15 +8,28 @@ the path and validated against the token subject (IDOR defense).
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    ConfigDict,
+    Field,
+    StringConstraints,
+    model_validator,
+)
 
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import Source, Verdict
 from cyo_adventure.storybook.evaluator import VarState
-from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
+from cyo_adventure.storybook.models import (
+    AgeBand,
+    ContentFlagLevel,
+    Length,
+    NarrativeStyle,
+)
 
 # ---------------------------------------------------------------------------
 # Reading-state resource bounds (audit Finding 8)
@@ -174,6 +187,53 @@ class CompletionView(BaseModel):
     found_at: datetime
 
 
+class ReadingHistoryItem(BaseModel):
+    """One storybook's reading-history summary for a profile (register K6/G9).
+
+    ``total_endings`` is read from the pinned (currently published) version's
+    ``metadata.ending_count``; a book with no current published version, or a
+    version whose metadata is missing/malformed, reports 0 rather than raising
+    (the listing degrades one row, never the whole response).
+    """
+
+    storybook_id: str
+    title: str
+    endings_found: int
+    ending_ids: list[str]
+    total_endings: int
+    in_progress: bool
+    last_activity_at: datetime
+
+
+class ReadingHistoryView(BaseModel):
+    """A profile's reading-history listing (the kid endings tracker, K6)."""
+
+    profile_id: str
+    books: list[ReadingHistoryItem]
+
+
+class ChildEngagementItem(BaseModel):
+    """One child's engagement signals for a guardian's family reading summary.
+
+    Deliberately signals-only (G9's privacy model: signals, not surveillance):
+    no story title, node, or choice content is carried here, only counts and
+    ids already visible to the guardian elsewhere (the library listing).
+    """
+
+    profile_id: str
+    display_name: str
+    books_started: int
+    books_finished: int
+    total_endings_found: int
+    last_activity_at: datetime | None
+
+
+class FamilyReadingSummaryView(BaseModel):
+    """Per-child engagement summary for the caller's own family (G9)."""
+
+    children: list[ChildEngagementItem]
+
+
 class SeriesNextBook(BaseModel):
     """The next readable book in a series, resolved for one profile."""
 
@@ -317,6 +377,101 @@ class RatingListView(BaseModel):
     """All ratings recorded by a single child profile."""
 
     ratings: list[RatingView]
+
+
+# ---------------------------------------------------------------------------
+# Notification feed schemas (S9 delivery infrastructure, G10 first slice)
+# ---------------------------------------------------------------------------
+
+
+class NotificationView(BaseModel):
+    """One guardian-facing notification derived from a pipeline_event row.
+
+    A read-only projection: there is no notification table. ``id`` is the
+    underlying pipeline_event id, which doubles as a stable sort/dedup key
+    for the client-side unread tracking this first slice relies on (see
+    api/notifications.py).
+    """
+
+    id: str
+    occurred_at: datetime
+    kind: str
+    severity: Literal["alert", "info"]
+    title: str
+    body: str
+    storybook_id: str | None = None
+    request_id: str | None = None
+    profile_id: str | None = None
+
+
+class NotificationListView(BaseModel):
+    """The guardian's family-scoped notification feed, newest first."""
+
+    notifications: list[NotificationView]
+
+
+# ---------------------------------------------------------------------------
+# Kid flag schemas (K15) -- structured, no-free-text child feedback signal.
+# ADR-016's no-free-text principle: none of these models carries a
+# child-authored text field; ``reason`` is a closed Literal vocabulary.
+# ---------------------------------------------------------------------------
+
+KidFlagReasonLiteral = Literal["did_not_like", "scared_me", "confusing"]
+KidFlagResolutionLiteral = Literal["dismissed", "archived_book", "noted"]
+
+
+class KidFlagCreateBody(BaseModel):
+    """A child's structured flag on a storybook passage (K15).
+
+    Deliberately carries no free-text field (``extra="forbid"`` rejects any
+    caller attempt to smuggle one in under an unexpected key); ``reason`` is
+    the entire signal.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    profile_id: str
+    storybook_id: str
+    version: int = Field(ge=1)
+    reason: KidFlagReasonLiteral
+    node_id: str | None = None
+
+
+class KidFlagCreatedView(BaseModel):
+    """The response to a successful flag submission."""
+
+    id: str
+    reason: KidFlagReasonLiteral
+
+
+class KidFlagView(BaseModel):
+    """A stored kid flag, as returned on the admin queue."""
+
+    id: str
+    family_id: str
+    profile_id: str
+    storybook_id: str
+    version: int
+    reason: KidFlagReasonLiteral
+    node_id: str | None
+    created_at: datetime
+    resolved_by: str | None
+    resolved_at: datetime | None
+    resolution: KidFlagResolutionLiteral | None
+
+
+class KidFlagListView(BaseModel):
+    """The admin open-flags queue, newest first."""
+
+    flags: list[KidFlagView]
+
+
+class KidFlagResolveBody(BaseModel):
+    """An admin's resolution decision for one open flag."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    resolution: KidFlagResolutionLiteral
 
 
 # ---------------------------------------------------------------------------
@@ -735,6 +890,72 @@ DisplayName = Annotated[
 # the API boundary so core/pin.py only ever hashes well-formed values.
 PinCode = Annotated[str, StringConstraints(pattern=r"^[0-9]{4,8}$")]
 
+# #CRITICAL: security: a banned theme is guardian-supplied free text that
+# later flows, unmodified, into a generation prompt via
+# story_requests/brief.py's ConceptBrief.content_nogo (see
+# generation/concept.py's control-character strip, which this mirrors for
+# the same reason: safety-eval Finding 5 / #64). Stripping control
+# characters and constraining to a narrow, lowercase charset here closes
+# that gap at the single point every theme string passes through before it
+# reaches ChildProfile.banned_themes.
+# #VERIFY: tests/integration/test_profiles.py banned-theme validation tests
+# assert control characters are stripped and out-of-charset input is a 422.
+_CONTROL_CHAR_PATTERN = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+_THEME_PATTERN = re.compile(r"^[a-z0-9][a-z0-9 '-]{0,39}$")
+
+
+def _normalize_theme(value: str) -> str:
+    """Strip control characters, lowercase, and validate a banned-theme string.
+
+    Args:
+        value: The raw theme string from the request body.
+
+    Returns:
+        str: The normalized (control-stripped, trimmed, lowercased) theme.
+
+    Raises:
+        ValueError: If the normalized value is empty or outside the allowed
+            charset (letters, digits, spaces, hyphens, apostrophes; 1-40
+            chars), which Pydantic reports as a 422.
+    """
+    normalized = _CONTROL_CHAR_PATTERN.sub("", value).strip().lower()
+    if not _THEME_PATTERN.fullmatch(normalized):
+        msg = (
+            "banned theme must be 1-40 characters: letters, numbers, "
+            "spaces, hyphens, or apostrophes"
+        )
+        raise ValueError(msg)
+    return normalized
+
+
+BannedTheme = Annotated[str, AfterValidator(_normalize_theme)]
+
+# Mirrors ConceptBrief.content_nogo's per-brief cap (generation/concept.py);
+# a profile cannot carry more banned themes than a single brief can express.
+_BANNED_THEMES_MAX = 20
+
+
+class ContentFlagCaps(BaseModel):
+    """Per-child ceiling overrides for the three content-sensitivity flags.
+
+    Each field is ``None`` when the guardian has not set an override for
+    that flag. A value here can only ever tighten what the child's age band
+    already permits: the band's own ceiling
+    (``validator/band_profile.py::BandProfile.content_ceiling``) is enforced
+    unconditionally by the validation gate regardless of this model, so a
+    guardian cannot use it to loosen the age-safety default, only to
+    restrict further (see ``story_requests/brief.py``'s clamp-to-band-ceiling
+    derivation). Stored on ``ChildProfile.allowed_content_flags`` as a dict
+    containing only the keys that are set.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    violence: ContentFlagLevel | None = None
+    scariness: ContentFlagLevel | None = None
+    peril: ContentFlagLevel | None = None
+
+
 # #CRITICAL: security: avatars must stay opaque glyph ids, never photos or free
 # text (the child-photo privacy decision is unresolved; see the frontend
 # avatar catalog's module docstring). A closed vocabulary here is what
@@ -774,6 +995,11 @@ class ProfileView(BaseModel):
     ``has_pin`` is the ONLY PIN-related field any view exposes; the stored
     ``pin_hash`` is write-only credential material and must never be
     serialized (see the ``#CRITICAL`` note on ``ChildProfile.pin_hash``).
+    ``content_flag_caps`` and ``banned_themes`` are the G2 per-child content
+    controls (see ``ContentFlagCaps`` and ``ChildProfile.banned_themes``);
+    both always serialize (an empty-caps object / empty list, never absent),
+    so a profile created before G2 shipped reads back with no overrides
+    rather than a missing field.
     """
 
     id: str
@@ -783,6 +1009,8 @@ class ProfileView(BaseModel):
     avatar: str | None
     tts_enabled: bool
     has_pin: bool
+    content_flag_caps: ContentFlagCaps
+    banned_themes: list[str]
     created_at: datetime
 
 
@@ -802,15 +1030,22 @@ class ProfileCreateBody(BaseModel):
     reading_level_cap: float = Field(default=99.0, ge=0.0, le=99.0)
     avatar: AvatarId | None = None
     tts_enabled: bool = False
+    content_flag_caps: ContentFlagCaps | None = None
+    banned_themes: (
+        Annotated[list[BannedTheme], Field(max_length=_BANNED_THEMES_MAX)] | None
+    ) = None
 
 
 class ProfileUpdateBody(BaseModel):
     """A guardian's partial update to a child profile.
 
-    ``avatar`` and ``pin`` distinguish "omitted" from "explicit null" via
-    ``model_fields_set``: an explicit ``"avatar": null`` clears the avatar,
-    and an explicit ``"pin": null`` removes the profile's picker PIN (a
-    4-8 digit string sets or replaces it). The other four fields have no
+    ``avatar``, ``pin``, ``content_flag_caps``, and ``banned_themes``
+    distinguish "omitted" from "explicit null" via ``model_fields_set``: an
+    explicit ``"avatar": null`` clears the avatar, an explicit ``"pin":
+    null`` removes the profile's picker PIN (a 4-8 digit string sets or
+    replaces it), and an explicit null on either G2 field clears it back to
+    "no override" / "no exclusions" (a non-null value replaces the stored
+    value wholesale, it does not merge). The other four fields have no
     legitimate "clear" semantics, so an explicit ``null`` on them is a
     deliberate no-op (the router only applies non-null values); see
     ``update_profile`` and
@@ -825,6 +1060,10 @@ class ProfileUpdateBody(BaseModel):
     avatar: AvatarId | None = None
     tts_enabled: bool | None = None
     pin: PinCode | None = None
+    content_flag_caps: ContentFlagCaps | None = None
+    banned_themes: (
+        Annotated[list[BannedTheme], Field(max_length=_BANNED_THEMES_MAX)] | None
+    ) = None
 
 
 # ---------------------------------------------------------------------------
