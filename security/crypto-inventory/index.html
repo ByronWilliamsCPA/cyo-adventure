@@ -2869,7 +2869,8 @@ groups; that is deliberate and lives in <code>homelab-infra</code> plus the Clou
   (negotiated-group check) is the <code>homelab-infra</code> acceptance test.</li>
 <li><strong>Backend egress</strong> (<code>httpx</code>): OpenRouter/Anthropic/Gemini/Supabase JWKS fetches use the
   container's OpenSSL defaults. Runtime image <code>dhi-python:3.12-debian13</code> ships OpenSSL 3.5.x,
-  so hybrid groups are offered when the far end supports them.</li>
+  so hybrid groups are offered when the far end supports them; the 3.5 floor is asserted in
+  CI by the <code>fips-runtime-parity</code> and <code>fips-image-floor</code> jobs (see section 7).</li>
 <li><strong>Ollama leg</strong>: <code>src/cyo_adventure/generation/provider.py</code> builds
   <code>ssl.create_default_context()</code> and adds the homelab CA (<code>certs/homelab-ca.pem</code> via
   <code>OLLAMA_CA_BUNDLE</code>); cleartext HTTP Basic is refused off-loopback
@@ -2960,7 +2961,30 @@ MD5/SHA-1 anywhere (enforced by <code>scripts/check_fips_compatibility.py</code>
 <ul>
 <li><code>scripts/check_fips_compatibility.py</code>: flags non-FIPS hashes/ciphers; treats FIPS 203/204/205
   names and <code>X25519MLKEM768</code> as approved; warns on pre-standardization names (Kyber, Dilithium,
-  SPHINCS+) with migration hints.</li>
+  SPHINCS+) with migration hints. Ambiguous cipher names (<code>seed</code>, <code>idea</code>) require cryptographic
+  context (a crypto-library import or a crypto namespace in the call chain) before flagging.</li>
+<li><strong>Acknowledged-findings baseline</strong> (2026-07-17): CI runs the checker at <code>--fail-level info</code>,
+  so every finding must be fixed or carry a fresh acknowledgment under
+  <code>[tool.fips_check.acknowledged]</code> in <code>pyproject.toml</code> (mandatory reason, reference into this
+  inventory, and reviewed date; entries expire after 90 days, matching the ADR-013 quarterly
+  review). Current entries: <code>cryptography</code>, <code>pyjwt</code>, <code>httpx</code>, <code>boto3</code>, each citing its section
+  here. Errors can never be acknowledged.</li>
+<li><strong>Runtime assertions</strong>: <code>tests/unit/test_fips_runtime_assertions.py</code> mechanically enforces
+  the testable half of those dispositions (cryptography &gt;= 45 and OpenSSL 3.x link, pyjwt<blockquote>
+<p>= 2.13, stdlib OpenSSL floor with a TLS 1.2+ context floor, asymmetric-only JWT allowlist
+  defaults plus an active startup validator). They run in the regular CI suite and in the
+  <code>fips-runtime-test</code> workflow job; do not renew a reviewed date while its assertion is red.</p>
+</blockquote>
+</li>
+<li><strong>Runtime OpenSSL floor is asserted, not assumed</strong> (2026-07-17): the stdlib OpenSSL floor
+  is parametrized via <code>FIPS_STDLIB_OPENSSL_FLOOR</code> (3.0 on ordinary hosts, whose uv-managed
+  interpreters statically link OpenSSL 3.0.x). Two CI jobs in <code>fips-compatibility.yml</code> raise
+  it to the ML-KEM-capable line: <code>fips-runtime-parity</code> runs the assertion suite on the
+  Debian 13 python line (<code>python:3.12-slim-trixie</code>, same distro OpenSSL 3.5.x as the
+  hardened runtime base) with the floor at 3.5, and <code>fips-image-floor</code> executes a shell-free
+  <code>python -c</code> check inside the pinned <code>dhi-python:3.12-debian13</code> digest itself. A base-image
+  digest bump that regressed below OpenSSL 3.5 now fails CI (<code>Dockerfile</code> is in the
+  workflow's trigger paths).</li>
 <li><code>core/config.py</code> startup validators fail the boot on forgeable JWT allowlist values.</li>
 <li>Bandit, OSV-Scanner, pip-audit, detect-secrets: general dependency and secret hygiene.</li>
 </ul>
@@ -2993,7 +3017,7 @@ MD5/SHA-1 anywhere (enforced by <code>scripts/check_fips_compatibility.py</code>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 03:08:39 UTC">July 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 17:52:43 UTC">July 17, 2026</span>
   </span>
 
     
