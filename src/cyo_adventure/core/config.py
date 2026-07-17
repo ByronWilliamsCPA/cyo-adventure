@@ -122,6 +122,17 @@ class Settings(BaseSettings):
     # environments where no queue is configured. Production must override via
     # CYO_ADVENTURE_REDIS_URL.
     redis_url: str = "redis://localhost:6379/0"
+    # Comma-separated Host-header allowlist for TrustedHostMiddleware
+    # (defense-in-depth against Host/X-Forwarded-Host spoofing). Empty (the
+    # default) leaves the middleware off, matching prior behavior; deployed
+    # tiers set their fronting domain(s), e.g.
+    # "cyoadventure.app,api.cyoadventure.app".
+    allowed_hosts: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            "CYO_ADVENTURE_ALLOWED_HOSTS", "ALLOWED_HOSTS"
+        ),
+    )
     # #CRITICAL: timing: RQ's own default job_timeout is 180s; a live Ollama run
     # (see ollama_timeout_seconds's cold-start note) routinely exceeds that, so an
     # unset job_timeout lets RQ SIGALRM-kill a still-healthy generation job and
