@@ -546,7 +546,7 @@
     },
     {
       "id": "hb_quay",
-      "body": "<<FILL role=choice words=100 beats='The shed's rolling doors wear a serious padlock; the office window's light spills yellow onto the quay stones a little farther on; and below the shed's seaward side, a dinghy is tied at the water steps near a small hatch above the tideline'>>",
+      "body": "<<FILL role=choice words=100 beats='The shed's rolling doors wear a serious padlock; the office window's light spills yellow onto the quay stones a little farther on; and below the shed's seaward side, a dinghy is tied at the water steps near a small hatch above the tideline, though it sits oddly low in the water, paint peeling and oars dusty, the look of a boat nobody has trusted in a long while'>>",
       "is_ending": false,
       "choices": [
         {
