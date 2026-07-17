@@ -815,7 +815,7 @@ validation = [
 
 [[package]]
 name = "cyo-adventure"
-version = "0.8.0"
+version = "0.11.0"
 source = { editable = "." }
 dependencies = [
     { name = "cryptography" },
@@ -830,6 +830,7 @@ dependencies = [
     { name = "redis" },
     { name = "rich" },
     { name = "rq" },
+    { name = "sentry-sdk" },
     { name = "structlog" },
 ]
 
@@ -948,6 +949,7 @@ requires-dist = [
     { name = "rq", specifier = ">=2.10.0" },
     { name = "ruamel-yaml", marker = "extra == 'dev'", specifier = ">=0.18.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9.0" },
+    { name = "sentry-sdk", specifier = ">=2.66.0" },
     { name = "sqlalchemy", extras = ["asyncio"], marker = "extra == 'api'", specifier = ">=2.0.0" },
     { name = "starlette", marker = "extra == 'api'", specifier = ">=0.49.1" },
     { name = "structlog", specifier = ">=23.1.0" },
@@ -4171,6 +4173,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c5/f0/184b4b5f8d00f2a92cf96eec8967a3d550b52cf94362dad1100df9e48d57/send2trash-2.1.0.tar.gz", hash = "sha256:1c72b39f09457db3c05ce1d19158c2cbef4c32b8bedd02c155e49282b7ea7459", size = 17255, upload-time = "2026-01-14T06:27:36.056Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1c/78/504fdd027da3b84ff1aecd9f6957e65f35134534ccc6da8628eb71e76d3f/send2trash-2.1.0-py3-none-any.whl", hash = "sha256:0da2f112e6d6bb22de6aa6daa7e144831a4febf2a87261451c4ad849fe9a873c", size = 17610, upload-time = "2026-01-14T06:27:35.218Z" },
+]
+
+[[package]]
+name = "sentry-sdk"
+version = "2.66.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "certifi" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/48/ff/670abe04c5072719b5060ed93851d0d69525d60f8f2c5810f8becd58f9c1/sentry_sdk-2.66.0.tar.gz", hash = "sha256:9727d35aa83c56cd53294676fe65b96296a334c9ce107fa2142bd70f47acb265", size = 935745, upload-time = "2026-07-16T12:42:04.663Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c7/bb/49b10783f29067da2eec179320617e94faf63196609de47aeab3c26c3325/sentry_sdk-2.66.0-py3-none-any.whl", hash = "sha256:096136c214c602be2b323524d30755dc5b30ec5a218a206207f33b12c05c6f11", size = 504769, upload-time = "2026-07-16T12:42:02.919Z" },
 ]
 
 [[package]]

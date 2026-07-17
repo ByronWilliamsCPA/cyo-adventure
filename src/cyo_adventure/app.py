@@ -20,22 +20,29 @@ from cyo_adventure.api import (
     admin_users,
     approval,
     assignments,
+    audit,
     child_sessions,
     covers,
     device_grants,
     families,
     family_connections,
+    flags,
     generation,
     health,
     library,
     me,
     moderation_dashboard,
     moderation_thresholds,
+    node_edit,
+    notifications,
     onboarding,
     profiles,
     provider_allowlist,
     ratings,
     reading,
+    reading_history,
+    recommendations,
+    rescreen,
     story_requests,
 )
 from cyo_adventure.core.config import settings
@@ -47,6 +54,7 @@ from cyo_adventure.core.exceptions import (
     StateTransitionError,
     ValidationError,
 )
+from cyo_adventure.core.observability import init_sentry
 from cyo_adventure.middleware import CorrelationMiddleware, add_security_middleware
 from cyo_adventure.utils.logging import get_logger
 
@@ -224,6 +232,22 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
     },
     {"name": "ratings", "description": "A child profile's star ratings of storybooks."},
     {
+        "name": "reading-history",
+        "description": "Reading-history reads for the kid and guardian surfaces.",
+    },
+    {
+        "name": "recommendations",
+        "description": "A profile's recommendation feed across the family and connected-family rings (ADR-016).",
+    },
+    {
+        "name": "flags",
+        "description": "Kid-raised, structured content flags feeding the admin moderation queue.",
+    },
+    {
+        "name": "notifications",
+        "description": "The guardian notification feed projected from the pipeline event log.",
+    },
+    {
         "name": "profiles",
         "description": "Guardian-managed child profiles within the caller's own family.",
     },
@@ -250,6 +274,18 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
     {
         "name": "approval",
         "description": "The storybook review/publish state machine: submit, approve, send back, archive.",
+    },
+    {
+        "name": "node-edit",
+        "description": "The lightweight passage editor with mandatory re-review (G6).",
+    },
+    {
+        "name": "rescreen",
+        "description": "Admin policy re-screen of published storybook versions.",
+    },
+    {
+        "name": "audit",
+        "description": "Admin-only audit reads over the append-only pipeline event log.",
     },
     {
         "name": "covers",
@@ -366,6 +402,7 @@ def create_app() -> FastAPI:
     Returns:
         FastAPI: The configured application.
     """
+    init_sentry(settings)
     app = _DocumentedApp(
         title="CYO Adventure",
         # The installed distribution version tracks pyproject.toml (bumped by
@@ -394,24 +431,31 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(library.router)
     app.include_router(reading.router)
+    app.include_router(reading_history.router)
     app.include_router(generation.router)
     app.include_router(profiles.router)
     app.include_router(families.router)
     app.include_router(ratings.router)
     app.include_router(assignments.router)
     app.include_router(approval.router)
+    app.include_router(node_edit.router)
     app.include_router(covers.router)
     app.include_router(moderation_thresholds.router)
     app.include_router(moderation_dashboard.router)
+    app.include_router(audit.router)
+    app.include_router(rescreen.router)
     app.include_router(provider_allowlist.router)
     app.include_router(me.router)
     app.include_router(story_requests.router)
     app.include_router(child_sessions.router)
     app.include_router(device_grants.router)
     app.include_router(onboarding.router)
+    app.include_router(flags.router)
+    app.include_router(notifications.router)
     app.include_router(admin_users.router)
     app.include_router(admin_profiles.router)
     app.include_router(family_connections.router)
+    app.include_router(recommendations.router)
     return app
 
 

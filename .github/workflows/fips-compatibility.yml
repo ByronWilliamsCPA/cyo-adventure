@@ -19,15 +19,22 @@ on:
     branches: [main, master]
     paths:
       - 'src/**/*.py'
+      - 'tests/**/*.py'
       - 'pyproject.toml'
       - 'requirements*.txt'
+      - 'scripts/check_fips_compatibility.py'
+      - 'Dockerfile'
       - '.github/workflows/fips-compatibility.yml'
   pull_request:
     branches: [main, master]
     paths:
       - 'src/**/*.py'
+      - 'tests/**/*.py'
       - 'pyproject.toml'
       - 'requirements*.txt'
+      - 'scripts/check_fips_compatibility.py'
+      - 'Dockerfile'
+      - '.github/workflows/fips-compatibility.yml'
   schedule:
     # Run weekly on Monday at 10 AM UTC
     - cron: '0 10 * * 1'
@@ -83,20 +90,29 @@ jobs:
             STRICT_FLAG="--strict"
           fi
 
-          # Run check and capture output
+          # Run check and capture output. pipefail is required: the default
+          # shell for run steps is `bash -e {0}` (no pipefail), so without it
+          # $? reports tee's exit status (always 0) and the failure gate in
+          # the "Check result" step below can never fire.
+          # --fail-level info: every finding must be resolved or carry a
+          # fresh acknowledgment in [tool.fips_check.acknowledged]
           set +e
+          set -o pipefail
           uv run python scripts/check_fips_compatibility.py \
             --fix-hints \
             --include-tests \
+            --fail-level info \
             $STRICT_FLAG \
             2>&1 | tee fips-report.txt
           EXIT_CODE=$?
+          set +o pipefail
           set -e
 
           # Also generate JSON report
           uv run python scripts/check_fips_compatibility.py \
             --json \
             --include-tests \
+            --fail-level info \
             > fips-report.json 2>/dev/null || true
 
           echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
@@ -106,9 +122,11 @@ jobs:
             ERRORS=$(jq -r '.summary.errors' fips-report.json)
             WARNINGS=$(jq -r '.summary.warnings' fips-report.json)
             INFO=$(jq -r '.summary.info' fips-report.json)
+            ACKNOWLEDGED=$(jq -r '.summary.acknowledged' fips-report.json)
             echo "errors=$ERRORS" >> $GITHUB_OUTPUT
             echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
             echo "info=$INFO" >> $GITHUB_OUTPUT
+            echo "acknowledged=$ACKNOWLEDGED" >> $GITHUB_OUTPUT
           fi
 
       - name: Upload FIPS report
@@ -128,10 +146,14 @@ jobs:
             const errors = parseInt('${{ steps.fips-check.outputs.errors }}') || 0;
             const warnings = parseInt('${{ steps.fips-check.outputs.warnings }}') || 0;
             const info = parseInt('${{ steps.fips-check.outputs.info }}') || 0;
+            const acknowledged = parseInt('${{ steps.fips-check.outputs.acknowledged }}') || 0;
+            const exitCode = parseInt('${{ steps.fips-check.outputs.exit_code }}') || 0;
 
+            // Status mirrors the job conclusion (driven by exit_code) so the
+            // comment and the check can never disagree.
             let status = '✅ PASSED';
             let emoji = '✅';
-            if (errors > 0) {
+            if (exitCode !== 0) {
               status = '❌ FAILED';
               emoji = '❌';
             } else if (warnings > 0) {
@@ -145,12 +167,13 @@ jobs:
             |--------|-------|
             | Errors | ${errors} |
             | Warnings | ${warnings} |
-            | Info | ${info} |
+            | Info (unacknowledged) | ${info} |
+            | Acknowledged | ${acknowledged} |
 
             **Status:** ${status}
 
-            ${errors > 0 ? '⚠️ This PR introduces FIPS-incompatible code or dependencies. Please review the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.' : ''}
-            ${warnings > 0 && errors === 0 ? 'ℹ️ Some packages may need verification for FIPS compliance. See the workflow artifacts for details.' : ''}
+            ${exitCode !== 0 ? 'This PR has FIPS findings at or above the failure level (--fail-level info). Fix them or, for info-level verification nudges with a documented disposition, acknowledge them under [tool.fips_check.acknowledged] in pyproject.toml. See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.' : ''}
+            ${acknowledged > 0 ? `ℹ️ ${acknowledged} finding(s) covered by the acknowledged baseline (dispositions in docs/security/crypto-inventory.md, assertions in tests/unit/test_fips_runtime_assertions.py).` : ''}
 
             <details>
             <summary>What is FIPS?</summary>
@@ -201,6 +224,90 @@ jobs:
           echo "::error::FIPS compatibility issues found. See the report for details."
           exit 1
 
+  # Runtime parity: run the FIPS runtime assertions on the Debian 13 python
+  # line the production image is built from, with the stdlib OpenSSL floor
+  # raised to 3.5 (the ML-KEM-capable line, per ADR-013 and the crypto
+  # inventory). The hardened dhi runtime image itself ships no shell, so CI
+  # steps cannot execute inside it; python:3.12-slim-trixie shares its
+  # Debian 13 userland and distro OpenSSL. step-security/harden-runner is
+  # omitted here because it does not support container jobs.
+  fips-runtime-parity:
+    name: FIPS Runtime Parity (Debian 13)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      image: python:3.12-slim-trixie
+
+    permissions:
+      contents: read
+    steps:
+      - name: Install git
+        # Must run BEFORE checkout: without git in the container,
+        # actions/checkout falls back to a REST API tarball download, which
+        # honors .gitattributes export-ignore and therefore ships a tree
+        # with no *.md, tests/, or docs/ (this repo export-ignores all
+        # three), breaking both the project build (README.md is project
+        # metadata) and the test run itself.
+        # hadolint-style version pinning is intentionally omitted: this is
+        # a throwaway CI container, and Debian point releases retire exact
+        # apt versions quickly.
+        run: apt-get update && apt-get install -y --no-install-recommends git ca-certificates
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Install uv
+        run: pip install --no-cache-dir uv
+
+      - name: Sync against the container interpreter
+        # Pin uv to the image's python so stdlib ssl links the distro
+        # OpenSSL 3.5.x instead of a downloaded standalone interpreter
+        # (python-build-standalone statically links OpenSSL 3.0.x, which
+        # would defeat the point of this job).
+        env:
+          UV_PYTHON_DOWNLOADS: never
+        run: uv sync --all-extras --python /usr/local/bin/python3
+
+      - name: Run FIPS runtime assertions at the 3.5 floor
+        env:
+          FIPS_STDLIB_OPENSSL_FLOOR: "3.5"
+        run: uv run pytest tests/unit/test_fips_runtime_assertions.py -v --no-cov
+
+  # Image floor: assert the pinned production base image itself links an
+  # ML-KEM-capable OpenSSL (>= 3.5). The image has no shell, so the check is
+  # a single exec-form python -c via docker run; the interpreter lives at
+  # /opt/python/bin in dhi images (see the Dockerfile's builder-stage
+  # comment). Pulling the ghcr.io mirror needs packages: read.
+  fips-image-floor:
+    name: FIPS Image OpenSSL Floor
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Assert runtime base image OpenSSL >= 3.5
+        run: |
+          IMAGE=$(grep -oE 'ghcr\.io/byronwilliamscpa/dhi-python:[^ ]+' Dockerfile | head -1)
+          if [ -z "$IMAGE" ]; then
+            echo "::error::Could not find the pinned dhi-python base image in Dockerfile"
+            exit 1
+          fi
+          echo "Asserting OpenSSL floor in $IMAGE"
+          docker run --rm --entrypoint /opt/python/bin/python3.12 "$IMAGE" -c "import ssl; v = ssl.OPENSSL_VERSION_INFO[:2]; assert v >= (3, 5), f'runtime image links {ssl.OPENSSL_VERSION}, below the 3.5 ML-KEM floor'; print('runtime image links', ssl.OPENSSL_VERSION)"
+
   # Optional: Test on actual FIPS-enabled environment
   fips-runtime-test:
     name: FIPS Runtime Test
@@ -230,6 +337,14 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --all-extras
+
+      - name: Run FIPS runtime assertions
+        # The mechanical half of the [tool.fips_check.acknowledged] baseline:
+        # dependency floors (cryptography, pyjwt), OpenSSL 3.x links, the
+        # TLS 1.2+ context floor, and the JWT allowlist startup validator.
+        # These also run in the regular CI test suite; this job repeats them
+        # so the weekly scheduled run exercises them even if ci.yml changes.
+        run: uv run pytest tests/unit/test_fips_runtime_assertions.py -v --no-cov
 
       - name: Test crypto imports in simulated FIPS mode
         run: |

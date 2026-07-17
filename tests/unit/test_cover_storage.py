@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-from botocore.exceptions import ClientError
+from botocore.exceptions import BotoCoreError, ClientError
 
 from cyo_adventure.covers.errors import CoverGenerationError
 from cyo_adventure.covers.storage import upload_cover
@@ -73,5 +73,27 @@ async def test_upload_failure_propagates() -> None:
     with (
         patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client),
         pytest.raises(ClientError),
+    ):
+        await upload_cover(b"WEBP", "s1/2.webp", _settings())
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_upload_cover_blank_config_value_raises_generation_error() -> None:
+    """An empty-string R2 credential counts as unconfigured, same as None."""
+    with pytest.raises(CoverGenerationError, match="not configured"):
+        await upload_cover(b"x", "k.webp", _settings(r2_account_id=""))
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_upload_cover_client_construction_failure_propagates() -> None:
+    """A boto3 client construction failure propagates instead of returning a URL."""
+    with (
+        patch(
+            "cyo_adventure.covers.storage.boto3.client",
+            side_effect=BotoCoreError(),
+        ),
+        pytest.raises(BotoCoreError),
     ):
         await upload_cover(b"WEBP", "s1/2.webp", _settings())

@@ -2,12 +2,16 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { choose } from '../player/engine'
 import type { Storybook } from '../player/types'
+import { clearChildSession, setChildSession } from '../auth/childSession'
+import type { SubmitFlagParams } from '../api/readerApi'
+import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
+import { ToastProvider } from '../notifications/ToastProvider'
 import { Reader } from './Reader'
 
 // choose() wraps the real implementation by default (every existing test
@@ -384,6 +388,113 @@ describe('Reader ending progress and celebration', () => {
   })
 })
 
+type FetchReadingHistoryMock = (profileId: string) => Promise<ReadingHistoryItem[]>
+type SubmitFlagMock = (params: SubmitFlagParams) => Promise<KidFlagCreatedView>
+
+describe('Reader K6 endings tracker', () => {
+  function reachLanternEnding(fetchReadingHistory?: FetchReadingHistoryMock) {
+    render(
+      <MemoryRouter>
+        <Reader
+          story={lantern}
+          profileId="p1"
+          fetchReadingHistory={fetchReadingHistory}
+        />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+  }
+
+  it('shows the tracker after the celebration when total_endings > 1', async () => {
+    const fetchReadingHistory = vi.fn<FetchReadingHistoryMock>().mockResolvedValue([
+      {
+        storybook_id: lantern.id,
+        title: lantern.title,
+        endings_found: 2,
+        ending_ids: ['e_treasure_found', 'e_other'],
+        total_endings: 4,
+        in_progress: false,
+        last_activity_at: '2026-07-01T00:00:00Z',
+      },
+    ])
+    reachLanternEnding(fetchReadingHistory)
+    expect(
+      await screen.findByTestId('endings-tracker')
+    ).toHaveTextContent('You found ending 2 of 4! Read again to find more.')
+    expect(fetchReadingHistory).toHaveBeenCalledWith('p1')
+  })
+
+  it('renders nothing when total_endings is 1 or fewer', async () => {
+    const fetchReadingHistory = vi.fn<FetchReadingHistoryMock>().mockResolvedValue([
+      {
+        storybook_id: lantern.id,
+        title: lantern.title,
+        endings_found: 1,
+        ending_ids: ['e_treasure_found'],
+        total_endings: 1,
+        in_progress: false,
+        last_activity_at: '2026-07-01T00:00:00Z',
+      },
+    ])
+    reachLanternEnding(fetchReadingHistory)
+    await waitFor(() => expect(fetchReadingHistory).toHaveBeenCalled())
+    expect(screen.queryByTestId('endings-tracker')).not.toBeInTheDocument()
+  })
+
+  it('renders nothing (no fetch attempted) when fetchReadingHistory is omitted', () => {
+    reachLanternEnding()
+    expect(screen.queryByTestId('endings-tracker')).not.toBeInTheDocument()
+  })
+
+  it('renders nothing on a lookup failure', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const fetchReadingHistory = vi.fn<FetchReadingHistoryMock>().mockRejectedValue(new Error('boom'))
+    reachLanternEnding(fetchReadingHistory)
+    await waitFor(() => expect(fetchReadingHistory).toHaveBeenCalled())
+    expect(screen.queryByTestId('endings-tracker')).not.toBeInTheDocument()
+    errorSpy.mockRestore()
+  })
+})
+
+describe('Reader K15 flag button', () => {
+  afterEach(() => {
+    clearChildSession()
+  })
+
+  it('does not render the flag button when submitFlag is omitted', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" />
+      </MemoryRouter>
+    )
+    expect(screen.queryByRole('button', { name: /tell a grown-up/i })).not.toBeInTheDocument()
+  })
+
+  it('does not render the flag button without a valid child session, even with submitFlag wired', () => {
+    render(
+      <MemoryRouter>
+        <ToastProvider>
+          <Reader story={lantern} profileId="p1" submitFlag={vi.fn<SubmitFlagMock>()} />
+        </ToastProvider>
+      </MemoryRouter>
+    )
+    expect(screen.queryByRole('button', { name: /tell a grown-up/i })).not.toBeInTheDocument()
+  })
+
+  it('renders the flag button in the chrome once a valid child session exists', () => {
+    setChildSession({ token: 't', expiresAt: '2100-01-01T00:00:00Z', profileId: 'p1' })
+    render(
+      <MemoryRouter>
+        <ToastProvider>
+          <Reader story={lantern} profileId="p1" submitFlag={vi.fn<SubmitFlagMock>()} />
+        </ToastProvider>
+      </MemoryRouter>
+    )
+    expect(screen.getByRole('button', { name: /tell a grown-up/i })).toBeInTheDocument()
+  })
+})
+
 describe('Reader corrupted-transition recovery', () => {
   it('recovers from a corrupted transition instead of crashing the reader', () => {
     // engine.choose() throws by contract on a structurally invalid choice (a
@@ -426,6 +537,154 @@ describe('Reader corrupted-transition recovery', () => {
       )
       fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
       expect(screen.getByRole('button', { name: /back to my books/i })).toBeInTheDocument()
+    } finally {
+      logSpy.mockRestore()
+    }
+  })
+})
+
+describe('Reader read-aloud (K7)', () => {
+  // A minimal stand-in for SpeechSynthesisUtterance: real browsers fire
+  // onend asynchronously once audio playback finishes; tests trigger it
+  // directly instead of waiting on real speech.
+  class MockUtterance {
+    text: string
+    onend: (() => void) | null = null
+    onerror: (() => void) | null = null
+    constructor(text: string) {
+      this.text = text
+    }
+  }
+
+  const speakMock = vi.fn()
+  const cancelMock = vi.fn()
+
+  function installSpeechSynthesis() {
+    vi.stubGlobal('speechSynthesis', { speak: speakMock, cancel: cancelMock })
+    vi.stubGlobal('SpeechSynthesisUtterance', MockUtterance)
+  }
+
+  beforeEach(() => {
+    speakMock.mockReset()
+    cancelMock.mockReset()
+  })
+
+  function renderLantern(ttsEnabled: boolean) {
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" ttsEnabled={ttsEnabled} />
+      </MemoryRouter>
+    )
+  }
+
+  it('does not render the toggle when tts_enabled is false, even with speechSynthesis present', () => {
+    installSpeechSynthesis()
+    renderLantern(false)
+    expect(screen.queryByLabelText('Read this page aloud')).toBeNull()
+  })
+
+  it('does not render the toggle when speechSynthesis is absent, even when tts_enabled is true', () => {
+    // Deliberately not installed.
+    renderLantern(true)
+    expect(screen.queryByLabelText('Read this page aloud')).toBeNull()
+  })
+
+  it('never auto-plays: speak is not called on mount even when available', () => {
+    installSpeechSynthesis()
+    renderLantern(true)
+    expect(speakMock).not.toHaveBeenCalled()
+  })
+
+  it('speaks the passage body then the visible choice labels when tapped', () => {
+    installSpeechSynthesis()
+    renderLantern(true)
+    const toggle = screen.getByLabelText('Read this page aloud')
+    fireEvent.click(toggle)
+
+    expect(screen.getByLabelText('Stop reading aloud')).toBeTruthy()
+    expect(speakMock).toHaveBeenCalledTimes(1)
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+    expect(bodyUtterance.text).toBe('A lantern lies near the entrance.')
+
+    bodyUtterance.onend?.()
+    expect(speakMock).toHaveBeenCalledTimes(2)
+    const choicesUtterance = speakMock.mock.calls[1][0] as MockUtterance
+    expect(choicesUtterance.text).toBe(
+      'Your choices are: Pick up the lantern., Walk inside.'
+    )
+  })
+
+  it('re-tapping while speaking stops speech', () => {
+    installSpeechSynthesis()
+    renderLantern(true)
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    expect(screen.getByLabelText('Stop reading aloud')).toBeTruthy()
+
+    fireEvent.click(screen.getByLabelText('Stop reading aloud'))
+    expect(cancelMock).toHaveBeenCalled()
+    expect(screen.getByLabelText('Read this page aloud')).toBeTruthy()
+  })
+
+  it('cancels speech on a choice tap (navigation)', () => {
+    installSpeechSynthesis()
+    renderLantern(true)
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    expect(screen.getByLabelText('Stop reading aloud')).toBeTruthy()
+    cancelMock.mockClear()
+
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    expect(cancelMock).toHaveBeenCalled()
+    expect(screen.getByLabelText('Read this page aloud')).toBeTruthy()
+  })
+
+  it('cancels speech on Go back', () => {
+    installSpeechSynthesis()
+    renderLantern(true)
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    expect(screen.getByLabelText('Stop reading aloud')).toBeTruthy()
+    cancelMock.mockClear()
+
+    fireEvent.click(screen.getByTestId('go-back'))
+    expect(cancelMock).toHaveBeenCalled()
+    expect(screen.getByLabelText('Read this page aloud')).toBeTruthy()
+  })
+
+  it('cancels speech on Leave', () => {
+    installSpeechSynthesis()
+    renderLantern(true)
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    cancelMock.mockClear()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Leave' }))
+    expect(cancelMock).toHaveBeenCalled()
+  })
+
+  it('cancels speech on unmount', () => {
+    installSpeechSynthesis()
+    const { unmount } = render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" ttsEnabled />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    cancelMock.mockClear()
+
+    unmount()
+    expect(cancelMock).toHaveBeenCalled()
+  })
+
+  it('does not show the toggle on the corrupted-transition error screen', () => {
+    installSpeechSynthesis()
+    vi.mocked(choose).mockImplementationOnce(() => {
+      throw new Error('dangling choice target')
+    })
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      renderLantern(true)
+      fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+      expect(screen.getByRole('alert')).toHaveTextContent(/stuck/i)
+      expect(screen.queryByLabelText('Read this page aloud')).toBeNull()
     } finally {
       logSpy.mockRestore()
     }

@@ -1,20 +1,36 @@
 """Tests for cyo_adventure.middleware.security module.
 
-Covers SecurityHeadersMiddleware, RateLimitMiddleware, SSRFPreventionMiddleware,
-the add_security_middleware configuration function, and the proxy-header trust
-boundary (Task E1) that lets both RateLimitMiddleware and SecurityHeadersMiddleware
-see the real client behind the nginx/Traefik reverse proxy.
+Covers SecurityHeadersMiddleware, RateLimitMiddleware (both the in-memory
+backend and the Redis-backed backend with its fail-open fallback),
+SSRFPreventionMiddleware, the add_security_middleware configuration function,
+and the proxy-header trust boundary (Task E1) that lets both
+RateLimitMiddleware and SecurityHeadersMiddleware see the real client behind
+the nginx/Traefik reverse proxy.
 
-All tests use a minimal FastAPI app with TestClient; no real network calls.
+All tests use a minimal FastAPI app with TestClient (or drive the middleware
+directly with mocks); no real network calls, and no real Redis server. This
+project has no `fakeredis` dependency (checked in pyproject.toml before
+writing these tests), so the Redis-backed tests use a small hand-rolled
+`_FakeAsyncRedis` double below that implements just the `register_script`
+surface `RateLimitMiddleware` calls, replicating `_RATE_LIMIT_SCRIPT`'s
+sliding-window-log algorithm in Python against a shared in-memory dict. Two
+`RateLimitMiddleware` instances constructed with the SAME `_FakeAsyncRedis`
+instance model two worker processes sharing one Redis server -- the
+multi-process property this backend exists to provide.
 """
 
 from __future__ import annotations
 
+import json
 import time
+from typing import TYPE_CHECKING
 
 import pytest
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
+
+if TYPE_CHECKING:
+    from starlette.responses import Response
 
 pytestmark = [pytest.mark.security]
 
@@ -40,6 +56,81 @@ def _app_with_security_headers() -> FastAPI:
     app = _minimal_app()
     app.add_middleware(SecurityHeadersMiddleware)
     return app
+
+
+class _FakeScript:
+    """Test double for a registered `redis.asyncio` Lua script.
+
+    Replicates `cyo_adventure.middleware.security._RATE_LIMIT_SCRIPT`'s
+    sliding-window-log algorithm directly in Python against a dict shared by
+    every `_FakeScript`/`_FakeAsyncRedis` built from the same store, instead
+    of interpreting the Lua source. Good enough to test this module's actual
+    contract (call `register_script`, `await` the result with keys=/args=,
+    unpack a 2-tuple) without needing a Lua interpreter or a real Redis.
+    """
+
+    def __init__(self, store: dict[str, list[tuple[float, str]]]) -> None:
+        self._store = store
+
+    async def __call__(self, keys: list[str], args: list[object]) -> tuple[int, int]:
+        key = keys[0]
+        now, minute_window, burst_window, rpm_limit, burst_limit, member = args
+        now = float(now)  # type: ignore[assignment]
+        minute_window = float(minute_window)  # type: ignore[assignment]
+        burst_window = float(burst_window)  # type: ignore[assignment]
+        rpm_limit = int(rpm_limit)  # type: ignore[assignment]
+        burst_limit = int(burst_limit)  # type: ignore[assignment]
+
+        entries = self._store.setdefault(key, [])
+        entries[:] = [(t, m) for t, m in entries if t > now - minute_window]
+
+        minute_count = len(entries)
+        if minute_count >= rpm_limit:
+            return (1, minute_count)
+
+        burst_count = sum(1 for t, _m in entries if t >= now - burst_window)
+        if burst_count >= burst_limit:
+            return (2, burst_count)
+
+        entries.append((now, str(member)))
+        return (0, minute_count + 1)
+
+
+class _FakeAsyncRedis:
+    """Test double for `redis.asyncio.Redis`, exposing only `register_script`
+    (the sole client method `RateLimitMiddleware` calls).
+    """
+
+    def __init__(self) -> None:
+        self._store: dict[str, list[tuple[float, str]]] = {}
+
+    def register_script(self, script: str) -> _FakeScript:
+        del script  # the fake always runs the one algorithm this module ships
+        return _FakeScript(self._store)
+
+
+class _FailingScript:
+    """A registered script that always raises, modeling an unreachable Redis."""
+
+    def __init__(self, error: Exception) -> None:
+        self._error = error
+        self.call_count = 0
+
+    async def __call__(self, keys: list[str], args: list[object]) -> tuple[int, int]:
+        del keys, args
+        self.call_count += 1
+        raise self._error
+
+
+class _FailingAsyncRedis:
+    """Test double whose `register_script` always returns a `_FailingScript`."""
+
+    def __init__(self, error: Exception) -> None:
+        self.script = _FailingScript(error)
+
+    def register_script(self, script: str) -> _FailingScript:
+        del script
+        return self.script
 
 
 # ---------------------------------------------------------------------------
@@ -356,6 +447,289 @@ class TestRateLimitMiddleware:
         assert "3.3.3.3" in middleware.requests
         assert "2.2.2.2" in middleware.requests
         assert "1.1.1.1" not in middleware.requests
+
+
+# ---------------------------------------------------------------------------
+# RateLimitMiddleware: Redis backend (M5 / Phase 5)
+# ---------------------------------------------------------------------------
+
+
+class TestRedisBackedRateLimitMiddleware:
+    """Tests for the Redis-backed rate limiter and its fail-open fallback.
+
+    Covers: the limit is enforced across two limiter instances sharing one
+    Redis backend (the multi-process property this backend exists for),
+    sliding-window expiry, the 429 response shape matches the in-memory
+    backend exactly, a Redis connection error falls back to the in-memory
+    limiter rather than failing the request, and the fail-open circuit
+    breaker skips retrying Redis during its cooldown window.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_redis_backend_shared_across_instances_enforces_limit(
+        self,
+    ) -> None:
+        """Two RateLimitMiddleware instances (modeling two worker processes)
+        sharing one Redis backend enforce ONE combined limit -- the property
+        a purely in-memory, process-local counter cannot provide.
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        fake_redis = _FakeAsyncRedis()
+        middleware_a = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=3,
+            burst_size=100,
+            backend="redis",
+            redis_client=fake_redis,
+        )
+        middleware_b = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=3,
+            burst_size=100,
+            backend="redis",
+            redis_client=fake_redis,
+        )
+
+        mock_request = MagicMock()
+        mock_request.client = MagicMock(host="10.0.0.5")
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        async def call_next(_req: object) -> object:
+            return mock_response
+
+        # Two requests through "process A", one through "process B": all
+        # three count toward the SAME shared 3-request-per-minute limit.
+        r1 = await middleware_a.dispatch(mock_request, call_next)
+        r2 = await middleware_a.dispatch(mock_request, call_next)
+        r3 = await middleware_b.dispatch(mock_request, call_next)
+        assert r1 is mock_response
+        assert r2 is mock_response
+        assert r3 is mock_response
+
+        # The 4th request, from either instance, is the shared limit's 4th --
+        # rejected regardless of which "process" makes it.
+        r4 = await middleware_b.dispatch(mock_request, call_next)
+        assert r4.status_code == 429  # type: ignore[union-attr]
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_redis_backend_window_expiry_resets_limit(self) -> None:
+        """Once the 60-second minute window fully elapses, an earlier
+        request ages out of the Redis sorted set and a fresh request is
+        allowed again.
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        fake_redis = _FakeAsyncRedis()
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=1,
+            burst_size=100,
+            backend="redis",
+            redis_client=fake_redis,
+        )
+
+        t0 = 1_000_000.0
+        first: Response | None = await middleware._check_redis("10.0.0.9", t0)
+        assert first is None  # allowed, recorded
+
+        second = await middleware._check_redis("10.0.0.9", t0 + 1)
+        assert second is not None
+        assert second.status_code == 429
+
+        third = await middleware._check_redis("10.0.0.9", t0 + 61)
+        assert third is None  # the window has fully elapsed; allowed again
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_redis_backend_burst_limit_returns_429(self) -> None:
+        """The burst (per-second) limit is enforced the same way over Redis
+        as it is by the in-memory backend.
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        fake_redis = _FakeAsyncRedis()
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=1000,
+            burst_size=2,
+            backend="redis",
+            redis_client=fake_redis,
+        )
+
+        t0 = 3_000_000.0
+        assert await middleware._check_redis("10.0.0.12", t0) is None
+        assert await middleware._check_redis("10.0.0.12", t0 + 0.1) is None
+        response = await middleware._check_redis("10.0.0.12", t0 + 0.2)
+
+        assert response is not None
+        assert response.status_code == 429
+        assert response.headers["Retry-After"] == "1"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_redis_backend_429_shape_matches_memory_backend(self) -> None:
+        """A Redis-backend 429 has the same JSON shape and Retry-After header
+        as the in-memory backend's 429 (response-contract stability for
+        clients, e.g. the frontend's retry-after handling).
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        fake_redis = _FakeAsyncRedis()
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=1,
+            burst_size=100,
+            backend="redis",
+            redis_client=fake_redis,
+        )
+
+        t0 = 2_000_000.0
+        assert await middleware._check_redis("10.0.0.11", t0) is None
+        response = await middleware._check_redis("10.0.0.11", t0 + 1)
+
+        assert response is not None
+        assert response.status_code == 429
+        assert response.headers["Retry-After"] == "60"
+        body = json.loads(bytes(response.body))  # type: ignore[union-attr]
+        assert body["error"] == "Too Many Requests"
+        assert body["retry_after"] == 60
+        assert "Rate limit exceeded" in body["message"]
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_redis_backend_falls_back_to_memory_on_connection_error(
+        self,
+    ) -> None:
+        """A Redis connection error does not fail the request: the middleware
+        fails OPEN by falling back to the in-memory limiter (same state,
+        `middleware.requests`, as the pure "memory" backend uses), rather
+        than raising or returning an error response of its own.
+        """
+        from unittest.mock import MagicMock
+
+        from redis.exceptions import ConnectionError as RedisConnectionError
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        failing_redis = _FailingAsyncRedis(RedisConnectionError("redis unreachable"))
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=2,
+            burst_size=100,
+            backend="redis",
+            redis_client=failing_redis,
+        )
+
+        mock_request = MagicMock()
+        mock_request.client = MagicMock(host="10.0.0.7")
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        async def call_next(_req: object) -> object:
+            return mock_response
+
+        r1 = await middleware.dispatch(mock_request, call_next)
+        r2 = await middleware.dispatch(mock_request, call_next)
+        r3 = await middleware.dispatch(mock_request, call_next)
+
+        assert r1 is mock_response
+        assert r2 is mock_response
+        # The in-memory fallback's own per-minute limit (2) now applies.
+        assert r3.status_code == 429  # type: ignore[union-attr]
+        assert "10.0.0.7" in middleware.requests
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_redis_backend_circuit_breaker_skips_retry_during_cooldown(
+        self,
+    ) -> None:
+        """After one Redis failure, further requests within the cooldown
+        window skip straight to the in-memory fallback WITHOUT attempting
+        Redis again -- bounding a sustained outage's added latency to one
+        timeout per cooldown window, not one per request.
+        """
+        from unittest.mock import MagicMock
+
+        from redis.exceptions import ConnectionError as RedisConnectionError
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        failing_redis = _FailingAsyncRedis(RedisConnectionError("redis unreachable"))
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=100,
+            burst_size=100,
+            backend="redis",
+            redis_client=failing_redis,
+            redis_retry_cooldown_seconds=30.0,
+        )
+
+        mock_request = MagicMock()
+        mock_request.client = MagicMock(host="10.0.0.8")
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        async def call_next(_req: object) -> object:
+            return mock_response
+
+        await middleware.dispatch(mock_request, call_next)
+        assert failing_redis.script.call_count == 1
+
+        await middleware.dispatch(mock_request, call_next)
+        assert failing_redis.script.call_count == 1  # still 1: cooldown skipped it
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_redis_backend_cooldown_expiry_retries_redis(self) -> None:
+        """Once the cooldown window elapses, the middleware attempts Redis
+        again rather than staying in fallback mode forever.
+        """
+        from unittest.mock import MagicMock
+
+        from redis.exceptions import ConnectionError as RedisConnectionError
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        failing_redis = _FailingAsyncRedis(RedisConnectionError("redis unreachable"))
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=100,
+            burst_size=100,
+            backend="redis",
+            redis_client=failing_redis,
+            redis_retry_cooldown_seconds=30.0,
+        )
+
+        mock_request = MagicMock()
+        mock_request.client = MagicMock(host="10.0.0.13")
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        async def call_next(_req: object) -> object:
+            return mock_response
+
+        await middleware.dispatch(mock_request, call_next)
+        assert failing_redis.script.call_count == 1
+
+        # Force the cooldown to have already elapsed (as if 30+ seconds had
+        # passed), the same way test_rate_limiter_cleanup_stale_entries above
+        # pokes middleware._last_cleanup directly rather than sleeping.
+        middleware._redis_unavailable_until = 0.0
+
+        await middleware.dispatch(mock_request, call_next)
+        assert failing_redis.script.call_count == 2
 
 
 # ---------------------------------------------------------------------------
@@ -865,6 +1239,111 @@ class TestAddSecurityMiddleware:
         response = client.post("/echo", content=b"0123456789X")
 
         assert response.status_code == 200
+
+    @pytest.mark.unit
+    def test_add_security_middleware_resolves_rate_limit_backend_from_settings(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """add_security_middleware(app), called with no explicit
+        rate_limit_backend/redis_url (exactly how app.py::create_app calls
+        it), resolves both from core.config.settings.
+
+        This is what makes "redis" the real production default with NO
+        change needed in app.py: Settings.rate_limit_backend defaults to
+        "redis" and Settings.redis_url is the same URL the RQ task queue
+        uses.
+        """
+        from cyo_adventure.core.config import settings as app_settings
+        from cyo_adventure.middleware.security import (
+            RateLimitMiddleware,
+            add_security_middleware,
+        )
+
+        monkeypatch.setattr(app_settings, "rate_limit_backend", "redis")
+        monkeypatch.setattr(app_settings, "redis_url", "redis://example-test:6379/0")
+
+        app = _minimal_app()
+        add_security_middleware(app)
+
+        rate_limit_mw = next(
+            m for m in app.user_middleware if m.cls is RateLimitMiddleware
+        )
+        assert rate_limit_mw.kwargs["backend"] == "redis"
+        assert rate_limit_mw.kwargs["redis_url"] == "redis://example-test:6379/0"
+
+    @pytest.mark.unit
+    def test_add_security_middleware_explicit_rate_limit_backend_overrides_settings(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An explicit rate_limit_backend/redis_url argument wins over
+        core.config.settings, so callers (and tests) can opt out of Redis
+        without needing a reachable Redis server.
+        """
+        from cyo_adventure.core.config import settings as app_settings
+        from cyo_adventure.middleware.security import (
+            RateLimitMiddleware,
+            add_security_middleware,
+        )
+
+        # Even with settings defaulting to redis, an explicit override wins.
+        monkeypatch.setattr(app_settings, "rate_limit_backend", "redis")
+
+        app = _minimal_app()
+        add_security_middleware(
+            app, rate_limit_backend="memory", redis_url="redis://unused:6379/0"
+        )
+
+        rate_limit_mw = next(
+            m for m in app.user_middleware if m.cls is RateLimitMiddleware
+        )
+        assert rate_limit_mw.kwargs["backend"] == "memory"
+
+
+# ---------------------------------------------------------------------------
+# Settings.rate_limit_backend and related Redis rate-limit config
+# (core/config.py, M5 / Phase 5)
+# ---------------------------------------------------------------------------
+
+
+class TestRateLimitBackendSetting:
+    """Tests for the Settings fields RateLimitMiddleware/add_security_middleware
+    resolve when the caller does not override them explicitly.
+    """
+
+    @pytest.mark.unit
+    def test_rate_limit_backend_defaults_to_redis(self) -> None:
+        """Settings.rate_limit_backend defaults to "redis": an in-memory-only
+        counter is meaningless across the multi-process production topology
+        SECURITY.md describes.
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().rate_limit_backend == "redis"
+
+    @pytest.mark.unit
+    def test_rate_limit_backend_overridable_via_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """CYO_ADVENTURE_RATE_LIMIT_BACKEND overrides the default, e.g. for a
+        single-process local/dev stack with no Redis available.
+        """
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("CYO_ADVENTURE_RATE_LIMIT_BACKEND", "memory")
+
+        assert Settings().rate_limit_backend == "memory"
+
+    @pytest.mark.unit
+    def test_rate_limit_redis_timeout_and_cooldown_defaults(self) -> None:
+        """Settings carries small, request-path-safe defaults for the Redis
+        socket timeout and the fail-open circuit-breaker cooldown, so a
+        Redis outage cannot silently turn into unbounded per-request latency.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings()
+        assert settings.rate_limit_redis_timeout_seconds == 0.5
+        assert settings.rate_limit_redis_cooldown_seconds == 5.0
 
 
 # ---------------------------------------------------------------------------

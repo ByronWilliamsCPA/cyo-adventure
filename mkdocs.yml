@@ -165,6 +165,10 @@ nav:
   - API Reference:
       - Overview: api-reference.md
 
+  - Operations:
+      - Operator Runbook: operations/runbook.md
+      - Authoring Guide: operations/authoring-guide.md
+
   - Architecture:
       - Overview: architecture/README.md
       - User Journeys: architecture/user-journeys.md

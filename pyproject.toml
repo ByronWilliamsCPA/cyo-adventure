@@ -3,7 +3,7 @@
 # UV uses standard PEP 621 pyproject.toml format with uv.lock for reproducible builds.
 [project]
 name = "cyo-adventure"
-version = "0.8.0"
+version = "0.11.0"
 description = "A choose-your-own-adventure reading app for kids"
 authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
@@ -82,6 +82,7 @@ dependencies = [
     # what makes a transitive downgrade below the floor a resolver error
     # instead of a silent posture regression. Do not remove as redundant.
     "cryptography>=45",
+    "sentry-sdk>=2.66.0",
 ]
 
 # Optional dependency groups
@@ -333,7 +334,8 @@ known-first-party = ["cyo_adventure"]
 "**/api/families.py" = ["TC001"]
 "**/api/covers.py" = ["TC001"]
 "**/api/onboarding.py" = ["TC001"]
-
+"**/api/notifications.py" = ["TC001"]
+"**/api/rescreen.py" = ["TC001"]
 # provider_allowlist.py imports Context alone (TC001, same reasoning as above)
 # and types its path params directly as uuid.UUID (TC003): with `from __future__
 # import annotations`, FastAPI resolves that annotation string via
@@ -392,6 +394,14 @@ known-first-party = ["cyo_adventure"]
 # each a distinct concern (lifecycle state, identity, story content, findings)
 # with no sensible default. A config object would obscure the contract.
 "**/api/review_surface.py" = ["PLR0913"]
+
+# edit_node's PATCH route has three path segments (storybook_id, version,
+# node_id) that identify the exact node being edited, plus the request body
+# and the Context dependency; each is REST-required or FastAPI-injected, not
+# collapsible into a config object (PLR0913). NodeEditBody/ReviewSurfaceView
+# (route body + return type) and Context must also stay real runtime imports
+# for the same FastAPI-resolves-via-get_type_hints reason as approval.py (TC001).
+"**/api/node_edit.py" = ["PLR0913", "TC001"]
 
 # The library-item builder carries storybook_id, blob, and version (the
 # identity of the row) plus rating and state (the per-profile enrichment,
@@ -678,6 +688,7 @@ filterwarnings = [
 ]
 xfail_strict = true
 markers = [
+    "quota_gate_real: opts an enqueue test out of the autouse quota-gate no-op patch",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
@@ -693,6 +704,7 @@ markers = [
     "regression: Regression tests for previously fixed bugs",
     "llm_eval: Tier 3 behavioral LLM evaluation (scheduled, not run in CI PRs)",
     "ai_security: adversarial AI security tests",
+    "mutation_deselect: excluded under mutation testing (mutmut's trampoline cannot forward athrow into async generators)",
 ]
 
 # Coverage Configuration
@@ -752,13 +764,60 @@ arg-type-hints-in-signature = true
 skip-checking-raises = false
 require-return-section-when-returning-nothing = false
 
-# Mutation Testing Configuration (mutmut)
+# Mutation Testing Configuration (mutmut 3.x dialect; see noxfile.py `mutate`)
+#
+# - `only_mutate` scopes mutation to the deterministic core (storybook,
+#   validator, player, publishing, moderation, events, story_requests,
+#   exceptions), where a missed mutant means a validation or safety gate
+#   regression could ship. The API/generation/covers layers are copied but
+#   not mutated: their behavior is dominated by FastAPI wiring and external
+#   providers, and mutating them multiplies runtime without adding gate
+#   signal. Widen this list deliberately, not by default.
+# - `pytest_add_cli_args` resets addopts so the coverage flags (and their
+#   --cov-fail-under=80 gate) do not run once per mutant, and deselects
+#   `mutation_deselect`-marked tests: mutmut's trampoline wraps async
+#   generator functions in an `async for`/`yield` delegator, which cannot
+#   forward athrow() into the inner generator, so tests that drive an async
+#   generator's error path via athrow() fail under instrumentation while
+#   passing in a normal run.
+# - `also_copy` ships the non-package files the unit suite reads at runtime
+#   into mutmut's mutants/ working tree (conformance corpus, skeleton
+#   catalog, band configs, scripts/ imports, planning-docs fixtures).
 [tool.mutmut]
-paths_to_mutate = "src/"
-backup = false
-runner = "uv run pytest -x --assert=plain -o addopts=''"
-tests_dir = "tests/"
-dict_synonyms = "Struct, NamedStruct"
+source_paths = ["src/cyo_adventure"]
+only_mutate = [
+    "src/cyo_adventure/storybook/*",
+    "src/cyo_adventure/validator/*",
+    "src/cyo_adventure/player/*",
+    "src/cyo_adventure/publishing/*",
+    "src/cyo_adventure/moderation/*",
+    "src/cyo_adventure/events/*",
+    "src/cyo_adventure/story_requests/*",
+    "src/cyo_adventure/core/exceptions.py",
+]
+pytest_add_cli_args_test_selection = ["tests/unit"]
+pytest_add_cli_args = [
+    "-x",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-m",
+    "not mutation_deselect",
+]
+also_copy = [
+    "schema/",
+    "skeletons/",
+    "configs/",
+    "scripts/",
+    "docs/",
+    "data/",
+    "frontend/src/",
+    "supabase/",
+    "out/",
+    "CHANGELOG.md",
+]
 
 # Bandit Security Configuration
 # Run: uv run bandit -c pyproject.toml -r src/
@@ -1021,3 +1080,31 @@ skip = [
     "docs/template_feedback.md",
 
 ]
+
+# FIPS checker acknowledged-findings baseline (ADR-013).
+# Each entry dispositions one info-level "may need FIPS verification" finding
+# from scripts/check_fips_compatibility.py. reason and reference are
+# mandatory; reviewed dates expire after 90 days (the ADR-013 quarterly
+# review), after which the checker warns until the disposition is
+# re-verified. Where a claim is mechanically testable, the backing assertion
+# lives in tests/unit/test_fips_runtime_assertions.py and is named in the
+# reason; renewing a reviewed date requires those assertions to be green.
+[tool.fips_check.acknowledged.cryptography]
+reason = "ML-DSA/SLH-DSA floor (>=45) and linked OpenSSL 3.x are asserted by tests/unit/test_fips_runtime_assertions.py; FIPS provider activation is a host property, not testable in CI"
+reference = "docs/security/crypto-inventory.md (section 6, dependency floors)"
+reviewed = 2026-07-17
+
+[tool.fips_check.acknowledged.pyjwt]
+reason = "Allowlist is config-driven and asymmetric-only by default; the startup validator refusing none/HS* and the >=2.13 floor are asserted by tests/unit/test_fips_runtime_assertions.py"
+reference = "docs/security/crypto-inventory.md (section 1, bearer-token verification)"
+reviewed = 2026-07-17
+
+[tool.fips_check.acknowledged.httpx]
+reason = "Egress TLS inherits the container's OpenSSL 3.5 defaults; the stdlib TLS 1.2+ floor and OpenSSL 3.x link are asserted by tests/unit/test_fips_runtime_assertions.py"
+reference = "docs/security/crypto-inventory.md (section 2, TLS legs)"
+reviewed = 2026-07-17
+
+[tool.fips_check.acknowledged.boto3]
+reason = "Used only for Cloudflare R2 uploads with SigV4 (HMAC-SHA256, symmetric, quantum-safe); AWS FIPS endpoints do not apply to R2"
+reference = "docs/security/crypto-inventory.md (item 8, backend to R2)"
+reviewed = 2026-07-17

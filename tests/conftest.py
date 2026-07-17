@@ -1,6 +1,7 @@
 """Pytest configuration and shared fixtures for CYO Adventure tests.
 
 This module provides:
+- Hypothesis settings profiles (ci / dev)
 - Shared fixtures for common test resources
 - Temporary directory management
 
@@ -8,9 +9,35 @@ Custom pytest markers are registered in ``pyproject.toml``
 (``[tool.pytest.ini_options].markers``), not here.
 """
 
+import os
 from pathlib import Path
 
 import pytest
+from hypothesis import HealthCheck, settings
+
+# ============================================================================
+# Hypothesis Profiles
+# ============================================================================
+#
+# ci: more examples, derandomized so a red CI run reproduces exactly, and no
+#     per-example deadline (shared runners have noisy timings; the suite-level
+#     timeout is the real guard).
+# dev: the library default (100 randomized examples) for fast local feedback
+#     with fresh exploration on every run.
+settings.register_profile(
+    "ci",
+    max_examples=200,
+    derandomize=True,
+    deadline=None,
+    print_blob=True,
+    suppress_health_check=(HealthCheck.too_slow,),
+)
+settings.register_profile("dev", settings.default)
+settings.load_profile(
+    "ci"
+    if os.environ.get("CI", "").strip().lower() in {"1", "true", "yes", "on"}
+    else "dev"
+)
 
 # ============================================================================
 # Temporary Directory Fixtures

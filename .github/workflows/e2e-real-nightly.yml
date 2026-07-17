@@ -1,0 +1,297 @@
+# Nightly real-backend E2E workflow (test-traceability-matrix.md, "Actions to
+# reach the bar" #6: "Wire e2e-real into a nightly CI job... rather than
+# leaving it developer-memory-only; keep it out of the PR path for speed.
+# This also absorbs the S2 conflict-race handoff once that spec lands.").
+#
+# Builds a throwaway real stack (Postgres service container, migrated with
+# the real Supabase migration chain and seeded with scripts/seed_dev_data.py,
+# same as ci.yml's api-tests job) and a real uvicorn process, then runs the
+# `real-backend` Playwright project (frontend/e2e-real/, zero route mocks)
+# against it, including the new S2 conflict-race spec
+# (offline-conflict-real.spec.ts). Kept off the PR path deliberately: this
+# tier needs a live Postgres plus a full frontend build+preview cycle and
+# would slow every PR for coverage that is not required to merge.
+#
+# Scheduled 09:30 UTC: offset from e2e-staging.yml's `0 13 * * *` (PR #268,
+# not yet merged to this branch) and e2e-prod.yml's `30 13 * * *` so none of
+# the three scheduled E2E tiers start in the same minute.
+#
+# -----------------------------------------------------------------------
+# Redis: not required to boot (decision recorded here, not assumed)
+# -----------------------------------------------------------------------
+# #ASSUME: external-resources: core/config.py's redis_url has a working
+# default and nothing in app.py or api/health.py opens a Redis connection at
+# import/startup time (api/health.py's check_cache is a documented
+# placeholder that never pings Redis). RateLimitMiddleware defaults to the
+# "redis" backend but always falls back to an in-memory counter on a Redis
+# error (rate_limit_redis_timeout_seconds bounds the added latency to 0.5s,
+# only until the 5s cooldown kicks in), so the app boots and serves requests
+# fine with no Redis running at all. This job runs a Redis service anyway:
+# the cost is negligible and it removes that per-request fallback latency
+# and the (currently unused by e2e-real, but future-proofing) RQ generation
+# queue's dependency, matching the commented-out `redis:7-alpine` service in
+# docker-compose.yml.
+# #VERIFY: if RateLimitMiddleware's fallback behavior ever changes to a hard
+# failure without Redis, this service becomes load-bearing instead of
+# defensive; re-read middleware/security.py before removing it.
+# -----------------------------------------------------------------------
+name: E2E (real backend, nightly)
+
+on:
+  schedule:
+    - cron: "30 9 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  # Unlike e2e-prod.yml/e2e-staging.yml, this tier owns no shared external
+  # resource (its Postgres/Redis are fresh per-run service containers, and
+  # it authenticates no real account), so canceling a stale run in favor of
+  # a newer one is safe.
+  group: e2e-real-nightly
+  cancel-in-progress: true
+
+jobs:
+  e2e-real:
+    name: Playwright (real-backend tier)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    services:
+      db:
+        # Matches docker-compose.yml's Postgres major version (16); the
+        # standard image (not the ghcr.io/byronwilliamscpa/dhi-postgres
+        # hardened variant docker-compose.yml uses) because GitHub Actions
+        # `services:` containers cannot run the setup steps (role creation,
+        # migrations) docker-compose's `depends_on: condition: service_healthy`
+        # plus a separate exec step provide; ci.yml's api-tests job already
+        # verified `postgres:16-alpine` works with this exact migration path
+        # (see its "Apply database migrations" step comment).
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: cyo_adventure
+          POSTGRES_USER: cyo_adventure
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cyo_adventure"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+
+      # The `api` extra (FastAPI, SQLAlchemy) is enough to run uvicorn and
+      # scripts/seed_dev_data.py; mirrors ci.yml's api-tests job exactly.
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@46f7f98c7f948ad727d22c1e67fab04c223a0520 # v3.0.0
+        with:
+          version: 2.109.1
+
+      # #ASSUME: external-resources: GitHub-hosted ubuntu-latest runners ship
+      # postgresql-client in their default toolset, but that is a hosted-image
+      # detail, not a contract; installing only when `psql` is absent keeps
+      # this cheap on the common case and self-healing if the image ever
+      # drops it.
+      # #VERIFY: only a real run against the actual runner image confirms
+      # this step is a no-op there.
+      - name: Ensure psql is available
+        run: |
+          command -v psql || (sudo apt-get update && sudo apt-get install -y --no-install-recommends postgresql-client)
+
+      # The baseline dump carries Supabase's `OWNER TO "postgres"` statements;
+      # the service container runs as `cyo_adventure` with no postgres role,
+      # so the push fails with SQLSTATE 42704 unless the role exists.
+      # Duplicate-tolerant, copied from ci.yml's api-tests job.
+      - name: Create postgres role for baseline OWNER statements
+        run: |
+          PGPASSWORD=password psql -h localhost -U cyo_adventure -d cyo_adventure -c \
+            'DO $$ BEGIN CREATE ROLE "postgres"; EXCEPTION WHEN duplicate_object THEN NULL; END $$;'
+
+      # Applies the real Supabase migration chain (supabase/migrations/*.sql)
+      # against the service container, exactly as ci.yml's api-tests job and
+      # local dev (frontend/README.md's "Real-backend e2e" section) do, so
+      # this tier exercises the same migrated schema staging/production run,
+      # not a schema built ad hoc from ORM metadata.
+      # #ASSUME: external-resources: CLI 2.109.1 attempts a TLS handshake by
+      # default against plain Postgres with no plaintext fallback, and
+      # ignores ?sslmode=disable in the db-url, so PGSSLMODE=disable is
+      # required for the non-TLS service container (same finding as ci.yml).
+      # #VERIFY: re-check on future supabase-cli upgrades whether this is
+      # still needed.
+      - name: Apply database migrations
+        env:
+          PGSSLMODE: disable
+          SUPABASE_DB_URL: postgresql://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: |
+          supabase db push --db-url "$SUPABASE_DB_URL" --yes
+
+      # Seeds the family/profiles/published stories the real-backend specs
+      # read (scripts/seed_dev_data.py; idempotent). Runs after migrations
+      # so it inserts into the migrated schema.
+      - name: Seed dev data
+        env:
+          DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: uv run python scripts/seed_dev_data.py
+
+      # Starts the real backend in the background (ENVIRONMENT defaults to
+      # "local", which trusts a bearer token as the authn subject and skips
+      # the non-local DEVICE_GRANT_SECRET/CHILD_SESSION_SECRET fail-fast
+      # checks in core/config.py). DEVICE_GRANT_SECRET must still be a
+      # non-empty value even in local: real-stack.ts's authorizeDevice()
+      # (used by every e2e-real spec, including the new S2 conflict spec)
+      # mints a real device grant, and the mint endpoint 400s
+      # (ConfigurationError) without a secret to sign it, regardless of
+      # environment. Output is captured to backend.log and uploaded on
+      # failure for post-mortem debugging.
+      # #CRITICAL: timing: the readiness-wait step below is what makes this
+      # safe; nothing here blocks until uvicorn is actually accepting
+      # connections.
+      - name: Start backend (uvicorn, background)
+        env:
+          ENVIRONMENT: local
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+          CYO_ADVENTURE_REDIS_URL: redis://localhost:6379/0
+          DEVICE_GRANT_SECRET: nightly-e2e-real-device-grant-secret
+        run: |
+          uv run uvicorn cyo_adventure.app:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
+          echo $! > backend.pid
+
+      - name: Wait for backend readiness
+        run: |
+          curl --retry 15 --retry-delay 2 --retry-all-errors -fsS http://localhost:8000/health/ready
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+
+      # Playwright's `real-backend` project webServer (frontend/playwright.config.ts)
+      # builds and serves the app itself (npm run build && vite preview on
+      # :4173), proxying /api to the uvicorn started above; no manual
+      # build/serve step is needed here. --workers=1 (baked into
+      # `npm run test:e2e:real`) avoids tripping the backend's per-IP rate
+      # limiter, which two parallel workers sharing the loopback IP would do.
+      - name: E2E (Playwright, real-backend tier)
+        working-directory: ./frontend
+        env:
+          E2E_BACKEND_URL: http://localhost:8000
+        run: npm run test:e2e:real
+
+      - name: Upload backend log
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-real-nightly-backend-log
+          path: backend.log
+          retention-days: 7
+
+      - name: Upload Playwright trace on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-real-nightly-traces
+          path: frontend/test-results/
+          retention-days: 7
+
+      - name: Alert on failure (pinned issue)
+        # Reusable alerting pattern for scheduled E2E tiers
+        # (test-traceability-matrix.md, "Actions to reach the bar" #2), copied
+        # from e2e-prod.yml with the marker/copy adjusted for this tier: find
+        # an OPEN issue labeled e2e-alert whose title starts with this
+        # workflow's marker and comment on it, or open one if none exists yet,
+        # so repo watchers get GitHub's native email/push notification
+        # instead of a red run nobody checks the Actions tab for.
+        if: ${{ failure() }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '[e2e-real-nightly]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'e2e-alert',
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Scheduled real-backend nightly E2E failed again on ${today}. Run: ${runUrl}`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} scheduled real-backend nightly E2E failing`,
+                labels: ['e2e-alert'],
+                body: [
+                  'The scheduled `E2E (real backend, nightly)` workflow',
+                  '(`.github/workflows/e2e-real-nightly.yml`) failed.',
+                  '',
+                  'This tier runs the `real-backend` Playwright project',
+                  '(frontend/e2e-real/, zero route mocks) against a throwaway',
+                  'Postgres-backed uvicorn built fresh each run; a failure here',
+                  'means either a real regression in the reader/guardian/admin',
+                  'flows, a real-backend spec (including the S2 conflict-race',
+                  'spec, offline-conflict-real.spec.ts) needs attention, or the',
+                  'migration/seed setup broke.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'This issue stays open and accumulates one comment per failing',
+                  'run until someone resolves the underlying problem and closes',
+                  'it; the next failure after that opens a fresh issue.',
+                ].join('\n'),
+              })
+            }

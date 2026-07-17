@@ -21,6 +21,7 @@ are doubled:
 
 from __future__ import annotations
 
+import copy
 import json
 import uuid
 from typing import TYPE_CHECKING, cast
@@ -487,6 +488,97 @@ async def test_invalid_repair_is_discarded_and_original_report_submits(
     assert version.moderation_report is not None
     assert version.moderation_report["summary"]["repaired"] is False
     assert version.blob == _BLOB
+
+
+@pytest.mark.unit
+async def test_repair_failing_gate_is_discarded_and_routes_to_human_review(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A repair that is schema-valid and re-moderates clean but breaks graph
+    topology is still rejected: the deterministic gate re-runs on the
+    repaired blob before it can replace the pre-repair one (owner ruling
+    2026-07-16), a blocked gate is treated exactly like a schema-invalid
+    revision, and the job routes to human review (submit), never silent
+    acceptance and never auto-publish.
+
+    The revised blob points ``c_follow``'s target at a node id that does not
+    exist in the story; ``StoryModel.model_validate`` and the mocked review
+    stages do not check reference integrity (only ``validator.gate.run_gate``
+    -- specifically L1 -- does), so this blob would have been silently
+    adopted before the fix and is rejected after it.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    broken_blob = copy.deepcopy(_BLOB)
+    nodes = cast("list[dict[str, object]]", broken_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    choices = cast("list[dict[str, object]]", start_node["choices"])
+    choices[0]["target"] = "n_does_not_exist"
+    generation_provider = MockProvider(responses=[json.dumps(broken_blob)])
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    # Rejected repair routes exactly like the pre-repair soft-flagged report:
+    # human review via submit, never auto_reject and never silent acceptance.
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    assert version.moderation_report is not None
+    assert version.moderation_report["summary"]["repaired"] is False
+    assert version.blob == _BLOB
+
+
+@pytest.mark.unit
+async def test_repair_passing_gate_is_adopted(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A repair that is schema-valid, re-moderates clean, AND passes the
+    deterministic gate is adopted: existing accept-a-good-repair behavior is
+    preserved after wiring the gate re-run into the adoption seam.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
+    generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    assert version.moderation_report is not None
+    assert version.moderation_report["summary"]["repaired"] is True
+    assert version.blob == revised_blob
 
 
 @pytest.mark.unit

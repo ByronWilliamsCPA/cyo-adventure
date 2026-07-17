@@ -13,16 +13,24 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Project Vision & Scope: CYO Adventure
 
-> **Status**: Active | **Version**: 1.1 | **Updated**: 2026-07-03
+> **Status**: Active | **Version**: 1.3 | **Updated**: 2026-07-16
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 
 ## TL;DR
 
-CYO Adventure is a family app that plays branching "choose your path" gamebook
+CYO Adventure is an app for kids that plays branching "choose your path" gamebook
 stories offline on a tablet or phone, paired with a content pipeline that turns a
-short concept plus a drafting guide into a finished, safety-reviewed story. It is
-built for one family's four children (roughly ages 9 to 15), and no story reaches a
-child until a parent approves it.
+short concept plus a drafting guide into a finished, safety-reviewed story. It was
+built first for one family's four children (roughly ages 9 to 15), who remain the
+founding reference users, and is now scoped as a multi-tenant public product
+([ADR-008](./adr/adr-008-public-app-store-launch.md),
+[ADR-009](./adr/adr-009-supabase-platform.md)). A child, guardian, or admin may
+initiate a story; the guardian gates the generation spend; and no story reaches a
+child until a trained safety admin approves and publishes it
+([ADR-005](./adr/adr-005-mandatory-human-approval.md) as amended,
+[ADR-015](./adr/adr-015-story-request-initiation-and-gating.md)). The full
+persona-level capability contract lives in the
+[capability register](./capability-register.md).
 
 ## Problem Statement
 
@@ -39,6 +47,12 @@ reader's choices. Two problems sit underneath that:
   drafting guide, and it writes a new branching story for the library.
 
 ### Target Users
+
+> **Scope note (2026-07-16)**: the named users below are the founding family, retained as
+> concrete reference personas. Since the public pivot (ADR-008/ADR-009) the target users
+> generalize to three roles: **children** (readers and story requesters), **guardians**
+> (household managers, story authors, cost gate), and **application admins** (safety gate
+> and platform operators). The capability register enumerates what each role expects.
 
 - **Primary (readers)**: the four children, who span a wide range.
   - **Briella (9-10)**: gentle, shorter stories; benefits from read-aloud (8-11 band).
@@ -65,8 +79,9 @@ throughout the design.
 - **Defect capture**: the validator rejects 100% of a curated "known-bad" corpus
   (dangling targets, orphan nodes, unreachable endings, unsatisfiable conditions,
   reading-level misses, unsafe content).
-- **Safety**: 0 stories reach a child profile without a recorded parent approval,
-  enforced by the state machine, not by convention.
+- **Safety**: 0 stories reach a child profile without a recorded human approval by the
+  global safety admin (the approver role per ADR-005 as amended 2026-06-30), enforced by
+  the state machine, not by convention.
 - **Offline reliability**: a downloaded story plays start to finish with the network
   disabled.
 
@@ -99,11 +114,32 @@ kid's library.
 4. **Validation gate**: automated graph-integrity checks (no dead ends, no orphans,
    every choice points somewhere real), reading level, and length, run between
    generation stages and before publish.
-5. **Safety and approval**: content moderation by age band plus a parent approval
-   step that no story can skip.
+5. **Safety and approval**: content moderation by age band plus a human approval
+   step, held by the global safety admin (ADR-005 as amended), that no story can skip.
 
 Five capabilities, because that is what the MVP needs. Replay tracking, a story
 editor, and read-aloud are valuable and scoped into later phases, not the core.
+
+### Ratified capability expansions (2026-07-16)
+
+A fresh-look review against the top-line goal produced the
+[capability register](./capability-register.md), and the owner ratified five expansions
+beyond the MVP framing above. These are scope, sequenced separately from the MVP list:
+
+1. **Universal story initiation**: a child, guardian, or admin may initiate a story
+   request (register K11/G4/A10, [ADR-015](./adr/adr-015-story-request-initiation-and-gating.md)).
+2. **Guardian cost gate**: no request spends generation budget without guardian consent,
+   with per-child pre-authorization as a guardian setting (G7, G3).
+3. **Admin safety gate reconfirmed**: the admin approve-and-publish transition remains the
+   sole path to a child's shelf regardless of who initiated (A6).
+4. **Kid feedback loop**: a simple "I didn't like this / this scared me" signal that a
+   grown-up actually sees (K15).
+5. **Guardian visibility and notifications**: reading-engagement visibility plus a
+   digest-and-alerts surface (G9, G10, S9).
+6. **A three-ring social boundary** replacing the flat exclusion: family recommendations,
+   guardian-connected-family recommendations (cousins), and future anonymized system
+   recommendations; everything else social stays excluded (K17, G17, A15, S11, S12,
+   [ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md)).
 
 ## Scope Definition
 
@@ -124,8 +160,14 @@ editor, and read-aloud are valuable and scoped into later phases, not the core.
 - ❌ **Dice combat and skill/luck checks (Tier 3)**: randomness turns "every path
   reaches an ending" from a guarantee into a probability the deterministic gate
   cannot certify. Revisit only if the kids ask for it.
-- ❌ **Any social, chat, or user-to-user feature**: a children's app has no reason
-  to carry one.
+- ❌ **General social features**: no messaging, chat, comments, or any free-text channel
+  between users; no user or family discovery; no follower/friend mechanics; no way for a
+  child to come into contact with anyone outside active parental approval. Refined
+  2026-07-16 from the earlier flat "no social features" exclusion: structured book
+  recommendations are allowed within a family and between guardian-approved connected
+  families (the cousins case), and the system may eventually recommend from anonymized
+  aggregate scores; never kid to kid beyond those rings. See
+  [ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md).
 - ❌ **Ads, and any telemetry on minors.** This is a permanent hard exclusion on
   every rung, not just v1.
 - 🔄 **Full visual story editor (graph canvas)**: a lightweight node editor lands in
@@ -201,6 +243,7 @@ prompts; guardian-visible, family-scoped, short-lived raw outputs).
 
 ## Related Documents
 
+- [Capability Register](./capability-register.md) (persona-level capability contract and checkoff sheet)
 - [Architecture Decisions](./adr/README.md)
 - [Technical Spec](./tech-spec.md)
 - [Roadmap](./roadmap.md)

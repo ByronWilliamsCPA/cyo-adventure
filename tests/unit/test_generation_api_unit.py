@@ -114,15 +114,40 @@ class _FakeSession:
         self.flush_count += 1
 
 
-def _principal(role: str, family_id: uuid.UUID, user_id: uuid.UUID) -> Principal:
-    """Build a Principal for the given role and family."""
+def _principal(
+    role: str,
+    family_id: uuid.UUID,
+    user_id: uuid.UUID,
+    *,
+    is_admin: bool = False,
+) -> Principal:
+    """Build a Principal for the given role, family, and admin capability."""
     return Principal(
         subject="sub",
         user_id=user_id,
         role=role,
         family_id=family_id,
         profile_ids=frozenset(),
+        is_admin=is_admin,
     )
+
+
+@pytest.fixture(autouse=True)
+def _quota_gate_noop(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch):
+    """Neutralize the ADR-015 quota gate for tests not targeting it.
+
+    ``enqueue_concept_generation`` calls the real ``enforce_family_quota``
+    (the G7 fix, 2026-07-17), whose queries the ``_FakeSession`` fakes in
+    this module cannot serve. Tests that exercise the gate itself opt out
+    with the ``quota_gate_real`` marker and patch their own double.
+    """
+    if "quota_gate_real" in request.keywords:
+        return
+
+    async def _noop(*_args: object, **_kwargs: object) -> None:
+        return None
+
+    monkeypatch.setattr("cyo_adventure.api.generation.enforce_family_quota", _noop)
 
 
 def _request() -> ConceptCreateRequest:
@@ -313,6 +338,70 @@ async def test_get_generation_job_returns_status() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_get_generation_job_report_hidden_from_plain_guardian() -> None:
+    """A plain guardian (no admin capability) never sees the raw report.
+
+    ADR-007 marks ``report`` admin/system-only; the 2026-07-16 ruling narrowed
+    the single-job GET to match the list endpoint on this point.
+    """
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    job = GenerationJob(concept_id=uuid.uuid4(), status="passed")
+    job.report = {"stage_1": "raw model output", "leak_marker": "should-not-leak"}
+    session = _FakeSession(results={GenerationJob: job, Concept: concept})
+    ctx = RequestContext(
+        principal=_principal("guardian", family_id, uuid.uuid4(), is_admin=False),
+        session=session,
+    )
+
+    resp = await get_generation_job(str(uuid.uuid4()), ctx)
+
+    assert resp.report is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_get_generation_job_report_visible_to_dual_role_guardian_admin() -> None:
+    """A guardian who also holds the admin capability sees the raw report.
+
+    Per the 2026-07-16 ruling, a dual-role adult is covered by the admin
+    side of the gate (``Principal.is_admin``), not by ``is_guardian``.
+    """
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    job = GenerationJob(concept_id=uuid.uuid4(), status="passed")
+    job.report = {"stage_1": "raw model output"}
+    session = _FakeSession(results={GenerationJob: job, Concept: concept})
+    ctx = RequestContext(
+        principal=_principal("guardian", family_id, uuid.uuid4(), is_admin=True),
+        session=session,
+    )
+
+    resp = await get_generation_job(str(uuid.uuid4()), ctx)
+
+    assert resp.report == {"stage_1": "raw model output"}
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_get_generation_job_admin_role_only_still_forbidden() -> None:
+    """A pure admin-role principal (not a guardian) still gets 403 here.
+
+    This endpoint's caller gate is unchanged by the report restriction: only
+    ``is_guardian`` principals may call it at all. A ``role="admin"``
+    principal (without also being a guardian) is not a guardian, so it never
+    reaches the report-visibility check.
+    """
+    session = _FakeSession()
+    ctx = RequestContext(
+        principal=_principal("admin", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+    with pytest.raises(AuthorizationError):
+        await get_generation_job(str(uuid.uuid4()), ctx)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_get_generation_job_missing_job_not_found() -> None:
     """A job id with no matching row raises ResourceNotFoundError (-> 404)."""
     session = _FakeSession(results={GenerationJob: None})
@@ -441,3 +530,52 @@ def test_enqueue_safely_success(monkeypatch: pytest.MonkeyPatch) -> None:
     job_id = str(uuid.uuid4())
     _enqueue_safely(job_id)
     assert seen == [job_id]
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+@pytest.mark.quota_gate_real
+async def test_enqueue_calls_quota_gate_with_concept_family(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The intake enqueue passes the ADR-015 cost gate the concept's family."""
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    session = _FakeSession(get_result=concept)
+    principal = _principal("guardian", family_id, uuid.uuid4())
+    seen: list[tuple[object, object, object]] = []
+
+    async def _spy(s: object, p: object, f: object, **_kw: object) -> None:
+        seen.append((s, p, f))
+
+    monkeypatch.setattr("cyo_adventure.api.generation.enforce_family_quota", _spy)
+    ctx = RequestContext(principal=principal, session=session)
+
+    await enqueue_concept_generation(str(uuid.uuid4()), ctx, BackgroundTasks())
+
+    assert seen == [(session, principal, family_id)]
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+@pytest.mark.quota_gate_real
+async def test_enqueue_over_quota_creates_no_job(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A 409 from the cost gate propagates and persists no GenerationJob."""
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    session = _FakeSession(get_result=concept)
+
+    async def _blocked(*_args: object, **_kwargs: object) -> None:
+        msg = "monthly story budget reached"
+        raise StateTransitionError(msg)
+
+    monkeypatch.setattr("cyo_adventure.api.generation.enforce_family_quota", _blocked)
+    ctx = RequestContext(
+        principal=_principal("guardian", family_id, uuid.uuid4()), session=session
+    )
+
+    with pytest.raises(StateTransitionError):
+        await enqueue_concept_generation(str(uuid.uuid4()), ctx, BackgroundTasks())
+    assert not any(isinstance(obj, GenerationJob) for obj in session.added)

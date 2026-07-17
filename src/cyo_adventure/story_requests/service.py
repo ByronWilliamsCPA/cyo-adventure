@@ -10,22 +10,35 @@ story_requests/authoring_plan.py::build_authoring_plan). Authored creation
 admin-initiated request skips the pending queue and calls it directly. The
 caller (the endpoint) is responsible for authorization before invoking these
 functions.
+
+ADR-015 budget-consent delta (G7/G13/G3): a request may not spend generation
+budget (i.e. may not reach ``_build_concept``, which is the only place a
+``Concept`` is created) until a guardian of its family has consented, unless
+the acting principal is spending platform budget (an admin acting in the
+admin capacity, see ``_bypasses_family_quota``). ``enforce_family_quota`` is
+the single gate both ``approve_story_request`` (the guardian/admin approve
+endpoint) and ``create_authored_request`` (the guardian/admin authored-create
+endpoint) call before building a concept. There is no ledger table yet
+(G13, interim): monthly spend is derived by counting rows that entered
+``approved`` in the current UTC calendar month (``StoryRequest.approved_at``),
+never by decrementing a stored balance.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from sqlalchemy import func, select
 
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     StateTransitionError,
     ValidationError,
 )
-from cyo_adventure.db.models import ChildProfile, Concept, Series, StoryRequest
+from cyo_adventure.db.models import ChildProfile, Concept, Family, Series, StoryRequest
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.story_requests.anchoring import load_anchor_context, resolve_anchor
@@ -45,6 +58,297 @@ MAX_PENDING_PER_PROFILE = 5
 
 # ADR-011 band rule: young bands run episodic series that carry no state.
 _EPISODIC_BANDS = frozenset({"3-5", "5-8"})
+
+
+# ---------------------------------------------------------------------------
+# ADR-015 budget-consent delta: family/child monthly spend derivation and the
+# guardian-cost-gate enforcement point.
+# ---------------------------------------------------------------------------
+
+
+def _month_start(now: datetime) -> datetime:
+    """Return the start (00:00:00 UTC) of ``now``'s calendar month.
+
+    Args:
+        now: A timezone-aware UTC instant.
+
+    Returns:
+        datetime: The first instant of that UTC calendar month.
+    """
+    return now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+
+async def _approved_count_since(
+    session: AsyncSession,
+    *,
+    since: datetime,
+    family_id: uuid.UUID | None = None,
+    profile_id: uuid.UUID | None = None,
+) -> int:
+    """Count rows that entered ``approved`` at or after ``since``.
+
+    Args:
+        session: The request session.
+        since: The inclusive lower bound (a UTC calendar-month start).
+        family_id: Scope to one family, or None for no family filter.
+        profile_id: Scope to one profile, or None for no profile filter.
+
+    Returns:
+        int: The matching row count.
+    """
+    # #ASSUME: data-integrity: this is the ENTIRE spend ledger (ADR-015 G13,
+    # interim): there is no separate balance/ledger table yet, so "spend" is
+    # always re-derived by counting approved_at timestamps rather than by
+    # reading or decrementing a stored counter. A row's approved_at is
+    # stamped exactly once (_build_concept) and a request's status never
+    # regresses out of "approved" (see StoryRequest.approved_at's docstring),
+    # so this count is stable for a past month and monotonically
+    # non-decreasing for the current one.
+    # #VERIFY: tests/unit/test_story_requests.py::TestBudget pins the
+    # month-boundary behavior with injected `now` values; a real ledger table
+    # is tracked as a G13 follow-up once spend needs finer-grained accounting
+    # (partial refunds, credits) than a monthly approval count can express.
+    stmt = (
+        select(func.count())
+        .select_from(StoryRequest)
+        .where(
+            StoryRequest.status == "approved",
+            StoryRequest.approved_at.is_not(None),
+            StoryRequest.approved_at >= since,
+        )
+    )
+    if family_id is not None:
+        stmt = stmt.where(StoryRequest.family_id == family_id)
+    if profile_id is not None:
+        stmt = stmt.where(StoryRequest.profile_id == profile_id)
+    total = await session.scalar(stmt)
+    return int(total or 0)
+
+
+async def family_monthly_spend(
+    session: AsyncSession, family_id: uuid.UUID, *, now: datetime | None = None
+) -> int:
+    """Return a family's approved-request count for the current UTC month.
+
+    Args:
+        session: The request session.
+        family_id: The family whose spend is counted.
+        now: Injection point for "the current instant" (tests); defaults to
+            the current UTC time.
+
+    Returns:
+        int: The family's monthly spend (ADR-015 G7/G13).
+    """
+    now = now or datetime.now(UTC)
+    return await _approved_count_since(
+        session, family_id=family_id, since=_month_start(now)
+    )
+
+
+async def profile_monthly_spend(
+    session: AsyncSession, profile_id: uuid.UUID, *, now: datetime | None = None
+) -> int:
+    """Return one child's approved-request count for the current UTC month.
+
+    Args:
+        session: The request session.
+        profile_id: The child profile whose spend is counted.
+        now: Injection point for "the current instant" (tests); defaults to
+            the current UTC time.
+
+    Returns:
+        int: The profile's monthly spend against its own envelope (ADR-015 G3).
+    """
+    now = now or datetime.now(UTC)
+    return await _approved_count_since(
+        session, profile_id=profile_id, since=_month_start(now)
+    )
+
+
+async def profile_monthly_spend_by_family(
+    session: AsyncSession, family_id: uuid.UUID, *, now: datetime | None = None
+) -> dict[uuid.UUID, int]:
+    """Return ``{profile_id: approved-this-month count}`` for a whole family.
+
+    A single bulk, grouped query rather than one ``profile_monthly_spend``
+    call per child (mirrors ``api/reading_history.py::get_family_reading_summary``'s
+    "one round-trip per signal, not per child" convention), backing the
+    ``GET /families/me/budget`` endpoint's per-child envelope-usage list.
+
+    Args:
+        session: The request session.
+        family_id: The family whose children's spend is counted.
+        now: Injection point for "the current instant" (tests); defaults to
+            the current UTC time.
+
+    Returns:
+        dict[uuid.UUID, int]: Profile id to its approved-this-month count. A
+        profile with zero approved requests this month is simply absent (not
+        a zero entry); callers should default a missing key to 0.
+    """
+    now = now or datetime.now(UTC)
+    since = _month_start(now)
+    rows = await session.execute(
+        select(StoryRequest.profile_id, func.count())
+        .where(
+            StoryRequest.family_id == family_id,
+            StoryRequest.status == "approved",
+            StoryRequest.approved_at.is_not(None),
+            StoryRequest.approved_at >= since,
+            StoryRequest.profile_id.is_not(None),
+        )
+        .group_by(StoryRequest.profile_id)
+    )
+    # The WHERE clause above excludes a NULL profile_id, so every row's first
+    # element is a real UUID; the cast narrows SQLAlchemy's positional
+    # 2-column select() (which loses precise per-element typing) rather than
+    # re-checking a condition already enforced in SQL.
+    typed_rows = cast("list[tuple[uuid.UUID, int]]", rows.all())
+    return dict(typed_rows)
+
+
+def resolve_family_quota(family: Family) -> int:
+    """Return a family's effective monthly quota (its override, or the platform default).
+
+    Args:
+        family: The family row.
+
+    Returns:
+        int: ``family.monthly_story_quota`` if set, else
+        ``settings.default_monthly_story_quota`` (ADR-015 G7).
+    """
+    if family.monthly_story_quota is not None:
+        return family.monthly_story_quota
+    return settings.default_monthly_story_quota
+
+
+def _bypasses_family_quota(principal: Principal, family_id: uuid.UUID) -> bool:
+    """Whether the acting principal spends platform budget, not family budget.
+
+    ADR-015: "Admin-initiated catalog requests bypass the family cost gate
+    because they spend platform budget, not family budget." Compared by
+    string value (rather than importing ``api.deps.Role``) to avoid a needless
+    import into this lower-level module; ``Principal.acting_role`` already
+    returns ``"admin"`` exactly when the principal is acting in the admin
+    capacity for this family (a pure admin-only adult always; a dual-role
+    guardian+admin only when acting OUTSIDE their own family -- see
+    ``Principal.acting_role``'s docstring).
+
+    Args:
+        principal: The approving/authoring principal.
+        family_id: The family the request belongs to.
+
+    Returns:
+        bool: True if this action is exempt from the family quota.
+    """
+    return principal.acting_role(family_id).value == "admin"
+
+
+async def enforce_family_quota(
+    session: AsyncSession,
+    principal: Principal,
+    family_id: uuid.UUID,
+    *,
+    now: datetime | None = None,
+) -> None:
+    """Raise 409 if this family's monthly spend already meets its quota.
+
+    The single guardian-cost-gate enforcement point (ADR-015 G7): both
+    ``approve_story_request`` and ``create_authored_request`` call this
+    before ``_build_concept`` runs, so a blocked call creates neither a
+    ``Concept`` nor (later) a ``GenerationJob``. A no-op for a principal
+    acting in the admin capacity (platform-funded catalog requests bypass
+    the family gate).
+
+    Args:
+        session: The request session.
+        principal: The approving/authoring principal.
+        family_id: The family the request belongs to.
+        now: Injection point for "the current instant" (tests); defaults to
+            the current UTC time.
+
+    Raises:
+        ResourceNotFoundError: If the family no longer exists.
+        StateTransitionError: If the family's monthly spend already meets or
+            exceeds its quota (-> 409, "monthly story budget reached").
+    """
+    # #CRITICAL: payment/financial: this is the guardian cost gate itself
+    # (ADR-015 G7); every non-admin path that can create a Concept MUST run
+    # this check first. A missed call site would let a request spend
+    # generation budget with no guardian consent recorded.
+    # #VERIFY: tests/unit/test_story_requests.py::TestBudget pins the block
+    # (nothing created past this point) and the admin-bypass exemption;
+    # tests/integration/test_story_requests_budget.py pins it end to end
+    # through both the approve and authored-create HTTP endpoints.
+    if _bypasses_family_quota(principal, family_id):
+        return
+    family = await session.get(Family, family_id)
+    if family is None:
+        msg = "family no longer exists"
+        raise ResourceNotFoundError(msg)
+    quota = resolve_family_quota(family)
+    spent = await family_monthly_spend(session, family_id, now=now)
+    if spent >= quota:
+        msg = "monthly story budget reached"
+        raise StateTransitionError(msg)
+
+
+async def can_auto_approve(
+    session: AsyncSession,
+    profile: ChildProfile,
+    family: Family,
+    *,
+    now: datetime | None = None,
+) -> bool:
+    """Whether a child's own pre-authorization envelope currently permits auto-approval.
+
+    ADR-015 G3: pre-authorization delegates the CLICK, never the liability,
+    so three independent conditions must all hold: the guardian opted this
+    child in (``request_auto_approve``), gave it an envelope
+    (``monthly_request_envelope`` is not None -- None means "no envelope
+    set", which blocks auto-approval even when ``request_auto_approve`` is
+    True, never "unlimited"), and that envelope is not yet exhausted for the
+    month; AND the family's own monthly quota is not exhausted (the spend
+    still draws from guardian-controlled family budget). A caller must still
+    call ``enforce_family_quota`` itself when it goes on to approve: this
+    function is a pre-check used to decide whether to ATTEMPT auto-approval,
+    not a substitute for the enforcement point.
+
+    Args:
+        session: The request session.
+        profile: The requesting child's profile.
+        family: The profile's family.
+        now: Injection point for "the current instant" (tests); defaults to
+            the current UTC time.
+
+    Returns:
+        bool: True if a fresh request for this profile may be auto-approved
+        right now.
+    """
+    # #ASSUME: concurrency: this is a read-then-decide check with no row
+    # lock; a rare concurrent double-submit could both pass this pre-check
+    # and both then call approve_story_request, spending one extra unit of
+    # envelope/quota (the same class of benign off-by-one already accepted
+    # by count_pending_for_profile above). Auto-approval is a convenience
+    # path with a human-set ceiling behind it (the guardian's own envelope
+    # choice), not a hard financial ledger, so this is accepted for R1.
+    # #VERIFY: tests/unit/test_story_requests.py::TestBudget covers the
+    # single-request decision matrix; a stricter guarantee would need a
+    # partial unique index or advisory lock, deferred as unnecessary here.
+    if not profile.request_auto_approve or profile.monthly_request_envelope is None:
+        return False
+    now = now or datetime.now(UTC)
+    since = _month_start(now)
+    profile_spent = await _approved_count_since(
+        session, profile_id=profile.id, since=since
+    )
+    if profile_spent >= profile.monthly_request_envelope:
+        return False
+    quota = resolve_family_quota(family)
+    family_spent = await _approved_count_since(
+        session, family_id=family.id, since=since
+    )
+    return family_spent < quota
 
 
 @dataclass(frozen=True, slots=True)
@@ -144,12 +448,19 @@ async def approve_story_request(
     *,
     confirmation: ApprovalConfirmation,
     series_title: str | None = None,
+    auto_approved: bool = False,
+    now: datetime | None = None,
 ) -> str:
     """Approve a pending request: build a concept (no job created yet).
 
     Args:
         session: The request session (caller owns the transaction).
-        principal: The approving guardian or admin.
+        principal: The approving guardian or admin, OR (ADR-015 G3
+            auto-approval) the requesting child's own principal when
+            ``auto_approved`` is True: the guardian's pre-authorization
+            (``ChildProfile.request_auto_approve`` + its envelope) is what
+            delegates the click, so the initiator stamp legitimately stays
+            the child.
         request: The pending story request.
         confirmation: The guardian's band/length/style confirmation, stamped
             onto the request before the brief builds (WS-B derivation flip).
@@ -158,14 +469,26 @@ async def approve_story_request(
             Ignored (and rejected, see Raises) for an anchored (continuation)
             request, which already carries its series. The endpoint screens
             this text before calling this function.
+        auto_approved: True when this call is the G3 pre-authorization path
+            (api/story_requests.py::create_story_request auto-approving its
+            own just-created row) rather than an explicit guardian/admin
+            click; stamped onto the emitted event's payload as an audit
+            marker (ADR-015: "pre-authorization delegates the click, never
+            the liability").
+        now: Injection point for "the current instant" (tests); defaults to
+            the current UTC time. Threaded through to the family-quota check
+            and the ``approved_at``/``reviewed_at`` stamps so a test can pin
+            a month boundary.
 
     Returns:
         str: The new concept id.
 
     Raises:
-        StateTransitionError: If the request is not pending (-> 409).
-        ResourceNotFoundError: If the requesting profile is missing, or the
-            anchor storybook is missing or outside the family (-> 404).
+        StateTransitionError: If the request is not pending, or the family's
+            monthly story budget is already reached (-> 409, ADR-015 G7).
+        ResourceNotFoundError: If the requesting profile is missing, the
+            family no longer exists, or the anchor storybook is missing or
+            outside the family (-> 404).
         ValidationError: If the built brief still trips the PII guard; if an
             anchored request also carries a ``series_title``; if the anchor
             storybook is no longer published; or if the confirmed age band
@@ -182,6 +505,14 @@ async def approve_story_request(
     # transaction commits (making its ensure_pending see the now-"approved"
     # status). Any other caller of this function must hold an equivalent lock.
     ensure_pending(request)
+    # #CRITICAL: payment/financial: the guardian cost gate (ADR-015 G7) runs
+    # BEFORE any series/anchor/profile work below, so a quota-blocked request
+    # never creates a Series row, never re-syncs an anchor's series_id, and
+    # never reaches _build_concept (no Concept, and therefore no later
+    # GenerationJob, is ever created for a blocked approval).
+    # #VERIFY: tests/unit/test_story_requests.py::TestBudget asserts a 409
+    # AND that no Concept row exists afterward.
+    await enforce_family_quota(session, principal, request.family_id, now=now)
     profile: ChildProfile | None = None
     if request.profile_id is not None:
         profile = await session.get(ChildProfile, request.profile_id)
@@ -236,6 +567,8 @@ async def approve_story_request(
         emit_approved_event=True,
         series_created=series_created,
         anchor_resolved=anchor_resolved,
+        auto_approved=auto_approved,
+        now=now,
     )
 
 
@@ -248,19 +581,29 @@ async def _build_concept(
     emit_approved_event: bool = False,
     series_created: bool = False,
     anchor_resolved: bool = False,
+    auto_approved: bool = False,
+    now: datetime | None = None,
 ) -> str:
     """Build the brief, run the PII backstop, persist the Concept, approve.
 
     Shared tail of guardian approval and authored creation: both end with the
-    request ``approved``, ``reviewed_by`` stamped, and a Concept linked. An
-    anchored request gets its soft-continuation context loaded here too, so
-    both entry points produce the same anchor-aware brief.
+    request ``approved``, ``reviewed_by``/``approved_at`` stamped, and a
+    Concept linked. An anchored request gets its soft-continuation context
+    loaded here too, so both entry points produce the same anchor-aware brief.
+    Both entry points MUST call ``enforce_family_quota`` before reaching this
+    function (ADR-015 G7): this is the sole place a ``Concept`` (and,
+    therefore, the eventual generation spend) is created, so it is the
+    consent seam.
 
     ``emit_approved_event`` is True only for the guardian/admin approval path
     (``approve_story_request``): an authored request is pre-approved at
     creation and never makes a pending-to-approved transition, so it emits a
     ``request_created`` event only (see ``create_authored_request``), not a
     second ``request_approved`` event for the same row.
+
+    ``auto_approved`` marks the emitted event's payload for the ADR-015 G3
+    pre-authorization path (ignored when ``emit_approved_event`` is False,
+    since an authored request emits no approval event to mark).
     """
     anchor_context = None
     if request.anchor_storybook_id is not None:
@@ -292,10 +635,18 @@ async def _build_concept(
     session.add(concept)
     await session.flush()
 
+    stamp = now or datetime.now(UTC)
     request.concept_id = concept.id
     request.status = "approved"
     request.reviewed_by = principal.user_id
-    request.reviewed_at = datetime.now(UTC)
+    request.reviewed_at = stamp
+    # #CRITICAL: payment/financial: approved_at is the sole timestamp
+    # ADR-015's monthly spend derivation (family_monthly_spend/
+    # profile_monthly_spend) reads; stamped exactly once, here, on the one
+    # code path that ever transitions a request into "approved".
+    # #VERIFY: tests/unit/test_story_requests.py asserts approved_at is set
+    # on both the guardian-approve and authored-create paths.
+    request.approved_at = stamp
 
     if emit_approved_event:
         # Stamp the capacity that authorized the approval: a dual-role adult
@@ -315,6 +666,12 @@ async def _build_concept(
                 "series_created": series_created,
                 "anchor_resolved": anchor_resolved,
                 "series_id": str(request.series_id) if request.series_id else None,
+                # ADR-015 G3: True marks this REQUEST_APPROVED event as a
+                # pre-authorization auto-approval (a guardian's standing
+                # envelope, not a fresh explicit click); reusing the existing
+                # event type with a payload marker rather than adding a new
+                # EventType/CHECK-constraint migration for it.
+                "auto_approved": auto_approved,
             },
         )
 
@@ -332,13 +689,18 @@ async def create_authored_request(
     screening: ScreeningResult,
     series_id: uuid.UUID | None = None,
     anchor_storybook_id: str | None = None,
+    now: datetime | None = None,
 ) -> tuple[StoryRequest, str | None]:
     """Create a guardian- or admin-initiated request, pre-approved (WS-B PR 2).
 
     The caller (the endpoint) has already authorized the principal, resolved
     the target family, validated the optional profile, and screened the text.
     A blocked screening persists a ``blocked`` row with no concept; otherwise
-    the row is approved and its Concept built in the same transaction.
+    the guardian cost gate runs (ADR-015 G7: a guardian-authored request
+    counts against the family's quota exactly like an approved one; an
+    admin-authored one bypasses it, see ``enforce_family_quota``) and, if it
+    passes, the row is approved and its Concept built in the same
+    transaction.
 
     Args:
         session: The request session (caller owns the transaction).
@@ -354,12 +716,22 @@ async def create_authored_request(
             creates the series row only for non-blocked outcomes.
         anchor_storybook_id: The continuation anchor, or None. Also
             endpoint-resolved, for the same reason.
+        now: Injection point for "the current instant" (tests); defaults to
+            the current UTC time.
 
     Returns:
         tuple[StoryRequest, str | None]: The persisted row and the new concept
-            id (None when the request was blocked).
+            id (None when the request was blocked or the family's monthly
+            story budget was already reached).
 
     Raises:
+        StateTransitionError: If the family's monthly story budget is already
+            reached (-> 409, ADR-015 G7). Nothing is committed for this
+            outcome: the request's own unit-of-work
+            (``api/deps.py::get_db_session``) rolls back the whole
+            transaction on any raised exception, so a quota-blocked authored
+            request never persists, unlike a guardian-authored request that
+            reaches ``pending`` through the create+approve two-step.
         ValidationError: If the built brief trips the PII backstop (-> 422).
     """
     # #CRITICAL: security: initiator_role is derived from the authenticated
@@ -408,7 +780,16 @@ async def create_authored_request(
     )
     if screening.blocked:
         return request, None
-    concept_id = await _build_concept(session, principal, request, profile)
+    # #CRITICAL: payment/financial: the guardian cost gate (ADR-015 G7) runs
+    # here too, not only in approve_story_request: an authored request skips
+    # the pending queue but a guardian-authored one still spends FAMILY
+    # budget, so it must clear the same quota check before _build_concept
+    # ever creates a Concept. An admin-authored request bypasses it (platform
+    # budget), exactly like the approve path (see _bypasses_family_quota).
+    # #VERIFY: tests/integration/test_story_requests_authored.py pins the
+    # guardian-over-quota 409 and the admin-bypass pass-through.
+    await enforce_family_quota(session, principal, family_id, now=now)
+    concept_id = await _build_concept(session, principal, request, profile, now=now)
     return request, concept_id
 
 

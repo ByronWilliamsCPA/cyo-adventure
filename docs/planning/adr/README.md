@@ -39,6 +39,10 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-012](./adr-012-supabase-cli-migrations.md) | Supabase CLI SQL migrations replace Alembic | Accepted | 2026-07-10 |
 | [ADR-013](./adr-013-hybrid-pqc-readiness.md) | Hybrid post-quantum cryptography readiness | Accepted | 2026-07-11 |
 | [ADR-014](./adr-014-device-authorized-kid-access.md) | Device-authorized kid access | Accepted | 2026-07-13 |
+| [ADR-015](./adr-015-story-request-initiation-and-gating.md) | Universal story initiation with a guardian cost gate and an admin safety gate | Accepted | 2026-07-16 |
+| [ADR-016](./adr-016-recommendation-sharing-social-boundary.md) | Recommendation sharing and the social boundary (three rings) | Accepted | 2026-07-16 |
+| [ADR-017](./adr-017-ai-cover-art.md) | AI cover art per storybook version | Accepted | 2026-07-16 |
+| [ADR-018](./adr-018-childrens-privacy-compliance.md) | Children's-privacy compliance architecture (COPPA, GDPR-K, AADC) | Proposed | 2026-07-16 |
 
 ## Creating ADRs
 

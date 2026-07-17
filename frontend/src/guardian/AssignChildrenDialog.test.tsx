@@ -33,13 +33,42 @@ const CONTENT_SUMMARY = {
   findings: [{ category: 'coherence', verdict: 'advisory', message: 'slightly disjoint' }],
 }
 
+// The published version's blob (GET /v1/storybooks/:id/versions/:version):
+// the same immutable-version endpoint the reader uses, reused client-side to
+// derive the story-overview skim aid (G5) without any new backend endpoint.
+const STORY_BLOB = {
+  schema_version: '1.0',
+  id: 's1',
+  version: 1,
+  title: 'The Cave',
+  start_node: 'start',
+  variables: [],
+  metadata: {
+    age_band: '8-11',
+    themes: ['courage', 'friendship'],
+    estimated_minutes: 8,
+  },
+  nodes: [
+    { id: 'start', body: 'A cave.', choices: [{ label: 'Go', target: 'end' }] },
+    {
+      id: 'end',
+      body: 'The end.',
+      choices: [],
+      is_ending: true,
+      ending: { id: 'end', title: 'Safe Return', valence: 'positive', kind: 'success' },
+    },
+  ],
+}
+
 beforeEach(() => {
   mockGet.mockReset()
   mockPost.mockReset()
-  // /content-summary -> tags; /assignments -> current assignments; else profiles.
+  // /content-summary -> tags; /versions/ -> the story blob; /assignments ->
+  // current assignments; else profiles.
   mockGet.mockImplementation((url: string) => {
     if (url.includes('/content-summary'))
       return Promise.resolve({ data: CONTENT_SUMMARY })
+    if (url.includes('/versions/')) return Promise.resolve({ data: STORY_BLOB })
     if (url.includes('/assignments'))
       return Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1'] } })
     return Promise.resolve({ data: PROFILES })
@@ -142,5 +171,33 @@ describe('AssignChildrenDialog', () => {
     expect(screen.getByText(/you can still assign/i)).toBeInTheDocument()
     // Never both: a load failure must never look identical to "no flags".
     expect(screen.queryByText('Clean')).not.toBeInTheDocument()
+  })
+
+  describe('story-overview skim aid (G5)', () => {
+    it('shows endings, read time, and themes once the published blob loads', async () => {
+      render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+      expect(await screen.findByText('Story overview')).toBeInTheDocument()
+      expect(await screen.findByText('Safe Return')).toBeInTheDocument()
+      expect(screen.getByText('8 minutes')).toBeInTheDocument()
+      expect(screen.getByText('courage, friendship', { exact: false })).toBeInTheDocument()
+      // Compact: no per-node passage/branch-shape detail, unlike the admin view.
+      expect(screen.queryByText(/Starts at/)).not.toBeInTheDocument()
+    })
+
+    it('omits the story-overview block, without breaking the dialog, when the blob fetch fails', async () => {
+      mockGet.mockImplementation((url: string) => {
+        if (url.includes('/content-summary')) return Promise.resolve({ data: CONTENT_SUMMARY })
+        if (url.includes('/versions/')) return Promise.reject(new Error('down'))
+        if (url.includes('/assignments'))
+          return Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1'] } })
+        return Promise.resolve({ data: PROFILES })
+      })
+      render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+      // The existing content-review tags still render (they do not depend on
+      // the blob fetch); the assign checklist stays usable either way.
+      expect(await screen.findByText('2 flagged')).toBeInTheDocument()
+      expect(await screen.findByRole('checkbox', { name: /Reader A$/ })).toBeInTheDocument()
+      expect(screen.queryByText('Story overview')).not.toBeInTheDocument()
+    })
   })
 })

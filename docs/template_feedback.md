@@ -783,7 +783,11 @@ name-list match.
 target resolves to a known crypto module or import (e.g. `Crypto.Cipher.SEED`,
 `cryptography.hazmat`), or at minimum require the attribute chain to include a crypto-library
 root before matching bare cipher names. Also align the workflow's PR-comment verdict with the
-job conclusion so the two cannot disagree.
+job conclusion so the two cannot disagree. Implemented in this repo on 2026-07-17: see
+`AMBIGUOUS_CIPHER_NAMES`, `CRYPTO_NAMESPACE_SEGMENTS`, `_module_imports_crypto`, and
+`_call_has_crypto_context` in `scripts/check_fips_compatibility.py`, with regression tests in
+`tests/unit/test_check_fips_compatibility.py`; the comment/conclusion alignment is the
+exit-code fix in the entry below.
 
 **Affected Files**: template `scripts/check_fips_compatibility.py`,
 `.github/workflows/fips-compatibility.yml`
@@ -849,3 +853,186 @@ and the `pyjwt` hint to cover asymmetric-only allowlists. See this repo's
 `_check_pqc_pre_standard_name`) for a working implementation.
 
 **Affected Files**: template `scripts/check_fips_compatibility.py`
+
+---
+
+## FIPS checker false-positives on ambiguous cipher names (`seed`, `idea`)
+
+**Issue**: `scripts/check_fips_compatibility.py` flags any attribute call whose
+name matches a `NON_FIPS_CIPHERS` entry. Two entries are common English
+identifiers: `seed` and `idea`. Any project calling `random.seed()`,
+`faker.seed()`, or its own `module.seed()` helper gets a hard error-severity
+"Non-FIPS cipher detected: seed" finding with no crypto anywhere in sight. In
+this repo, five such errors fired on `tests/unit/test_seed_staging.py` (a
+staging seed-data test) and failed the FIPS CI gate on a PR.
+
+**Context**: Discovered when the `fips-compatibility.yml` workflow (which runs
+with `--include-tests`) failed on a feature PR that never touched crypto.
+
+**Suggested Fix**: For ambiguous names, require crypto context before flagging:
+either the uppercase algorithm spelling (`SEED(...)`, `IDEA(...)`) or a receiver
+chain containing a crypto namespace (`Crypto`, `cryptography`, `Cipher`,
+`ciphers`, `algorithms`). This repo implements it as `AMBIGUOUS_CIPHER_NAMES` +
+`CRYPTO_NAMESPACE_HINTS` + `_has_crypto_receiver` in
+`scripts/check_fips_compatibility.py`, with regression tests in
+`tests/unit/test_check_fips_compatibility.py`.
+
+**Priority**: High (a false error blocks CI for any project that seeds a PRNG)
+
+**Affected Files**: template `scripts/check_fips_compatibility.py`
+### `[tool.mutmut]` block ships mutmut 2.x config keys while pinning mutmut 3.x, so mutation testing crashes at startup
+
+- **Priority**: High
+- **Category**: Configuration
+- **Discovered**: 2026-07-17
+
+**Issue**: The template's `pyproject.toml` writes a `[tool.mutmut]` section in mutmut 2.x
+dialect (`paths_to_mutate` as a string, `tests_dir` as a string, `runner`, `backup`,
+`dict_synonyms`) while `[dependency-groups]`/dev extras pin `mutmut>=3.3.1`. mutmut 3.x
+renamed `paths_to_mutate` to `source_paths` (a list), replaced `tests_dir` with
+`pytest_add_cli_args_test_selection` (a list), and removed `runner`/`backup`/`dict_synonyms`
+entirely. With the shipped config, `mutmut` crashes on import:
+`TypeError: can only concatenate list (not "str") to list`
+(`mutmut/configuration.py::_load_config`, concatenating the string `tests_dir` onto a list).
+Even if the string parsed, `paths_to_mutate = "src/"` would be iterated character-by-character
+into paths `s`, `r`, `c`, `/`. Every entry point is dead: `nox -s mutate`, a bare
+`uv run mutmut run`, and the weekly `mutation-testing.yml` workflow. The removed `runner` key
+also silently drops the template's intent of running pytest with `-o addopts=''`; under
+mutmut 3.x the copied `pyproject.toml` addopts (coverage, `--cov-fail-under=80`) apply to
+every mutant run unless `pytest_add_cli_args` re-suppresses them.
+
+**Context**: Found while evaluating mutation-testing robustness for this project. Reproduced
+locally: `uv run mutmut version` crashes with the TypeError above (mutmut 3.6.0 resolved from
+the `>=3.3.1` pin). Additionally, all three scheduled runs of `mutation-testing.yml` in this
+repo failed in about 20 seconds each, before ever reaching mutmut: the org reusable workflow
+`python-mutation.yml` runs `uv sync` with `--no-build`, which cannot install the project
+itself (`Distribution 'cyo-adventure==0.1.0 @ editable+.' can't be installed because it is
+marked as '--no-build' but has no binary distribution`). The net effect is that mutation
+testing has never produced a score for this project, and because the workflow is
+schedule-only, no PR surface ever shows the breakage.
+
+**Suggested Fix**: (1) Rewrite the template's `[tool.mutmut]` block in mutmut 3.x dialect:
+`source_paths = ["src/<package>"]`, `pytest_add_cli_args_test_selection = ["tests/"]`, and
+`pytest_add_cli_args = ["-x", "-o", "addopts="]` to keep coverage out of mutant runs; drop
+`runner`, `backup`, `tests_dir`, and `dict_synonyms`. (2) Add `also_copy` entries for any
+non-`tests/` fixture directories the suite reads at runtime (this project reads
+`schema/conformance/` from `tests/unit/test_evaluator.py`), since mutmut 3.x runs tests from a
+`mutants/` copy of the tree. (3) In the org reusable workflow, either drop `--no-build` or add
+`--no-build-package` exceptions for the project itself so `uv sync` can install the editable
+root. (4) Consider failing the workflow loudly on config errors instead of skipping the run
+steps, and alerting on scheduled-workflow failures; a schedule-only job that has never
+succeeded is invisible.
+
+**Affected Files**: template `pyproject.toml` (`[tool.mutmut]`), template `noxfile.py`
+(`mutate` session docstring), org reusable workflow
+`ByronWilliamsCPA/.github/.github/workflows/python-mutation.yml`
+
+---
+
+### Fuzzing scaffold ships a no-op harness, so weekly ClusterFuzzLite runs pass while fuzzing nothing
+
+- **Priority**: High
+- **Category**: CI/CD
+- **Discovered**: 2026-07-17
+
+**Issue**: The template's `fuzz/fuzz_input_validation.py` is an unfilled scaffold: its
+`test_one_input` consumes bytes via `FuzzedDataProvider.ConsumeUnicodeNoSurrogates(1024)`
+inside `contextlib.suppress(ValueError, TypeError)` and never imports or calls any project
+code (the `# TODO: Import the module functions you want to fuzz` markers are still in place).
+Because `cifuzzy.yml` gates only on the existence of `fuzz/*.py`, the harness builds, runs for
+the full 600-second budget, and reports success every week. The green "Continuous Fuzzing"
+signal is indistinguishable from a real fuzzing program despite exercising zero lines of
+application code. The template's `fuzz/README.md` compounds this by claiming fuzzing runs "on
+every push to main/develop and on PRs", while the workflow is schedule/dispatch-only.
+
+**Context**: Found while evaluating fuzzing robustness for this project. The last four
+scheduled ClusterFuzzLite runs are green at about 13 minutes each; reading the harness shows
+none of that time touches `cyo_adventure`. Meanwhile the project has textbook fuzz targets the
+scaffold was meant for: the storybook condition evaluator, `Storybook.model_validate` over the
+invalid-fixture corpus, and the import/schema-validation path.
+
+**Suggested Fix**: (1) In the template, either mark the scaffold harness so CI treats it as
+absent (e.g. name it `fuzz_example.py.tmpl` or have the workflow's target-detection step grep
+for the TODO marker and skip with a loud summary line "scaffold harness only, not fuzzing
+project code"), or fail the workflow when the only harness present is the unmodified scaffold.
+(2) Update `fuzz/README.md` trigger claims to match the actual workflow schedule. (3) Add a
+post-generation checklist item telling projects to point the harness at their first real
+parser/validator entry point.
+
+**Affected Files**: template `fuzz/fuzz_input_validation.py`, `fuzz/README.md`,
+`.github/workflows/cifuzzy.yml`
+
+---
+
+### FIPS workflow's failure gate never fires: `tee` swallows the exit code, and trigger paths omit the tests it scans
+
+- **Priority**: High
+- **Category**: CI/CD
+- **Discovered**: 2026-07-17
+
+**Issue**: Two compounding defects in `.github/workflows/fips-compatibility.yml` make the FIPS
+gate inform-only in every mode, including `--strict` dispatch. First, the run step captures
+`EXIT_CODE=$?` after piping the checker through `tee`
+(`uv run python scripts/check_fips_compatibility.py ... | tee fips-report.txt`). The step uses
+the workflow default shell (`bash -e {0}`), which does not enable `pipefail`, so `$?` reports
+`tee`'s exit status, which is always 0. The `Check result` step that is supposed to fail the
+job on findings (`if: steps.fips-check.outputs.exit_code != '0'`) can therefore never trigger,
+and the job concludes success regardless of errors. This is the root cause of the symptom
+already recorded above in "FIPS checker flags any method named `seed()`": the job shows green
+while the PR comment says FAILED. Second, the check runs with `--include-tests`, but the
+workflow's `push`/`pull_request` paths filters list only `src/**/*.py`, `pyproject.toml`, and
+`requirements*.txt`. A PR that introduces a FIPS finding in `tests/**` never triggers the
+workflow at all; the finding first appears on the weekly cron, where the exit-code bug hides
+it again.
+
+**Context**: Discovered while assessing whether this repo could pass an org-wide strict FIPS
+posture. Running `scripts/check_fips_compatibility.py --include-tests` locally exits 1 (five
+findings, all the known `seed()` false positive), while the corresponding workflow runs
+conclude success.
+
+**Suggested Fix**: In the run step, either `set -o pipefail` before the pipeline or capture
+`${PIPESTATUS[0]}` (or declare `shell: bash` on the step, which enables `pipefail` by
+default). Add `tests/**/*.py` to both paths filters so the triggers cover everything the
+checker scans. With enforcement restored, the `seed()` matcher fix already reported above
+becomes a prerequisite, since restoring the gate without it would fail builds on the false
+positive. Implemented in this repo on 2026-07-17 (`set -o pipefail` around the pipeline plus
+expanded paths filters, including `scripts/check_fips_compatibility.py` itself, which was
+also missing from the triggers); see `.github/workflows/fips-compatibility.yml`.
+
+**Affected Files**: template `.github/workflows/fips-compatibility.yml`
+
+---
+
+### FIPS checker has no disposition mechanism for its info-level findings
+
+- **Priority**: Medium
+- **Category**: Tooling
+- **Discovered**: 2026-07-17
+
+**Issue**: `scripts/check_fips_compatibility.py` emits info-severity "Package may need FIPS
+verification" findings (cryptography, httpx, boto3, pyjwt, etc.) that no flag can make
+blocking and no mechanism can mark verified. `--strict` only promotes warnings, so a project
+that wants a zero-tolerance FIPS gate has no way to say "these four were verified, fail on
+anything new". The findings degrade into permanent noise: they appear on every run, cannot be
+resolved, and train contributors to ignore the report.
+
+**Context**: Found while turning this project's FIPS workflow fully strict. The four standing
+info findings all had written dispositions in `docs/security/crypto-inventory.md`, but nothing
+connected them to the checker, and any newly added crypto-adjacent dependency would surface
+only as one more ignorable info line.
+
+**Suggested Fix**: Adopt this repo's implementation upstream: (1) a `--fail-level
+{error,warning,info}` flag (stricter of `--strict`/`--fail-level` wins); (2) an
+acknowledged-findings baseline in `[tool.fips_check.acknowledged.<package>]` with mandatory
+`reason`, `reference`, and `reviewed` (date) keys, where acknowledgments apply only to
+info-level findings, expire after 90 days (warning until re-reviewed), and malformed, unused,
+future-dated, or error-targeting entries each warn; (3) runtime assertions
+(`tests/unit/test_fips_runtime_assertions.py`) backing the mechanically testable dispositions
+(dependency floors, OpenSSL major version, TLS context floor) so "verified" means a green test
+rather than a paragraph. See `load_acknowledgments`, `apply_acknowledgments`, and
+`compute_exit_code` in this repo's `scripts/check_fips_compatibility.py`, plus the
+`--fail-level info` invocation and acknowledged-count PR comment in
+`.github/workflows/fips-compatibility.yml`.
+
+**Affected Files**: template `scripts/check_fips_compatibility.py`,
+`.github/workflows/fips-compatibility.yml`

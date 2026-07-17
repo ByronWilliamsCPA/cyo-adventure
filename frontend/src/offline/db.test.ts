@@ -9,13 +9,19 @@ import {
   _resetDbHandle,
   cacheStorybook,
   clearDeviceGrantMirror,
+  deleteReadingState,
+  deleteStorybooksById,
   dequeue,
   enqueueWrite,
+  getAllProfileShelves,
   getCachedStorybook,
   getDeviceGrantMirror,
   getReadingState,
+  listCachedStorybookIds,
   listQueue,
+  listReadingStateStorybookIds,
   putDeviceGrantMirror,
+  putProfileShelf,
   putReadingState,
   type QueuedWrite,
 } from './db'
@@ -141,5 +147,75 @@ describe('offline IndexedDB cache', () => {
     // loses no data.
     await cacheStorybook(story)
     expect((await getCachedStorybook('s_demo', 1))?.id).toBe('s_demo')
+  })
+
+  it('migrates a v2 database to v3 by adding only the profile_shelf store', async () => {
+    // Reproduce a real pre-revocation v2 database: device_grant exists, but
+    // profile_shelf does not.
+    const v2 = await openDB(DB_NAME, 2, {
+      upgrade(db) {
+        db.createObjectStore('storybooks')
+        db.createObjectStore('reading_states')
+        db.createObjectStore('offline_queue', { keyPath: 'event_id' })
+        db.createObjectStore('device_grant')
+      },
+    })
+    v2.close()
+
+    // getDb() opens at DB_VERSION (3), so idb's upgrade fires with
+    // oldVersion === 2: both `oldVersion < 1` and `oldVersion < 2` blocks are
+    // skipped and only `profile_shelf` is created.
+    await putProfileShelf('p1', ['s1', 's2'])
+    expect(await getAllProfileShelves()).toEqual([
+      { profile_id: 'p1', storybook_ids: ['s1', 's2'] },
+    ])
+
+    // Pre-existing v1/v2 stores still work and lost no data.
+    await cacheStorybook(story)
+    expect((await getCachedStorybook('s_demo', 1))?.id).toBe('s_demo')
+  })
+
+  describe('offline-copy revocation primitives', () => {
+    it('deletes a single profile reading state without touching another profile', async () => {
+      await putReadingState('p1', 's_demo', state)
+      await putReadingState('p2', 's_demo', state)
+      await deleteReadingState('p1', 's_demo')
+      expect(await getReadingState('p1', 's_demo')).toBeUndefined()
+      expect(await getReadingState('p2', 's_demo')).toEqual(state)
+    })
+
+    it('lists only the storybook ids a given profile has reading state for', async () => {
+      await putReadingState('p1', 's_demo', state)
+      await putReadingState('p1', 's_other', state)
+      await putReadingState('p2', 's_demo', state)
+      expect((await listReadingStateStorybookIds('p1')).sort()).toEqual(['s_demo', 's_other'])
+      expect(await listReadingStateStorybookIds('p2')).toEqual(['s_demo'])
+    })
+
+    it('deletes every cached version of a storybook by id', async () => {
+      await cacheStorybook(story)
+      await cacheStorybook({ ...story, version: 2 })
+      await cacheStorybook({ ...story, id: 's_other' })
+      await deleteStorybooksById('s_demo')
+      expect(await getCachedStorybook('s_demo', 1)).toBeUndefined()
+      expect(await getCachedStorybook('s_demo', 2)).toBeUndefined()
+      expect(await getCachedStorybook('s_other', 1)).toBeDefined()
+    })
+
+    it('lists distinct cached storybook ids across versions', async () => {
+      await cacheStorybook(story)
+      await cacheStorybook({ ...story, version: 2 })
+      await cacheStorybook({ ...story, id: 's_other' })
+      expect((await listCachedStorybookIds()).sort()).toEqual(['s_demo', 's_other'])
+    })
+
+    it('round-trips a profile shelf snapshot and overwrites on the next put', async () => {
+      await putProfileShelf('p1', ['s1', 's2'])
+      expect(await getAllProfileShelves()).toEqual([
+        { profile_id: 'p1', storybook_ids: ['s1', 's2'] },
+      ])
+      await putProfileShelf('p1', ['s1'])
+      expect(await getAllProfileShelves()).toEqual([{ profile_id: 'p1', storybook_ids: ['s1'] }])
+    })
   })
 })

@@ -59,4 +59,37 @@ describe('makeLibraryApi', () => {
     })
     expect(view.value).toBe(5)
   })
+
+  describe('history (K6 endings tracker)', () => {
+    it('fetches the reading-history rows for a profile', async () => {
+      const get = vi.fn().mockResolvedValue({
+        data: {
+          profile_id: 'p1',
+          books: [
+            {
+              storybook_id: 's1',
+              title: 'The Lantern',
+              endings_found: 2,
+              ending_ids: ['e1', 'e2'],
+              total_endings: 5,
+              in_progress: true,
+              last_activity_at: '2026-07-01T00:00:00Z',
+            },
+          ],
+        },
+      })
+      const api = makeLibraryApi(fakeAxios({ get }))
+      const rows = await api.history('p1')
+      expect(get).toHaveBeenCalledWith('/v1/reading-history/p1')
+      expect(rows).toHaveLength(1)
+      expect(rows[0]).toMatchObject({ storybook_id: 's1', endings_found: 2, total_endings: 5 })
+    })
+
+    it('degrades to an empty list when the response has no books array', async () => {
+      const get = vi.fn().mockResolvedValue({ data: { profile_id: 'p1' } })
+      const api = makeLibraryApi(fakeAxios({ get }))
+      const rows = await api.history('p1')
+      expect(rows).toEqual([])
+    })
+  })
 })

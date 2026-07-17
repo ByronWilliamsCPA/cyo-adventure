@@ -3,8 +3,31 @@ import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router-d
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MockInstance } from 'vitest'
 
-import { NotFoundPage, RouteError, RouteFallback } from './routeElements'
+import { Suspense } from 'react'
+
+import {
+  AuditPage,
+  AuthoringQueuePage,
+  NotFoundPage,
+  ProviderAllowlistPage,
+  RouteError,
+  RouteFallback,
+  UserManagementPage,
+} from './routeElements'
 import { routes } from './router'
+
+vi.mock('./admin/AuditPage', () => ({
+  AuditPage: () => <div>AuditPage loaded</div>,
+}))
+vi.mock('./admin/AuthoringQueuePage', () => ({
+  AuthoringQueuePage: () => <div>AuthoringQueuePage loaded</div>,
+}))
+vi.mock('./admin/ProviderAllowlistPage', () => ({
+  ProviderAllowlistPage: () => <div>ProviderAllowlistPage loaded</div>,
+}))
+vi.mock('./admin/UserManagementPage', () => ({
+  UserManagementPage: () => <div>UserManagementPage loaded</div>,
+}))
 
 describe('NotFoundPage', () => {
   it('renders friendly 404 copy with a way home for both audiences', () => {
@@ -106,5 +129,31 @@ describe('router catch-all (router.tsx)', () => {
     const catchAll = routes.find((route) => 'path' in route && route.path === '*')
     expect(catchAll).toBeDefined()
     expect(catchAll && 'errorElement' in catchAll && catchAll.errorElement).toBeTruthy()
+  })
+})
+
+describe('lazy admin page loaders', () => {
+  // The loader thunk and its named-export mapper are the only code this file
+  // adds per page; mounting each lazy component through Suspense executes both
+  // without needing the real page's data layer. Pages exercised only through
+  // full-router navigation cover their thunks nondeterministically (Suspense
+  // timing), which is exactly the per-file function-coverage flake this block
+  // pins down.
+  const cases = [
+    ['AuditPage', AuditPage],
+    ['AuthoringQueuePage', AuthoringQueuePage],
+    ['ProviderAllowlistPage', ProviderAllowlistPage],
+    ['UserManagementPage', UserManagementPage],
+  ] as const
+
+  it.each(cases)('resolves the %s loader to the named export', async (name, LazyPage) => {
+    render(
+      <MemoryRouter>
+        <Suspense fallback={<RouteFallback />}>
+          <LazyPage />
+        </Suspense>
+      </MemoryRouter>
+    )
+    expect(await screen.findByText(`${name} loaded`)).toBeInTheDocument()
   })
 })

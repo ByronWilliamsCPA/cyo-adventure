@@ -95,6 +95,28 @@ describe('buildBrief', () => {
     })
     expect(brief.protagonist.name).toBe('Captain Rosa')
   })
+
+  // G2: the selected child's banned_themes flow into content_nogo.
+  it('folds bannedThemes into content_nogo when provided', () => {
+    const brief = buildBrief({
+      premise: 'Into the tide pools.',
+      tone: 'adventurous',
+      ageBand: '8-11',
+      readingLevelCap: 4,
+      bannedThemes: ['spiders', 'magic'],
+    })
+    expect(brief.content_nogo).toEqual(['spiders', 'magic'])
+  })
+
+  it('defaults content_nogo to an empty list when bannedThemes is omitted', () => {
+    const brief = buildBrief({
+      premise: 'Into the tide pools.',
+      tone: 'adventurous',
+      ageBand: '8-11',
+      readingLevelCap: 4,
+    })
+    expect(brief.content_nogo).toEqual([])
+  })
 })
 
 describe('formatRelativeTime', () => {

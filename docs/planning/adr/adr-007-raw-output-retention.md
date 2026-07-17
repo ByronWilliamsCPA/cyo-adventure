@@ -13,8 +13,49 @@ tags:
 
 # ADR-007: Raw LLM output retention policy for `GenerationJob.report`
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-16; see Amendment below)
 > **Date**: 2026-06-29
+
+## Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)
+
+Both halves of the purge described in the TL;DR and Decision sections below are now
+built, closing the "raw output currently persists indefinitely" gap the 2026-07-16
+amendment flagged:
+
+- **30-day sweep**: `supabase/migrations/20260718000000_add_report_retention_purge.sql`
+  registers a daily `pg_cron` job (`purge_generation_job_report`) that nulls
+  `generation_job.report` for jobs in a terminal status (`passed`, `needs_review`,
+  `failed`) whose `updated_at` is more than 30 days old. `queued`, `running`, and
+  `awaiting_manual_fill` are excluded as non-terminal. The migration guards
+  `CREATE EXTENSION pg_cron` in an exception-catching block (`RAISE NOTICE` on
+  failure) and unschedules-then-reschedules by job name, so it never hard-fails on a
+  Postgres without `pg_cron` and is safe to re-apply. An index on
+  `(status, updated_at)` backs the purge predicate per this ADR's Implementation
+  Notes.
+- **On-publish purge**: `publishing/service.py::approve` (the sole path that sets
+  `storybook.status = "published"`) nulls the matching `generation_job.report` (by
+  `storybook_id` and `version`) in the same transaction as the publish write, so a
+  rollback of the publish also rolls back the purge.
+
+## Amendment (2026-07-16): access-control ruling and code reconciliation
+
+The 2026-07-16 traceability review found the code had drifted from this ADR:
+`GET /generation-jobs/{id}` returned the full `report` to any guardian in the owning
+family, and the privacy model had been updated to document that reality rather than this
+ADR's admin-only rule. The owner ruled the same day: **the admin reviews generated output
+first, then it reaches the parent**, with a dual-role adult covered by the admin
+capability. The parent may ultimately receive unedited LLM output when the admin approves
+without changes; that is accepted, because by then it has passed the automated gates and
+admin review. Consequences:
+
+- The single-job endpoint is tightened so `report` is returned only to principals with
+  the admin capability; guardians keep status, stage log, and error information.
+  Implemented on branch `claude/app-capabilities-review-wm6gt3`.
+- Guardians see generated content through the normal post-approval surfaces, never
+  through raw job output.
+- The privacy model's guardian-visibility wording is corrected back to admin-only.
+- The 30-day/on-publish purge below remains decided and remains unbuilt (Phase 5); raw
+  output currently persists until that job ships, which is tracked as a known gap.
 
 ## TL;DR
 
