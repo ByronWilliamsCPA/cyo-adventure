@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Nina and Theo are best friends. One sunny day, they find a map. It is under the big oak tree. The map is old and rolled up. It has a red X on it. What is at the X? Today they will find out!",
+      "body": "Nina and Theo are best friends. One sunny afternoon, they find something special under Grandpa's big oak tree. They pull out an old, rolled-up map. It is hand-drawn. A dotted line twists and turns on it. A red X marks the end. The two friends look at each other and smile. Today they will hunt for treasure!",
       "is_ending": false,
       "choices": [
         {
@@ -56,7 +56,7 @@
     },
     {
       "id": "o_intro",
-      "body": "The map points to the big oak. Nina holds it. Theo counts steps. The oak is very big. You can hide behind it. They see the line split. It goes two ways.",
+      "body": "The dotted line on the map points to the great big oak. Nina holds the map while Theo counts their steps. The oak tree is huge. Three kids could hide behind it. As they walk closer, they see the dotted line split. It makes two paths near the roots of the tree.",
       "is_ending": false,
       "choices": [
         {
@@ -68,7 +68,7 @@
     },
     {
       "id": "o_fork",
-      "body": "The line goes two ways now. One way goes to a log. The log is by itself. The other way goes to a swing. The swing is on a branch. Which way should they go?",
+      "body": "The dotted line splits into two paths now. One path wiggles toward a mossy hollow log. They hear soft croaking from it. The other path curves toward an old tire swing. It hangs from a low branch. Which path should they follow? Nina and Theo look at each other and choose their way.",
       "is_ending": false,
       "choices": [
         {
@@ -85,7 +85,7 @@
     },
     {
       "id": "o_hollow_1",
-      "body": "They go to the log. It is very big. It is on the grass. One end is dark. It is cool. They hear a croak. It is not bad. It sounds like a party.",
+      "body": "They follow the path to the hollow log. It sits in the long grass. The log is bigger than a barrel. One end is dark and cool. They hear a friendly croaking sound from deep inside. It does not sound scary at all. It sounds like tiny friends having fun.",
       "is_ending": false,
       "choices": [
         {
@@ -97,7 +97,7 @@
     },
     {
       "id": "o_hollow_2",
-      "body": "Nina has a light. She looks in the log. Theo looks at the map. The line goes through the log. The croaks get loud. Many tiny things croak. It sounds like fun.",
+      "body": "Nina shines her flashlight into the hollow log. Theo checks the dotted line on the map. The line seems to go right through the log and out the other side. The croaking grows louder and busier. It sounds like many tiny voices all talking.",
       "is_ending": false,
       "choices": [
         {
@@ -109,7 +109,7 @@
     },
     {
       "id": "o_hollow_app",
-      "body": "Past the log, they see a wet mark on the map. Two paths go on. One path is dry and dusty. It goes to the fence. One path is wet and soft. Which path is right?",
+      "body": "Past the log, they see a water mark on the map. Two small paths lead away from the log now. One path is dry and dusty and goes toward the fence. The other path is soft and mossy and goes to the damp corner. Which path does the mapmaker mean? They need to decide.",
       "is_ending": false,
       "choices": [
         {
@@ -126,7 +126,7 @@
     },
     {
       "id": "e_set_hollow",
-      "body": "The dry path ends at pots. No X. No gift. Nina and Theo laugh. They roll up the map. They go back for a drink. They will try again soon.",
+      "body": "The dry path just curves back to the fence. It ends at a pile of old flowerpots. There is no X here. No treasure. Nina and Theo laugh at the silly dead end. They roll up the map and skip back to the porch. They get a big cold glass of lemonade. They will try again tomorrow.",
       "is_ending": true,
       "ending": {
         "id": "end_set_hollow",
@@ -137,7 +137,7 @@
     },
     {
       "id": "o_hollow_3",
-      "body": "They go on the wet path. It is soft. Ferns touch their knees. The croaks get loud and happy. Theo says it sounds like many tiny friends. They walk deeper.",
+      "body": "They follow the mossy path forward. It is springy and cool under their feet. Ferns brush their knees as they walk. The croaking grows louder and happier. Theo whispers that it sounds like hundreds of tiny voices talking. The friends press on deeper into the garden.",
       "is_ending": false,
       "choices": [
         {
@@ -149,7 +149,7 @@
     },
     {
       "id": "o_hollow_4",
-      "body": "The path goes down. The ground is soft. They see flat rocks. The rocks look like small doors. They step gently. They follow the line.",
+      "body": "The path dips down into a shady green hollow below them. The ground here is soft under their feet. They see smooth flat stones. Each stone looks like a tiny doorway or a small home. The friends step with care and follow the dotted line deeper.",
       "is_ending": false,
       "choices": [
         {
@@ -161,7 +161,7 @@
     },
     {
       "id": "o_hollow_5",
-      "body": "They find a ring of rocks. Behind it are toads. They are big and fat. They sit on leaves. The toads do not run. They look at the kids.",
+      "body": "In the green hollow they find a ring of round pebbles. It is set out like a tiny wall or a circle. Behind it sit plump spotted toads. The toads sit on leaf-thrones and lily-pad chairs. The toads do not hop away. They blink slowly at the visitors.",
       "is_ending": false,
       "choices": [
         {
@@ -173,7 +173,7 @@
     },
     {
       "id": "o_hollow_6",
-      "body": "The biggest toad has a crown. It is made of clover. It looks at them. Nina and Theo kneel down. The map's X is right here.",
+      "body": "The biggest toad wears a crown made of clover. It blinks slowly at the two friends. Nina and Theo kneel down very gently so they will not scare anyone. And there, right where the toad king sits, the map's red X is drawn.",
       "is_ending": false,
       "choices": [
         {
@@ -185,7 +185,7 @@
     },
     {
       "id": "e_toad_king",
-      "body": "They found a tiny toad town. The big toad is the king. He sits on a leaf. The kids will keep it safe. They leave a leaf as a gift. They walk home and grin.",
+      "body": "The friends have found a tiny toad kingdom in the shady hollow. A big toad with a clover crown is the king. He sits on his leafy throne. Nina and Theo promise to keep it safe. They leave a green leaf as a gift. All the way home they cannot stop smiling.",
       "is_ending": true,
       "ending": {
         "id": "end_toad_king",
@@ -196,7 +196,7 @@
     },
     {
       "id": "o_swing_1",
-      "body": "They go to the swing. It is made of a tire. It hangs from a branch. The tire spins a bit. There are ribbons on the rope. They are bright and shake.",
+      "body": "They follow the loop of the path to the old tire swing. It hangs from a low branch of the oak tree. The tire turns slowly in the breeze. Someone has tied bright ribbons to the rope. The ribbons flutter and shine in the sun.",
       "is_ending": false,
       "choices": [
         {
@@ -208,7 +208,7 @@
     },
     {
       "id": "o_swing_2",
-      "body": "Theo gives it a soft push. He hears bells. They ring up high. Nina looks at the map. The line goes up the trunk. They hear the bells again.",
+      "body": "Theo gives the tire swing a gentle push. He hears a soft tinkling sound from higher up in the tree. Nina looks at the map. The dotted line climbs up the trunk toward the leaves. The tinkling sounds just like tiny bells.",
       "is_ending": false,
       "choices": [
         {
@@ -220,7 +220,7 @@
     },
     {
       "id": "o_swing_app",
-      "body": "The line splits. One part goes left to thick leaves. One part goes right on a low branch. It looks easy to walk. They hear bells. Which way should they go?",
+      "body": "The dotted line splits at a knot in the tree trunk. One branch of the line goes left toward thick prickly leaves. The other branch goes right along a smooth low limb. It looks easy to walk on. The friends hear the ringing bells above them. Which way should they go?",
       "is_ending": false,
       "choices": [
         {
@@ -237,7 +237,7 @@
     },
     {
       "id": "e_set_swing",
-      "body": "The left branch is just twigs. It ends at an old box. No X. They laugh and get off. They go back. The X is not here.",
+      "body": "The prickly left branch is just a tangle of twigs and branches. It leads nowhere but to an empty old bird box. No X here. The friends giggle at the silly dead end. They hop off and head back. They know the X is hiding somewhere else.",
       "is_ending": true,
       "ending": {
         "id": "end_set_swing",
@@ -248,7 +248,7 @@
     },
     {
       "id": "o_swing_3",
-      "body": "The low branch is easy. They can walk on it. The bells get loud. Nina holds the trunk. Theo has the map. The branch curves up.",
+      "body": "The smooth low limb is easy to balance along. The tinkling gets clearer with every step they take. Nina keeps one hand on the trunk for safety. Theo watches the map and points the way. The branch curves toward a sunny gap in the leaves.",
       "is_ending": false,
       "choices": [
         {
@@ -260,7 +260,7 @@
     },
     {
       "id": "o_swing_4",
-      "body": "They find a special place. Many things hang from the twigs. Keys, shells, and spoons hang down. Buttons too. The tree makes a sound.",
+      "body": "They reach a special place. Hundreds of little things dangle from twigs. Keys, shells, spoons, and buttons all knock together in the wind. The whole tree seems to sing and make music softly.",
       "is_ending": false,
       "choices": [
         {
@@ -272,7 +272,7 @@
     },
     {
       "id": "o_swing_5",
-      "body": "It is a wind chime tree. Someone made it long ago. Shiny bits make rainbows. Nina and Theo stop. They just listen. The tree sings.",
+      "body": "Someone made a wind chime long ago on every branch. Sunlight bounces off the shiny bits. It makes little rainbows. Nina and Theo stand still. They just listen to the music. The wind moves and makes it sing.",
       "is_ending": false,
       "choices": [
         {
@@ -284,7 +284,7 @@
     },
     {
       "id": "o_swing_6",
-      "body": "The biggest chime is in the middle. It is made from a can and spoons. The map's X is right here. Nina touches it very soft.",
+      "body": "In the middle hangs the biggest chime. It is made from an old can and spoons. The map's red X is right beside it. Nina reaches out and gives it a very soft, gentle touch.",
       "is_ending": false,
       "choices": [
         {
@@ -296,7 +296,7 @@
     },
     {
       "id": "e_chime",
-      "body": "They found a tree that sings. It sings when the wind blows. The kids add a shell. Now the tree will sing more. They walk home and hum the song.",
+      "body": "The friends have found a secret wind-chime tree. It sings all by itself whenever the breeze blows through. They add one small shell of their own to the branches. Now the tree will sing a little louder and sweeter. They walk home humming the tree's happy tune.",
       "is_ending": true,
       "ending": {
         "id": "end_chime",
@@ -307,7 +307,7 @@
     },
     {
       "id": "r_intro",
-      "body": "The map points to the shed. It is green and small. Theo jumps over some flowers. Nina reads the map. The door is open just a crack. It makes a sound.",
+      "body": "The dotted line points across the lawn to the little green shed. It sits near the fence at the back of the garden. Theo hops over a colorful flowerbed while Nina reads the map. The shed door hangs open just a crack. Something inside the shed gives a soft creak.",
       "is_ending": false,
       "choices": [
         {
@@ -319,7 +319,7 @@
     },
     {
       "id": "r_fork",
-      "body": "The path splits. One path goes in the shed. It is dark. One path goes to rocks. They are big and grey. The kids pick one to see.",
+      "body": "Behind the shed the trail splits into two paths. One line slips inside the shed's open door into the cool shadows. The other path runs off toward the big grey rock pile stacked against the back fence. The friends pick which one to explore.",
       "is_ending": false,
       "choices": [
         {
@@ -336,7 +336,7 @@
     },
     {
       "id": "r_shed_1",
-      "body": "They open the door. Dust and light come in. They see pots and hoses. It smells like dirt and wood. The line points to the back.",
+      "body": "They push the door open slowly. Dusty light comes in from outside. They see pots and hoses inside. It smells like dirt and old wood. The dotted line leads to the corner way in back.",
       "is_ending": false,
       "choices": [
         {
@@ -348,7 +348,7 @@
     },
     {
       "id": "r_shed_2",
-      "body": "Nina walks past rakes. Theo has the map. In the back is a stack of crates. Light glows up high. It looks warm.",
+      "body": "Nina tiptoes carefully past rakes and watering cans. Theo holds the map steady in his hands. In the corner they see a stack of wooden crates piled up like steps going up. A faint light glows from a gap near the roof. Something up there looks cozy and warm.",
       "is_ending": false,
       "choices": [
         {
@@ -360,7 +360,7 @@
     },
     {
       "id": "r_shed_app",
-      "body": "The map is torn here. Two ways go on. One way is under a bench. It is very dark. One way is up a stack of crates. Which way is right?",
+      "body": "The map is torn right at this spot in the journey. Two ways go forward from here. A low gap leads under a workbench into the dark. A wobbly ladder of crates climbs up toward the glowing gap near the roof. The friends decide which way the X wants them to go.",
       "is_ending": false,
       "choices": [
         {
@@ -377,7 +377,7 @@
     },
     {
       "id": "e_set_shed",
-      "body": "Under the bench is just old pots. A bug sleeps there. No gift. The kids back out. They laugh and sneeze. They go back for a cool drink.",
+      "body": "The low gap under the workbench is just a cobwebby dead end. It is full of old plant pots and a sleepy woodlouse. The friends back out sneezing and laughing. They dust the map off gently. They trot back to the porch for cold lemonade before trying another trail.",
       "is_ending": true,
       "ending": {
         "id": "end_set_shed",
@@ -388,7 +388,7 @@
     },
     {
       "id": "r_shed_3",
-      "body": "They climb the crates. It shakes a tiny bit. But it is OK. They go up to the light. Theo sees it first and says oh. Nina climbs up fast.",
+      "body": "The crate ladder wobbles just a little but it holds strong. The friends climb toward the warm glowing gap up high. Theo goes first and gasps softly at what he sees. Nina scrambles up right behind him as fast as she can.",
       "is_ending": false,
       "choices": [
         {
@@ -400,7 +400,7 @@
     },
     {
       "id": "r_shed_4",
-      "body": "Up high is a special place. It is cozy and nice. There are soft things to sit on. A crate table is there. A light hangs down. It is warm here.",
+      "body": "Up in the loft is a cozy hideaway. Someone built it from soft things. There are cushions and a table made from a crate. A light hangs down. It feels warm and nice here.",
       "is_ending": false,
       "choices": [
         {
@@ -412,7 +412,7 @@
     },
     {
       "id": "r_shed_5",
-      "body": "Inside are two good seats. There are books about fun trips. A jar of star stickers sits here. The map's X is right here too.",
+      "body": "Inside are two soft seats to sit in. There are books about fun trips. A jar of shiny paper stars sits there. The map's red X is right in this special place.",
       "is_ending": false,
       "choices": [
         {
@@ -424,7 +424,7 @@
     },
     {
       "id": "r_shed_6",
-      "body": "A sign says Explorers Welcome. The kids know kids made this. A long time ago, they built it. Now the kids get to come in. It is like being a guest.",
+      "body": "The sign says Explorers Welcome. The kids know kids made this fort. Long ago they built it and left it. Now these kids can come in. It feels like they are honored guests.",
       "is_ending": false,
       "choices": [
         {
@@ -436,7 +436,7 @@
     },
     {
       "id": "e_fort",
-      "body": "They found a secret fort. It was made by kids long ago. Now the kids can use it too. They write their names in a book. This is their fort now.",
+      "body": "The friends have found a snug secret fort hidden in the top of the shed. It is all ready and waiting for new explorers like them. They write their own names in the little logbook on the shelf. They promise to come back and take good care of it. This will be their special headquarters now.",
       "is_ending": true,
       "ending": {
         "id": "end_fort",
@@ -447,7 +447,7 @@
     },
     {
       "id": "r_rock_1",
-      "body": "The other way goes to rocks. They are grey and stacked up. The sun made them warm. Small flowers grow in them. A flat rock is near the bottom.",
+      "body": "The other path leads to the big grey rocks. They are stacked up against the back fence. The sun made them warm. Small flowers grow in between the rocks. A flat stone is near the bottom.",
       "is_ending": false,
       "choices": [
         {
@@ -459,7 +459,7 @@
     },
     {
       "id": "r_rock_2",
-      "body": "Theo taps the rock. It sounds hollow. Something is under it. Nina looks at the map. The X is below the rocks. A ring of small rocks marks it.",
+      "body": "Theo taps the flat stone carefully and it sounds hollow. He can tell there is a space underneath it. Nina checks the map. The red X sits just below the rocks. A little ring of pebbles seems to mark the very spot.",
       "is_ending": false,
       "choices": [
         {
@@ -471,7 +471,7 @@
     },
     {
       "id": "r_rock_app",
-      "body": "They see two arrows on the rock. One points left to a gap. One points down to dirt. Where should they dig?",
+      "body": "Two small arrows are scratched faintly on the flat stone. One arrow points left toward a gap between two mossy boulders. The other arrow points down at the loose sandy soil right beneath the stone. The friends choose where to search and look.",
       "is_ending": false,
       "choices": [
         {
@@ -488,7 +488,7 @@
     },
     {
       "id": "e_set_rock",
-      "body": "The gap has ants. Many ants go back and forth. No gift here. The kids say hi to the ants. They roll up the map. They go back for a cold drink.",
+      "body": "The gap between the mossy boulders is just a snug home for a busy line of ants. The ants march back and forth doing their work. No treasure to be seen here. The friends say a polite hello to the ants. They roll up the map and wander back to the porch for a cold lemonade break.",
       "is_ending": true,
       "ending": {
         "id": "end_set_rock",
@@ -499,7 +499,7 @@
     },
     {
       "id": "r_rock_3",
-      "body": "They lift the rock away. The dirt below is soft and easy. Theo digs with a tool. Nina uses her hands. They see something smooth and round.",
+      "body": "They lift the stone up and move it to the side. The dirt under it is soft and easy to move. Theo digs with a tool while Nina uses her hands. Soon they see something smooth and round.",
       "is_ending": false,
       "choices": [
         {
@@ -511,7 +511,7 @@
     },
     {
       "id": "r_rock_4",
-      "body": "It is a small metal box. It has a latch. It is under the dirt just right. The kids lift it out. They blow off the dust.",
+      "body": "A little tin box with a rusty latch sits nestled in the sand. It is exactly where the map's X promised it would be. It is exactly the size for two hands to lift. The friends carefully wiggle it free and blow the dust off the lid.",
       "is_ending": false,
       "choices": [
         {
@@ -523,7 +523,7 @@
     },
     {
       "id": "r_rock_5",
-      "body": "The latch pops. It makes a happy sound. Inside is cloth. Under it are glass balls. They are blue and green and gold. Nina smiles big.",
+      "body": "The latch pops open with a happy click sound. Inside, wrapped in an old checkered cloth, is a collection of glass marbles. They catch the sunlight in swirls of blue, green, and gold. Nina gasps with delight at the sight.",
       "is_ending": false,
       "choices": [
         {
@@ -535,7 +535,7 @@
     },
     {
       "id": "r_rock_6",
-      "body": "The balls have fun names. Some are called cats-eyes. Some spin. One is as clear as rain. A note says share and enjoy. They read it again.",
+      "body": "There are cats-eyes and swirlies and one big shooter. The shooter is as clear as a raindrop. Dozens of marbles were saved by some other kid years and years ago. A tiny note in the box simply says share and enjoy. The friends read it twice and smile wide.",
       "is_ending": false,
       "choices": [
         {
@@ -547,7 +547,7 @@
     },
     {
       "id": "e_marbles",
-      "body": "They dug up a box of shiny balls. A kid hid them long ago. The kids take two to keep. They put the rest back with a note. They walk home with one in each pocket.",
+      "body": "The friends have dug up a hidden box of beautiful glass marbles. They were left as treasure by a kid from long ago. They choose two favorite marbles to keep as memories. They leave the rest tucked back with a note of their own for the next finder. They walk home clinking a marble in each pocket.",
       "is_ending": true,
       "ending": {
         "id": "end_marbles",
@@ -558,7 +558,7 @@
     },
     {
       "id": "s_intro",
-      "body": "The last part of the line goes down to the stream. The stream is at the bottom of the garden. Water goes splash. Theo holds the map up high.",
+      "body": "The last part of the dotted line runs down the sloping lawn. It goes to the little stream at the very bottom of the garden. The stream is where it meets the park beyond. The water chatters happily over smooth stones. Theo holds the map up high so it will not get wet.",
       "is_ending": false,
       "choices": [
         {
@@ -570,7 +570,7 @@
     },
     {
       "id": "s_fork",
-      "body": "The line splits. One way goes in berry bushes. One way goes over flat rocks in the water. The kids pick which way.",
+      "body": "Down by the water the map's line splits one final time. One branch curves into the tall blackberry bushes along the bank. The other hops out across a row of flat stepping stones. The stones cross to the far side of the stream. The friends decide which way the treasure lies.",
       "is_ending": false,
       "choices": [
         {
@@ -587,7 +587,7 @@
     },
     {
       "id": "s_bramble_1",
-      "body": "They go into the bushes. There are berries, red and full. The leaves are thick and green. A cat meows soft. It is far inside.",
+      "body": "They follow the line into the shade of the tall blackberry bushes. They are heavy with ripe purple berries. The leaves make a cool green tunnel. From somewhere deeper inside comes a soft, friendly meow. It sounds calm and nice.",
       "is_ending": false,
       "choices": [
         {
@@ -599,7 +599,7 @@
     },
     {
       "id": "s_bramble_2",
-      "body": "Nina holds a branch back. No thorns will catch them. The meow comes again, closer. Theo checks the map. The line goes right in. They go soft.",
+      "body": "Nina holds a branch aside so no thorns will catch their sleeves. The meowing comes again, closer this time. Theo checks the map. The dotted line winds right into the middle of the patch. They step in gently and carefully.",
       "is_ending": false,
       "choices": [
         {
@@ -611,7 +611,7 @@
     },
     {
       "id": "s_bramble_app",
-      "body": "The line gets faint. Two paths go on. One is low and prickly. One goes to bright sun. The meow sounds happy there. Which way should they go?",
+      "body": "Inside the bushes the trail on the map is faded and hard to see. Two little tunnels lead on through the leaves and branches. One tunnel goes low toward a dark thorny thicket. The other goes toward a patch of warm sunlight. The meowing sounds happiest there. They pick a way.",
       "is_ending": false,
       "choices": [
         {
@@ -628,7 +628,7 @@
     },
     {
       "id": "e_set_bramble",
-      "body": "The low path ends in thick thorns. No way to go. A lost sock hangs on a branch. They back out safe. They laugh and go get a cool drink.",
+      "body": "The low tunnel just ends in a thick tangle of thorns too prickly to pass. A lost sock is caught on a branch there. The friends carefully back out without a single scratch on them. They laugh at the silly sock. They head up to the porch for a cool glass of lemonade.",
       "is_ending": true,
       "ending": {
         "id": "end_set_bramble",
@@ -639,7 +639,7 @@
     },
     {
       "id": "s_bramble_3",
-      "body": "The sun path opens up. It is a small clear place. The ground is soft. The meow becomes a purr. They see green eyes.",
+      "body": "The sunny tunnel opens into a cozy little clearing right in the heart of the bushes. The ground is floored with soft dry leaves. The meowing turns into a rumbly purr. Two green eyes blink at them from a warm nest of grass.",
       "is_ending": false,
       "choices": [
         {
@@ -651,7 +651,7 @@
     },
     {
       "id": "s_bramble_4",
-      "body": "A fluffy cat sits there. It is grey with white feet. It does not run. It stands up and comes to say hi. A bell hangs on its neck.",
+      "body": "A fluffy grey cat with white paws is curled up in the sunny clearing. It does not run away at all. Instead it stretches big and yawns wide. It pads right over to say hello. It wears a little collar with a bell.",
       "is_ending": false,
       "choices": [
         {
@@ -663,7 +663,7 @@
     },
     {
       "id": "s_bramble_5",
-      "body": "The cat wraps around their legs. It purrs like a tiny motor. It flops down for pets. They rub its soft fur. The X is right here.",
+      "body": "The cat winds around their ankles, purring like a tiny motor. It floops over on its side for a belly rub. The friends laugh and stroke its soft fur gently. The map's red X is drawn right where the cat has made its cozy hideaway.",
       "is_ending": false,
       "choices": [
         {
@@ -675,7 +675,7 @@
     },
     {
       "id": "s_bramble_6",
-      "body": "The tag says Pepper. It says please be my friend. No home is on it. This cat likes this place. It knows the kids are OK. The kids think the cat is special.",
+      "body": "The collar has a small tag that reads Pepper, please be my friend. There is no address on it at all. The cat clearly knows this bramble clearing well. It treats the friends like old pals it has known. Nina and Theo wonder if Pepper has been waiting for the map to be found.",
       "is_ending": false,
       "choices": [
         {
@@ -687,7 +687,7 @@
     },
     {
       "id": "e_cat",
-      "body": "They found a cat named Pepper. He lives in the bushes. He is happy here. The kids will visit him. They will help him. Pepper walks them home with his tail up.",
+      "body": "The friends have found a cat named Pepper. He lives happy in a secret bramble spot. They share their snack with their new pal. They promise to visit him every day. Pepper walks them home.",
       "is_ending": true,
       "ending": {
         "id": "end_cat",
@@ -698,7 +698,7 @@
     },
     {
       "id": "s_bank_1",
-      "body": "They go to the rocks in the water. They are flat and dry. The kids hop from rock to rock. One at a time. They get to the other side. A tree leans over the water.",
+      "body": "The stepping stones cross the chattering stream in a neat flat row. They are dry on top and easy to hop from one to the next. The friends cross one careful stone at a time to the mossy far bank. The dotted line points to the roots of a leaning willow tree.",
       "is_ending": false,
       "choices": [
         {
@@ -710,7 +710,7 @@
     },
     {
       "id": "s_bank_2",
-      "body": "The tree has long green leaves. They touch the water. The ground is soft and cool. Theo looks at the map. The X is in the roots. Something shines.",
+      "body": "On the far bank the willow trails its long green fingers in the water. The ground beneath its roots is soft and cool. Theo studies the map carefully. The red X sits tucked among the tangled roots. Something glints faintly in the shade.",
       "is_ending": false,
       "choices": [
         {
@@ -722,7 +722,7 @@
     },
     {
       "id": "s_bank_app",
-      "body": "Two spots are in the roots. One is wet and muddy. It is right at the water's edge. One is dry and safe. Something shines there. Where should they look?",
+      "body": "Two hollows show among the willow roots. One is a wet muddy dip right at the water's edge. The other is a dry sheltered nook a little higher up. The glinting seems to come from the dry spot. The friends choose where the X is pointing.",
       "is_ending": false,
       "choices": [
         {
@@ -739,7 +739,7 @@
     },
     {
       "id": "e_set_bank",
-      "body": "The mud spot has just a wet rock and a bug. The bug looks shocked. The kids get mud on their shoes. They laugh and hop back over the rocks.",
+      "body": "The mud spot only has a shiny wet rock and a bug there. The bug looks shocked and surprised to see them. The kids get mud on their shoes. They laugh about it. They hop back over the rocks one by one.",
       "is_ending": true,
       "ending": {
         "id": "end_set_bank",
@@ -750,7 +750,7 @@
     },
     {
       "id": "s_bank_3",
-      "body": "The dry spot is just right to kneel in. Something shines in the soil. Nina brushes it. Theo holds the leaves back. A bit of metal shows.",
+      "body": "The dry spot is just right to kneel in. They see something shiny in the soil. Nina brushes the dirt away. Theo holds the leaves back and keeps them back. A bit of metal appears.",
       "is_ending": false,
       "choices": [
         {
@@ -762,7 +762,7 @@
     },
     {
       "id": "s_bank_4",
-      "body": "It is a small brass box. It is old and green. It does not open easy. The kids work the lid. At last it opens with a soft sound.",
+      "body": "It is a small brass tin, green at the edges but still shut tight. It is exactly where the map's X promised. The friends work the stiff lid with careful patient fingers. At last it opens with a soft puff of old air.",
       "is_ending": false,
       "choices": [
         {
@@ -774,7 +774,7 @@
     },
     {
       "id": "s_bank_5",
-      "body": "Inside are shiny buttons. So many buttons. Some are brass. Some are glass. Some are like flowers. They shine like real gold.",
+      "body": "Inside the tin are many shiny buttons. So many pretty buttons. Some are brass and some are glass. Some look like tiny flowers. They shine like real gold in the light.",
       "is_ending": false,
       "choices": [
         {
@@ -786,7 +786,7 @@
     },
     {
       "id": "s_bank_6",
-      "body": "A person saved these buttons long ago. Each one is pretty and special. A note inside says for the finder, with love. The kids feel like they found real gold.",
+      "body": "Someone kept these buttons safe here for many years. Each button is pretty and special and unique. A note inside says for the finder, with love. The kids feel like they found real gold.",
       "is_ending": false,
       "choices": [
         {
@@ -798,7 +798,7 @@
     },
     {
       "id": "e_buttons",
-      "body": "They dug up a box of shiny buttons. It is the real gift. They pick one button each to keep. They put it back with a note. They hop back over the rocks. They feel like kings.",
+      "body": "The friends have dug up a hidden tin of shiny buttons. It is the real gift at the end of the map. They pick one button each to keep as their own. They put it back with a note for the next finder. They walk home across the rocks feeling like kings.",
       "is_ending": true,
       "ending": {
         "id": "end_buttons",

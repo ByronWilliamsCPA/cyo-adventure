@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Clover the little bear cub spreads a soft checked blanket in the sunny meadow. The picnic basket is empty. No friends are here yet. She claps her paws happily. What should she fetch first?",
+      "body": "Clover the little bear cub spreads a soft checked blanket in the sunny meadow. The grass tickles her paws. The picnic basket sits empty. It is ready to fill. No friends are here yet. She looks around at the blue sky. She claps her paws happily. Her heart feels full of joy. What should she fetch first?",
       "is_ending": false,
       "choices": [
         {
@@ -71,7 +71,7 @@
     },
     {
       "id": "n_honey1",
-      "body": "Clover pads to the round beehive. The bees hum kindly in the warm sun. She stops and thinks. Should she ask nicely and wait? Or poke the hive?",
+      "body": "Clover pads to the round beehive. The bees hum a soft song in the warm sun. Their hum sounds like buzzzz buzzzz. She stops and thinks hard. Should she ask nicely and wait for them? Or poke the hive to hurry them?",
       "is_ending": false,
       "choices": [
         {
@@ -88,7 +88,7 @@
     },
     {
       "id": "n_honey2",
-      "body": "The bees fill a little pot with warm golden honey. Clover hugs it close to her chest. The picnic is growing! She looks at all the honey. Should she go back? Or start now?",
+      "body": "The bees fill a little pot with warm golden honey. The honey smells so sweet and sticky. Clover hugs it close to her chest. She can smell the honey. The picnic is growing! She looks at all the sticky gold. Should she go back? Or ring the bell and start now?",
       "is_ending": false,
       "choices": [
         {
@@ -105,7 +105,7 @@
     },
     {
       "id": "e_honey_oops",
-      "body": "Clover pokes the round hive. Bees buzz out in a puff! They chase her round and round the meadow. She runs and laughs and laughs. Nobody gets stung. She goes back.",
+      "body": "Clover pokes the round hive. Bees buzz out in a puff so fast! They make a buzzzz buzzzz sound. They chase her round and round the meadow. She runs and laughs and laughs. Her paws go tap tap tap. Nobody gets stung. She giggles and giggles. She goes back to try again.",
       "is_ending": true,
       "ending": {
         "id": "end_honey_oops",
@@ -116,7 +116,7 @@
     },
     {
       "id": "n_berry1",
-      "body": "Clover skips to the bramble bush. Red berries shine in the sun so bright. Some sit low and easy. Some sit high and wobbly. Pick the easy ones? Or reach up?",
+      "body": "Clover skips to the bramble bush. Red berries shine in the bright sun. They look juicy and sweet. Some sit low and easy to reach. Some sit high and wobbly way up. Pick the easy low ones? Or stretch up high for the wobbly ones?",
       "is_ending": false,
       "choices": [
         {
@@ -133,7 +133,7 @@
     },
     {
       "id": "n_berry2",
-      "body": "Clover picks and picks lots of berries. Red berries fill the basket up. Her little paws turn pink! The picnic grows and grows! Should she go back? Or start now?",
+      "body": "Clover picks and picks lots of red berries. They taste sweet and a little bit tart. Red berries fill the basket up high. Her little paws turn pink pink pink. She can smell the berries so good. The picnic keeps growing and growing! Should she go back? Or ring the bell and start now?",
       "is_ending": false,
       "choices": [
         {
@@ -150,7 +150,7 @@
     },
     {
       "id": "e_berry_oops",
-      "body": "Clover reaches for the high berries up. The branch springs back and back. The basket tips into soft grass. Plop! Berries roll everywhere. She laughs. She goes back.",
+      "body": "Clover reaches for high berries up high. The branch springs back very fast. The whole basket tips into soft soft grass. Plop! Berries roll everywhere and everywhere and everywhere. Some land on leaves. Some roll down the slope. She laughs and laughs so much. She goes back to start over.",
       "is_ending": true,
       "ending": {
         "id": "end_berry_oops",
@@ -161,7 +161,7 @@
     },
     {
       "id": "n_ball1",
-      "body": "Clover remembers the big red ball is somewhere in the tall grass. She hunts for it happily. She sees little bounce marks. Should she follow the marks? Or dive in?",
+      "body": "Clover remembers the big red ball. It is somewhere in the tall tall grass. The grass is green and soft and tall. She hunts for it happily. She looks left. She looks right. She sees little bounce marks in the grass. Should she follow the marks? Or dive in headfirst?",
       "is_ending": false,
       "choices": [
         {
@@ -178,7 +178,7 @@
     },
     {
       "id": "n_ball2",
-      "body": "There is the big shiny red ball! Just right for games and play. The fun is growing! She can roll it back to the blanket. Or start the picnic now.",
+      "body": "There sits the big shiny red ball! It is so red and round and smooth. Just right for games and play. She can almost see her face in it. The fun is growing and growing! She can roll it back. Or ring the bell and start now.",
       "is_ending": false,
       "choices": [
         {
@@ -195,7 +195,7 @@
     },
     {
       "id": "e_ball_oops",
-      "body": "Clover dives deep in tall grass. A little grasshopper sits on her nose! Not the ball. She sneezes a giggly sneeze so funny. She laughs. She goes back.",
+      "body": "Clover dives deep in tall grass. A little grasshopper sits on her nose! Not the ball. It tickles so much! She sneezes a giggly sneeze so funny. Her nose goes achoo! She sneezes again. She giggles and giggles and laughs. The grasshopper hops away. She goes back to look again.",
       "is_ending": true,
       "ending": {
         "id": "end_ball_oops",
@@ -206,7 +206,7 @@
     },
     {
       "id": "n_kite1",
-      "body": "Clover wants the bright paper kite. It lies by the old wooden fence. She can carry it gently and safe. Or let it flap open in the wind.",
+      "body": "Clover wants the bright paper kite. The kite is red and yellow and blue. It lies folded by the old wooden fence. A little breeze moves past. She can feel it on her fur. She can carry it gently and safe. Or she can let it flap open in the wind.",
       "is_ending": false,
       "choices": [
         {
@@ -223,7 +223,7 @@
     },
     {
       "id": "n_kite2",
-      "body": "Clover holds the folded kite under her arm carefully. It is safe and ready to fly high! The picnic grows! Should she go back? Or start the picnic now?",
+      "body": "Clover holds the folded kite under her arm carefully and safe. The kite feels light. It is ready to fly high up. She can feel the breeze. The picnic keeps growing and growing! Should she go back? Or ring the bell and start the picnic now?",
       "is_ending": false,
       "choices": [
         {
@@ -240,7 +240,7 @@
     },
     {
       "id": "e_kite_oops",
-      "body": "Clover lets the kite flap open wide. A strong gust tugs it hard. It tumbles and tangles up tight. The string wraps round and round the fence post. She goes back.",
+      "body": "Clover lets the kite flap open wide. A big strong gust tugs it hard. The wind goes whoooosh! It tumbles and tangles up so tight. The string wraps round and round the fence post. It is a muddle muddle muddle. She laughs and laughs. She untangles it all. She goes back to try again slowly.",
       "is_ending": true,
       "ending": {
         "id": "end_kite_oops",
@@ -251,7 +251,7 @@
     },
     {
       "id": "n_owl1",
-      "body": "Sleepy Owl dozes on a branch of the old oak tree. His round eyes are shut tight tight. Clover wants him at the picnic. Hoot softly? Or shake the branch?",
+      "body": "Sleepy Owl dozes on a branch of the old oak tree. His feathers are so fluffy and soft. His round eyes are shut shut shut tight. He barely moves. A little snore comes from him. Clover wants him at the picnic. She can hoot softly to wake him gently. Or she can shake the whole branch hard.",
       "is_ending": false,
       "choices": [
         {
@@ -268,7 +268,7 @@
     },
     {
       "id": "n_owl2",
-      "body": "Owl blinks his big round eyes open wide. He yawns a long sleepy yawn. Yes yes yes! He will come! The friends are growing! Start the picnic now?",
+      "body": "Owl blinks his big big round eyes open wide. He yawns a long long sleepy yawn. His yawn goes awwwww. He blinks again. He looks at Clover. Yes yes yes! He will come! His eyes are so warm. The friends are growing! Should she go back? Or ring the bell now?",
       "is_ending": false,
       "choices": [
         {
@@ -285,7 +285,7 @@
     },
     {
       "id": "e_owl_oops",
-      "body": "Clover shakes the branch hard and hard. Leaves fall down down down. A big pile of leaves! She giggles and giggles. Owl snores. She goes back.",
+      "body": "Clover shakes the branch hard and fast. Leaves fall down down down so many! Crunchy dry leaves. They fall on her head. She is buried in a pile pile pile of leaves! A giggly giggly pile! Owl snores louder on his branch. She can still hear him. She brushes off the leaves. She goes back.",
       "is_ending": true,
       "ending": {
         "id": "end_owl_oops",
@@ -296,7 +296,7 @@
     },
     {
       "id": "n_music1",
-      "body": "Clover looks for the little music box. It sits on a mossy stump. She can lift the lid carefully and peek. Or wind the handle fast fast.",
+      "body": "Clover looks for the little music box. It sits closed on a mossy mossy stump. The stump is old and soft. Green moss grows on it. The music box is silent and waiting. She can lift the lid carefully and peek inside. Or she can give the handle a big fast wind.",
       "is_ending": false,
       "choices": [
         {
@@ -313,7 +313,7 @@
     },
     {
       "id": "n_music2",
-      "body": "The music box tinkles a soft sweet tune. Clover hums along so happy. The picnic is growing! Should she go back? Or start the picnic now?",
+      "body": "The music box tinkles a soft sweet tune. Tinkle tinkle tinkle tinkle. Clover hums along so happy. The tune makes her paws want to dance. The picnic keeps growing and growing! She can feel the music in her heart. Should she go back? Or ring the bell and start now?",
       "is_ending": false,
       "choices": [
         {
@@ -330,7 +330,7 @@
     },
     {
       "id": "e_music_oops",
-      "body": "Clover winds the handle too too fast and hard. The music plays crazy wild! Her paws dance all wrong. She giggles. She goes back.",
+      "body": "Clover winds the handle too too fast and hard. The music box plays a crazy wild silly tune! The sound goes boing boing boing and faster faster! Her paws dance all wrong and wrong and wrong. She spins around. She giggles so much. She tries to stop but keeps giggling. She goes back to wind it slowly.",
       "is_ending": true,
       "ending": {
         "id": "end_music_oops",
@@ -341,7 +341,7 @@
     },
     {
       "id": "n_gather",
-      "body": "Clover rings the little picnic bell loud. Ding ding ding! Bears waddle come over fast. From bushes and trees. They come to the blanket now!",
+      "body": "Clover rings the little picnic bell loud. Ding ding ding! The sound goes out over the meadow. Teddy bears hear it and waddle over fast. Waddle waddle waddle. Some come from under bushes. Some come from behind tall trees. They come from everywhere around. They come to the checked blanket now!",
       "is_ending": false,
       "choices": [
         {
@@ -353,7 +353,7 @@
     },
     {
       "id": "n_welcome",
-      "body": "Bears sit in a ring on the blanket soft. They wiggle and wiggle with glee. Everything Clover fetched sits in the middle. All ready to use now!",
+      "body": "The teddy bears settle in a happy ring on the blanket so soft. They wiggle and wiggle with lots of joy and glee. Their fur is warm and fluffy. Everything Clover fetched sits piled in the middle. Honey. Berries. Music box. Kite. All piled up and ready. The picnic is almost here!",
       "is_ending": false,
       "choices": [
         {
@@ -365,7 +365,7 @@
     },
     {
       "id": "n_arrange",
-      "body": "Clover spreads out the honey pot and berries. All the treats sit in the warm sun. The friends lick their lips. They wiggle their paws happy. What now?",
+      "body": "Clover spreads out the honey pot and red red berries. All the treats sit in the warm warm sun. The honey gleams gold. The berries shine red. The friends lick their lips. They wiggle their paws so happy. They wait and wait. What should Clover do first?",
       "is_ending": false,
       "choices": [
         {
@@ -382,7 +382,7 @@
     },
     {
       "id": "n_share",
-      "body": "Honey goes round and round the ring. Berries go round and round. Everyone munches munch munch. The sun is warm. The day is very happy.",
+      "body": "The honey goes round and round the ring. The red berries go round and round. Everyone munches and munches. Munch munch munch so happy. The sun is warm on their fur. The sky is blue blue blue. The day is very very happy. Clover thinks of how to keep the fun going.",
       "is_ending": false,
       "choices": [
         {
@@ -404,7 +404,7 @@
     },
     {
       "id": "n_game",
-      "body": "The bears are ready to play today! In the breezy meadow out there. Clover claps her paws with lots of joy. The picnic is fun! What game?",
+      "body": "The teddy bears are ready to play today! In the breezy breezy meadow out there. A soft wind blows their fur. Clover claps her paws with lots of joy. The picnic is a happy party! The fun is growing. Which cheerful game should they play?",
       "is_ending": false,
       "choices": [
         {
@@ -421,7 +421,7 @@
     },
     {
       "id": "e_song",
-      "body": "Everyone joins paws and sings so loud. The teddy bears' picnic song. They sway and sway sway. Under the warm sun. Clover's heart so full.",
+      "body": "Everyone joins paws and sings so loud. The teddy bears' picnic song. They sway and sway and sway. Under the warm warm sun. Clover sings too. Their voices go round and round. The song sounds so sweet. Her heart is as full as the honey pot. The picnic is perfect perfect perfect.",
       "is_ending": true,
       "ending": {
         "id": "end_song",
@@ -432,7 +432,7 @@
     },
     {
       "id": "e_music_finale",
-      "body": "The little music box plays and plays. Tinkle tinkle tinkle sounds. Bears sway and hum along. Clover smiles big and wide. The picnic cozy.",
+      "body": "The little music box plays and plays. Tinkle tinkle tinkle tinkle. All the teddy bears sway and hum along together. Hummmmm hummmm. They sit on the sunny blanket. Their fur is warm and cozy. Clover beams at every single happy friend. The picnic is cozy and complete.",
       "is_ending": true,
       "ending": {
         "id": "end_music_finale",
@@ -443,7 +443,7 @@
     },
     {
       "id": "e_nap",
-      "body": "Full of honey and berries so sweet. All the bears curl up up up. On the blanket warm and soft. In the sun sun sun. A happy nap.",
+      "body": "Full of honey and red red berries so sweet. All the teddy bears and Clover curl up together. A soft soft heap. On the warm blanket. In the sun sun sun. They breathe in and out. The picnic she built piece by piece is perfect. Everything is peaceful and cozy.",
       "is_ending": true,
       "ending": {
         "id": "end_nap",
@@ -454,7 +454,7 @@
     },
     {
       "id": "e_ball_game",
-      "body": "The red ball rolls round round round. Bears giggle and giggle laugh. Roll it again please! The picnic is fun and fun. Hooray hooray!",
+      "body": "The big red ball rolls round round round. It goes in a circle circle circle. All the teddy bears sit in a ring. They giggle and giggle and giggle so much! They cheer and cheer and cheer! Roll it again please! The picnic is a bouncy bouncy happy success!",
       "is_ending": true,
       "ending": {
         "id": "end_ball_game",
@@ -465,7 +465,7 @@
     },
     {
       "id": "e_kite_game",
-      "body": "The bright kite goes up up up high. The wind carries it so far. Bears cheer cheer cheer. Clover flies it with pride. Warm sun.",
+      "body": "The bright bright kite dips and soars high. It goes up up up into the sky. The wind carries it so far far. All the teddy bears cheer from the blanket. Hooray hooray! Clover flies the kite with pride and joy. The warm breeze carries it high and high.",
       "is_ending": true,
       "ending": {
         "id": "end_kite_game",
