@@ -6,7 +6,8 @@ owner: core-maintainer
 purpose: "Execution plan for the first full authoring run: use supervised subagents to
   fill every production skeleton so each age-band x length combination has one story,
   with a per-story compliance evaluation loop (deterministic gate + independent
-  reviewer) before anything is imported or published."
+  reviewer) before anything is imported or published; plus a skeleton-expansion wave
+  where Fable designs two additional skeletons per production cell."
 tags:
   - planning
   - generation
@@ -28,10 +29,13 @@ combination, plus 4 gamebook style variants) using parallel subagents, one story
 cell. Each story runs a fixed per-story pipeline: **author fill (chunked) -> scripted
 integrity checks -> offline validation gate -> independent compliance review ->
 supervisor adjudication -> bounded repair loop**. Authors are Haiku (bands 3-5, 5-8) or
-Sonnet (8-11 and up); Opus is escalation-only. Nothing is imported to the database or
-published in this run: the deliverables are filled story JSONs in `out/` plus a
-compliance report per story and a coverage summary, all committed for human review per
-ADR-005.
+Sonnet (8-11 and up); Opus is escalation-only. A separate **skeleton-expansion wave
+(Wave 5)** has Fable design two additional skeletons for each of the 18 production
+cells (36 new skeletons, bringing the catalog to 3 per cell), each passing scripted
+structural validation and an independent design review. Nothing is imported to the
+database or published in this run: the deliverables are filled story JSONs in `out/`,
+new skeletons under `skeletons/`, a compliance/design report per artifact, and a
+coverage summary, all committed for human review per ADR-005.
 
 ## 1. Objective and scope
 
@@ -47,13 +51,18 @@ exactly one authored, gate-passing, compliance-reviewed story**.
   waves are signed off.
 - MVP-tier skeletons (`the-lost-mitten`, `the-clocktower-cipher`, `the-sunken-signal`)
   are excluded: they are non-production seeds and two already have fills in `out/`.
+- **Skeleton expansion (Wave 5)**: Fable designs 2 additional skeletons for every one
+  of the 18 production cells (36 new skeletons), growing the catalog to 3 skeletons
+  per cell (section 6.1). Designing skeletons is in scope; **filling** the new
+  skeletons is not; a follow-on run reuses the Wave 1-4 machinery for that.
 - Import into Postgres and publication are **out of scope for this run** (section 8).
 
 ## 2. Coverage matrix (cell -> skeleton)
 
 Every production cell already has exactly one production-eligible skeleton
-(`production_eligible: true`, all Tier 1, no state variables), so this run is
-prose-fill only; no structural authoring is needed.
+(`production_eligible: true`, all Tier 1, no state variables), so Waves 1-4 are
+prose-fill only; structural authoring happens exclusively in Wave 5, which adds 2 more
+skeletons per cell (section 6.1).
 
 | Band | Length | Style | Skeleton | Nodes | Topology | Wave | Author model |
 | --- | --- | --- | --- | ---: | --- | :-: | --- |
@@ -91,6 +100,11 @@ complexity requires it.**
   (reviewer rejects two consecutive revisions for craft, not mechanics). Escalation
   replaces the author model for the failing nodes only, and the supervisor records why
   in the story's compliance report.
+- **Skeleton design (Wave 5) is the explicit exception**: designer agents run
+  **Fable** by product direction, because graph design (topology, reconvergence,
+  arc floors, ending economies at up to ~500 nodes) is the hardest task in the run.
+  Skeleton **design reviewers** run Opus; the deterministic structural checks stay
+  scripted (section 6.1).
 - The supervisor (main session) does not delegate adjudication: it reads every gate
   report and reviewer verdict itself.
 
@@ -122,7 +136,8 @@ skeleton --(A: author fill, chunked)--> out/<slug>.filled.json
 
 ### 5.1 Deterministic checks (B and C, scripted)
 
-Run by the supervisor via two small scripts added in Wave 0:
+Run by the supervisor via small scripts added in Wave 0 (a third, for Wave 5 skeleton
+validation, is specified in section 6.1):
 
 - `scripts/check_fill_integrity.py <skeleton> <filled>`:
   - **Structural immutability**: strip node body text from both files and compare the
@@ -176,14 +191,75 @@ the large fills spend tokens.
 
 | Wave | Content | Stories | Approx. prose volume | Gate to proceed |
 | :-: | --- | :-: | --- | --- |
-| 0 | Tooling: the two scripts (5.1), fix the stale word-target table in `cyo-author/SKILL.md` (section 9), create `out/reports/` | - | - | Scripts pass on an existing MVP fill in `out/` |
+| 0 | Tooling: the three scripts (5.1 and 6.1), fix the stale word-target table in `cyo-author/SKILL.md` (section 9), create `out/reports/` | - | - | Fill scripts pass on an existing MVP fill in `out/`; `check_skeleton.py` passes on the 18 existing production skeletons |
 | 1 | Pilot: one small story per author model tier (3-5 S, 5-8 S, 8-11 S) | 3 | ~10k words | All 3 approved; supervisor reviews process friction and adjusts prompts/chunk size |
 | 2 | Remaining prose Short/Medium | 7 | ~83k words | All approved |
 | 3 | Prose Long | 4 | ~103k words | All approved; core objective (14/14 combinations) met |
 | 4 | Optional: gamebook variants | 4 | ~106k words | Only on explicit go-ahead after Wave 3 sign-off |
+| 5 | Skeleton expansion: Fable designs 2 new skeletons per production cell | 36 skeletons | ~7,000 nodes of graph design (beats, choices, endings) | Independent track; may start any time after Wave 1 confirms tooling |
 
 Parallelism: 3-4 story pipelines at a time within a wave; stages B-D for one story
-overlap with stage A of the next (no barrier between stories).
+overlap with stage A of the next (no barrier between stories). Wave 5 is an
+independent track (it consumes no fill-pipeline capacity) and can run alongside
+Waves 2-4 at supervisor discretion.
+
+### 6.1 Wave 5: skeleton expansion (Fable designers)
+
+Goal: 2 additional skeletons for each of the 18 production cells, growing the catalog
+to 3 per cell so `skeleton_match` has real variety and recency weighting has room to
+rotate.
+
+**Per-skeleton pipeline** (mirrors the story pipeline, structure instead of prose):
+
+```text
+design brief --(A: Fable designer)--> skeletons/<band>/<slug>.json
+            --(B: scripted structural validation)--> load_skeleton + cell assertions
+            --(C: design review, Opus, fresh context)--> rubric verdict
+            --(D: supervisor adjudication)--> approve | repair (bounded) | halt
+            --(E: artifact)--> out/reports/skeletons/<slug>.design.md
+```
+
+- **Design brief (supervisor-authored, one per skeleton)**: the target cell, the
+  required topology, a theme direction, and the cell's numeric contract (node
+  envelope, `min_complete_floor`, ending count/fraction, decisions-per-path 4-8,
+  choices-per-decision 2-3, 2-3 setup nodes before the first choice).
+- **Diversity constraints**: within each cell, the 3 skeletons (1 existing + 2 new)
+  must differ in topology wherever the band's ADR-011 allowance offers more than one
+  (every current production skeleton at 8-11+ is `branch_and_bottleneck`, so the new
+  ones should exercise `open_map`, `sorting_hat` (Medium/Long only), `time_cave`, and
+  `gauntlet` (gamebook) as the band allows), and must differ in theme from each other
+  and from the existing skeleton.
+- **Tier 2 (stateful) option**: at 10-13 and up, one of the two new skeletons per cell
+  may declare variables/effects/conditions (loops require state from 10-13 per
+  ADR-011). Tier-2 shells get the Layer-2 state-space walk in step B automatically via
+  `run_gate`. The whole current production catalog is Tier 1, so this is the first
+  real exercise of the Tier-2 path; if pilot Tier-2 skeletons prove expensive to
+  validate, the supervisor may keep the remainder Tier 1 and record the decision.
+- **Schema source of truth**: `storybook/models.py` (`ending.kind` / `ending.valence`),
+  not the stale `reference/skeleton-format.md` field names; the format reference is
+  used only for the `<<FILL role=... words=... beats='...'>>` directive grammar. Every
+  non-ending node body is a `<<FILL>>` directive whose `words=` hint matches the
+  band's ADR-011 mean and whose `beats=` text is specific enough for a Haiku/Sonnet
+  author to fill without inventing plot.
+- **Scripted validation (B)**, a Wave 0 addition `scripts/check_skeleton.py`:
+  `load_skeleton()` (which already runs the gate's blocking layers on the shell) plus
+  assertions the gate alone does not pin to the brief: declared cell matches the
+  brief, node count inside `production_cell_budget`, shortest satisfying-completion
+  path >= `min_complete_floor`, ending count inside the cell's ADR-011 range, topology
+  declaration matches the brief, `production_eligible: true`, tier as briefed.
+- **Design review rubric (C, Opus)**: beat-arc quality on the fastest-finish path
+  (setup -> rising -> climax -> resolution, no hollow win), choice meaningfulness (no
+  fake choices converging instantly without consequence), reconvergence reads sensibly
+  from every parent, fail-state placement matches band policy, beats are fillable at
+  the band's words-per-node mean, theme/topology diversity vs the cell's other
+  skeletons.
+- **Dagger-cell ceiling**: ADR-011 flags 13-16 Long gamebook and 16+ Medium/Long
+  gamebook as at or beyond the ~460-node hand-authoring ceiling. New skeletons in
+  those cells target the **low end** of their node envelopes (and stay <= ~460 nodes)
+  rather than matching the existing seeds' sizes.
+- **Repair loop**: same bound as stories (section 7), except escalation has nowhere to
+  go above Fable; a skeleton that fails twice is halted and reported with the reviewer
+  findings.
 
 ## 7. Failure handling
 
@@ -235,6 +311,9 @@ per-node target.
 | 4 | `run_gate` offline matches server-side import validation | Same function is called by the import path; divergence is a bug, surfaced at import time |
 | 5 | Wave 4 gamebook fills (up to 505 nodes) may exceed single-agent context | Chunking plus per-chunk agent handoff; decision deferred until Wave 4 is authorized |
 | 6 | Token cost: ~196k words of prose for Waves 1-3, plus review passes | Smallest-first waves, Haiku on young bands, Opus escalation-only |
+| 7 | Wave 5 is the largest single spend (~7,000 nodes of Fable graph design plus Opus reviews) | Dagger cells target envelope low ends; supervisor may pause the track mid-wave at any cell boundary; per-cell commits keep partial progress |
+| 8 | Fable-designed Tier-2 skeletons may hit Layer-2 walk cost or novel gate failures (Tier-2 path untested at production scale) | Tier 2 capped at one of the two new skeletons per 10-13+ cell; fall back to Tier 1 on repeated failures and record the decision |
+| 9 | Large gamebook skeleton JSONs (~300-460 nodes) may exceed a single designer-agent response | Designer emits the graph in chunks (topology outline first, then node batches); scripted validation stitches and verifies the assembled file |
 
 ## 11. Acceptance criteria (run-level)
 
@@ -246,4 +325,8 @@ per-node target.
 - [ ] Coverage summary grid committed and current.
 - [ ] No skeleton or metadata was mutated by any author agent (integrity diffs clean).
 - [ ] Any Opus escalation is documented with its trigger.
+- [ ] Wave 5: 36 new skeletons committed (2 per production cell, catalog at 3 per
+      cell), each passing `check_skeleton.py` and an Opus design review, with a design
+      report under `out/reports/skeletons/` and topology/theme diversity satisfied
+      within every cell.
 - [ ] Nothing imported or published; ADR-005 human approval remains the next gate.
