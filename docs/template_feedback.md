@@ -783,7 +783,11 @@ name-list match.
 target resolves to a known crypto module or import (e.g. `Crypto.Cipher.SEED`,
 `cryptography.hazmat`), or at minimum require the attribute chain to include a crypto-library
 root before matching bare cipher names. Also align the workflow's PR-comment verdict with the
-job conclusion so the two cannot disagree.
+job conclusion so the two cannot disagree. Implemented in this repo on 2026-07-17: see
+`AMBIGUOUS_CIPHER_NAMES`, `CRYPTO_NAMESPACE_SEGMENTS`, `_module_imports_crypto`, and
+`_call_has_crypto_context` in `scripts/check_fips_compatibility.py`, with regression tests in
+`tests/unit/test_check_fips_compatibility.py`; the comment/conclusion alignment is the
+exit-code fix in the entry below.
 
 **Affected Files**: template `scripts/check_fips_compatibility.py`,
 `.github/workflows/fips-compatibility.yml`
@@ -883,6 +887,8 @@ conclude success.
 default). Add `tests/**/*.py` to both paths filters so the triggers cover everything the
 checker scans. With enforcement restored, the `seed()` matcher fix already reported above
 becomes a prerequisite, since restoring the gate without it would fail builds on the false
-positive.
+positive. Implemented in this repo on 2026-07-17 (`set -o pipefail` around the pipeline plus
+expanded paths filters, including `scripts/check_fips_compatibility.py` itself, which was
+also missing from the triggers); see `.github/workflows/fips-compatibility.yml`.
 
 **Affected Files**: template `.github/workflows/fips-compatibility.yml`
