@@ -16,10 +16,10 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from pydantic import ValidationError as PydanticValidationError
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 
 from cyo_adventure.core.exceptions import BusinessLogicError, ResourceNotFoundError
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.publishing.state_machine import (
     Action,
@@ -290,6 +290,29 @@ async def approve(
     storybook.visibility = visibility.value
     version_row.approved_by = principal.user_id
     version_row.published_at = datetime.now(UTC)
+    # #CRITICAL: data integrity: ADR-007 requires GenerationJob.report (raw,
+    # multi-stage LLM output) to be nulled the instant the storybook version it
+    # produced reaches "published", not just after the 30-day sweep
+    # (20260718000000_add_report_retention_purge.sql). This UPDATE runs in the
+    # same flush as the status/approved_by/published_at writes above, so a
+    # rollback of the publish also rolls back the purge (both-or-neither).
+    # storybook_id is a plain string column, not a FK (see GenerationJob's
+    # class docstring: a job can fail before any storybook row exists), so this
+    # is a value match, not a joined delete; version narrows to the specific
+    # job(s) that produced *this* published version, not every job ever run
+    # for the storybook.
+    # #VERIFY: test_approve_nulls_generation_job_report in
+    # tests/unit/test_report_retention.py asserts the UPDATE targets
+    # (storybook_id, version) and only touches non-null report rows.
+    await session.execute(
+        update(GenerationJob)
+        .where(
+            GenerationJob.storybook_id == storybook.id,
+            GenerationJob.version == version,
+            GenerationJob.report.is_not(None),
+        )
+        .values(report=None)
+    )
     # #CRITICAL: data-integrity: this is the WS-D event-log record of the
     # publish transition; record_event's internal flush lands it in the same
     # pending transaction as the status/approved_by/published_at writes above,
