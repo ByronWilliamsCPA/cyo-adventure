@@ -18,7 +18,7 @@
       "community"
     ],
     "estimated_minutes": 12,
-    "ending_count": 36,
+    "ending_count": 34,
     "content_flags": {
       "violence": "none",
       "scariness": "mild",
@@ -992,28 +992,16 @@
     },
     {
       "id": "l_c3",
-      "body": "<<FILL role=rising words=98 beats='Sky teaches you washout, the sly little twist old wing-makers give a wingtip so it keeps lifting after the middle gives up; your first re-ribbed test section holds its streamers steady clear to the tip, and you catch Juno watching from the loft with actual curiosity before she remembers to smirk'>>",
+      "body": "<<FILL role=choice words=106 beats='Sky answers the tip stall with two drawings pinned side by side, a washout twist built into both wingtips, and two honest derby philosophies: a long soarer wing that rides the high line above the chimneys, slow, patient, and certain of the distance; or a short dart wing for the fast line under the rooftop hoops, quick and twitchy and thrilling if you can hold it; the trainer's keel will take either, exactly once'>>",
       "is_ending": false,
       "choices": [
         {
-          "id": "c_l_c3",
-          "label": "Plan the derby wing.",
-          "target": "l_c4"
-        }
-      ]
-    },
-    {
-      "id": "l_c4",
-      "body": "<<FILL role=choice words=106 beats='the derby course allows two honest philosophies and Sky has drawn both: a long soarer wing that rides the high line above the chimneys, slow, patient, and certain of the distance; or a short dart wing for the fast line under the rooftop hoops, quick and twitchy and thrilling if you can hold it; the trainer's keel will take either, exactly once'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_l_c4_a",
+          "id": "c_l_c3_a",
           "label": "Build the long soarer wing for the high line.",
           "target": "l_f1"
         },
         {
-          "id": "c_l_c4_b",
+          "id": "c_l_c3_b",
           "label": "Build the short dart wing for the fast line.",
           "target": "l_g1"
         }
@@ -1048,24 +1036,24 @@
     },
     {
       "id": "l_f3",
-      "body": "<<FILL role=choice words=104 beats='tomorrow morning the derby trials seed the field: fly the soarer as she is and trust your thumbs to herd her wander through three hoops, claiming your seed while she is still half-wild; or skip the trials altogether and spend the next month building and tuning the trim tab properly, betting everything on a perfect late-summer flight nobody has promised you'>>",
+      "body": "<<FILL role=choice words=104 beats='a wing this long wants two more hands at the rail: a tail-line crew to steady her through launch and a voice to call the drift at the hoops; but the derby trials paint only the pilot's name on the board, and asking Juno to crew means handing your build's every secret to your rival a month before the derby; the trials fly tomorrow at dawn, with or without you deciding out loud'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_l_f3_a",
-          "label": "Fly the trials tomorrow, wander and all.",
+          "label": "Fly the trials solo tomorrow, no crew.",
           "target": "l_f4"
         },
         {
           "id": "c_l_f3_b",
-          "label": "Skip the trials and perfect the trim tab.",
+          "label": "Ask Juno and a friend to crew the launch.",
           "target": "l_f5"
         }
       ]
     },
     {
       "id": "l_f4",
-      "body": "<<FILL role=rising words=88 beats='trial morning is gusty; the soarer swims off the rail sweet as ever, floats the first hoop, then wanders wide of the second no matter how hard you lean the lines, and settles herself, gentle and unbothered, into the market's striped awning like a cat into a hammock'>>",
+      "body": "<<FILL role=rising words=88 beats='solo at dawn, no one on the tail line and no voice calling the drift: the soarer leaves the rail crooked, floats the first hoop anyway, then wanders wide of the second with your hands too full to correct, and settles herself, gentle and unbothered, into the market's striped awning like a cat into a hammock'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1077,12 +1065,24 @@
     },
     {
       "id": "l_f5",
-      "body": "<<FILL role=rising words=92 beats='you become the guild's student of small surfaces: one trim tab becomes four prototypes, then a hinge of your own design, then a tab so clean the soarer flies hands-off across the whole roof while Sky holds his coffee and grins; other fliers start bringing you their wandering gliders'>>",
+      "body": "<<FILL role=rising words=92 beats='Juno says yes before you finish asking, and drafts a junior from the gadget shop for gust duty; the first crewed launch leaves the rail straight as a ruled line, and with a voice on the tail rope calling the drift, the soarer's famous wander shrinks to a whisper by the second morning'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_l_f5",
-          "label": "Fix the roof's wandering wings.",
+          "label": "Fly the crewed month out.",
+          "target": "l_c4"
+        }
+      ]
+    },
+    {
+      "id": "l_c4",
+      "body": "<<FILL role=rising words=94 beats='the crewed month is the best flying of the summer: Juno calls the drift from the tail line, the gadget shop junior times the gusts, and between launches the three of you tune the soarer's trim tab until she flies a chalk line the length of the roof; other fliers start drifting over to ask about their own wandering wings'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_c4",
+          "label": "See where the crew work leads.",
           "target": "l_z2"
         }
       ]
@@ -1314,6 +1314,18 @@
         {
           "id": "c_l_i6",
           "label": "Ride the secret river.",
+          "target": "l_i7"
+        }
+      ]
+    },
+    {
+      "id": "l_i7",
+      "body": "<<FILL role=rising words=88 beats='the river of warm air carries the dart over the last hoop, over the landing lawn, over hedges and one very surprised picnic, while far behind you the derby crowd cranes and points at a glider doing what no chart on the guild wall says a glider should'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_i7",
+          "label": "Land where the river ends.",
           "target": "l_z6"
         }
       ]
@@ -1350,6 +1362,18 @@
         {
           "id": "c_l_j3",
           "label": "Plan Pip's training summer.",
+          "target": "l_j6"
+        }
+      ]
+    },
+    {
+      "id": "l_j6",
+      "body": "<<FILL role=rising words=90 beats='your first post week is all routes and rhythms: you walk the three great legs on foot with a map, the market sprint cobbles, the wide river cross, the storm-bell line over Mill Hill, while Pip rides your shoulder and marks each landmark with one thoughtful circle overhead; by week's end you know every rooftop, bridge, and bell between the loft and the hills, and Pip knows them one circle better'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_j6",
+          "label": "Choose her one great leg.",
           "target": "l_j4"
         }
       ]
@@ -1618,7 +1642,7 @@
     },
     {
       "id": "l_z1",
-      "body": "<<FILL role=failure words=112 beats='the judges are kind and the rules are rules: no second hoop, no derby seed, and the re-fly they grant you lands a month after summer ends; you spend the last weeks fitting the trim tab at last and leave the guild with a to-do list, a wing that finally flies straight in the autumn re-fly with only Sky and the pigeons watching, and a promise chalked on your bench for next year, trials are won in June'>>",
+      "body": "<<FILL role=failure words=112 beats='the judges are kind and the rules are rules: no second hoop, no derby seed, and the re-fly they grant you lands a month after summer ends; Sky walks you home past the awning and says the only thing he ever says twice, big wings are crewed wings; the last weeks become crewed practice with Juno on the tail line, and the autumn re-fly goes clean through all three hoops with only the crew and the pigeons watching, which turns out to be plenty'>>",
       "is_ending": true,
       "ending": {
         "id": "l_z1",
@@ -1629,7 +1653,7 @@
     },
     {
       "id": "l_z2",
-      "body": "<<FILL role=ending words=116 beats='by derby day you have no seed and no regrets: half the field flies with your trim tabs, and every clean turn through the hoops is a little bit yours; Sky enters your tab design in the guild book with your name in rigger's capitals and the title trim doctor underneath; you came to win a derby and instead discovered the quiet trade of making other people's wings honest, which Sky says was always the better secret'>>",
+      "body": "<<FILL role=ending words=116 beats='the derby comes and the soarer flies it mid-pack, steady as a ferry, and it does not matter at all: by then half the field launches with your crew calls and flies with your trim tabs, and every clean turn through the hoops is a little bit yours; Sky enters the tab design and the tail-line drill in the guild book with your name in rigger's capitals and the title trim doctor underneath; you came to win a derby and instead discovered the quiet trade of making other people's wings honest, which Sky says was always the better secret'>>",
       "is_ending": true,
       "ending": {
         "id": "l_z2",
@@ -1673,7 +1697,7 @@
     },
     {
       "id": "l_z6",
-      "body": "<<FILL role=ending words=118 beats='the thermal carries you past the last hoop, past the landing lawn, past the derby itself, to a feather landing in the long meadow while the judges regretfully rule you out for distance; disqualified, and the only flier who came home with a discovery: Sky starts a new wind map that evening with the thermal river drawn in your name, and half the roof spends September learning to find it; records fade, he says, but a named wind is forever'>>",
+      "body": "<<FILL role=ending words=118 beats='the feather landing in the long meadow is the farthest flight in guild memory, and the judges regretfully rule you out for distance; disqualified, and the only flier who came home with a discovery: Sky starts a new wind map that evening with the thermal river drawn in your name, and half the roof spends September learning to find it; records fade, he says, but a named wind is forever'>>",
       "is_ending": true,
       "ending": {
         "id": "l_z6",
@@ -1815,24 +1839,12 @@
     },
     {
       "id": "m_c2",
-      "body": "<<FILL role=rising words=96 beats='asked once, Mr. Crumb says the stair is the problem; asked twice, Gran's rule working like a charm, he stops, wipes his hands, and admits the truth: it is the timing, eight ovens proofing and baking on eight schedules with nothing but his memory, and the stair only hurts because he is always running late by the time he climbs it'>>",
+      "body": "<<FILL role=rising words=104 beats='asked once, Mr. Crumb says the stair is the problem; asked twice, Gran's rule working like a charm, he admits the truth: it is the timing, eight ovens proofing and baking on eight schedules with nothing but his memory; back at the bench your first proofing-clock sketch collects one pointed correction from Priya in passing, your return springs will tire by August, which is irritating and, you realize by supper, correct'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_c2",
-          "label": "Sketch a first idea.",
-          "target": "m_c3"
-        }
-      ]
-    },
-    {
-      "id": "m_c3",
-      "body": "<<FILL role=rising words=94 beats='your first sketch is a proofing-clock, one dial with a numbered flag for each oven that drops when its bread is ready; Priya, passing your bench, points one finger at the drawing and says your return springs will tire and sag by August, which is irritating, and, you realize by supper, correct'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_c3",
-          "label": "Pick the build that matters most.",
+          "label": "Weigh the two builds at the bench.",
           "target": "m_c4"
         }
       ]
@@ -1885,13 +1897,37 @@
       "choices": [
         {
           "id": "c_m_f3_a",
-          "label": "Scale to all eight ovens before the fair.",
-          "target": "m_f4"
+          "label": "Perfect the two-oven clock and enter it small.",
+          "target": "m_f5"
         },
         {
           "id": "c_m_f3_b",
-          "label": "Perfect the two-oven clock and enter it small.",
-          "target": "m_f5"
+          "label": "Scale to all eight ovens before the fair.",
+          "target": "m_f4"
+        }
+      ]
+    },
+    {
+      "id": "m_f5",
+      "body": "<<FILL role=rising words=92 beats='you spend the fortnight making the small clock unarguable: sealed tubes polished, flags balanced to drop in half a heartbeat, and a little brass door for cleaning out flour that Gran inspects twice and pronounces sensible, which from Gran is a parade'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_f5",
+          "label": "Fit it at the bakery first.",
+          "target": "m_f6"
+        }
+      ]
+    },
+    {
+      "id": "m_f6",
+      "body": "<<FILL role=rising words=88 beats='the last days go to ovens three and four at the bakery itself, the clock earning its keep in real flour weather while Mr. Crumb learns to trust it, plus a hand-lettered card explaining the whole trick; it is the least spectacular entry on your street of the fair, and the most finished thing you have ever made'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_f6",
+          "label": "Show it at the fair.",
+          "target": "m_z1"
         }
       ]
     },
@@ -1903,18 +1939,6 @@
         {
           "id": "c_m_f4",
           "label": "Untangle in front of the judges.",
-          "target": "m_z1"
-        }
-      ]
-    },
-    {
-      "id": "m_f5",
-      "body": "<<FILL role=rising words=92 beats='you spend the fortnight making the small clock unarguable: sealed tubes polished, flags balanced to drop in half a heartbeat, a little brass door for cleaning out flour, and a hand-lettered card explaining the whole trick; it is the least spectacular entry on your street of the fair, and the most finished thing you have ever made'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_f5",
-          "label": "Show it at the fair.",
           "target": "m_z2"
         }
       ]
@@ -1950,37 +1974,13 @@
       "choices": [
         {
           "id": "c_m_g3_a",
-          "label": "Improvise the rope-twist brake from the book.",
-          "target": "m_g4"
+          "label": "Offer Priya a trade for her brake design.",
+          "target": "m_h1"
         },
         {
           "id": "c_m_g3_b",
-          "label": "Offer Priya a trade for her brake design.",
-          "target": "m_h1"
-        }
-      ]
-    },
-    {
-      "id": "m_g4",
-      "body": "<<FILL role=rising words=86 beats='the rope-twist brake judders like a nervous laugh, holds through every empty test, and then meets its first real load of morning rolls; the basket sails down the stairwell in stately slow disaster and forty rolls take Market Street at a gallop, pursued by pigeons'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_g4",
-          "label": "Chase the rolls down the street.",
-          "target": "m_g5"
-        }
-      ]
-    },
-    {
-      "id": "m_g5",
-      "body": "<<FILL role=rising words=90 beats='nobody is hurt and the ducks in the fountain eat like kings, but Mr. Crumb retires the lift on the spot until it earns a proper brake, and he is right; that evening you find Priya's brake drawings on your bench, unasked, weighted down with one of her perfect gears and no note at all'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_g5",
-          "label": "Read the drawings she left.",
-          "target": "m_z3"
+          "label": "Improvise the rope-twist brake from the book.",
+          "target": "m_g4"
         }
       ]
     },
@@ -2015,25 +2015,8 @@
       "choices": [
         {
           "id": "c_m_h3",
-          "label": "Build the cage in three days.",
-          "target": "m_h4"
-        }
-      ]
-    },
-    {
-      "id": "m_h4",
-      "body": "<<FILL role=choice words=108 beats='the caged lift is done with a night to spare and two ways to finish the story: install it in the bakery before dawn, pass the inspector, and let the fair judges find the helper already helping, bread on time, no stage at all; or crate it to the fair as a full working exhibit, two-story demo booth, crowds and ribbons and all, while Mr. Crumb hauls baskets one more week; Priya says it is your call, which is new'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_h4_a",
-          "label": "Install it in the bakery and let the bread speak.",
+          "label": "Bolt the cage in before dawn.",
           "target": "m_h5"
-        },
-        {
-          "id": "c_m_h4_b",
-          "label": "Bring it to the fair as a working exhibit.",
-          "target": "m_i1"
         }
       ]
     },
@@ -2057,84 +2040,31 @@
         {
           "id": "c_m_h6",
           "label": "Meet the judges at the bakery.",
+          "target": "m_z3"
+        }
+      ]
+    },
+    {
+      "id": "m_g4",
+      "body": "<<FILL role=rising words=86 beats='the rope-twist brake judders like a nervous laugh, holds through every empty test, and then meets its first real load of morning rolls; the basket sails down the stairwell in stately slow disaster and forty rolls take Market Street at a gallop, pursued by pigeons'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_g4",
+          "label": "Chase the rolls down the street.",
+          "target": "m_g5"
+        }
+      ]
+    },
+    {
+      "id": "m_g5",
+      "body": "<<FILL role=rising words=90 beats='nobody is hurt and the ducks in the fountain eat like kings, but Mr. Crumb retires the lift on the spot until it earns a proper brake, and he is right; that evening you find Priya's brake drawings on your bench, unasked, weighted down with one of her perfect gears and no note at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_g5",
+          "label": "Read the drawings she left.",
           "target": "m_z4"
-        }
-      ]
-    },
-    {
-      "id": "m_i1",
-      "body": "<<FILL role=rising words=94 beats='the fair build is its own invention: a two-story demo booth with a real stair, the caged lift running loop after loop, and a sign in Priya's perfect lettering; at Gran's nudge you bring her the entry card, and after a silence the length of a held breath she signs the second line, co-inventor, pressing hard enough to emboss the table'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_i1",
-          "label": "Rehearse the demo.",
-          "target": "m_i2"
-        }
-      ]
-    },
-    {
-      "id": "m_i2",
-      "body": "<<FILL role=rising words=90 beats='rehearsal week: Mr. Crumb donates demo loaves and heckles helpfully from a stool, the lift runs two hundred flawless loops, the brake and cage pass every test you can invent, and you and Priya learn each other's cues until the ten-minute show runs like one pair of hands'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_i2",
-          "label": "Take the booth to fair day.",
-          "target": "m_i3"
-        }
-      ]
-    },
-    {
-      "id": "m_i3",
-      "body": "<<FILL role=rising words=98 beats='fair day roars around booth nine: crowd five deep, the mayor warming up the ribbon scissors, Ms. Okafor waving from her stall, and the judges arriving with their clipboards squared; they ask the question judges always ask a two-name card, who did what here, and the demo slot is ten minutes, starting now'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_i3",
-          "label": "Answer with the demo itself.",
-          "target": "m_i4"
-        }
-      ]
-    },
-    {
-      "id": "m_i4",
-      "body": "<<FILL role=choice words=106 beats='one demo, two ways to run it: take the stage yourself, the trade and the cage and the three-day sprint told by the junior who called the shots, with Priya feeding the lift on cue; or hand Priya the patter you wrote together, her first time ever out front at the fair that has twice broken her heart, while you load baskets and watch the crowd from the outside'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_i4_a",
-          "label": "Run the demo yourself at the booth.",
-          "target": "m_i5"
-        },
-        {
-          "id": "c_m_i4_b",
-          "label": "Hand Priya the demo and work the baskets.",
-          "target": "m_i6"
-        }
-      ]
-    },
-    {
-      "id": "m_i5",
-      "body": "<<FILL role=rising words=84 beats='you run the show and the show runs true: loaves rise and settle, the brake sighs on cue, the cage folds flat to a gasp, and at minute nine you name every part after its maker, Priya's brake twice, while she pretends to be busy with baskets'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_i5",
-          "label": "Hear the judges' call.",
-          "target": "m_z5"
-        }
-      ]
-    },
-    {
-      "id": "m_i6",
-      "body": "<<FILL role=rising words=86 beats='Priya goes pale, takes the patter, and then takes the stage the way she squares a drawing, completely; from the baskets you watch her voice steady at minute two and catch fire at minute five, and you see something you could never see from the stage, exactly where every single face in the crowd lights up'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_i6",
-          "label": "Watch the crowd, not the machine.",
-          "target": "m_z6"
         }
       ]
     },
@@ -2169,6 +2099,18 @@
       "choices": [
         {
           "id": "c_m_j3",
+          "label": "Learn the stall before you build.",
+          "target": "m_j5"
+        }
+      ]
+    },
+    {
+      "id": "m_j5",
+      "body": "<<FILL role=rising words=90 beats='you spend the week measuring instead of making: the tilt's exact angle, the top row's tipping point, the tram timetable copied into your notebook, and a chalk mark on the cobbles where the rumble hits hardest; Gran calls it the most invisible work an inventor does and the only kind that never gets rebuilt'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_j5",
           "label": "Choose your line of attack.",
           "target": "m_j4"
         }
@@ -2205,11 +2147,23 @@
     },
     {
       "id": "m_k2",
-      "body": "<<FILL role=rising words=98 beats='the cobbles are the true exam and street testing needs a permit, one week away by the clerk's calendar, which lands two days after Market Row; or there is the other way, wheeling the stall out under the gas lamps tonight and testing against the late trams with nobody's leave asked, data by dawn, and the nightwatch walks that beat twice an hour'>>",
+      "body": "<<FILL role=rising words=92 beats='the cobbles are the true exam: the same damper that sits stone-calm on the workshop floor shivers differently on stone, Gran warns, and only a real tram on the real street will tell you which sand-pot is lying; street testing, though, is a permitted thing, with a form and a stamp and a clerk who cannot be hurried'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_k2",
+          "label": "Ask the clerk about a permit.",
+          "target": "m_k6"
+        }
+      ]
+    },
+    {
+      "id": "m_k6",
+      "body": "<<FILL role=rising words=96 beats='the clerk's calendar says one week for the stamp, which leaves two bare days between permit and Market Row, enough to tune four sand-pots if nothing surprises you; or there is the other way, wheeling the stall out under the gas lamps tonight and testing against the late trams with nobody's leave asked, data by dawn, and the nightwatch walks that beat twice an hour'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_k6",
           "label": "Choose how to get your data.",
           "target": "m_k3"
         }
@@ -2217,30 +2171,18 @@
     },
     {
       "id": "m_k3",
-      "body": "<<FILL role=choice words=106 beats='the night test would settle every spring and sand-pot before Market Row, and the guild's street rights are not yours to gamble, and both of those things are true at once; the permit path is honest and slow and misses the row by two days, leaving your damper to be judged on a workshop demonstration instead of the street it was built for; the last tram of the night rumbles past the shop window like a dare'>>",
+      "body": "<<FILL role=choice words=106 beats='the night test would settle every spring and sand-pot this week, with days to spare, and the guild's street rights are not yours to gamble, and both of those things are true at once; the permit path is honest and slow and leaves you two bare days of tuning before the row, betting the summer on a week you cannot spend building; the last tram of the night rumbles past the shop window like a dare'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_k3_a",
-          "label": "Test on the street tonight, without the permit.",
-          "target": "m_k4"
+          "label": "Wait for the permit and lose the week.",
+          "target": "m_k5"
         },
         {
           "id": "c_m_k3_b",
-          "label": "Wait for the permit and miss the live test.",
-          "target": "m_k5"
-        }
-      ]
-    },
-    {
-      "id": "m_k4",
-      "body": "<<FILL role=rising words=88 beats='the damper drinks its first real tram beautifully at half past eleven, and the nightwatch rounds the corner at twenty to twelve; what follows involves lanterns, a ledger, Gran arriving in her dressing gown to vouch for you, and the guild's street-testing rights suspended for the season by a sergeant who is very sorry and does it anyway'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_m_k4",
-          "label": "Face the shop in the morning.",
-          "target": "m_z7"
+          "label": "Test on the street tonight, without the permit.",
+          "target": "m_k4"
         }
       ]
     },
@@ -2252,7 +2194,19 @@
         {
           "id": "c_m_k5",
           "label": "Tune the damper to the chart.",
-          "target": "m_z8"
+          "target": "m_z5"
+        }
+      ]
+    },
+    {
+      "id": "m_k4",
+      "body": "<<FILL role=rising words=88 beats='the damper drinks its first real tram beautifully at half past eleven, and the nightwatch rounds the corner at twenty to twelve; what follows involves lanterns, a ledger, Gran arriving in her dressing gown to vouch for you, and the guild's street-testing rights suspended for the season by a sergeant who is very sorry and does it anyway'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_k4",
+          "label": "Face the shop in the morning.",
+          "target": "m_z6"
         }
       ]
     },
@@ -2299,13 +2253,13 @@
       "choices": [
         {
           "id": "c_m_l4_a",
-          "label": "Polish your own entry; the row is a contest.",
-          "target": "m_l5"
+          "label": "Knock on Priya's bench and offer your help.",
+          "target": "m_m1"
         },
         {
           "id": "c_m_l4_b",
-          "label": "Knock on Priya's bench and offer your help.",
-          "target": "m_m1"
+          "label": "Polish your own entry; the row is a contest.",
+          "target": "m_l5"
         }
       ]
     },
@@ -2329,7 +2283,7 @@
         {
           "id": "c_m_l6",
           "label": "Hear the row scored as a row.",
-          "target": "m_z9"
+          "target": "m_z7"
         }
       ]
     },
@@ -2371,17 +2325,17 @@
     },
     {
       "id": "m_m4",
-      "body": "<<FILL role=choice words=112 beats='the bell rope rises and three places call you at once: your own stall, running the apple-catcher for the judges at Ms. Okafor's side, the summer's work shown by its maker; Priya's stall, co-running the scaler you helped save, two names on one machine at the fair that broke her heart twice; or the head of the row by the mayor's bell, where every visitor passes first, if you hurry your stall up there now, trading Ms. Okafor's real corner, tilt, tram, and all, for a borrowed flat table in the best spot on the street'>>",
+      "body": "<<FILL role=choice words=112 beats='the bell rope rises and three places call you at once: Priya's stall, co-running the scaler you helped save, two names on one machine at the fair that broke her heart twice; your own stall, running the apple-catcher for the judges at Ms. Okafor's side, the summer's work shown by its maker; or the head of the row by the mayor's bell, where every visitor passes first, if you hurry your stall up there now, trading Ms. Okafor's real corner, tilt, tram, and all, for a borrowed flat table in the best spot on the street'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_m4_a",
-          "label": "Run the apple-catcher at your own stall.",
+          "label": "Stand with Priya and co-run the scaler.",
           "target": "m_m5"
         },
         {
           "id": "c_m_m4_b",
-          "label": "Stand with Priya and co-run the scaler.",
+          "label": "Run the apple-catcher at your own stall.",
           "target": "m_m6"
         },
         {
@@ -2393,25 +2347,25 @@
     },
     {
       "id": "m_m5",
-      "body": "<<FILL role=rising words=86 beats='the bell rings, the first tram of the morning rumbles down Market Street on schedule, and the judges reach Ms. Okafor's stall just as the top row of apples breaks loose in the sun exactly the way it has all summer; the rail and the chute do the rest while you narrate nothing at all'>>",
+      "body": "<<FILL role=rising words=88 beats='you take your place at Priya's side and feed the scaler its first fair-morning fish as the bell fades; the felt-lined slide sheds grit like rain off canvas, the machine sings the whole morning through, and two stalls down you can hear, every quarter hour, the soft thunder of your own catcher rolling apples home to no one'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_m5",
-          "label": "Count the apples home.",
-          "target": "m_z10"
+          "label": "Stand back for the scoring.",
+          "target": "m_z8"
         }
       ]
     },
     {
       "id": "m_m6",
-      "body": "<<FILL role=rising words=88 beats='you take your place at Priya's side and feed the scaler its first fair-morning fish as the bell fades; the felt-lined slide sheds grit like rain off canvas, the machine sings the whole morning through, and two stalls down you can hear, every quarter hour, the soft thunder of your own catcher rolling apples home to no one'>>",
+      "body": "<<FILL role=rising words=86 beats='the bell rings, the first tram of the morning rumbles down Market Street on schedule, and the judges reach Ms. Okafor's stall just as the top row of apples breaks loose in the sun exactly the way it has all summer; the rail and the chute do the rest while you narrate nothing at all'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_m6",
-          "label": "Stand back for the scoring.",
-          "target": "m_z11"
+          "label": "Count the apples home.",
+          "target": "m_z9"
         }
       ]
     },
@@ -2423,137 +2377,115 @@
         {
           "id": "c_m_m7",
           "label": "Present the catcher to the judges.",
-          "target": "m_z12"
+          "target": "m_z10"
         }
       ]
     },
     {
       "id": "m_z1",
-      "body": "<<FILL role=failure words=112 beats='Mr. Crumb rescues the morning like the showman he secretly is, selling the dark tray as extra-crusty specials to a laughing crowd and feeding the judges the evidence; your demo becomes the honest two-oven clock, which works perfectly and wins polite applause and no ribbon; on the walk home he orders the eight-oven clock anyway, built slow over autumn, one oven a week, and Gran frames your fair-morning to-do list as a lesson titled ambition, with flour in it'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "m_z1",
-        "valence": "negative",
-        "kind": "setback",
-        "title": "The Extra-Crusty Specials"
-      }
-    },
-    {
-      "id": "m_z2",
       "body": "<<FILL role=ending words=116 beats='no ribbon, and the right stranger: the flour mill's engineer stands at your small table for twenty entire minutes, works the flags, opens the cleaning door, reads the card twice, and orders three clocks for the mill floor before walking on; your first commission, written on the back of the engineer's calling card; Gran frames the order slip over your bench and tells the whole shop that ribbons fade but repeat customers, dear, are forever'>>",
       "is_ending": true,
       "ending": {
-        "id": "m_z2",
+        "id": "m_z1",
         "valence": "neutral",
         "kind": "discovery",
         "title": "The First Order Slip"
       }
     },
     {
-      "id": "m_z3",
-      "body": "<<FILL role=failure words=114 beats='the lift waits for autumn and the brake it deserves, and your summer becomes the study of stopping: you build Priya's brake at quarter scale, then half, filling a notebook with why each part is shaped the way it is, and mail her your gear templates in return; at the fair you demo the day it rained rolls as a cautionary exhibit that draws the biggest laugh of the afternoon, and Gran pins a card to it, every inventor owns one famous morning'>>",
+      "id": "m_z2",
+      "body": "<<FILL role=failure words=112 beats='Mr. Crumb rescues the morning like the showman he secretly is, selling the dark tray as extra-crusty specials to a laughing crowd and feeding the judges the evidence; your demo becomes the honest two-oven clock, which works perfectly and wins polite applause and no ribbon; on the walk home he orders the eight-oven clock anyway, built slow over autumn, one oven a week, and Gran frames your fair-morning to-do list as a lesson titled ambition, with flour in it'>>",
       "is_ending": true,
       "ending": {
-        "id": "m_z3",
+        "id": "m_z2",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Day It Rained Rolls"
+        "title": "The Extra-Crusty Specials"
       }
     },
     {
-      "id": "m_z4",
+      "id": "m_z3",
       "body": "<<FILL role=completion words=118 beats='the judges score the lift where it lives, between the flour fog and the cooling racks, and invent a ribbon on the spot, best helper at work, because none of their categories fit a machine that never came to the fair; the breakfast bun with your name sells out by eight for the rest of the summer, and Priya's brake gets its own line on the award card at your insistence; Gran adds a second law over your bench, the best booth, dear, is the shop itself'>>",
       "is_ending": true,
       "ending": {
-        "id": "m_z4",
+        "id": "m_z3",
         "valence": "positive",
         "kind": "success",
         "title": "The Breakfast Bun"
       }
     },
     {
-      "id": "m_z5",
-      "body": "<<FILL role=completion words=120 beats='blue ribbon, best working helper, and the mayor reads the card aloud with both names in it while Mr. Crumb throws rolls to the crowd like confetti he planned all along; the lift goes into the bakery the very next dawn and the booth's real trophy goes up over two benches at once, the entry card, framed crooked on purpose because Priya says perfect corners are for drawings; next summer's ledger already has your two names bracketed together, in Gran's hand'>>",
+      "id": "m_z4",
+      "body": "<<FILL role=failure words=114 beats='the lift waits for autumn and the brake it deserves, and your summer becomes the study of stopping: you build Priya's brake at quarter scale, then half, filling a notebook with why each part is shaped the way it is, and mail her your gear templates in return; at the fair you demo the day it rained rolls as a cautionary exhibit that draws the biggest laugh of the afternoon, and Gran pins a card to it, every inventor owns one famous morning'>>",
       "is_ending": true,
       "ending": {
-        "id": "m_z5",
-        "valence": "positive",
-        "kind": "success",
-        "title": "Blue Ribbon at Booth Nine"
-      }
-    },
-    {
-      "id": "m_z6",
-      "body": "<<FILL role=ending words=118 beats='the ribbon goes to a walking scarecrow from the north guild, and it barely matters: your notebook from the baskets, filled with where crowds gasp, drift, lean in, and reach for their coins, becomes the thing Gran reads twice and calls the real invention of your summer; Priya, incandescent after her first clean run out front, claims the demo spot for next year and appoints you head of watching; machines, Gran says, are half the craft, the other half is people meeting them'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "m_z6",
-        "valence": "neutral",
-        "kind": "discovery",
-        "title": "The Notebook of Gasps"
-      }
-    },
-    {
-      "id": "m_z7",
-      "body": "<<FILL role=failure words=114 beats='the damper is real and the price was real too: with street rights gone for the season, Market Row judges your invention on a cobble-box replica while Ms. Okafor's actual stall shivers untested a stone's throw away; honorable mention, with a written note about patience that Gran does not frame; she sets you instead to drafting the guild's first night-testing permit proposal for the town council, because the rule that caught you, she says, is a bad rule badly needed, and fixing rules is inventing too'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "m_z7",
+        "id": "m_z4",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Cobble-Box Demo"
+        "title": "The Day It Rained Rolls"
       }
     },
     {
-      "id": "m_z8",
+      "id": "m_z5",
       "body": "<<FILL role=ending words=116 beats='on Market Row morning the stall stands stone-still through six trams while the apples doze in their tilt, and the judges hand your damper second place in the row; the surprise comes at noon, when a man from the tram company asks to buy not the damper but the jar-of-peas chart, which maps every soft rail joint on Market Street; Gran shelves a copy in the guild library under reference, your name on the spine, and teaches you the word that matters, the measuring, dear, was the invention'>>",
       "is_ending": true,
       "ending": {
-        "id": "m_z8",
+        "id": "m_z5",
         "valence": "neutral",
         "kind": "discovery",
         "title": "The Jar-of-Peas Chart"
       }
     },
     {
-      "id": "m_z9",
+      "id": "m_z6",
+      "body": "<<FILL role=failure words=114 beats='the damper is real and the price was real too: with street rights gone for the season, Market Row judges your invention on a cobble-box replica while Ms. Okafor's actual stall shivers untested a stone's throw away; honorable mention, with a written note about patience that Gran does not frame; she sets you instead to drafting the guild's first night-testing permit proposal for the town council, because the rule that caught you, she says, is a bad rule badly needed, and fixing rules is inventing too'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_z6",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cobble-Box Demo"
+      }
+    },
+    {
+      "id": "m_z7",
       "body": "<<FILL role=failure words=112 beats='your catcher takes its stall's points and the row loses the ribbon it wanted: the judges' card praises your rail and notes, in small firm letters, that a helper street helps together, and the grand ribbon goes to a smaller row across town that ran complete; you carry home a certificate and a knot in your stomach that outlasts it, and in September you mail Priya your gear templates with a one-line note, next summer, both stalls; her answer is a drawing of your catcher, corrected, which is Priya for yes'>>",
       "is_ending": true,
       "ending": {
-        "id": "m_z9",
+        "id": "m_z7",
         "valence": "negative",
         "kind": "setback",
         "title": "A Certificate and a Knot"
       }
     },
     {
-      "id": "m_z10",
-      "body": "<<FILL role=completion words=122 beats='forty apples roll home to a cheer that brings the whole row running, and Market Row is scored the way it worked, as one machine the length of a street: the grand ribbon names every helper and every inventor, your catcher and Priya's scaler two lines apart on the same card, the way Gran always intended; Ms. Okafor sells out by noon, tilt and all, and gives the catcher's first saved apple a shelf of its own; the fair closes with the mayor asking Gran what Market Street will build next year, and Gran looking down the row at her juniors and saying, ask them twice'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "m_z10",
-        "valence": "positive",
-        "kind": "completion",
-        "title": "Forty Apples Home"
-      }
-    },
-    {
-      "id": "m_z11",
+      "id": "m_z8",
       "body": "<<FILL role=completion words=118 beats='Priya's stall takes first in Market Row and the judges read the card aloud, her name and then, because she wrote it there in her squarest lettering, yours; her thank-you speech is four words long, which for Priya is an oration, and Ms. Okafor reports the catcher ran perfectly all morning unattended, which Gran pronounces the highest compliment a helper can earn, working best, dear, when you are busy being elsewhere; the two of you spend the last week of summer drawing machines that need four hands on one page'>>",
       "is_ending": true,
       "ending": {
-        "id": "m_z11",
+        "id": "m_z8",
         "valence": "positive",
         "kind": "success",
         "title": "Priya's First Ribbon"
       }
     },
     {
-      "id": "m_z12",
+      "id": "m_z9",
+      "body": "<<FILL role=completion words=122 beats='forty apples roll home to a cheer that brings the whole row running, and Market Row is scored the way it worked, as one machine the length of a street: the grand ribbon names every helper and every inventor, your catcher and Priya's scaler two lines apart on the same card, the way Gran always intended; Ms. Okafor sells out by noon, tilt and all, and gives the catcher's first saved apple a shelf of its own; the fair closes with the mayor asking Gran what Market Street will build next year, and Gran looking down the row at her juniors and saying, ask them twice'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_z9",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Forty Apples Home"
+      }
+    },
+    {
+      "id": "m_z10",
       "body": "<<FILL role=failure words=116 beats='the judges stop, watch your rail guard forty perfectly motionless apples, and move on, because a helper shown away from its trouble has nothing to help with; back at her tram-side corner Ms. Okafor catches runaways in her apron all morning, kind about it and slower every hour, and the scoring card notes one stall out of place; Gran walks you back down the row at noon, bolts the catcher where it belonged, and the first apple it rolls home draws a bigger crowd than the head of the row ever did; next year's ledger entry, in your own writing, says judged where it helps'>>",
       "is_ending": true,
       "ending": {
-        "id": "m_z12",
+        "id": "m_z10",
         "valence": "negative",
         "kind": "setback",
         "title": "The Stall That Moved"
