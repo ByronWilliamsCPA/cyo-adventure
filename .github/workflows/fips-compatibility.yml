@@ -23,6 +23,7 @@ on:
       - 'pyproject.toml'
       - 'requirements*.txt'
       - 'scripts/check_fips_compatibility.py'
+      - 'Dockerfile'
       - '.github/workflows/fips-compatibility.yml'
   pull_request:
     branches: [main, master]
@@ -32,6 +33,7 @@ on:
       - 'pyproject.toml'
       - 'requirements*.txt'
       - 'scripts/check_fips_compatibility.py'
+      - 'Dockerfile'
       - '.github/workflows/fips-compatibility.yml'
   schedule:
     # Run weekly on Monday at 10 AM UTC
@@ -221,6 +223,78 @@ jobs:
         run: |
           echo "::error::FIPS compatibility issues found. See the report for details."
           exit 1
+
+  # Runtime parity: run the FIPS runtime assertions on the Debian 13 python
+  # line the production image is built from, with the stdlib OpenSSL floor
+  # raised to 3.5 (the ML-KEM-capable line, per ADR-013 and the crypto
+  # inventory). The hardened dhi runtime image itself ships no shell, so CI
+  # steps cannot execute inside it; python:3.12-slim-trixie shares its
+  # Debian 13 userland and distro OpenSSL. step-security/harden-runner is
+  # omitted here because it does not support container jobs.
+  fips-runtime-parity:
+    name: FIPS Runtime Parity (Debian 13)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      image: python:3.12-slim-trixie
+
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Install uv
+        run: pip install --no-cache-dir uv
+
+      - name: Sync against the container interpreter
+        # Pin uv to the image's python so stdlib ssl links the distro
+        # OpenSSL 3.5.x instead of a downloaded standalone interpreter
+        # (python-build-standalone statically links OpenSSL 3.0.x, which
+        # would defeat the point of this job).
+        env:
+          UV_PYTHON_DOWNLOADS: never
+        run: uv sync --all-extras --python /usr/local/bin/python3
+
+      - name: Run FIPS runtime assertions at the 3.5 floor
+        env:
+          FIPS_STDLIB_OPENSSL_FLOOR: "3.5"
+        run: uv run pytest tests/unit/test_fips_runtime_assertions.py -v --no-cov
+
+  # Image floor: assert the pinned production base image itself links an
+  # ML-KEM-capable OpenSSL (>= 3.5). The image has no shell, so the check is
+  # a single exec-form python -c via docker run; the interpreter lives at
+  # /opt/python/bin in dhi images (see the Dockerfile's builder-stage
+  # comment). Pulling the ghcr.io mirror needs packages: read.
+  fips-image-floor:
+    name: FIPS Image OpenSSL Floor
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Assert runtime base image OpenSSL >= 3.5
+        run: |
+          IMAGE=$(grep -oE 'ghcr\.io/byronwilliamscpa/dhi-python:[^ ]+' Dockerfile | head -1)
+          if [ -z "$IMAGE" ]; then
+            echo "::error::Could not find the pinned dhi-python base image in Dockerfile"
+            exit 1
+          fi
+          echo "Asserting OpenSSL floor in $IMAGE"
+          docker run --rm --entrypoint /opt/python/bin/python3.12 "$IMAGE" -c "import ssl; v = ssl.OPENSSL_VERSION_INFO[:2]; assert v >= (3, 5), f'runtime image links {ssl.OPENSSL_VERSION}, below the 3.5 ML-KEM floor'; print('runtime image links', ssl.OPENSSL_VERSION)"
 
   # Optional: Test on actual FIPS-enabled environment
   fips-runtime-test:

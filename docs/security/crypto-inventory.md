@@ -69,7 +69,8 @@ groups; that is deliberate and lives in `homelab-infra` plus the Cloudflare dash
   (negotiated-group check) is the `homelab-infra` acceptance test.
 - **Backend egress** (`httpx`): OpenRouter/Anthropic/Gemini/Supabase JWKS fetches use the
   container's OpenSSL defaults. Runtime image `dhi-python:3.12-debian13` ships OpenSSL 3.5.x,
-  so hybrid groups are offered when the far end supports them.
+  so hybrid groups are offered when the far end supports them; the 3.5 floor is asserted in
+  CI by the `fips-runtime-parity` and `fips-image-floor` jobs (see section 7).
 - **Ollama leg**: `src/cyo_adventure/generation/provider.py` builds
   `ssl.create_default_context()` and adds the homelab CA (`certs/homelab-ca.pem` via
   `OLLAMA_CA_BUNDLE`); cleartext HTTP Basic is refused off-loopback
@@ -134,9 +135,18 @@ MD5/SHA-1 anywhere (enforced by `scripts/check_fips_compatibility.py`).
   here. Errors can never be acknowledged.
 - **Runtime assertions**: `tests/unit/test_fips_runtime_assertions.py` mechanically enforces
   the testable half of those dispositions (cryptography >= 45 and OpenSSL 3.x link, pyjwt
-  >= 2.13, stdlib OpenSSL 3.x with a TLS 1.2+ context floor, asymmetric-only JWT allowlist
+  >= 2.13, stdlib OpenSSL floor with a TLS 1.2+ context floor, asymmetric-only JWT allowlist
   defaults plus an active startup validator). They run in the regular CI suite and in the
   `fips-runtime-test` workflow job; do not renew a reviewed date while its assertion is red.
+- **Runtime OpenSSL floor is asserted, not assumed** (2026-07-17): the stdlib OpenSSL floor
+  is parametrized via `FIPS_STDLIB_OPENSSL_FLOOR` (3.0 on ordinary hosts, whose uv-managed
+  interpreters statically link OpenSSL 3.0.x). Two CI jobs in `fips-compatibility.yml` raise
+  it to the ML-KEM-capable line: `fips-runtime-parity` runs the assertion suite on the
+  Debian 13 python line (`python:3.12-slim-trixie`, same distro OpenSSL 3.5.x as the
+  hardened runtime base) with the floor at 3.5, and `fips-image-floor` executes a shell-free
+  `python -c` check inside the pinned `dhi-python:3.12-debian13` digest itself. A base-image
+  digest bump that regressed below OpenSSL 3.5 now fails CI (`Dockerfile` is in the
+  workflow's trigger paths).
 - `core/config.py` startup validators fail the boot on forgeable JWT allowlist values.
 - Bandit, OSV-Scanner, pip-audit, detect-secrets: general dependency and secret hygiene.
 

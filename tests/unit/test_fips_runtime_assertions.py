@@ -11,15 +11,24 @@ If a test in this module fails, the acknowledgment it backs is no longer
 true. Fix the regression (or re-verify the disposition); do not renew the
 acknowledgment's ``reviewed`` date while its backing assertion is red.
 
+The stdlib OpenSSL floor is parametrized via FIPS_STDLIB_OPENSSL_FLOOR
+because the linked OpenSSL is a property of the interpreter build, not of
+this repo: ordinary hosts (uv-managed python-build-standalone links 3.0.x)
+assert the default ``3.0``, while the ``fips-runtime-parity`` job in
+``fips-compatibility.yml`` runs this suite on the Debian 13 python line with
+the floor raised to ``3.5``, the ML-KEM-capable line the runtime image
+ships. The ``fips-image-floor`` job asserts the same 3.5 floor inside the
+pinned production base image itself.
+
 Deliberately not asserted here, because they are host/deployment properties
-CI cannot observe: OpenSSL FIPS-provider activation, the runtime image's
-OpenSSL 3.5 ML-KEM groups (a property of ``dhi-python:3.12-debian13``, not of
-the CI host), and boto3 endpoint selection (R2 uses SigV4/HMAC-SHA256, which
-is quantum-safe; AWS FIPS endpoints do not apply).
+CI cannot observe: OpenSSL FIPS-provider activation, and boto3 endpoint
+selection (R2 uses SigV4/HMAC-SHA256, which is quantum-safe; AWS FIPS
+endpoints do not apply).
 """
 
 from __future__ import annotations
 
+import os
 import ssl
 
 import pytest
@@ -28,6 +37,30 @@ import pytest
 # Downgrades below these are posture regressions per ADR-013.
 CRYPTOGRAPHY_MAJOR_FLOOR = 45  # ML-DSA/SLH-DSA (FIPS 204/205) primitives
 PYJWT_FLOOR = (2, 13)  # JWKS client + allowlist enforcement
+
+# Env override for the stdlib-linked OpenSSL floor (see module docstring).
+STDLIB_OPENSSL_FLOOR_ENV = "FIPS_STDLIB_OPENSSL_FLOOR"
+STDLIB_OPENSSL_FLOOR_DEFAULT = "3.0"
+
+
+def _stdlib_openssl_floor() -> tuple[int, int]:
+    """Parse the stdlib OpenSSL floor from the environment.
+
+    Returns:
+        The (major, minor) floor; a bare major like ``"3"`` means minor 0.
+        Fails the calling test on an unparseable value, so a typo in a
+        workflow env block can never silently weaken the floor.
+    """
+    raw = os.environ.get(STDLIB_OPENSSL_FLOOR_ENV, STDLIB_OPENSSL_FLOOR_DEFAULT)
+    try:
+        numbers = [int(part) for part in raw.split(".")]
+    except ValueError:
+        numbers = []
+    if len(numbers) not in (1, 2):
+        pytest.fail(
+            f"{STDLIB_OPENSSL_FLOOR_ENV} must look like '3' or '3.5', got {raw!r}"
+        )
+    return (numbers[0], numbers[1] if len(numbers) == 2 else 0)
 
 
 @pytest.mark.unit
@@ -64,17 +97,35 @@ def test_cryptography_links_openssl_3_or_newer() -> None:
 
 
 @pytest.mark.unit
-def test_stdlib_ssl_is_openssl_3_or_newer() -> None:
-    """The stdlib ssl module (httpx's TLS layer) links OpenSSL 3.x+.
+def test_stdlib_ssl_meets_openssl_floor() -> None:
+    """The stdlib ssl module (httpx's TLS layer) meets the OpenSSL floor.
 
     Backs the ``httpx`` acknowledgment: backend egress inherits these
-    defaults. The stricter 3.5 floor (ML-KEM hybrid groups) is a property of
-    the runtime image (`dhi-python:3.12-debian13`), not of CI hosts, so only
-    the major line is asserted here.
+    defaults. The floor is 3.0 on ordinary hosts and raised to 3.5 (ML-KEM
+    hybrid groups) by the runtime-parity job; see the module docstring.
     """
-    assert ssl.OPENSSL_VERSION_INFO[0] >= 3, (
-        f"stdlib ssl links {ssl.OPENSSL_VERSION}; need OpenSSL 3.x+"
+    floor = _stdlib_openssl_floor()
+    linked = ssl.OPENSSL_VERSION_INFO[:2]
+    assert linked >= floor, (
+        f"stdlib ssl links {ssl.OPENSSL_VERSION}; floor is OpenSSL "
+        f"{floor[0]}.{floor[1]}"
     )
+
+
+@pytest.mark.unit
+def test_stdlib_openssl_floor_env_parsing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The floor override parses bare and dotted forms and rejects garbage."""
+    monkeypatch.setenv(STDLIB_OPENSSL_FLOOR_ENV, "3.5")
+    assert _stdlib_openssl_floor() == (3, 5)
+    monkeypatch.setenv(STDLIB_OPENSSL_FLOOR_ENV, "3")
+    assert _stdlib_openssl_floor() == (3, 0)
+    monkeypatch.delenv(STDLIB_OPENSSL_FLOOR_ENV, raising=False)
+    assert _stdlib_openssl_floor() == (3, 0)
+    monkeypatch.setenv(STDLIB_OPENSSL_FLOOR_ENV, "banana")
+    with pytest.raises(pytest.fail.Exception):
+        _stdlib_openssl_floor()
 
 
 @pytest.mark.unit
