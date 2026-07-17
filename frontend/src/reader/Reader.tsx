@@ -25,6 +25,7 @@ import { BackToLibrary } from './BackToLibrary'
 import { ContinueSeries } from './ContinueSeries'
 import { ReaderChrome } from './ReaderChrome'
 import { readerProgressLabel, readerProgressPercent } from './readerProgress'
+import { useReadAloud } from './useReadAloud'
 import './reader.css'
 
 export interface ReaderProps {
@@ -48,6 +49,15 @@ export interface ReaderProps {
     profileId: string,
     storybookId: string
   ) => Promise<SeriesNextBookInfo | null>
+  /**
+   * The profile's `tts_enabled` flag (K7 / Phase 4b read-aloud), threaded in
+   * from `ReaderRoute` via `readAloudPreference.ts`. Defaults to false so a
+   * profile ReaderRoute knows nothing about (or a caller that omits this
+   * prop, e.g. most existing tests) never shows the toggle. Browser support
+   * is checked separately (`useReadAloud`); both must hold for the toggle to
+   * render.
+   */
+  ttsEnabled?: boolean
 }
 
 export function Reader({
@@ -58,6 +68,7 @@ export function Reader({
   profileId,
   onLeave,
   fetchSeriesNext,
+  ttsEnabled = false,
 }: ReaderProps) {
   const navigate = useNavigate()
   const [snapshot, send] = useMachine(readerMachine, {
@@ -65,6 +76,11 @@ export function Reader({
   })
   const { reading, error: choiceError } = snapshot.context
   const node = story.nodes.find((n) => n.id === reading.current_node)
+
+  // Read-aloud (K7): the toggle itself renders in ReaderChrome, but the
+  // speech content (passage body, then choice labels) is only known here.
+  const readAloud = useReadAloud(ttsEnabled)
+  const choices = useMemo(() => visibleChoices(story, reading), [story, reading])
 
   // Report progress whenever the reading state changes (drives WP7 persistence).
   useEffect(() => {
@@ -102,7 +118,22 @@ export function Reader({
   // catches an assign() throw internally and permanently stops the actor,
   // so catching it here, after send() returns, would be too late.
   const choose = (choiceId: string): void => {
+    // Read-aloud must never talk over the next passage; a choice tap is
+    // navigation within the same mounted Reader (no unmount), so this is not
+    // covered by the hook's unmount cleanup.
+    readAloud.stop()
     send({ type: 'CHOOSE', choiceId })
+  }
+
+  // Tapping the read-aloud toggle: start speaking the current passage (then
+  // its visible choices), or stop if already speaking. Never auto-plays; the
+  // only way speech starts is this explicit tap.
+  const handleToggleSpeak = (): void => {
+    if (readAloud.speaking) {
+      readAloud.stop()
+    } else {
+      readAloud.speak(node?.body ?? '', choices.map((choice) => choice.label))
+    }
   }
 
   // Whenever the node changes, in either direction (a choice forward or Go
@@ -137,7 +168,12 @@ export function Reader({
     <button
       type="button"
       className="reader-leave"
-      onClick={onLeave ?? (() => void navigate(`/library/${profileId}`))}
+      onClick={() => {
+        // Read-aloud must never keep talking after the child has left.
+        readAloud.stop()
+        const leave = onLeave ?? (() => void navigate(`/library/${profileId}`))
+        leave()
+      }}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path
@@ -161,7 +197,16 @@ export function Reader({
   // to answer, so memoize it per reading state rather than per render.
   const canUndo = useMemo(() => canGoBack(story, reading), [story, reading])
   const goBackButton = canUndo ? (
-    <Button variant="ghost" data-testid="go-back" onClick={() => send({ type: 'BACK' })}>
+    <Button
+      variant="ghost"
+      data-testid="go-back"
+      onClick={() => {
+        // Going back changes the current node without unmounting the Reader,
+        // so read-aloud must be stopped explicitly here.
+        readAloud.stop()
+        send({ type: 'BACK' })
+      }}
+    >
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path
           fill="none"
@@ -183,11 +228,23 @@ export function Reader({
   // ending the bar is forced full: the story is done, and a finished story
   // must never look unfinished to the child who just finished it.
   const ended = snapshot.matches('ended')
+  // The read-aloud toggle only makes sense while there is a real passage to
+  // read (the normal reading and ending screens); the stuck-page error
+  // screen below shares `chrome` but never gets the toggle, so a child is
+  // never invited to hear a page that failed to render. `readAloud.available`
+  // already folds in both the profile's tts_enabled flag and browser
+  // support, so omitting the prop when it's false keeps ReaderChrome from
+  // rendering a dead button.
   const chrome = (
     <ReaderChrome
       percent={ended ? 100 : readerProgressPercent(story, reading)}
       label={ended ? 'You finished this story!' : readerProgressLabel(story, reading)}
       back={leaveButton}
+      readAloud={
+        !choiceError && readAloud.available
+          ? { speaking: readAloud.speaking, onToggle: handleToggleSpeak }
+          : undefined
+      }
     />
   )
 
@@ -205,7 +262,10 @@ export function Reader({
             <Button
               variant="primary"
               size="lg"
-              onClick={() => send({ type: 'RESTART' })}
+              onClick={() => {
+                readAloud.stop()
+                send({ type: 'RESTART' })
+              }}
             >
               Start over
             </Button>
@@ -273,7 +333,10 @@ export function Reader({
               variant="primary"
               size="lg"
               data-testid="restart"
-              onClick={() => send({ type: 'RESTART' })}
+              onClick={() => {
+                readAloud.stop()
+                send({ type: 'RESTART' })
+              }}
             >
               Read again
             </Button>
@@ -310,7 +373,7 @@ export function Reader({
           <PassageText text={node?.body ?? ''} />
         </div>
         <ul className="reader-choices">
-          {visibleChoices(story, reading).map((choice) => (
+          {choices.map((choice) => (
             <li key={choice.id}>
               <ChoiceButton
                 label={choice.label}

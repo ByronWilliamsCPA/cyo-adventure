@@ -54,6 +54,9 @@ export interface ReaderPageProps {
   continuation?: ContinuationSeed
   /** Forwarded to the Reader's ending screen. */
   fetchSeriesNext?: (profileId: string, storybookId: string) => Promise<SeriesNextBookInfo | null>
+  /** The profile's `tts_enabled` flag (K7 / Phase 4b read-aloud), forwarded
+   * straight to the Reader. See `ReaderRoute` for where this is resolved. */
+  ttsEnabled?: boolean
 }
 
 type FetchServerState = (profileId: string, storybookId: string) => Promise<ReadingState | null>
@@ -119,6 +122,7 @@ export function ReaderPage({
   recordCompletion = NO_RECORD_COMPLETION,
   continuation,
   fetchSeriesNext,
+  ttsEnabled,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
   const [conflict, setConflict] = useState<ConflictState | null>(null)
@@ -547,6 +551,7 @@ export function ReaderPage({
         profileId={profileId}
         onLeave={handleLeave}
         fetchSeriesNext={fetchSeriesNext}
+        ttsEnabled={ttsEnabled}
       />
       {conflict ? (
         <ConflictDialog
