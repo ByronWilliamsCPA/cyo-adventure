@@ -3236,6 +3236,14 @@ default (C1) first because it is a one-variable-away total auth bypass, then the
 cluster (H1, H2, H4, M1, M2, M3) and its keystone (K1), then privacy/retention (H3, M5), then supply
 chain, cost, deployment, and inert-control cleanup. Each workstream lands as its own reviewed PR.</p>
 <h2 id="severity-and-status-map">Severity and status map<a class="headerlink" href="#severity-and-status-map" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Status note (2026-07-17):</strong> this map was written before a run of hardening
+PRs and a follow-up review (<code>docs/reviews/comprehensive-review-2026-07-17.md</code>
++ <code>docs/planning/remediation-plan-2026-07-17.md</code>). The statuses below have been
+reconciled against current code. Items marked "needs re-triage" were not
+re-verified end to end and should be checked against HEAD before any further
+work, not trusted from this table.</p>
+</blockquote>
 <table>
 <thead>
 <tr>
@@ -3252,133 +3260,133 @@ chain, cost, deployment, and inert-control cleanup. Each workstream lands as its
 <td>Critical</td>
 <td><code>environment</code> defaults to unverified auth stub (fail-open)</td>
 <td>A</td>
-<td>[ ] not started</td>
+<td>[x] done: <code>core/config.py</code> fails closed on an unset tier / weak secrets</td>
 </tr>
 <tr>
 <td>H1</td>
 <td>High</td>
 <td>No age-band ceiling from approval through delivery</td>
 <td>B</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>H2</td>
 <td>High</td>
 <td>AI cover images reach children unmoderated</td>
 <td>B</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>H3</td>
 <td>High</td>
 <td>ADR-007 retention purge unimplemented</td>
 <td>D</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>H4</td>
 <td>High</td>
 <td>No fail-fast on the no-op <code>mock</code> moderation reviewer</td>
 <td>C</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage (related: ARCH-H3 classifier-degraded shipped 2026-07-17)</td>
 </tr>
 <tr>
 <td>K1</td>
 <td>Keystone</td>
 <td>Children share the guardian token in R1</td>
 <td>E</td>
-<td>[ ] not started</td>
+<td>[x] done: child-scoped session + device tokens (PRs #228, #247)</td>
 </tr>
 <tr>
 <td>M1</td>
 <td>Medium</td>
 <td>Reading/completion routes bypass the assignment read-gate</td>
 <td>B</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>M2</td>
 <td>Medium</td>
 <td>Guardian blob-fetch skips the assignment gate</td>
 <td>B</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>M3</td>
 <td>Medium</td>
 <td>Auto-repair skips the deterministic validator gate</td>
 <td>B</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>M4</td>
 <td>Medium</td>
 <td>Review-model IDs bypass the provider allowlist</td>
 <td>F</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>M5</td>
 <td>Medium</td>
 <td>PII egress guard is display-name-only; birthdate arm dead</td>
 <td>D</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>M6</td>
 <td>Medium</td>
 <td>Stranded-job reclaim can double-execute a job</td>
 <td>F</td>
-<td>[ ] not started</td>
+<td>[x] done 2026-07-17: shared RQ identity + compare-and-set claim (ARCH-H2)</td>
 </tr>
 <tr>
 <td>M7</td>
 <td>Medium</td>
 <td>Family cost cap enforced on only one enqueue path</td>
 <td>F</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>M8</td>
 <td>Medium</td>
 <td>Prod Postgres exposed to host; base compose password default</td>
 <td>G</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>L1</td>
 <td>Low</td>
 <td>Reading-state anti-forgery replay optional, off by default</td>
 <td>H</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>L2</td>
 <td>Low</td>
 <td>Child free-text templated into prompt with no delimiting</td>
 <td>H</td>
-<td>[ ] not started</td>
+<td>[x] done 2026-07-17: UNTRUSTED_USER_INPUT fences (SEC-B4)</td>
 </tr>
 <tr>
 <td>L3</td>
 <td>Low</td>
 <td><code>allowed_content_flags</code> cap completely inert</td>
 <td>H</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>L4</td>
 <td>Low</td>
 <td><code>reading_level_cap</code> not enforced at delivery</td>
 <td>H</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 <tr>
 <td>L5</td>
 <td>Low</td>
 <td>Health endpoints disclose exact Python/app version</td>
 <td>G</td>
-<td>[ ] not started</td>
+<td>[ ] needs re-triage</td>
 </tr>
 </tbody>
 </table>
@@ -3807,7 +3815,7 @@ open decisions are not lost.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 18:27:05 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 23:35:28 UTC">July 17, 2026</span>
   </span>
 
     
