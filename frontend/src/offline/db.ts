@@ -79,6 +79,26 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
         db.createObjectStore('library_lists')
       }
     },
+    // #CRITICAL: timing (ARCH-M5): without these callbacks a DB_VERSION bump
+    // could hang every new tab. `blocking` fires on THIS (older) connection when
+    // a newer-version open is waiting; close it and drop the cached handle so
+    // the upgrade proceeds and our next op reopens at the new version, instead
+    // of the new tab waiting forever on a connection an old tab never released.
+    // #VERIFY: db.test.ts "closes and reopens when a newer version is blocking".
+    blocking() {
+      void _db?.then((db) => db.close()).catch(() => undefined)
+      _db = null
+    },
+    // This tab wants to upgrade but an older connection elsewhere has not closed
+    // yet; surfaced so an "app won't load" incident is diagnosable.
+    blocked() {
+      console.warn('cyo-reader: IndexedDB upgrade blocked by an older tab')
+    },
+    // The connection closed unexpectedly (e.g. the browser evicted it); drop the
+    // cached handle so the next op reopens cleanly.
+    terminated() {
+      _db = null
+    },
   })
   return _db
 }

@@ -103,4 +103,42 @@ describe('useReplayOnReconnect', () => {
     await waitFor(() => expect(onOutcome).toHaveBeenCalledTimes(1))
     expect(onOutcome).toHaveBeenCalledWith({ replayed: 1, conflicts: [], failed: [] })
   })
+
+  it('skips replay when another tab holds the cross-tab lock (ARCH-M4)', async () => {
+    // navigator.locks with ifAvailable invokes the callback with null when the
+    // lock is held elsewhere; the hook must skip replay entirely that round.
+    const request = vi.fn(
+      (
+        _name: string,
+        _opts: { ifAvailable?: boolean },
+        cb: (lock: unknown) => Promise<unknown>
+      ) => cb(null)
+    )
+    vi.stubGlobal('navigator', { ...navigator, locks: { request } })
+    mockReplayQueue.mockResolvedValue({ replayed: 1, conflicts: [], failed: [] })
+    const onOutcome = vi.fn()
+    renderHook(() => useReplayOnReconnect(fakeApi, onOutcome))
+
+    await waitFor(() => expect(request).toHaveBeenCalled())
+    expect(mockReplayQueue).not.toHaveBeenCalled()
+    expect(onOutcome).not.toHaveBeenCalled()
+  })
+
+  it('runs replay when it acquires the cross-tab lock', async () => {
+    const request = vi.fn(
+      (
+        _name: string,
+        _opts: { ifAvailable?: boolean },
+        cb: (lock: unknown) => Promise<unknown>
+      ) => cb({})
+    )
+    vi.stubGlobal('navigator', { ...navigator, locks: { request } })
+    mockReplayQueue.mockResolvedValue({ replayed: 2, conflicts: [], failed: [] })
+    const onOutcome = vi.fn()
+    renderHook(() => useReplayOnReconnect(fakeApi, onOutcome))
+
+    await waitFor(() => expect(onOutcome).toHaveBeenCalledTimes(1))
+    expect(mockReplayQueue).toHaveBeenCalledTimes(1)
+  })
+
 })
