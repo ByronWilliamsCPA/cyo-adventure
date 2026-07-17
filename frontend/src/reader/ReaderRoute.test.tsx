@@ -81,6 +81,19 @@ describe('ReaderRoute guards', () => {
     expect(screen.getByRole('button', { name: 'Back to my books' })).toBeTruthy()
   })
 
+  it('refuses a story when a child session exists for a different profile (SEC-F1)', async () => {
+    const { setChildSession, clearChildSession } = await import('../auth/childSession')
+    setChildSession({ token: 't', expiresAt: '2099-01-01T00:00:00Z', profileId: 'p1' })
+    try {
+      // Session is for p1; deep-linking to p2's reader must be refused rather
+      // than served from the offline cache.
+      renderAt(`/read/p2/${lantern.id}/1`)
+      expect(screen.getByText("That's not your bookshelf")).toBeTruthy()
+    } finally {
+      clearChildSession()
+    }
+  })
+
   it('shows a styled, exitable message when route params are missing', () => {
     renderAtIncompleteRoute('/read/p1')
     expect(screen.getByText("We couldn't tell which story to open")).toBeTruthy()

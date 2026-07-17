@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
 import { Button } from '@ds/components/Button'
+import { getValidChildSession } from '../auth/childSession'
 import {
   makeFetchServerState,
   makeFetchSeriesNext,
@@ -153,6 +154,29 @@ export function ReaderRoute() {
         title="That story link looks wrong"
         description="This story link isn't valid. Let's go back to your books."
         actions={<BackToLibrary profileId={profileId} />}
+      />
+    )
+  }
+
+  // #CRITICAL: security (SEC-F1): if a child session exists for a DIFFERENT
+  // profile than the one in the URL, refuse to open this profile's story, even
+  // from the offline cache (ReaderPage loads cache-first and never hits the
+  // server when the blob is cached, so the online 401 gate alone would not stop
+  // this). Without it a sibling on a shared device could deep-link to another
+  // profile's reader and read their downloaded books and progress. A route with
+  // no session at all is left to the online 401 + picker recovery.
+  // #VERIFY: ReaderRoute.test.tsx "refuses a story for a mismatched profile".
+  const activeSession = getValidChildSession()
+  if (activeSession && activeSession.profileId !== profileId) {
+    return (
+      <EmptyState
+        title="That's not your bookshelf"
+        description="Ask a grown-up to help you get back to your own books."
+        actions={
+          <Button variant="ghost" onClick={() => void navigate(KID_PICKER_PATH)}>
+            Back to start
+          </Button>
+        }
       />
     )
   }
