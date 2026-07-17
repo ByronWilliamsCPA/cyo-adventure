@@ -15,12 +15,15 @@ from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.responses import JSONResponse
 
 from cyo_adventure.api import (
+    admin_profiles,
+    admin_users,
     approval,
     assignments,
     child_sessions,
     covers,
     device_grants,
     families,
+    family_connections,
     generation,
     health,
     library,
@@ -239,6 +242,9 @@ def create_app() -> FastAPI:
     app.include_router(child_sessions.router)
     app.include_router(device_grants.router)
     app.include_router(onboarding.router)
+    app.include_router(admin_users.router)
+    app.include_router(admin_profiles.router)
+    app.include_router(family_connections.router)
     return app
 
 

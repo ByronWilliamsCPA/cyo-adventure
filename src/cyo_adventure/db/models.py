@@ -89,20 +89,28 @@ _COVER_STATUS_VALUES = "'none', 'generating', 'ready', 'failed'"
 # (see _AGE_BAND_VALUES for that pattern), but cyo_adventure.events.__init__
 # imports events.writer, which imports db.models, so importing
 # cyo_adventure.events.models from here creates a circular import; the
-# fourteen values are listed verbatim instead and must be kept in sync with
+# values are listed verbatim instead and must be kept in sync with
 # cyo_adventure.events.models.EventType by hand.
 _PIPELINE_EVENT_TYPE_VALUES = (
     "'request_created', 'request_approved', 'request_declined', "
     "'plan_assigned', 'generation_started', 'generation_finished', "
     "'moderation_completed', 'repair_applied', 'sent_back', 'released', "
-    "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated'"
+    "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated', "
+    "'user_managed', 'family_managed', 'family_connection_changed'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
     "'story_request', 'generation_job', 'storybook', 'storybook_version', "
     "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
-    "'moderation_setting'"
+    "'moderation_setting', 'user', 'family', 'family_connection'"
 )
+
+# The three admin-user lifecycle states (WS-J admin user management): a
+# guardian/admin created via the JIT onboarding path or the seed script is
+# always 'active'; a row admin-created ahead of first sign-in starts
+# 'pending' (see api/onboarding.py's email-match bind); 'deactivated' blocks
+# authentication (api/deps.py::require_principal) without deleting the row.
+_USER_STATUS_VALUES = "'pending', 'active', 'deactivated'"
 
 
 class Family(Base):
@@ -113,6 +121,15 @@ class Family(Base):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200))
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    # Nullable timestamp rather than a status string (contrast User.status):
+    # a family only ever has two states, so "when was it deactivated" is
+    # strictly more useful than a third enum value would be. Set by
+    # api/families.py's admin PATCH; deactivating a family cascades to
+    # deactivate every member User/ChildProfile in the same transaction (so
+    # the auth hot path only ever needs to check User.status), but
+    # reactivating a family does NOT auto-reactivate its members (deliberate
+    # asymmetry: an admin reactivates people individually).
+    deactivated_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
 class Series(Base):
@@ -182,6 +199,7 @@ class User(Base):
         CheckConstraint(
             "role <> 'admin' OR is_admin = true", name="ck_user_admin_role_flag"
         ),
+        CheckConstraint(f"status IN ({_USER_STATUS_VALUES})", name="ck_user_status"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
@@ -222,6 +240,20 @@ class User(Base):
         ForeignKey(_FK_CHILD_PROFILE), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    # #CRITICAL: security: 'pending' is an admin-created invite row (WS-J):
+    # its authn_subject is a synthetic placeholder (api/admin_users.py's
+    # _PENDING_SUBJECT_PREFIX) that no real JWT can ever carry, but
+    # require_principal ALSO rejects any non-'active' status explicitly as
+    # defense in depth (same "unknown subject" message as an unrecognized
+    # subject, so status is never a distinguishable oracle). 'deactivated' is
+    # the soft-remove state for an admin/guardian; the row and its history
+    # (stories, ratings, events) are preserved.
+    # #VERIFY: tests/integration/test_admin_users_api.py::
+    # test_deactivated_guardian_cannot_authenticate,
+    # test_pending_invite_cannot_authenticate.
+    status: Mapped[str] = mapped_column(
+        String(16), default="active", server_default=sa_text("'active'")
+    )
 
 
 class ChildProfile(Base):
@@ -245,6 +277,54 @@ class ChildProfile(Base):
     # #VERIFY: tests/integration/test_profiles.py::test_pin_hash_never_serialized
     # asserts the raw response JSON never contains "pin_hash".
     pin_hash: Mapped[str | None] = mapped_column(Text, default=None)
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    # Soft-remove (WS-J admin user management): a deactivated profile is
+    # excluded from every listing a picker or guardian console reads
+    # (api/deps.py::_resolve_profiles, api/profiles.py::list_profiles) and
+    # api/child_sessions.py refuses to mint a new session for it, but its
+    # reading history, ratings, and events are preserved.
+    # #VERIFY: tests/integration/test_admin_profiles_api.py::
+    # test_deactivated_profile_excluded_from_listing_and_session_mint.
+    deactivated_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+
+
+class FamilyConnection(Base):
+    """A directional cross-family opt-in for story recommendations (WS-J).
+
+    ``family_id`` is the "viewer": the family that has opted in to seeing
+    recommendations sourced from ``connected_family_id``. The relationship is
+    deliberately one-way (admin decision): family_id -> connected_family_id
+    does not imply the reverse, so mutual visibility is two rows, not one.
+    No recommendation engine reads this table yet (WS-J only builds the admin
+    allowlist); the `Rating` model's (child_profile_id, storybook_id) grain
+    was already shaped for the future join (see its docstring).
+
+    Attributes:
+        id: Surrogate primary key.
+        family_id: The family opted in to receiving recommendations (viewer).
+        connected_family_id: The family whose stories may be recommended.
+        created_by: The admin who created the connection, or ``None``.
+        created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "family_connection"
+    __table_args__ = (
+        CheckConstraint(
+            "family_id <> connected_family_id", name="ck_family_connection_not_self"
+        ),
+        UniqueConstraint(
+            "family_id", "connected_family_id", name="uq_family_connection_pair"
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    connected_family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY), index=True
+    )
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 

@@ -28,6 +28,7 @@ import {
   ReviewDetailPage,
   RouteError,
   RouteFallback,
+  UserManagementPage,
 } from './routeElements'
 import {
   ADMIN_CONSOLE_PATH,
@@ -190,6 +191,10 @@ export const routes = [
                   {
                     path: 'moderation-dashboard',
                     element: suspended(<ModerationDashboardPage />),
+                  },
+                  {
+                    path: 'users',
+                    element: suspended(<UserManagementPage />),
                   },
                 ],
               },

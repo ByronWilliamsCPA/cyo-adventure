@@ -486,6 +486,17 @@ async def require_principal(
     if user is None:
         msg = "unknown subject"
         raise AuthenticationError(msg)
+    # #CRITICAL: security: a 'pending' row's authn_subject is a synthetic
+    # placeholder (api/admin_users.py) that no real verified subject can ever
+    # match, so this branch exists purely as defense in depth; 'deactivated'
+    # is the reachable case (WS-J admin user management), and it MUST be
+    # rejected with the same message as an unknown subject so status is never
+    # a distinguishable oracle for a caller probing authn_subject validity.
+    # #VERIFY: tests/integration/test_admin_users_api.py::
+    # test_deactivated_guardian_cannot_authenticate.
+    if user.status != "active":
+        msg = "unknown subject"
+        raise AuthenticationError(msg)
     profile_ids = await _resolve_profiles(session, user)
     # #CRITICAL: security: coerce the ORM role string to the closed Role enum at
     # the auth boundary; an unmodeled DB role raises ValueError -> 500 rather
@@ -621,8 +632,17 @@ async def _resolve_profiles(session: AsyncSession, user: User) -> frozenset[uuid
             with no assigned profile.
     """
     if user.role == Role.GUARDIAN:
+        # #ASSUME: data-integrity: a deactivated kid profile (WS-J) is
+        # excluded here so it disappears from every surface that derives its
+        # profile set from the auth boundary (the picker, the guardian
+        # console), without touching the row's history.
+        # #VERIFY: tests/integration/test_admin_profiles_api.py::
+        # test_deactivated_profile_excluded_from_guardian_listing.
         rows = await session.scalars(
-            select(ChildProfile.id).where(ChildProfile.family_id == user.family_id)
+            select(ChildProfile.id).where(
+                ChildProfile.family_id == user.family_id,
+                ChildProfile.deactivated_at.is_(None),
+            )
         )
         return frozenset(rows.all())
     if user.child_profile_id is not None:

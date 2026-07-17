@@ -106,6 +106,16 @@ async def create_child_session(
     if profile is None:
         msg = "profile not found"
         raise ResourceNotFoundError(msg)
+    # #CRITICAL: security: an admin-deactivated profile (WS-J) must not mint a
+    # new reading session; the same "not found" message as a truly missing
+    # profile is used, matching this module's own stated principle (no
+    # differently-shaped existence leak) rather than introducing a
+    # distinguishable "deactivated" error.
+    # #VERIFY: tests/integration/test_admin_profiles_api.py::
+    # test_deactivated_profile_cannot_mint_child_session.
+    if profile.deactivated_at is not None:
+        msg = "profile not found"
+        raise ResourceNotFoundError(msg)
 
     if ctx.principal.role is Role.DEVICE:
         # #CRITICAL: security: a device grant may mint only within its OWN

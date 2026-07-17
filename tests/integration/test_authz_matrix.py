@@ -246,6 +246,53 @@ def _profile_update_body(_seed: Seed) -> dict[str, Any]:
     return {}
 
 
+def _admin_user_create_body(seed: Seed) -> dict[str, Any]:
+    # A fresh random suffix per call: two RouteSpec resolutions for this
+    # endpoint against the same schema (e.g. the base matrix plus the
+    # dual-role check) must never collide on the create_user's
+    # duplicate-pending-invite-email guard (409).
+    return {
+        "email": f"authz-matrix-{uuid.uuid4()}@example.com",
+        "family_id": str(seed.family_id),
+        "role": "guardian",
+    }
+
+
+def _admin_user_update_body(_seed: Seed) -> dict[str, Any]:
+    return {}
+
+
+def _admin_profile_create_body(seed: Seed) -> dict[str, Any]:
+    return {
+        "family_id": str(seed.family_id),
+        "display_name": "Authz Matrix Kid",
+        "age_band": "8-11",
+    }
+
+
+def _admin_profile_update_body(_seed: Seed) -> dict[str, Any]:
+    return {}
+
+
+def _admin_family_create_body(_seed: Seed) -> dict[str, Any]:
+    return {"name": "Authz Matrix Family"}
+
+
+def _admin_family_update_body(_seed: Seed) -> dict[str, Any]:
+    return {}
+
+
+def _family_connection_create_body(_seed: Seed) -> dict[str, Any]:
+    # Both ids are fresh, never-persisted uuids: the role gate runs before
+    # either family is looked up, so an allowed role legitimately resolves to
+    # a 404 (mirrors _random_uuid_path's rationale) rather than needing real
+    # seed-owned families.
+    return {
+        "family_id": str(uuid.uuid4()),
+        "connected_family_id": str(uuid.uuid4()),
+    }
+
+
 def _concept_create_body(_seed: Seed) -> dict[str, Any]:
     return {
         "brief": {
@@ -315,6 +362,63 @@ class RouteSpec:
 _ROUTE_SPECS: list[RouteSpec] = [
     # -- families.py: admin-only (is_admin) --------------------------------
     RouteSpec("GET", "/api/v1/admin/families", frozenset({Role.ADMIN})),
+    RouteSpec(
+        "POST",
+        "/api/v1/admin/families",
+        frozenset({Role.ADMIN}),
+        json_body=_admin_family_create_body,
+    ),
+    RouteSpec(
+        "PATCH",
+        "/api/v1/admin/families/{family_id}",
+        frozenset({Role.ADMIN}),
+        path_params=_random_uuid_path("family_id"),
+        json_body=_admin_family_update_body,
+    ),
+    # -- admin_users.py: admin-only (_require_admin) -----------------------
+    RouteSpec("GET", "/api/v1/admin/users", frozenset({Role.ADMIN})),
+    RouteSpec(
+        "POST",
+        "/api/v1/admin/users",
+        frozenset({Role.ADMIN}),
+        json_body=_admin_user_create_body,
+    ),
+    RouteSpec(
+        "PATCH",
+        "/api/v1/admin/users/{user_id}",
+        frozenset({Role.ADMIN}),
+        path_params=_random_uuid_path("user_id"),
+        json_body=_admin_user_update_body,
+    ),
+    # -- admin_profiles.py: admin-only (_require_admin) ---------------------
+    RouteSpec("GET", "/api/v1/admin/profiles", frozenset({Role.ADMIN})),
+    RouteSpec(
+        "POST",
+        "/api/v1/admin/profiles",
+        frozenset({Role.ADMIN}),
+        json_body=_admin_profile_create_body,
+    ),
+    RouteSpec(
+        "PATCH",
+        "/api/v1/admin/profiles/{profile_id}",
+        frozenset({Role.ADMIN}),
+        path_params=_random_uuid_path("profile_id"),
+        json_body=_admin_profile_update_body,
+    ),
+    # -- family_connections.py: admin-only (_require_admin) -----------------
+    RouteSpec("GET", "/api/v1/admin/family-connections", frozenset({Role.ADMIN})),
+    RouteSpec(
+        "POST",
+        "/api/v1/admin/family-connections",
+        frozenset({Role.ADMIN}),
+        json_body=_family_connection_create_body,
+    ),
+    RouteSpec(
+        "DELETE",
+        "/api/v1/admin/family-connections/{connection_id}",
+        frozenset({Role.ADMIN}),
+        path_params=_random_uuid_path("connection_id"),
+    ),
     # -- moderation_thresholds.py: admin-only (_require_admin) -------------
     RouteSpec("GET", "/api/v1/admin/moderation-thresholds", frozenset({Role.ADMIN})),
     RouteSpec(

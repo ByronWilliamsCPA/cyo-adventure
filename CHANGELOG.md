@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Admin user management console (`/admin/users`). An admin can now create,
+  reassign, and activate/deactivate guardians, admins, kid profiles, and
+  families from one console, plus curate a new directional family-connection
+  allowlist for a future cross-family recommendation feature. None of this
+  existed before: families and guardians were only ever created implicitly
+  via Supabase JIT onboarding, and there was no admin path to manage a kid
+  profile in another family or a family's active/deactivated status.
+  Admin-created guardians/admins start as a `pending` invite (no Supabase
+  Admin API integration exists in this codebase) that binds to a real account
+  by exact email match on that person's first Supabase login. Deactivating a
+  family cascades to deactivate its members in one transaction; reactivating
+  a family does not auto-reactivate them.
+
 ## [0.6.0] - 2026-07-16
 
 ### Added
