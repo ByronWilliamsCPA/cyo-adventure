@@ -527,12 +527,12 @@
     },
     {
       "id": "pw_flop_roll",
-      "body": "<<FILL role=choice words=75 beats='Milo gives Winnie the gentlest push and she rolls like a tiny wheel, then wobbles in a big silly circle and stops pointing the exact wrong way; wheee, says the tiny voice, dizzy but delighted; the pool is no closer at all; Milo giggles and carefully steadies her; he can pick a plan again or ask Gran for a tip'>>",
+      "body": "<<FILL role=choice words=75 beats='Milo gives Winnie the gentlest nudge to start her rolling like a tiny wheel, but Winnie tucks herself snugly into her shell and simply will not budge, stuck fast as a pebble glued to the rock; no rolling today, thank you, says a tiny muffled voice; Milo laughs at his silly fizzled idea, and Winnie peeks back out, completely comfy; he can pick a plan again or ask Gran for a tip'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pw_roll_again",
-          "label": "Turn her around and try again.",
+          "label": "Smile at the stubborn shell and try again.",
           "target": "pw_plan"
         },
         {
@@ -578,7 +578,7 @@
     },
     {
       "id": "pw_win",
-      "body": "<<FILL role=rising words=75 beats='Milo wets his palm in a pool and lays his hand flat beside Winnie; she slides aboard and holds on snug; step by careful step he carries her down the rock like the slowest, happiest elevator on the whole beach, and kneels at the edge of her cool pool'>>",
+      "body": "<<FILL role=rising words=75 beats='Milo wets his palm in a pool and lays his hand flat beside Winnie; she slides aboard and holds on snug; this is the longest, highest, most careful rescue of the whole day, step by slow step down the big rock while the arriving tide gurgles behind him like a cheering crowd, until he kneels at the edge of her cool pool'>>",
       "is_ending": false,
       "choices": [
         {
@@ -731,7 +731,7 @@
     },
     {
       "id": "e_tide_star",
-      "body": "<<FILL role=ending words=80 beats='Milo snuggles next to Gran on the towel and shares crackers while the friendly tide slides in; the water reaches the little fish and his puddle grows into a lake, unwraps the crab from his seaweed, and carries the tiny periwinkle gently home, doing the rest of the rescuing all by itself; Milo waves to each friend as they float free and happy; next low tide, he decides, he will do more of the helping himself'>>",
+      "body": "<<FILL role=ending words=80 beats='Milo snuggles next to Gran on the towel and shares crackers while the friendly tide slides in; the water reaches the little fish and his puddle grows into a lake, unwraps the crab from his seaweed, and carries the tiny periwinkle gently home, doing the rest of the rescuing all by itself; Milo waves to each friend as they float free and happy; one rescue by Milo and three by the sea, says Gran, what a fine team; Milo snuggles deeper into the warm towel, proud of Stella's rescue and already excited to come back and visit the brimming pools'>>",
       "is_ending": true,
       "ending": {
         "id": "end_tide_star",

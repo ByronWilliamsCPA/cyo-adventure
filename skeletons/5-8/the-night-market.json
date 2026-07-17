@@ -366,7 +366,7 @@
     },
     {
       "id": "tm_screws",
-      "body": "<<FILL role=choice words=72 beats='the screws are small as sesame seeds and every size is different; Milo spreads them on the green felt while Pip sorts with the tips of her claws, which turn out to be perfect tweezers; nearby a shiny wind-up beetle sits waiting, its key just begging for a turn; Milo decides whether to keep lining the screws up in neat rows or to give the beetles key a good winding while they work'>>",
+      "body": "<<FILL role=choice words=72 beats='the screws are small as sesame seeds and every size is different; Milo spreads them on the green felt while Pip sorts with the tips of her claws, which turn out to be perfect tweezers; nearby a shiny wind-up beetle sits waiting, its key just begging for a turn; Milo decides whether to keep lining the screws up in neat rows or to wind the beetles key as far as it can go'>>",
       "is_ending": false,
       "choices": [
         {
@@ -376,7 +376,7 @@
         },
         {
           "id": "c_tm_screws_wind",
-          "label": "Give the beetle's key a good winding.",
+          "label": "Wind the beetle's key as far as it can go.",
           "target": "e_tm_spring"
         }
       ]
@@ -586,7 +586,7 @@
     },
     {
       "id": "f_steps",
-      "body": "<<FILL role=choice words=95 beats='the wide stone steps at the head of the square glow under the thickest lantern strings, and the ceremony keepers are setting out the wish-lantern rack; on a long tray they lay spare wish paper, coils of golden string, and little flames in tins, because no shy latecomer is ever left out at this market; so whatever the evening has held, between Pips basket and the keepers tray, everything her lantern needs is here; write this scene so it works no matter which stalls were visited or in what order; steam drifts up the steps, paper crinkles, string music floats over; helpers and stall keepers begin to gather; Pip takes a deep breath and looks to Milo'>>",
+      "body": "<<FILL role=choice words=95 beats='the wide stone steps at the head of the square glow under the thickest lantern strings, and the ceremony keepers are setting out the wish-lantern rack; on a long tray they lay spare moon-white wish paper, coils of golden string, and little flames in tins, because no shy latecomer is ever left out at this market; so whatever the evening has held, between Pips basket and the keepers tray, everything her lantern needs is here; write this scene so it works no matter which stalls were visited or in what order; steam drifts up the steps, paper crinkles, string music floats over; helpers and stall keepers begin to gather; Pip takes a deep breath and looks to Milo, and three things could happen next, they could fold and write the wish, get the lantern ready to fly, or gather the stall friends around Pip first'>>",
       "is_ending": false,
       "choices": [
         {
@@ -666,7 +666,7 @@
     },
     {
       "id": "f_string",
-      "body": "<<FILL role=rising words=66 beats='the golden string goes on with the market knot, loop, loop, pull, so the folded wish can hang beneath the lantern like the clapper of a tiny bell; Pip pulls the last loop snug herself and checks it twice; the lantern is dressed and ready; now only the flame is left, the biggest moment of all'>>",
+      "body": "<<FILL role=rising words=66 beats='the golden string goes on with a simple loop-loop-pull knot, easy enough for small paws, so the folded wish can hang beneath the lantern like the clapper of a tiny bell; Pip pulls the last loop snug herself and checks it twice; the lantern is dressed and ready; now only the flame is left, the biggest moment of all'>>",
       "is_ending": false,
       "choices": [
         {
