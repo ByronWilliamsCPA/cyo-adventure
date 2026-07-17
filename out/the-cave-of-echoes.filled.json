@@ -109,7 +109,7 @@
     },
     {
       "id": "la_grotto_app",
-      "body": "The crack is narrow, and Maya could just squeeze through it sideways. But cold water is pooling around her boots, seeping in from somewhere deep in the rock. Biscuit whines softly, caught between the glow ahead and the cold at his paws. Maya presses one hand on the chilly stone and must decide fast: squeeze through before the water rises, or turn back while the way out is still dry?",
+      "body": "The crack is narrow, and Maya could just squeeze through it sideways. But cold water is pooling around her boots. It is seeping in from somewhere deep in the rock. Biscuit whines softly. He is caught between the glow ahead and the cold at his paws. Maya presses one hand on the chilly stone. She must decide fast: squeeze through before the water rises, or turn back while the way out is still dry?",
       "is_ending": false,
       "choices": [
         {
@@ -137,7 +137,7 @@
     },
     {
       "id": "la_squeeze",
-      "body": "Maya turns sideways and wriggles through the cool crack, her torch pointing ahead of her. Stone brushes both her shoulders, then lets go all at once as she pops free into open space. Biscuit squeezes through right behind her and shakes himself hard, spraying water across the floor. Ahead, the blue glow brightens fast, filling a wide, shimmering room just past the next step.",
+      "body": "Maya turns sideways and wriggles through the cool crack, torch pointing ahead of her. Stone brushes both her shoulders, then lets go all at once. She pops free into open space. Biscuit squeezes through right behind her, shaking himself hard and spraying water across the floor. Ahead, the blue glow brightens fast. It fills a wide, shimmering room just past the next step.",
       "is_ending": false,
       "choices": [
         {
@@ -166,7 +166,7 @@
     },
     {
       "id": "la_crystal_take",
-      "body": "Maya reaches up and eases the loose crystal free, and it slips into her palm, cool and heavy, glowing softly with its own blue light. The little crystal lights up a low passage Maya had not seen before, one that curves back the way she came, toward the old lighthouse stairs. Biscuit trots eagerly into the glow, his tail wagging fast and ready to follow the light home.",
+      "body": "Maya reaches up and eases the loose crystal free. It slips into her palm, cool and heavy, glowing softly with its own blue light. The little crystal lights up a low passage Maya had not seen before. It curves back the way she came, toward the old lighthouse stairs. Biscuit trots eagerly into the glow, tail wagging fast, ready to follow the light home.",
       "is_ending": false,
       "choices": [
         {
@@ -276,7 +276,7 @@
     },
     {
       "id": "la_bell",
-      "body": "The rope ladder holds firm all the way down, and at the bottom, Maya finds a huge old ship's bell, hanging green with age from a natural stone arch. Slow drips fall from the ceiling and strike its rim, making it ring softly, again and again, in the patient dark. Biscuit noses at the bell's long shadow, tail wagging, while Maya stares up at it in wonder. She steps closer for a proper look.",
+      "body": "The rope ladder holds firm all the way down. At the bottom, Maya finds a huge old ship's bell, hanging green with age from a natural stone arch. Slow drips fall from the ceiling and strike its rim. They make it ring softly, again and again, in the patient dark. Biscuit noses at the bell's long shadow, tail wagging. Maya stares up at it in wonder, then steps closer for a proper look.",
       "is_ending": false,
       "choices": [
         {
@@ -676,7 +676,7 @@
     },
     {
       "id": "da_bat_back",
-      "body": "Maya will not risk waking the whole roost. She and Biscuit ease back, one quiet step at a time. They retrace the dark passage. Soon they reach the cave mouth. Daylight is dusty and warm. They are safe now. Maya feels awed by what she saw. She talks about the sleeping bats they left behind.",
+      "body": "Maya will not risk waking the whole sleeping roost tonight. She and Biscuit ease back, one quiet step at a time. They retrace the dark passage toward the distant cave mouth. They emerge into daylight dusty and awed, but completely safe. Already, Maya is talking about the hundreds of bats. They were left sleeping peacefully behind them in the dark.",
       "is_ending": true,
       "ending": {
         "id": "e_set_bat",
@@ -815,7 +815,7 @@
     },
     {
       "id": "da_compass",
-      "body": "Maya wipes off the green crust with her sleeve. The needle still swings true. It points her the quick way back to the cave mouth. Biscuit trots ahead, sure of the way. Maya follows the needle through the dark. She moves fast now. The tide is rising close behind them.",
+      "body": "Maya wipes the green crust from the compass with her sleeve, and the needle still swings true, pointing her the quickest way back to the cave mouth. Biscuit trots ahead, sure of the way, while Maya follows the needle through the dark passage. She moves fast now, because the tide is rising close behind them.",
       "is_ending": false,
       "choices": [
         {
@@ -850,7 +850,7 @@
     },
     {
       "id": "da_coins2",
-      "body": "Maya lugs the box up to daylight. She stays just ahead of the rising tide. Her arms ache. Her breath comes ragged. Biscuit bursts out beside her into the sun. His tail wags hard with relief. Maya sets the box down on dry sand. She grins wide. She pictures the museum polishing every coin, and her name on a little card: the girl who found the smugglers' hoard.",
+      "body": "Maya lugs the heavy box up to daylight, just ahead of the rising tide. Her arms ache and her breath comes ragged with the effort. Biscuit bursts out beside her into the warm sun, tail wagging hard with relief. Maya sets the box down on dry sand and grins wide. She is already picturing the museum polishing every coin and printing her name on a little card: the girl who found the smugglers' hoard.",
       "is_ending": true,
       "ending": {
         "id": "e_coins",
