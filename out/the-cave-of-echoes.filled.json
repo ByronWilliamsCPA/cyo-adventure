@@ -376,7 +376,7 @@
     },
     {
       "id": "ra_lake_app",
-      "body": "The rocky shelf narrows ahead. It turns slick and green with clinging weed. Below it waits the vast underground lake, dark and silent. Maya tests one foot on the slippery rock. It slides a little under her boot. Biscuit hangs back, unsure of the footing. Maya must choose now: climb carefully down to the lake's pale shore, or back off the slippery shelf before anyone falls into that cold black water.",
+      "body": "The rocky shelf narrows ahead, turning slick and green with clinging weed. Below it waits the vast underground lake, dark and silent. Maya tests one foot on the slippery rock. She grips a knob of stone first and checks that it holds before she trusts her weight to it. The rock still slides a little under her boot. Biscuit hangs back, unsure of the footing. Maya must choose now. She can climb carefully down to the lake's pale shore, keeping low and using both hands, or back off the slippery shelf before anyone falls into that cold black water.",
       "is_ending": false,
       "choices": [
         {
@@ -404,7 +404,7 @@
     },
     {
       "id": "ra_descend",
-      "body": "Maya picks her way carefully down the rocky shelf. She reaches a shore of pale, smooth gravel beside the vast, still lake. The water lies glassy and cold, stretching into darkness. Something long and dark rests half out of the water on the gravel nearby. Its shape looks strange in the dim torchlight. Biscuit trots toward it first, tail low with curiosity. Maya follows along the shore to see what has washed up here.",
+      "body": "Maya picks her way down the rocky shelf, staying low and keeping three points on the rock at all times. She reaches a shore of pale, smooth gravel beside the vast, still lake. The water lies glassy and cold, stretching into darkness. Something long and dark rests half out of the water on the gravel nearby, its shape strange in the dim torchlight. Biscuit trots toward it first, tail low with curiosity. Maya follows along the shore to see what has washed up here.",
       "is_ending": false,
       "choices": [
         {
@@ -659,7 +659,7 @@
     },
     {
       "id": "da_bat_app",
-      "body": "The grey light overhead comes from a narrow shaft in the roof. It might be a way up and out of the caves. But reaching it means crossing the floor right beneath the sleeping bats. That is close enough to risk waking the whole roost. Biscuit crouches low, waiting for Maya's lead. She must decide now: tiptoe carefully across under the roost, or back quietly away and leave the bats to sleep in peace.",
+      "body": "The grey light overhead comes from a narrow shaft in the roof. It might be a way up and out of the caves. But reaching it means crossing the floor right beneath the sleeping bats, close enough to risk waking the whole roost. These are wild animals, and Maya knows she must never touch them. She can only pass by slow and hushed, keeping her distance. Biscuit crouches low, waiting for Maya's lead. She must decide now: tiptoe carefully across under the roost, or back quietly away and leave the bats to sleep in peace.",
       "is_ending": false,
       "choices": [
         {
@@ -676,7 +676,7 @@
     },
     {
       "id": "da_bat_back",
-      "body": "Maya will not risk waking the whole sleeping roost tonight. She and Biscuit ease back, one quiet step at a time. They retrace the dark passage toward the distant cave mouth. They emerge into daylight dusty and awed, but completely safe. Already, Maya is talking about the hundreds of bats. They were left sleeping peacefully behind them in the dark.",
+      "body": "Maya will not risk waking the whole sleeping roost tonight. She and Biscuit ease back, one quiet step at a time. They retrace the dark passage toward the distant cave mouth. They emerge into daylight dusty and awed, but completely safe. Behind them, the hundreds of bats sleep on, peaceful in the dark. Maya likes knowing she made the kind choice. She wonders what it looks like when the whole roost wakes and pours into the night sky to hunt. She decides to ask the lighthouse ranger about it tomorrow.",
       "is_ending": true,
       "ending": {
         "id": "e_set_bat",
@@ -687,7 +687,7 @@
     },
     {
       "id": "da_bat_enter",
-      "body": "Maya and Biscuit cross the chamber floor on soft, careful feet. Not a single bat stirs above them in the roost. Beneath the shaft of grey light, a jumble of fallen rock forms a rough staircase. It climbs steadily toward the distant circle of daylight far overhead. Biscuit noses at the loose stones eagerly, tail wagging. Maya steadies herself against the rock. She begins picking her way up the rocky steps toward the light above.",
+      "body": "Maya and Biscuit cross the chamber floor on soft, careful feet. They move slow and hushed, giving the wild roost all the space it needs. Not a single bat stirs above them. Beneath the shaft of grey light, a jumble of fallen rock forms a rough staircase. It climbs steadily toward the distant circle of daylight far overhead. Biscuit noses at the loose stones eagerly, tail wagging. Maya steadies herself against the rock. She begins picking her way up the rocky steps toward the light above.",
       "is_ending": false,
       "choices": [
         {
@@ -723,7 +723,7 @@
     },
     {
       "id": "da_skylight",
-      "body": "Maya climbs out through a hidden hole in the clifftop meadow. It sits high above the lighthouse. She blinks hard in the sudden bright sun. Biscuit shakes himself off in the long grass, tail wagging fast with relief. Maya turns back to look at the small, hidden opening behind her. She already imagines how the museum will react. A whole secret way into the caves, and a colony of bats nobody else ever knew was living below the meadow.",
+      "body": "Maya climbs out through a hidden hole in the clifftop meadow, high above the lighthouse. She blinks hard in the sudden bright sun. Biscuit shakes himself off in the long grass, tail wagging fast with relief. Maya turns back to look at the small, hidden opening behind her. She already imagines how the museum will react. It is a whole secret way into the caves. And it comes with a colony of bats nobody else ever knew was living below the meadow.",
       "is_ending": true,
       "ending": {
         "id": "e_bats",
@@ -827,7 +827,7 @@
     },
     {
       "id": "da_compass2",
-      "body": "The century-old compass leads Maya and Biscuit straight out to the cave mouth. They arrive just as the sea comes rushing back in behind them. Maya steps onto dry sand, breathless. She clutches a real smuggler's compass that still finds true north after all these years. She already knows the whole town will beg to hear the story of how she found it, deep beneath the old lighthouse.",
+      "body": "The century-old compass leads Maya and Biscuit straight out to the cave mouth. They arrive just as the sea comes rushing back in behind them. Maya steps onto dry sand, breathless and grinning. A real smuggler's compass sits clutched in her hand, its needle still finding true north after all these years. She already knows the whole town will beg to hear this story, the one about the compass she found deep beneath the old lighthouse.",
       "is_ending": true,
       "ending": {
         "id": "e_compass",
