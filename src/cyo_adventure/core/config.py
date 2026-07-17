@@ -122,6 +122,43 @@ class Settings(BaseSettings):
     # environments where no queue is configured. Production must override via
     # CYO_ADVENTURE_REDIS_URL.
     redis_url: str = "redis://localhost:6379/0"
+    # M5/Phase 5: RateLimitMiddleware's backend selector (middleware/security.py).
+    # "redis" shares rate-limit counters across every worker process via this
+    # same redis_url (the RQ queue's Redis instance, database index 0 by
+    # default; a distinct logical DB can be pointed at via redis_url if
+    # keyspace collision with RQ job data is a concern). "memory" keeps the
+    # legacy process-local counter, useful for single-process local dev or
+    # tests that must not depend on a reachable Redis. RateLimitMiddleware
+    # itself always falls back to the in-memory counter on a Redis error
+    # regardless of this setting: this only chooses the *preferred* backend,
+    # not whether the fallback exists.
+    # #CRITICAL: security: "redis" is the correct default for every deployed
+    # (non-local) tier per docs/planning/roadmap.md Phase 5 -- an in-memory
+    # counter is meaningless across the multi-process/multi-replica production
+    # topology described in SECURITY.md.
+    # #VERIFY: tests/unit/test_security.py::TestRateLimitBackendSetting
+    # covers the default and the env-var override.
+    rate_limit_backend: Literal["redis", "memory"] = Field(
+        default="redis", validation_alias="CYO_ADVENTURE_RATE_LIMIT_BACKEND"
+    )
+    # #CRITICAL: timing: RateLimitMiddleware.dispatch runs on every request; a
+    # slow/black-holed Redis connection must not add unbounded latency to the
+    # request path while stuck waiting for a socket. Both socket_connect_timeout
+    # and socket_timeout on the redis client are set from this value.
+    # #VERIFY: tests/unit/test_security.py::test_redis_backend_falls_back_to_memory_on_connection_error
+    # exercises the fallback path this bound protects.
+    rate_limit_redis_timeout_seconds: float = Field(
+        default=0.5, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_TIMEOUT_SECONDS"
+    )
+    # #CRITICAL: timing: once a Redis error is observed, RateLimitMiddleware
+    # stops retrying Redis for this many seconds and serves every request from
+    # the in-memory fallback instead. Without this circuit breaker, a sustained
+    # outage would pay rate_limit_redis_timeout_seconds of added latency on
+    # EVERY request, not just the first.
+    # #VERIFY: tests/unit/test_security.py::test_redis_backend_circuit_breaker_skips_retry_during_cooldown
+    rate_limit_redis_cooldown_seconds: float = Field(
+        default=5.0, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS"
+    )
     # #CRITICAL: timing: RQ's own default job_timeout is 180s; a live Ollama run
     # (see ollama_timeout_seconds's cold-start note) routinely exceeds that, so an
     # unset job_timeout lets RQ SIGALRM-kill a still-healthy generation job and

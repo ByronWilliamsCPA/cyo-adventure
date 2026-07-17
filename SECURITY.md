@@ -27,12 +27,22 @@ Or email: byronawilliams@gmail.com
 The following limitations are documented and tracked for remediation before
 production deployment or horizontal scaling:
 
-- **Rate limiting is in-memory only.** `middleware/security.py: RateLimitMiddleware`
-  enforces per-IP rate limits using a process-local counter. This is effective for
-  single-process, single-machine deployments but provides no protection across
-  multiple processes or behind a load balancer. Redis-backed rate limiting (e.g.
-  `fastapi-limiter`) is required before any multi-instance deployment. Tracked as
-  a Phase 5 hardening task in the roadmap.
+- **Rate limiting is Redis-backed with an in-memory fail-open fallback.**
+  `middleware/security.py: RateLimitMiddleware` enforces per-IP rate limits
+  using a Redis sorted set (an atomic Lua script), shared across every worker
+  process and replica, and keyed on the same Redis instance/URL the RQ task
+  queue uses (`core/config.py: Settings.redis_url`,
+  `Settings.rate_limit_backend`, default `"redis"` on every deployed tier).
+  This closes the multi-process gap tracked as a Phase 5 hardening task in the
+  roadmap. If Redis is unreachable or times out, the middleware deliberately
+  fails OPEN: it logs a structured `rate_limit_redis_unavailable` warning and
+  falls back to the original process-local in-memory counter for a short
+  cooldown window before retrying Redis, rather than rejecting or hanging
+  every request. This is an intentional availability-over-strictness
+  trade-off: during a Redis outage, the effective rate limit reverts to
+  per-process enforcement (a client distributing requests across replicas is
+  no longer capped in aggregate) until Redis recovers. Operators should alert
+  on the `rate_limit_redis_unavailable` log event.
 
 - **Dev auth stub must be replaced before non-local deployment.** The bearer-token
   extraction in `api/deps.py` treats any token as a verified OIDC subject (no

@@ -549,14 +549,15 @@ runs on Supabase-managed infrastructure instead of the homelab; see
 - [ ] Performance pass, offline-edge hardening, accessibility (WCAG AA basics: contrast,
       focus order, scalable text).
 - [ ] Sentry wired on client and server; backups and a tested restore.
-- [ ] Replace in-memory `RateLimitMiddleware` with Redis-backed rate limiting
-      (`fastapi-limiter` or `slowapi`) to support multi-process and load-balanced
-      deployments. The current in-memory implementation is single-process only
+- [x] Replace in-memory `RateLimitMiddleware` with Redis-backed rate limiting
+      (in-house sliding-window Lua script over the existing `redis` client, not
+      `fastapi-limiter`/`slowapi`) to support multi-process and load-balanced
+      deployments, with a fail-open in-memory fallback on Redis outages
       (documented in SECURITY.md Known Infrastructure Limitations).
-- [ ] Operator runbook and a short authoring guide for non-technical use.
-- [ ] ADR-007 retention purge: the pg_cron job nulling `generation_job.report` 30 days
+- [x] Operator runbook and a short authoring guide for non-technical use.
+- [x] ADR-007 retention purge: the pg_cron job nulling `generation_job.report` 30 days
       post-completion or on publish (raw output currently persists indefinitely; S10).
-- [ ] Offline-copy revocation: archived/pulled books are removed from device caches at
+- [x] Offline-copy revocation: archived/pulled books are removed from device caches at
       next connection, completing the kill switch and the incident pull-everywhere path
       (G8, A5).
 - [ ] Admin audit view over the pipeline event log: who did what to child-linked data,
