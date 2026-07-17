@@ -84,7 +84,12 @@ test.describe('moderation thresholds', () => {
 
     await page.goto('/admin/moderation-thresholds')
     await expect(page.getByRole('cell', { name: 'violence', exact: true })).toBeVisible()
+    // Removing an override changes live surfacing behavior for a whole
+    // age band/category, so it is gated behind a confirm dialog (main's
+    // 2026-07-16 UX pass, same pattern as approve/decline); the delete
+    // fires only from "Confirm remove", not the row button itself.
     await page.getByRole('button', { name: 'Remove violence override for 5-8' }).click()
+    await page.getByRole('button', { name: 'Confirm remove' }).click()
     await expect(page.getByText('No overrides yet.')).toBeVisible()
   })
 
@@ -105,7 +110,11 @@ test.describe('moderation thresholds', () => {
     await page.goto('/admin/moderation-thresholds')
     const floorInput = page.getByLabel('Noise floor (0-1)')
     await floorInput.fill('0.35')
+    // Saving the noise floor affects every reviewer, so it too is gated
+    // behind a confirm dialog (main's 2026-07-16 UX pass); the PUT fires
+    // only from "Confirm noise floor".
     await page.getByRole('button', { name: 'Save noise floor' }).click()
+    await page.getByRole('button', { name: 'Confirm noise floor' }).click()
 
     await expect.poll(() => savedValue).toBe(0.35)
   })
@@ -152,9 +161,13 @@ test.describe('moderation dashboard', () => {
     await expect(page.getByRole('heading', { name: 'Moderation dashboard' })).toBeVisible()
     await expect(page.getByText('violence in 5-8')).toBeVisible()
 
+    // Applying a suggestion changes live surfacing behavior, so it too is
+    // gated behind a confirm dialog (main's 2026-07-16 UX pass); the upsert
+    // fires only from "Confirm apply", not the row button itself.
     await page
       .getByRole('button', { name: 'Apply: raise violence (5-8) to flag' })
       .click()
+    await page.getByRole('button', { name: 'Confirm apply' }).click()
 
     await expect.poll(() => upsertPosted).toBe(true)
     await expect(page.getByText('No threshold suggestions right now.')).toBeVisible()
