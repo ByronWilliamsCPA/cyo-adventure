@@ -51,6 +51,7 @@ from cyo_adventure.core.exceptions import (
     StateTransitionError,
     ValidationError,
 )
+from cyo_adventure.core.observability import init_sentry
 from cyo_adventure.middleware import CorrelationMiddleware, add_security_middleware
 from cyo_adventure.utils.logging import get_logger
 
@@ -208,6 +209,7 @@ def create_app() -> FastAPI:
     Returns:
         FastAPI: The configured application.
     """
+    init_sentry(settings)
     app = FastAPI(
         title="CYO Adventure",
         version="0.1.0",

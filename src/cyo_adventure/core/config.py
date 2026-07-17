@@ -599,6 +599,37 @@ class Settings(BaseSettings):
     cover_max_bytes: int = 256_000
     cover_job_timeout_seconds: int = 180
 
+    # --- Observability: Sentry (M5 / Phase 5) ---
+    # Read from the UNPREFIXED SENTRY_DSN env var: .env.example already
+    # documents this name (Observability section), matching the
+    # OPENROUTER_API_KEY/OLLAMA_*/OIDC_* precedent for operator-facing names.
+    # None (default) disables Sentry entirely; core/observability.py::init_sentry
+    # is a documented no-op in that case, so leaving this unset is always safe
+    # for local dev, CI, and any deployment that has not opted in.
+    # #CRITICAL: security: this is not a secret in the traditional sense (a
+    # Sentry DSN is a write-only ingest endpoint, not a credential that grants
+    # read access), but it still identifies the project; never log it.
+    # #VERIFY: init_sentry never logs the DSN value itself, only whether one
+    # is configured.
+    sentry_dsn: str | None = Field(default=None, validation_alias="SENTRY_DSN")
+    # Fraction of transactions sampled for Sentry performance tracing
+    # (0.0-1.0). Low by default: this deployment wants error tracking first,
+    # not full APM, and a kids' reading app has no need for high trace volume
+    # against the Sentry quota. Prefixed (cyo_adventure_) since this is an
+    # internal tuning knob, not an operator-facing name mirrored from
+    # another tool the way SENTRY_DSN is.
+    # #ASSUME: external resources: sentry_sdk.init clamps an out-of-range
+    # sample rate itself; the ge/le bounds below just fail fast on an
+    # obviously-wrong config value instead of deferring to that clamp.
+    # #VERIFY: tests/unit/test_config.py-style bounds check via Pydantic's
+    # own ge/le validation (rejects <0 or >1 at startup).
+    sentry_traces_sample_rate: float = Field(
+        default=0.1,
+        ge=0.0,
+        le=1.0,
+        validation_alias="CYO_ADVENTURE_SENTRY_TRACES_SAMPLE_RATE",
+    )
+
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.
