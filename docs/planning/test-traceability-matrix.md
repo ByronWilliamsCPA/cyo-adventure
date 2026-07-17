@@ -86,7 +86,7 @@ integration suites rather than browser E2E.
 | A10 | Admin-initiated requests | ✅ | 🟡 | ❌ | ❌ |
 | A12/A15 | User mgmt; connections console | PR267 (specs ride the PR) | ❌ | ❌ | ❌ |
 | A16 | Cover generation | ❌ | ❌ | ❌ | ❌ |
-| S2 | Conflict resolution | ✅ | ❌ (handoff doc; race mechanics written) | ❌ | ❌ |
+| S2 | Conflict resolution | ✅ | 🟡 (spec written: `offline-conflict-real.spec.ts`; runs nightly via `e2e-real-nightly.yml`, not yet observed passing in CI) | ❌ | ❌ |
 | S8 | Request -> shelf pipeline | ✅ (segmented) | 🟡 (seeded, no live generate) | ❌ | ❌ |
 | S10 | PII/IDOR boundaries | ✅ | ✅ | ❌ | ❌ |
 | S11 | Social/device boundary | ✅ | ❌ | 🟡 | 🟡 |
@@ -126,10 +126,11 @@ else needs mocked + one real-environment tier minimum.
    GitHub issue labeled `e2e-alert` with the run link. Repo watchers then get email/push
    from GitHub natively. This is the cheapest "quickly alerted" mechanism; a messaging
    webhook can layer on later.
-3. **Create `e2e-prod.yml`**: daily cron (offset from staging, e.g. 13:30 UTC) + manual
-   dispatch, running the existing `e2e-prod` specs against the live URL with a dedicated
-   test family, same trace-artifact and alerting steps. The device-grant spec already
-   demonstrates safe prod writes (mint then revoke); keep prod additions read-mostly.
+3. **Done** (`.github/workflows/e2e-prod.yml`): daily cron `30 13 * * *` (offset from
+   staging) + manual dispatch, running the existing `e2e-prod` specs against the live URL
+   with a dedicated test family, plus the pinned-issue `e2e-alert` step. The device-grant
+   spec already demonstrates safe prod writes (mint then revoke); prod additions stay
+   read-mostly.
 4. **Extend staging beyond smoke to GJ2, GJ3, GJ5**: staging is the only environment
    where the full generate-moderate-approve pipeline can run repeatedly without touching
    family prod data; seed it with a standing test family, admin, and a mock-provider or
@@ -138,9 +139,11 @@ else needs mocked + one real-environment tier minimum.
 5. **Promote GJ1 and GJ4 in prod from smoke to journey**: extend the existing prod specs
    so the kid actually opens a book and reaches a page (GJ1), and add the offline
    toggle + resync leg to GJ4 where Playwright's offline emulation permits.
-6. **Wire e2e-real into a nightly CI job** (Postgres service container + uvicorn + seed
-   script) rather than leaving it developer-memory-only; keep it out of the PR path for
-   speed. This also absorbs the S2 conflict-race handoff once that spec lands.
+6. **Done** (`.github/workflows/e2e-real-nightly.yml`): nightly cron `30 9 * * *`
+   (Postgres + Redis service containers, real Supabase migrations, `seed_dev_data.py`,
+   backgrounded uvicorn) plus manual dispatch, kept out of the PR path. Also absorbs the
+   S2 conflict-race handoff: `frontend/e2e-real/offline-conflict-real.spec.ts` now runs in
+   this job (see the S2 row above).
 7. **Close the two shipped-but-untested rows**: K5 (assert Go Back returns to the prior
    node without state corruption; it was just ratified, it deserves a pin) and K8/A16
    (cover renders when present, letter-tile fallback when absent; admin generate button
