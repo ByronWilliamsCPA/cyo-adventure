@@ -30,6 +30,7 @@ import {
   ReviewDetailPage,
   RouteError,
   RouteFallback,
+  AuditPage,
   UserManagementPage,
 } from './routeElements'
 import {
@@ -199,6 +200,10 @@ export const routes = [
                   {
                     path: 'users',
                     element: suspended(<UserManagementPage />),
+                  },
+                  {
+                    path: 'audit',
+                    element: suspended(<AuditPage />),
                   },
                 ],
               },

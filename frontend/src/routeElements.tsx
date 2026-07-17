@@ -148,6 +148,10 @@ export const UserManagementPage = lazyWithReload('UserManagementPage', () =>
     default: m.UserManagementPage,
   }))
 )
+
+export const AuditPage = lazyWithReload('AuditPage', () =>
+  import('./admin/AuditPage').then((m) => ({ default: m.AuditPage }))
+)
 export const ReaderRoute = lazyWithReload('ReaderRoute', () =>
   import('./reader/ReaderRoute').then((m) => ({ default: m.ReaderRoute }))
 )

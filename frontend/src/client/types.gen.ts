@@ -357,6 +357,80 @@ export type AssignmentListView = {
 };
 
 /**
+ * AuditEventView
+ *
+ * One append-only pipeline_event row, projected for the admin console.
+ */
+export type AuditEventView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Occurred At
+     */
+    occurred_at: string;
+    /**
+     * Actor Id
+     */
+    actor_id: string | null;
+    /**
+     * Actor Role
+     */
+    actor_role: string;
+    /**
+     * Entity Type
+     */
+    entity_type: string;
+    /**
+     * Entity Id
+     */
+    entity_id: string;
+    /**
+     * Event Type
+     */
+    event_type: string;
+    /**
+     * From State
+     */
+    from_state: string | null;
+    /**
+     * To State
+     */
+    to_state: string | null;
+    /**
+     * Payload
+     */
+    payload: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * AuditListView
+ *
+ * A page of the audit log, newest first.
+ */
+export type AuditListView = {
+    /**
+     * Events
+     */
+    events: Array<AuditEventView>;
+    /**
+     * Limit
+     */
+    limit: number;
+    /**
+     * Offset
+     */
+    offset: number;
+    /**
+     * Has More
+     */
+    has_more: boolean;
+};
+
+/**
  * AuthoringPlanRequest
  *
  * Admin's choice of authoring method, mechanism, and prep model.
@@ -2264,6 +2338,12 @@ export type ReadinessCheck = {
      * Error message if failed
      */
     error?: string | null;
+    /**
+     * State
+     *
+     * Fine-grained state: ok, degraded, or unconfigured
+     */
+    state?: 'ok' | 'degraded' | 'unconfigured' | null;
 };
 
 /**
@@ -4831,6 +4911,70 @@ export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses = {
 };
 
 export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponse = ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses[keyof ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses];
+
+export type ListAuditEventsApiV1AdminAuditGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: {
+        /**
+         * Kind
+         */
+        kind?: string | null;
+        /**
+         * Actor Id
+         */
+        actor_id?: string | null;
+        /**
+         * Storybook Id
+         */
+        storybook_id?: string | null;
+        /**
+         * Profile Id
+         */
+        profile_id?: string | null;
+        /**
+         * Since
+         */
+        since?: string | null;
+        /**
+         * Until
+         */
+        until?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Offset
+         */
+        offset?: number;
+    };
+    url: '/api/v1/admin/audit';
+};
+
+export type ListAuditEventsApiV1AdminAuditGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListAuditEventsApiV1AdminAuditGetError = ListAuditEventsApiV1AdminAuditGetErrors[keyof ListAuditEventsApiV1AdminAuditGetErrors];
+
+export type ListAuditEventsApiV1AdminAuditGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: AuditListView;
+};
+
+export type ListAuditEventsApiV1AdminAuditGetResponse = ListAuditEventsApiV1AdminAuditGetResponses[keyof ListAuditEventsApiV1AdminAuditGetResponses];
 
 export type ListAllowlistApiV1AdminProviderAllowlistGetData = {
     body?: never;

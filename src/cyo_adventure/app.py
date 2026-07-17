@@ -19,6 +19,7 @@ from cyo_adventure.api import (
     admin_users,
     approval,
     assignments,
+    audit,
     child_sessions,
     covers,
     device_grants,
@@ -245,6 +246,7 @@ def create_app() -> FastAPI:
     app.include_router(covers.router)
     app.include_router(moderation_thresholds.router)
     app.include_router(moderation_dashboard.router)
+    app.include_router(audit.router)
     app.include_router(provider_allowlist.router)
     app.include_router(me.router)
     app.include_router(story_requests.router)

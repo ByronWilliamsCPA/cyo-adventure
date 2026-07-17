@@ -495,6 +495,7 @@ _ROUTE_SPECS: list[RouteSpec] = [
         query_params=_threshold_query,
     ),
     RouteSpec("GET", "/api/v1/admin/moderation/dashboard", frozenset({Role.ADMIN})),
+    RouteSpec("GET", "/api/v1/admin/audit", frozenset({Role.ADMIN})),
     RouteSpec("GET", "/api/v1/admin/moderation/noise-floor", frozenset({Role.ADMIN})),
     RouteSpec(
         "PUT",
