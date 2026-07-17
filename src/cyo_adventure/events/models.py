@@ -57,6 +57,12 @@ class EventType(StrEnum):
     RATED = "rated"
     KID_FLAGGED = "kid_flagged"
     FLAG_RESOLVED = "flag_resolved"
+    # WS-J admin user management: each covers several mutations via a
+    # payload "action" field (mirrors THRESHOLD_CHANGED covering both upsert
+    # and delete), rather than one event type per CRUD verb per entity.
+    USER_MANAGED = "user_managed"
+    FAMILY_MANAGED = "family_managed"
+    FAMILY_CONNECTION_CHANGED = "family_connection_changed"
 
 
 SYSTEM_ACTOR_ROLE = "system"

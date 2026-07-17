@@ -50,6 +50,10 @@ describe('AdminShell', () => {
       'href',
       '/admin/moderation-thresholds'
     )
+    expect(screen.getByRole('link', { name: 'User management' })).toHaveAttribute(
+      'href',
+      '/admin/users'
+    )
     expect(screen.getByText('Admin')).toBeInTheDocument()
   })
 

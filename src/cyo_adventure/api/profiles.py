@@ -144,15 +144,24 @@ async def list_profiles(ctx: Context) -> ProfileListView:
     # #VERIFY: test_profiles.py::test_device_grant_lists_own_family_profiles
     # asserts the family's profiles are returned and a second family's are not.
     if ctx.principal.role is Role.DEVICE:
+        # #ASSUME: data-integrity: a deactivated profile (WS-J) is excluded
+        # here too, mirroring _resolve_profiles, so a shared device's picker
+        # never offers a profile an admin has taken offline.
+        # #VERIFY: tests/integration/test_admin_profiles_api.py::
+        # test_deactivated_profile_excluded_from_device_listing.
         rows = await ctx.session.scalars(
             select(ChildProfile)
-            .where(ChildProfile.family_id == ctx.principal.family_id)
+            .where(
+                ChildProfile.family_id == ctx.principal.family_id,
+                ChildProfile.deactivated_at.is_(None),
+            )
             .order_by(ChildProfile.created_at.asc(), ChildProfile.id.asc())
         )
         return ProfileListView(profiles=[_view(row) for row in rows.all()])
     # #CRITICAL: security: scope strictly to principal.profile_ids (resolved at
     # the auth boundary in deps.py), never to a client-supplied family or
-    # profile id, so no cross-family row can ever appear (IDOR).
+    # profile id, so no cross-family row can ever appear (IDOR). profile_ids
+    # already excludes deactivated profiles (_resolve_profiles).
     # #VERIFY: test_profiles.py::test_guardian_lists_own_family_profiles asserts
     # family B's profile is absent from guardian A's list.
     if not ctx.principal.profile_ids:

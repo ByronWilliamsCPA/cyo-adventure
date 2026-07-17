@@ -140,6 +140,11 @@ export const ModerationDashboardPage = lazyWithReload('ModerationDashboardPage',
     default: m.ModerationDashboardPage,
   }))
 )
+export const UserManagementPage = lazyWithReload('UserManagementPage', () =>
+  import('./admin/UserManagementPage').then((m) => ({
+    default: m.UserManagementPage,
+  }))
+)
 export const ReaderRoute = lazyWithReload('ReaderRoute', () =>
   import('./reader/ReaderRoute').then((m) => ({ default: m.ReaderRoute }))
 )

@@ -69,6 +69,21 @@ alter table if exists "public"."kid_flag" enable row level security;
 -- tests/unit/test_pipeline_event_check_vocab.py for event_type; entity_type
 -- has no such guard, by design -- see that test module's trailing comment).
 --
+-- #CRITICAL: data integrity: 20260716120000_admin_user_management.sql (which
+-- applies before this migration in timestamp order) ALSO replaces both of
+-- these CHECK constraints wholesale with its own absolute value list. If
+-- this migration's replacement list only carried the K15 values, applying
+-- both migrations in sequence would silently drop the WS-J admin values
+-- ('user_managed'/'family_managed'/'family_connection_changed' and
+-- 'user'/'family'/'family_connection') the prior migration just added. The
+-- lists below are therefore the union of both migrations' additions, not
+-- just this one's, and must be kept that way if either list grows again.
+-- #VERIFY: tests/unit/test_pipeline_event_check_vocab.py's drift guard pins
+-- the event_type list against cyo_adventure.events.models.EventType; there
+-- is no equivalent guard for entity_type (see that test module's trailing
+-- comment), so a future entity_type addition must be checked by hand
+-- against every migration that widens this CHECK.
+--
 -- Written to be idempotent (checks the current constraint definition before
 -- acting), mirroring 20260713181500_add_device_actor_role_to_pipeline_event.sql,
 -- so it is a no-op if applied a second time or if the constraint already
@@ -80,13 +95,16 @@ BEGIN
         FROM pg_constraint
         WHERE conname = 'ck_pipeline_event_event_type'
           AND conrelid = '"public"."pipeline_event"'::regclass
-          AND pg_get_constraintdef(oid) NOT LIKE '%''kid_flagged''%'
+          AND (
+              pg_get_constraintdef(oid) NOT LIKE '%''kid_flagged''%'
+              OR pg_get_constraintdef(oid) NOT LIKE '%''user_managed''%'
+          )
     ) THEN
         ALTER TABLE "public"."pipeline_event"
             DROP CONSTRAINT "ck_pipeline_event_event_type";
         ALTER TABLE "public"."pipeline_event"
             ADD CONSTRAINT "ck_pipeline_event_event_type"
-            CHECK ((("event_type")::"text" = ANY ((ARRAY['request_created'::character varying, 'request_approved'::character varying, 'request_declined'::character varying, 'plan_assigned'::character varying, 'generation_started'::character varying, 'generation_finished'::character varying, 'moderation_completed'::character varying, 'repair_applied'::character varying, 'sent_back'::character varying, 'released'::character varying, 'threshold_changed'::character varying, 'noise_floor_changed'::character varying, 'book_assigned'::character varying, 'rated'::character varying, 'kid_flagged'::character varying, 'flag_resolved'::character varying])::"text"[])));
+            CHECK ((("event_type")::"text" = ANY ((ARRAY['request_created'::character varying, 'request_approved'::character varying, 'request_declined'::character varying, 'plan_assigned'::character varying, 'generation_started'::character varying, 'generation_finished'::character varying, 'moderation_completed'::character varying, 'repair_applied'::character varying, 'sent_back'::character varying, 'released'::character varying, 'threshold_changed'::character varying, 'noise_floor_changed'::character varying, 'book_assigned'::character varying, 'rated'::character varying, 'kid_flagged'::character varying, 'flag_resolved'::character varying, 'user_managed'::character varying, 'family_managed'::character varying, 'family_connection_changed'::character varying])::"text"[])));
     END IF;
 END
 $$;
@@ -98,13 +116,16 @@ BEGIN
         FROM pg_constraint
         WHERE conname = 'ck_pipeline_event_entity_type'
           AND conrelid = '"public"."pipeline_event"'::regclass
-          AND pg_get_constraintdef(oid) NOT LIKE '%''kid_flag''%'
+          AND (
+              pg_get_constraintdef(oid) NOT LIKE '%''kid_flag''%'
+              OR pg_get_constraintdef(oid) NOT LIKE '%''family_connection''%'
+          )
     ) THEN
         ALTER TABLE "public"."pipeline_event"
             DROP CONSTRAINT "ck_pipeline_event_entity_type";
         ALTER TABLE "public"."pipeline_event"
             ADD CONSTRAINT "ck_pipeline_event_entity_type"
-            CHECK ((("entity_type")::"text" = ANY ((ARRAY['story_request'::character varying, 'generation_job'::character varying, 'storybook'::character varying, 'storybook_version'::character varying, 'series'::character varying, 'storybook_assignment'::character varying, 'rating'::character varying, 'moderation_threshold'::character varying, 'moderation_setting'::character varying, 'kid_flag'::character varying])::"text"[])));
+            CHECK ((("entity_type")::"text" = ANY ((ARRAY['story_request'::character varying, 'generation_job'::character varying, 'storybook'::character varying, 'storybook_version'::character varying, 'series'::character varying, 'storybook_assignment'::character varying, 'rating'::character varying, 'moderation_threshold'::character varying, 'moderation_setting'::character varying, 'kid_flag'::character varying, 'user'::character varying, 'family'::character varying, 'family_connection'::character varying])::"text"[])));
     END IF;
 END
 $$;

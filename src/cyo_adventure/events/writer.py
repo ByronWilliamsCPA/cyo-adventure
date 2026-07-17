@@ -46,6 +46,12 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # itself carries no free text and neither does this event.
     EventType.KID_FLAGGED: frozenset({"reason", "storybook_id"}),
     EventType.FLAG_RESOLVED: frozenset({"resolution"}),
+    # WS-J admin user management. Deliberately excludes email/display_name/
+    # family name: those are contact/identity data, not the control-plane
+    # facts (action, role, status) this log needs to stay PII-free (D3).
+    EventType.USER_MANAGED: frozenset({"action", "role", "status"}),
+    EventType.FAMILY_MANAGED: frozenset({"action", "status"}),
+    EventType.FAMILY_CONNECTION_CHANGED: frozenset({"action", "connected_family_id"}),
 }
 
 
