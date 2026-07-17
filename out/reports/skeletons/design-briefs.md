@@ -79,6 +79,17 @@ decisions per path (pure tree couples depth to the ending budget); (4) negative
 endings only after corner-cutting choices, adult-cushioned at young bands,
 doctrine-teaching, no death below the band ceiling.
 
+TIER-2 (STATEFUL) PATTERN RULES (from the approved pattern-setter, the-glass-comet;
+apply to briefs #18, #20, #21, #23, #26, #28, #30, #32, #34, #36): (1) <= 3 variables,
+each gating a different outcome axis; (2) EXACT-PARTITION conditions at every
+convergence/resolution node (cover all reachable states, exactly one enabled choice,
+proven by re-running walk_configurations); (3) UNROLL retries/loops so each iteration
+consumes a monotonic resource and self-terminates acyclically (a literal cycle trips
+PL-18 off b&b); (4) reserve the best outcome for a single early gated state; (5) every
+multi-parent beat entry-agnostic + carrying state-reflection instructions; (6) <= ~8-10
+decision-clicks per real playthrough at 10-13; (7) leave 1-2 nodes of depth headroom
+under the cell cap (do NOT ship at the cap like the pattern-setter did).
+
 Ending-count targets follow the ADR-011 master table for the cell; gamebook cells
 are "few wins + many fails" with ~25-35% of nodes as terminals. Every brief also
 carries the constants: decisions per path ~4-8, choices per decision 2-3, ~2-3 setup
