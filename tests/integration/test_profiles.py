@@ -813,7 +813,7 @@ async def test_create_and_update_envelope_fields(
         },
         headers=guardian,
     )
-    assert created.status_code == 200, created.text
+    assert created.status_code == 201, created.text
     body = created.json()
     assert body["request_auto_approve"] is True
     assert body["monthly_request_envelope"] == 3

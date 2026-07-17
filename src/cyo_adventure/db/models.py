@@ -413,6 +413,18 @@ class FamilyConnection(Base):
             "(consented_by_sharer_user_id IS NULL) = (consented_by_sharer_at IS NULL)",
             name="ck_family_connection_sharer_consent_pairing",
         ),
+        # Mirrors the consent migration's partial index backing the K17
+        # "active connections where I am the viewer" lookup; the schema-parity
+        # test compares migration-built and ORM-built schemas, so it must
+        # exist on both sides.
+        Index(
+            "ix_family_connection_active_viewer",
+            "family_id",
+            postgresql_where=sa_text(
+                "consented_by_viewer_user_id IS NOT NULL"
+                " AND consented_by_sharer_user_id IS NOT NULL"
+            ),
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
