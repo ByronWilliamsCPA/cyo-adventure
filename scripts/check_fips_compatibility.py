@@ -13,21 +13,30 @@ FIPS mode restricts cryptographic algorithms to NIST-approved ones:
 - Flagged for migration: pre-standardization PQC names (Kyber, Dilithium,
   SPHINCS+); use the finalized FIPS 203/204/205 parameter sets instead.
 
+Findings that are manual-verification nudges (severity "info") can be
+acknowledged in pyproject.toml under [tool.fips_check.acknowledged] with a
+mandatory reason, reference, and reviewed date; see ACK_MAX_AGE_DAYS below.
+
 Usage:
-    python scripts/check_fips_compatibility.py [--strict] [--fix-hints]
+    python scripts/check_fips_compatibility.py [--strict] [--fail-level LEVEL]
+        [--fix-hints]
 
 Exit codes:
-    0: No FIPS compatibility issues found
-    1: Issues found (or errors)
+    0: No findings at or above the failure level (acknowledged info excluded)
+    1: Findings at or above the failure level (errors always fail; warnings
+       fail under --strict or --fail-level warning/info; unacknowledged info
+       fails under --fail-level info)
 """
 
 from __future__ import annotations
 
 import argparse
 import ast
+import datetime
 import json
 import re
 import sys
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -94,6 +103,27 @@ NON_FIPS_CIPHERS = {
     "seed",
 }
 
+# Cipher names that are also ordinary English identifiers. Matching them as
+# bare attribute names produces false positives (a `seed_staging.seed()` call
+# is database seeding, not the SEED block cipher of RFC 4269), so these names
+# are only flagged when the call carries cryptographic context: the module
+# imports a crypto library, or the call's attribute chain passes through a
+# known crypto namespace. Unambiguous names (des, rc4, blowfish, ...) are
+# flagged unconditionally as before.
+AMBIGUOUS_CIPHER_NAMES = {"seed", "idea"}
+
+# Lowercased module-path or attribute-chain segments that mark code as
+# cryptographic for the ambiguous-name gate above.
+CRYPTO_NAMESPACE_SEGMENTS = {
+    "crypto",  # pycrypto / pycryptodome (Crypto.Cipher.*)
+    "cryptodome",  # pycryptodomex (Cryptodome.Cipher.*)
+    "cryptography",  # pyca/cryptography
+    "hazmat",
+    "ciphers",
+    "cipher",
+    "m2crypto",
+}
+
 # NIST-finalized post-quantum algorithms (FIPS 203/204/205) and the hybrid TLS
 # key-exchange group built on them. These are FIPS-approved (ADR-013) and must
 # never be flagged, including by any future substring or name-list matching.
@@ -124,6 +154,31 @@ PQC_PRE_STANDARD_NAMES: dict[str, str] = {
 }
 
 
+# Acknowledged-findings baseline (ADR-013). Info-level "may need FIPS
+# verification" findings can be acknowledged in pyproject.toml under a
+# [tool.fips_check.acknowledged.<package>] table whose mandatory keys are
+# reason (why the disposition is acceptable), reference (a citation into
+# docs/security/crypto-inventory.md), and reviewed (a YYYY-MM-DD date).
+#
+# Acknowledgments apply ONLY to info-severity findings; error findings can
+# never be baselined away. An acknowledgment older than ACK_MAX_AGE_DAYS stops
+# suppressing and emits a warning instead, which fails the build at
+# --fail-level warning or stricter; the cadence mirrors the quarterly
+# signature-gate review mandated by ADR-013 decision 5.
+ACK_MAX_AGE_DAYS = 90
+ACK_REQUIRED_FIELDS = ("reason", "reference", "reviewed")
+
+
+@dataclass
+class Acknowledgment:
+    """A justified, dated disposition for one info-level package finding."""
+
+    package: str
+    reason: str
+    reference: str
+    reviewed: datetime.date
+
+
 @dataclass
 class FipsIssue:
     """Represents a FIPS compatibility issue."""
@@ -134,14 +189,85 @@ class FipsIssue:
     category: str  # "hash", "cipher", "package", "config"
     message: str
     fix_hint: str | None = None
+    package: str | None = None  # set on package findings; keys acknowledgments
+    acknowledged: bool = False  # excluded from failure computation when True
+
+
+def _module_imports_crypto(tree: ast.AST) -> bool:
+    """Report whether a module imports any known cryptography library.
+
+    Scans every ``import``/``from ... import`` in the tree (not just
+    top-of-file ones) so the result does not depend on statement order
+    relative to the calls being checked.
+
+    Args:
+        tree: Parsed AST of the module under inspection.
+
+    Returns:
+        True when any imported module path contains a segment from
+        CRYPTO_NAMESPACE_SEGMENTS.
+    """
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            modules = [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom):
+            modules = [node.module] if node.module else []
+        else:
+            continue
+        for module in modules:
+            segments = {part.lower() for part in module.split(".")}
+            if segments & CRYPTO_NAMESPACE_SEGMENTS:
+                return True
+    return False
+
+
+def _attribute_chain(node: ast.expr) -> list[str]:
+    """Return the lowercased dotted-name chain of an expression.
+
+    ``Crypto.Cipher.SEED.new`` yields ``["crypto", "cipher", "seed", "new"]``.
+    Non-name path elements (calls, subscripts) terminate the walk, so only
+    the trailing plain-attribute suffix is returned.
+
+    Args:
+        node: The expression to unwind (typically ``ast.Call.func``).
+
+    Returns:
+        Chain segments from base to attribute, lowercased.
+    """
+    parts: list[str] = []
+    current: ast.expr = node
+    while isinstance(current, ast.Attribute):
+        parts.append(current.attr.lower())
+        current = current.value
+    if isinstance(current, ast.Name):
+        parts.append(current.id.lower())
+    return list(reversed(parts))
 
 
 class FipsCodeVisitor(ast.NodeVisitor):
     """AST visitor to detect FIPS-incompatible code patterns."""
 
-    def __init__(self, file_path: Path) -> None:
+    def __init__(self, file_path: Path, has_crypto_import: bool = False) -> None:
         self.file_path = file_path
+        self.has_crypto_import = has_crypto_import
         self.issues: list[FipsIssue] = []
+
+    def _call_has_crypto_context(self, node: ast.Call) -> bool:
+        """Decide whether a call is plausibly cryptographic.
+
+        Used only to gate AMBIGUOUS_CIPHER_NAMES; unambiguous cipher names
+        never consult this.
+
+        Args:
+            node: The call under inspection.
+
+        Returns:
+            True when the module imports a crypto library or the call's
+            attribute chain passes through a crypto namespace segment.
+        """
+        if self.has_crypto_import:
+            return True
+        return bool(set(_attribute_chain(node.func)) & CRYPTO_NAMESPACE_SEGMENTS)
 
     def _check_hashlib_call(self, node: ast.Call) -> None:
         """Detect hashlib.md5(), hashlib.sha1(), and similar non-FIPS hash calls.
@@ -233,6 +359,10 @@ class FipsCodeVisitor(ast.NodeVisitor):
             return
         if func_name not in NON_FIPS_CIPHERS:
             return
+        if func_name in AMBIGUOUS_CIPHER_NAMES and not self._call_has_crypto_context(
+            node
+        ):
+            return
         self.issues.append(
             FipsIssue(
                 file_path=self.file_path,
@@ -259,6 +389,10 @@ class FipsCodeVisitor(ast.NodeVisitor):
             if self._check_pqc_pre_standard_name(node, algo):
                 continue
             if algo not in NON_FIPS_HASHES and algo not in NON_FIPS_CIPHERS:
+                continue
+            if algo in AMBIGUOUS_CIPHER_NAMES and not self._call_has_crypto_context(
+                node
+            ):
                 continue
             self.issues.append(
                 FipsIssue(
@@ -297,6 +431,246 @@ class FipsCodeVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+def _coerce_reviewed_date(value: object) -> datetime.date | None:
+    """Normalize a TOML ``reviewed`` value to a date, or None if invalid.
+
+    TOML bare dates parse to ``datetime.date`` (or ``datetime.datetime`` with
+    a time component); quoted ISO strings are also accepted.
+
+    Args:
+        value: The raw value from the acknowledgment table.
+
+    Returns:
+        The reviewed date, or None when the value is not a usable date.
+    """
+    if isinstance(value, datetime.datetime):
+        return value.date()
+    if isinstance(value, datetime.date):
+        return value
+    if isinstance(value, str):
+        try:
+            return datetime.date.fromisoformat(value)
+        except ValueError:
+            return None
+    return None
+
+
+def load_acknowledgments(
+    pyproject_path: Path,
+) -> tuple[dict[str, Acknowledgment], list[FipsIssue]]:
+    """Load [tool.fips_check.acknowledged] entries from pyproject.toml.
+
+    Malformed entries (missing required fields, unparseable dates, non-table
+    values) are never silently dropped: each produces a warning-severity
+    issue, so under --strict or --fail-level warning a broken acknowledgment
+    fails the build instead of quietly acknowledging nothing.
+
+    Args:
+        pyproject_path: Path to the pyproject.toml to read.
+
+    Returns:
+        A mapping of lowercased package name to Acknowledgment, plus any
+        config-hygiene issues found while loading.
+    """
+    acks: dict[str, Acknowledgment] = {}
+    issues: list[FipsIssue] = []
+    if not pyproject_path.exists():
+        return acks, issues
+    try:
+        with pyproject_path.open("rb") as handle:
+            data = tomllib.load(handle)
+    except (tomllib.TOMLDecodeError, OSError) as exc:
+        issues.append(
+            FipsIssue(
+                file_path=pyproject_path,
+                line_number=0,
+                severity="warning",
+                category="config",
+                message=f"Could not parse acknowledgment config: {exc}",
+            )
+        )
+        return acks, issues
+
+    table = data.get("tool", {}).get("fips_check", {}).get("acknowledged", {})
+    if not isinstance(table, dict):
+        issues.append(
+            FipsIssue(
+                file_path=pyproject_path,
+                line_number=0,
+                severity="warning",
+                category="config",
+                message="[tool.fips_check.acknowledged] must be a table of tables",
+            )
+        )
+        return acks, issues
+
+    for package, entry in table.items():
+        problem: str | None = None
+        reviewed: datetime.date | None = None
+        if not isinstance(entry, dict):
+            problem = "entry must be a table with reason, reference, reviewed"
+        else:
+            missing = [field for field in ACK_REQUIRED_FIELDS if field not in entry]
+            if missing:
+                problem = f"missing required field(s): {', '.join(missing)}"
+            else:
+                reviewed = _coerce_reviewed_date(entry["reviewed"])
+                if reviewed is None:
+                    problem = "reviewed must be a date (YYYY-MM-DD)"
+        if problem is not None or reviewed is None:
+            issues.append(
+                FipsIssue(
+                    file_path=pyproject_path,
+                    line_number=0,
+                    severity="warning",
+                    category="config",
+                    message=f"Invalid acknowledgment for '{package}': {problem}",
+                    fix_hint=(
+                        "Each [tool.fips_check.acknowledged.<pkg>] entry needs "
+                        "reason, reference, and reviewed (a YYYY-MM-DD date)"
+                    ),
+                    package=package.lower(),
+                )
+            )
+            continue
+        acks[package.lower()] = Acknowledgment(
+            package=package.lower(),
+            reason=str(entry["reason"]),
+            reference=str(entry["reference"]),
+            reviewed=reviewed,
+        )
+    return acks, issues
+
+
+def apply_acknowledgments(
+    issues: list[FipsIssue],
+    acks: dict[str, Acknowledgment],
+    today: datetime.date,
+) -> list[FipsIssue]:
+    """Mark acknowledged info-level package findings; report ack hygiene.
+
+    Mutates matching findings' ``acknowledged`` flag in place and returns the
+    extra issues this pass generates:
+
+    - stale acknowledgment (older than ACK_MAX_AGE_DAYS): the finding stays
+      active and a warning is added, so strict/fail-level-warning runs fail
+      until the disposition is re-reviewed;
+    - future-dated acknowledgment: warning, finding stays active;
+    - acknowledgment matching an error-severity finding: warning, never
+      suppressed (errors cannot be baselined);
+    - acknowledgment matching no finding at all: warning to remove dead
+      config.
+
+    Args:
+        issues: Findings collected so far (read for package matches).
+        acks: Loaded acknowledgments keyed by lowercased package name.
+        today: Date used for staleness computation (injectable for tests).
+
+    Returns:
+        The hygiene issues produced while applying the baseline.
+    """
+    extra: list[FipsIssue] = []
+    matched: set[str] = set()
+    warned: set[str] = set()
+
+    def _warn_once(ack: Acknowledgment, message: str, fix_hint: str | None) -> None:
+        if ack.package in warned:
+            return
+        warned.add(ack.package)
+        extra.append(
+            FipsIssue(
+                file_path=Path("pyproject.toml"),
+                line_number=0,
+                severity="warning",
+                category="config",
+                message=message,
+                fix_hint=fix_hint,
+                package=ack.package,
+            )
+        )
+
+    for issue in issues:
+        if issue.package is None:
+            continue
+        ack = acks.get(issue.package)
+        if ack is None:
+            continue
+        matched.add(ack.package)
+        if issue.severity != "info":
+            _warn_once(
+                ack,
+                f"Acknowledgment for '{ack.package}' cannot apply: only "
+                "info-level findings can be acknowledged, and this package "
+                f"has a {issue.severity}-level finding",
+                "Fix the underlying finding; errors cannot be baselined",
+            )
+            continue
+        age_days = (today - ack.reviewed).days
+        if age_days < 0:
+            _warn_once(
+                ack,
+                f"Acknowledgment for '{ack.package}' has a future reviewed "
+                f"date ({ack.reviewed.isoformat()})",
+                "Set reviewed to the date the disposition was actually checked",
+            )
+            continue
+        if age_days > ACK_MAX_AGE_DAYS:
+            _warn_once(
+                ack,
+                f"Acknowledgment for '{ack.package}' is stale: reviewed "
+                f"{ack.reviewed.isoformat()} ({age_days} days ago, max "
+                f"{ACK_MAX_AGE_DAYS} per the ADR-013 quarterly review)",
+                "Re-verify the disposition against "
+                "docs/security/crypto-inventory.md and update the reviewed date",
+            )
+            continue
+        issue.acknowledged = True
+
+    for package, ack in acks.items():
+        if package not in matched:
+            _warn_once(
+                ack,
+                f"Acknowledgment for '{package}' matches no finding; remove "
+                "the dead entry",
+                "Delete the [tool.fips_check.acknowledged] entry for this package",
+            )
+    return extra
+
+
+def compute_exit_code(
+    error_count: int,
+    warning_count: int,
+    unacknowledged_info_count: int,
+    fail_level: str,
+    strict: bool,
+) -> int:
+    """Resolve the process exit code from finding counts and failure policy.
+
+    Args:
+        error_count: Error-severity findings (always fatal).
+        warning_count: Warning-severity findings (including ack hygiene).
+        unacknowledged_info_count: Info findings not covered by a fresh
+            acknowledgment.
+        fail_level: Lowest severity that fails ("error", "warning", "info").
+        strict: Legacy flag; raises an "error" fail_level to "warning". The
+            stricter of the two settings wins.
+
+    Returns:
+        1 when any finding at or above the effective failure level exists,
+        else 0.
+    """
+    effective = fail_level
+    if strict and effective == "error":
+        effective = "warning"
+    if error_count:
+        return 1
+    if effective in {"warning", "info"} and warning_count:
+        return 1
+    if effective == "info" and unacknowledged_info_count:
+        return 1
+    return 0
+
+
 def check_python_file(file_path: Path) -> list[FipsIssue]:
     """Check a Python file for FIPS compatibility issues."""
     issues: list[FipsIssue] = []
@@ -305,7 +679,9 @@ def check_python_file(file_path: Path) -> list[FipsIssue]:
         content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content, filename=str(file_path))
 
-        visitor = FipsCodeVisitor(file_path)
+        visitor = FipsCodeVisitor(
+            file_path, has_crypto_import=_module_imports_crypto(tree)
+        )
         visitor.visit(tree)
         issues.extend(visitor.issues)
 
@@ -365,6 +741,7 @@ def check_pyproject_toml(file_path: Path) -> list[FipsIssue]:
                             category="package",
                             message=f"FIPS-incompatible package: {package}",
                             fix_hint=message,
+                            package=package.lower(),
                         )
                     )
 
@@ -388,6 +765,7 @@ def check_pyproject_toml(file_path: Path) -> list[FipsIssue]:
                             category="package",
                             message=f"Package may need FIPS verification: {package}",
                             fix_hint=message,
+                            package=package.lower(),
                         )
                     )
 
@@ -432,6 +810,7 @@ def check_requirements_file(file_path: Path) -> list[FipsIssue]:
                         category="package",
                         message=f"FIPS-incompatible package: {package}",
                         fix_hint=FIPS_INCOMPATIBLE_PACKAGES[package],
+                        package=package,
                     )
                 )
             elif package in FIPS_VERIFY_PACKAGES:
@@ -443,6 +822,7 @@ def check_requirements_file(file_path: Path) -> list[FipsIssue]:
                         category="package",
                         message=f"Package may need FIPS verification: {package}",
                         fix_hint=FIPS_VERIFY_PACKAGES[package],
+                        package=package,
                     )
                 )
 
@@ -505,7 +885,19 @@ Examples:
     parser.add_argument(
         "--strict",
         action="store_true",
-        help="Treat warnings as errors (exit 1 on warnings)",
+        help="Treat warnings as errors (equivalent to --fail-level warning)",
+    )
+    parser.add_argument(
+        "--fail-level",
+        choices=("error", "warning", "info"),
+        default="error",
+        help=(
+            "Lowest severity that fails the check (default: error). 'info' "
+            "additionally requires every info finding to be resolved or "
+            "acknowledged under [tool.fips_check.acknowledged] in "
+            "pyproject.toml. When --strict is also given, the stricter of "
+            "the two settings wins."
+        ),
     )
     parser.add_argument(
         "--fix-hints",
@@ -547,10 +939,21 @@ Examples:
     all_issues.extend(check_requirements_file(Path("requirements.txt")))
     all_issues.extend(check_requirements_file(Path("requirements-dev.txt")))
 
-    # Filter and count by severity
+    # Apply the acknowledged-findings baseline (ADR-013)
+    acks, ack_config_issues = load_acknowledgments(Path("pyproject.toml"))
+    all_issues.extend(ack_config_issues)
+    today = datetime.datetime.now(tz=datetime.UTC).date()
+    all_issues.extend(apply_acknowledgments(all_issues, acks, today))
+
+    # Filter and count by severity; acknowledged findings never fail
     errors = [i for i in all_issues if i.severity == "error"]
     warnings = [i for i in all_issues if i.severity == "warning"]
-    infos = [i for i in all_issues if i.severity == "info"]
+    infos = [i for i in all_issues if i.severity == "info" and not i.acknowledged]
+    acknowledged = [i for i in all_issues if i.acknowledged]
+
+    exit_code = compute_exit_code(
+        len(errors), len(warnings), len(infos), args.fail_level, args.strict
+    )
 
     if args.json:
         output = {
@@ -558,6 +961,7 @@ Examples:
                 "errors": len(errors),
                 "warnings": len(warnings),
                 "info": len(infos),
+                "acknowledged": len(acknowledged),
             },
             "issues": [
                 {
@@ -567,6 +971,8 @@ Examples:
                     "category": i.category,
                     "message": i.message,
                     "fix_hint": i.fix_hint,
+                    "package": i.package,
+                    "acknowledged": i.acknowledged,
                 }
                 for i in all_issues
             ],
@@ -578,36 +984,50 @@ Examples:
         print("=" * 60)
         print()
 
-        if all_issues:
-            # Print errors first, then warnings, then info
+        if errors or warnings or infos:
+            # Print errors first, then warnings, then unacknowledged info
             for issue in errors + warnings + infos:
                 print_issue(issue, show_hints=args.fix_hints)
         else:
-            print("✓ No FIPS compatibility issues found")
+            print("✓ No unacknowledged FIPS compatibility issues found")
+            print()
+
+        if acknowledged:
+            print(
+                f"Acknowledged findings ({len(acknowledged)}), per "
+                "[tool.fips_check.acknowledged] in pyproject.toml:"
+            )
+            for issue in acknowledged:
+                ack = acks[issue.package or ""]
+                print(f"  ✓ {ack.package}: {ack.reason}")
+                print(f"    ref: {ack.reference} (reviewed {ack.reviewed})")
             print()
 
         # Summary
         print("-" * 60)
         print(
-            f"Summary: {len(errors)} error(s), {len(warnings)} warning(s), {len(infos)} info"
+            f"Summary: {len(errors)} error(s), {len(warnings)} warning(s), "
+            f"{len(infos)} info, {len(acknowledged)} acknowledged"
         )
         print()
 
         if errors:
             print("FIPS Compliance: ❌ FAILED")
             print("  Address errors before deploying to FIPS-enabled systems.")
+        elif exit_code:
+            print("FIPS Compliance: ❌ FAILED")
+            print(
+                f"  Unresolved findings at or above --fail-level "
+                f"{args.fail_level}; fix them or acknowledge info findings "
+                "in [tool.fips_check.acknowledged]."
+            )
         elif warnings:
             print("FIPS Compliance: ⚠️  NEEDS REVIEW")
             print("  Review warnings for potential FIPS issues.")
         else:
             print("FIPS Compliance: ✅ PASSED")
 
-    # Determine exit code
-    if errors:
-        return 1
-    if args.strict and warnings:
-        return 1
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":
