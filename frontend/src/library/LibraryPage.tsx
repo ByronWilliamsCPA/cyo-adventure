@@ -6,6 +6,7 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { Mascot } from '../kid/Mascot'
+import { reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 import { BookCard } from './BookCard'
 import { makeLibraryApi, type LibraryItemView, type ReadingHistoryItem } from './libraryApi'
@@ -109,6 +110,22 @@ export function LibraryPage() {
         const items = await libraryApi.list(id)
         if (cancelled || !isMountedRef.current) return
         setState({ status: 'ready', items, history: [], recommendations: [] })
+        // Offline-copy revocation (roadmap Phase 5, register G8/A5): this shelf
+        // fetch just succeeded, so `items` is the authoritative set of books
+        // this profile may read. Reconcile the device's offline cache against
+        // it so an archived/pulled/unassigned book is removed from local
+        // storage at this connection, not just hidden from the shelf. Fire-
+        // and-forget and best-effort, like history/recommendations below: a
+        // reconcile failure (blocked storage, private browsing) must not
+        // block the shelf from rendering. Deliberately placed only in this
+        // success branch, never in the catch below: see revocation.ts's
+        // #CRITICAL note on never purging after a failed fetch.
+        reconcileOfflineCache(
+          id,
+          items.map((item) => item.id)
+        ).catch((err: unknown) => {
+          logApiError('offline cache reconcile failed', err)
+        })
         // K6 endings tracker: best-effort and deliberately NOT awaited above.
         // A failure (or a slow response) here must never delay or block the
         // shelf itself from rendering; the badges just stay absent until this
@@ -159,6 +176,19 @@ export function LibraryPage() {
   }, [libraryApi, recommendationsApi, profileId])
 
   useEffect(load, [load])
+
+  // Offline-copy revocation (roadmap Phase 5, G8/A5): re-fetch on reconnect
+  // too, not just on mount. A device can sit on this page through a
+  // connectivity drop and recovery; the 'online' event re-runs `load()`,
+  // whose success path above reconciles the offline cache, so a book pulled
+  // while this device was offline is still caught at "next connection"
+  // instead of only at the next full page load. Mirrors
+  // useReplayOnReconnect's mount+online pattern (hooks/useReplayOnReconnect.ts).
+  useEffect(() => {
+    const onOnline = () => load()
+    window.addEventListener('online', onOnline)
+    return () => window.removeEventListener('online', onOnline)
+  }, [load])
 
   const rate = useCallback(
     (storybookId: string, value: number) => {

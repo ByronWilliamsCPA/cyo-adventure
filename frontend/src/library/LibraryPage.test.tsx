@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LibraryPage } from './LibraryPage'
@@ -15,6 +15,17 @@ const mockPost = vi.fn()
 const fakeApi = { get: mockGet, post: mockPost }
 vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
+}))
+
+// Offline-copy revocation (G8/A5): LibraryPage's only job here is to call
+// reconcileOfflineCache with this fetch's authoritative ids, only on the
+// success path. The actual reconciliation logic (what gets purged) is
+// covered by offline/revocation.test.ts against the real IndexedDB cache;
+// this file only asserts the call-site wiring.
+const mockReconcile = vi.fn<(profileId: string, ids: string[]) => Promise<void>>()
+mockReconcile.mockResolvedValue(undefined)
+vi.mock('../offline/revocation', () => ({
+  reconcileOfflineCache: (profileId: string, ids: string[]) => mockReconcile(profileId, ids),
 }))
 
 function renderLibrary() {
@@ -66,6 +77,7 @@ const SERIES_BOOK = {
 beforeEach(() => {
   mockGet.mockReset()
   mockPost.mockReset()
+  mockReconcile.mockReset().mockResolvedValue(undefined)
 })
 
 describe('LibraryPage', () => {
@@ -556,6 +568,48 @@ describe('LibraryPage', () => {
       renderLibrary()
       expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
       expect(screen.queryByText(/loved this/i)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('offline-copy revocation call site (roadmap Phase 5, G8/A5)', () => {
+    it('reconciles the offline cache with the fresh shelf ids on a successful fetch', async () => {
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, NOT_STARTED] } })
+      renderLibrary()
+      await screen.findByRole('region', { name: /continue reading/i })
+      await waitFor(() => expect(mockReconcile).toHaveBeenCalledWith('p1', ['s1', 's3']))
+    })
+
+    it('does not reconcile the offline cache when the fetch fails', async () => {
+      mockGet.mockRejectedValue(new Error('boom'))
+      renderLibrary()
+      await screen.findByText(/lost the bookshelf/i)
+      expect(mockReconcile).not.toHaveBeenCalled()
+    })
+
+    it('reconciles again when connectivity returns while the page stays mounted', async () => {
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      renderLibrary()
+      await screen.findByRole('region', { name: /continue reading/i })
+      await waitFor(() => expect(mockReconcile).toHaveBeenCalledTimes(1))
+
+      await act(async () => {
+        window.dispatchEvent(new Event('online'))
+        await Promise.resolve()
+      })
+
+      await waitFor(() => expect(mockReconcile).toHaveBeenCalledTimes(2))
+    })
+
+    it('a reconcile rejection is logged and never crashes the shelf', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      mockReconcile.mockRejectedValueOnce(new Error('reconcile boom'))
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      await waitFor(() =>
+        expect(errorSpy).toHaveBeenCalledWith('offline cache reconcile failed', 'reconcile boom')
+      )
+      errorSpy.mockRestore()
     })
   })
 })
