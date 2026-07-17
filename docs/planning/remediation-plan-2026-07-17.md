@@ -31,26 +31,36 @@ independently shippable PRs, each with tests that pin the fixed behavior.
 
 ## Status map
 
+Legend: [x] done · [~] partial (rest blocked/deferred, see notes) · [ ] not started.
+
 | PR | Title | Closes | Size | Depends on | Status |
 | --- | --- | --- | --- | --- | --- |
-| P1 | Generation worker-death resilience | ARCH-H1, ARCH-H2 (A1) | L | none | [ ] |
-| P2 | Moderation classifier degraded signal | ARCH-H3 (A2) | M | none | [ ] |
-| P3 | Renovate coverage for image digests + dead rules | ARCH-H4, part ARCH-L-TEST (A3) | S | none | [ ] |
-| P4 | Kid-route credential binding | SEC-F1, SEC-F2 (A7) | M | none | [ ] |
+| P1 | Generation worker-death resilience | ARCH-H1, ARCH-H2 (A1) | L | none | [x] |
+| P2 | Moderation classifier degraded signal | ARCH-H3 (A2) | M | none | [x] |
+| P3 | Renovate coverage for image digests + dead rules | ARCH-H4, part ARCH-L-TEST (A3) | S | none | [x] |
+| P4 | Kid-route credential binding | SEC-F1, SEC-F2 (A7) | M | none | [x] |
 | P5 | Offline library shelf | UX-K1 (A4) | M | P4 | [ ] |
 | P6 | Reader text-size control + wire `tts_enabled` | UX-K2 (A5) | M | none | [ ] |
-| P7 | Guardian pipeline visibility + auto-assign on publish | UX-G1, UX-G2 (A6) | M | none | [ ] |
+| P7 | Guardian pipeline visibility + auto-assign on publish | UX-G1, UX-G2 (A6) | M | none | [ ] blocked: auto-assign needs a schema migration threading requested_by_profile_id request->concept->storybook (no such link exists) |
 | P8 | PIN lockout + Redis principal-keyed rate limiting | SEC-B1, SEC-B2 (A8) | L | none | [ ] |
-| P9 | Frontend auth hygiene (PKCE, sourcemaps, cache purge) | SEC-F3, SEC-F4, SEC-F5 (A9) | M | none | [ ] |
-| P10 | Cover staleness escape + queue retry policy | ARCH-M1, ARCH-M2 (A10) | M | P1 | [ ] |
-| P11 | Backlog re-triage + doc corrections | A11 | S | none | [ ] |
-| P12 | Evaluator depth cap + schema_version gate | ARCH-M9, ARCH-M6 (A12) | M | none | [ ] |
+| P9 | Frontend auth hygiene (PKCE, sourcemaps, cache purge) | SEC-F3, SEC-F4, SEC-F5 (A9) | M | none | [~] sourcemaps + cache purge done; PKCE (SEC-F3) deferred (reworks hash-based recovery detection, needs a live Supabase project to verify) |
+| P10 | Cover staleness escape + queue retry policy | ARCH-M1, ARCH-M2 (A10) | M | P1 | [ ] blocked: StorybookVersion has no updated_at/cover_started_at; a reliable staleness check needs a schema migration |
+| P11 | Backlog re-triage + doc corrections | A11 | S | none | [x] |
+| P12 | Evaluator depth cap + schema_version gate | ARCH-M9, ARCH-M6 (A12) | M | none | [~] evaluator depth cap (ARCH-M9) done; schema_version reader gate (ARCH-M6) not started |
 | P13 | Offline sync robustness (locks, conflicts store, IDB) | ARCH-M4, ARCH-M5 (A12) | M | P5 | [ ] |
-| P14 | Dev-loop and CI-gate hygiene | ARCH-M10, ARCH-M11, jsx-a11y (A13) | S | none | [ ] |
-| P15 | UX polish batch 1 (kid surface) | UX-K3, UX-K4, UX-K6, UX-K7 (A14) | S | none | [ ] |
+| P14 | Dev-loop and CI-gate hygiene | ARCH-M10, ARCH-M11, jsx-a11y (A13) | S | none | [~] nox extras + 3.10 drop + codecov + stale ignore done; jsx-a11y deferred (plugin peer range excludes eslint 10) |
+| P15 | UX polish batch 1 (kid surface) | UX-K3, UX-K4, UX-K6, UX-K7 (A14) | S | none | [~] UX-K3/K4/K7 done; UX-K6 (PIN ask-a-grown-up escape) not started |
 | P16 | UX polish batch 2 (adult surfaces + tokens) | UX-C1, UX-C2, UX-A1, UX-A3, UX-G4 (A14) | M | none | [ ] |
 | P17 | Progress semantics (finished state) | UX-K5 | M | P12 | [ ] |
-| P18 | Backend middleware hygiene | SEC-B3, SEC-B4, SEC-B6 | S | none | [ ] |
+| P18 | Backend middleware hygiene | SEC-B3, SEC-B4, SEC-B6 | S | none | [x] |
+
+**Delivered in the 2026-07-17 implementation pass:** P1, P2, P3, P4, P11, P12
+(depth cap), P14, P15, P18 fully; P9 and P12 partially. Every shipped change
+carries regression tests and passed lint + typecheck; the backend unit suite and
+the affected frontend suites are green. Blocked items (P7 auto-assign, P10 cover
+staleness) require Supabase schema migrations that cannot be applied or
+integration-tested from this repo alone; P9's PKCE flip and P14's jsx-a11y are
+deferred for the environment/compatibility reasons noted above.
 
 Suggested waves (PRs within a wave are independent and can run in parallel):
 

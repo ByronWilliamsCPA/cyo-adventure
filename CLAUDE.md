@@ -553,9 +553,11 @@ React frontend (frontend/)
    |  npm run generate-client                  committed to git, CI fails on drift
    v  reads  http://localhost:8000/openapi.json
 FastAPI backend (src/cyo_adventure/)
-   - api/            14 routers (health, library, reading, generation, profiles,
+   - api/            21 routers (health, library, reading, generation, profiles,
                       families, ratings, assignments, approval, covers,
-                      moderation_thresholds, provider_allowlist, me, story_requests)
+                      moderation_thresholds, provider_allowlist, me, story_requests,
+                      admin_profiles, admin_users, child_sessions, device_grants,
+                      family_connections, moderation_dashboard, onboarding)
    - core/           config.py, database.py (async SQLAlchemy), exceptions.py
    - middleware/     correlation.py, security.py (OWASP headers)
    - db/             SQLAlchemy ORM models (stories, profiles, families, requests,
@@ -612,11 +614,14 @@ PostgreSQL (async SQLAlchemy, core/database.py) + Redis (RQ job queue)
 src/cyo_adventure/
 ├── __init__.py
 ├── app.py                  # FastAPI app; wires all routers via include_router
-├── api/                     # FastAPI routers (14): health, library, reading,
+├── api/                     # FastAPI routers (21): health, library, reading,
 │                            # generation, profiles, families, ratings, assignments,
 │                            # approval, covers, moderation_thresholds,
-│                            # provider_allowlist, me, story_requests; support
-│                            # modules (not routers): schemas, deps, review_surface
+│                            # provider_allowlist, me, story_requests, admin_profiles,
+│                            # admin_users, child_sessions, device_grants,
+│                            # family_connections, moderation_dashboard, onboarding;
+│                            # support modules (not routers): schemas, deps,
+│                            # review_surface
 ├── core/                    # config.py, database.py, exceptions.py
 ├── middleware/              # security.py, correlation.py
 ├── db/                      # SQLAlchemy ORM models.py (domain: stories, profiles,
