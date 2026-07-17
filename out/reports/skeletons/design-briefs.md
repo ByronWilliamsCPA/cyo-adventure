@@ -70,6 +70,15 @@ tree; endings equal leaves, so decisions-per-path couples to the ending budget
 (~4-6 decisions at 28-36 endings over three tracks). Briefs mentioning
 "within-track reconvergence" are superseded by this rule.
 
+SORTING_HAT PATTERN RULES (from the approved pattern-setter, the-storm-chasers-club;
+apply to briefs #13, #17, #19, #25, #33): (1) shared setup teaches rules/stakes, then
+an informational sort node names each track's job and lead character before the pick;
+(2) recurring cross-track world anchors are the topology's payoff, governed by ONE
+canonical fact sheet per anchor so no branch contradicts another; (3) expect 4-5
+decisions per path (pure tree couples depth to the ending budget); (4) negative
+endings only after corner-cutting choices, adult-cushioned at young bands,
+doctrine-teaching, no death below the band ceiling.
+
 Ending-count targets follow the ADR-011 master table for the cell; gamebook cells
 are "few wins + many fails" with ~25-35% of nodes as terminals. Every brief also
 carries the constants: decisions per path ~4-8, choices per decision 2-3, ~2-3 setup
