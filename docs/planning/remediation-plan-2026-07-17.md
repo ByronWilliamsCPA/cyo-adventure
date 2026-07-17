@@ -39,19 +39,19 @@ Legend: [x] done · [~] partial (rest blocked/deferred, see notes) · [ ] not st
 | P2 | Moderation classifier degraded signal | ARCH-H3 (A2) | M | none | [x] |
 | P3 | Renovate coverage for image digests + dead rules | ARCH-H4, part ARCH-L-TEST (A3) | S | none | [x] |
 | P4 | Kid-route credential binding | SEC-F1, SEC-F2 (A7) | M | none | [x] |
-| P5 | Offline library shelf | UX-K1 (A4) | M | P4 | [ ] |
-| P6 | Reader text-size control + wire `tts_enabled` | UX-K2 (A5) | M | none | [ ] |
+| P5 | Offline library shelf | UX-K1 (A4) | M | P4 | [x] |
+| P6 | Reader text-size control + wire `tts_enabled` | UX-K2 (A5) | M | none | [~] text-size control shipped; `tts_enabled` left as its documented deliberate deferral (no read-aloud yet) |
 | P7 | Guardian pipeline visibility + auto-assign on publish | UX-G1, UX-G2 (A6) | M | none | [ ] blocked: auto-assign needs a schema migration threading requested_by_profile_id request->concept->storybook (no such link exists) |
 | P8 | PIN lockout + Redis principal-keyed rate limiting | SEC-B1, SEC-B2 (A8) | L | none | [ ] |
 | P9 | Frontend auth hygiene (PKCE, sourcemaps, cache purge) | SEC-F3, SEC-F4, SEC-F5 (A9) | M | none | [~] sourcemaps + cache purge done; PKCE (SEC-F3) deferred (reworks hash-based recovery detection, needs a live Supabase project to verify) |
 | P10 | Cover staleness escape + queue retry policy | ARCH-M1, ARCH-M2 (A10) | M | P1 | [ ] blocked: StorybookVersion has no updated_at/cover_started_at; a reliable staleness check needs a schema migration |
 | P11 | Backlog re-triage + doc corrections | A11 | S | none | [x] |
 | P12 | Evaluator depth cap + schema_version gate | ARCH-M9, ARCH-M6 (A12) | M | none | [~] evaluator depth cap (ARCH-M9) done; schema_version reader gate (ARCH-M6) not started |
-| P13 | Offline sync robustness (locks, conflicts store, IDB) | ARCH-M4, ARCH-M5 (A12) | M | P5 | [ ] |
+| P13 | Offline sync robustness (locks, conflicts store, IDB) | ARCH-M4, ARCH-M5 (A12) | M | P5 | [~] cross-tab replay lock + IDB blocking callbacks done; durable conflicts store (data-loss-on-tab-close) deferred (touches the delicate resolution flow) |
 | P14 | Dev-loop and CI-gate hygiene | ARCH-M10, ARCH-M11, jsx-a11y (A13) | S | none | [~] nox extras + 3.10 drop + codecov + stale ignore done; jsx-a11y deferred (plugin peer range excludes eslint 10) |
-| P15 | UX polish batch 1 (kid surface) | UX-K3, UX-K4, UX-K6, UX-K7 (A14) | S | none | [~] UX-K3/K4/K7 done; UX-K6 (PIN ask-a-grown-up escape) not started |
-| P16 | UX polish batch 2 (adult surfaces + tokens) | UX-C1, UX-C2, UX-A1, UX-A3, UX-G4 (A14) | M | none | [ ] |
-| P17 | Progress semantics (finished state) | UX-K5 | M | P12 | [ ] |
+| P15 | UX polish batch 1 (kid surface) | UX-K3, UX-K4, UX-K6, UX-K7 (A14) | S | none | [x] |
+| P16 | UX polish batch 2 (adult surfaces + tokens) | UX-C1, UX-C2, UX-A1, UX-A3, UX-G4 (A14) | M | none | [~] UX-C1 (inline retry) + UX-C2 (AA token) done; UX-A1/UX-A3/UX-G4 (admin-console polish) not started |
+| P17 | Progress semantics (finished state) | UX-K5 | M | P12 | [x] |
 | P18 | Backend middleware hygiene | SEC-B3, SEC-B4, SEC-B6 | S | none | [x] |
 
 **Delivered in the 2026-07-17 implementation pass:** P1, P2, P3, P4, P11, P12
