@@ -1045,6 +1045,33 @@ class ReviewQueueView(BaseModel):
     items: list[ReviewQueueItem]
 
 
+class StorybookSummary(BaseModel):
+    """One storybook in the admin master library, any lifecycle status (P19).
+
+    Unlike the review queue (which lists only ``in_review`` stories), the master
+    library lets an admin browse and re-open every story: published, archived,
+    needs_revision, draft, or in_review. ``version`` is the latest version;
+    ``updated_at`` is that version's creation time, an activity proxy for
+    sorting most-recent-first.
+    """
+
+    storybook_id: str
+    title: str
+    status: str
+    version: int
+    age_band: str | None = None
+    family_id: str
+    current_published_version: int | None = None
+    created_at: datetime
+    updated_at: datetime | None = None
+
+
+class StorybookLibraryView(BaseModel):
+    """The admin master library: every storybook, newest activity first."""
+
+    items: list[StorybookSummary]
+
+
 # ---------------------------------------------------------------------------
 # Guardian content-summary schemas (Task 2.1)
 # ---------------------------------------------------------------------------

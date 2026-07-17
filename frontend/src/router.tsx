@@ -6,6 +6,7 @@ import { DeviceAuthorizedRoute } from './auth/DeviceAuthorizedRoute'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import {
   AdminConsolePage,
+  AdminLibraryPage,
   AdminRequestsPage,
   AdminShell,
   AdultGate,
@@ -184,6 +185,7 @@ export const routes = [
                 element: suspended(<AdminShell />),
                 children: [
                   { index: true, element: suspended(<AdminConsolePage />) },
+                  { path: 'library', element: suspended(<AdminLibraryPage />) },
                   { path: 'requests', element: suspended(<AdminRequestsPage />) },
                   { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
                   {

@@ -121,6 +121,9 @@ export const AdminShell = lazyWithReload('AdminShell', () =>
 export const AdminConsolePage = lazyWithReload('AdminConsolePage', () =>
   import('./admin/AdminConsolePage').then((m) => ({ default: m.AdminConsolePage }))
 )
+export const AdminLibraryPage = lazyWithReload('AdminLibraryPage', () =>
+  import('./admin/AdminLibraryPage').then((m) => ({ default: m.AdminLibraryPage }))
+)
 export const AdminRequestsPage = lazyWithReload('AdminRequestsPage', () =>
   import('./admin/AdminRequestsPage').then((m) => ({ default: m.AdminRequestsPage }))
 )

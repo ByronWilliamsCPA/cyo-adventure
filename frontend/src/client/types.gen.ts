@@ -2457,6 +2457,68 @@ export type StoryRequestView = {
 };
 
 /**
+ * StorybookLibraryView
+ *
+ * The admin master library: every storybook, newest activity first.
+ */
+export type StorybookLibraryView = {
+    /**
+     * Items
+     */
+    items: Array<StorybookSummary>;
+};
+
+/**
+ * StorybookSummary
+ *
+ * One storybook in the admin master library, any lifecycle status (P19).
+ *
+ * Unlike the review queue (which lists only ``in_review`` stories), the master
+ * library lets an admin browse and re-open every story: published, archived,
+ * needs_revision, draft, or in_review. ``version`` is the latest version;
+ * ``updated_at`` is that version's creation time, an activity proxy for
+ * sorting most-recent-first.
+ */
+export type StorybookSummary = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Age Band
+     */
+    age_band?: string | null;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Current Published Version
+     */
+    current_published_version?: number | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at?: string | null;
+};
+
+/**
  * StructurePattern
  *
  * Narrative-structure templates available for story generation.
@@ -3921,6 +3983,42 @@ export type GetReviewQueueApiV1ReviewQueueGetResponses = {
 };
 
 export type GetReviewQueueApiV1ReviewQueueGetResponse = GetReviewQueueApiV1ReviewQueueGetResponses[keyof GetReviewQueueApiV1ReviewQueueGetResponses];
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: {
+        /**
+         * Status
+         */
+        status?: string | null;
+    };
+    url: '/api/v1/admin/storybooks';
+};
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetError = ListAdminStorybooksApiV1AdminStorybooksGetErrors[keyof ListAdminStorybooksApiV1AdminStorybooksGetErrors];
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: StorybookLibraryView;
+};
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetResponse = ListAdminStorybooksApiV1AdminStorybooksGetResponses[keyof ListAdminStorybooksApiV1AdminStorybooksGetResponses];
 
 export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetData = {
     body?: never;

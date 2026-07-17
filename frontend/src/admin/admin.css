@@ -163,3 +163,38 @@
   font-size: var(--text-sm);
   margin-left: var(--space-2, 0.5rem);
 }
+
+/* P19: admin master library page. */
+.admin-library__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+  margin: var(--space-3, 0.75rem) 0;
+}
+
+.admin-library__filter {
+  min-height: 44px;
+  padding: 0 var(--space-3, 0.75rem);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold, 600);
+  color: var(--color-ink, #2c1a0e);
+  background: var(--color-parchment, #f8f3e8);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  border-radius: var(--radius-full, 999px);
+  cursor: pointer;
+}
+
+.admin-library__filter:hover,
+.admin-library__filter:focus-visible {
+  border-color: var(--color-amber, #e07f2e);
+}
+
+.admin-library__filter--active {
+  background: var(--color-amber, #e07f2e);
+  border-color: var(--color-amber, #e07f2e);
+  color: var(--color-parchment, #f8f3e8);
+}
+
+.admin-library__status {
+  font-weight: var(--weight-bold, 600);
+}
