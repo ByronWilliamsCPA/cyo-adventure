@@ -129,9 +129,7 @@ class Settings(BaseSettings):
     # "cyoadventure.app,api.cyoadventure.app".
     allowed_hosts: str = Field(
         default="",
-        validation_alias=AliasChoices(
-            "CYO_ADVENTURE_ALLOWED_HOSTS", "ALLOWED_HOSTS"
-        ),
+        validation_alias=AliasChoices("CYO_ADVENTURE_ALLOWED_HOSTS", "ALLOWED_HOSTS"),
     )
     # #CRITICAL: timing: RQ's own default job_timeout is 180s; a live Ollama run
     # (see ollama_timeout_seconds's cold-start note) routinely exceeds that, so an

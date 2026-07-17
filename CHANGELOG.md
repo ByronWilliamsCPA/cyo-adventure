@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Comprehensive security, UX, and design review (`docs/reviews/`) plus a tiered
+  remediation plan, and the remediation of most of its findings.
+- Reader text-size control (A/A+/A++, persisted per profile) and an offline
+  library shelf so an offline kid can still reach their downloaded books.
+- Admin review-queue flow-through (auto-advance + queue position), triage
+  metadata (age band, waiting time) on queue rows, and a new admin master
+  library (`/admin/library`, `GET /v1/admin/storybooks`) to browse and re-open
+  any story in any lifecycle status.
+- Admin operator endpoint to force-fail a stuck generation job.
 - Strict FIPS compliance gate (ADR-013). The FIPS checker gains a
   `--fail-level {error,warning,info}` flag and an acknowledged-findings
   baseline in `pyproject.toml` (`[tool.fips_check.acknowledged]`): each
@@ -26,6 +35,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Generation pipeline no longer strands jobs at `running` or double-executes
+  them after a hard worker death; the condition validator is depth-capped
+  against `RecursionError`.
+- A failed or unconfigured moderation classifier now surfaces a visible
+  degraded advisory instead of silently contributing nothing.
+- Kid routes no longer fall back to the guardian bearer and the reader refuses a
+  mismatched profile (closes cross-profile reads online and offline).
+- Library shows "Finished!" for completed books instead of a misleading page
+  count; several kid-surface tap targets, recovery links, and copy fixes.
+- Guardian/admin "Please reload" dead-ends became inline retry; muted-ink token
+  raised to WCAG AA.
 - FIPS checker no longer flags domain `seed()`/`idea()` method calls as the
   SEED/IDEA block ciphers; ambiguous cipher names now require cryptographic
   context (a crypto-library import or a crypto namespace in the call chain).
@@ -33,6 +53,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   code was previously swallowed by a `tee` pipeline without `pipefail`, so
   the job always passed while the PR comment could say FAILED. Trigger
   paths now also cover `tests/`, the checker script, and the `Dockerfile`.
+
+### Changed
+
+- Security hardening: TrustedHost activation, untrusted-input prompt fences,
+  correlation-middleware ordering, hidden production source maps, cache purge on
+  sign-out.
+- Supply chain and dev hygiene: Renovate manages container image digests and
+  pre-commit; nox extras fixed and Python 3.10 legs dropped; codecov
+  safety-critical gate extended.
 
 ## [0.8.0] - 2026-07-17
 

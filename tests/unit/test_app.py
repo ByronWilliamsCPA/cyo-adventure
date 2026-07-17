@@ -364,9 +364,7 @@ class TestTrustedHost:
         monkeypatch.setattr(settings, "allowed_hosts", "")
         app = create_app()
 
-        assert not any(
-            m.cls is TrustedHostMiddleware for m in app.user_middleware
-        )
+        assert not any(m.cls is TrustedHostMiddleware for m in app.user_middleware)
 
     @pytest.mark.unit
     def test_trusted_host_present_when_configured(

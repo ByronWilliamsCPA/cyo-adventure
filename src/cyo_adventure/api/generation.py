@@ -541,7 +541,9 @@ async def force_fail_generation_job(
         to_state="failed",
         payload={"outcome": "failed"},
     )
-    _log.warning("generation_job.force_failed job=%s by admin", job_id)
+    # Log the validated UUID (job.id), never the raw user-supplied path string,
+    # so a crafted job_id can never forge log entries (CodeQL log-injection).
+    _log.warning("generation_job.force_failed job=%s by admin", job.id)
     return AdminJobActionResponse(
         id=str(job.id),
         status=cast("JobStatusLiteral", job.status),
