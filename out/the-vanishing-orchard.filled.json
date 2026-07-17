@@ -384,7 +384,7 @@
   },
   {
    "id": "e_kee_a",
-   "body": "Rowan swore to starve it. She would give the tree nothing, she said, not a single name, and let it wither on its own hunger. Odile's face closed like a shutter. That was the answer of a fool, the old keeper said, not a keeper. A starved hunger does not fade. It only grows more desperate and reaches further, stripping the town bare trying to feed itself. Rowan had learned nothing, Odile decided, and could only make things worse. She pressed a warning into Rowan's hand that made no sense, words about roots and frost and a door in the dark, and then sent her back down the hill alone. Rowan descended into the cold valley with the warning turning uselessly in her mind, unable to understand the one thing that might have saved the town.",
+   "body": "Rowan swore to starve it. She would give the tree nothing, not a single name, and let it wither on its own hunger. Odile's face closed like a shutter. That was the answer of a fool, the old keeper said, not a keeper. A starved hunger does not fade. It only grows more desperate and reaches further, stripping the town bare trying to feed itself. Rowan had learned nothing, Odile decided, and could only make it worse. She pressed a warning into Rowan's hand that made no sense, words about roots and frost and a door in the dark, and sent her back down the hill alone. Rowan went down into the cold valley with the warning turning uselessly in her mind, unable to understand the one thing that might have saved the town.",
    "is_ending": true,
    "ending": {
     "id": "e_kee_a",
@@ -443,7 +443,7 @@
   },
   {
    "id": "kee_bdec",
-   "body": "The cord ran long and heavy in Rowan's two hands, and she felt the pull of two very different choices. She could let Odile guide her fingers all the way back along the knots to the founding, and learn the whole shape of the keeping before she did anything rash. Or she could do the thing her anger wanted, and cut the cord clean through, sawing the line in two to try to end the terrible bargain once and for all. The cord felt almost alive between her palms, warm where the knots clustered thickest. Odile waited beside her, patient, not telling her which to do. Rowan turned the coarse rope over, feeling every knot, and knew that whatever she chose in the next moment could not easily be undone.",
+   "body": "The cord ran long and heavy in Rowan's two hands, coil upon coil of knotted years, and she felt the pull of two very different choices. She could let Odile guide her fingers all the way back along the knots to the founding, and learn the whole shape of the keeping before she did anything rash or final. That was the patient road, and it frightened her less. Or she could do the thing her anger wanted, and cut the cord clean through, sawing the line in two to try to end the terrible bargain once and for all. The cord felt almost alive between her palms, warm where the knots clustered thickest. Odile waited beside her, patient, not telling her which to do. Rowan turned the coarse rope over, feeling every knot, and knew that whatever she chose in the next moment could not easily be undone.",
    "is_ending": false,
    "choices": [
     {
@@ -531,7 +531,7 @@
   },
   {
    "id": "kee_clue",
-   "body": "Odile's last words sent Rowan back down toward the town and the cider house at the orchard's edge. Everything the keeper had told her pointed the same way as the cold wind at her back. Down. The oldest root, Odile said, had cracked the founding wall in the cellar long ago and pushed through into the dark, and it waited there below in the black spring, patient as it had always been. That was where the keeping happened, and that was where it would have to be answered. Rowan carried the withered seed and the warning and the promise of Teo down the slope with her. There was nothing more the hilltop could give her. It was time to carry what she had found to the cider house and go down to the water.",
+   "body": "Odile's last words sent Rowan back down toward the town and the cider house at the orchard's edge. Everything the old keeper had told her pointed the same way as the cold wind now at her back. Down. The oldest root, Odile said, had cracked the founding wall in the cellar long ago and pushed through into the dark, and it waited there below in the black spring, patient as it had always been. That was where the keeping happened, and that was where it would finally have to be answered. Rowan carried the withered seed, and the warning, and the promise of Teo down the slope with her. There was nothing more the hilltop could give her now. It was time to carry what she had found to the cider house and go down at last to the water.",
    "is_ending": false,
    "choices": [
     {
@@ -625,7 +625,7 @@
   },
   {
    "id": "e_pho_a",
-   "body": "Rowan struck a match. She told herself she was stopping the spread, cauterising the wound, and she touched the flame to the corner of the fading prints. The old paper caught fast and eagerly. But as the fire climbed across the photographs, she understood too late what she had done. The flames were taking the last images of the forgotten, the final proof that those faces had ever existed at all. When the fire burned down to grey ash on the floorboards, not even the gaps remained. There was nothing left now to show that anyone had been lost, no vacancy, no shadow, no faint smear on the paper. She had not stopped the Quiet. She had finished its work for it, and made the erasure complete, sealing the missing away past any hope of return.",
+   "body": "Rowan struck a match. She was stopping the spread, she told herself, and she touched the flame to the corner of the fading prints. The old paper caught fast and eagerly. But as the fire climbed across the photographs, she understood too late what she had done. The flames were taking the last images of the forgotten, the final proof that those faces had ever existed. When the fire burned down to grey ash, not even the gaps remained. There was nothing left now to show that anyone had been lost. She had not stopped the Quiet at all. She had finished its work for it, and made the erasure complete, sealing the missing away past any hope of return.",
    "is_ending": true,
    "ending": {
     "id": "e_pho_a",
@@ -712,7 +712,7 @@
   },
   {
    "id": "pho_conv",
-   "body": "Rowan gathered every photograph that showed the orchard and laid them out in a long line across the attic floor, ordered by year. Seen all together like that, the pattern was undeniable. The oldest tree swelled steadily from picture to picture. It grew taller and darker and heavier through the decades, while the town glimpsed behind it grew thin and faint and empty. The tree fattened as Alderwick starved. Then, tucked behind the very last photograph in the line, wedged into the frame itself, Rowan found one more image she had missed. It showed a young woman standing beside the cider house cellar door. She was her grandmother, unmistakably, decades younger than Rowan had ever known her. And in her open palm, held up toward the camera, lay a small dark withered seed.",
+   "body": "Rowan gathered every photograph that showed the orchard and laid them out in a long line across the attic floor, ordered by year. Seen all together like that, the pattern was undeniable. The oldest tree swelled steadily from picture to picture. It grew taller and darker and heavier through the decades. Behind it, the town grew thin and faint and empty. The tree fattened as Alderwick slowly starved. Then Rowan found one more image she had missed. It was tucked behind the very last photograph in the line, wedged into the frame itself. It showed a young woman standing beside the cider house cellar door. She was her grandmother, unmistakably, though decades younger than Rowan had ever known her. And in her open palm, held up toward the camera as if in offering, lay a small dark withered seed.",
    "is_ending": false,
    "choices": [
     {
@@ -1183,7 +1183,7 @@
   },
   {
    "id": "b1b_dec",
-   "body": "Rowan still had the withered seed clenched in her fist, and on a strange impulse she pressed her seed-holding hand flat to the surface of the spring. Something changed at once, because where her hand touched the black water, the drowned faces steadied. They stopped their endless turning and grew clear and calm, held in place by whatever the seed was. She lifted her hand and they drifted again, and she lowered it and they held. Rowan stared at the water, understanding slowly. The greening seed in her palm could steady the spring and reach the lost where her walls never could. She could learn from this and follow where it led, or she could ignore it and go back to uselessly mortaring a wall that would never, ever hold.",
+   "body": "Rowan still had the withered seed clenched in her fist, and on a strange impulse she pressed her seed-holding hand flat to the surface of the spring. Something changed at once, because where her hand touched the black water, the drowned faces steadied. They stopped their endless turning and grew clear and calm, held in place by whatever the seed was. She lifted her hand and they drifted again, and she lowered it and they held. Rowan stared at the water, understanding coming to her slowly in the cold. The greening seed in her palm could steady the spring and reach the lost where all her walls of stone never could. She could learn from this and follow where it led her, deeper into the real nature of the keeping. Or she could ignore it and go back to uselessly mortaring a wall that would never, ever hold.",
    "is_ending": false,
    "choices": [
     {
@@ -1200,7 +1200,7 @@
   },
   {
    "id": "e_b1b",
-   "body": "Rowan turned her back on the steadying seed and went on mortaring the wall. She was stubborn, and she wanted to win by force. She packed the split with stone and clay and pressed it tight. For one proud hour it actually seemed to hold, and she let herself believe she had beaten it. Then, in the night, the root simply split the wall wider than before, shouldering the stone aside as easily as a shoot pushes through soil. A whole childhood of the town drained away through the new crack while Alderwick slept, faces and streets and summers all gone by morning. Rowan woke to a town thinner than the one she had tried to save. Her wall had bought nothing but a little time, and cost the town far more than it had ever managed to hold back.",
+   "body": "Rowan turned her back on the steadying seed and went on mortaring the wall. She was stubborn, and she wanted to win by force. She packed the split with stone and clay and pressed it tight, and for one proud hour it seemed to hold. Then, in the night, the root simply split the wall wider than before, shouldering the stone aside as easily as a shoot pushes through soil. A whole childhood of the town drained away through the new crack while Alderwick slept, faces and streets and summers gone by morning. Rowan woke to a town thinner than the one she had tried to save. Her wall had bought nothing but a little time, and cost the town far more than it had ever held back.",
    "is_ending": true,
    "ending": {
     "id": "e_b1b",
@@ -1283,7 +1283,7 @@
   },
   {
    "id": "b1c_dec",
-   "body": "One person held on longer than the rest, and it was Teo. When Rowan gripped her cousin's arm and named the lost, he did not go blank the way the others did. He held her gaze, and his face stayed troubled, and the names seemed to catch in him and stay a moment before the root could smooth them away. His stubborn love was doing something the whole square could not. Rowan saw her choice clearly then. She could build on Teo, on that one held memory, and try to understand why his love resisted the Quiet where everyone else surrendered. Or she could keep shouting into the dusk on her own, wearing her voice to nothing, trying to save a town that could not even hear what it had lost.",
+   "body": "One person held on longer than the rest, and it was Teo. When Rowan gripped her cousin's arm and named the lost, he did not go blank the way all the others did. He held her gaze, and his face stayed troubled, and the names seemed to catch in him and stay a moment before the root could smooth them away again. His stubborn love was doing something the whole square could not. Rowan saw her choice clearly then, standing there in the emptying dusk. She could build on Teo, on that one stubbornly held memory, and try to understand why his love resisted the Quiet where everyone else surrendered so easily. Or she could keep shouting into the dark on her own, wearing her voice down to nothing, trying to save a town that could not even hear what it had lost.",
    "is_ending": false,
    "choices": [
     {
@@ -1400,7 +1400,7 @@
   },
   {
    "id": "b2t_d1",
-   "body": "So it was a trade, plain and simple and terrible. Memory for memory. To buy back the town's lost years, Rowan would have to give the root memories of her own to keep in their place, the beloved traded for the lost. She crouched at the water with her greening seed and felt the shape of the bargain settle over her. She could measure the true cost of it now, press the root to show her exactly what such a trade would take from her before she agreed to anything. Or she could pull back here, snatch her hand from the water while she still had every memory intact, and keep herself whole at the town's expense. The lost quarter shimmered and sank in the spring below her, waiting on her nerve.",
+   "body": "So it was a trade, plain and simple and terrible. Memory for memory. To buy back the town's lost years, Rowan would have to give the root memories of her own to keep in their place, the beloved handed over for the lost. She crouched at the water with her greening seed and felt the shape of the bargain settle heavily over her. She could measure the true cost of it now, and press the root to show her exactly what such a trade would take from her before she agreed to anything at all. Or she could pull back here and now, snatch her hand from the water while she still had every memory intact, and keep herself whole at the town's expense. The lost quarter shimmered and sank in the spring below her, waiting on her nerve to hold or to fail.",
    "is_ending": false,
    "choices": [
     {
@@ -1678,7 +1678,7 @@
   },
   {
    "id": "b3u_d1",
-   "body": "Rowan stood before the gathered town with the spring at her back, and two paths opened. She could try the harder, stranger thing. She could teach the root an entirely new bargain, a shared keeping in which the whole town held its own memory together and the tree kept through all of them instead of devouring one. That had never been done, and it might fail badly. Or she could take the gentler road. She could simply tell these frightened people that the orchard had only ever been lonely and hungry, and let them make their peace with the smaller losses. The crowd waited on her in the cold. Rowan felt the whole weight of the choice, the bold gamble against the quiet surrender, resting on what she said next.",
+   "body": "Rowan stood before the gathered town with the spring at her back, and two paths opened before her in the cold. She could try the harder, stranger thing. She could teach the root an entirely new bargain, a shared keeping in which the whole town held its own memory together and the tree kept through all of them instead of devouring one. That had never once been done, and it might fail badly and cost them everything. Or she could take the gentler road. She could simply tell these frightened people that the orchard had only ever been lonely and hungry, and let them make their peace with the smaller losses and go home. The crowd waited on her word in the lamplight. Rowan felt the whole weight of the choice, the bold gamble against the quiet surrender, resting on whatever she said next.",
    "is_ending": false,
    "choices": [
     {
@@ -1706,7 +1706,7 @@
   },
   {
    "id": "b3u_m",
-   "body": "Rowan chose the harder path, but she saw its danger at once. The weight of the town's whole memory had to land on enough hands at the same moment, or it would crush the few who were already there. If she began too soon, before the crowd had truly gathered, the burden would fall on a handful of shivering people and break them. Timing was everything now. She could hold to the plan and wait, agonising as it was, until enough of Alderwick had come down the stair to bear the load together. Or she could give in to the pressing frost and begin the ritual now, with too few hands, and pray it was enough. The cold deepened around them, and the spring's light pulsed faster, impatient.",
+   "body": "Rowan chose the harder path, but she saw its danger at once. The weight of the town's whole memory had to land on enough hands at the very same moment, or it would crush the few who were already there in the cold. If she began too soon, before the crowd had truly gathered, the burden would fall on a handful of shivering people and break them utterly. Timing was everything now. She could hold to the plan and wait, agonising as it was, until enough of Alderwick had come down the stair to bear the load together. Or she could give in to the pressing frost and begin the ritual now, with far too few hands, and simply pray it was enough. The cold deepened around them, and the spring's light pulsed faster, impatient for her answer.",
    "is_ending": false,
    "choices": [
     {
@@ -2150,7 +2150,7 @@
   },
   {
    "id": "e_all_restore",
-   "body": "Alderwick woke whole. Every stolen year had come rising back, and now a town that remembered on purpose held it safe. They stood together, refusing ever again to let their own people slip quietly into the dark. The orchard still stood on the hill, and it still bore its heavy fruit. But it fed on the town's freely given memory now, and it no longer ate its keepers. Rowan walked up out of the cider house into a square full of morning light and full of names that finally fit their faces. Neighbours greeted neighbours they had forgotten for forty years, and the war memorial meant something again. She stood in the middle of it, tired to the bone and quietly amazed, the girl from away who had taught a whole town how to keep itself.",
+   "body": "Alderwick woke whole. Every stolen year had come rising back, and now a town that remembered on purpose held it safe. The people stood together at last, refusing ever again to let their own kin slip quietly into the dark. The orchard still stood on the hill, and it still bore its heavy fruit. But it fed on the town's freely given memory now, and it no longer ate its keepers. Rowan walked up out of the cider house into a square full of morning light, and full of names that finally fit their faces again. Neighbours greeted neighbours they had forgotten for forty long years, and the war memorial meant something once more. She stood in the middle of it all, tired to the bone and quietly amazed, the girl from away who had taught a whole town how to keep itself.",
    "is_ending": true,
    "ending": {
     "id": "e_all_restore",
@@ -2200,7 +2200,7 @@
   },
   {
    "id": "fin_one_1",
-   "body": "Rowan held one face steady in her mind, the neighbour girl she had grown up beside, lost to the Quiet the same winter Rowan's family took her away. She could still see the gap-toothed grin, still hear the crow of triumph over a won game of conkers. That was the one she would lift. She could not empty the whole spring, but she could pay honestly for a single life. So Rowan chose a memory of her own to offer in fair trade, one bright thing she could bear to lose, and held it ready over the water. One soul, one price, clean and even. She knelt at the black spring with the green seed in one hand and the offered memory in the other, ready to buy back the girl the town had forgotten it ever loved.",
+   "body": "Rowan held one face steady in her mind, the neighbour girl she had grown up beside, lost to the Quiet the same winter that Rowan's family took her away. She could still see the gap-toothed grin, still hear the crow of triumph over a won game of conkers. That was the one she would lift. She could not empty the whole spring by herself, but she could pay honestly for a single life. So Rowan chose a memory of her own to offer in fair trade, one bright thing she could bear to lose, and held it ready over the dark water. One soul, one price, clean and even. She knelt at the black spring with the green seed in one hand and the offered memory in the other, ready at last to buy back the girl the town had forgotten it ever loved.",
    "is_ending": false,
    "choices": [
     {
@@ -2245,7 +2245,7 @@
   },
   {
    "id": "e_one_saved",
-   "body": "Rowan climbed the cellar stair with the neighbour girl beside her, up into the frost-bright morning and the waking square. And the town gasped to remember her. Neighbours who had passed her fading photograph a hundred times without a flicker suddenly knew her name, her laugh, the games she had won. They crowded around her weeping with a joy they could not explain. The Quiet still slept below in its spring, and the wider loss of the town remained, all those other faces still turning in the dark. But one whole life walked Alderwick again in the sunlight, laughing, real. Rowan had bought her back with a single summer, one she would never miss half as much as this bright life was worth. She watched the girl run into the crowd, and she knew it was enough.",
+   "body": "Rowan climbed the cellar stair with the neighbour girl beside her, up into the frost-bright morning and the slowly waking square. And the town gasped to remember her. Neighbours who had passed her fading photograph a hundred times without a flicker suddenly knew her name, her laugh, the schoolyard games she had always won. They crowded around her, weeping with a joy they could not begin to explain. The Quiet still slept below in its spring, and the wider loss of the town remained, all those other faces still turning in the dark. But one whole life walked Alderwick again in the sunlight, laughing, real. Rowan had bought her back with a single summer, one she would never miss half as much as this bright life was worth. She watched the girl run laughing into the crowd, and she knew that it was enough.",
    "is_ending": true,
    "ending": {
     "id": "e_one_saved",
@@ -2284,7 +2284,7 @@
   },
   {
    "id": "e_trade_greed",
-   "body": "At the last moment Rowan grasped for more. She had offered one memory, but seeing the root willing to deal, she asked it for more years than she had put on the table, pushing for a bargain weighted in her favour. The root did not argue. It simply, patiently, held her to the exact terms of what she had actually given. It kept the memory she had handed down, and in return it granted her nothing at all, because she had tried to take more than she paid for. Rowan surfaced from the water poorer by one true memory and richer by not a single restored year. The old root was exact, and it did not reward grasping. She had learned the cost of reaching for too much, and gained nothing for the lesson but the lesson itself.",
+   "body": "At the last moment Rowan grasped for more. She had offered one memory, but seeing the root willing to deal, she asked it for more years than she had put on the table. The root did not argue. It simply, patiently, held her to the exact terms of what she had actually given. It kept the memory she had handed down, and in return it granted her nothing at all, because she had tried to take more than she paid for. Rowan surfaced poorer by one true memory and richer by not a single restored year. The old root was exact, and it did not reward grasping. She had learned the cost of reaching for too much, and gained nothing for the lesson but the lesson itself.",
    "is_ending": true,
    "ending": {
     "id": "e_trade_greed",
