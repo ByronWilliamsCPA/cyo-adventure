@@ -849,3 +849,40 @@ and the `pyjwt` hint to cover asymmetric-only allowlists. See this repo's
 `_check_pqc_pre_standard_name`) for a working implementation.
 
 **Affected Files**: template `scripts/check_fips_compatibility.py`
+
+---
+
+### FIPS workflow's failure gate never fires: `tee` swallows the exit code, and trigger paths omit the tests it scans
+
+- **Priority**: High
+- **Category**: CI/CD
+- **Discovered**: 2026-07-17
+
+**Issue**: Two compounding defects in `.github/workflows/fips-compatibility.yml` make the FIPS
+gate inform-only in every mode, including `--strict` dispatch. First, the run step captures
+`EXIT_CODE=$?` after piping the checker through `tee`
+(`uv run python scripts/check_fips_compatibility.py ... | tee fips-report.txt`). The step uses
+the workflow default shell (`bash -e {0}`), which does not enable `pipefail`, so `$?` reports
+`tee`'s exit status, which is always 0. The `Check result` step that is supposed to fail the
+job on findings (`if: steps.fips-check.outputs.exit_code != '0'`) can therefore never trigger,
+and the job concludes success regardless of errors. This is the root cause of the symptom
+already recorded above in "FIPS checker flags any method named `seed()`": the job shows green
+while the PR comment says FAILED. Second, the check runs with `--include-tests`, but the
+workflow's `push`/`pull_request` paths filters list only `src/**/*.py`, `pyproject.toml`, and
+`requirements*.txt`. A PR that introduces a FIPS finding in `tests/**` never triggers the
+workflow at all; the finding first appears on the weekly cron, where the exit-code bug hides
+it again.
+
+**Context**: Discovered while assessing whether this repo could pass an org-wide strict FIPS
+posture. Running `scripts/check_fips_compatibility.py --include-tests` locally exits 1 (five
+findings, all the known `seed()` false positive), while the corresponding workflow runs
+conclude success.
+
+**Suggested Fix**: In the run step, either `set -o pipefail` before the pipeline or capture
+`${PIPESTATUS[0]}` (or declare `shell: bash` on the step, which enables `pipefail` by
+default). Add `tests/**/*.py` to both paths filters so the triggers cover everything the
+checker scans. With enforcement restored, the `seed()` matcher fix already reported above
+becomes a prerequisite, since restoring the gate without it would fail builds on the false
+positive.
+
+**Affected Files**: template `.github/workflows/fips-compatibility.yml`
