@@ -494,7 +494,7 @@
     },
     {
       "id": "r_no_trunk",
-      "body": "The trunk breathes out cedar and old paper the moment Wren lifts the heavy lid, a smell that is somehow fully her grandfather. Inside lie a water-stained logbook, its cover gone soft with age, and a fat rubber-banded bundle of QSL cards. Those are the little postcards radio operators mail each other to confirm they really made contact across all that static. There is also a ribboned stack of envelopes tucked underneath everything else, addressed in his handwriting but somehow never really stamped or sent. Her eyes are already burning with tiredness, the kind that makes the print swim a little. She can manage to read carefully through just one of these before she has to stop for the night. So she needs to choose which pile is most likely to hold an actual answer worth losing sleep over.",
+      "body": "The trunk breathes out cedar and old paper the moment Wren lifts the heavy lid, a smell that is somehow fully her grandfather. Inside lie a water-stained logbook, its cover gone soft with age. And a fat rubber-banded bundle of QSL cards. Those are the little postcards radio operators mail each other to confirm they really made contact across all that static. There is also a ribboned stack of envelopes tucked underneath everything else, addressed in his handwriting but somehow never really stamped or sent. Her eyes are already burning with tiredness, the kind that makes the print swim a little. She can manage to read carefully through just one of these before she has to stop for the night. So she needs to choose which pile is most likely to hold an actual answer worth losing sleep over.",
       "is_ending": false,
       "choices": [
         {
@@ -648,7 +648,7 @@
     },
     {
       "id": "r_notes_beat",
-      "body": "Whatever she has found among her grandfather's things tonight, letters or logbook or pinned notes on a workshop wall, it all points to the same stubborn fact. A man named Alder has been transmitting from the headland relay for what looks like a whole lifetime. He has done it patiently, on purpose, long after anyone reasonable would have simply quit and moved on. Her grandfather knew it. In his own quiet, unfinished way, he worried about it for years, without ever managing to really fix it before he ran out of time. And now Wren is sitting here, past midnight, holding the only thread her family has left that truly leads back to the man himself. It feels less like curiosity now, and much more like something she really has to finish for him.",
+      "body": "Whatever she has found among her grandfather's things tonight, letters or logbook or pinned notes on a workshop wall, it all points to the same stubborn fact. A man named Alder has been transmitting from the headland relay for what looks like a whole lifetime. He has done it patiently, on purpose, long after anyone reasonable would have simply quit and moved on. Her grandfather knew it. In his own quiet, unfinished way, he worried about it for years, without ever managing to really fix it before he ran out of time. And now Wren is sitting here, past midnight, holding the only thread her family has left that truly leads back to the man himself. It feels less like curiosity now. And much more like something she really has to finish for him.",
       "is_ending": false,
       "choices": [
         {
@@ -696,7 +696,7 @@
     },
     {
       "id": "n_b1_choice",
-      "body": "A name is not an answer, Wren reminds herself, sitting back on her bed. It is just the shape one might later take, if she pulls at it hard enough. She has a mystery with a real person at its center now, and two very different ways to close in on it from here. She could bend her attention to the numbers Alder reads out every single cycle. She is convinced there is a code buried somewhere inside that string of digits, waiting patiently for the right key to unlock it. Or she could set the numbers aside fully, and chase Alder himself instead, through old town records and yellowed newspapers, and whoever in this town might still remember a man who simply would not let a dead relay station go quiet.",
+      "body": "A name is not an answer, Wren reminds herself, sitting back on her bed. It is just the shape one might later take, if she pulls at it hard enough. She has a mystery with a real person at its center now. And two very different ways to close in on it from here. She could bend her attention to the numbers Alder reads out every single cycle. She is convinced there is a code buried somewhere inside that string of digits, waiting patiently for the right key to unlock it. Or she could set the numbers aside fully. And chase Alder himself instead, through old town records and yellowed newspapers. And whoever in this town might still remember a man who simply would not let a dead relay station go quiet.",
       "is_ending": false,
       "choices": [
         {
@@ -713,7 +713,7 @@
     },
     {
       "id": "m_numbers_1",
-      "body": "Wren writes the whole number string out in full, across a fresh page, and stares at it until the digits start to blur together. It could be a book cipher, keyed to some text she already owns. Maybe it is her grandfather's own logbook, its page numbers standing in for letters the way old operators used to do it decades ago. Or it could be something simpler and far colder: timestamps, a countdown ticking steadily toward one single fixed moment in the future. Each theory needs a fully different kind of work from her, one with a book open on the desk, the other with a stopwatch and a calendar spread flat. She can only really chase one properly tonight before her eyes give out fully. So she has to guess which kind of number this really is, before she even starts.",
+      "body": "Wren writes the whole number string out in full, across a fresh page. And stares at it until the digits start to blur together. It could be a book cipher, keyed to some text she already owns. Maybe it is her grandfather's own logbook, its page numbers standing in for letters the way old operators used to do it decades ago. Or it could be something simpler and far colder: timestamps, a countdown ticking steadily toward one single fixed moment in the future. Each theory needs a fully different kind of work from her, one with a book open on the desk, the other with a stopwatch and a calendar spread flat. She can only really chase one properly tonight before her eyes give out fully. So she has to guess which kind of number this really is, before she even starts.",
       "is_ending": false,
       "choices": [
         {
@@ -730,7 +730,7 @@
     },
     {
       "id": "m_num_cipher",
-      "body": "Using her grandfather's logbook, with its page numbers standing in patiently for letters, Wren maps each figure in the string to a single word, one at a time. Fragments start surfacing almost at once, faster than she expected: holding, and answer, and the single letter M, repeated often enough to feel clearly real instead of coincidental. But one whole cluster near the end refuses to resolve into anything but total gibberish, no matter how many times she shuffles the key around. She could keep forcing that stubborn cluster through the same logbook cipher, hoping she is simply missing something small and obvious. Or she could switch fully to a second book she distinctly remembers him underlining just as heavily, years ago.",
+      "body": "Using her grandfather's logbook, with its page numbers standing in patiently for letters, Wren maps each figure in the string to a single word, one at a time. Fragments start surfacing almost at once, faster than she expected: holding, and answer. And the single letter M, repeated often enough to feel clearly real instead of coincidental. But one whole cluster near the end refuses to resolve into anything but total gibberish, no matter how many times she shuffles the key around. She could keep forcing that stubborn cluster through the same logbook cipher, hoping she is simply missing something small and obvious. Or she could switch fully to a second book she distinctly remembers him underlining just as heavily, years ago.",
       "is_ending": false,
       "choices": [
         {
@@ -776,7 +776,7 @@
     },
     {
       "id": "m_num_cracked2",
-      "body": "The tide-table key gives Wren just one decoded certainty. It is wrapped around the same repeated plea for M she has already found twice tonight: a date, and an hour, only a few days off from right now. The numbers, she understands clearly now, work like a kind of clock. They count toward that specific moment instead of simply repeating themselves forever into the dark. Judging by how close that date already is on her calendar, the clock is nearly run all the way down to nothing.",
+      "body": "The tide-table key gives Wren just one decoded certainty. It is wrapped around the same repeated plea for M she has already found twice tonight: a date. And an hour, only a few days off from right now. The numbers, she understands clearly now, work like a kind of clock. They count toward that specific moment instead of simply repeating themselves forever into the dark. Judging by how close that date already is on her calendar, the clock is nearly run all the way down to nothing.",
       "is_ending": false,
       "choices": [
         {
@@ -788,7 +788,7 @@
     },
     {
       "id": "e_num_gibberish",
-      "body": "The cipher slips through Wren's fingers no matter which key she tries next. Every fresh attempt spits out fresh nonsense, until the numbers blur together into meaningless noise on the page. She keeps at it long past midnight, notebook after notebook filling with crossed-out guesses. The pattern stubbornly refuses to hold still for her. Later she closes the books for good. She is no closer to any real meaning than when she started hours ago, her eyes burning and her patience spent. The loop keeps counting somewhere in the dark. It is steady and indifferent to her failure. It counts toward a total Wren simply cannot read, not tonight, and maybe, she thinks miserably, not ever.",
+      "body": "The cipher slips through Wren's fingers no matter which key she tries next. Every fresh attempt spits out fresh nonsense, until the numbers blur together into meaningless noise on the page. She keeps at it long past midnight, notebook after notebook filling with crossed-out guesses. The pattern stubbornly refuses to hold still for her. Later she closes the books for good. She is no closer to any real meaning than when she started hours ago, her eyes burning and her patience spent. The loop keeps counting somewhere in the dark. It is steady and indifferent to her failure. It counts toward a total Wren simply cannot read, not tonight. And maybe, she thinks miserably, not ever.",
       "is_ending": true,
       "ending": {
         "id": "e_num_gibberish",
@@ -799,7 +799,7 @@
     },
     {
       "id": "m_num_time",
-      "body": "Treating the whole string as timestamps instead of a cipher, Wren logs the gap between each broadcast cycle carefully. She holds a stopwatch in one hand, a notebook balanced awkwardly on her knee. The intervals are shrinking, she notices almost right away. Each cycle comes a little sooner than the one before it, a pattern far too steady to be some accident of failing equipment. She could keep timing the loop carefully, cycle after patient cycle, and use the shrinking pattern to project just when it at last hits zero. Or she could take what she already has right now, and map it straight onto a calendar instead, trading precision for speed, a rougher answer sooner rather than a careful one later.",
+      "body": "Treating the whole string as timestamps instead of a cipher, Wren logs the gap between each broadcast cycle carefully. She holds a stopwatch in one hand, a notebook balanced awkwardly on her knee. The intervals are shrinking, she notices almost right away. Each cycle comes a little sooner than the one before it, a pattern far too steady to be some accident of failing equipment. She could keep timing the loop carefully, cycle after patient cycle. And use the shrinking pattern to project just when it at last hits zero. Or she could take what she already has right now. And map it straight onto a calendar instead, trading precision for speed, a rougher answer sooner rather than a careful one later.",
       "is_ending": false,
       "choices": [
         {
@@ -990,7 +990,7 @@
     },
     {
       "id": "n_b2_choice",
-      "body": "She cannot answer a signal she does not fully understand yet, Wren tells herself firmly, sitting up straighter. So she has to pick one thread and follow it properly through to the end. She could hunt down who M really is, the listener Alder has it seems waited an entire lifetime for. She would need to track down family records, or old documents, or anyone left in this town who might really remember. Or she could set the person aside fully for now, and work out just what this shrinking countdown is really racing toward. Whatever it turns out to be, it is getting close. And close, tonight, is starting to feel really urgent.",
+      "body": "She cannot answer a signal she does not fully understand yet, Wren tells herself firmly, sitting up straighter. So she has to pick one thread and follow it properly through to the end. She could hunt down who M really is, the listener Alder has it seems waited an entire lifetime for. She would need to track down family records, or old documents. Or anyone left in this town who might really remember. Or she could set the person aside fully for now. And work out just what this shrinking countdown is really racing toward. Whatever it turns out to be, it is getting close. And close, tonight, is starting to feel really urgent.",
       "is_ending": false,
       "choices": [
         {
@@ -1094,7 +1094,7 @@
     },
     {
       "id": "e_list_deadend",
-      "body": "Wren chases the chart in widening, more and more desperate circles, until every promising lead folds back on some earlier dead end she has already tried twice over. Exhausted, her eyes stinging from staring at faded ink for hours, she at last gives it up for the night. She saves a clean recording of the loop onto her phone before she lets the whole search go fully. She carries a really good mystery out of the whole night, one she could play for anyone curious enough to ask about it. She just never manages to really finish it herself, and the loop keeps counting somewhere out past the headland, patient as ever, without her.",
+      "body": "Wren chases the chart in widening, more and more desperate circles, until every promising lead folds back on some earlier dead end she has already tried twice over. Exhausted, her eyes stinging from staring at faded ink for hours, she at last gives it up for the night. She saves a clean recording of the loop onto her phone before she lets the whole search go fully. She carries a really good mystery out of the whole night, one she could play for anyone curious enough to ask about it. She just never manages to really finish it herself. And the loop keeps counting somewhere out past the headland, patient as ever, without her.",
       "is_ending": true,
       "ending": {
         "id": "e_list_deadend",
@@ -1105,7 +1105,7 @@
     },
     {
       "id": "mm_count_1",
-      "body": "To pin down just what this countdown is racing toward, Wren has two ways to go. She can take the purely mathematical route, and simply project the shrinking loop straight to its zero point, trusting the numbers alone to tell her plainly what is coming. Or she can chase a hunch instead, one that has been quietly nagging at her for the last hour. Maybe it is timed to the coast itself somehow, to an incoming tide or a storm swelling steadily toward the headland this very week. One approach lives fully on paper at her desk. The other means really checking the weather report, and maybe getting a lot more wet before this long night is at last over.",
+      "body": "To pin down just what this countdown is racing toward, Wren has two ways to go. She can take the purely mathematical route. And simply project the shrinking loop straight to its zero point, trusting the numbers alone to tell her plainly what is coming. Or she can chase a hunch instead, one that has been quietly nagging at her for the last hour. Maybe it is timed to the coast itself somehow, to an incoming tide or a storm swelling steadily toward the headland this very week. One approach lives fully on paper at her desk. The other means really checking the weather report. And maybe getting a lot more wet before this long night is at last over.",
       "is_ending": false,
       "choices": [
         {
@@ -1203,7 +1203,7 @@
     },
     {
       "id": "n_b3",
-      "body": "Everything Wren has gathered tonight snaps into one clear, ticking shape. The countdown ends this coming night, no matter which path led her to this same answer. That is when the relay's ancient power cell will at last fail for good. The moment it does, a last message will play on its own. It is Kell Alder's recorded farewell to his daughter Marin. It will play once into the dark, and then erase itself forever, gone before anyone else gets a real chance to hear it. A storm is rolling in behind it too, timed almost just to that same failing hour. It will finish whatever the dying power cell does not manage alone. Thirty years of patient, lonely waiting come down to a single remaining hour tonight. As far as Wren can tell, sitting alone with the loop ticking in her headphones, she is the only person on this whole earth who knows it.",
+      "body": "Everything Wren has gathered tonight snaps into one clear, ticking shape. The countdown ends this coming night, no matter which path led her to this same answer. That is when the relay's ancient power cell will at last fail for good. The moment it does, a last message will play on its own. It is Kell Alder's recorded farewell to his daughter Marin. It will play once into the dark. And then erase itself forever, gone before anyone else gets a real chance to hear it. A storm is rolling in behind it too, timed almost just to that same failing hour. It will finish whatever the dying power cell does not manage alone. Thirty years of patient, lonely waiting come down to a single remaining hour tonight. As far as Wren can tell, sitting alone with the loop ticking in her headphones, she is the only person on this whole earth who knows it.",
       "is_ending": false,
       "choices": [
         {
@@ -1339,7 +1339,7 @@
     },
     {
       "id": "f_st_power",
-      "body": "The power cell in front of Wren is a corroded brick. It barely holds any voltage, and it hums unevenly under her hand. She remembers, with a jolt, her grandfather's spare battery. It is still in the bottom of her pack, half forgotten until this exact moment. She could splice it in fast right now. That would buy the whole relay precious extra hours, and then she could call the situation in properly to people who know what they are doing. Or she could try nursing the dying cell along by hand instead, coaxing whatever life is left inside it, hoping quietly it lasts through one final broadcast.",
+      "body": "The power cell in front of Wren is a corroded brick. It barely holds any voltage, and it hums unevenly under her hand. She remembers, with a jolt, her grandfather's spare battery. It is still in the bottom of her pack, half forgotten until this exact moment. She could splice it in fast right now. That would buy the whole relay precious extra hours. And then she could call the situation in properly to people who know what they are doing. Or she could try nursing the dying cell along by hand instead, coaxing whatever life is left inside it, hoping quietly it lasts through one final broadcast.",
       "is_ending": false,
       "choices": [
         {
@@ -1456,7 +1456,7 @@
     },
     {
       "id": "f_relay_1",
-      "body": "Wren stays home instead and runs for the attic. She decides fast that the safer plan might also turn out to be the smarter one tonight. If she cannot reach the headland in time herself, she can at least try to amplify Alder's message far and wide. Maybe Marin will stumble across it somehow, wherever she really is tonight. Her grandfather's own transmitter sits there under its dust sheet, dusty but wired and ready to go. She could power it up herself right now and try boosting the loop directly out across the airwaves. Or she could pick up the phone first instead, and wake the town's amateur radio club, throwing the message across their whole county net rather than relying on one old rig alone.",
+      "body": "Wren stays home instead and runs for the attic. She decides fast that the safer plan might also turn out to be the smarter one tonight. If she cannot reach the headland in time herself, she can at least try to amplify Alder's message far and wide. Maybe Marin will stumble across it somehow, wherever she really is tonight. Her grandfather's own transmitter sits there under its dust sheet, dusty but wired and ready to go. She could power it up herself right now and try boosting the loop directly out across the airwaves. Or she could pick up the phone first instead. And wake the town's amateur radio club, throwing the message across their whole county net rather than relying on one old rig alone.",
       "is_ending": false,
       "choices": [
         {
@@ -1473,7 +1473,7 @@
     },
     {
       "id": "f_re_rig",
-      "body": "Her grandfather's rig hums slowly to life under Wren's hands. It sounds warm and achingly familiar, just the way it always did when he ran it himself at this same desk. She could boost the relay's loop carefully. She could splice Marin's name across every legal band she can reach, patient and precise about it, praying quietly the signal carries somewhere useful in the storm. Or she could push the old set well past its rated limits instead, chasing far more range than it was ever built to give, and simply hope the whole rig holds together long enough to matter tonight.",
+      "body": "Her grandfather's rig hums slowly to life under Wren's hands. It sounds warm and achingly familiar, just the way it always did when he ran it himself at this same desk. She could boost the relay's loop carefully. She could splice Marin's name across every legal band she can reach, patient and precise about it, praying quietly the signal carries somewhere useful in the storm. Or she could push the old set well past its rated limits instead, chasing far more range than it was ever built to give. And simply hope the whole rig holds together long enough to matter tonight.",
       "is_ending": false,
       "choices": [
         {
@@ -1507,7 +1507,7 @@
     },
     {
       "id": "e_re_answer",
-      "body": "The carrier resolves slowly into an actual voice. It sounds hesitant, clearly disbelieving, and it asks who is broadcasting her name across the whole county like this. Wren explains everything in one breathless rush: her father, the relay, thirty years of waiting. Then she hands the whole channel over to the loop itself. Marin listens to her father's patient, waiting message, with a stranger's daughter as the only witness in the room. Three decades of silence are at last, gently broken by a girl who simply refused to stop listening tonight.",
+      "body": "The carrier resolves slowly into an actual voice. It sounds hesitant, clearly disbelieving. And it asks who is broadcasting her name across the whole county like this. Wren explains everything in one breathless rush: her father, the relay, thirty years of waiting. Then she hands the whole channel over to the loop itself. Marin listens to her father's patient, waiting message, with a stranger's daughter as the only witness in the room. Three decades of silence are at last, gently broken by a girl who simply refused to stop listening tonight.",
       "is_ending": true,
       "ending": {
         "id": "e_re_answer",
@@ -1540,7 +1540,7 @@
     },
     {
       "id": "f_re_club",
-      "body": "Wren rings the amateur radio club's emergency line, her fingers shaking as she dials the number from memory. A sleepy operator answers on the third ring, half annoyed at first. Then he wakes fully as her whole tangled story spills out in one desperate rush. He could throw Alder's message onto the county-wide net right away, reaching dozens of stations at once for the widest possible chance somebody hears it. Or, if she is simply unlucky with the timing tonight, she might learn instead that nobody is really on shift right now, and only an after-hours recorder is listening at this particular hour.",
+      "body": "Wren rings the amateur radio club's emergency line, her fingers shaking as she dials the number from memory. A sleepy operator answers on the third ring, half annoyed at first. Then he wakes fully as her whole tangled story spills out in one desperate rush. He could throw Alder's message onto the county-wide net right away, reaching dozens of stations at once for the widest possible chance somebody hears it. Or, if she is simply unlucky with the timing tonight, she might learn instead that nobody is really on shift right now. And only an after-hours recorder is listening at this particular hour.",
       "is_ending": false,
       "choices": [
         {
@@ -1585,7 +1585,7 @@
     },
     {
       "id": "e_re_log",
-      "body": "Wren cannot be certain any single lead tonight is really Marin, not with the clock this close to running out. So she logs every one carefully anyway, and hands the club a complete file: the frequency, the whole story, every promising callback she managed to gather. The net keeps the message circulating night after night from here on out. Though Wren herself never gets to see just how it all ends, Alder's loop is at last sitting safely in a hundred searching hands, instead of just one tired old man's.",
+      "body": "Wren cannot be certain any single lead tonight is really Marin, not with the clock this close to running out. So she logs every one carefully anyway. And hands the club a complete file: the frequency, the whole story, every promising callback she managed to gather. The net keeps the message circulating night after night from here on out. Though Wren herself never gets to see just how it all ends, Alder's loop is at last sitting safely in a hundred searching hands, instead of just one tired old man's.",
       "is_ending": true,
       "ending": {
         "id": "e_re_log",
@@ -1607,7 +1607,7 @@
     },
     {
       "id": "f_help_1",
-      "body": "Wren stands in the rain with her phone in her hand. She cannot do this alone against a clock this unforgiving, not tonight. She could phone the coast guard auxiliary instead. They treat any real beacon on the headland seriously, and they can reach the relay by road in minutes if she convinces them fast enough. Or she could track down one of Alder's old colleagues from the relay's working days. That person would understand every word of what she found tonight, without her needing to explain any of it twice.",
+      "body": "Wren stands in the rain with her phone in her hand. She cannot do this alone against a clock this unforgiving, not tonight. She could phone the coast guard auxiliary instead. They treat any real beacon on the headland seriously. And they can reach the relay by road in minutes if she convinces them fast enough. Or she could track down one of Alder's old colleagues from the relay's working days. That person would understand every word of what she found tonight, without her needing to explain any of it twice.",
       "is_ending": false,
       "choices": [
         {
@@ -1658,7 +1658,7 @@
     },
     {
       "id": "e_he_escort",
-      "body": "The crew patches Wren straight into the relay's own system from the road. Their equipment backs up Alder's fragile thirty-year loop, and the signal leaps well past its old, tired limits at last. Within the hour they trace the return call to Marin. They hold the channel open steadily the whole time. At long last, across all that accumulated silence, father and daughter are really speaking to each other.",
+      "body": "The crew patches Wren straight into the relay's own system from the road. Their equipment backs up Alder's fragile thirty-year loop. And the signal leaps well past its old, tired limits at last. Within the hour they trace the return call to Marin. They hold the channel open steadily the whole time. At long last, across all that accumulated silence, father and daughter are really speaking to each other.",
       "is_ending": true,
       "ending": {
         "id": "e_he_escort",
@@ -1680,7 +1680,7 @@
     },
     {
       "id": "e_he_dismiss",
-      "body": "The officer has no real emergency to log, so he thanks Wren politely and files her call under curiosities. No crew ever rolls out that night. Alone on the headland, the countdown runs down with no one watching. The loop at last dies somewhere in the gale. The one report that might have saved it sits closed inside a duty logbook that nobody opens again.",
+      "body": "The officer has no real emergency to log. So he thanks Wren politely and files her call under curiosities. No crew ever rolls out that night. Alone on the headland, the countdown runs down with no one watching. The loop at last dies somewhere in the gale. The one report that might have saved it sits closed inside a duty logbook that nobody opens again.",
       "is_ending": true,
       "ending": {
         "id": "e_he_dismiss",
@@ -1708,7 +1708,7 @@
     },
     {
       "id": "f_he_join",
-      "body": "Ruiz meets Wren right at the headland gate, jangling a heavy set of keys he never quite got around to returning after all these years away. He knows this whole console cold, far better than Wren ever could manage alone tonight. Together, they could complete Alder's scheduled transmission the right way, doing it just right before the power cell at last dies for good on its own. Or Wren could simply step back now instead, and let the old professional take over fully from here. Her own part in this whole long search would already be finished, either way, tonight.",
+      "body": "Ruiz meets Wren right at the headland gate, jangling a heavy set of keys he never quite got around to returning after all these years away. He knows this whole console cold, far better than Wren ever could manage alone tonight. Together, they could complete Alder's scheduled transmission the right way, doing it just right before the power cell at last dies for good on its own. Or Wren could simply step back now instead. And let the old professional take over fully from here. Her own part in this whole long search would already be finished, either way, tonight.",
       "is_ending": false,
       "choices": [
         {
@@ -1747,7 +1747,7 @@
     },
     {
       "id": "e_he_dead",
-      "body": "The number rings out to a confused stranger. He has never heard of Ruiz, or Alder, or any relay station at all. Ruiz moved away years ago, it turns out, and he left no forwarding line behind him. Every other name from the relay's old working days has either scattered across the country or passed on fully by now. Wren sits there with the dead phone still warm in her hand. The clock keeps running down regardless of anything she does. The one person who might have really helped her is already gone, well beyond any reach she has left tonight.",
+      "body": "The number rings out to a confused stranger. He has never heard of Ruiz, or Alder, or any relay station at all. Ruiz moved away years ago, it turns out. And he left no forwarding line behind him. Every other name from the relay's old working days has either scattered across the country or passed on fully by now. Wren sits there with the dead phone still warm in her hand. The clock keeps running down regardless of anything she does. The one person who might have really helped her is already gone, well beyond any reach she has left tonight.",
       "is_ending": true,
       "ending": {
         "id": "e_he_dead",
