@@ -24,17 +24,18 @@ not started.
 | 5-8 | medium | the-backyard-treasure-map | haiku -> opus | **APPROVED** (2 cycles + Opus rewrite + re-review) |
 | 8-11 | short | the-cave-of-echoes | sonnet | **APPROVED** (1 cycle) |
 | 8-11 | medium | the-sky-ship-stowaway | sonnet | **APPROVED** (1 cycle) |
-| 8-11 | long | the-clockwork-menagerie | - | Wave 3 (not started) |
+| 8-11 | long | the-clockwork-menagerie | opus | **APPROVED** (1 cycle) |
 | 10-13 | short | the-midnight-museum | sonnet | **APPROVED** (1 cycle) |
 | 10-13 | medium | the-hollow-lighthouse | sonnet | **APPROVED** (2 cycles) |
-| 10-13 | long | the-mapmakers-island | - | Wave 3 (not started) |
-| 13-16 | medium | the-signal-in-the-static | sonnet -> opus | repair cycle 2 (Opus, in flight) |
-| 13-16 | long | the-vanishing-orchard | - | Wave 3 (not started) |
-| 16+ | medium | the-last-train-north | sonnet | compliance review (Opus, in flight) |
-| 16+ | long | the-salt-archive | - | Wave 3 (not started) |
+| 10-13 | long | the-mapmakers-island | opus | **APPROVED** (1 cycle) |
+| 13-16 | medium | the-signal-in-the-static | sonnet -> opus | **APPROVED** (opus repair + dominator fix) |
+| 13-16 | long | the-vanishing-orchard | opus | **APPROVED** (0 cycles) |
+| 16+ | medium | the-last-train-north | sonnet -> opus | **APPROVED** (opus repair) |
+| 16+ | long | the-salt-archive | opus | **APPROVED** (title fix) |
 
-**8 of 14 approved.** Wave 2's last two (signal, train) are in their final
-Opus stages; Wave 3 (the four Longs) and Wave 4 (gamebooks) not started.
+**14 of 14 APPROVED. Core objective complete.** Waves 1-3 done. Wave 4
+(4 optional gamebook variants) not started; Wave 5 skeleton design held on
+the Fable outage.
 
 ## Wave 5 skeletons (2 new per production cell; 36 total)
 
