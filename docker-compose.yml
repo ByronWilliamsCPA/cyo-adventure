@@ -28,6 +28,18 @@ services:
       # builds the engine via create_async_engine(), which rejects a bare
       # postgresql:// (sync) URL.
       DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://cyo_adventure:password@db:5432/cyo_adventure}
+
+      # Backend token-signing secrets (core/config.py). Without a value the
+      # mint endpoints (POST /api/v1/child-sessions, POST /api/v1/device-grants)
+      # fail with a 400 ConfigurationError, so this LOCAL stack ships benign
+      # defaults, mirroring the POSTGRES_PASSWORD `password` default above;
+      # the Postman/newman suite (docs/api/README.md) exercises both mints
+      # against this stack in CI. Non-local deployments never rely on these:
+      # core/config.py fails startup outside `local` unless real secrets are
+      # provided (docker-compose.prod.yml), and these dev values must never
+      # be used there.
+      CHILD_SESSION_SECRET: ${CHILD_SESSION_SECRET:-local-dev-child-session-secret-not-for-production}
+      DEVICE_GRANT_SECRET: ${DEVICE_GRANT_SECRET:-local-dev-device-grant-secret-not-for-production}
       # Redis cache (if applicable)
       # REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
 

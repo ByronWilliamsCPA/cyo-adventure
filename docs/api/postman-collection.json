@@ -615,6 +615,929 @@
       ]
     },
     {
+      "name": "child-sessions",
+      "description": "Guardian-minted child session tokens (P6-04): mint one for the seeded profile, prove the token acts as that child, then pin the role, cross-family, and missing-profile gates.",
+      "item": [
+        {
+          "name": "POST child-sessions mints a session for the dev profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"token\": {\"type\": \"string\"}, \"expires_at\": {\"type\": \"string\", \"format\": \"date-time\"}, \"profile_id\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"token\", \"expires_at\", \"profile_id\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"token is scoped to the requested profile\", function () { var body = pm.response.json(); pm.expect(body.profile_id).to.eql(pm.collectionVariables.get(\"profile_id\")); pm.expect(body.token).to.be.a(\"string\"); pm.expect(body.token.length).to.be.above(20); pm.collectionVariables.set(\"child_session_token\", body.token); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/child-sessions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "child-sessions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"{{profile_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me with the minted token acts as the child",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"subject\": {\"type\": \"string\"}, \"role\": {\"type\": \"string\"}, \"is_admin\": {\"type\": \"boolean\"}, \"family_id\": {\"type\": \"string\"}, \"profile_ids\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"subject\", \"role\", \"is_admin\", \"family_id\", \"profile_ids\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"principal is the child, scoped to one profile\", function () { var body = pm.response.json(); pm.expect(body.role).to.eql(\"child\"); pm.expect(body.is_admin).to.eql(false); pm.expect(body.profile_ids.length).to.eql(1); pm.expect(body.profile_ids[0]).to.eql(pm.collectionVariables.get(\"profile_id\")); pm.expect(body.family_id).to.eql(pm.collectionVariables.get(\"family_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_session_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST child-sessions as child (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/child-sessions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "child-sessions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"{{profile_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST child-sessions for another family's profile -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/child-sessions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "child-sessions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"22222222-2222-2222-2222-222222222222\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST child-sessions as admin for a nonexistent profile -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/child-sessions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "child-sessions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"99999999-9999-9999-9999-999999999999\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "device-grants",
+      "description": "Durable device authorizations (ADR-014 phase 1): mint a grant, walk the device token's exact capability matrix (list profiles and mint a child session, nothing else), then revoke and prove revocation is enforced online.",
+      "item": [
+        {
+          "name": "POST device-grants as guardian mints a grant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"token\": {\"type\": \"string\"}, \"expires_at\": {\"type\": \"string\", \"format\": \"date-time\"}, \"family_id\": {\"type\": \"string\"}, \"authorized_by\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"id\", \"token\", \"expires_at\", \"family_id\", \"authorized_by\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"grant is bound to the guardian's family\", function () { var body = pm.response.json(); pm.expect(body.family_id).to.eql(pm.collectionVariables.get(\"family_id\")); pm.expect(body.token.length).to.be.above(20); pm.collectionVariables.set(\"device_grant_token\", body.token); pm.collectionVariables.set(\"device_grant_id\", body.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/device-grants",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "device-grants"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Newman Test Tablet\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET device-grants lists the grant without its token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"type\": \"array\", \"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"label\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"label\", \"created_at\"]}};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"row is present and never carries the token\", function () { var body = pm.response.json(); var found = body.find(function (g) { return g.id === pm.collectionVariables.get(\"device_grant_id\"); }); pm.expect(found).to.not.be.undefined; pm.expect(found.label).to.eql(\"Newman Test Tablet\"); pm.expect(found).to.not.have.property(\"token\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/device-grants",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "device-grants"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /profiles with the device token lists family profiles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"profiles\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"has_pin\": {\"type\": \"boolean\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"has_pin\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"profiles\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"device sees the family profile picker\", function () { var body = pm.response.json(); var ids = body.profiles.map(function (p) { return p.id; }); pm.expect(ids).to.include(pm.collectionVariables.get(\"profile_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{device_grant_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profiles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST child-sessions with the device token mints a session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"token\": {\"type\": \"string\"}, \"expires_at\": {\"type\": \"string\", \"format\": \"date-time\"}, \"profile_id\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"token\", \"expires_at\", \"profile_id\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"device-minted session targets the profile\", function () { var body = pm.response.json(); pm.expect(body.profile_id).to.eql(pm.collectionVariables.get(\"profile_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{device_grant_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/child-sessions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "child-sessions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"{{profile_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST device-grants with the device token (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{device_grant_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/device-grants",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "device-grants"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"escalation attempt\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST onboarding with the device token -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{device_grant_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/onboarding",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "onboarding"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST device-grants as admin without family_id -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ValidationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ValidationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/device-grants",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "device-grants"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE device-grants revokes the grant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 204\", function () { pm.response.to.have.status(204); });",
+                  "pm.test(\"no body on revocation\", function () { pm.expect(pm.response.text()).to.eql(\"\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/device-grants/{{device_grant_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "device-grants",
+                "{{device_grant_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /profiles with the revoked device token -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthenticationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthenticationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{device_grant_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profiles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE device-grants for an unknown grant -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/device-grants/99999999-9999-9999-9999-999999999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "device-grants",
+                "99999999-9999-9999-9999-999999999999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "onboarding",
+      "description": "First-login guardian provisioning (P6-03): a fresh verified subject gets a family + guardian row (201), a retry is idempotent (200), and child-session tokens can never onboard.",
+      "item": [
+        {
+          "name": "POST onboarding provisions a new guardian family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"family_id\": {\"type\": \"string\"}, \"user_id\": {\"type\": \"string\"}, \"role\": {\"type\": \"string\"}, \"created\": {\"type\": \"boolean\"}}, \"type\": \"object\", \"required\": [\"family_id\", \"user_id\", \"role\", \"created\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"a fresh family and guardian are created\", function () { var body = pm.response.json(); pm.expect(body.created).to.eql(true); pm.expect(body.role).to.eql(\"guardian\"); pm.collectionVariables.set(\"onboard_family_id\", body.family_id); pm.collectionVariables.set(\"onboard_user_id\", body.user_id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer newman-onboard-guardian",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/onboarding",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "onboarding"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST onboarding again is idempotent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"family_id\": {\"type\": \"string\"}, \"user_id\": {\"type\": \"string\"}, \"role\": {\"type\": \"string\"}, \"created\": {\"type\": \"boolean\"}}, \"type\": \"object\", \"required\": [\"family_id\", \"user_id\", \"role\", \"created\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"the same family and user come back, not a duplicate\", function () { var body = pm.response.json(); pm.expect(body.created).to.eql(false); pm.expect(body.family_id).to.eql(pm.collectionVariables.get(\"onboard_family_id\")); pm.expect(body.user_id).to.eql(pm.collectionVariables.get(\"onboard_user_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer newman-onboard-guardian",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/onboarding",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "onboarding"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST onboarding with a child session token -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_session_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/onboarding",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "onboarding"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST onboarding with no token -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthenticationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthenticationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/onboarding",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "onboarding"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "families",
       "item": [
         {
@@ -693,6 +1616,220 @@
                 "admin",
                 "families"
               ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST admin/families creates a family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"name\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"active\", \"deactivated\"]}, \"guardian_count\": {\"type\": \"integer\"}, \"kid_count\": {\"type\": \"integer\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"name\", \"status\", \"guardian_count\", \"kid_count\", \"created_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"new family starts active and empty\", function () { var body = pm.response.json(); pm.expect(body.name).to.eql(\"Newman Ops Family\"); pm.expect(body.status).to.eql(\"active\"); pm.expect(body.guardian_count).to.eql(0); pm.expect(body.kid_count).to.eql(0); pm.collectionVariables.set(\"newman_family_id\", body.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/families",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "families"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Newman Ops Family\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH admin/families renames the family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"name\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"active\", \"deactivated\"]}, \"guardian_count\": {\"type\": \"integer\"}, \"kid_count\": {\"type\": \"integer\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"name\", \"status\", \"guardian_count\", \"kid_count\", \"created_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"rename is applied without touching status\", function () { var body = pm.response.json(); pm.expect(body.name).to.eql(\"Newman Ops Family Renamed\"); pm.expect(body.status).to.eql(\"active\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/families/{{newman_family_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "families",
+                "{{newman_family_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Newman Ops Family Renamed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST admin/families as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/families",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "families"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"should not exist\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH admin/families for an unknown family -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/families/99999999-9999-9999-9999-999999999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "families",
+                "99999999-9999-9999-9999-999999999999"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ghost\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           },
           "response": []
@@ -1067,6 +2204,256 @@
                   "language": "json"
                 }
               }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /library discovers the Ember Trail series pair",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"stories\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"title\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"age_band\": {\"type\": \"string\"}, \"tier\": {\"type\": \"integer\"}, \"reading_level_target\": {\"type\": \"number\"}, \"node_count\": {\"type\": \"integer\", \"default\": 0}, \"rating\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"progress\": {\"anyOf\": [{\"properties\": {\"current_node\": {\"type\": \"string\"}, \"nodes_visited\": {\"type\": \"integer\"}, \"updated_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"current_node\", \"nodes_visited\", \"updated_at\"]}, {\"type\": \"null\"}]}, \"series_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"book_index\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"cover_url\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"title\", \"version\", \"age_band\", \"tier\", \"reading_level_target\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"stories\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"both Ember Trail books are discoverable\", function () { var body = pm.response.json(); var embers = body.stories.filter(function (s) { return s.series_id !== null && s.series_id !== undefined; }).sort(function (a, b) { return a.book_index - b.book_index; }); pm.expect(embers.length).to.eql(2); pm.collectionVariables.set(\"ember_book_1\", embers[0].id); pm.collectionVariables.set(\"ember_book_2\", embers[1].id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/library?profile_id={{profile_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "library"
+              ],
+              "query": [
+                {
+                  "key": "profile_id",
+                  "value": "{{profile_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET series-next from Ember Trail 1 points at book 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"next\": {\"anyOf\": [{\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"title\": {\"type\": \"string\"}, \"series_entry_node\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"carries_state\": {\"type\": \"boolean\"}}, \"additionalProperties\": false, \"type\": \"object\", \"required\": [\"storybook_id\", \"version\", \"title\", \"carries_state\"]}, {\"type\": \"null\"}]}}, \"additionalProperties\": false, \"type\": \"object\"};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"book 1 continues into book 2 with carried state\", function () { var body = pm.response.json(); pm.expect(body.next).to.not.eql(null); pm.expect(body.next.storybook_id).to.eql(pm.collectionVariables.get(\"ember_book_2\")); pm.expect(body.next.version).to.eql(1); pm.expect(body.next.carries_state).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/series-next/{{profile_id}}/{{ember_book_1}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "series-next",
+                "{{profile_id}}",
+                "{{ember_book_1}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET series-next from the final series book is null",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"next\": {\"anyOf\": [{\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"title\": {\"type\": \"string\"}, \"series_entry_node\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"carries_state\": {\"type\": \"boolean\"}}, \"additionalProperties\": false, \"type\": \"object\", \"required\": [\"storybook_id\", \"version\", \"title\", \"carries_state\"]}, {\"type\": \"null\"}]}}, \"additionalProperties\": false, \"type\": \"object\"};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"no next book after the series finale\", function () { var body = pm.response.json(); pm.expect(body.next).to.eql(null); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/series-next/{{profile_id}}/{{ember_book_2}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "series-next",
+                "{{profile_id}}",
+                "{{ember_book_2}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET series-next on a non-series book is null",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"next\": {\"anyOf\": [{\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"title\": {\"type\": \"string\"}, \"series_entry_node\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"carries_state\": {\"type\": \"boolean\"}}, \"additionalProperties\": false, \"type\": \"object\", \"required\": [\"storybook_id\", \"version\", \"title\", \"carries_state\"]}, {\"type\": \"null\"}]}}, \"additionalProperties\": false, \"type\": \"object\"};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"a standalone book has no continuation\", function () { var body = pm.response.json(); pm.expect(body.next).to.eql(null); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/series-next/{{profile_id}}/{{storybook_id_1}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "series-next",
+                "{{profile_id}}",
+                "{{storybook_id_1}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET series-next for another family's profile -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/series-next/22222222-2222-2222-2222-222222222222/{{ember_book_1}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "series-next",
+                "22222222-2222-2222-2222-222222222222",
+                "{{ember_book_1}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET series-next for an unknown storybook -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/series-next/{{profile_id}}/no-such-book",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "series-next",
+                "{{profile_id}}",
+                "no-such-book"
+              ]
             }
           },
           "response": []
@@ -1966,6 +3353,132 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "GET admin/story-requests lists requests across families",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"requests\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"profile_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"status\": {\"type\": \"string\", \"enum\": [\"pending\", \"approved\", \"declined\", \"blocked\"]}, \"request_text\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"moderation_flags\": {\"items\": {\"properties\": {\"category\": {\"type\": \"string\"}, \"verdict\": {\"type\": \"string\", \"enum\": [\"block\", \"flag\", \"advisory\", \"pass\"]}, \"message\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"category\", \"verdict\", \"message\"]}, \"type\": \"array\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}, \"initiator_role\": {\"type\": \"string\", \"enum\": [\"child\", \"guardian\", \"admin\"]}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"length\": {\"anyOf\": [{\"type\": \"string\", \"enum\": [\"short\", \"medium\", \"long\"]}, {\"type\": \"null\"}]}, \"narrative_style\": {\"type\": \"string\", \"enum\": [\"prose\", \"gamebook\"]}, \"series_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"proposed_series_title\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"anchor_storybook_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"profile_id\", \"status\", \"request_text\", \"moderation_flags\", \"created_at\", \"initiator_role\", \"age_band\", \"length\", \"narrative_style\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"requests\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"both earlier requests appear in the global queue\", function () { var body = pm.response.json(); var ids = body.requests.map(function (r) { return r.id; }); pm.expect(ids).to.include(pm.collectionVariables.get(\"request_id\")); pm.expect(ids).to.include(pm.collectionVariables.get(\"request_id_2\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/story-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "story-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET admin/story-requests as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/story-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "story-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET admin/story-requests with a bogus status -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ValidationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ValidationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/story-requests?status=bogus",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "story-requests"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "bogus"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -2789,6 +4302,176 @@
       ]
     },
     {
+      "name": "moderation-dashboard",
+      "description": "Admin moderation evidence (WS-F), read after the thresholds folder so its threshold and noise-floor writes appear in recent_changes.",
+      "item": [
+        {
+          "name": "GET admin/moderation/dashboard aggregates override evidence",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"insights\": {\"items\": {\"properties\": {\"age_band\": {\"type\": \"string\"}, \"category\": {\"type\": \"string\"}, \"advisory_findings\": {\"type\": \"integer\"}, \"flag_findings\": {\"type\": \"integer\"}, \"decided_versions\": {\"type\": \"integer\"}, \"released_versions\": {\"type\": \"integer\"}, \"override_rate\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}, \"last_seen\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"age_band\", \"category\", \"advisory_findings\", \"flag_findings\", \"decided_versions\", \"released_versions\", \"override_rate\", \"last_seen\"]}, \"type\": \"array\"}, \"recent_changes\": {\"items\": {\"properties\": {\"occurred_at\": {\"type\": \"string\", \"format\": \"date-time\"}, \"event_type\": {\"type\": \"string\"}, \"entity_id\": {\"type\": \"string\"}, \"payload\": {\"additionalProperties\": true, \"type\": \"object\"}}, \"type\": \"object\", \"required\": [\"occurred_at\", \"event_type\", \"entity_id\", \"payload\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"insights\", \"recent_changes\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"recent changes carry only threshold event types\", function () { var body = pm.response.json(); body.recent_changes.forEach(function (c) { pm.expect([\"threshold_changed\", \"noise_floor_changed\"]).to.include(c.event_type); }); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation",
+                "dashboard"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET admin/moderation/suggestions returns proposals and gates",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"min_decided_versions\": {\"type\": \"integer\"}, \"min_override_rate\": {\"type\": \"number\"}, \"suggestions\": {\"items\": {\"properties\": {\"age_band\": {\"type\": \"string\"}, \"category\": {\"type\": \"string\"}, \"current_min_verdict\": {\"type\": \"string\", \"enum\": [\"advisory\", \"flag\", \"block\"]}, \"current_min_score\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}, \"suggested_min_verdict\": {\"type\": \"string\", \"enum\": [\"advisory\", \"flag\", \"block\"]}, \"override_rate\": {\"type\": \"number\"}, \"decided_versions\": {\"type\": \"integer\"}, \"released_versions\": {\"type\": \"integer\"}}, \"type\": \"object\", \"required\": [\"age_band\", \"category\", \"current_min_verdict\", \"current_min_score\", \"suggested_min_verdict\", \"override_rate\", \"decided_versions\", \"released_versions\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"min_decided_versions\", \"min_override_rate\", \"suggestions\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"the suggestion gates are the documented constants\", function () { var body = pm.response.json(); pm.expect(body.min_decided_versions).to.eql(5); pm.expect(body.min_override_rate).to.eql(0.8); pm.expect(body.suggestions).to.be.an(\"array\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation/suggestions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation",
+                "suggestions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET admin/moderation/dashboard as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation",
+                "dashboard"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET admin/moderation/suggestions as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation/suggestions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation",
+                "suggestions"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "provider-allowlist",
       "item": [
         {
@@ -3027,6 +4710,1250 @@
                   "language": "json"
                 }
               }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "admin-users",
+      "description": "Admin console user management (WS-J): list adult accounts, invite a guardian into the newman family, and pin the self-manage, duplicate-invite, and pending-transition guards.",
+      "item": [
+        {
+          "name": "GET admin/users lists adult accounts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"users\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"email\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"role\": {\"type\": \"string\", \"enum\": [\"guardian\", \"admin\"]}, \"is_admin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"pending\", \"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"email\", \"role\", \"is_admin\", \"status\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"users\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"adult accounts only, never the authn subject\", function () { var body = pm.response.json(); pm.expect(body.users.length).to.be.above(0); body.users.forEach(function (u) { pm.expect(u).to.not.have.property(\"authn_subject\"); pm.expect(u.role).to.not.eql(\"child\"); }); var admin = body.users.find(function (u) { return u.role === \"admin\"; }); pm.expect(admin).to.not.be.undefined; pm.collectionVariables.set(\"admin_user_id\", admin.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST admin/users invites a guardian into the newman family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"email\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"role\": {\"type\": \"string\", \"enum\": [\"guardian\", \"admin\"]}, \"is_admin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"pending\", \"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"email\", \"role\", \"is_admin\", \"status\", \"created_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"invite lands pending in the right family\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"pending\"); pm.expect(body.email).to.eql(\"newman.invite@example.com\"); pm.expect(body.family_id).to.eql(pm.collectionVariables.get(\"newman_family_id\")); pm.collectionVariables.set(\"invited_user_id\", body.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newman.invite@example.com\",\n  \"family_id\": \"{{newman_family_id}}\",\n  \"role\": \"guardian\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST admin/users with the same email again -> 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 409\", function () { pm.response.to.have.status(409); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names StateTransitionError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"StateTransitionError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newman.invite@example.com\",\n  \"family_id\": \"{{newman_family_id}}\",\n  \"role\": \"guardian\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH admin/users grants the invite the admin capability",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"email\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"role\": {\"type\": \"string\", \"enum\": [\"guardian\", \"admin\"]}, \"is_admin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"pending\", \"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"email\", \"role\", \"is_admin\", \"status\", \"created_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"capability set without changing the base role\", function () { var body = pm.response.json(); pm.expect(body.is_admin).to.eql(true); pm.expect(body.role).to.eql(\"guardian\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/{{invited_user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "{{invited_user_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_admin\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH admin/users cannot leave pending via status -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ValidationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ValidationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/{{invited_user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "{{invited_user_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH admin/users on your own account -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/{{admin_user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "{{admin_user_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_admin\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET admin/users filtered to the newman family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"users\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"email\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"role\": {\"type\": \"string\", \"enum\": [\"guardian\", \"admin\"]}, \"is_admin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"pending\", \"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"email\", \"role\", \"is_admin\", \"status\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"users\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"only the invited guardian is in the family\", function () { var body = pm.response.json(); pm.expect(body.users.length).to.eql(1); pm.expect(body.users[0].id).to.eql(pm.collectionVariables.get(\"invited_user_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users?family_id={{newman_family_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "family_id",
+                  "value": "{{newman_family_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET admin/users as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH admin/users for an unknown user -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/99999999-9999-9999-9999-999999999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "99999999-9999-9999-9999-999999999999"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_admin\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "admin-profiles",
+      "description": "Admin console child-profile management (WS-J): cross-family listing, create in the newman family, PIN + deactivation lifecycle, and the deactivated-profile child-session gate.",
+      "item": [
+        {
+          "name": "GET admin/profiles lists profiles across families",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"profiles\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"has_pin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"has_pin\", \"status\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"profiles\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"listing crosses family boundaries\", function () { var body = pm.response.json(); pm.expect(body.profiles.length).to.be.above(1); var cross = body.profiles.find(function (p) { return p.family_id !== pm.collectionVariables.get(\"family_id\"); }); pm.expect(cross).to.not.be.undefined; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "profiles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST admin/profiles creates a profile in the newman family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"has_pin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"has_pin\", \"status\", \"created_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"profile lands active and PIN-less in the family\", function () { var body = pm.response.json(); pm.expect(body.family_id).to.eql(pm.collectionVariables.get(\"newman_family_id\")); pm.expect(body.status).to.eql(\"active\"); pm.expect(body.has_pin).to.eql(false); pm.collectionVariables.set(\"admin_profile_id\", body.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "profiles"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"family_id\": \"{{newman_family_id}}\",\n  \"display_name\": \"Newman Admin Kid\",\n  \"age_band\": \"8-11\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH admin/profiles sets a PIN and deactivates",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"has_pin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"has_pin\", \"status\", \"created_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"PIN recorded as a flag only; profile deactivated\", function () { var body = pm.response.json(); pm.expect(body.has_pin).to.eql(true); pm.expect(body.status).to.eql(\"deactivated\"); pm.expect(pm.response.text()).to.not.include(\"1234\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/profiles/{{admin_profile_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "profiles",
+                "{{admin_profile_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"1234\",\n  \"status\": \"deactivated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH admin/profiles with a malformed PIN -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"detail\": {\"type\": \"array\"}}, \"required\": [\"detail\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"the malformed PIN is never echoed back\", function () { pm.expect(pm.response.text()).to.not.include(\"abc\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/profiles/{{admin_profile_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "profiles",
+                "{{admin_profile_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"abc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST child-sessions for the deactivated profile -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/child-sessions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "child-sessions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"{{admin_profile_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET admin/profiles filtered to the newman family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"profiles\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"has_pin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"has_pin\", \"status\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"profiles\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"deactivated profile still listed for admins\", function () { var body = pm.response.json(); pm.expect(body.profiles.length).to.eql(1); pm.expect(body.profiles[0].id).to.eql(pm.collectionVariables.get(\"admin_profile_id\")); pm.expect(body.profiles[0].status).to.eql(\"deactivated\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/profiles?family_id={{newman_family_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "profiles"
+              ],
+              "query": [
+                {
+                  "key": "family_id",
+                  "value": "{{newman_family_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET admin/profiles as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "profiles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH admin/profiles for an unknown profile -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/profiles/99999999-9999-9999-9999-999999999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "profiles",
+                "99999999-9999-9999-9999-999999999999"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"ghost\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "family-connections",
+      "description": "Directional cross-family recommendation opt-ins (WS-J): connect the dev family to the newman family, pin the duplicate/self/unknown guards, then remove the row.",
+      "item": [
+        {
+          "name": "GET admin/family-connections starts empty",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"connections\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"family_name\": {\"type\": \"string\"}, \"connected_family_id\": {\"type\": \"string\"}, \"connected_family_name\": {\"type\": \"string\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"family_name\", \"connected_family_id\", \"connected_family_name\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"connections\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"no connections are seeded\", function () { var body = pm.response.json(); pm.expect(body.connections.length).to.eql(0); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/family-connections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "family-connections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST admin/family-connections connects dev -> newman",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"family_name\": {\"type\": \"string\"}, \"connected_family_id\": {\"type\": \"string\"}, \"connected_family_name\": {\"type\": \"string\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"family_name\", \"connected_family_id\", \"connected_family_name\", \"created_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"directional row carries both family names\", function () { var body = pm.response.json(); pm.expect(body.family_id).to.eql(pm.collectionVariables.get(\"family_id\")); pm.expect(body.connected_family_id).to.eql(pm.collectionVariables.get(\"newman_family_id\")); pm.expect(body.family_name).to.eql(\"Dev Family\"); pm.expect(body.connected_family_name).to.eql(\"Newman Ops Family Renamed\"); pm.collectionVariables.set(\"connection_id\", body.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/family-connections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "family-connections"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"family_id\": \"{{family_id}}\",\n  \"connected_family_id\": \"{{newman_family_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST the same direction again -> 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 409\", function () { pm.response.to.have.status(409); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names StateTransitionError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"StateTransitionError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/family-connections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "family-connections"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"family_id\": \"{{family_id}}\",\n  \"connected_family_id\": \"{{newman_family_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST a self-connection -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ValidationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ValidationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/family-connections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "family-connections"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"family_id\": \"{{family_id}}\",\n  \"connected_family_id\": \"{{family_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST with an unknown family -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/family-connections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "family-connections"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"family_id\": \"99999999-9999-9999-9999-999999999999\",\n  \"connected_family_id\": \"{{newman_family_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST admin/family-connections as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/family-connections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "family-connections"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"family_id\": \"{{family_id}}\",\n  \"connected_family_id\": \"{{newman_family_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE admin/family-connections removes the row",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 204\", function () { pm.response.to.have.status(204); });",
+                  "pm.test(\"no body on removal\", function () { pm.expect(pm.response.text()).to.eql(\"\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/family-connections/{{connection_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "family-connections",
+                "{{connection_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE the same connection again -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/family-connections/{{connection_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "family-connections",
+                "{{connection_id}}"
+              ]
             }
           },
           "response": []

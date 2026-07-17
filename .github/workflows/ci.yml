@@ -518,7 +518,8 @@ jobs:
         run: npm install -g --ignore-scripts newman@6.2.1
 
       # Brings up the API (port 8000, /health/live) plus Postgres from the repo
-      # compose stack; the compose defaults (ENVIRONMENT=local dev auth, no
+      # compose stack; the compose defaults (ENVIRONMENT=local dev auth, dev
+      # token-signing secrets for the child-session/device-grant mints, no
       # external-service credentials) are all this job needs.
       - name: Start API stack
         run: docker compose up -d --build app db
@@ -592,10 +593,15 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
         run: uv run python scripts/seed_dev_data.py
 
-      # #ASSUME: timing: --delay-request 1100 paces the suite under the app's
-      # 60 req/min sliding-window rate limiter (RateLimitMiddleware).
+      # #ASSUME: timing: --delay-request 1100 keeps consecutive requests from
+      # racing the unit-of-work commit, which lands after the response is sent
+      # (FastAPI yield-dependency teardown): without a delay, a create's row
+      # can be invisible to the immediately following request. It also paces
+      # the suite under the 60 req/min rate limiter wherever that middleware
+      # is enabled (it is off in this stack's ENVIRONMENT=local).
       # #VERIFY: every newman invocation of this collection (here and the local
-      # loop in docs/api/README.md) must carry the same delay or requests 429.
+      # loop in docs/api/README.md) must carry the same delay, or fast
+      # back-to-back requests intermittently 403/404 on just-created rows.
       - name: Run newman (JUnit for Test Analytics)
         run: |
           newman run docs/api/postman-collection.json \
