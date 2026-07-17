@@ -405,20 +405,23 @@ def mutate(session: nox.Session) -> None:
 
     Mutation testing introduces small code changes (mutations) and verifies
     that tests catch them. A high mutation score indicates effective tests.
+    Scope and pytest flags come from [tool.mutmut] in pyproject.toml
+    (mutmut 3.x dialect); scripts/mutation_score.py aggregates the .meta
+    results into the score the weekly CI workflow also reports.
 
     Usage:
         nox -s mutate              # Run mutation testing
-        nox -s mutate -- --report  # Show mutation report
+        nox -s mutate -- --report  # Score existing results only
     """
     session.install("-e", ".[dev,api]")
 
     if session.posargs and "--report" in session.posargs:
-        # Show results only
-        session.run("mutmut", "results")
+        # Score existing results only
+        session.run("python", "scripts/mutation_score.py")
     else:
-        # Run mutation testing
-        session.run("mutmut", "run", "--no-progress")
-        session.run("mutmut", "results")
+        # Run mutation testing (mutmut 3.x has no --no-progress flag)
+        session.run("mutmut", "run")
+        session.run("python", "scripts/mutation_score.py")
 
 
 # ==========================================

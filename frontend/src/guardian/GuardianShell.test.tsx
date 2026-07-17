@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { ToastProvider } from '../notifications/ToastProvider'
 import { GuardianShell } from './GuardianShell'
 import { STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 
@@ -13,7 +14,11 @@ vi.mock('../auth/useAuth', () => ({
 
 // The shell's pending-count nav badge reads the family queue on mount; the
 // default (rejected) implementation keeps the badge hidden in every
-// pre-existing test, matching the shell's silent-failure behavior.
+// pre-existing test, matching the shell's silent-failure behavior. The G10
+// NotificationBell (rendered in the header alongside sign-out) shares this
+// same mocked `get`: its own fetches (GET /v1/notifications) reject too by
+// default and are swallowed the same way (NotificationBell.tsx's
+// refreshUnread catch), so they never interfere with these assertions.
 const mockGet = vi.fn()
 const fakeApi = { get: mockGet }
 vi.mock('../hooks/useApi', () => ({
@@ -30,16 +35,44 @@ function pendingRequests(count: number) {
   }
 }
 
+const PENDING_URL = '/v1/story-requests?status=pending'
+
+/**
+ * Routes the shared mockGet by URL, so the pending-queue's own sequenced
+ * responses (`responses`, consumed one per call, the last repeating) are
+ * never accidentally consumed by the G10 NotificationBell's concurrent GET
+ * /v1/notifications poll (which always resolves to an empty, harmless feed
+ * here; NotificationBell.test.tsx owns its own behavior coverage).
+ */
+function routeGet(...responses: Array<{ data: unknown } | Error>) {
+  let call = 0
+  mockGet.mockImplementation((url: string) => {
+    if (url === '/v1/notifications') return Promise.resolve({ data: { notifications: [] } })
+    if (url === PENDING_URL) {
+      const resp = responses[Math.min(call, responses.length - 1)]
+      call += 1
+      return resp instanceof Error ? Promise.reject(resp) : Promise.resolve(resp)
+    }
+    return Promise.reject(new Error(`unexpected GET ${url}`))
+  })
+}
+
 function renderShell() {
   return render(
-    <MemoryRouter initialEntries={['/guardian']}>
-      <Routes>
-        <Route path="/guardian" element={<GuardianShell />}>
-          <Route index element={<div>console content</div>} />
-          <Route path="intake" element={<div>intake content</div>} />
-        </Route>
-      </Routes>
-    </MemoryRouter>
+    // NotificationBell (G10) calls useToast(), which throws outside a
+    // ToastProvider; every other guardian route already sits under the real
+    // ToastProvider (App.tsx), so this wrapper keeps the shell's own tests
+    // faithful to that tree instead of mocking the toast channel away.
+    <ToastProvider>
+      <MemoryRouter initialEntries={['/guardian']}>
+        <Routes>
+          <Route path="/guardian" element={<GuardianShell />}>
+            <Route index element={<div>console content</div>} />
+            <Route path="intake" element={<div>intake content</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </ToastProvider>
   )
 }
 
@@ -49,7 +82,7 @@ beforeEach(() => {
   mockUseAuth.mockReset()
   mockSignOut.mockReset()
   mockGet.mockReset()
-  mockGet.mockRejectedValue(new Error('no queue backend in this test'))
+  routeGet(new Error('no queue backend in this test'))
 })
 
 describe('GuardianShell', () => {
@@ -60,12 +93,35 @@ describe('GuardianShell', () => {
     expect(screen.getByRole('link', { name: 'Console' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Request a story' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Story requests' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Reading' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Sign out' })).not.toBeInTheDocument()
-    // Books and Profiles are both guardian-only (family-management
-    // affordances an admin-only adult has no family for); no principal
-    // means they're absent too.
+    // Books, Profiles, and Connections are all guardian-only
+    // (family-management affordances an admin-only adult has no family
+    // for); no principal means they're absent too.
     expect(screen.queryByRole('link', { name: 'Books' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Profiles' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Connections' })).not.toBeInTheDocument()
+    // The G10 notification bell is gated on a principal the same way
+    // sign-out is; it renders nothing of its own without one.
+    expect(screen.queryByRole('button', { name: /Notifications/ })).not.toBeInTheDocument()
+  })
+
+  it('shows the Reading link for an admin principal too, unlike Books/Profiles', () => {
+    mockUseAuth.mockReturnValue({ principal: principal('admin'), signOut: mockSignOut })
+    renderShell()
+    // G9's reading-summary endpoint accepts guardian OR admin
+    // (api/reading_history.py), unlike Books/Profiles; the nav link is
+    // unconditional like Console/Request a story/Story requests.
+    expect(screen.getByRole('link', { name: 'Reading' })).toHaveAttribute(
+      'href',
+      '/guardian/reading'
+    )
+  })
+
+  it('shows the notification bell for a signed-in principal', () => {
+    mockUseAuth.mockReturnValue({ principal: principal('guardian'), signOut: mockSignOut })
+    renderShell()
+    expect(screen.getByRole('button', { name: /Notifications/ })).toBeInTheDocument()
   })
 
   it('shows the Books link only for a guardian principal, not admin', () => {
@@ -78,6 +134,14 @@ describe('GuardianShell', () => {
     mockUseAuth.mockReturnValue({ principal: principal('admin'), signOut: mockSignOut })
     renderShell()
     expect(screen.queryByRole('link', { name: 'Profiles' })).not.toBeInTheDocument()
+  })
+
+  it('shows the Connections link only for a guardian principal, not admin', () => {
+    // ADR-016 register G17: consent is a guardian-only act, same gating as
+    // Books/Profiles above (an admin-only adult has no family to consent for).
+    mockUseAuth.mockReturnValue({ principal: principal('admin'), signOut: mockSignOut })
+    renderShell()
+    expect(screen.queryByRole('link', { name: 'Connections' })).not.toBeInTheDocument()
   })
 
   it('shows the Admin console link for a principal holding the admin capability', () => {
@@ -102,6 +166,10 @@ describe('GuardianShell', () => {
     renderShell()
     expect(screen.getByRole('link', { name: 'Books' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Profiles' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Connections' })).toHaveAttribute(
+      'href',
+      '/guardian/connections'
+    )
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument()
   })
 
@@ -164,31 +232,27 @@ describe('GuardianShell', () => {
     })
 
     it('renders the pending count with an accessible link name', async () => {
-      mockGet.mockResolvedValue(pendingRequests(3))
+      routeGet(pendingRequests(3))
       renderShell()
       const link = await screen.findByRole('link', { name: 'Story requests, 3 waiting' })
       expect(within(link).getByText('3')).toBeInTheDocument()
-      expect(mockGet).toHaveBeenCalledWith('/v1/story-requests?status=pending')
+      expect(mockGet).toHaveBeenCalledWith(PENDING_URL)
     })
 
     it('hides the badge when there are zero pending requests', async () => {
-      mockGet.mockResolvedValue(pendingRequests(0))
+      routeGet(pendingRequests(0))
       renderShell()
       // Wait for the fetch to settle before asserting absence.
-      await waitFor(() =>
-        expect(mockGet).toHaveBeenCalledWith('/v1/story-requests?status=pending')
-      )
+      await waitFor(() => expect(mockGet).toHaveBeenCalledWith(PENDING_URL))
       const link = screen.getByRole('link', { name: 'Story requests' })
       expect(link).not.toHaveAttribute('aria-label')
       expect(within(link).queryByText('0')).not.toBeInTheDocument()
     })
 
     it('hides the badge when the fetch fails (silent progressive enhancement)', async () => {
-      mockGet.mockRejectedValue(new Error('backend down'))
+      routeGet(new Error('backend down'))
       renderShell()
-      await waitFor(() =>
-        expect(mockGet).toHaveBeenCalledWith('/v1/story-requests?status=pending')
-      )
+      await waitFor(() => expect(mockGet).toHaveBeenCalledWith(PENDING_URL))
       const link = screen.getByRole('link', { name: 'Story requests' })
       expect(link).not.toHaveAttribute('aria-label')
     })
@@ -201,11 +265,10 @@ describe('GuardianShell', () => {
     })
 
     it('refetches when the queue signals a change (approve/decline landed)', async () => {
-      mockGet.mockResolvedValueOnce(pendingRequests(2))
+      routeGet(pendingRequests(2), pendingRequests(1))
       renderShell()
       await screen.findByRole('link', { name: 'Story requests, 2 waiting' })
 
-      mockGet.mockResolvedValueOnce(pendingRequests(1))
       act(() => {
         window.dispatchEvent(new Event(STORY_REQUESTS_CHANGED_EVENT))
       })
@@ -216,11 +279,10 @@ describe('GuardianShell', () => {
 
     it('refetches when the route changes between guardian pages', async () => {
       const user = userEvent.setup()
-      mockGet.mockResolvedValueOnce(pendingRequests(1))
+      routeGet(pendingRequests(1), pendingRequests(4))
       renderShell()
       await screen.findByRole('link', { name: 'Story requests, 1 waiting' })
 
-      mockGet.mockResolvedValueOnce(pendingRequests(4))
       await user.click(screen.getByRole('link', { name: 'Request a story' }))
       await screen.findByText('intake content')
       expect(

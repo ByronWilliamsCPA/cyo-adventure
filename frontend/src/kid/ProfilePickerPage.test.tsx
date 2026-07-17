@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getChildSession, setChildSession } from '../auth/childSession'
 import { setDeviceGrant } from '../auth/deviceGrant'
 import { ProfilePickerPage } from './ProfilePickerPage'
+import { getReadAloudPreference } from './readAloudPreference'
 
 const mockGet = vi.fn()
 const mockPost = vi.fn()
@@ -301,6 +302,50 @@ describe('ProfilePickerPage child session mint (G1 / P6-04)', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/library/p1')
   })
 
+  it('caches the profile tts_enabled flag (K7) for the reader route to read back, on a pick', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({
+      data: {
+        profiles: [
+          {
+            id: 'p1',
+            display_name: 'Reader A',
+            age_band: '10-13',
+            reading_level_cap: 99,
+            avatar: 'fox',
+            tts_enabled: true,
+            created_at: '2026-07-02T00:00:00Z',
+          },
+        ],
+      },
+    })
+    mockPost.mockResolvedValue({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/library/p1'))
+    expect(getReadAloudPreference('p1')).toBe(true)
+  })
+
+  it('caches tts_enabled=false just as reliably (no stale true from an earlier pick)', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: ONE_PROFILE }) // tts_enabled: false
+    mockPost.mockResolvedValue({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/library/p1'))
+    expect(getReadAloudPreference('p1')).toBe(false)
+  })
+
   it('still navigates to the library when the mint call fails, without storing a session', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const user = userEvent.setup()
@@ -555,10 +600,37 @@ describe('ProfilePickerPage PIN gate (P6-07)', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/library/p1')
   })
 
+  it('caches tts_enabled (K7) only after a correct PIN, not before', async () => {
+    const user = userEvent.setup()
+    const ttsPinProfile = {
+      profiles: [{ ...PIN_PROFILE.profiles[0], tts_enabled: true }],
+    }
+    mockGet.mockResolvedValue({ data: ttsPinProfile })
+    mockPost.mockResolvedValue({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    renderPicker()
+
+    await openPinPrompt(user)
+    // Opening the prompt alone (before any PIN is confirmed) must not seed
+    // the toggle for a profile the child has not proven they may read as.
+    expect(getReadAloudPreference('p1')).toBe(false)
+
+    const input = screen.getByLabelText(/secret pin/i)
+    await user.type(input, '4321')
+    await user.click(screen.getByRole('button', { name: /let's read/i }))
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/library/p1'))
+    expect(getReadAloudPreference('p1')).toBe(true)
+  })
+
   it('shows a gentle retry message and does not navigate when the PIN is wrong', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const user = userEvent.setup()
-    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    const ttsPinProfile = {
+      profiles: [{ ...PIN_PROFILE.profiles[0], tts_enabled: true }],
+    }
+    mockGet.mockResolvedValue({ data: ttsPinProfile })
     mockPost.mockRejectedValue({
       isAxiosError: true,
       response: { status: 403, data: { code: 'PIN_MISMATCH' } },
@@ -576,6 +648,9 @@ describe('ProfilePickerPage PIN gate (P6-07)', () => {
     expect(screen.queryByText(/ask a grown-up/i)).not.toBeInTheDocument()
     expect(mockNavigate).not.toHaveBeenCalled()
     expect(getChildSession()).toBeNull()
+    // A wrong PIN must not cache tts_enabled either: the child has not
+    // proven they may read as this profile yet.
+    expect(getReadAloudPreference('p1')).toBe(false)
     // The prompt stays up for another try, with the field cleared.
     expect(screen.getByLabelText(/secret pin/i)).toHaveValue('')
     errorSpy.mockRestore()

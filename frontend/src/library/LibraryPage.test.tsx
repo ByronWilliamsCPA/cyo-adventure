@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { IDBFactory } from 'fake-indexeddb'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -20,6 +20,17 @@ const mockPost = vi.fn()
 const fakeApi = { get: mockGet, post: mockPost }
 vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
+}))
+
+// Offline-copy revocation (G8/A5): LibraryPage's only job here is to call
+// reconcileOfflineCache with this fetch's authoritative ids, only on the
+// success path. The actual reconciliation logic (what gets purged) is
+// covered by offline/revocation.test.ts against the real IndexedDB cache;
+// this file only asserts the call-site wiring.
+const mockReconcile = vi.fn<(profileId: string, ids: string[]) => Promise<void>>()
+mockReconcile.mockResolvedValue(undefined)
+vi.mock('../offline/revocation', () => ({
+  reconcileOfflineCache: (profileId: string, ids: string[]) => mockReconcile(profileId, ids),
 }))
 
 function renderLibrary() {
@@ -73,6 +84,7 @@ beforeEach(() => {
   mockPost.mockReset()
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
+  mockReconcile.mockReset().mockResolvedValue(undefined)
 })
 
 describe('LibraryPage', () => {
@@ -417,6 +429,222 @@ describe('LibraryPage', () => {
         anchor_storybook_id: 's4',
       })
     )
+  })
+
+  describe('K6 endings tracker', () => {
+    // Routes mockGet by URL so the library list and reading-history calls
+    // (both GETs, fired from the same load()) can be answered differently.
+    function mockLibraryAndHistory(stories: unknown[], books: unknown[]) {
+      mockGet.mockImplementation((url: string) => {
+        if (url.startsWith('/v1/reading-history/')) {
+          return Promise.resolve({ data: { profile_id: 'p1', books } })
+        }
+        return Promise.resolve({ data: { stories } })
+      })
+    }
+
+    it('shows the endings badge on a shelf card once the history call resolves', async () => {
+      // IN_PROGRESS is the hero (most recent activity); OLDER_IN_PROGRESS is
+      // the shelf card this test targets.
+      mockLibraryAndHistory(
+        [OLDER_IN_PROGRESS, IN_PROGRESS],
+        [{ storybook_id: OLDER_IN_PROGRESS.id, endings_found: 2, total_endings: 5 }]
+      )
+      renderLibrary()
+      const shelf = await screen.findByRole('region', { name: /more to explore/i })
+      expect(await within(shelf).findByText('2 of 5 endings found')).toBeInTheDocument()
+    })
+
+    it('shows the endings badge on the hero card', async () => {
+      mockLibraryAndHistory(
+        [IN_PROGRESS],
+        [{ storybook_id: IN_PROGRESS.id, endings_found: 1, total_endings: 3 }]
+      )
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      expect(await within(hero).findByText('1 of 3 endings found')).toBeInTheDocument()
+    })
+
+    it('shows no badge (never crashes) when the history fetch fails', async () => {
+      mockGet.mockImplementation((url: string) => {
+        if (url.startsWith('/v1/reading-history/')) {
+          return Promise.reject(new Error('history boom'))
+        }
+        return Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+      })
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
+      errorSpy.mockRestore()
+    })
+
+    it('shows no badge for a book with no matching history row', async () => {
+      mockLibraryAndHistory([IN_PROGRESS], [])
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('K17 recommendations feed (ADR-016 rings 1-2)', () => {
+    // Routes mockGet by URL so the library list and recommendations calls
+    // (both GETs, fired from the same load()) can be answered differently.
+    function mockLibraryAndRecommendations(stories: unknown[], items: unknown[]) {
+      mockGet.mockImplementation((url: string) => {
+        if (url.startsWith('/v1/recommendations/')) {
+          return Promise.resolve({ data: { items } })
+        }
+        return Promise.resolve({ data: { stories } })
+      })
+    }
+
+    it('shows a family-ring chip on the matching shelf card once the feed resolves', async () => {
+      mockLibraryAndRecommendations(
+        [OLDER_IN_PROGRESS, IN_PROGRESS],
+        [
+          {
+            storybook_id: OLDER_IN_PROGRESS.id,
+            title: OLDER_IN_PROGRESS.title,
+            cover_url: null,
+            recommender_name: 'Maya',
+            rating: 5,
+            ring: 'family',
+          },
+        ]
+      )
+      renderLibrary()
+      const shelf = await screen.findByRole('region', { name: /more to explore/i })
+      expect(await within(shelf).findByText('Maya loved this')).toBeInTheDocument()
+    })
+
+    it('shows a connection-ring chip with the "Cousin" prefix on the hero card', async () => {
+      mockLibraryAndRecommendations(
+        [IN_PROGRESS],
+        [
+          {
+            storybook_id: IN_PROGRESS.id,
+            title: IN_PROGRESS.title,
+            cover_url: null,
+            recommender_name: 'Leo',
+            rating: 4,
+            ring: 'connection',
+          },
+        ]
+      )
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      expect(await within(hero).findByText('Cousin Leo loved this')).toBeInTheDocument()
+    })
+
+    it('collapses multiple recommenders for the same book into "and N more"', async () => {
+      mockLibraryAndRecommendations(
+        [IN_PROGRESS],
+        [
+          {
+            storybook_id: IN_PROGRESS.id,
+            title: IN_PROGRESS.title,
+            cover_url: null,
+            recommender_name: 'Maya',
+            rating: 5,
+            ring: 'family',
+          },
+          {
+            storybook_id: IN_PROGRESS.id,
+            title: IN_PROGRESS.title,
+            cover_url: null,
+            recommender_name: 'Leo',
+            rating: 4,
+            ring: 'connection',
+          },
+        ]
+      )
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      expect(await within(hero).findByText('Maya loved this and 1 more')).toBeInTheDocument()
+    })
+
+    it('shows no chip (never crashes the shelf) when the recommendations fetch fails', async () => {
+      mockGet.mockImplementation((url: string) => {
+        if (url.startsWith('/v1/recommendations/')) {
+          return Promise.reject(new Error('recommendations boom'))
+        }
+        return Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+      })
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/loved this/i)).not.toBeInTheDocument()
+      errorSpy.mockRestore()
+    })
+
+    it('shows no chip when the feed is empty', async () => {
+      mockLibraryAndRecommendations([IN_PROGRESS], [])
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/loved this/i)).not.toBeInTheDocument()
+    })
+
+    it('shows no chip for a book with no matching recommendation entry', async () => {
+      mockLibraryAndRecommendations(
+        [IN_PROGRESS],
+        [
+          {
+            storybook_id: 'some-other-book',
+            title: 'Some Other Book',
+            cover_url: null,
+            recommender_name: 'Maya',
+            rating: 5,
+            ring: 'family',
+          },
+        ]
+      )
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/loved this/i)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('offline-copy revocation call site (roadmap Phase 5, G8/A5)', () => {
+    it('reconciles the offline cache with the fresh shelf ids on a successful fetch', async () => {
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, NOT_STARTED] } })
+      renderLibrary()
+      await screen.findByRole('region', { name: /continue reading/i })
+      await waitFor(() => expect(mockReconcile).toHaveBeenCalledWith('p1', ['s1', 's3']))
+    })
+
+    it('does not reconcile the offline cache when the fetch fails', async () => {
+      mockGet.mockRejectedValue(new Error('boom'))
+      renderLibrary()
+      await screen.findByText(/lost the bookshelf/i)
+      expect(mockReconcile).not.toHaveBeenCalled()
+    })
+
+    it('reconciles again when connectivity returns while the page stays mounted', async () => {
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      renderLibrary()
+      await screen.findByRole('region', { name: /continue reading/i })
+      await waitFor(() => expect(mockReconcile).toHaveBeenCalledTimes(1))
+
+      await act(async () => {
+        window.dispatchEvent(new Event('online'))
+        await Promise.resolve()
+      })
+
+      await waitFor(() => expect(mockReconcile).toHaveBeenCalledTimes(2))
+    })
+
+    it('a reconcile rejection is logged and never crashes the shelf', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      mockReconcile.mockRejectedValueOnce(new Error('reconcile boom'))
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      await waitFor(() =>
+        expect(errorSpy).toHaveBeenCalledWith('offline cache reconcile failed', 'reconcile boom')
+      )
+      errorSpy.mockRestore()
+    })
   })
 })
 

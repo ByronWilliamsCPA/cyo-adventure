@@ -569,3 +569,34 @@ def test_gate_blocks_on_policy_violation() -> None:
     result = run_gate(_policy_story_with_death_ending())
     assert result.blocked
     assert any(f.rule_id == "PL-15" for f in result.report.errors)
+
+
+# ---------------------------------------------------------------------------
+# 11. PL-22: an unconfigured band profile fails the gate closed
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_gate_blocks_on_unconfigured_band_profile(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A story whose band has no configured BandProfile blocks with PL-22.
+
+    Owner ruling 2026-07-16: the policy layer must fail CLOSED, not silently
+    skip PL-15/16/17, when band_profile.profile_for cannot resolve a profile
+    for the story's band. Every real AgeBand is configured (guarded by
+    test_band_profile.py::test_profiles_match_age_band_enum_exactly), so this
+    is exercised by monkeypatching profile_for at its policy.py import site,
+    same as test_policy.py::test_validate_policy_fails_closed_when_profile_is_none,
+    but through the full run_gate entry point used by the generation
+    orchestrator and the validate API endpoint.
+    """
+    monkeypatch.setattr(
+        "cyo_adventure.validator.policy.profile_for", lambda _band: None
+    )
+    result = run_gate(_policy_story_with_death_ending())
+    assert result.blocked
+    assert any(f.rule_id == "PL-22" for f in result.report.errors)
+    # PL-15 must not have run: profile_for was forced to None, so the gate
+    # cannot check the forbidden-ending-kind rule without a profile.
+    assert not any(f.rule_id == "PL-15" for f in result.report.findings)

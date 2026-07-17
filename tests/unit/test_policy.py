@@ -18,6 +18,7 @@ from cyo_adventure.storybook.models import (
     Valence,
 )
 from cyo_adventure.validator.policy import node_word_count, validate_policy
+from cyo_adventure.validator.report import Severity
 
 
 def _story(
@@ -572,21 +573,42 @@ def test_pl20_allows_fast_fail_when_win_is_deep():
     assert not any(f.rule_id == "PL-20" for f in report.errors)
 
 
-def test_validate_policy_short_circuits_when_profile_is_none(
+def test_validate_policy_fails_closed_when_profile_is_none(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """profile_for returning None is a documented fail-open, defensive branch.
+    """An unconfigured band profile must block, not silently skip (fail closed).
 
-    test_profiles_match_age_band_enum_exactly guarantees every real AgeBand has
-    a configured profile, so this branch is unreachable through any valid
-    Storybook. Exercising it requires monkeypatching profile_for at its policy.py
-    import site; this is a coverage-only test for the defensive short-circuit,
-    not evidence the branch is reachable in production.
+    Owner ruling 2026-07-16: a band with no configured BandProfile must not
+    let a story through PL-15/16/17 unvalidated. test_profiles_match_age_band_enum_exactly
+    guarantees every real AgeBand has a configured profile, so this branch is
+    unreachable through any valid Storybook; that lockstep test is kept as
+    defense in depth. This test exercises the runtime behavior directly by
+    monkeypatching profile_for at its policy.py import site, proving the gate
+    itself fails closed rather than relying solely on the enum lockstep.
     """
     monkeypatch.setattr(
         "cyo_adventure.validator.policy.profile_for", lambda _band: None
     )
     story = _story(age_band="8-11", kind=EndingKind.SUCCESS)
     report = validate_policy(story)
-    assert report.ok is True
-    assert report.findings == []
+    assert report.ok is False
+    assert len(report.findings) == 1
+    finding = report.findings[0]
+    assert finding.rule_id == "PL-22"
+    assert finding.severity is Severity.ERROR
+    assert finding.story_id == story.id
+    assert "band profile not configured" in finding.message
+    assert "8-11" in finding.message
+
+
+@pytest.mark.parametrize("band", ["3-5", "5-8", "8-11", "10-13", "13-16", "16+"])
+def test_validate_policy_never_emits_pl22_for_a_configured_band(band: str) -> None:
+    """Every real, configured band must validate exactly as before: no PL-22.
+
+    The PL-22 fail-closed guard exists for the unconfigured-band branch only;
+    it must never fire for any band that ``band_profile._PROFILES`` actually
+    configures. Uses a benign SUCCESS ending with no content flags so no other
+    PL rule fires either, isolating the assertion to PL-22.
+    """
+    report = validate_policy(_story(age_band=band, kind=EndingKind.SUCCESS))
+    assert not any(f.rule_id == "PL-22" for f in report.findings)

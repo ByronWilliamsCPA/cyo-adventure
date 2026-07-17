@@ -97,6 +97,9 @@ export const IntakePage = lazyWithReload('IntakePage', () =>
 export const BooksPage = lazyWithReload('BooksPage', () =>
   import('./guardian/BooksPage').then((m) => ({ default: m.BooksPage }))
 )
+export const ReadingPage = lazyWithReload('ReadingPage', () =>
+  import('./guardian/ReadingPage').then((m) => ({ default: m.ReadingPage }))
+)
 export const RequestsPage = lazyWithReload('RequestsPage', () =>
   import('./guardian/RequestsPage').then((m) => ({ default: m.RequestsPage }))
 )
@@ -114,6 +117,9 @@ export const ProfilePickerPage = lazyWithReload('ProfilePickerPage', () =>
 )
 export const ProfilesPage = lazyWithReload('ProfilesPage', () =>
   import('./guardian/ProfilesPage').then((m) => ({ default: m.ProfilesPage }))
+)
+export const ConnectionsPage = lazyWithReload('ConnectionsPage', () =>
+  import('./guardian/ConnectionsPage').then((m) => ({ default: m.ConnectionsPage }))
 )
 export const AdminShell = lazyWithReload('AdminShell', () =>
   import('./admin/AdminShell').then((m) => ({ default: m.AdminShell }))
@@ -154,6 +160,10 @@ export const UserManagementPage = lazyWithReload('UserManagementPage', () =>
   import('./admin/UserManagementPage').then((m) => ({
     default: m.UserManagementPage,
   }))
+)
+
+export const AuditPage = lazyWithReload('AuditPage', () =>
+  import('./admin/AuditPage').then((m) => ({ default: m.AuditPage }))
 )
 export const ReaderRoute = lazyWithReload('ReaderRoute', () =>
   import('./reader/ReaderRoute').then((m) => ({ default: m.ReaderRoute }))

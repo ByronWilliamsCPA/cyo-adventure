@@ -14,7 +14,7 @@ source: "tech-spec.md section 'Validation gate (deterministic, no LLM)'"
 
 # Validation Rule Catalog
 
-> **Status**: Accepted | **Version**: 1.1 | **Updated**: 2026-07-03
+> **Status**: Accepted | **Version**: 1.2 | **Updated**: 2026-07-16
 > **Scope**: All stories (Layer 1, Policy); Tier-2 stories only (Layer 2); all stories
 > advisory (RL); all stories always-human (SAFE)
 
@@ -109,7 +109,9 @@ Runs after Layer 1 passes and the Storybook parses, on the typed model plus the 
 graph (`validator/policy.py`). Most findings are ERROR-severity and blocking; PL-19 is
 advisory (WARNING). PL-15..PL-18 are defined below; PL-19 (words-per-node), PL-20
 (fastest-finish arc floor), and PL-21 (off-matrix rejection) are specified in
-[ADR-011](./adr/adr-011-story-scale-framework.md) rather than duplicated here.
+[ADR-011](./adr/adr-011-story-scale-framework.md) rather than duplicated here. PL-22
+(band profile not configured, fail closed) is a runtime invariant rather than an
+age-safety rule in its own right; it is defined below.
 
 | Rule ID | Layer | Description | Failure Message Template |
 |---------|-------|-------------|--------------------------|
@@ -117,6 +119,7 @@ advisory (WARNING). PL-15..PL-18 are defined below; PL-19 (words-per-node), PL-2
 | PL-16 | Policy | **Content ceiling**: each `metadata.content_flags` value must not exceed the band's `content_ceiling` for that flag (ordered-enum comparison). | `PL-16 policy: {flag} '{level}' exceeds band '{age_band}' ceiling '{ceiling}' in story '{story_id}'` |
 | PL-17 | Policy | **Floors**: distinct endings must meet `min_endings`; decision nodes (non-ending nodes with >= 2 choices) must meet `min_decisions`, both possibly scaled and counted from the graph. | `PL-17 floor: {n} ending(s)/decision node(s) below {scope} minimum {min} in story '{story_id}'` |
 | PL-18 | Policy | **Topology verify**: declared `metadata.topology` must be admissible for the class inferred from graph metrics (networkx classifier). | `PL-18 topology: declared '{topology}' is not admissible for the graph (admissible: {admissible}) in story '{story_id}'` |
+| PL-22 | Policy | **Band profile fail-closed**: added 2026-07-16 per the owner ruling (fail closed). When a story's age band has no configured `BandProfile` (`validator/band_profile.py::profile_for` returns `None`), the gate emits this single blocking finding and returns immediately instead of silently skipping PL-15/16/17 for that band. Unreachable through any valid, enum-constrained `age_band` today (a lockstep test pins the `AgeBand` enum against the configured profiles), so this is a runtime backstop, not a normal-path rule. See `validator/policy.py::validate_policy` and `tests/unit/test_policy.py::test_validate_policy_fails_closed_when_profile_is_none`. | `PL-22 policy: band profile not configured for band '{age_band}' in story '{story_id}'; refusing to validate age safety` |
 
 ---
 
@@ -125,7 +128,9 @@ advisory (WARNING). PL-15..PL-18 are defined below; PL-19 (words-per-node), PL-2
 The validator applies rules in this order:
 
 1. L1-1 through L1-7 (graph; all stories). Stop if any L1 rule fails.
-2. PL-15 through PL-21 (age-policy gate; all stories). PL-19 is advisory; the rest block.
+2. PL-15 through PL-21, plus the PL-22 fail-closed guard (age-policy gate; all stories).
+   PL-19 is advisory; the rest block. PL-22 fires only when the band has no configured
+   profile, in which case it is the sole finding and PL-15..PL-21 do not run.
 3. L2-8 through L2-12 (state-space; Tier-2 only). Stop if any L2 rule fails.
 4. RL-13 (advisory; all stories). Log warnings; continue.
 5. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.

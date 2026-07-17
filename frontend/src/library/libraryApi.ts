@@ -1,11 +1,20 @@
 import type { AxiosInstance } from 'axios'
 
+import type { ReadingHistoryItem, ReadingHistoryView } from '../client/types.gen'
+
 /**
  * Hand-typed adapter for the library + ratings endpoints (repo convention:
  * mirror the backend Pydantic views by hand; the generated client is unused).
  * Backend contracts: src/cyo_adventure/api/schemas.py (LibraryItem,
  * LibraryProgress, RatingView).
+ *
+ * `history` (K6 endings tracker) is the one exception: its wire shape
+ * (`ReadingHistoryItem`) is imported straight from the generated client
+ * (`client/types.gen`) rather than hand-mirrored, matching childSessionApi.ts's
+ * convention for a newer endpoint with no existing hand-typed precedent here.
  */
+
+export type { ReadingHistoryItem } from '../client/types.gen'
 
 export interface LibraryProgressView {
   current_node: string
@@ -45,6 +54,10 @@ export interface RatingView {
 export interface LibraryApi {
   list(profileId: string): Promise<LibraryItemView[]>
   rate(profileId: string, storybookId: string, value: number): Promise<RatingView>
+  /** K6 endings tracker: one row per storybook the profile has any
+   * completion for. Best-effort from the caller's point of view: a rejection
+   * here must never block the shelf itself from rendering. */
+  history(profileId: string): Promise<ReadingHistoryItem[]>
 }
 
 export function makeLibraryApi(api: AxiosInstance): LibraryApi {
@@ -62,6 +75,17 @@ export function makeLibraryApi(api: AxiosInstance): LibraryApi {
         value,
       })
       return res.data
+    },
+    async history(profileId) {
+      const res = await api.get<ReadingHistoryView>(`/v1/reading-history/${profileId}`)
+      // #ASSUME: data-integrity: a well-formed response always has `books` as
+      // an array (ReadingHistoryView). Defend against a malformed or
+      // unexpectedly-shaped body anyway (this call shares the same GET
+      // helper the rest of the page's mocked tests reuse for other
+      // endpoints) so a bad payload degrades to "no badges" rather than
+      // throwing out of a fire-and-forget .then() and going unhandled.
+      // #VERIFY: LibraryPage.test.tsx K6 describe block.
+      return Array.isArray(res.data.books) ? res.data.books : []
     },
   }
 }

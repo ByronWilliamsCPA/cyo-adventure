@@ -5,14 +5,17 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { Button } from '@ds/components/Button'
 import { getValidChildSession } from '../auth/childSession'
 import {
+  makeFetchReadingHistory,
   makeFetchServerState,
   makeFetchSeriesNext,
   makeFetchStory,
   makeRecordCompletion,
+  makeSubmitFlag,
   makeSyncApi,
 } from '../api/readerApi'
 import { useApi } from '../hooks/useApi'
 import { useReplayOnReconnect } from '../hooks/useReplayOnReconnect'
+import { getReadAloudPreference } from '../kid/readAloudPreference'
 import { useToast } from '../notifications/useToast'
 import type { QueuedWrite } from '../offline/db'
 import { resolveConflict, saveProgress, type ReplayOutcome } from '../offline/sync'
@@ -48,9 +51,21 @@ export function ReaderRoute() {
   const fetchServerState = useMemo(() => makeFetchServerState(api), [api])
   const recordCompletion = useMemo(() => makeRecordCompletion(api), [api])
   const fetchSeriesNext = useMemo(() => makeFetchSeriesNext(api), [api])
+  const fetchReadingHistory = useMemo(() => makeFetchReadingHistory(api), [api])
+  const submitFlag = useMemo(() => makeSubmitFlag(api), [api])
   const navigate = useNavigate()
   const location = useLocation()
   const continuation = useMemo(() => parseContinuation(location.state), [location.state])
+  // K7 / Phase 4b read-aloud: this route only ever gets a profile id, never
+  // the full ProfileView (and its tts_enabled flag), so it reads back the
+  // value ProfilePickerPage cached at pick time rather than adding a second
+  // /v1/profiles fetch on every reader page load. A profile ReaderRoute
+  // knows nothing about (e.g. a deep link opened without going through the
+  // picker) resolves to false, hiding the toggle rather than guessing.
+  const ttsEnabled = useMemo(
+    () => (profileId ? getReadAloudPreference(profileId) : false),
+    [profileId]
+  )
 
   const [replayConflicts, setReplayConflicts] = useState<QueuedWrite[]>([])
   const [replayFailedCount, setReplayFailedCount] = useState(0)
@@ -198,6 +213,9 @@ export function ReaderRoute() {
         profileId={profileId}
         storybookId={storybookId}
         version={parsedVersion}
+        ttsEnabled={ttsEnabled}
+        fetchReadingHistory={fetchReadingHistory}
+        submitFlag={submitFlag}
       />
       {replayConflicts.length > 0 && (
         <ConflictDialog

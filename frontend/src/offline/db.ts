@@ -1,7 +1,7 @@
 /**
  * IndexedDB cache for offline reading (idb wrapper).
  *
- * The server is canonical; this is a cache only. Four stores back the reader:
+ * The server is canonical; this is a cache only. Five stores back the reader:
  * - `storybooks`: downloaded immutable story blobs, keyed by `id@version`.
  * - `reading_states`: the latest known reading state per profile+story.
  * - `offline_queue`: reading-state writes made while offline, replayed in order
@@ -12,6 +12,13 @@
  *   localStorage clear (private-mode eviction, a user clearing site data)
  *   does not strand an otherwise-valid, still-unexpired grant, since
  *   IndexedDB survives a localStorage clear on most browsers.
+ * - `profile_shelf`: the last authoritative library list seen for each
+ *   profile on this device (offline-copy revocation, see offline/revocation.ts
+ *   and roadmap Phase 5 G8/A5). `storybooks` is keyed by `id@version` only,
+ *   not by profile, because a book can be legitimately assigned to more than
+ *   one sibling profile on the same device; this store is what lets
+ *   revocation tell "nobody on this device may read this book anymore" apart
+ *   from "this profile lost it, but a sibling still has it".
  */
 
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb'
@@ -30,6 +37,12 @@ export interface QueuedWrite {
   queued_at: number
 }
 
+/** A profile's last known authoritative shelf (offline-copy revocation). */
+export interface ProfileShelfSnapshot {
+  profile_id: string
+  storybook_ids: string[]
+}
+
 interface ReaderDB extends DBSchema {
   storybooks: { key: string; value: Storybook }
   reading_states: { key: string; value: ReadingState }
@@ -39,6 +52,7 @@ interface ReaderDB extends DBSchema {
   // bookshelf (UX-K1) rather than a dead-end "Try again" that can never
   // succeed. Keyed by profileId.
   library_lists: { key: string; value: LibraryItemView[] }
+  profile_shelf: { key: string; value: ProfileShelfSnapshot }
 }
 
 const DB_NAME = 'cyo-reader'
@@ -62,10 +76,13 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
     // #ASSUME: data-integrity: idb's upgrade callback receives the OLD
     // version (0 for a brand-new database), and each `if` runs the schema
     // change for every version the open needed to pass through, so a
-    // brand-new database (oldVersion 0) creates all four stores in one pass,
-    // and an existing v1 database (oldVersion 1) only gains `device_grant`.
+    // brand-new database (oldVersion 0) creates all stores in one pass, an
+    // existing v1 database (oldVersion 1) gains `device_grant`, `library_lists`,
+    // and `profile_shelf`, and an existing v2 database (oldVersion 2) gains
+    // `library_lists` and `profile_shelf`.
     // #VERIFY: db.test.ts "creates the device_grant store on a fresh
-    // database" and offline/db.test.ts's existing v1 stores stay reachable.
+    // database", the v1-to-v3 and v2-to-v3 migration tests, and offline/db.test.ts's
+    // existing stores stay reachable across every migration path.
     upgrade(db, oldVersion) {
       if (oldVersion < 1) {
         db.createObjectStore('storybooks')
@@ -77,6 +94,7 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
       }
       if (oldVersion < 3) {
         db.createObjectStore('library_lists')
+        db.createObjectStore('profile_shelf')
       }
     },
     // #CRITICAL: timing (ARCH-M5): without these callbacks a DB_VERSION bump
@@ -200,6 +218,60 @@ export async function getDeviceGrantMirror(): Promise<DeviceGrant | undefined> {
 export async function clearDeviceGrantMirror(): Promise<void> {
   const db = await getDb()
   await db.delete('device_grant', DEVICE_GRANT_KEY)
+}
+
+/** Remove a single profile's locally-cached reading state (offline-copy revocation). */
+export async function deleteReadingState(profileId: string, storybookId: string): Promise<void> {
+  const db = await getDb()
+  await db.delete('reading_states', stateKey(profileId, storybookId))
+}
+
+/** Storybook ids this profile has a locally-cached reading state for. */
+export async function listReadingStateStorybookIds(profileId: string): Promise<string[]> {
+  const db = await getDb()
+  const keys = await db.getAllKeys('reading_states')
+  const prefix = `${profileId}:`
+  return keys.filter((key) => key.startsWith(prefix)).map((key) => key.slice(prefix.length))
+}
+
+/** Remove every cached version of a storybook (offline-copy revocation). */
+export async function deleteStorybooksById(id: string): Promise<void> {
+  const db = await getDb()
+  const keys = await db.getAllKeys('storybooks')
+  const prefix = `${id}@`
+  for (const key of keys) {
+    if (key.startsWith(prefix)) {
+      await db.delete('storybooks', key)
+    }
+  }
+}
+
+/** Distinct storybook ids currently cached on this device, across every version. */
+export async function listCachedStorybookIds(): Promise<string[]> {
+  const db = await getDb()
+  const keys = await db.getAllKeys('storybooks')
+  return [...new Set(keys.map((key) => key.slice(0, key.lastIndexOf('@'))))]
+}
+
+/**
+ * Persist a profile's latest authoritative shelf (offline-copy revocation;
+ * see offline/revocation.ts). Overwrites the previous snapshot: the caller
+ * always passes the full, fresh list from a successful library fetch, never
+ * a partial update.
+ */
+export async function putProfileShelf(profileId: string, storybookIds: string[]): Promise<void> {
+  const db = await getDb()
+  await db.put(
+    'profile_shelf',
+    { profile_id: profileId, storybook_ids: storybookIds },
+    profileId
+  )
+}
+
+/** Every profile shelf snapshot known on this device. */
+export async function getAllProfileShelves(): Promise<ProfileShelfSnapshot[]> {
+  const db = await getDb()
+  return db.getAll('profile_shelf')
 }
 
 /** Reset the cached database handle (test isolation helper). */

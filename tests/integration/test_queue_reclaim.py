@@ -22,13 +22,13 @@ from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
-from docker.errors import DockerException
 from rq.exceptions import DuplicateJobError
 from testcontainers.redis import RedisContainer
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.db.models import Concept, Family, GenerationJob
 from cyo_adventure.generation import queue as queue_mod
+from tests.integration._docker_probe import start_or_probe_error
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -247,11 +247,11 @@ def redis_url() -> Iterator[str]:
     ``_pg_url`` Postgres fixture in conftest.py so a developer without Docker
     is not blocked; CI runners provide Docker for testcontainers.
     """
-    try:
-        container = RedisContainer("redis:7-alpine")
-        container.start()
-    except (DockerException, OSError) as exc:
-        pytest.skip(f"Docker/Redis testcontainer unavailable: {exc}")
+    container, probe_error = start_or_probe_error(
+        lambda: RedisContainer("redis:7-alpine")
+    )
+    if container is None:
+        pytest.skip(f"Docker/Redis testcontainer unavailable: {probe_error}")
     try:
         host = container.get_container_host_ip()
         port = container.get_exposed_port(container.port)

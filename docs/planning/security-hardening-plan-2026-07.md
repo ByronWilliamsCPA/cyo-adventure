@@ -462,3 +462,42 @@ PII egress (folded into M5); dormant cross-book series validator (no runtime pat
 `TrustedHostMiddleware`/HTTPS in `app.py` (reasonably delegated to the reverse proxy; a defense-in-depth
 note, not a workstream); shared unbounded RQ queue as the sole throttle (overlaps M6/M7, no separate
 workstream). Seven candidates dismissed in total.
+
+---
+
+## Follow-ups from edge-case testing round (2026-07-17)
+
+Two residuals surfaced while hardening the PII egress guard and the token
+verifiers. Both are bounded and documented in code; recorded here so the
+open decisions are not lost.
+
+### R-1: PII guard does not fold confusable homoglyphs
+
+- **Severity:** Low (defense-in-depth; the common evasions are now closed).
+- **State:** The guard now NFKC-normalizes and strips zero-width / format and
+  control characters before matching (`generation/pii.py::_fold_for_match`), so
+  zero-width-split and compatibility-form (full-width, ligature) evasions are
+  blocked and tested (`tests/unit/test_pii_guard.py`). Confusable homoglyphs
+  (e.g. Cyrillic U+0415 for Latin "E") are NOT folded: NFKC does not treat them
+  as equivalent, and full UTS-39 confusable folding risks false positives on
+  legitimate multilingual real-child names.
+- **Decision needed.** Accept the residual (current), or add scoped confusable
+  folding (e.g. a curated Latin/Cyrillic/Greek homoglyph table) if the threat
+  model warrants it. The residual is pinned by
+  `test_name_with_cyrillic_homoglyph_is_not_matched`; inverting that test is the
+  entry point for the change.
+
+### R-2: OIDC verification runs with zero clock-skew leeway
+
+- **Severity:** Low (availability, not a security weakness).
+- **State:** All three JWT verifiers decode with PyJWT's default `leeway=0`.
+  For the self-issued child-session and device-grant tokens this is correct
+  (same backend mints and verifies). For the OIDC path the issuer is external
+  (Supabase), so a token whose `iat`/`nbf` is even slightly ahead of the
+  verifier's clock is rejected; current behavior is pinned in
+  `tests/unit/test_oidc_verification.py`.
+- **Decision needed.** Whether to add a small clock-skew leeway (e.g.
+  `leeway=timedelta(seconds=60)`) to `deps._verify_oidc_jwt` only. This trades a
+  negligible expiry-window extension for tolerance of real IdP/verifier clock
+  drift. Left unchanged pending that call; the boundary tests document the
+  current strict stance either way.

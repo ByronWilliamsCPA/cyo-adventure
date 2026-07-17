@@ -15,6 +15,29 @@ chosen by the guardian for the story and is NOT screened here. Screening it
 would be incorrect because the character name is intentionally included in
 generation prompts as story content, and it does not identify a real child.
 
+Normalization (anti-evasion)
+----------------------------
+Before matching, both the prompt and the forbidden tokens are folded with
+:func:`_fold_for_match`: NFKC normalization collapses compatibility forms (so a
+full-width or ligature spelling of a name matches its plain form), and
+zero-width / format characters (Unicode category ``Cf``, e.g. U+200B ZERO WIDTH
+SPACE, U+200D ZERO WIDTH JOINER, U+FEFF) plus non-whitespace control characters
+(category ``Cc``, e.g. NUL) are stripped, so a name broken up by an invisible
+character (e.g. "Em" + U+200B + "ma") still matches. Folding is applied
+symmetrically to both sides so a forbidden value carrying such characters is
+handled too.
+
+# #CRITICAL: security: without this fold, the guard is bypassable by inserting a
+#            zero-width character inside a real-child name, or by spelling it in
+#            an NFKC-equivalent compatibility form, letting the PII reach the
+#            provider. #VERIFY: test_pii_guard covers zero-width, ZWJ, BOM,
+#            full-width, ligature, and control-character evasions.
+# #EDGE: security: confusable HOMOGLYPHS (e.g. Cyrillic U+0415 for Latin "E")
+#        are NOT folded here; NFKC does not treat them as equivalent and full
+#        UTS-39 confusable folding risks false positives on legitimate
+#        multilingual names. #VERIFY: test_name_with_cyrillic_homoglyph_is_not
+#        _matched pins this known residual so a future change is a deliberate one.
+
 Matching strategy
 -----------------
 Name matching uses negative-lookaround anchors so that a name token such as
@@ -39,6 +62,7 @@ secret from appearing in log output, Sentry breadcrumbs, or exception chains.
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass
 
 from cyo_adventure.core.exceptions import ValidationError
@@ -47,6 +71,33 @@ __all__ = [
     "PiiContext",
     "assert_prompt_pii_safe",
 ]
+
+# Standard whitespace kept during folding: stripping these could merge otherwise
+# separate tokens, so only invisible/format and non-whitespace control chars are
+# removed.
+_KEPT_WHITESPACE = frozenset("\t\n\r\f\v ")
+
+
+def _fold_for_match(text: str) -> str:
+    """Normalize text so invisible or compatibility-form evasions cannot hide PII.
+
+    Applies NFKC normalization, then strips zero-width / format characters
+    (Unicode category ``Cf``) and non-whitespace control characters (category
+    ``Cc``). Standard whitespace is preserved so unrelated tokens are not merged.
+
+    Args:
+        text: The prompt or forbidden token to fold.
+
+    Returns:
+        The folded text, safe to match literally against another folded value.
+    """
+    normalized = unicodedata.normalize("NFKC", text)
+    return "".join(
+        ch
+        for ch in normalized
+        if not (unicodedata.category(ch) in {"Cf", "Cc"} and ch not in _KEPT_WHITESPACE)
+    )
+
 
 # #CRITICAL: security: this is the sole egress guard preventing real child PII
 #            from reaching an external LLM provider.
@@ -129,12 +180,17 @@ def assert_prompt_pii_safe(prompt: str, *, forbidden: PiiContext) -> None:
         >>> assert_prompt_pii_safe("Write a story about Emma.", forbidden=ctx)
         ValidationError: ...
     """
+    # Fold once: NFKC + strip invisibles so evasion by zero-width insertion or
+    # compatibility-form spelling cannot slip a name or date past the guard.
+    folded_prompt = _fold_for_match(prompt)
+
     # Screen name tokens with lookaround-anchored matching.
     for name in forbidden.child_names:
-        if not name:
+        folded_name = _fold_for_match(name)
+        if not folded_name:
             continue
-        pattern = _compile_name_pattern(name)
-        if pattern.search(prompt):
+        pattern = _compile_name_pattern(folded_name)
+        if pattern.search(folded_prompt):
             msg = "prompt contains a forbidden real-child identifier"
             raise ValidationError(
                 msg,
@@ -145,11 +201,12 @@ def assert_prompt_pii_safe(prompt: str, *, forbidden: PiiContext) -> None:
     # Screen birthdate strings with substring matching.
     # Date strings are distinctive enough that substring matching is adequate
     # and safer than word-boundary matching for formats with non-word characters.
-    prompt_lower = prompt.lower()
+    folded_prompt_lower = folded_prompt.lower()
     for birthdate in forbidden.birthdates:
-        if not birthdate:
+        folded_birthdate = _fold_for_match(birthdate)
+        if not folded_birthdate:
             continue
-        if birthdate.lower() in prompt_lower:
+        if folded_birthdate.lower() in folded_prompt_lower:
             msg = "prompt contains a forbidden real-child identifier"
             raise ValidationError(
                 msg,

@@ -10,14 +10,24 @@ function fakeAxios(data: unknown) {
 }
 
 describe('makeKidStoryRequestApi', () => {
-  it('create posts a story request and returns id and status', async () => {
+  it('create posts a story request and returns id, status, and proposedSeriesTitle', async () => {
     const { api, post } = fakeAxios({ id: 'req1', status: 'pending' })
     const result = await makeKidStoryRequestApi(api).create('p1', 'Please write a dragon story')
     expect(post).toHaveBeenCalledWith('/v1/story-requests', {
       profile_id: 'p1',
       request_text: 'Please write a dragon story',
     })
-    expect(result).toEqual({ id: 'req1', status: 'pending' })
+    expect(result).toEqual({ id: 'req1', status: 'pending', proposedSeriesTitle: null })
+  })
+
+  it('create maps proposed_series_title from the wire response (K12)', async () => {
+    const { api } = fakeAxios({
+      id: 'req1',
+      status: 'pending',
+      proposed_series_title: 'The Cupcake Chronicles',
+    })
+    const result = await makeKidStoryRequestApi(api).create('p1', 'A dragon who loves cupcakes')
+    expect(result.proposedSeriesTitle).toBe('The Cupcake Chronicles')
   })
 
   it('create strips guardian-facing fields from the full wire response', async () => {
@@ -32,14 +42,20 @@ describe('makeKidStoryRequestApi', () => {
       moderation_flags: [{ category: 'language', verdict: 'clean', message: '' }],
     })
     const result = await makeKidStoryRequestApi(api).create('p1', 'Please write a dragon story')
-    // Returned object carries ONLY the kid-safe keys: id, status, and the
-    // child's own request_text (UX-K3). Guardian-facing fields (created_at,
-    // moderation_flags) are stripped.
-    expect(Object.keys(result).sort()).toEqual(['id', 'request_text', 'status'])
+    // Returned object carries ONLY the kid-safe keys: id, status, the child's
+    // own request_text (UX-K3), and the proposed series title (K12). Guardian-
+    // facing fields (created_at, moderation_flags, profile_id) are stripped.
+    expect(Object.keys(result).sort()).toEqual([
+      'id',
+      'proposedSeriesTitle',
+      'request_text',
+      'status',
+    ])
     expect(result).toEqual({
       id: 'req1',
       status: 'pending',
       request_text: 'Please write a dragon story',
+      proposedSeriesTitle: null,
     })
   })
 
@@ -53,8 +69,8 @@ describe('makeKidStoryRequestApi', () => {
     const result = await makeKidStoryRequestApi(api).listForProfile('p1')
     expect(get).toHaveBeenCalledWith('/v1/story-requests?profile_id=p1')
     expect(result).toEqual([
-      { id: 'req1', status: 'pending' },
-      { id: 'req2', status: 'approved' },
+      { id: 'req1', status: 'pending', proposedSeriesTitle: null },
+      { id: 'req2', status: 'approved', proposedSeriesTitle: null },
     ])
   })
 
@@ -90,6 +106,17 @@ describe('makeKidStoryRequestApi', () => {
     ])
   })
 
+  it('listForProfile maps proposed_series_title per row (K12)', async () => {
+    const { api } = fakeAxios({
+      requests: [
+        { id: 'req1', status: 'approved', proposed_series_title: 'Fox Tales' },
+        { id: 'req2', status: 'approved', proposed_series_title: null },
+      ],
+    })
+    const result = await makeKidStoryRequestApi(api).listForProfile('p1')
+    expect(result.map((r) => r.proposedSeriesTitle)).toEqual(['Fox Tales', null])
+  })
+
   it('listForProfile strips guardian-facing fields from full wire response', async () => {
     // Realistic full wire fixture with all backend fields
     const { api } = fakeAxios({
@@ -115,21 +142,33 @@ describe('makeKidStoryRequestApi', () => {
       ],
     })
     const result = await makeKidStoryRequestApi(api).listForProfile('p1')
-    // Returned objects contain ONLY the kid-safe keys: id, status, and the
-    // child's own request_text (UX-K3). Guardian-facing fields (profile_id,
+    // Returned objects contain ONLY the kid-safe keys: id, status, request_text
+    // (UX-K3), and proposedSeriesTitle (K12). Guardian-facing fields (profile_id,
     // created_at, moderation_flags) are stripped.
     expect(result).toHaveLength(2)
-    expect(Object.keys(result[0]).sort()).toEqual(['id', 'request_text', 'status'])
-    expect(Object.keys(result[1]).sort()).toEqual(['id', 'request_text', 'status'])
+    expect(Object.keys(result[0]).sort()).toEqual([
+      'id',
+      'proposedSeriesTitle',
+      'request_text',
+      'status',
+    ])
+    expect(Object.keys(result[1]).sort()).toEqual([
+      'id',
+      'proposedSeriesTitle',
+      'request_text',
+      'status',
+    ])
     expect(result[0]).toEqual({
       id: 'req1',
       status: 'pending',
       request_text: 'Please write a dragon story',
+      proposedSeriesTitle: null,
     })
     expect(result[1]).toEqual({
       id: 'req2',
       status: 'approved',
       request_text: 'Can you make a wizard adventure',
+      proposedSeriesTitle: null,
     })
   })
 })

@@ -120,8 +120,10 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 | 3 Safety + Review | ✅ Delivered, backend (moderation #36, approval spine #34, review surface + save-state #45); guardian UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); **R1 feature-complete** (#73 auth redirect closed 2026-07-06; remaining doc sync #52 is Track 2 hygiene, not an R1 gap) |
 | Story-lifecycle redesign (WS-A..G, post-R1) | ✅ Delivered (merged 2026-07-06 to 2026-07-10: moderation thresholds #141/#161/#162, request lifecycle #163/#164/#165/#167, provider selection + skeleton matching #170/#175, pipeline event log #168, catalog sharing #180, suggestion dashboard #176, series chaining #184/#192); see [story-lifecycle-redesign.md](./story-lifecycle-redesign.md) |
-| 4b Editor + UX | ⏸️ Not started (post-R1; read-aloud is also an R2/R3 subscription lever) |
-| 5 Hardening | ⏸️ Not started (post-R1; public-tier ops fold into Phase 9) |
+| 4b Editor + Engagement | ⏸️ Not started (post-R1; scope expanded by the 2026-07-16 register-driven replan: adds G5 skim aids, G2 controls UI, G3 permissions, K15 kid flag, G15 device view, K5/K8 test pins; see roadmap.md) |
+| 4c Family Loops (NEW 2026-07-16) | ⏸️ Not started (S9 notification infra, G10 alerts/digest, G9 visibility, K12 kid status, G7/G13 budget consent; see roadmap.md) |
+| 4d Connections (NEW 2026-07-16) | ⏸️ Not started (ADR-016 delivery: G17 dual-guardian consent, K17 recommendation surfaces, A15 enforcement guard; needs PR #267 merged) |
+| 5 Hardening | ⏸️ Not started (post-R1; public-tier ops fold into Phase 9; 2026-07-16 replan adds ADR-007 purge, G8/A5 offline revocation, A13 audit view, A4 re-screen first cut, nightly e2e-real + staging golden journeys + S2 real conflict spec, adversarial live-model run) |
 | 6 Public auth + multi-tenancy | ⏸️ Not started (R2; planned 2026-07-02) |
 | 7 Kids compliance + account lifecycle | ⏸️ Not started (R3) |
 | 8 iOS shell + subscriptions | ⏸️ Not started (R2) |
@@ -137,6 +139,20 @@ feature-complete and R2 planning, the seven-workstream story-lifecycle redesign 
 through WS-G) hardened moderation, request handling, generation matching, observability,
 catalog sharing, and series continuation; all seven merged by 2026-07-10. The public rungs
 (R2/R3) are the next critical path; see Section 5.
+
+**2026-07-16 register-driven replan**: a fresh-look capability review produced the
+[capability register](./capability-register.md) (stable K/G/A/S IDs, v1.5), a
+[traceability review](./traceability-review-2026-07-16.md) of code/PRs/backlog, a
+[test traceability matrix](./test-traceability-matrix.md), and ADRs 015-018. The
+resulting staging lives in [roadmap.md](./roadmap.md) (the "2026-07-16 Replan" section):
+a Now queue (merge PRs #267/#268 with review conditions, staging secrets, scheduled
+prod E2E with alerting, doc chores, ADR-018 counsel start), expanded Phase 4b, new
+Phases 4c (Family Loops) and 4d (Connections), expanded Phase 5, and register-tagged
+additions to Phases 7 (ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12
+abuse workflow, A14 compliance reporting), 8 (G13 full credits/IAP), and 9 (A9 curation
+surface, A7 ops dashboards, A8 runtime levers such as kill-job and cost caps, A4 full
+catalog re-screen). Where this note and the phase sections below disagree on Track 2
+task lists, this replan governs until the sections are rewritten.
 
 ---
 
@@ -1062,6 +1078,16 @@ Ordered by expected leverage; each becomes a phase or slice when picked up:
    App Store rules permit (US anti-steering relief), cheaper family plan direct.
 7. **Education channel**: teacher-as-guardian maps onto the existing family model;
    classroom licensing monetizes outside app-store commission entirely.
+8. **Ring-3 system recommendations** (register S12, [ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md)):
+   anonymized aggregate K18 rating scores drive system-to-kid suggestions, with the
+   minimum-population threshold; never kid-to-kid beyond ring 2.
+9. **Corpus quality tooling** (register A11): drift, repetition, and template-y-output
+   detection across the generated catalog; pairs with the Modal/yield experiments.
+
+Note (2026-07-16): items 5, 6, and 7 are parked pending their design elements (no ADR
+decides Android or web direct billing; the education persona is not in the capability
+register); per register maintenance rule 3, each needs its design element recorded
+before it is schedulable.
 
 ---
 

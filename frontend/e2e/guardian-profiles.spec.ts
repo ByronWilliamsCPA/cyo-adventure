@@ -73,3 +73,34 @@ test('avatar choices are presets only; no photo upload exists', async ({ page })
   await expect(page.getByRole('group', { name: 'Avatar' }).getByRole('radio')).toHaveCount(23)
   await expect(page.locator('input[type="file"]')).toHaveCount(0)
 })
+
+// ADR-015 G3: the "Story requests" auto-approve section. Payload correctness
+// (touched vs. untouched, null-clears-auto-approve) is covered exhaustively
+// in ProfileFormDialog.test.tsx; this just proves the section renders and
+// wires through end to end via a real submit round trip.
+test('turns on auto-approve with a monthly limit and sends both fields', async ({ page }) => {
+  await page.route('**/api/v1/profiles', (route) =>
+    route.fulfill({ json: { profiles: [READER_A] } })
+  )
+  await page.route('**/api/v1/families/me/budget', (route) =>
+    route.fulfill({
+      json: { quota: 5, spent_this_month: 0, remaining: 5, children: [] },
+    })
+  )
+
+  let patched: Record<string, unknown> | null = null
+  await page.route('**/api/v1/profiles/p1', (route) => {
+    patched = route.request().postDataJSON() as Record<string, unknown>
+    return route.fulfill({ json: READER_A })
+  })
+
+  await page.goto('/guardian/profiles')
+  await page.getByRole('button', { name: 'Edit Reader A' }).click()
+
+  await page.getByRole('checkbox', { name: "Auto-approve this child's requests" }).check()
+  await page.getByLabel(/Monthly auto-approve limit/).fill('3')
+  await page.getByRole('button', { name: 'Save' }).click()
+
+  await expect.poll(() => patched).not.toBeNull()
+  expect(patched).toMatchObject({ request_auto_approve: true, monthly_request_envelope: 3 })
+})

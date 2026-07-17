@@ -131,6 +131,43 @@ class Settings(BaseSettings):
         default="",
         validation_alias=AliasChoices("CYO_ADVENTURE_ALLOWED_HOSTS", "ALLOWED_HOSTS"),
     )
+    # M5/Phase 5: RateLimitMiddleware's backend selector (middleware/security.py).
+    # "redis" shares rate-limit counters across every worker process via this
+    # same redis_url (the RQ queue's Redis instance, database index 0 by
+    # default; a distinct logical DB can be pointed at via redis_url if
+    # keyspace collision with RQ job data is a concern). "memory" keeps the
+    # legacy process-local counter, useful for single-process local dev or
+    # tests that must not depend on a reachable Redis. RateLimitMiddleware
+    # itself always falls back to the in-memory counter on a Redis error
+    # regardless of this setting: this only chooses the *preferred* backend,
+    # not whether the fallback exists.
+    # #CRITICAL: security: "redis" is the correct default for every deployed
+    # (non-local) tier per docs/planning/roadmap.md Phase 5 -- an in-memory
+    # counter is meaningless across the multi-process/multi-replica production
+    # topology described in SECURITY.md.
+    # #VERIFY: tests/unit/test_security.py::TestRateLimitBackendSetting
+    # covers the default and the env-var override.
+    rate_limit_backend: Literal["redis", "memory"] = Field(
+        default="redis", validation_alias="CYO_ADVENTURE_RATE_LIMIT_BACKEND"
+    )
+    # #CRITICAL: timing: RateLimitMiddleware.dispatch runs on every request; a
+    # slow/black-holed Redis connection must not add unbounded latency to the
+    # request path while stuck waiting for a socket. Both socket_connect_timeout
+    # and socket_timeout on the redis client are set from this value.
+    # #VERIFY: tests/unit/test_security.py::test_redis_backend_falls_back_to_memory_on_connection_error
+    # exercises the fallback path this bound protects.
+    rate_limit_redis_timeout_seconds: float = Field(
+        default=0.5, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_TIMEOUT_SECONDS"
+    )
+    # #CRITICAL: timing: once a Redis error is observed, RateLimitMiddleware
+    # stops retrying Redis for this many seconds and serves every request from
+    # the in-memory fallback instead. Without this circuit breaker, a sustained
+    # outage would pay rate_limit_redis_timeout_seconds of added latency on
+    # EVERY request, not just the first.
+    # #VERIFY: tests/unit/test_security.py::test_redis_backend_circuit_breaker_skips_retry_during_cooldown
+    rate_limit_redis_cooldown_seconds: float = Field(
+        default=5.0, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS"
+    )
     # #CRITICAL: timing: RQ's own default job_timeout is 180s; a live Ollama run
     # (see ollama_timeout_seconds's cold-start note) routinely exceeds that, so an
     # unset job_timeout lets RQ SIGALRM-kill a still-healthy generation job and
@@ -548,6 +585,20 @@ class Settings(BaseSettings):
         default=None, validation_alias="R2_PUBLIC_BASE_URL"
     )
     covers_backup_dir: str | None = None
+
+    # --- ADR-015 G7: guardian cost gate ---
+    # Platform-wide default monthly story-request budget for a family whose
+    # Family.monthly_story_quota is unset (NULL): resolved at read time by
+    # story_requests/service.py::_resolve_family_quota, never copied onto the
+    # row at family creation, so raising this default lifts every
+    # not-yet-customized family automatically.
+    # #CRITICAL: payment/financial: this is the platform-wide fallback for
+    # the generation-spend gate; a value that is too high (or accidentally
+    # unbounded) weakens ADR-015's guardian cost gate for every family that
+    # has not set an explicit override.
+    # #VERIFY: tests/unit/test_story_requests.py pins the None-falls-back
+    # case against this default.
+    default_monthly_story_quota: int = Field(default=10, ge=0)
     # #ASSUME: external resources: the "-preview" alias was retired on the
     # Gemini API (shutdown 2026-06-25); the stable Nano Banana Pro id is used.
     # #VERIFY: override via COVER_MODEL if Google renames the stable channel.
@@ -556,6 +607,37 @@ class Settings(BaseSettings):
     cover_quality: int = 80
     cover_max_bytes: int = 256_000
     cover_job_timeout_seconds: int = 180
+
+    # --- Observability: Sentry (M5 / Phase 5) ---
+    # Read from the UNPREFIXED SENTRY_DSN env var: .env.example already
+    # documents this name (Observability section), matching the
+    # OPENROUTER_API_KEY/OLLAMA_*/OIDC_* precedent for operator-facing names.
+    # None (default) disables Sentry entirely; core/observability.py::init_sentry
+    # is a documented no-op in that case, so leaving this unset is always safe
+    # for local dev, CI, and any deployment that has not opted in.
+    # #CRITICAL: security: this is not a secret in the traditional sense (a
+    # Sentry DSN is a write-only ingest endpoint, not a credential that grants
+    # read access), but it still identifies the project; never log it.
+    # #VERIFY: init_sentry never logs the DSN value itself, only whether one
+    # is configured.
+    sentry_dsn: str | None = Field(default=None, validation_alias="SENTRY_DSN")
+    # Fraction of transactions sampled for Sentry performance tracing
+    # (0.0-1.0). Low by default: this deployment wants error tracking first,
+    # not full APM, and a kids' reading app has no need for high trace volume
+    # against the Sentry quota. Prefixed (cyo_adventure_) since this is an
+    # internal tuning knob, not an operator-facing name mirrored from
+    # another tool the way SENTRY_DSN is.
+    # #ASSUME: external resources: sentry_sdk.init clamps an out-of-range
+    # sample rate itself; the ge/le bounds below just fail fast on an
+    # obviously-wrong config value instead of deferring to that clamp.
+    # #VERIFY: tests/unit/test_config.py-style bounds check via Pydantic's
+    # own ge/le validation (rejects <0 or >1 at startup).
+    sentry_traces_sample_rate: float = Field(
+        default=0.1,
+        ge=0.0,
+        le=1.0,
+        validation_alias="CYO_ADVENTURE_SENTRY_TRACES_SAMPLE_RATE",
+    )
 
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:

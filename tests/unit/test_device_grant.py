@@ -442,3 +442,41 @@ def test_weak_device_grant_secret_outside_local_rejected(weak: str) -> None:
     secret = SecretStr(weak)
     with pytest.raises(ConfigError, match="DEVICE_GRANT_SECRET"):
         Settings(**kwargs, device_grant_secret=secret)
+
+
+# ---------------------------------------------------------------------------
+# Time-boundary / clock-skew edge cases (PyJWT leeway defaults to 0).
+#
+# Device-grant tokens are minted and verified by the SAME backend, so the
+# strict leeway=0 boundary is correct. These pin exp-at-now and future-iat/nbf
+# rejection so a later leeway change is deliberate.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_expiry_exactly_at_now_is_rejected() -> None:
+    """A token whose exp equals the current instant fails verification."""
+    now = datetime.now(UTC)
+    token = _encode(_claims(iat=now - timedelta(minutes=5), exp=now))
+    with pytest.raises(AuthenticationError):
+        verify_device_grant_token(token)
+
+
+@pytest.mark.unit
+def test_future_issued_at_is_rejected_under_zero_leeway() -> None:
+    """An iat in the future is rejected (no clock-skew tolerance)."""
+    now = datetime.now(UTC)
+    token = _encode(
+        _claims(iat=now + timedelta(minutes=5), exp=now + timedelta(hours=1))
+    )
+    with pytest.raises(AuthenticationError):
+        verify_device_grant_token(token)
+
+
+@pytest.mark.unit
+def test_future_not_before_is_rejected() -> None:
+    """An nbf in the future is rejected even though it is not in the require set."""
+    now = datetime.now(UTC)
+    token = _encode(_claims(nbf=now + timedelta(minutes=5)))
+    with pytest.raises(AuthenticationError):
+        verify_device_grant_token(token)

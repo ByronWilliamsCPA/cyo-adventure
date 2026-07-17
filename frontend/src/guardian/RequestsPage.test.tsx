@@ -28,6 +28,7 @@ function principal(role: 'guardian' | 'admin') {
 }
 
 const PENDING_URL = '/v1/story-requests?status=pending'
+const BUDGET_URL = '/v1/families/me/budget'
 
 const DRAGON_REQUEST = {
   id: 'req-1',
@@ -498,5 +499,85 @@ describe('RequestsPage', () => {
     renderPage()
     await screen.findByText('A story about a friendly dragon')
     expect(screen.queryByLabelText(/what should the story be about/i)).not.toBeInTheDocument()
+  })
+})
+
+describe('RequestsPage G13 balance banner and ADR-015 G7 budget surfacing', () => {
+  function mockPendingAndBudget(requests: unknown[], budget: unknown) {
+    mockGet.mockImplementation((url: string) => {
+      if (url === PENDING_URL) return Promise.resolve({ data: { requests } })
+      if (url === BUDGET_URL) return Promise.resolve({ data: budget })
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+  }
+
+  it('shows the balance banner above the queue', async () => {
+    mockPendingAndBudget([DRAGON_REQUEST], {
+      quota: 5,
+      spent_this_month: 2,
+      remaining: 3,
+      children: [],
+    })
+    renderPage()
+    expect(await screen.findByTestId('budget-banner')).toHaveTextContent(
+      '3 of 5 stories left this month'
+    )
+  })
+
+  it('shows the remaining-budget context next to a ready-to-approve row', async () => {
+    mockPendingAndBudget([DRAGON_REQUEST], {
+      quota: 5,
+      spent_this_month: 3,
+      remaining: 2,
+      children: [],
+    })
+    renderPage()
+    await screen.findByText('A story about a friendly dragon')
+    fireEvent.change(screen.getByLabelText('Story length'), { target: { value: 'medium' } })
+    expect(
+      screen.getByText('This will use 1 of your 2 remaining stories this month.')
+    ).toBeInTheDocument()
+  })
+
+  it('surfaces the friendly budget message (not the generic one) on a budget-exhausted approve', async () => {
+    mockPendingAndBudget([DRAGON_REQUEST], {
+      quota: 5,
+      spent_this_month: 5,
+      remaining: 0,
+      children: [],
+    })
+    mockPost.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: { status: 409, data: { message: 'monthly story budget reached' } },
+    })
+    renderPage()
+    const title = await screen.findByText('A story about a friendly dragon')
+    fireEvent.change(screen.getByLabelText('Story length'), { target: { value: 'medium' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/used this month's story budget/i)
+    expect(alert).toHaveTextContent(/next month/i)
+    expect(alert).not.toHaveTextContent(/could not update/i)
+    expect(title).toBeInTheDocument()
+  })
+
+  it('keeps the generic message for a non-budget 409 (e.g. an already-decided request)', async () => {
+    mockPendingAndBudget([DRAGON_REQUEST], {
+      quota: 5,
+      spent_this_month: 0,
+      remaining: 5,
+      children: [],
+    })
+    mockPost.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: { status: 409, data: { message: "story request is 'declined', not pending" } },
+    })
+    renderPage()
+    await screen.findByText('A story about a friendly dragon')
+    fireEvent.change(screen.getByLabelText('Story length'), { target: { value: 'medium' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/could not update/i)
   })
 })

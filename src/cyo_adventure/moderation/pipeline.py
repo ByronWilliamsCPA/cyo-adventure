@@ -39,6 +39,7 @@ from cyo_adventure.moderation.stages import (
 from cyo_adventure.publishing import service
 from cyo_adventure.storybook.models import Storybook as StoryModel
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.validator.gate import run_gate
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -161,8 +162,9 @@ async def run_moderation_pipeline(
         )
         if revised is not None:
             # Re-moderate into a separate report; only adopt it (and persist the
-            # revised blob) if the repair is schema-valid. A malformed repair is
-            # discarded so the original soft-flagged report drives the routing.
+            # revised blob) if the repair is schema-valid AND passes the
+            # deterministic validation gate. A malformed or gate-failing repair
+            # is discarded so the original soft-flagged report drives routing.
             repaired_report = ModerationReport(reviewer_independent=independent)
             try:
                 await _run_all_stages(
@@ -177,24 +179,53 @@ async def run_moderation_pipeline(
                 # #VERIFY: report and version_row.blob are left unchanged here.
                 _logger.warning("moderation.repair_invalid_blob", story_id=story_id)
             else:
-                repaired_report.repaired = True
-                report = repaired_report
-                version_row.blob = revised
-                # #ASSUME: data-integrity: the event log must record a repair
-                # the moment the revised blob is adopted, before moderation_report
-                # is overwritten below, so repair_applied always precedes
-                # moderation_completed in occurred_at order for this version.
-                # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
-                # test_repaired_moderation_writes_repair_applied_then_completed
-                # asserts exactly one repair_applied row when repair occurs.
-                await record_event(
-                    session,
-                    Actor.system(),
-                    entity_type="storybook_version",
-                    entity_id=f"{story_id}:{version}",
-                    event_type=EventType.REPAIR_APPLIED,
-                    payload={"stage": "moderation"},
-                )
+                # #CRITICAL: data-integrity: the repair prompt asks the generator
+                # to "preserve node ids, choices, and branching structure" while
+                # revising prose, but nothing enforces that promise; a clean
+                # re-moderation pass says nothing about topology, forbidden
+                # endings, or the L1-7 node/word budget. The repaired blob's
+                # structure must be re-proven by the deterministic gate at this
+                # seam (the point it would replace version_row.blob), the same
+                # gate the original draft passed before it ever reached
+                # moderation, not just trusted because re-moderation was clean.
+                # #VERIFY: a blocked gate here is treated exactly like a
+                # schema-invalid revision: the revised blob is discarded and
+                # ``report``/``version_row.blob`` stay at their pre-repair
+                # values, so routing below falls through to the pre-repair
+                # report's own verdict (submit if soft-flagged, auto_reject if
+                # the pre-repair report already hard-blocked). This never
+                # silently accepts a structurally-broken repair and never
+                # auto-publishes.
+                # tests/unit/test_moderation_pipeline.py::
+                # test_repair_failing_gate_is_discarded_and_routes_to_human_review
+                # and ::test_repair_passing_gate_is_adopted assert both branches.
+                gate_result = run_gate(revised)
+                if gate_result.blocked:
+                    _logger.warning(
+                        "moderation.repair_failed_gate",
+                        story_id=story_id,
+                        rule_ids=[f.rule_id for f in gate_result.report.errors],
+                    )
+                else:
+                    repaired_report.repaired = True
+                    report = repaired_report
+                    version_row.blob = revised
+                    # #ASSUME: data-integrity: the event log must record a repair
+                    # the moment the revised blob is adopted, before
+                    # moderation_report is overwritten below, so repair_applied
+                    # always precedes moderation_completed in occurred_at order
+                    # for this version.
+                    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+                    # test_repaired_moderation_writes_repair_applied_then_completed
+                    # asserts exactly one repair_applied row when repair occurs.
+                    await record_event(
+                        session,
+                        Actor.system(),
+                        entity_type="storybook_version",
+                        entity_id=f"{story_id}:{version}",
+                        event_type=EventType.REPAIR_APPLIED,
+                        payload={"stage": "moderation"},
+                    )
 
     version_row.moderation_report = report.to_dict()
 

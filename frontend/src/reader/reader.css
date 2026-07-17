@@ -81,6 +81,92 @@
   background: var(--color-amber-subtle);
 }
 
+/* Read-aloud toggle (K7): same pill shape as the Leave control so the two
+   read as siblings in the chrome; the --speaking modifier gives it a filled,
+   unmistakably "on" look distinct from the resting outline, satisfying the
+   accessibility requirement that speaking state be visually distinct. */
+.reader-tts-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-parchment-deeper);
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.reader-tts-toggle:hover,
+.reader-tts-toggle:focus-visible {
+  border-color: var(--color-amber);
+  background: var(--color-amber-subtle);
+}
+
+.reader-tts-toggle--speaking {
+  border-color: var(--color-amber-deep);
+  background: var(--color-amber-deep);
+  color: var(--color-parchment);
+}
+
+.reader-tts-toggle--speaking:hover,
+.reader-tts-toggle--speaking:focus-visible {
+  border-color: var(--color-amber-deep);
+  background: var(--color-amber-deep);
+}
+
+/* Tell a grown-up (K15): same pill shape as the Leave/Listen controls so it
+   reads as a chrome sibling, not a special warning. Deliberately unstyled as
+   an alarm: this is a calm, always-available "I want to say something", not
+   an error state. */
+.reader-flag-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-parchment-deeper);
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.reader-flag-toggle:hover,
+.reader-flag-toggle:focus-visible {
+  border-color: var(--color-amber);
+  background: var(--color-amber-subtle);
+}
+
+.reader-flag-prompt {
+  margin: 0 0 var(--space-3);
+}
+
+.reader-flag-error {
+  margin: 0 0 var(--space-3);
+  color: var(--color-warning);
+}
+
+.reader-flag-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.reader-flag-reasons .cyo-btn {
+  width: 100%;
+  justify-content: flex-start;
+}
+
 .reader-save-warning {
   margin: 0;
   padding: var(--space-2) var(--space-3);
@@ -372,6 +458,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
+}
+
+/* K6 endings tracker (ending-screen half): a quiet, best-effort line under
+   the passage body. Absent entirely when the lookup fails or the book has
+   only one ending, so it never competes visually with the celebration. */
+.reader-ending__endings-tracker {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
 }
 
 /* Rare defensive screen: a structurally invalid transition (corrupted cached

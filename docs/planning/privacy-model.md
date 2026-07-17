@@ -45,9 +45,11 @@ child. The following are classified as child-linked:
 - `completion` rows: `ending_id`, `found_at`, keyed by `child_profile_id`.
 - Raw LLM generation outputs stored in `generation_job.report` (a Postgres JSONB
   column), if they were generated in a context where a concept brief containing profile
-  attributes was used. `GET /generation-jobs/{id}` exposes this field to the job's own
-  family guardian (family-scoped, guardian-gated, not admin-only); the list endpoint and
-  every child-facing endpoint exclude it.
+  attributes was used. Per ADR-007 as amended 2026-07-16, `GET /generation-jobs/{id}`
+  exposes this field only to principals with the admin capability (a dual-role adult
+  qualifies via that capability); guardians receive job status, stage log, and error
+  information without `report`. The list endpoint and every child-facing endpoint
+  exclude it entirely.
 
 The following are not child-linked on their own (they link to a family or a story, not
 to an individual child):
@@ -80,13 +82,23 @@ must be fictional), `point_of_view` (default 2nd person), `age_band`, `reading_l
 "13-16", "16+"); it identifies a generation target, not an individual child. The backend must validate that the concept brief does not
 contain free-text fields with real names before dispatching to the provider.
 
+**Child-initiated requests (shipped in WS-B of the story-lifecycle redesign; budget-consent
+semantics added by ADR-015)**: a child-typed story wish is child-provided free text and is
+likely to contain the child's own name or friends' names. Current behavior, verified in
+`api/story_requests.py`: wish text is screened at intake against the family's child-profile
+names and for safety, and a blocked wish persists as a `blocked` row that proceeds nowhere.
+The wish reaches the **generation** provider only after guardian approval converts it into a
+concept, and the PII guard runs on the resulting brief before that egress. Note, however,
+that the intake **screening** step itself sends the wish text to the external moderation
+classifiers described in the next section, so those services are data-handling
+counterparties for child-typed text as well as for generated prose.
+
 ---
 
 ## Raw LLM Outputs and Prompt Text
 
 Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are guardian-visible (family-scoped, via the single-job GET
-endpoint only) and short-lived:
+text sent to the provider are admin-only (ADR-007 as amended 2026-07-16) and short-lived:
 
 - **Prompt text**: store the prompt template version and a hash, not the full rendered
   prompt, where the rendered text could carry child-specific detail. The hash allows
@@ -105,14 +117,58 @@ endpoint only) and short-lived:
   #          confirm report stays off child-facing endpoints and the job-list endpoint.
   ```
 
-- **Access control**: `generation_job.report` is guardian-visible via
-  `GET /generation-jobs/{id}` (family-scoped, guardian-gated), not admin-only. It is
-  excluded from the list endpoint (job status only) and every child-facing endpoint, and
-  is not accessible via the story-serving path.
+- **Access control**: `generation_job.report` is returned by `GET /generation-jobs/{id}`
+  only to principals with the admin capability (ADR-007 as amended 2026-07-16; the
+  admin reviews first, then the parent receives content through post-approval surfaces).
+  It is excluded from the list endpoint (job status only) and every child-facing
+  endpoint, and is not accessible via the story-serving path.
 
 Moderation reports (the per-node flags and the moderation API response) persist with the
 `storybook_version` record for audit. They contain node IDs and flag categories, not raw
 child data.
+
+---
+
+## External Moderation Classifiers (Stage 0, first-line filter)
+
+This is a deliberate design decision, not an incidental integration: **all AI-generated
+story prose** runs through external moderation classifiers as the first-line safety filter,
+precisely so that safety does not depend on a parent reading every path in detail. The
+human gates (guardian oversight, admin approval per ADR-005) sit on top of this floor, not
+in place of it.
+
+Current mechanism (`moderation/classifiers.py`, wired in `moderation/pipeline.py`): when
+keys are configured, every generated node's prose is sent per-node to the **OpenAI
+Moderation API** and **Google Perspective API** during Stage 0 of the moderation pipeline.
+The same classifiers screen child-typed story-request text at intake
+(`story_requests/screening.py`). Both services are therefore standing data-handling
+counterparties for two data categories:
+
+- **Generated story prose** (family-linked content produced by the pipeline; the PII guard
+  keeps real child detail out of the prompts that produce it).
+- **Child-typed request text** (child-provided free text, screened before storage).
+
+Consequences for the provider data-handling review (Blocker 1 below): OpenAI and Google
+(Perspective) must be included alongside the generation leg (OpenRouter) and the LLM
+review leg when confirming retention terms. Classifier calls should remain content-only:
+no child identifier, profile id, or family id accompanies the text, and failures are
+logged by node id only.
+
+Ring-2 recommendation sharing (guardian-connected families, the cousins case) is a new
+child-linked data flow: a recommendation visible to a connected family carries the
+recommending child's display name and a reading signal (book plus rating) into another
+household. Controls, binding per
+[ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md):
+
+- Visibility exists only along a directional, revocable `family_connection` with active
+  guardian consent on both sides; revocation removes visibility immediately.
+- Payloads are structured data only (book reference, display name, rating); never free
+  text, reading progress, request text, or profile attributes beyond the display name.
+- Ring-3 global aggregation (future) must be anonymized: no per-child or per-family
+  identifier may reach or be inferable from a global recommendation, with a
+  minimum-population threshold before aggregates surface.
+- Deletion-readiness: recommendations and connections are family-linked rows in known
+  tables and must be included in family erasure.
 
 ---
 
@@ -178,8 +234,10 @@ counterparty for the generation leg (not the direct Anthropic API). OpenRouter a
 downstream model providers retain inputs and outputs per their terms unless a
 zero-data-retention (ZDR) path applies. Because concept briefs may carry age-band data
 and fictional content derived from a child's interests, the applicable terms must be
-confirmed before dispatch. The moderation / review provider on the safety leg is subject
-to the same data-handling review.
+confirmed before dispatch. The safety leg is subject to the same data-handling review, and
+it has three counterparties, not one: the Stage-0 external classifiers (OpenAI Moderation
+and Google Perspective, which receive all generated prose and child-typed request text;
+see the External Moderation Classifiers section above) and the LLM review provider.
 
 **Required action**: confirm whether the standard OpenRouter retention path or a ZDR path
 applies to this use case for both the generation leg and the review / moderation

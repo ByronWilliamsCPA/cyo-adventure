@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -445,3 +446,95 @@ async def test_child_cannot_save_progress_on_cross_family_private_book(
         headers=auth(seed.child_token),
     )
     assert done.status_code == 403, done.text
+
+
+# ---------------------------------------------------------------------------
+# True-concurrency contracts: overlapping requests, not sequential staleness.
+# The save handler takes SELECT ... FOR UPDATE on the row, so overlapping
+# saves must serialize at the database; these tests race real requests with
+# asyncio.gather (each request gets its own session and connection from the
+# client fixture's per-request override).
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_concurrent_divergent_saves_have_exactly_one_winner(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Two overlapping saves from one base revision: one 200, one 409.
+
+    The FOR UPDATE row lock serializes the read-modify-write, so the loser
+    re-reads after the winner's commit, fails the revision check, and gets
+    the winner's row back in the 409 body; a lost update (both 200, one
+    overwritten) must be impossible.
+    """
+    url = f"/api/v1/reading-state/{seed.child_profile_id}/{seed.storybook_id}"
+    create = await client.put(
+        url,
+        json=_save_body(seed.version, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert create.status_code == 200, create.text
+
+    left, right = await asyncio.gather(
+        client.put(
+            url,
+            json=_save_body(seed.version, node="n_treasure", revision=1),
+            headers=auth(seed.child_token),
+        ),
+        client.put(
+            url,
+            json=_save_body(seed.version, node="n_entrance", revision=1),
+            headers=auth(seed.child_token),
+        ),
+    )
+    statuses = sorted((left.status_code, right.status_code))
+    assert statuses == [200, 409], (left.text, right.text)
+    winner = left if left.status_code == 200 else right
+    loser = right if winner is left else left
+
+    assert winner.json()["state_revision"] == 2
+    conflict = loser.json()
+    assert conflict["current_row"]["state_revision"] == 2
+    assert conflict["current_row"]["current_node"] == winner.json()["current_node"]
+
+    final = await client.get(url, headers=auth(seed.child_token))
+    assert final.status_code == 200
+    assert final.json()["state_revision"] == 2
+    assert final.json()["current_node"] == winner.json()["current_node"]
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_concurrent_duplicate_event_applies_exactly_once(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The same event delivered twice concurrently is applied exactly once.
+
+    A flaky network can retry a save while the original is still in flight.
+    The loser of the row lock must observe last_event_id already recorded
+    and return the current row idempotently (200), never a spurious 409 and
+    never a double-applied revision bump.
+    """
+    url = f"/api/v1/reading-state/{seed.child_profile_id}/{seed.storybook_id}"
+    create = await client.put(
+        url,
+        json=_save_body(seed.version, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert create.status_code == 200, create.text
+
+    body = _save_body(seed.version, node="n_treasure", revision=1, event_id="evt-race")
+    first, second = await asyncio.gather(
+        client.put(url, json=body, headers=auth(seed.child_token)),
+        client.put(url, json=body, headers=auth(seed.child_token)),
+    )
+    assert first.status_code == 200, first.text
+    assert second.status_code == 200, second.text
+    assert first.json()["state_revision"] == 2
+    assert second.json()["state_revision"] == 2
+
+    final = await client.get(url, headers=auth(seed.child_token))
+    assert final.json()["state_revision"] == 2
+    assert final.json()["current_node"] == "n_treasure"
