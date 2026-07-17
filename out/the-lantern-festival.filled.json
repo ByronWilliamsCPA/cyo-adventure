@@ -105,7 +105,7 @@
     },
     {
       "id": "n_willow1",
-      "body": "Under the old willow tree, her friends rest. They nap in soft piles of fur. The warm sun feels good on them. Tansy wants to ask them to the festival. She could knock soft on the willow door. That would wake them slow and easy. Or she could clang the loud dinner bell. The bell would wake them very fast. What should she do?",
+      "body": "Under the old willow tree, her friends rest in soft piles. The warm sun feels good on them as they nap. Tansy wants to ask them to the big festival tonight. She could knock soft on the willow door. That would wake them slow and easy. Or she could clang the loud dinner bell. The bell would wake them very fast. What should she do?",
       "is_ending": false,
       "choices": [
         {
@@ -122,7 +122,7 @@
     },
     {
       "id": "n_willow2",
-      "body": "Her friends yawn and stretch and say yes. They grab their little lanterns at once. The group is growing and feeling happy. Tansy feels the joy all around her. She can lead them to the meadow now. Or she can go back to her clearing. What choice feels best to her?",
+      "body": "Her friends yawn and stretch and say yes at once. They jump up and grab their little lanterns right away. The group is growing and everyone feels happy together. Tansy feels the joy all around her as they laugh. She can lead them to the meadow now. Or she can go back to her clearing. What choice feels best to her?",
       "is_ending": false,
       "choices": [
         {
@@ -156,7 +156,7 @@
     },
     {
       "id": "n_reed2",
-      "body": "The dry reeds snap free in a neat bundle. They are gold and strong. They bend just right in her paws. They are perfect for making frames. She can weave them right here by the pond. Or she can carry the bundle back home. What should she do?",
+      "body": "The dry reeds snap free in a neat and tidy bundle. They are gold and strong and ready to bend. They bend just right in her tiny paws. They are perfect for making pretty frames. She can weave them right here by the pond. Or she can carry the bundle back home. What should she do?",
       "is_ending": false,
       "choices": [
         {
@@ -214,7 +214,7 @@
     },
     {
       "id": "n_shed1",
-      "body": "In the little garden shed sit old lanterns. They rest dusty on a high shelf. The paint is still pretty on them. Tansy can dust each one off now. Or she can go back and get them later. What feels right to her?",
+      "body": "In the little garden shed sit old lanterns from last year's festival. They rest dusty on a high shelf and need some care. The paint is still pretty on each one. Tansy can dust each one off now with a soft cloth. Or she can go back and get them later. What feels right to her?",
       "is_ending": false,
       "choices": [
         {
@@ -272,7 +272,7 @@
     },
     {
       "id": "n_meadow",
-      "body": "The meadow opens wide at dusk. The sky turns purple and pink above. The big oak stands tall and strong there. The still pond mirrors the colors. Tansy's things pile up and grow bigger. Friends keep coming through the trees. Everyone smiles and helps her. Should she set up now? Or make one more trip?",
+      "body": "The meadow opens wide at dusk with colors everywhere. The sky turns purple and pink as the sun goes down. The big oak stands tall and strong there. The still pond mirrors the colors so well. Tansy's things pile up and grow bigger. Friends keep coming through the trees. Everyone smiles and helps her gather more. Should she set up now? Or make one more trip?",
       "is_ending": false,
       "choices": [
         {
@@ -306,7 +306,7 @@
     },
     {
       "id": "n_hang",
-      "body": "Friends lift the lanterns into oak branches. They sway like fireflies in the breeze. The light flickers soft and warm. The sky turns purple and then dark. Soon night will come to the meadow. All the stars will come out. Should Tansy light them now? Or wait for the first star?",
+      "body": "Friends lift the lanterns into oak branches with care. They sway like fireflies in the evening breeze. The light flickers soft and warm and pretty. The sky turns purple and then dark. Soon night will come to the meadow. All the stars will come out. Should Tansy light them now? Or wait for the first star?",
       "is_ending": false,
       "choices": [
         {
@@ -323,7 +323,7 @@
     },
     {
       "id": "n_light",
-      "body": "One by one the lanterns glow. First one, then two, then three, then more. The meadow glows gold and warm. The light is soft and pretty. Everyone gasps with joy and wonder. They clap their paws together. The glow makes them all smile. Should Tansy float some on the pond? Or keep them high in the oak?",
+      "body": "One by one the lanterns glow and come alive. First one, then two, then three, then more and more. The meadow glows gold and warm all around. The light is soft and pretty to see. Everyone gasps with joy and wonder too. They clap their paws together and smile. The glow makes them all smile wide. Should Tansy float some on the pond? Or keep them high in the oak?",
       "is_ending": false,
       "choices": [
         {
@@ -451,7 +451,7 @@
     },
     {
       "id": "e_berry_oops",
-      "body": "Tansy reaches for the high berries. The wobbly branch springs back so fast. Her basket bounces high into the air. It flies into the soft ferns. Boing, boing, boing it goes. She does not get hurt at all. She laughs out loud at it. The berries roll around in the ferns. She dusts off and heads back. Time to try again.",
+      "body": "Tansy reaches for the high berries on the wobbly branch. The branch springs back so very fast and hard. Her basket bounces high into the air. It flies into the soft ferns below. Boing, boing, boing it goes with funny sounds. She does not get hurt at all. She laughs out loud at it. The berries roll around in the ferns. She dusts off and heads back home. Time to try again.",
       "is_ending": true,
       "ending": {
         "id": "end_berry_oops",
