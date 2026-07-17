@@ -33,6 +33,7 @@ import uuid
 from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter, BackgroundTasks
+from rq.exceptions import DuplicateJobError
 from sqlalchemy import func, select
 from sqlalchemy.orm import defer
 
@@ -41,6 +42,7 @@ if TYPE_CHECKING:
 
 from cyo_adventure.api.deps import Context, authorize_family
 from cyo_adventure.api.schemas import (
+    AdminJobActionResponse,
     ConceptCreatedResponse,
     ConceptCreateRequest,
     GenerationEnqueuedResponse,
@@ -64,6 +66,8 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+from cyo_adventure.events.models import Actor, EventType
+from cyo_adventure.events.writer import record_event
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.generation.queue import enqueue_generation
 from cyo_adventure.validator.gate import run_gate
@@ -156,8 +160,21 @@ def _enqueue_safely(job_id: str) -> None:
     # #VERIFY: generation/queue.py::requeue_stranded_jobs re-queues rows
     # stranded in the "queued" state by this failure (or any other outage);
     # run once at worker-process startup (generation/worker_main.py::main).
+    #
+    # #CRITICAL: concurrency: pass rq_job_id=job_id so the original enqueue and
+    # the reclaim sweep's re-enqueue share ONE RQ identity. Previously this path
+    # let RQ mint a random id, so after a long worker outage the sweep's
+    # rq_job_id=row_id re-enqueue did not collide with the still-queued original
+    # and the job executed twice. With a shared id, unique=True makes RQ raise
+    # DuplicateJobError (a no-op) instead of admitting a second execution.
+    # DuplicateJobError on this original enqueue means the row is already queued
+    # under its own id (e.g. a retried request), which is the desired outcome.
+    # #VERIFY: test_enqueue_safely_uses_row_id_as_rq_job_id and the reclaim
+    # double-execution integration test.
     try:
-        enqueue_generation(job_id, settings)
+        enqueue_generation(job_id, settings, rq_job_id=job_id)
+    except DuplicateJobError:
+        _log.info("enqueue_generation skipped for job %s; already queued", job_id)
     except Exception:  # noqa: BLE001 -- best-effort enqueue; row is the source of truth
         _log.exception(
             "enqueue_generation failed for job %s; row committed but not queued",
@@ -457,6 +474,78 @@ async def get_generation_job(
         error=job.error,
         skeleton_slug=skeleton_slug if isinstance(skeleton_slug, str) else None,
         theme_brief=theme_brief if isinstance(theme_brief, dict) else None,
+    )
+
+
+@router.post("/admin/generation-jobs/{job_id}/force-fail")
+async def force_fail_generation_job(
+    job_id: str,
+    ctx: Context,
+) -> AdminJobActionResponse:
+    """Force-fail a stuck generation job so its family's cap slot is freed.
+
+    Operator escape hatch for a job wedged at ``"queued"`` or ``"running"``
+    (for example after a hard worker death that the startup reclaim sweep has
+    not yet reached, or a job the operator wants to abandon). Because the
+    per-family active-job cap counts both statuses, two wedged rows otherwise
+    block that family from generating anything, with no other way to clear them.
+
+    Args:
+        job_id: The UUID string of the job to force-fail.
+        ctx: The request context (principal and session).
+
+    Returns:
+        AdminJobActionResponse: The job id, its new status, and the error string.
+
+    Raises:
+        AuthorizationError: If the caller is not an admin (-> 403).
+        ResourceNotFoundError: If the job does not exist (-> 404).
+        StateTransitionError: If the job is already in a terminal state (-> 409).
+        ValidationError: If ``job_id`` is not a valid UUID (-> 422).
+    """
+    # #CRITICAL: security: admin-only operator action; a guardian must not be
+    # able to force-fail arbitrary jobs across families.
+    # #VERIFY: test_force_fail_requires_admin and test_force_fail_cross_family.
+    if not ctx.principal.is_admin:
+        msg = "admin role required for this endpoint"
+        raise AuthorizationError(msg, required_permission="admin")
+
+    job_uuid = _parse_uuid(job_id, "job_id")
+    job = await ctx.session.get(GenerationJob, job_uuid)
+    if job is None:
+        msg = f"generation job '{job_id}' not found"
+        raise ResourceNotFoundError(msg)
+
+    # #EDGE: data-integrity: only an active job can be force-failed; a terminal
+    # row (passed/needs_review/failed) is rejected so this action never rewrites
+    # a real outcome.
+    # #VERIFY: test_force_fail_rejects_terminal_job.
+    if job.status not in ("queued", "running"):
+        msg = f"job '{job_id}' is not active (status={job.status})"
+        raise StateTransitionError(msg)
+
+    from_state = job.status
+    job.status = "failed"
+    job.error = "interrupted: force-failed by admin"
+    # #CRITICAL: data-integrity: the event rides the request unit-of-work commit
+    # alongside the status write (record_event only flushes); the shared commit
+    # is performed by the injected unit-of-work, never inline here.
+    # #VERIFY: test_force_fail_records_finished_event.
+    await record_event(
+        ctx.session,
+        Actor.system(),
+        entity_type="generation_job",
+        entity_id=str(job.id),
+        event_type=EventType.GENERATION_FINISHED,
+        from_state=from_state,
+        to_state="failed",
+        payload={"outcome": "failed"},
+    )
+    _log.warning("generation_job.force_failed job=%s by admin", job_id)
+    return AdminJobActionResponse(
+        id=str(job.id),
+        status=cast("JobStatusLiteral", job.status),
+        error=job.error,
     )
 
 

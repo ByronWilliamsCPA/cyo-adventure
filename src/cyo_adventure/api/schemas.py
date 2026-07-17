@@ -273,6 +273,14 @@ class GenerationJobListView(BaseModel):
     jobs: list[GenerationJobListItem]
 
 
+class AdminJobActionResponse(BaseModel):
+    """Result of an admin operator action on a generation job."""
+
+    id: str
+    status: JobStatusLiteral
+    error: str | None = None
+
+
 class ValidateResponse(BaseModel):
     """Response returned by the re-validate endpoint."""
 

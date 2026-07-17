@@ -17,6 +17,8 @@ from sqlalchemy import select
 
 from cyo_adventure.core.config import settings as _default_settings
 from cyo_adventure.db.models import GenerationJob
+from cyo_adventure.events.models import Actor, EventType
+from cyo_adventure.events.writer import record_event
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -119,9 +121,11 @@ def enqueue_generation(
     # second list entry for the same id, so a row that is merely deep in the
     # queue (not actually lost) would get run_generation_job_sync invoked
     # TWICE concurrently (duplicate LLM calls, a persist_storybook primary-key
-    # race). unique=True is only set when rq_job_id was actually supplied (the
-    # reclaim-sweep call path); the normal per-request enqueue (rq_job_id=None)
-    # never collides, since RQ mints a fresh id every time.
+    # race). unique=True is set whenever rq_job_id is supplied. Both the normal
+    # per-request enqueue (api/generation.py::_enqueue_safely) and the reclaim
+    # sweep now pass rq_job_id=row_id, so they share one identity and RQ raises
+    # DuplicateJobError rather than admit a second execution of the same row.
+    # A caller that passes rq_job_id=None (none in production today) opts out.
     # #VERIFY: exercised by test_enqueue_generation_second_call_same_id_raises_duplicate,
     # which runs the REAL rq.Queue.enqueue (a Redis testcontainer, not a mock)
     # and asserts a second call with the same rq_job_id raises DuplicateJobError
@@ -137,53 +141,111 @@ def enqueue_generation(
 
 
 async def requeue_stranded_jobs(
-    session: AsyncSession, stale_after: timedelta = _DEFAULT_STALE_AFTER
+    session: AsyncSession,
+    stale_after: timedelta = _DEFAULT_STALE_AFTER,
+    running_stale_after: timedelta | None = None,
 ) -> int:
-    """Re-enqueue jobs stuck at 'queued' older than stale_after (RQ lost them).
+    """Reclaim jobs stranded by an enqueue outage or a hard worker death.
 
-    A row can be stranded at ``"queued"`` forever if the background enqueue
-    task never reached Redis (a Redis outage; see the docstring on
-    ``api/generation.py::_enqueue_safely``) or if RQ/Redis itself lost the job
-    (a Redis restart with no persistence, a worker crash before the job's
-    ``"running"`` transition committed). Call this once when a worker process
-    starts, before it begins pulling jobs off the queue.
+    Two failure modes leave a job unrecoverable without this sweep, and both
+    permanently consume a slot of the per-family active-job cap
+    (``api/generation.py::MAX_ACTIVE_JOBS_PER_FAMILY``), which counts both
+    ``"queued"`` and ``"running"`` rows:
+
+    1. **Stranded at ``"queued"``**: the background enqueue never reached Redis
+       (a Redis outage; see ``api/generation.py::_enqueue_safely``) or RQ/Redis
+       lost the job (a Redis restart with no persistence). These are
+       re-enqueued.
+    2. **Stranded at ``"running"``**: the worker was hard-killed (SIGKILL, OOM,
+       power loss) after committing the ``queued -> running`` transition but
+       before the pipeline's own ``finally`` guard could run. No signal unwinds
+       Python in that case, so the guard never fires and the row sits
+       ``"running"`` forever. These are force-failed with
+       ``error="interrupted: worker died"``, mirroring the finally guard, and
+       are NOT auto-re-enqueued: the job may already have spent provider budget,
+       so recovery is an explicit guardian/operator retry, not a silent re-run.
+
+    Call this once when a worker process starts, before it begins pulling jobs.
 
     # #CRITICAL: concurrency: a job legitimately waiting in a deep queue must
     # not be double-enqueued. enqueue_generation passes unique=True whenever
-    # rq_job_id=row_id is given (below), so RQ raises DuplicateJobError
-    # instead of silently pushing a second queue entry when the row is already
-    # queued under this id; that is the expected, desired outcome for this
-    # sweep (the row IS still queued, exactly what we want), so it is caught
-    # per-row and treated as a no-op rather than as a sweep failure. One stuck
-    # duplicate must not abort reclaiming the rest of the stale batch.
+    # rq_job_id=row_id is given (below), so RQ raises DuplicateJobError instead
+    # of silently pushing a second queue entry when the row is already queued
+    # under this id; that is the desired outcome (the row IS still queued), so
+    # it is caught per-row and treated as a no-op, not a sweep failure, and is
+    # excluded from the returned reclaim count. Now that the original enqueue
+    # also uses rq_job_id=row_id (api/generation.py::_enqueue_safely), the
+    # sweep and the original share one identity, so a still-queued original is
+    # correctly recognized as a duplicate rather than run a second time.
     # #VERIFY: test_requeue_stranded_jobs_second_sweep_same_row_is_queue_idempotent
-    # runs two sweeps of the same still-stale row against a real Redis
-    # testcontainer and asserts the queue never grows a second entry for it.
+    # and test_reclaim_after_completed_run_does_not_re_execute.
 
     Args:
-        session: Active async session used to select stranded rows. Read-only:
-            this function performs no writes and does not commit.
+        session: Active async session. Writes and commits when it force-fails a
+            stranded ``"running"`` row; performs no writes for the queued sweep.
         stale_after: How long a row may sit at ``"queued"`` before it is
             considered lost and re-enqueued. Defaults to 30 minutes.
+        running_stale_after: How long a row may sit at ``"running"`` before it
+            is considered a dead worker's orphan and force-failed. Defaults to
+            the configured generation job timeout plus a 5-minute margin, so a
+            still-legitimately-running job is never reaped early.
 
     Returns:
-        The number of rows re-enqueued.
+        The number of rows reclaimed: queued rows actually re-enqueued (excluding
+        already-queued no-ops) plus running rows force-failed.
     """
-    cutoff = datetime.now(UTC) - stale_after
-    result = await session.execute(
+    now = datetime.now(UTC)
+    reclaimed = 0
+
+    # --- Sweep 1: re-enqueue rows lost while queued. -----------------------
+    queued_cutoff = now - stale_after
+    queued_result = await session.execute(
         select(GenerationJob).where(
             GenerationJob.status == "queued",
-            GenerationJob.updated_at < cutoff,
+            GenerationJob.updated_at < queued_cutoff,
         )
     )
-    stranded = result.scalars().all()
-    for row in stranded:
+    for row in queued_result.scalars().all():
         row_id = str(row.id)
         try:
             enqueue_generation(row_id, _default_settings, rq_job_id=row_id)
+            reclaimed += 1
         except DuplicateJobError:
-            logger.info(
-                "requeue_stranded_jobs.already_queued",
-                job_id=row_id,
-            )
-    return len(stranded)
+            logger.info("requeue_stranded_jobs.already_queued", job_id=row_id)
+
+    # --- Sweep 2: force-fail rows orphaned by a hard worker death. ----------
+    if running_stale_after is None:
+        running_stale_after = timedelta(
+            seconds=_default_settings.generation_job_timeout_seconds
+        ) + timedelta(minutes=5)
+    running_cutoff = now - running_stale_after
+    running_result = await session.execute(
+        select(GenerationJob).where(
+            GenerationJob.status == "running",
+            GenerationJob.updated_at < running_cutoff,
+        )
+    )
+    orphaned = list(running_result.scalars().all())
+    for row in orphaned:
+        row.status = "failed"
+        row.error = "interrupted: worker died"
+        # #CRITICAL: data-integrity: the failure event must land in the same
+        # transaction as the status write (spec D1); record_event only flushes.
+        # #VERIFY: test_requeue_force_fails_stranded_running_row asserts the row
+        # lands "failed" with a matching generation_finished event.
+        await record_event(
+            session,
+            Actor.system(),
+            entity_type="generation_job",
+            entity_id=str(row.id),
+            event_type=EventType.GENERATION_FINISHED,
+            from_state="running",
+            to_state="failed",
+            payload={"outcome": "failed"},
+        )
+        reclaimed += 1
+        logger.warning("requeue_stranded_jobs.force_failed_orphan", job_id=str(row.id))
+    if orphaned:
+        await session.commit()
+
+    return reclaimed

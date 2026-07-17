@@ -5,6 +5,26 @@ export type ClientOptions = {
 };
 
 /**
+ * AdminJobActionResponse
+ *
+ * Result of an admin operator action on a generation job.
+ */
+export type AdminJobActionResponse = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Status
+     */
+    status: 'queued' | 'running' | 'passed' | 'needs_review' | 'failed' | 'awaiting_manual_fill';
+    /**
+     * Error
+     */
+    error?: string | null;
+};
+
+/**
  * AdminProfileCreateBody
  *
  * An admin's request to create a child profile in any family.
@@ -3192,6 +3212,42 @@ export type GetGenerationJobApiV1GenerationJobsJobIdGetResponses = {
 };
 
 export type GetGenerationJobApiV1GenerationJobsJobIdGetResponse = GetGenerationJobApiV1GenerationJobsJobIdGetResponses[keyof GetGenerationJobApiV1GenerationJobsJobIdGetResponses];
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Job Id
+         */
+        job_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/generation-jobs/{job_id}/force-fail';
+};
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostError = ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostErrors[keyof ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostErrors];
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: AdminJobActionResponse;
+};
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponse = ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponses[keyof ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponses];
 
 export type ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostData = {
     body?: never;

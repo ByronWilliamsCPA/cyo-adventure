@@ -15,6 +15,7 @@ import uuid
 
 import pytest
 from fastapi import BackgroundTasks
+from rq.exceptions import DuplicateJobError
 
 from cyo_adventure.api.deps import Principal, RequestContext
 from cyo_adventure.api.generation import (
@@ -22,6 +23,7 @@ from cyo_adventure.api.generation import (
     _enqueue_safely,
     create_concept,
     enqueue_concept_generation,
+    force_fail_generation_job,
     get_generation_job,
     validate_storybook_version,
 )
@@ -408,7 +410,7 @@ def test_enqueue_safely_swallows_redis_failure(
 ) -> None:
     """_enqueue_safely logs and swallows a failing enqueue (best-effort)."""
 
-    def _boom(_job_id: str, _settings: object) -> str:
+    def _boom(_job_id: str, _settings: object, *, rq_job_id: str | None = None) -> str:
         msg = "redis down"
         raise ConnectionError(msg)
 
@@ -429,15 +431,98 @@ def test_enqueue_safely_swallows_redis_failure(
 
 
 @pytest.mark.unit
-def test_enqueue_safely_success(monkeypatch: pytest.MonkeyPatch) -> None:
-    """_enqueue_safely calls enqueue_generation with the job id."""
-    seen: list[str] = []
+def test_enqueue_safely_uses_row_id_as_rq_job_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """_enqueue_safely passes rq_job_id=job_id so the sweep shares one identity.
 
-    def _ok(job_id: str, _settings: object) -> str:
-        seen.append(job_id)
+    The original enqueue must reuse the row id as the RQ job id; otherwise the
+    reclaim sweep's rq_job_id=row_id re-enqueue cannot dedupe against a
+    still-queued original and the job runs twice.
+    """
+    seen: list[tuple[str, str | None]] = []
+
+    def _ok(job_id: str, _settings: object, *, rq_job_id: str | None = None) -> str:
+        seen.append((job_id, rq_job_id))
         return "rq-1"
 
     monkeypatch.setattr("cyo_adventure.api.generation.enqueue_generation", _ok)
     job_id = str(uuid.uuid4())
     _enqueue_safely(job_id)
-    assert seen == [job_id]
+    assert seen == [(job_id, job_id)]
+
+
+@pytest.mark.unit
+def test_enqueue_safely_swallows_duplicate_job(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A DuplicateJobError (row already queued under its id) is a no-op."""
+
+    def _dupe(_job_id: str, _settings: object, *, rq_job_id: str | None = None) -> str:
+        raise DuplicateJobError
+
+    monkeypatch.setattr("cyo_adventure.api.generation.enqueue_generation", _dupe)
+    # Must not raise.
+    assert _enqueue_safely(str(uuid.uuid4())) is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_force_fail_requires_admin() -> None:
+    """A guardian (non-admin) principal cannot force-fail a job (-> 403)."""
+    session = _FakeSession()
+    ctx = RequestContext(
+        principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+    with pytest.raises(AuthorizationError):
+        await force_fail_generation_job(str(uuid.uuid4()), ctx)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_force_fail_missing_job_not_found() -> None:
+    """Force-failing a nonexistent job raises ResourceNotFoundError (-> 404)."""
+    session = _FakeSession(get_result=None)
+    ctx = RequestContext(
+        principal=_principal("admin", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+    with pytest.raises(ResourceNotFoundError):
+        await force_fail_generation_job(str(uuid.uuid4()), ctx)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_force_fail_rejects_terminal_job() -> None:
+    """A job already terminal ('passed') cannot be force-failed (-> 409)."""
+    job = GenerationJob(concept_id=uuid.uuid4(), status="passed")
+    job.id = uuid.uuid4()
+    session = _FakeSession(get_result=job)
+    ctx = RequestContext(
+        principal=_principal("admin", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+    with pytest.raises(StateTransitionError):
+        await force_fail_generation_job(str(job.id), ctx)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_force_fail_running_job_sets_failed_and_records_event() -> None:
+    """A stuck 'running' job is force-failed and a finished event is recorded."""
+    from cyo_adventure.db.models import PipelineEvent
+
+    job = GenerationJob(concept_id=uuid.uuid4(), status="running")
+    job.id = uuid.uuid4()
+    session = _FakeSession(get_result=job)
+    ctx = RequestContext(
+        principal=_principal("admin", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+
+    resp = await force_fail_generation_job(str(job.id), ctx)
+
+    assert resp.status == "failed"
+    assert resp.error == "interrupted: force-failed by admin"
+    assert job.status == "failed"
+    events = [obj for obj in session.added if isinstance(obj, PipelineEvent)]
+    assert len(events) == 1
+    assert events[0].to_state == "failed"
+    assert events[0].from_state == "running"
