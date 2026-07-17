@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The served OpenAPI schema now documents the real API contract: bearer auth
+  as a proper security scheme on every authenticated operation (the Authorize
+  control now works in `/docs`, and generated clients see the requirement),
+  the 401/403/404/409 error envelope on each operation that can produce one,
+  a description for all 21 tags, and the installed release version instead of
+  a hardcoded `0.1.0`. `/health` reported the same stale `0.1.0` and now
+  tracks the release too.
+
+### Added
+
+- Full API-level test coverage in the Postman/newman suite: all 67 operations
+  are now exercised in CI (previously 47), adding child sessions, device
+  grants (including online revocation enforcement), onboarding idempotency,
+  the admin user/profile consoles, family connections, the moderation
+  dashboard, the admin story-request queue, series continuation, and admin
+  family create/rename. The local compose stack ships benign dev
+  token-signing secrets so the mint endpoints are testable end to end.
+
 ## [0.8.0] - 2026-07-17
 
 ## [0.7.0] - 2026-07-17
