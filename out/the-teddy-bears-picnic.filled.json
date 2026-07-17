@@ -443,7 +443,7 @@
     },
     {
       "id": "e_nap",
-      "body": "Full of good snacks and happy times, all the bears curl up together in a soft heap on the warm blanket. The sun is soft on their fur. The picnic she built is perfect and peaceful. Everything is cozy.",
+      "body": "Full of snacks. Full of happy times. All the bears curl up together. They make a soft heap. On the warm blanket. The sun is soft on their fur. The picnic she built is good. Everything is cozy.",
       "is_ending": true,
       "ending": {
         "id": "end_nap",

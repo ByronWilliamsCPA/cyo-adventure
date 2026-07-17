@@ -553,7 +553,7 @@
     },
     {
       "id": "n_lockup",
-      "body": "<<FILL role=rising words=116 beats='the trail, whichever one Priya followed, ends at the storage closet at the back of the workshop while lunch repairs clatter behind her; every clue she is carrying points the same way, at something that was inside this room after lockup; the closet door hangs open a crack, and inside is an empty charging dock still faintly warm, dusty wheel tracks rolling out and back, a child's crayon drawing folded neatly on a shelf as if put away with care, and in the dock's card slot an ancient punch card, chewed along one edge'>>",
+      "body": "<<FILL role=rising words=116 beats='the trail, whichever one Priya followed, ends at the storage closet at the back of the workshop while lunch repairs clatter behind her; Ben, already at the Sparks bench laying out tools, spots her heading for the closet and jogs over to join her; every clue she is carrying points the same way, at something that was inside this room after lockup; the closet door hangs open a crack, and inside is an empty charging dock still faintly warm, dusty wheel tracks rolling out and back, a child's crayon drawing folded neatly on a shelf as if put away with care, and in the dock's card slot an ancient punch card, chewed along one edge'>>",
       "is_ending": false,
       "choices": [
         {
@@ -738,7 +738,7 @@
     },
     {
       "id": "y_story",
-      "body": "<<FILL role=rising words=96 beats='Vasquez's eyes crinkle; fifty years of this school, she says, and the anniversary surprise turns out to be a mystery solved by students, that is the story; she plans to introduce Herbie herself, sends them off to repair, and has Herbie wheeled to the gym so the fair can meet him properly'>>",
+      "body": "<<FILL role=rising words=96 beats='Vasquez's eyes crinkle; fifty years of this school, she says, and the anniversary surprise turns out to be a mystery solved by students, that is a story worth telling when the moment is right; she leaves the telling of it in Priya's hands, sends them off to repair, and has Herbie wheeled to the gym so the fair can meet him properly'>>",
       "is_ending": false,
       "choices": [
         {
@@ -767,7 +767,7 @@
     },
     {
       "id": "y_agree",
-      "body": "<<FILL role=rising words=94 beats='told kindly, it is a different story altogether: not custodian's robot wrecks fair, but the school's oldest robot got his chores mixed up and three teams got a wild morning; everyone in the office breathes easier, Mr. Okafor thanks her for the right words in the right order, and he goes to fetch Herbie so there are no more surprises'>>",
+      "body": "<<FILL role=rising words=94 beats='told kindly, it is a different story altogether: not custodian's robot wrecks fair, but the school's oldest robot got his chores mixed up and three teams got a wild morning; everyone in the office breathes easier, Mr. Okafor thanks her for the right words in the right order and goes to fetch Herbie so there are no more surprises, while Priya and the team race back to the workshop and rebuild Gizmo from the neatly sorted bins'>>",
       "is_ending": false,
       "choices": [
         {
@@ -871,7 +871,7 @@
     },
     {
       "id": "n_demo",
-      "body": "<<FILL role=rising words=118 beats='however the last hour was spent, demo time arrives the way it always does, all at once; the gym is packed, the judges click their pens, and Gizmo waits at the start line, patched, blinking, and ready enough; off at the edge of the floor old Herbie sits safe and still with his bow tie straightened, drawing curious looks, the day's whole mystery folded up quietly beside the bleachers; Priya's team gathers around her, and her heart hammers in the good way for the first time since breakfast'>>",
+      "body": "<<FILL role=rising words=118 beats='however the last hour was spent, demo time arrives the way it always does, all at once; the gym is packed, the judges click their pens, and Gizmo waits at the start line, patched, blinking, and ready enough; off at the edge of the floor old Herbie sits safe and still with his bow tie straightened, drawing curious looks, the day's whole mystery answered at last; Priya's team gathers around her, and her heart hammers in the good way for the first time since breakfast'>>",
       "is_ending": false,
       "choices": [
         {
