@@ -22,7 +22,7 @@
     "ending_count": 25,
     "content_flags": {
       "violence": "none",
-      "scariness": "mild",
+      "scariness": "moderate",
       "peril": "moderate"
     },
     "topology": "sorting_hat",
@@ -1085,7 +1085,7 @@
     },
     {
       "id": "m_b_wrong",
-      "body": "<<FILL role=rising words=100 beats='clean and confident, and quietly wrong: the Bell Creek report was the stale one, and for ten minutes the room nudges spotters and warnings a mile off the storm's true hail line, until a puzzled voice from the quarry reports stones bouncing off his truck right now'>>",
+      "body": "<<FILL role=rising words=100 beats='your pick is lucky, Bell Creek really is the live report, but clean and confident has become the board's whole style: the fairgrounds wind column is riding gauge numbers that quietly stopped updating ten minutes ago, plotted without one question mark, and the room steers by stale wind until a puzzled spotter radios that the fairgrounds flags are whipping hard while your board still says calm'>>",
       "is_ending": false,
       "choices": [
         {
