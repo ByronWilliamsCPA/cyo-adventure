@@ -147,6 +147,23 @@
   background: var(--color-amber-deep);
 }
 
+/* K17 recommendations feed (ADR-016 rings 1-2): a small warm chip under the
+   cover/title link, never inside it, matching the endings badge's rule that
+   decorations must not compete with the "open this book" tap target. */
+.recommendation-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-amber-text, var(--color-ink-secondary));
+  font-size: var(--text-xs);
+}
+
+.recommendation-chip__glyph {
+  flex-shrink: 0;
+  color: var(--color-amber-deep, #c17b2a);
+}
+
 .star-rating {
   display: flex;
   gap: var(--space-1);

@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { ProgressBar } from '@ds/components/ProgressBar'
 import { EndingsBadge } from './EndingsBadge'
+import { RecommendationChip } from './RecommendationChip'
 import type { LibraryItemView } from './libraryApi'
 import { StarRating } from './StarRating'
 import { percentComplete } from './bookCardUtils'
 import { coverGradient } from './coverPalette'
+import type { RecommendationSummary } from './recommendationsUtils'
 
 export interface BookCardProps {
   item: LibraryItemView
@@ -21,6 +23,11 @@ export interface BookCardProps {
    * withholds a total_endings: 0 book, so a not-yet-published-metadata book
    * never shows a misleading "0 of 0". */
   endings?: { found: number; total: number }
+  /** K17 recommendations feed (ADR-016 rings 1-2): this book's grouped
+   * recommenders, when known. Absent (undefined) whenever the profile's
+   * recommendations fetch is still loading, failed, or has no entry for this
+   * book; the chip is withheld rather than shown as an error either way. */
+  recommendation?: RecommendationSummary
 }
 
 export function BookCard({
@@ -30,6 +37,7 @@ export function BookCard({
   onRate,
   onContinue,
   endings,
+  recommendation,
 }: BookCardProps) {
   const readTo = `/read/${profileId}/${item.id}/${item.version}`
   const pct = percentComplete(item)
@@ -83,6 +91,7 @@ export function BookCard({
       {(started || (endings && endings.found > 0)) && endings ? (
         <EndingsBadge found={endings.found} total={endings.total} />
       ) : null}
+      {recommendation ? <RecommendationChip summary={recommendation} /> : null}
       <StarRating
         value={item.rating}
         onRate={(value) => onRate(item.id, value)}

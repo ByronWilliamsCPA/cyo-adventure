@@ -125,4 +125,35 @@ describe('BookCard', () => {
       expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
     })
   })
+
+  describe('K17 recommendations feed (ADR-016 rings 1-2)', () => {
+    function renderCardWithRecommendation(
+      recommendation?: {
+        firstName: string
+        firstRing: 'family' | 'connection'
+        moreCount: number
+      }
+    ) {
+      return render(
+        <MemoryRouter>
+          <BookCard item={BASE_ITEM} profileId="p1" onRate={() => {}} recommendation={recommendation} />
+        </MemoryRouter>
+      )
+    }
+
+    it('shows the family-ring chip when a recommendation summary is provided', () => {
+      renderCardWithRecommendation({ firstName: 'Maya', firstRing: 'family', moreCount: 0 })
+      expect(screen.getByText('Maya loved this')).toBeInTheDocument()
+    })
+
+    it('shows the connection-ring chip with the "Cousin" prefix', () => {
+      renderCardWithRecommendation({ firstName: 'Leo', firstRing: 'connection', moreCount: 0 })
+      expect(screen.getByText('Cousin Leo loved this')).toBeInTheDocument()
+    })
+
+    it('renders no chip when the recommendation prop is not provided (feed still loading, failed, or no entry for this book)', () => {
+      renderCardWithRecommendation(undefined)
+      expect(screen.queryByText(/loved this/i)).not.toBeInTheDocument()
+    })
+  })
 })

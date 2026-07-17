@@ -440,6 +440,124 @@ describe('LibraryPage', () => {
       expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
     })
   })
+
+  describe('K17 recommendations feed (ADR-016 rings 1-2)', () => {
+    // Routes mockGet by URL so the library list and recommendations calls
+    // (both GETs, fired from the same load()) can be answered differently.
+    function mockLibraryAndRecommendations(stories: unknown[], items: unknown[]) {
+      mockGet.mockImplementation((url: string) => {
+        if (url.startsWith('/v1/recommendations/')) {
+          return Promise.resolve({ data: { items } })
+        }
+        return Promise.resolve({ data: { stories } })
+      })
+    }
+
+    it('shows a family-ring chip on the matching shelf card once the feed resolves', async () => {
+      mockLibraryAndRecommendations(
+        [OLDER_IN_PROGRESS, IN_PROGRESS],
+        [
+          {
+            storybook_id: OLDER_IN_PROGRESS.id,
+            title: OLDER_IN_PROGRESS.title,
+            cover_url: null,
+            recommender_name: 'Maya',
+            rating: 5,
+            ring: 'family',
+          },
+        ]
+      )
+      renderLibrary()
+      const shelf = await screen.findByRole('region', { name: /more to explore/i })
+      expect(await within(shelf).findByText('Maya loved this')).toBeInTheDocument()
+    })
+
+    it('shows a connection-ring chip with the "Cousin" prefix on the hero card', async () => {
+      mockLibraryAndRecommendations(
+        [IN_PROGRESS],
+        [
+          {
+            storybook_id: IN_PROGRESS.id,
+            title: IN_PROGRESS.title,
+            cover_url: null,
+            recommender_name: 'Leo',
+            rating: 4,
+            ring: 'connection',
+          },
+        ]
+      )
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      expect(await within(hero).findByText('Cousin Leo loved this')).toBeInTheDocument()
+    })
+
+    it('collapses multiple recommenders for the same book into "and N more"', async () => {
+      mockLibraryAndRecommendations(
+        [IN_PROGRESS],
+        [
+          {
+            storybook_id: IN_PROGRESS.id,
+            title: IN_PROGRESS.title,
+            cover_url: null,
+            recommender_name: 'Maya',
+            rating: 5,
+            ring: 'family',
+          },
+          {
+            storybook_id: IN_PROGRESS.id,
+            title: IN_PROGRESS.title,
+            cover_url: null,
+            recommender_name: 'Leo',
+            rating: 4,
+            ring: 'connection',
+          },
+        ]
+      )
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      expect(await within(hero).findByText('Maya loved this and 1 more')).toBeInTheDocument()
+    })
+
+    it('shows no chip (never crashes the shelf) when the recommendations fetch fails', async () => {
+      mockGet.mockImplementation((url: string) => {
+        if (url.startsWith('/v1/recommendations/')) {
+          return Promise.reject(new Error('recommendations boom'))
+        }
+        return Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+      })
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/loved this/i)).not.toBeInTheDocument()
+      errorSpy.mockRestore()
+    })
+
+    it('shows no chip when the feed is empty', async () => {
+      mockLibraryAndRecommendations([IN_PROGRESS], [])
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/loved this/i)).not.toBeInTheDocument()
+    })
+
+    it('shows no chip for a book with no matching recommendation entry', async () => {
+      mockLibraryAndRecommendations(
+        [IN_PROGRESS],
+        [
+          {
+            storybook_id: 'some-other-book',
+            title: 'Some Other Book',
+            cover_url: null,
+            recommender_name: 'Maya',
+            rating: 5,
+            ring: 'family',
+          },
+        ]
+      )
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      expect(screen.queryByText(/loved this/i)).not.toBeInTheDocument()
+    })
+  })
 })
 
 describe('percentComplete', () => {

@@ -250,3 +250,95 @@ test('shows no endings tracker (never an error) when the reading-history fetch f
   await expect(hero).toContainText('The Lantern')
   await expect(page.getByText(/endings found/i)).toHaveCount(0)
 })
+
+// K17 (ADR-016 rings 1-2): the recommendations feed only ever decorates a
+// book already on this shelf with a warm chip; it never adds a book or
+// offers any interaction beyond the card's own open-book link.
+test('shows a family-ring chip on the matching book once the recommendations feed resolves (K17)', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/recommendations/*', (route) =>
+    route.fulfill({
+      json: {
+        items: [
+          {
+            storybook_id: 's1',
+            title: 'The Lantern',
+            cover_url: null,
+            recommender_name: 'Maya',
+            rating: 5,
+            ring: 'family',
+          },
+        ],
+      },
+    })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(hero.getByText('Maya loved this')).toBeVisible()
+  // Acorn Detectives has no matching feed entry: no chip, absence not error.
+  const shelf = page.getByRole('region', { name: 'More to Explore' })
+  const acorn = shelf.locator('.book-card', { hasText: 'Acorn Detectives' })
+  await expect(acorn.getByText(/loved this/i)).toHaveCount(0)
+})
+
+test('shows a connection-ring chip with the Cousin prefix and collapses extra recommenders (K17)', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/recommendations/*', (route) =>
+    route.fulfill({
+      json: {
+        items: [
+          {
+            storybook_id: 's3',
+            title: 'Acorn Detectives',
+            cover_url: null,
+            recommender_name: 'Leo',
+            rating: 4,
+            ring: 'connection',
+          },
+          {
+            storybook_id: 's3',
+            title: 'Acorn Detectives',
+            cover_url: null,
+            recommender_name: 'Priya',
+            rating: 5,
+            ring: 'family',
+          },
+        ],
+      },
+    })
+  )
+  await page.goto('/library/p1')
+  const shelf = page.getByRole('region', { name: 'More to Explore' })
+  await expect(shelf.getByText('Cousin Leo loved this and 1 more')).toBeVisible()
+  // Tapping the chip does nothing beyond the card's own open-book link: no
+  // reply/send affordance exists anywhere on this surface (ADR-016).
+  await expect(page.getByRole('button', { name: /loved this/i })).toHaveCount(0)
+  await expect(page.getByRole('textbox')).toHaveCount(0)
+})
+
+test('shows no chip (never an error) when the recommendations feed fails', async ({ page }) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/recommendations/*', (route) =>
+    route.fulfill({ status: 500, json: { detail: 'boom' } })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(page.getByText(/loved this/i)).toHaveCount(0)
+})
+
+test('shows no chip when the recommendations feed is empty', async ({ page }) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/recommendations/*', (route) =>
+    route.fulfill({ json: { items: [] } })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(page.getByText(/loved this/i)).toHaveCount(0)
+})

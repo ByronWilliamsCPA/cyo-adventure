@@ -10,6 +10,8 @@ import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 import { BookCard } from './BookCard'
 import { makeLibraryApi, type LibraryItemView, type ReadingHistoryItem } from './libraryApi'
 import { pickHero } from './pickHero'
+import { makeRecommendationsApi, type RecommendationItem } from './recommendationsApi'
+import { summarizeRecommendations } from './recommendationsUtils'
 import { RequestStory, type ContinueAnchor } from './RequestStory'
 import './library.css'
 
@@ -24,12 +26,22 @@ import './library.css'
 // is intentional: BookCard already withholds the badge for a book with no
 // matching row, so every one of those cases degrades identically (absence,
 // not an error state).
+//
+// `recommendations` (K17, ADR-016 rings 1-2) follows the exact same
+// best-effort shape: starts empty, fills in behind the items, and a fetch
+// failure degrades to "no chips" rather than an error state, per ADR-016
+// design point 3 (kid-safe, never an error surface for a decoration).
 type LibraryState =
   | { status: 'loading' }
   | { status: 'unauthenticated' }
   | { status: 'forbidden' }
   | { status: 'error' }
-  | { status: 'ready'; items: LibraryItemView[]; history: ReadingHistoryItem[] }
+  | {
+      status: 'ready'
+      items: LibraryItemView[]
+      history: ReadingHistoryItem[]
+      recommendations: RecommendationItem[]
+    }
 
 /**
  * Kid library home (wireframe 4.2): Continue Reading hero for the most
@@ -40,6 +52,7 @@ export function LibraryPage() {
   const { profileId } = useParams()
   const api = useApi()
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
+  const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
   const [continueAnchor, setContinueAnchor] = useState<ContinueAnchor | null>(null)
   const requestStoryRef = useRef<HTMLDivElement>(null)
@@ -95,7 +108,7 @@ export function LibraryPage() {
       try {
         const items = await libraryApi.list(id)
         if (cancelled || !isMountedRef.current) return
-        setState({ status: 'ready', items, history: [] })
+        setState({ status: 'ready', items, history: [], recommendations: [] })
         // K6 endings tracker: best-effort and deliberately NOT awaited above.
         // A failure (or a slow response) here must never delay or block the
         // shelf itself from rendering; the badges just stay absent until this
@@ -110,6 +123,22 @@ export function LibraryPage() {
           .catch((err: unknown) => {
             // Redacted shape only, never the raw axios error; see logApiError.
             logApiError('reading history fetch failed', err)
+          })
+        // K17 recommendations feed (ADR-016 rings 1-2): same best-effort
+        // shape as history above, deliberately NOT awaited. A failure (or a
+        // slow response, e.g. the sibling backend endpoint still landing)
+        // must never delay or error the shelf; the chips just stay absent
+        // until this resolves, or forever on failure.
+        recommendationsApi
+          .list(id)
+          .then((recommendations) => {
+            if (!cancelled && isMountedRef.current) {
+              setState((prev) => (prev.status === 'ready' ? { ...prev, recommendations } : prev))
+            }
+          })
+          .catch((err: unknown) => {
+            // Redacted shape only, never the raw axios error; see logApiError.
+            logApiError('recommendations fetch failed', err)
           })
       } catch (err) {
         // Redacted shape only, never the raw axios error (its `config` carries
@@ -127,7 +156,7 @@ export function LibraryPage() {
     return () => {
       cancelled = true
     }
-  }, [libraryApi, profileId])
+  }, [libraryApi, recommendationsApi, profileId])
 
   useEffect(load, [load])
 
@@ -231,7 +260,7 @@ export function LibraryPage() {
       </div>
     )
   }
-  const { items, history } = state
+  const { items, history, recommendations } = state
   // K6 endings tracker: keyed by storybook id so BookCard can look up its own
   // row in O(1); a book with no row (history still loading, fetch failed, or
   // genuinely no completion yet) gets `undefined` and BookCard renders no badge.
@@ -240,6 +269,13 @@ export function LibraryPage() {
     const row = historyByBook.get(item.id)
     return row ? { found: row.endings_found, total: row.total_endings } : undefined
   }
+  // K17 recommendations feed (ADR-016 rings 1-2): same lookup shape as
+  // history above. Recommendations only ever decorate a book already on this
+  // shelf (per design: no separate unassigned-books browse, that would
+  // bypass the assignment gate), so any feed entry for a book absent from
+  // `items` is simply never looked up and never rendered.
+  const recommendationsByBook = summarizeRecommendations(recommendations)
+  const recommendationFor = (item: LibraryItemView) => recommendationsByBook.get(item.id)
   if (items.length === 0) {
     return (
       <div className="library">
@@ -268,6 +304,7 @@ export function LibraryPage() {
             onRate={rate}
             onContinue={askForNextBook}
             endings={endingsFor(hero)}
+            recommendation={recommendationFor(hero)}
           />
         </section>
       ) : null}
@@ -283,6 +320,7 @@ export function LibraryPage() {
                   onRate={rate}
                   onContinue={askForNextBook}
                   endings={endingsFor(item)}
+                  recommendation={recommendationFor(item)}
                 />
               </li>
             ))}
