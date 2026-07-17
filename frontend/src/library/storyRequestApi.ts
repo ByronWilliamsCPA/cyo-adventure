@@ -13,6 +13,8 @@ export type StoryRequestStatus = 'pending' | 'approved' | 'declined' | 'blocked'
 export interface KidStoryRequest {
   id: string
   status: StoryRequestStatus
+  /** The child's own idea text, so pending rows are distinguishable (UX-K3). */
+  request_text: string
 }
 
 // Internal wire type: full response from backend (not exported)
@@ -63,16 +65,23 @@ export function makeKidStoryRequestApi(api: AxiosInstance): KidStoryRequestApi {
       // Explicitly map to the kid-safe subset at runtime (same boundary as
       // listForProfile) so a guardian-facing field on the create response can
       // never leak into kid-surface code; a compile-time cast would not strip it.
-      return { id: res.data.id, status: res.data.status }
+      return {
+        id: res.data.id,
+        status: res.data.status,
+        request_text: res.data.request_text,
+      }
     },
     async listForProfile(profileId: string): Promise<KidStoryRequest[]> {
       const res = await api.get<{ requests: WireStoryRequest[] }>(
         `/v1/story-requests?profile_id=${encodeURIComponent(profileId)}`
       )
-      // Explicitly map to kid-safe subset to prevent guardian-facing fields from leaking
+      // Explicitly map to kid-safe subset to prevent guardian-facing fields
+      // from leaking. request_text is the child's OWN idea (not guardian-facing)
+      // and is surfaced so pending rows are distinguishable (UX-K3).
       return res.data.requests.map((r) => ({
         id: r.id,
         status: r.status,
+        request_text: r.request_text,
       }))
     },
   }

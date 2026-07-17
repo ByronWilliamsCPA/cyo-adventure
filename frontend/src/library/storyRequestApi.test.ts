@@ -32,9 +32,15 @@ describe('makeKidStoryRequestApi', () => {
       moderation_flags: [{ category: 'language', verdict: 'clean', message: '' }],
     })
     const result = await makeKidStoryRequestApi(api).create('p1', 'Please write a dragon story')
-    // Returned object must carry ONLY the kid-safe keys.
-    expect(Object.keys(result).sort()).toEqual(['id', 'status'])
-    expect(result).toEqual({ id: 'req1', status: 'pending' })
+    // Returned object carries ONLY the kid-safe keys: id, status, and the
+    // child's own request_text (UX-K3). Guardian-facing fields (created_at,
+    // moderation_flags) are stripped.
+    expect(Object.keys(result).sort()).toEqual(['id', 'request_text', 'status'])
+    expect(result).toEqual({
+      id: 'req1',
+      status: 'pending',
+      request_text: 'Please write a dragon story',
+    })
   })
 
   it('listForProfile gets the requests for a profile and returns the list', async () => {
@@ -109,12 +115,21 @@ describe('makeKidStoryRequestApi', () => {
       ],
     })
     const result = await makeKidStoryRequestApi(api).listForProfile('p1')
-    // Verify returned objects contain ONLY id and status keys
+    // Returned objects contain ONLY the kid-safe keys: id, status, and the
+    // child's own request_text (UX-K3). Guardian-facing fields (profile_id,
+    // created_at, moderation_flags) are stripped.
     expect(result).toHaveLength(2)
-    expect(Object.keys(result[0]).sort()).toEqual(['id', 'status'])
-    expect(Object.keys(result[1]).sort()).toEqual(['id', 'status'])
-    // Verify the safe fields are present
-    expect(result[0]).toEqual({ id: 'req1', status: 'pending' })
-    expect(result[1]).toEqual({ id: 'req2', status: 'approved' })
+    expect(Object.keys(result[0]).sort()).toEqual(['id', 'request_text', 'status'])
+    expect(Object.keys(result[1]).sort()).toEqual(['id', 'request_text', 'status'])
+    expect(result[0]).toEqual({
+      id: 'req1',
+      status: 'pending',
+      request_text: 'Please write a dragon story',
+    })
+    expect(result[1]).toEqual({
+      id: 'req2',
+      status: 'approved',
+      request_text: 'Can you make a wizard adventure',
+    })
   })
 })

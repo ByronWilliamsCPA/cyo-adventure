@@ -31,7 +31,8 @@
   align-items: center;
   gap: var(--space-1);
   flex-shrink: 0;
-  min-height: 40px;
+  /* UX-K7: the one kid control that sat under the 44px tap floor. */
+  min-height: 44px;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-full);
   border: 2px solid var(--color-parchment-deeper);

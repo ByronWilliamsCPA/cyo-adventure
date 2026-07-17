@@ -251,11 +251,21 @@ export function RequestStory({
         <div className="request-story__status">
           <h2 className="request-story__list-heading">My requests</h2>
           <ul className="request-story__list">
-            {requests.map((req) => (
-              <li key={req.id} data-status={req.status} className="request-story__item">
-                {STATUS_COPY[req.status]}
-              </li>
-            ))}
+            {requests.map((req) => {
+              const idea = req.request_text ?? ''
+              return (
+                <li key={req.id} data-status={req.status} className="request-story__item">
+                  {idea ? (
+                    <span className="request-story__item-idea">
+                      {'“'}
+                      {idea.length > 80 ? `${idea.slice(0, 80)}…` : idea}
+                      {'”'}
+                    </span>
+                  ) : null}
+                  <span className="request-story__item-status">{STATUS_COPY[req.status]}</span>
+                </li>
+              )
+            })}
           </ul>
         </div>
       ) : null}

@@ -192,6 +192,34 @@
   background: var(--color-amber-subtle, #fdf3e6);
 }
 
+/*
+ * UX-K4: "I am a grown-up" / "Back to Who's reading?" recovery links on the
+ * picker and library error/empty screens. Previously this class had no rule at
+ * all, so these rendered as tiny default-blue underlined links well under the
+ * 44px tap floor, on the exact screens a stressed kid or parent hits. Styled as
+ * a legible pill that meets the tap target, matching .picker-retry.
+ */
+.picker-tile__add-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  font-family: var(--font-sans, 'Segoe UI', sans-serif);
+  font-weight: 600;
+  color: var(--color-ink, #2c1a0e);
+  background: var(--color-parchment, #f8f3e8);
+  border: 2px solid var(--color-amber, #e07f2e);
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.picker-tile__add-link:hover,
+.picker-tile__add-link:focus-visible {
+  background: var(--color-amber-subtle, #fdf3e6);
+}
+
 /* P6-07: PIN prompt for a PIN-protected profile. */
 .picker-pin {
   display: flex;
