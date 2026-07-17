@@ -516,8 +516,9 @@ For an incident where content reached a child and needs to be traced and contain
 - [ADR-012: Supabase CLI SQL migrations](../planning/adr/adr-012-supabase-cli-migrations.md)
 - [Deployment architecture](../architecture/deployment.md)
 - [Generation pipeline architecture](../architecture/generation-pipeline.md)
-- [SECURITY.md](../../SECURITY.md) (vulnerability reporting; also documents the Redis-backed
-  rate limiter's fail-open fallback behavior referenced in Section 1)
+- `SECURITY.md` at the repository root (vulnerability reporting; also documents the
+  Redis-backed rate limiter's fail-open fallback behavior referenced in Section 1; it lives
+  outside the rendered docs tree, so open it on GitHub or in the repo checkout)
 - [R1 live E2E checklist](../planning/r1-live-e2e-checklist.md)
 - [Authoring guide](authoring-guide.md) (this deliverable's companion document, written for
   non-technical guardians and admins)
