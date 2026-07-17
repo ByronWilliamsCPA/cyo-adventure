@@ -20,7 +20,6 @@ from typing import TYPE_CHECKING
 
 import pytest
 import pytest_asyncio
-from docker.errors import DockerException
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
@@ -38,6 +37,7 @@ from cyo_adventure.db.models import (
     User,
 )
 from cyo_adventure.middleware.security import RateLimitMiddleware
+from tests.integration._docker_probe import start_or_probe_error
 
 if TYPE_CHECKING:
     import uuid
@@ -93,16 +93,16 @@ def _pg_url() -> Iterator[str]:
     # skipping. Match on truthy tokens rather than mere presence so an explicit
     # ``CI=false`` from a local shell keeps the developer-friendly skip.
     """
-    try:
-        container = PostgresContainer("postgres:16-alpine", driver="asyncpg")
-        container.start()
-    except (DockerException, OSError) as exc:
+    container, probe_error = start_or_probe_error(
+        lambda: PostgresContainer("postgres:16-alpine", driver="asyncpg")
+    )
+    if container is None:
         if os.environ.get("CI", "").strip().lower() in {"1", "true", "yes", "on"}:
             pytest.fail(
                 "Docker unavailable in CI runner; integration tests would "
-                f"silently skip: {exc}"
+                f"silently skip: {probe_error}"
             )
-        pytest.skip(f"Docker/Postgres testcontainer unavailable: {exc}")
+        pytest.skip(f"Docker/Postgres testcontainer unavailable: {probe_error}")
     try:
         yield container.get_connection_url()
     finally:
