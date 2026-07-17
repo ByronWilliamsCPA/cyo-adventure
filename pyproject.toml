@@ -334,7 +334,6 @@ known-first-party = ["cyo_adventure"]
 "**/api/covers.py" = ["TC001"]
 "**/api/onboarding.py" = ["TC001"]
 "**/api/notifications.py" = ["TC001"]
-
 # provider_allowlist.py imports Context alone (TC001, same reasoning as above)
 # and types its path params directly as uuid.UUID (TC003): with `from __future__
 # import annotations`, FastAPI resolves that annotation string via
@@ -393,6 +392,14 @@ known-first-party = ["cyo_adventure"]
 # each a distinct concern (lifecycle state, identity, story content, findings)
 # with no sensible default. A config object would obscure the contract.
 "**/api/review_surface.py" = ["PLR0913"]
+
+# edit_node's PATCH route has three path segments (storybook_id, version,
+# node_id) that identify the exact node being edited, plus the request body
+# and the Context dependency; each is REST-required or FastAPI-injected, not
+# collapsible into a config object (PLR0913). NodeEditBody/ReviewSurfaceView
+# (route body + return type) and Context must also stay real runtime imports
+# for the same FastAPI-resolves-via-get_type_hints reason as approval.py (TC001).
+"**/api/node_edit.py" = ["PLR0913", "TC001"]
 
 # The library-item builder carries storybook_id, blob, and version (the
 # identity of the row) plus rating and state (the per-profile enrichment,
@@ -679,6 +686,7 @@ filterwarnings = [
 ]
 xfail_strict = true
 markers = [
+    "quota_gate_real: opts an enqueue test out of the autouse quota-gate no-op patch",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",

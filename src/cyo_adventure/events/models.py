@@ -63,6 +63,11 @@ class EventType(StrEnum):
     USER_MANAGED = "user_managed"
     FAMILY_MANAGED = "family_managed"
     FAMILY_CONNECTION_CHANGED = "family_connection_changed"
+    # G6: a prose-only passage edit (node body and/or choice label text) that
+    # forced a re-run of the deterministic gate and the node's moderation
+    # findings. The payload carries only the node id (never the edited prose)
+    # per spec D3; see api/node_edit.py.
+    NODE_EDITED = "node_edited"
 
 
 SYSTEM_ACTOR_ROLE = "system"

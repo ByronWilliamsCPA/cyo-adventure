@@ -31,6 +31,7 @@ from cyo_adventure.api import (
     me,
     moderation_dashboard,
     moderation_thresholds,
+    node_edit,
     notifications,
     onboarding,
     profiles,
@@ -38,6 +39,7 @@ from cyo_adventure.api import (
     ratings,
     reading,
     reading_history,
+    recommendations,
     story_requests,
 )
 from cyo_adventure.core.config import settings
@@ -237,6 +239,7 @@ def create_app() -> FastAPI:
     app.include_router(ratings.router)
     app.include_router(assignments.router)
     app.include_router(approval.router)
+    app.include_router(node_edit.router)
     app.include_router(covers.router)
     app.include_router(moderation_thresholds.router)
     app.include_router(moderation_dashboard.router)
@@ -251,6 +254,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_users.router)
     app.include_router(admin_profiles.router)
     app.include_router(family_connections.router)
+    app.include_router(recommendations.router)
     return app
 
 

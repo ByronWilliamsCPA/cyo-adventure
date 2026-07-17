@@ -51,7 +51,16 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # facts (action, role, status) this log needs to stay PII-free (D3).
     EventType.USER_MANAGED: frozenset({"action", "role", "status"}),
     EventType.FAMILY_MANAGED: frozenset({"action", "status"}),
-    EventType.FAMILY_CONNECTION_CHANGED: frozenset({"action", "connected_family_id"}),
+    # ADR-016 (register G17): "role" ("viewer"/"sharer") and "active" (both
+    # sides now consented) are consent markers, not free text, added for the
+    # new consent/revoke actions; "created"/"removed" (admin CRUD) never set
+    # them.
+    EventType.FAMILY_CONNECTION_CHANGED: frozenset(
+        {"action", "connected_family_id", "role", "active"}
+    ),
+    # G6: the node id only, never the edited prose (spec D3); see
+    # api/node_edit.py::edit_node.
+    EventType.NODE_EDITED: frozenset({"node_id"}),
 }
 
 

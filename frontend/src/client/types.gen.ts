@@ -1033,6 +1033,60 @@ export type FamilyConnectionListView = {
 };
 
 /**
+ * FamilyConnectionMineItem
+ *
+ * One connection touching the caller's family, from their own side.
+ *
+ * ``direction`` is relative to the caller: ``"viewer"`` means the caller's
+ * family is ``FamilyConnection.family_id`` (it would see the counterpart's
+ * recommendations); ``"sharer"`` means the caller's family is
+ * ``connected_family_id`` (the counterpart would see theirs). ``active`` is
+ * ``True`` only when both sides have consented (ADR-016 dual-guardian rule).
+ */
+export type FamilyConnectionMineItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Direction
+     */
+    direction: 'viewer' | 'sharer';
+    /**
+     * Counterpart Family Id
+     */
+    counterpart_family_id: string;
+    /**
+     * Counterpart Family Name
+     */
+    counterpart_family_name: string;
+    /**
+     * My Consent
+     */
+    my_consent: boolean;
+    /**
+     * Active
+     */
+    active: boolean;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * FamilyConnectionMineListView
+ *
+ * Every connection touching the caller's family, from their own side.
+ */
+export type FamilyConnectionMineListView = {
+    /**
+     * Connections
+     */
+    connections: Array<FamilyConnectionMineItem>;
+};
+
+/**
  * FamilyConnectionView
  *
  * One directional family-connection row, with both family names.
@@ -1758,6 +1812,30 @@ export type ModerationDashboardView = {
 export type NarrativeStyle = 'prose' | 'gamebook';
 
 /**
+ * NodeEditBody
+ *
+ * A prose-only edit to one node: replacement body text and/or choice labels.
+ *
+ * Structure (ids, targets, conditions, effects, graph shape) is never
+ * editable through this body; ``api/node_edit.py::edit_node`` applies
+ * ``body`` to the node's prose and each ``choice_labels`` entry to the
+ * matching existing choice id's ``label`` only, rejecting any id absent
+ * from the node.
+ */
+export type NodeEditBody = {
+    /**
+     * Body
+     */
+    body?: string | null;
+    /**
+     * Choice Labels
+     */
+    choice_labels?: {
+        [key: string]: string;
+    } | null;
+};
+
+/**
  * NoiseFloorUpdateBody
  *
  * PUT body for the global admin noise floor.
@@ -1931,6 +2009,14 @@ export type ProfileCreateBody = {
      * Banned Themes
      */
     banned_themes?: Array<string> | null;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve?: boolean;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope?: number | null;
 };
 
 /**
@@ -1989,6 +2075,14 @@ export type ProfileUpdateBody = {
      * Banned Themes
      */
     banned_themes?: Array<string> | null;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve?: boolean | null;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope?: number | null;
 };
 
 /**
@@ -2036,6 +2130,14 @@ export type ProfileView = {
      * Banned Themes
      */
     banned_themes: Array<string>;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve: boolean;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope: number | null;
     /**
      * Created At
      */
@@ -2371,6 +2473,50 @@ export type ReadingStateView = {
      * Last Synced At
      */
     last_synced_at: string | null;
+};
+
+/**
+ * RecommendationItem
+ *
+ * One recommended book: a rating from another profile, never a message.
+ */
+export type RecommendationItem = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Cover Url
+     */
+    cover_url: string | null;
+    /**
+     * Recommender Name
+     */
+    recommender_name: string;
+    /**
+     * Rating
+     */
+    rating: number;
+    /**
+     * Ring
+     */
+    ring: 'family' | 'connection';
+};
+
+/**
+ * RecommendationsView
+ *
+ * A profile's recommendation feed (ring 1 family + ring 2 connections).
+ */
+export type RecommendationsView = {
+    /**
+     * Items
+     */
+    items: Array<RecommendationItem>;
 };
 
 /**
@@ -4325,6 +4471,50 @@ export type GetReviewQueueApiV1ReviewQueueGetResponses = {
 
 export type GetReviewQueueApiV1ReviewQueueGetResponse = GetReviewQueueApiV1ReviewQueueGetResponses[keyof GetReviewQueueApiV1ReviewQueueGetResponses];
 
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchData = {
+    body: NodeEditBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+        /**
+         * Version
+         */
+        version: number;
+        /**
+         * Node Id
+         */
+        node_id: string;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}';
+};
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchError = EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchErrors[keyof EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchErrors];
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReviewSurfaceView;
+};
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponse = EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponses[keyof EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponses];
+
 export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetData = {
     body?: never;
     headers?: {
@@ -5709,3 +5899,142 @@ export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteR
 };
 
 export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponse = DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses[keyof DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses];
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/family-connections/mine';
+};
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetError = ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetErrors[keyof ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetErrors];
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionMineListView;
+};
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponse = ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponses[keyof ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponses];
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Connection Id
+         */
+        connection_id: string;
+    };
+    query?: never;
+    url: '/api/v1/family-connections/{connection_id}/consent';
+};
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteError = RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteErrors[keyof RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteErrors];
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionMineItem;
+};
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponse = RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponses[keyof RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponses];
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Connection Id
+         */
+        connection_id: string;
+    };
+    query?: never;
+    url: '/api/v1/family-connections/{connection_id}/consent';
+};
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostError = ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostErrors[keyof ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostErrors];
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionMineItem;
+};
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponse = ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponses[keyof ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponses];
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/recommendations/{profile_id}';
+};
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetError = GetRecommendationsApiV1RecommendationsProfileIdGetErrors[keyof GetRecommendationsApiV1RecommendationsProfileIdGetErrors];
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: RecommendationsView;
+};
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetResponse = GetRecommendationsApiV1RecommendationsProfileIdGetResponses[keyof GetRecommendationsApiV1RecommendationsProfileIdGetResponses];

@@ -66,6 +66,7 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.generation.queue import enqueue_generation
+from cyo_adventure.story_requests.service import enforce_family_quota
 from cyo_adventure.validator.gate import run_gate
 
 router = APIRouter(prefix="/api/v1", tags=["generation"])
@@ -263,6 +264,15 @@ async def enqueue_concept_generation(
         msg = f"concept '{concept_id}' not found"
         raise ResourceNotFoundError(msg)
     authorize_family(ctx.principal, concept.family_id)
+
+    # #CRITICAL: payment/financial: the direct intake path spends generation
+    # budget exactly like a story-request approval, so it passes the same
+    # ADR-015 guardian cost gate; without this call the legacy concept path
+    # bypasses the family quota entirely (traceability finding, 2026-07-17).
+    # Admin acting-capacity bypasses inside enforce_family_quota
+    # (platform-funded), mirroring the request paths.
+    # #VERIFY: test_generation_api_unit.py::TestEnqueueQuotaGate.
+    await enforce_family_quota(ctx.session, ctx.principal, concept.family_id)
 
     # #CRITICAL: security: enforce the per-family active-job cap before insert
     # (audit Finding 9). A rare off-by-one under concurrent enqueues is

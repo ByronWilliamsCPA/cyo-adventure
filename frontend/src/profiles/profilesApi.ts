@@ -49,7 +49,38 @@ export interface ProfileView {
   created_at: string
 }
 
-export interface ProfileCreateBody {
+/**
+ * ADR-015 G3 pre-authorization fields (ProfileFormDialog's "Story requests"
+ * section).
+ *
+ * #CRITICAL: external-resources: at this writing, POST /v1/profiles and
+ * PATCH /v1/profiles/{id} (api/schemas.py's ProfileCreateBody /
+ * ProfileUpdateBody) do NOT declare these two fields, and both bodies use
+ * `extra="forbid"` server-side -- sending them today 422s the WHOLE
+ * request, not just these keys. The DB column and the read-only usage view
+ * (`ChildEnvelopeUsageView`, surfaced only via GET /v1/families/me/budget)
+ * exist, but the write path into a profile does not yet. ProfileFormDialog
+ * only includes these keys in a create/update body when the guardian
+ * actually changes this section from its seeded value (see its "touched"
+ * gate), so an ordinary profile edit that never opens this section is
+ * unaffected either way; a guardian who DOES use it will 422 until a
+ * backend change adds these fields to ProfileCreateBody/ProfileUpdateBody
+ * and applies them in create_profile/update_profile (api/profiles.py).
+ * #VERIFY: profilesApi.test.ts pins the wire shape only; closing the gap
+ * itself is backend work tracked outside this change.
+ */
+export interface ProfileEnvelopeFields {
+  /** Whether this child's story requests skip the guardian's own click. */
+  request_auto_approve?: boolean
+  /**
+   * The monthly cap (in stories) auto-approval may spend for this child.
+   * `null` means "no envelope set", which blocks auto-approval even when
+   * `request_auto_approve` is true -- never "unlimited".
+   */
+  monthly_request_envelope?: number | null
+}
+
+export interface ProfileCreateBody extends ProfileEnvelopeFields {
   display_name: string
   age_band: AgeBandValue
   reading_level_cap?: number
@@ -66,7 +97,7 @@ export interface ProfileCreateBody {
  * unrepresentable from the UI. avatar, pin, content_flag_caps, and
  * banned_themes have real "clear via null" semantics.
  */
-export interface ProfileUpdateBody {
+export interface ProfileUpdateBody extends ProfileEnvelopeFields {
   display_name?: string
   age_band?: AgeBandValue
   reading_level_cap?: number

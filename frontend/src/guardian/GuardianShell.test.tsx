@@ -95,11 +95,12 @@ describe('GuardianShell', () => {
     expect(screen.getByRole('link', { name: 'Story requests' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Reading' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Sign out' })).not.toBeInTheDocument()
-    // Books and Profiles are both guardian-only (family-management
-    // affordances an admin-only adult has no family for); no principal
-    // means they're absent too.
+    // Books, Profiles, and Connections are all guardian-only
+    // (family-management affordances an admin-only adult has no family
+    // for); no principal means they're absent too.
     expect(screen.queryByRole('link', { name: 'Books' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Profiles' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Connections' })).not.toBeInTheDocument()
     // The G10 notification bell is gated on a principal the same way
     // sign-out is; it renders nothing of its own without one.
     expect(screen.queryByRole('button', { name: /Notifications/ })).not.toBeInTheDocument()
@@ -135,6 +136,14 @@ describe('GuardianShell', () => {
     expect(screen.queryByRole('link', { name: 'Profiles' })).not.toBeInTheDocument()
   })
 
+  it('shows the Connections link only for a guardian principal, not admin', () => {
+    // ADR-016 register G17: consent is a guardian-only act, same gating as
+    // Books/Profiles above (an admin-only adult has no family to consent for).
+    mockUseAuth.mockReturnValue({ principal: principal('admin'), signOut: mockSignOut })
+    renderShell()
+    expect(screen.queryByRole('link', { name: 'Connections' })).not.toBeInTheDocument()
+  })
+
   it('shows the Admin console link for a principal holding the admin capability', () => {
     // A dual-role adult (guardian base role + is_admin) gets the switcher
     // into the parallel /admin surface; an admin-only principal does too.
@@ -157,6 +166,10 @@ describe('GuardianShell', () => {
     renderShell()
     expect(screen.getByRole('link', { name: 'Books' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Profiles' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Connections' })).toHaveAttribute(
+      'href',
+      '/guardian/connections'
+    )
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument()
   })
 

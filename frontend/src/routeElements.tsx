@@ -118,6 +118,9 @@ export const ProfilePickerPage = lazyWithReload('ProfilePickerPage', () =>
 export const ProfilesPage = lazyWithReload('ProfilesPage', () =>
   import('./guardian/ProfilesPage').then((m) => ({ default: m.ProfilesPage }))
 )
+export const ConnectionsPage = lazyWithReload('ConnectionsPage', () =>
+  import('./guardian/ConnectionsPage').then((m) => ({ default: m.ConnectionsPage }))
+)
 export const AdminShell = lazyWithReload('AdminShell', () =>
   import('./admin/AdminShell').then((m) => ({ default: m.AdminShell }))
 )

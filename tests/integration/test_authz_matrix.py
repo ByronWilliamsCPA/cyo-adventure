@@ -127,6 +127,24 @@ def _storybook_version_path(seed: Seed) -> dict[str, str]:
     return {"storybook_id": seed.storybook_id, "version": str(seed.version)}
 
 
+def _storybook_version_node_path(seed: Seed) -> dict[str, str]:
+    # #ASSUME: data integrity: this endpoint's own role/family gate runs
+    # before the node is ever looked up (api/node_edit.py::_load_edit_target,
+    # then the status/version checks), so an unknown node id at worst yields
+    # a 404 for an allowed role -- a business-rule outcome distinct from the
+    # 403 this matrix asserts on, per RouteSpec's own docs above. The literal
+    # id is not required to exist in the seeded story.
+    return {
+        "storybook_id": seed.storybook_id,
+        "version": str(seed.version),
+        "node_id": "n_start",
+    }
+
+
+def _node_edit_body(_seed: Seed) -> dict[str, Any]:
+    return {"body": "Authz-matrix probe body text."}
+
+
 def _child_profile_path(seed: Seed) -> dict[str, str]:
     return {"profile_id": str(seed.child_profile_id)}
 
@@ -431,6 +449,33 @@ _ROUTE_SPECS: list[RouteSpec] = [
         "/api/v1/admin/family-connections/{connection_id}",
         frozenset({Role.ADMIN}),
         path_params=_random_uuid_path("connection_id"),
+    ),
+    # -- family_connections.py: guardian consent (ADR-016, register G17);
+    # _require_guardian rejects admin-only too (mirrors notifications.py's
+    # guardian-only feed, not a role-hierarchy exception). connection_id is a
+    # fresh, never-persisted uuid in the two id-bearing specs: the role gate
+    # runs before the row lookup, so an allowed GUARDIAN token legitimately
+    # resolves to a 404 (mirrors _random_uuid_path's own rationale) rather
+    # than needing a real seed-owned connection.
+    RouteSpec("GET", "/api/v1/family-connections/mine", frozenset({Role.GUARDIAN})),
+    RouteSpec(
+        "POST",
+        "/api/v1/family-connections/{connection_id}/consent",
+        frozenset({Role.GUARDIAN}),
+        path_params=_random_uuid_path("connection_id"),
+    ),
+    RouteSpec(
+        "DELETE",
+        "/api/v1/family-connections/{connection_id}/consent",
+        frozenset({Role.GUARDIAN}),
+        path_params=_random_uuid_path("connection_id"),
+    ),
+    # -- recommendations.py: ownership-scoped, admin bypass (K17, ADR-016) --
+    RouteSpec(
+        "GET",
+        "/api/v1/recommendations/{profile_id}",
+        frozenset({Role.GUARDIAN, Role.CHILD, Role.ADMIN}),
+        path_params=_child_profile_path,
     ),
     # -- moderation_thresholds.py: admin-only (_require_admin) -------------
     RouteSpec("GET", "/api/v1/admin/moderation-thresholds", frozenset({Role.ADMIN})),
@@ -765,6 +810,16 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN}),
         path_params=_storybook_version_path,
     ),
+    # -- node_edit.py: admin, or guardian for their own family's story
+    # (api/node_edit.py::_load_edit_target: role gate before load, then
+    # authorize_family for a non-admin) --------------------------------------
+    RouteSpec(
+        "PATCH",
+        "/api/v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}",
+        frozenset({Role.ADMIN, Role.GUARDIAN}),
+        path_params=_storybook_version_node_path,
+        json_body=_node_edit_body,
+    ),
 ]
 
 ROUTE_TABLE: dict[tuple[str, str], RouteSpec] = {
@@ -963,6 +1018,8 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("POST", "/api/v1/storybooks/{storybook_id}/assignments"),
     ("GET", "/api/v1/storybooks/{storybook_id}/content-summary"),
     ("GET", "/api/v1/reading-history/{profile_id}"),
+    ("PATCH", "/api/v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}"),
+    ("GET", "/api/v1/recommendations/{profile_id}"),
 ]
 
 # Every key referenced above must actually be an authorized (guardian-eligible)
@@ -1040,6 +1097,7 @@ _CROSS_FAMILY_CHILD_ROUTE_KEYS: list[tuple[str, str]] = [
     ("GET", "/api/v1/series-next/{profile_id}/{storybook_id}"),
     ("POST", "/api/v1/completions"),
     ("GET", "/api/v1/reading-history/{profile_id}"),
+    ("GET", "/api/v1/recommendations/{profile_id}"),
 ]
 
 # Every key referenced above must actually be a child-eligible route in

@@ -45,9 +45,27 @@ export interface ProfileFormEditBody extends ProfileCreateBody {
   pin?: string | null
 }
 
+/** Seeds the "Story requests" section's initial state on edit; see the
+ * `envelopeInfo` prop doc below for why this cannot come from `initial`. */
+export interface ProfileEnvelopeInfo {
+  request_auto_approve: boolean
+  monthly_request_envelope: number | null
+}
+
 interface ProfileFormDialogBaseProps {
   title: string
   onClose: () => void
+  /**
+   * The child's current ADR-015 G3 pre-approval settings, when known.
+   * ProfileView carries neither field (see profilesApi.ts's
+   * ProfileEnvelopeFields doc), so this cannot be derived from `initial`;
+   * the only place they round-trip today is GET /v1/families/me/budget's
+   * per-child usage rows (budgetApi.ts's ChildEnvelopeUsage), which the
+   * caller (ProfilesPage) fetches separately and matches by profile id.
+   * Absent (create mode, or a failed/not-yet-loaded budget fetch) seeds the
+   * section to its off/no-limit default.
+   */
+  envelopeInfo?: ProfileEnvelopeInfo
 }
 
 /**
@@ -79,7 +97,7 @@ type PinChoice = 'keep' | 'set' | 'clear'
  * catalog's module docstring.
  */
 export function ProfileFormDialog(props: ProfileFormDialogProps) {
-  const { title, initial, onClose } = props
+  const { title, initial, onClose, envelopeInfo } = props
   const [displayName, setDisplayName] = useState(initial?.display_name ?? '')
   const [ageBand, setAgeBand] = useState(initial?.age_band ?? '5-8')
   const [cap, setCap] = useState(String(initial?.reading_level_cap ?? 99))
@@ -103,6 +121,18 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   )
   const [bannedThemes, setBannedThemes] = useState<string[]>(initial?.banned_themes ?? [])
   const [themeInput, setThemeInput] = useState('')
+  // ADR-015 G3 "Story requests" section. Seeded from envelopeInfo (not
+  // `initial`, which cannot carry these fields -- see the prop's doc); a
+  // fresh create or a missing envelopeInfo seeds off/no-limit.
+  const initialAutoApprove = envelopeInfo?.request_auto_approve ?? false
+  const initialEnvelope = envelopeInfo?.monthly_request_envelope ?? null
+  const [autoApprove, setAutoApprove] = useState(initialAutoApprove)
+  // String state (not number), same rationale as `cap`: an emptied field is
+  // the deliberate "no envelope" value, and Number('') === 0 would otherwise
+  // read as a real, most-restrictive limit rather than "unset".
+  const [envelopeText, setEnvelopeText] = useState(
+    initialEnvelope !== null ? String(initialEnvelope) : ''
+  )
   // Picker-PIN controls (edit mode only). `keep` leaves the stored PIN (or
   // its absence) untouched; the typed value is held only in this state and
   // discarded with the dialog; it is never echoed back by the server.
@@ -143,6 +173,18 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
         scariness: scarinessCap || undefined,
         peril: perilCap || undefined,
       }
+      // ADR-015 G3: only include these two keys when the guardian actually
+      // changed the section from its seeded value. #CRITICAL:
+      // external-resources: the live backend does not accept these fields
+      // yet (see ProfileEnvelopeFields' doc in profilesApi.ts) -- omitting
+      // them whenever the section is untouched keeps an ordinary name/
+      // avatar/cap edit working today regardless of that gap; touching the
+      // section will 422 until the backend catches up, by design (nothing
+      // safe to do client-side about a schema the server does not have yet).
+      const trimmedEnvelope = envelopeText.trim()
+      const envelopeValue = trimmedEnvelope === '' ? null : Number(trimmedEnvelope)
+      const envelopeTouched =
+        autoApprove !== initialAutoApprove || envelopeValue !== initialEnvelope
       const base: ProfileFormCreateBody = {
         display_name: displayName,
         age_band: ageBand,
@@ -151,6 +193,9 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
         tts_enabled: ttsEnabled,
         content_flag_caps: contentFlagCaps,
         banned_themes: bannedThemes,
+        ...(envelopeTouched
+          ? { request_auto_approve: autoApprove, monthly_request_envelope: envelopeValue }
+          : {}),
       }
       // Narrow on the discriminant so create mode structurally cannot emit
       // a pin; only edit mode builds the wider body.
@@ -186,7 +231,18 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   const pinValid = pinChoice !== 'set' || PIN_SHAPE.test(pinValue)
   const nameMissing = displayName.trim().length === 0
   const capInvalid = cap.trim() === '' || !Number.isFinite(capNum) || capNum < 0 || capNum > 99
-  const valid = !nameMissing && !capInvalid && pinValid
+  // Mirrors the backend's CHECK constraint (monthly_request_envelope IS NULL
+  // OR >= 0): blank is always valid (it means "no envelope"), so this only
+  // gates a non-blank value that is not a non-negative integer. Checked
+  // regardless of whether the toggle is currently on, so a value typed
+  // while the toggle was on and left behind after toggling off still blocks
+  // Save rather than silently saving something the guardian never approved.
+  const envelopeTrimmed = envelopeText.trim()
+  const envelopeNum = Number(envelopeTrimmed)
+  const envelopeInvalid =
+    envelopeTrimmed !== '' &&
+    (!Number.isFinite(envelopeNum) || !Number.isInteger(envelopeNum) || envelopeNum < 0)
+  const valid = !nameMissing && !capInvalid && pinValid && !envelopeInvalid
 
   // Names what still blocks Save while it is disabled for missing/invalid
   // inputs (null while saving or once everything is filled). Derived from
@@ -195,6 +251,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   if (nameMissing) missingInputs.push('a name')
   if (capInvalid) missingInputs.push('a reading level from 0 to 99')
   if (!pinValid) missingInputs.push('a 4-8 digit PIN')
+  if (envelopeInvalid) missingInputs.push('a monthly auto-approve limit of 0 or more, or blank')
   const saveHint =
     !saving && missingInputs.length > 0 ? `Enter ${missingInputs.join(' and ')} to save.` : null
 
@@ -303,6 +360,40 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
           />
           Read-aloud
         </label>
+        <fieldset className="profile-form__budget">
+          <legend>Story requests</legend>
+          <label className="cyo-field cyo-field--checkbox">
+            <input
+              type="checkbox"
+              checked={autoApprove}
+              onChange={(e) => setAutoApprove(e.target.checked)}
+              aria-describedby="auto-approve-help"
+            />
+            Auto-approve this child&apos;s requests
+          </label>
+          <p id="auto-approve-help" className="profile-form__hint">
+            Requests will start writing immediately, using your monthly budget, up to the limit
+            below.
+          </p>
+          <label className="cyo-field">
+            Monthly auto-approve limit
+            <input
+              type="number"
+              min="0"
+              step="1"
+              className="cyo-field__control"
+              value={envelopeText}
+              disabled={!autoApprove}
+              onChange={(e) => setEnvelopeText(e.target.value)}
+              aria-describedby="envelope-help"
+            />
+          </label>
+          <p id="envelope-help" className="profile-form__hint cyo-text-muted">
+            {autoApprove && envelopeTrimmed === ''
+              ? 'Leave this blank and auto-approve stays off, even with the toggle on above: a limit is required to auto-approve.'
+              : "Stories made under auto-approve count toward this limit and your family's overall monthly budget."}
+          </p>
+        </fieldset>
         <fieldset className="profile-form__content-controls">
           <legend>Content limits</legend>
           <p className="profile-form__hint">

@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { IntakePage } from './IntakePage'
+import { STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 
 // Stable object reference: a fresh object each call would loop the useMemo/effect.
 const mockGet = vi.fn()
@@ -138,6 +139,7 @@ describe('IntakePage', () => {
   it('renders each pill state and a failed job error', async () => {
     mockGet.mockImplementation((url: string) => {
       if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/families/me/budget') return Promise.reject(new Error('no budget mock'))
       return Promise.resolve({
         data: {
           jobs: [
@@ -450,6 +452,10 @@ describe('IntakePage', () => {
     const user = userEvent.setup()
     let calls = 0
     mockGet.mockReset().mockImplementation((url: string) => {
+      // BudgetBanner's own mount fetch is routed out of the `calls` counter
+      // (same reasoning as the polling test above): it is a sibling fetch,
+      // not one of the two "mount fetches" this counter tracks.
+      if (url === '/v1/families/me/budget') return Promise.reject(new Error('no budget mock'))
       calls += 1
       // Both mount fetches (profiles + jobs) fail; the first retry succeeds.
       if (calls <= 2) return Promise.reject(new Error('boom'))
@@ -520,6 +526,12 @@ describe('IntakePage', () => {
     let call = 0
     mockGet.mockImplementation((url: string) => {
       if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
+      // BudgetBanner also fires a GET on mount (a sibling of the jobs poll,
+      // not the jobs endpoint itself); matching it explicitly and routing
+      // it away from the `call` counter keeps that counter meaning exactly
+      // "how many times the jobs list has been fetched", which the
+      // call === 1 ? active : settled branch below depends on.
+      if (url === '/v1/families/me/budget') return Promise.reject(new Error('no budget mock'))
       call += 1
       return Promise.resolve({ data: { jobs: [call === 1 ? active : settled] } })
     })
@@ -543,5 +555,92 @@ describe('IntakePage', () => {
       await vi.advanceTimersByTimeAsync(24000)
     })
     expect(call).toBe(callsAfterSettle)
+  })
+})
+
+describe('IntakePage G13 balance banner and ADR-015 G7 budget surfacing', () => {
+  function mockLoadAndBudget(budget: unknown) {
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/generation-jobs') return Promise.resolve({ data: { jobs: [] } })
+      if (url === '/v1/families/me/budget') return Promise.resolve({ data: budget })
+      throw new Error(`unexpected GET ${url}`)
+    })
+  }
+
+  it('shows the balance banner near the submit button', async () => {
+    mockLoadAndBudget({ quota: 5, spent_this_month: 2, remaining: 3, children: [] })
+    renderPage()
+    expect(await screen.findByTestId('budget-banner')).toHaveTextContent(
+      '3 of 5 stories left this month'
+    )
+  })
+
+  it('dispatches the story-requests-changed event after a successful submit (banner refresh signal)', async () => {
+    const user = userEvent.setup()
+    mockLoadAndBudget({ quota: 5, spent_this_month: 2, remaining: 3, children: [] })
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/concepts') return Promise.resolve({ data: { concept_id: 'c1' } })
+      if (url === '/v1/concepts/c1/generate')
+        return Promise.resolve({ data: { job_id: 'j1', status: 'queued' } })
+      throw new Error(`unexpected POST ${url}`)
+    })
+    const listener = vi.fn()
+    window.addEventListener(STORY_REQUESTS_CHANGED_EVENT, listener)
+    try {
+      renderPage()
+      await user.click(await screen.findByRole('button', { name: /Reader A/i }))
+      await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
+      await user.click(screen.getByRole('button', { name: /Request Story/i }))
+
+      await waitFor(() => expect(listener).toHaveBeenCalledTimes(1))
+    } finally {
+      window.removeEventListener(STORY_REQUESTS_CHANGED_EVENT, listener)
+    }
+  })
+
+  it('surfaces the friendly budget message on a budget-exhausted submit', async () => {
+    // #ASSUME (IntakePage.tsx submit()): this path is not reachable against
+    // the live backend today (neither /v1/concepts nor its /generate
+    // enforces the family quota yet), but the handling stays correct and
+    // harmless either way, so it is worth pinning.
+    const user = userEvent.setup()
+    mockLoadAndBudget({ quota: 5, spent_this_month: 5, remaining: 0, children: [] })
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/concepts')
+        return Promise.reject(
+          Object.assign(new Error('monthly story budget reached'), {
+            isAxiosError: true,
+            response: { status: 409, data: { message: 'monthly story budget reached' } },
+          })
+        )
+      throw new Error(`unexpected POST ${url}`)
+    })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /Reader A/i }))
+    await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
+    await user.click(screen.getByRole('button', { name: /Request Story/i }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/used this month's story budget/i)
+    expect(alert).toHaveTextContent(/next month/i)
+    expect(alert).not.toHaveTextContent(/could not send this request/i)
+  })
+
+  it('keeps the generic transient message for a non-budget submit failure', async () => {
+    const user = userEvent.setup()
+    mockLoadAndBudget({ quota: 5, spent_this_month: 0, remaining: 5, children: [] })
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/concepts') return Promise.reject(new Error('nope'))
+      throw new Error(`unexpected POST ${url}`)
+    })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /Reader A/i }))
+    await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
+    await user.click(screen.getByRole('button', { name: /Request Story/i }))
+
+    expect(await screen.findByText(/could not send this request/i)).toBeInTheDocument()
   })
 })

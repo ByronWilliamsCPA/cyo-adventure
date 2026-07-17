@@ -7,6 +7,11 @@ import { Dialog } from '@ds/components/Dialog'
 import { PassageText } from '@ds/components/PassageText'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import {
+  asGateFailure,
+  makePassageEditApi,
+  type GateFindingView,
+} from './passageEditApi'
 import { makeCoverApi, type CoverStatusView } from '../guardian/coverApi'
 import { FlagBadge, verdictTone } from '../guardian/FlagBadge'
 import {
@@ -100,6 +105,58 @@ function readNodes(blob: Record<string, unknown>): StoryNodeView[] {
     })
   })
   return nodes
+}
+
+interface EditableChoice {
+  id: string
+  label: string
+  target: string
+}
+
+interface EditableNode {
+  body: string
+  choices: EditableChoice[]
+}
+
+/**
+ * Read one node's editable fields (body plus each choice's id/label/target)
+ * straight from the raw blob, bypassing `readNodes`/`ChoiceView` (which never
+ * carry a choice's `id` -- the read-through and diff views key choices by
+ * `target` instead, deliberately, see `diffChoices`). The G6 edit dialog
+ * needs the real choice id to build a `choice_labels: {choice_id: label}`
+ * PATCH body, so this reads it directly rather than widening the
+ * read-through's own types for a value only the edit dialog uses.
+ *
+ * Returns `null` when the node id is not found or the node has no usable
+ * prose id -- the Edit button that opens this dialog only ever passes an id
+ * already rendered from `readNodes`, so this is a defensive fallback, not an
+ * expected path.
+ */
+function findEditableNode(blob: Record<string, unknown>, nodeId: string): EditableNode | null {
+  const raw = blob.nodes
+  if (!Array.isArray(raw)) return null
+  for (const entry of raw) {
+    if (typeof entry !== 'object' || entry === null) continue
+    const record = entry as Record<string, unknown>
+    if (record.id !== nodeId) continue
+    const body = typeof record.body === 'string' ? record.body : ''
+    const choices: EditableChoice[] = []
+    if (Array.isArray(record.choices)) {
+      for (const choiceEntry of record.choices) {
+        if (typeof choiceEntry !== 'object' || choiceEntry === null) continue
+        const choiceRecord = choiceEntry as Record<string, unknown>
+        const id = typeof choiceRecord.id === 'string' ? choiceRecord.id : ''
+        if (!id) continue
+        choices.push({
+          id,
+          label: typeof choiceRecord.label === 'string' ? choiceRecord.label : '',
+          target: typeof choiceRecord.target === 'string' ? choiceRecord.target : '',
+        })
+      }
+    }
+    return { body, choices }
+  }
+  return null
 }
 
 interface ReadThrough {
@@ -393,6 +450,8 @@ interface PassageProps {
   highlighted: boolean
   knownIds: Set<string>
   onJump: (nodeId: string) => void
+  onEdit: (nodeId: string) => void
+  editDisabled: boolean
 }
 
 /**
@@ -400,8 +459,22 @@ interface PassageProps {
  * kind and valence), the prose, then the kid-facing choice labels with a jump
  * button per resolvable target. tabIndex={-1} lets a jump move real focus
  * here; badges carry text, never color alone.
+ *
+ * `onEdit` opens the G6 passage-edit dialog (prose only: body text and
+ * choice labels); `editDisabled` mirrors the Approve/Send Back actionbar's
+ * own status guard so an edit is never offered on a published/archived/draft
+ * version the backend would reject anyway.
  */
-function Passage({ node, isStart, flagged, highlighted, knownIds, onJump }: PassageProps) {
+function Passage({
+  node,
+  isStart,
+  flagged,
+  highlighted,
+  knownIds,
+  onJump,
+  onEdit,
+  editDisabled,
+}: PassageProps) {
   const classes = ['review-node']
   if (flagged) classes.push('review-node--flagged')
   if (highlighted) classes.push('review-node--highlight')
@@ -425,6 +498,15 @@ function Passage({ node, isStart, flagged, highlighted, knownIds, onJump }: Pass
         </p>
       ) : null}
       <PassageText text={node.body} />
+      <Button
+        variant="ghost"
+        size="sm"
+        className="review-node__edit"
+        onClick={() => onEdit(node.id)}
+        disabled={editDisabled}
+      >
+        Edit passage
+      </Button>
       {node.choices.length > 0 ? (
         <ul className="review-choices">
           {node.choices.map((choice, index) => (
@@ -460,10 +542,17 @@ export function ReviewDetailPage() {
   const api = useApi()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
   const coverApi = useMemo(() => makeCoverApi(api), [api])
+  const passageEditApi = useMemo(() => makePassageEditApi(api), [api])
   const navigate = useNavigate()
 
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [dialog, setDialog] = useState<ActionDialog>(null)
+  const [editNodeId, setEditNodeId] = useState<string | null>(null)
+  const [editBody, setEditBody] = useState('')
+  const [editChoices, setEditChoices] = useState<EditableChoice[]>([])
+  const [editSubmitting, setEditSubmitting] = useState(false)
+  const [editError, setEditError] = useState<string | null>(null)
+  const [editGateFindings, setEditGateFindings] = useState<GateFindingView[] | null>(null)
   const [visibility, setVisibility] = useState<Visibility>('family')
   const [reason, setReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -717,6 +806,65 @@ export function ReviewDetailPage() {
       : surface.storybook_id
   const reasonValid = reason.trim().length >= 1 && reason.trim().length <= 2000
 
+  // G6: an edit is offered only while the backend would accept one
+  // (in_review or needs_revision); mirrors the Approve/Send Back guard above.
+  const editingDisabled = surface.status !== 'in_review' && surface.status !== 'needs_revision'
+  const editBodyValid = editBody.trim().length >= 1
+
+  function openEditDialog(nodeId: string) {
+    const found = findEditableNode(surface.blob, nodeId)
+    if (!found) return
+    setEditNodeId(nodeId)
+    setEditBody(found.body)
+    setEditChoices(found.choices)
+    setEditError(null)
+    setEditGateFindings(null)
+  }
+
+  function closeEditDialog() {
+    setEditNodeId(null)
+    setEditError(null)
+    setEditGateFindings(null)
+    setEditSubmitting(false)
+  }
+
+  function setEditChoiceLabel(choiceId: string, label: string) {
+    setEditChoices((current) => current.map((c) => (c.id === choiceId ? { ...c, label } : c)))
+  }
+
+  async function saveEdit() {
+    if (editNodeId === null) return
+    setEditSubmitting(true)
+    setEditError(null)
+    setEditGateFindings(null)
+    try {
+      const refreshed = await passageEditApi.editNode(storybookId, surface.version, editNodeId, {
+        body: editBody,
+        ...(editChoices.length > 0
+          ? { choice_labels: Object.fromEntries(editChoices.map((c) => [c.id, c.label])) }
+          : {}),
+      })
+      setState({ kind: 'ready', surface: refreshed })
+      closeEditDialog()
+    } catch (err) {
+      // Log the message, not the axios error object (its config.headers
+      // carries the caller's Authorization bearer token).
+      console.error('passage edit failed:', err instanceof Error ? err.message : err)
+      const gateFailure = asGateFailure(err)
+      if (gateFailure) {
+        setEditGateFindings(gateFailure.findings)
+      } else {
+        setEditError(
+          classifyApiError(err, {
+            transient: 'We could not save this edit. Please try again.',
+            server: 'We could not save this edit. Please try again.',
+          }).message
+        )
+      }
+      setEditSubmitting(false)
+    }
+  }
+
   return (
     <section className="review-detail">
       <h1>{title}</h1>
@@ -874,6 +1022,8 @@ export function ReviewDetailPage() {
             highlighted={highlightedId === node.id}
             knownIds={readThrough.knownIds}
             onJump={jumpToPassage}
+            onEdit={openEditDialog}
+            editDisabled={editingDisabled}
           />
         ))}
         {readThrough.unreachable.length > 0 ? (
@@ -894,6 +1044,8 @@ export function ReviewDetailPage() {
                 highlighted={highlightedId === node.id}
                 knownIds={readThrough.knownIds}
                 onJump={jumpToPassage}
+                onEdit={openEditDialog}
+                editDisabled={editingDisabled}
               />
             ))}
           </section>
@@ -1060,6 +1212,76 @@ export function ReviewDetailPage() {
               required
             />
           </label>
+        </Dialog>
+      ) : null}
+
+      {editNodeId !== null ? (
+        <Dialog title={`Edit passage ${editNodeId}`} onClose={closeEditDialog} actions={
+          <>
+            <Button variant="ghost" onClick={closeEditDialog} disabled={editSubmitting}>
+              Cancel
+            </Button>
+            {/*
+              #CRITICAL: security: prose-only edit; the backend re-runs the
+              deterministic gate and re-review before persisting, and rejects
+              (422, unchanged blob) an edit that breaks a structural/length/
+              reading-level rule. This dialog never lets structure (ids,
+              targets, conditions, effects) be touched -- only body text and
+              existing choice labels are editable fields here.
+              #VERIFY: ReviewDetailPage.test.tsx passage-edit success + 422 cases.
+            */}
+            <Button
+              disabled={!editBodyValid || editSubmitting}
+              onClick={() => void saveEdit()}
+            >
+              Save
+            </Button>
+          </>
+        }>
+          {editError ? (
+            <p role="alert" className="review-detail__action-error cyo-text-error">
+              {editError}
+            </p>
+          ) : null}
+          {editGateFindings && editGateFindings.length > 0 ? (
+            <div role="alert" className="review-detail__gate-failure cyo-text-error">
+              <p>This edit did not pass the validation gate:</p>
+              <ul>
+                {editGateFindings.map((finding, index) => (
+                  // Findings are static per render; index key is stable here.
+                  <li key={index}>
+                    {finding.rule_id}: {finding.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          <label className="review-detail__edit-body">
+            Passage text
+            <textarea
+              value={editBody}
+              onChange={(event) => setEditBody(event.target.value)}
+              maxLength={20000}
+              rows={6}
+              required
+            />
+          </label>
+          {editChoices.length > 0 ? (
+            <fieldset className="review-detail__edit-choices">
+              <legend>Choice labels</legend>
+              {editChoices.map((choice) => (
+                <label key={choice.id} className="review-detail__edit-choice">
+                  {`Choice to ${choice.target || '(missing target)'}`}
+                  <input
+                    type="text"
+                    value={choice.label}
+                    maxLength={500}
+                    onChange={(event) => setEditChoiceLabel(choice.id, event.target.value)}
+                  />
+                </label>
+              ))}
+            </fieldset>
+          ) : null}
         </Dialog>
       ) : null}
     </section>

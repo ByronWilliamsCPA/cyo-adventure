@@ -69,6 +69,8 @@ def _view(row: ChildProfile) -> ProfileView:
             row.allowed_content_flags or {}
         ),
         banned_themes=list(row.banned_themes or []),
+        request_auto_approve=row.request_auto_approve,
+        monthly_request_envelope=row.monthly_request_envelope,
         created_at=row.created_at,
     )
 
@@ -100,6 +102,16 @@ def _apply_g2_content_controls(row: ChildProfile, body: ProfileUpdateBody) -> No
         row.banned_themes = (
             list(body.banned_themes) if body.banned_themes is not None else None
         )
+    # G3 (ADR-015 envelope): toggle follows non-null-applies; envelope follows
+    # explicit-null-clears. A cleared envelope makes auto-approve inert even
+    # with the toggle on (enforced in story_requests.service.can_auto_approve).
+    # #CRITICAL: payment/financial: these fields authorize automatic
+    # generation spend; guardian-only via _require_guardian on the route.
+    # #VERIFY: test_profiles.py::test_create_and_update_envelope_fields.
+    if body.request_auto_approve is not None:
+        row.request_auto_approve = body.request_auto_approve
+    if "monthly_request_envelope" in fields:
+        row.monthly_request_envelope = body.monthly_request_envelope
 
 
 def _require_guardian(principal: Principal) -> None:
@@ -214,6 +226,12 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
         banned_themes=(
             list(body.banned_themes) if body.banned_themes is not None else None
         ),
+        # #CRITICAL: payment/financial: the G3 envelope fields authorize
+        # automatic generation spend (ADR-015); they are guardian-set only,
+        # and enforcement lives in story_requests.service.can_auto_approve.
+        # #VERIFY: test_profiles.py::test_create_and_update_envelope_fields.
+        request_auto_approve=body.request_auto_approve,
+        monthly_request_envelope=body.monthly_request_envelope,
     )
     ctx.session.add(row)
     # The unit-of-work dependency commits on success; flush + refresh to read

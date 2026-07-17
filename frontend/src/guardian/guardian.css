@@ -401,6 +401,36 @@
   font-size: 0.875rem;
 }
 
+/* ADR-015 G3: "Auto-approve on" card badge (ProfilesPage). */
+.profiles__badge {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--color-amber-subtle, #fdf3e6);
+  color: var(--color-amber-deep, #c17b2a);
+  width: fit-content;
+}
+
+/* G13 (interim) balance banner: "N of M stories left this month". */
+.budget-banner {
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  width: fit-content;
+  background: var(--color-amber-subtle, #fdf3e6);
+  color: var(--color-amber-deep, #c17b2a);
+}
+
+.budget-banner--warning {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
 .profile-form {
   display: flex;
   flex-direction: column;
@@ -454,6 +484,15 @@
 
 /* G2: per-child content-flag caps and banned-themes exclusions. */
 .profile-form__content-controls {
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ADR-015 G3: the "Story requests" auto-approve toggle + monthly limit. */
+.profile-form__budget {
   border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
   border-radius: 8px;
   display: flex;
@@ -1617,6 +1656,82 @@
   text-decoration: underline;
   cursor: pointer;
   padding: 0;
+}
+
+/* ============================================================================
+   Connections (ConnectionsPage.tsx, ADR-016 register G17): the guardian
+   consent console for cross-family recommendation connections. Card/text-tone
+   treatment comes from the shared cyo-card / cyo-text-muted / cyo-text-error
+   classes applied directly in the component, mirroring the Reading cards
+   above; only the layout and the status-chip tones stay here. */
+
+.connections__intro {
+  max-width: 40rem;
+  margin: 0 0 var(--space-4, 1rem);
+}
+
+.connections__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.connections-card {
+  padding: var(--space-4, 1rem);
+}
+
+.connections-card__main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2, 0.5rem);
+}
+
+.connections-card__name {
+  font-weight: var(--weight-bold, 700);
+  font-size: var(--text-lg, 1.25rem);
+}
+
+.connections-card__summary {
+  margin: var(--space-2, 0.5rem) 0 0;
+  font-size: 0.9375rem;
+}
+
+.connections-card__actions {
+  margin-top: var(--space-3, 0.75rem);
+}
+
+.connections-card__error {
+  margin: var(--space-2, 0.5rem) 0 0;
+  font-size: 0.875rem;
+}
+
+.connections-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full, 999px);
+  font-size: 0.75rem;
+  font-weight: var(--weight-semibold, 600);
+  white-space: nowrap;
+}
+
+.connections-chip--active {
+  background: var(--color-success-subtle, #e3f3e6);
+  color: var(--color-success-deep, #1f7a3d);
+}
+
+.connections-chip--waiting {
+  background: var(--color-amber-subtle, #fbe9d0);
+  color: var(--color-amber-deep, #c17b2a);
+}
+
+.connections-chip--inactive {
+  background: var(--color-border-soft, rgb(44 26 14 / 12%));
+  color: var(--color-ink-muted, #8c6f56);
 }
 
 /* ============================================================================

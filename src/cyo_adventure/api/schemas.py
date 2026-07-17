@@ -1078,6 +1078,8 @@ class ProfileView(BaseModel):
     has_pin: bool
     content_flag_caps: ContentFlagCaps
     banned_themes: list[str]
+    request_auto_approve: bool
+    monthly_request_envelope: int | None
     created_at: datetime
 
 
@@ -1101,6 +1103,8 @@ class ProfileCreateBody(BaseModel):
     banned_themes: (
         Annotated[list[BannedTheme], Field(max_length=_BANNED_THEMES_MAX)] | None
     ) = None
+    request_auto_approve: bool = False
+    monthly_request_envelope: Annotated[int, Field(ge=0, le=100)] | None = None
 
 
 class ProfileUpdateBody(BaseModel):
@@ -1131,6 +1135,12 @@ class ProfileUpdateBody(BaseModel):
     banned_themes: (
         Annotated[list[BannedTheme], Field(max_length=_BANNED_THEMES_MAX)] | None
     ) = None
+    # G3 (ADR-015 pre-authorization envelope): request_auto_approve follows the
+    # non-null-applies rule; monthly_request_envelope follows the explicit-null
+    # -clears rule via model_fields_set (null = no envelope = auto-approve
+    # inert even when the toggle is on, see story_requests.service.can_auto_approve).
+    request_auto_approve: bool | None = None
+    monthly_request_envelope: Annotated[int, Field(ge=0, le=100)] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -1201,6 +1211,41 @@ class ArchivedView(BaseModel):
 
     id: str
     status: Literal["archived"]
+
+
+# ---------------------------------------------------------------------------
+# Passage edit schema (G6: lightweight passage editor with re-review)
+# ---------------------------------------------------------------------------
+
+
+class NodeEditBody(BaseModel):
+    """A prose-only edit to one node: replacement body text and/or choice labels.
+
+    Structure (ids, targets, conditions, effects, graph shape) is never
+    editable through this body; ``api/node_edit.py::edit_node`` applies
+    ``body`` to the node's prose and each ``choice_labels`` entry to the
+    matching existing choice id's ``label`` only, rejecting any id absent
+    from the node.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    body: Annotated[str, StringConstraints(min_length=1, max_length=20000)] | None = None
+    choice_labels: (
+        dict[str, Annotated[str, StringConstraints(min_length=1, max_length=500)]] | None
+    ) = None
+
+    @model_validator(mode="after")
+    def _require_an_edit(self) -> NodeEditBody:
+        """Reject a body that edits nothing.
+
+        Raises:
+            ValueError: If both ``body`` and ``choice_labels`` are absent.
+        """
+        if self.body is None and not self.choice_labels:
+            msg = "at least one of body or choice_labels must be supplied"
+            raise ValueError(msg)
+        return self
 
 
 # ---------------------------------------------------------------------------
@@ -1840,3 +1885,57 @@ class FamilyConnectionCreateBody(BaseModel):
 
     family_id: str
     connected_family_id: str
+
+
+# ---------------------------------------------------------------------------
+# Guardian consent schemas (ADR-016, register G17): the caller's own family's
+# side of each directional connection it touches, never the full admin view.
+# ---------------------------------------------------------------------------
+
+
+class FamilyConnectionMineItem(BaseModel):
+    """One connection touching the caller's family, from their own side.
+
+    ``direction`` is relative to the caller: ``"viewer"`` means the caller's
+    family is ``FamilyConnection.family_id`` (it would see the counterpart's
+    recommendations); ``"sharer"`` means the caller's family is
+    ``connected_family_id`` (the counterpart would see theirs). ``active`` is
+    ``True`` only when both sides have consented (ADR-016 dual-guardian rule).
+    """
+
+    id: str
+    direction: Literal["viewer", "sharer"]
+    counterpart_family_id: str
+    counterpart_family_name: str
+    my_consent: bool
+    active: bool
+    created_at: datetime
+
+
+class FamilyConnectionMineListView(BaseModel):
+    """Every connection touching the caller's family, from their own side."""
+
+    connections: list[FamilyConnectionMineItem]
+
+
+# ---------------------------------------------------------------------------
+# K17 recommendation feed (ADR-016 rings 1-2). Structured data only: a book
+# pointer, a rating, and a recommender display name, never free text.
+# ---------------------------------------------------------------------------
+
+
+class RecommendationItem(BaseModel):
+    """One recommended book: a rating from another profile, never a message."""
+
+    storybook_id: str
+    title: str
+    cover_url: str | None
+    recommender_name: str
+    rating: int
+    ring: Literal["family", "connection"]
+
+
+class RecommendationsView(BaseModel):
+    """A profile's recommendation feed (ring 1 family + ring 2 connections)."""
+
+    items: list[RecommendationItem]

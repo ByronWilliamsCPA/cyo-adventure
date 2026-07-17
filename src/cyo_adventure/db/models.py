@@ -99,7 +99,8 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'moderation_completed', 'repair_applied', 'sent_back', 'released', "
     "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated', "
     "'kid_flagged', 'flag_resolved', "
-    "'user_managed', 'family_managed', 'family_connection_changed'"
+    "'user_managed', 'family_managed', 'family_connection_changed', "
+    "'node_edited'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
@@ -366,9 +367,17 @@ class FamilyConnection(Base):
     recommendations sourced from ``connected_family_id``. The relationship is
     deliberately one-way (admin decision): family_id -> connected_family_id
     does not imply the reverse, so mutual visibility is two rows, not one.
-    No recommendation engine reads this table yet (WS-J only builds the admin
-    allowlist); the `Rating` model's (child_profile_id, storybook_id) grain
-    was already shaped for the future join (see its docstring).
+    The `Rating` model's (child_profile_id, storybook_id) grain was already
+    shaped for the recommendation join (see its docstring); ``api/
+    recommendations.py`` (K17) is the sole reader.
+
+    ADR-016 (register G17): admin creation of a row is a permission edge only,
+    never consent. A connection is ACTIVE, and contributes to K17
+    recommendations, only when BOTH ``consented_by_viewer_user_id`` and
+    ``consented_by_sharer_user_id`` are set; either guardian may revoke their
+    own side at any time by clearing it back to ``None``, which deactivates
+    the connection immediately (there is no separate stored "active" flag to
+    fall out of sync -- it is always the two-columns-non-null check).
 
     Attributes:
         id: Surrogate primary key.
@@ -376,6 +385,16 @@ class FamilyConnection(Base):
         connected_family_id: The family whose stories may be recommended.
         created_by: The admin who created the connection, or ``None``.
         created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+        consented_by_viewer_user_id: The viewer-side guardian's ``User.id``
+            who consented, or ``None`` if the viewer has not (or no longer)
+            consented.
+        consented_by_viewer_at: When the viewer-side consent was recorded, or
+            ``None``. Paired with ``consented_by_viewer_user_id`` (both null
+            or both set; enforced by the migration's CHECK).
+        consented_by_sharer_user_id: The sharer-side guardian's ``User.id``
+            who consented, or ``None``.
+        consented_by_sharer_at: When the sharer-side consent was recorded, or
+            ``None``. Paired with ``consented_by_sharer_user_id``.
     """
 
     __tablename__ = "family_connection"
@@ -385,6 +404,14 @@ class FamilyConnection(Base):
         ),
         UniqueConstraint(
             "family_id", "connected_family_id", name="uq_family_connection_pair"
+        ),
+        CheckConstraint(
+            "(consented_by_viewer_user_id IS NULL) = (consented_by_viewer_at IS NULL)",
+            name="ck_family_connection_viewer_consent_pairing",
+        ),
+        CheckConstraint(
+            "(consented_by_sharer_user_id IS NULL) = (consented_by_sharer_at IS NULL)",
+            name="ck_family_connection_sharer_consent_pairing",
         ),
     )
 
@@ -397,6 +424,18 @@ class FamilyConnection(Base):
         ForeignKey(_FK_USER), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    consented_by_viewer_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    consented_by_viewer_at: Mapped[datetime | None] = mapped_column(
+        _TS, default=None
+    )
+    consented_by_sharer_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    consented_by_sharer_at: Mapped[datetime | None] = mapped_column(
+        _TS, default=None
+    )
 
 
 class Storybook(Base):

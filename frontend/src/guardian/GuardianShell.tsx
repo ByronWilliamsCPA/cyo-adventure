@@ -146,6 +146,12 @@ export function GuardianShell() {
         {principal?.role === 'guardian' ? (
           <NavLink to="/guardian/profiles">Profiles</NavLink>
         ) : null}
+        {/* ADR-016 register G17: consent is a guardian-only act (an
+            admin-only adult may not stand in for a family's guardian), same
+            guardian-only gating as Books/Profiles above. */}
+        {principal?.role === 'guardian' ? (
+          <NavLink to="/guardian/connections">Connections</NavLink>
+        ) : null}
         {principal?.isAdmin ? <NavLink to={ADMIN_CONSOLE_PATH}>Admin console</NavLink> : null}
       </nav>
       {signOutError ? (

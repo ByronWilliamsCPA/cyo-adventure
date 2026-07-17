@@ -442,3 +442,136 @@ describe('ProfileFormDialog G2 content controls', () => {
     expect(screen.getAllByText('spiders ✕')).toHaveLength(1)
   })
 })
+
+describe('ProfileFormDialog ADR-015 G3 "Story requests" section', () => {
+  function autoApproveToggle() {
+    return screen.getByRole('checkbox', { name: /auto-approve this child's requests/i })
+  }
+  function envelopeInput() {
+    return screen.getByLabelText<HTMLInputElement>(/monthly auto-approve limit/i)
+  }
+
+  it('defaults to off with a disabled, blank limit on create', () => {
+    render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+    expect(autoApproveToggle()).not.toBeChecked()
+    expect(envelopeInput()).toBeDisabled()
+    expect(envelopeInput()).toHaveValue(null)
+  })
+
+  it('enables the limit input only once the toggle is on', async () => {
+    const user = userEvent.setup()
+    render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+    expect(envelopeInput()).toBeDisabled()
+    await user.click(autoApproveToggle())
+    expect(envelopeInput()).toBeEnabled()
+    await user.click(autoApproveToggle())
+    expect(envelopeInput()).toBeDisabled()
+  })
+
+  it('does not include the envelope fields in the payload when the section is left untouched', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+    const body = onSubmit.mock.calls[0][0] as Record<string, unknown>
+    expect('request_auto_approve' in body).toBe(false)
+    expect('monthly_request_envelope' in body).toBe(false)
+  })
+
+  it('includes both fields once the toggle is turned on and a limit is set', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    await user.click(autoApproveToggle())
+    await user.type(envelopeInput(), '3')
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ request_auto_approve: true, monthly_request_envelope: 3 })
+      )
+    )
+  })
+
+  it('sends an explicit null envelope (auto-approve off) when the limit is cleared with the toggle left on', async () => {
+    // #VERIFY (ProfileFormDialog.tsx save()): null = no envelope = no
+    // auto-approve server-side, even though the toggle checkbox itself
+    // still reads "on" -- the copy under the field says this explicitly.
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={existingProfile(false)}
+        envelopeInfo={{ request_auto_approve: true, monthly_request_envelope: 5 }}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    expect(autoApproveToggle()).toBeChecked()
+    expect(envelopeInput()).toHaveValue(5)
+    await user.clear(envelopeInput())
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ request_auto_approve: true, monthly_request_envelope: null })
+      )
+    )
+  })
+
+  it('shows the honest "auto-approve stays off" copy when the toggle is on but the limit is blank', async () => {
+    const user = userEvent.setup()
+    render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+    await user.click(autoApproveToggle())
+    expect(screen.getByText(/auto-approve stays off/i)).toBeInTheDocument()
+  })
+
+  it('seeds the toggle and limit from envelopeInfo on edit and omits the fields when unchanged', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={existingProfile(false)}
+        envelopeInfo={{ request_auto_approve: true, monthly_request_envelope: 2 }}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    expect(autoApproveToggle()).toBeChecked()
+    expect(envelopeInput()).toHaveValue(2)
+
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+    const body = onSubmit.mock.calls[0][0] as Record<string, unknown>
+    expect('request_auto_approve' in body).toBe(false)
+    expect('monthly_request_envelope' in body).toBe(false)
+  })
+
+  it('disables Save while the limit is a negative or non-integer value', async () => {
+    const user = userEvent.setup()
+    render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    await user.click(autoApproveToggle())
+    await user.type(envelopeInput(), '-1')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
+
+    await user.clear(envelopeInput())
+    await user.type(envelopeInput(), '2.5')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
+
+    await user.clear(envelopeInput())
+    await user.type(envelopeInput(), '4')
+    expect(screen.getByRole('button', { name: /save/i })).toBeEnabled()
+  })
+})
