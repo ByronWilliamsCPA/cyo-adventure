@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Security (PII egress):** the prompt PII guard now NFKC-normalizes and strips
+  zero-width / format and control characters before matching, closing confirmed
+  bypasses (zero-width insertion, compatibility-form spelling, control chars)
+  that let a real-child name reach an external LLM provider. Confusable
+  homoglyphs remain a documented residual.
+- **Mutation testing** now runs: rewrote `[tool.mutmut]` in the mutmut 3.x
+  dialect (the stale 2.x keys crashed mutmut 3.6 at startup) and replaced the
+  broken org reusable workflow call with a self-contained, scored weekly job.
+- **Continuous fuzzing** now exercises real code: replaced the no-op template
+  harness with condition-evaluator and Storybook-validation Atheris targets and
+  seed corpora.
+- Docker-less test runs no longer exit non-zero: a failed testcontainer Docker
+  probe leaked a socket that `filterwarnings=["error"]` escalated at teardown.
+
+### Added
+
+- Mutation scoring shared by CI and `nox -s mutate` (`scripts/mutation_score.py`).
+- Weekly mutation and fuzzing workflows file a `ci-failure` tracking issue on a
+  failed scheduled run so schedule-only breakage cannot stay silent.
+- Hypothesis `ci`/`dev` settings profiles and generative player-engine property
+  tests; adversarial-corpus tests under the `ai_security` marker; negative-path
+  tests for the cover-art subsystem; generation-boundary malformed-output tests;
+  true-concurrency reading-state tests; and JWT time-boundary tests.
+
 ## [0.7.0] - 2026-07-17
 
 ### Added
