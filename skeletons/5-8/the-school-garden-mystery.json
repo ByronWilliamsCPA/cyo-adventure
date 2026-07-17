@@ -20,7 +20,7 @@
     "estimated_minutes": 5,
     "ending_count": 7,
     "content_flags": {
-      "violence": "mild",
+      "violence": "none",
       "scariness": "mild",
       "peril": "mild"
     },
@@ -88,7 +88,7 @@
         },
         {
           "id": "c_hub_willow",
-          "label": "Follow the clues to the quiet willow corner.",
+          "label": "Head for the quiet willow at the back.",
           "target": "wc_approach"
         }
       ]
@@ -423,7 +423,7 @@
     },
     {
       "id": "wc_watch",
-      "body": "<<FILL role=rising words=70 beats='out comes a mother rabbit, and tumbling after her come two round baby bunnies who bounce into the clover and nibble; Priya checks her notebook without making a sound, hoppy prints, rabbit-size tunnel, gray fluff, tiny bites, every single clue fits; the lettuce mystery has a soft, whiskery answer'>>",
+      "body": "<<FILL role=rising words=70 beats='out comes a mother rabbit, and tumbling after her come two round baby bunnies who bounce into the clover and nibble; Priya checks her notebook without making a sound, hoppy prints, the cozy burrow, gray fluff, tiny bites, every single clue fits; the lettuce mystery has a soft, whiskery answer'>>",
       "is_ending": false,
       "choices": [
         {
@@ -481,7 +481,7 @@
     },
     {
       "id": "r_tell",
-      "body": "<<FILL role=rising words=70 beats='Priya opens her notebook on Ms. Flores helper table and walks the class through the case clue by clue, the tiny bites, the hoppy prints, the tunnel under the fence, the gray fluff; everyone gasps at the answer; then the whole class lines up to tiptoe out and meet the rabbit family'>>",
+      "body": "<<FILL role=rising words=70 beats='Priya opens her notebook on Ms. Flores helper table and walks the class through the case clue by clue, the tiny bites, the hoppy prints, the gray fluff, the cozy burrow under the willow; everyone gasps at the answer; then the whole class lines up to tiptoe out and meet the rabbit family'>>",
       "is_ending": false,
       "choices": [
         {

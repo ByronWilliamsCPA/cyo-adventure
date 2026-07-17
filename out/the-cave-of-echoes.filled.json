@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Maya ducks under the lighthouse rocks with Biscuit at her heels, right as the tide begins pulling back from the sea caves. Three dark openings wait in the cliff, and cool air breathes out of each one. Each mouth sends back its own sound: the left one hums, warm and low, while the right one drips, slow and steady. Straight ahead, something almost whispers in the dark. Biscuit's tail thumps on the sand as Maya checks the wet line on the rocks behind her. She has about an hour before the sea comes back and seals every cave mouth shut. She switches on her torch and picks the sound that calls to her first.",
+      "body": "Maya ducks under the lighthouse rocks with Biscuit at her heels, right as the tide begins pulling back from the sea caves. Her aunt, who keeps the lighthouse, knows they are exploring the cove until the tide turns. Three dark openings wait in the cliff, and cool air breathes out of each one. Each mouth sends back its own sound: the left one hums, warm and low, while the right one drips, slow and steady. Straight ahead, something almost whispers in the dark. Biscuit's tail thumps on the sand as Maya checks the wet line on the rocks behind her. She has about an hour before the sea comes back and seals every cave mouth shut. She switches on her torch and picks the sound that calls to her first.",
       "is_ending": false,
       "choices": [
         {
@@ -178,7 +178,7 @@
     },
     {
       "id": "la_crystal_out",
-      "body": "The glowing crystal lights every step of the climb. A narrow stone stair leads up to a little wooden door. It is tucked behind the old lighthouse. Maya pushes it open and steps into the cool evening air. Orange light spreads over the sea. In her hands she holds a real cave crystal. It still glows faintly against her palm. Biscuit presses against her leg, tail wagging fast. Maya cannot wait to show everyone what the caves gave her tonight.",
+      "body": "The glowing crystal lights every step of the climb. It leads up a narrow stone stair that ends at a little wooden door, tucked behind the old lighthouse. Maya pushes it open and steps into the cool evening air, where orange light spreads wide over the sea. In her hands, still glowing faintly against her palm, she holds a real cave crystal. Biscuit presses against her leg, tail wagging fast. Maya cannot wait to show everyone back home what the caves gave her tonight.",
       "is_ending": true,
       "ending": {
         "id": "e_crystal",
@@ -312,7 +312,7 @@
     },
     {
       "id": "la_bell4",
-      "body": "Maya has the ship's name safe in her notebook now. The old lantern is lit bravely against the dark. She and Biscuit climb the good rope back up toward daylight, hand over hand. They spill out of the cave mouth just as gold evening light hits the water. Maya can already picture the whole town gathering close. They will want to hear about the lost ship that still rings, faithfully, somewhere under the sea near her home.",
+      "body": "The ship's name is safe in her notebook now, and the old lantern is lit against the dark. Maya and Biscuit climb the good rope back up toward daylight, hand over hand. They spill out of the cave mouth just as gold evening light hits the water. Maya can already picture the whole town gathering close. They will be eager to hear about the lost ship that still rings, faithfully, somewhere under the sea near her home.",
       "is_ending": true,
       "ending": {
         "id": "e_bell",
