@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { ToastProvider } from '../notifications/ToastProvider'
 import { StoryRequestQueue } from './StoryRequestQueue'
 
 /**
@@ -47,6 +48,17 @@ function mockPending(requests: unknown[]) {
   )
 }
 
+// ToastProvider wraps every render, mirroring App.tsx's production mounting:
+// StoryRequestQueue calls useToast() unconditionally, so a bare render would
+// throw its outside-provider error (same pattern as RequestsPage.test.tsx).
+function renderQueue() {
+  return render(
+    <ToastProvider>
+      <StoryRequestQueue scope="family" />
+    </ToastProvider>
+  )
+}
+
 beforeEach(() => {
   mockGet.mockReset()
   mockPost.mockReset()
@@ -55,7 +67,7 @@ beforeEach(() => {
 
 describe('StoryRequestQueue anchoring', () => {
   it('shows the series-title input and no continuation note for a non-anchored row', async () => {
-    render(<StoryRequestQueue scope="family" />)
+    renderQueue()
     await screen.findByText('A story about a friendly dragon')
 
     expect(screen.getByLabelText('Series title (optional)')).toBeEnabled()
@@ -65,7 +77,7 @@ describe('StoryRequestQueue anchoring', () => {
 
   it('disables the age band select and shows a continuation note for an anchored row', async () => {
     mockPending([{ ...BASE_REQUEST, anchor_storybook_id: 'sb_1' }])
-    render(<StoryRequestQueue scope="family" />)
+    renderQueue()
     await screen.findByText('A story about a friendly dragon')
 
     const ageBand = screen.getByLabelText('Age band')
@@ -81,7 +93,7 @@ describe('StoryRequestQueue anchoring', () => {
   it('omits series_title from the approve payload when left blank', async () => {
     mockPost.mockResolvedValue({ data: { id: BASE_REQUEST.id, status: 'approved' } })
     const user = userEvent.setup()
-    render(<StoryRequestQueue scope="family" />)
+    renderQueue()
     await screen.findByText('A story about a friendly dragon')
 
     await user.selectOptions(screen.getByLabelText('Story length'), 'short')
@@ -95,7 +107,7 @@ describe('StoryRequestQueue anchoring', () => {
   it('trims and includes series_title in the approve payload when provided', async () => {
     mockPost.mockResolvedValue({ data: { id: BASE_REQUEST.id, status: 'approved' } })
     const user = userEvent.setup()
-    render(<StoryRequestQueue scope="family" />)
+    renderQueue()
     await screen.findByText('A story about a friendly dragon')
 
     await user.type(screen.getByLabelText('Series title (optional)'), '  The Dragon Chronicles  ')
@@ -110,14 +122,14 @@ describe('StoryRequestQueue anchoring', () => {
 
 describe('StoryRequestQueue teen narrative style', () => {
   it('hides the story style field for a non-teen age band', async () => {
-    render(<StoryRequestQueue scope="family" />)
+    renderQueue()
     await screen.findByText('A story about a friendly dragon')
     expect(screen.queryByLabelText('Story style')).not.toBeInTheDocument()
   })
 
   it('shows the story style field once a teen age band is selected', async () => {
     const user = userEvent.setup()
-    render(<StoryRequestQueue scope="family" />)
+    renderQueue()
     await screen.findByText('A story about a friendly dragon')
 
     await user.selectOptions(screen.getByLabelText('Age band'), '13-16')
@@ -127,7 +139,7 @@ describe('StoryRequestQueue teen narrative style', () => {
   it('resets narrative style to prose when the age band moves back out of the teen bands', async () => {
     mockPost.mockResolvedValue({ data: { id: BASE_REQUEST.id, status: 'approved' } })
     const user = userEvent.setup()
-    render(<StoryRequestQueue scope="family" />)
+    renderQueue()
     await screen.findByText('A story about a friendly dragon')
 
     await user.selectOptions(screen.getByLabelText('Age band'), '13-16')
@@ -154,7 +166,7 @@ describe('StoryRequestQueue moderation flags and blocked text', () => {
         ],
       },
     ])
-    render(<StoryRequestQueue scope="family" />)
+    renderQueue()
     await screen.findByText('A story about a friendly dragon')
     expect(screen.getByText('violence')).toBeInTheDocument()
     expect(screen.getByText('language')).toBeInTheDocument()
@@ -162,7 +174,7 @@ describe('StoryRequestQueue moderation flags and blocked text', () => {
 
   it('falls back to a placeholder when request_text is null', async () => {
     mockPending([{ ...BASE_REQUEST, request_text: null, status: 'blocked' }])
-    render(<StoryRequestQueue scope="family" />)
+    renderQueue()
     expect(await screen.findByText('Idea hidden by content check')).toBeInTheDocument()
   })
 })
