@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Clover is a little bear. She spreads a soft blanket. It has a check pattern. She is in a sunny meadow. The grass tickles her paws. The basket is empty. No friends are here yet. She smiles. She looks around. She claps her paws. What should she fetch?",
+      "body": "Clover is a little bear. She spreads a soft blanket in the sunny meadow. It has a check pattern. The grass tickles her paws. A small picnic basket waits. A little bell sits ready on the blanket. She smiles. She looks around at all the things to do. She claps her paws. What should she do next?",
       "is_ending": false,
       "choices": [
         {
@@ -105,7 +105,7 @@
     },
     {
       "id": "e_honey_oops",
-      "body": "Clover pokes the round hive. Bees buzz out in a puff so fast! They make a buzzing sound. They chase her round the meadow. She runs and laughs and laughs. Her paws go tap tap tap. Nobody gets stung. She giggles. She goes back.",
+      "body": "Clover pokes the round hive. Bees buzz out in a puff so fast! They chase her round and round the meadow. She runs and laughs and laughs. Her paws go tap tap tap. Nobody gets stung. She giggles. She goes back.",
       "is_ending": true,
       "ending": {
         "id": "end_honey_oops",
@@ -206,7 +206,7 @@
     },
     {
       "id": "n_kite1",
-      "body": "Clover wants the bright paper kite. The kite is red and yellow and blue. It lies folded by the old wooden fence. A breeze moves past her fur. She can carry it gently and safe. Or let it flap open in the wind.",
+      "body": "Clover wants the bright paper kite. The kite is red and yellow and blue. It lies folded by the old wooden fence. A breeze moves past her fur. She can carry it gently and safely. Or let it flap open in the wind.",
       "is_ending": false,
       "choices": [
         {
@@ -223,7 +223,7 @@
     },
     {
       "id": "n_kite2",
-      "body": "Clover holds the folded kite under her arm safe. It feels light. It is ready to fly. She can feel the breeze. The picnic grows! Should she go back? Or ring the bell and start now?",
+      "body": "Clover holds the folded kite safely under her arm. It feels light. It is ready to fly. She can feel the breeze. The picnic grows! Should she go back? Or ring the bell and start now?",
       "is_ending": false,
       "choices": [
         {
@@ -353,7 +353,7 @@
     },
     {
       "id": "n_welcome",
-      "body": "The teddy bears sit in a ring. They sit on the blanket. They wiggle with joy. Their fur is warm. Everything is piled in the middle. Honey. Berries. Music box. Kite. All ready!",
+      "body": "The teddy bears sit in a ring on the blanket. They wiggle with joy and glee. Their fur is warm and fluffy. Everything Clover fetched is piled in the middle. What a fine pile!",
       "is_ending": false,
       "choices": [
         {
@@ -421,7 +421,7 @@
     },
     {
       "id": "e_song",
-      "body": "Everyone joins paws and sings the picnic song. They sway and sway. Under the warm sun. Clover sings too. Their voices go round and round. The song sounds so sweet. Her heart is as full as the honey pot. The picnic is perfect.",
+      "body": "Everyone joins paws and sings the picnic song under the warm sun. They sway and sway. Clover sings too. Their voices go round and round. The song sounds so sweet and happy. Her heart feels so full. The picnic is perfect.",
       "is_ending": true,
       "ending": {
         "id": "end_song",
@@ -443,7 +443,7 @@
     },
     {
       "id": "e_nap",
-      "body": "Full of honey and berries so sweet. All the bears curl up together. A soft heap. On the warm blanket. In the sun. They breathe in and out. The picnic she built is perfect. Everything is peaceful.",
+      "body": "Full of good snacks and happy times, all the bears curl up together in a soft heap on the warm blanket. The sun is soft on their fur. The picnic she built is perfect and peaceful. Everything is cozy.",
       "is_ending": true,
       "ending": {
         "id": "end_nap",

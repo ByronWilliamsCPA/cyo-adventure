@@ -624,7 +624,7 @@
     },
     {
       "id": "cv_window",
-      "body": "<<FILL role=choice words=100 beats='through the curtain gap: an old man at a fold-down table covered with newspaper clippings about the fair, a tin of brass polish, and a framed photograph of the carousel in its glory; as Nell watches he takes out a big handkerchief and wipes his eyes; whatever she expected to find at the fair tonight, it was not a grown man crying quietly over a merry-go-round; her own throat goes tight; not a villain, a mourner'>>",
+      "body": "<<FILL role=choice words=100 beats='through the curtain gap: the fair's old caretaker at his fold-down table, surrounded by newspaper clippings about the fair, a tin of brass polish, and a framed photograph of the carousel in its glory days; as Nell watches, he takes out a big handkerchief and wipes his eyes, grief plain and private on his weathered face; her own throat goes tight; keep the tableau general about him, the man who keeps this fair loves that carousel and is quietly heartbroken over it, so the moment lands whether Nell is seeing him for the very first time or already knows exactly who he is'>>",
       "is_ending": false,
       "choices": [
         {
