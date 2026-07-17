@@ -253,10 +253,15 @@ design brief --(A: Fable designer)--> skeletons/<band>/<slug>.json
   from every parent, fail-state placement matches band policy, beats are fillable at
   the band's words-per-node mean, theme/topology diversity vs the cell's other
   skeletons.
-- **Dagger-cell ceiling**: ADR-011 flags 13-16 Long gamebook and 16+ Medium/Long
-  gamebook as at or beyond the ~460-node hand-authoring ceiling. New skeletons in
-  those cells target the **low end** of their node envelopes (and stay <= ~460 nodes)
-  rather than matching the existing seeds' sizes.
+- **Dagger-cell ceiling (deliberate experiment)**: ADR-011 flags 13-16 Long gamebook
+  and 16+ Medium/Long gamebook as at or beyond the ~460-node hand-authoring ceiling.
+  In each dagger cell, the two new skeletons split roles: **one targets the low end**
+  of the node envelope (a safely authorable seed), and **one deliberately targets the
+  upper half of the envelope** (for 16+ Long gamebook, ~600+ nodes) to empirically
+  test the 460-node ceiling assumption. The ceiling-challenger's design report must
+  record evidence for or against the ceiling: chunks needed, repair cycles, review
+  findings density, and wall-clock/token cost relative to the low-end sibling, so
+  ADR-011's ceiling number can be revisited with data.
 - **Repair loop**: same bound as stories (section 7), except escalation has nowhere to
   go above Fable; a skeleton that fails twice is halted and reported with the reviewer
   findings.

@@ -16,9 +16,22 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
    prose. Never change `id`, `choices[].target`, `start_node`, node ids, `is_ending`,
    `ending`, `variables`, or `metadata`. Changing structure is a bug.
 
-2. **Read the band rules.** From `metadata.age_band`, apply the per-band words/node target
-   and fail-state policy (see `reference/skeleton-format.md`). Word targets: 3-5 ~75-100,
-   5-8 ~100, 8-11 ~125-150, 10-13 ~175, 13-16 ~225, 16+ ~250 words per node.
+2. **Read the band rules.** From `metadata.age_band` (and `metadata.narrative_style`),
+   apply the per-band words/node envelope and fail-state policy. The node's own
+   `words=` hint is the primary per-node target; these are the enforced ADR-011
+   envelopes (story mean must land in the advisory range; the per-node max is a hard
+   gate error, PL-19):
+
+   | Band | Style | Mean | Advisory | Per-node max |
+   | --- | --- | ---: | --- | ---: |
+   | 3-5 | prose | 40 | 28-55 | 90 |
+   | 5-8 | prose | 70 | 50-95 | 155 |
+   | 8-11 | prose | 100 | 70-135 | 220 |
+   | 10-13 | prose | 100 | 70-135 | 220 |
+   | 13-16 | prose | 140 | 100-185 | 310 |
+   | 13-16 | gamebook | 65 | 45-90 | 145 |
+   | 16+ | prose | 175 | 125-230 | 385 |
+   | 16+ | gamebook | 80 | 55-110 | 175 |
 
 3. **Fill each `<<FILL role=... words=... beats='...'>>` body** with prose that:
 
