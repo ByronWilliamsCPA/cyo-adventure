@@ -360,7 +360,7 @@
     },
     {
       "id": "r_shed_app",
-      "body": "The map is torn right at this spot. Two ways go forward. A low gap leads under a workbench. Into darkness. Very dark. A wobbly ladder of crates climbs up. Up toward the glowing gap. Up toward the roof. The crates shake a little. Which way should they go? The friends decide. They choose their way.",
+      "body": "The map is torn right at this spot and two ways go forward from here. A low gap leads under a workbench and goes into darkness that is very dark. A wobbly ladder of crates climbs up and up toward the glowing gap. Up toward the roof where light shines down. The crates shake a little as they climb. Which way should they go? The friends decide and choose their way forward.",
       "is_ending": false,
       "choices": [
         {
@@ -471,7 +471,7 @@
     },
     {
       "id": "r_rock_app",
-      "body": "Two small arrows are scratched on the stone. Faint scratches. One arrow points left. To a gap between boulders. Mossy boulders. The other arrow points down. At loose sandy soil. Right beneath the stone. The friends choose where to search. Where to dig. Which way feels right.",
+      "body": "Two small arrows are scratched on the stone, faint and hard to see but there. One arrow points left and goes toward a gap between two mossy boulders. The other arrow points down and marks the loose sandy soil right beneath. The friends choose where to search and where to dig into the ground. Which way feels right to follow?",
       "is_ending": false,
       "choices": [
         {
@@ -488,7 +488,7 @@
     },
     {
       "id": "e_set_rock",
-      "body": "The gap between the boulders has ants. So many ants. They march back and forth. Back and forth. Doing their work. No treasure here. No X. The friends say hello to the ants. Goodbye, ants, they say. They roll up the map. Back to the porch they go. For a cold lemonade break.",
+      "body": "The gap between the boulders is just a snug home for a busy line of ants marching. They march back and forth and back and forth doing their work all day. No treasure here and no X is marked anywhere in this place. The friends say hello to the ants in a polite and friendly way. Goodbye ants they say together. They roll up the map and wander back.",
       "is_ending": true,
       "ending": {
         "id": "end_set_rock",
@@ -558,7 +558,7 @@
     },
     {
       "id": "s_intro",
-      "body": "The last part of the line runs down. Down the sloping lawn. To the little stream at the bottom. The very bottom. The stream meets the park beyond. Water chatters over smooth stones. Splash splash splash. Happy water sounds. Theo holds the map up high. Very high. So it will not get wet.",
+      "body": "The last part of the dotted line runs down the sloping lawn below them. It goes to the little stream at the very bottom of the garden where it meets the park beyond. The water chatters over smooth stones in a happy way. Splash splash splash. Theo holds the map up high so it will not get wet from the water.",
       "is_ending": false,
       "choices": [
         {
@@ -628,7 +628,7 @@
     },
     {
       "id": "e_set_bramble",
-      "body": "The low tunnel ends in thick thorns. Too prickly to pass. No way through. A lost sock hangs on a branch. Just a sock. The friends back out. Very carefully. Not a single scratch. They did it. They laugh about the silly sock. Up to the porch they go. For a cool glass of lemonade.",
+      "body": "The low tunnel just ends in a thick tangle of thorns too prickly to pass through. No way to go any further forward. A lost sock hangs on a branch there. Just a sock and nothing else. The friends back out very carefully and slowly. Not a single scratch on their skin. They laugh about the silly sock together. Up to the porch they go for a cool glass of lemonade.",
       "is_ending": true,
       "ending": {
         "id": "end_set_bramble",
@@ -651,7 +651,7 @@
     },
     {
       "id": "s_bramble_4",
-      "body": "A fluffy grey cat sits there. With white paws. So soft looking. It does not run away. Not at all. It stays. It stretches. It yawns big. It pads right over. To say hello. A little bell hangs on its neck. It jingles softly. Jingle jingle. A friendly sound.",
+      "body": "A fluffy grey cat sits there with white paws that are soft and clean. So soft looking and nice to see. It does not run away at all or hide. It stays and stretches big and yawns very wide. It pads right over. A little bell hangs on its neck and jingles softly. Jingle jingle. A friendly sound that greets them.",
       "is_ending": false,
       "choices": [
         {
@@ -663,7 +663,7 @@
     },
     {
       "id": "s_bramble_5",
-      "body": "The cat winds around their ankles. Around and around. It purrs like a tiny motor. Purrrr. A warm sound. It flops over on its side. For a belly rub. The friends laugh and stroke its soft fur. So soft. So warm. The map's red X is right here. Right where the cat sits.",
+      "body": "The cat winds around their ankles going around and around them both. It purrs like a tiny motor running. Purrrr is the sound it makes. A warm sound that makes them smile. It flops over on its side. For a belly rub and scratch. The friends laugh and stroke its soft fur. The map's red X is right here in this place.",
       "is_ending": false,
       "choices": [
         {
@@ -675,7 +675,7 @@
     },
     {
       "id": "s_bramble_6",
-      "body": "The collar has a small tag. It reads Pepper, please be my friend. No address. No home written down. The cat clearly knows this bramble clearing well. Very well. It treats the friends like old pals. Like friends it has known. Nina and Theo wonder. Has Pepper been waiting? Waiting for the map?",
+      "body": "The collar has a small tag that reads Pepper, please be my friend. No address is on it and no home is written down on the tag. The cat clearly knows this bramble clearing well and very well. It treats the friends like old pals that it has known and loved. Nina and Theo wonder if Pepper has been waiting for them.",
       "is_ending": false,
       "choices": [
         {
@@ -698,7 +698,7 @@
     },
     {
       "id": "s_bank_1",
-      "body": "The stepping stones cross the stream. In a neat flat row. They are dry on top. Easy to hop from one to the next. The friends cross one careful stone at a time. One stone. Then another. To the mossy far bank. The dotted line points to a willow tree. A leaning willow tree.",
+      "body": "The stepping stones cross the chattering stream in a neat and perfect flat row. They are dry on top and easy to hop from one stone to the next. The friends cross one careful stone at a time to the mossy far bank beyond. The dotted line points to a willow tree that leans and bends.",
       "is_ending": false,
       "choices": [
         {
@@ -739,7 +739,7 @@
     },
     {
       "id": "e_set_bank",
-      "body": "The muddy dip holds a shiny wet pebble. Just a pebble. And one very surprised water beetle. It looks shocked. Shocked to see them. The friends get mud on their shoes. On their feet. They grin at the muddy mess. They laugh. They wave to the beetle. Goodbye, beetle, they say. Back across the stones they hop.",
+      "body": "The muddy dip at the water's edge holds a shiny wet pebble and that is all. Just a pebble and nothing more. One very surprised water beetle lives there. It looks shocked and amazed to see them coming. The friends get mud on their shoes. On their feet and all around. They grin and laugh about the muddy mess. They wave to the beetle and hop back.",
       "is_ending": true,
       "ending": {
         "id": "end_set_bank",
@@ -762,7 +762,7 @@
     },
     {
       "id": "s_bank_4",
-      "body": "It is a small brass tin. Green at the edges. Old and green. Exactly where the map's X promised. Right here. The friends work the stiff lid. With careful fingers. Patient fingers. Slow and steady. At last it opens. A soft puff of old air. Whoooosh.",
+      "body": "It is a small brass tin that is green at the edges and very old. Old and special and important. It sits exactly where the map's X promised. Right here in the perfect spot. The friends work the stiff lid with careful fingers. Patient fingers that work slowly and steady. At last it opens with a soft puff. Whoooosh goes the old air.",
       "is_ending": false,
       "choices": [
         {
