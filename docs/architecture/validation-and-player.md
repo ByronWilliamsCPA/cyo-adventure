@@ -42,12 +42,12 @@ never block. SAFE-14 findings route to human review via `safety_flagged`, not `b
 | Rule | What it checks |
 |------|----------------|
 | L1-1 | Schema conformance (jsonschema against exported Pydantic schema) |
-| L1-2 | `start_node` exists in the node list |
-| L1-3 | All nodes are reachable from `start_node` (networkx) |
-| L1-4 | At least one ending node exists |
-| L1-5 | No choice targets a non-existent node (no dangling edges) |
-| L1-6 | Variable usage is consistent (inc/dec on declared int vars only) |
-| L1-7 | Story depth budget not exceeded |
+| L1-2 | Id uniqueness, `start_node` exists, and every choice target resolves (no dangling edges) |
+| L1-3 | All nodes are reachable from `start_node` (BFS) |
+| L1-4 | Termination well-formedness: ending nodes are childless with an ending block; non-ending nodes have >=1 choice and a path to an ending |
+| L1-5 | Trap-loop detection: every non-trivial cycle (strongly connected component) can still reach an ending |
+| L1-6 | Variable/condition/effect whitelist: declared int vars only, whitelisted operators, tier rule |
+| L1-7 | Budget: `ending_count` matches the distinct-ending count, node-count band, and max branch depth |
 
 ### Layer 2 Rules
 
@@ -55,8 +55,10 @@ Run only for Tier-2 (state-tracking) stories after L1 passes:
 
 | Rule | What it checks |
 |------|----------------|
-| L2-9 | Every reachable path eventually reaches an ending |
-| L2-10..L2-12 | Reachability properties under variable conditions (BFS over state space) |
+| L2-9 | Stateful dead-end: a reachable non-ending configuration with zero visible choices |
+| L2-10 | Loop escape: an ending stays reachable from every reachable configuration |
+| L2-11 | Dead branch: a conditional choice that is never visible in any reachable configuration |
+| L2-12 | Walk-cap ceiling: the reachable-configuration set stayed within the complexity bound |
 
 ## Story Player Engine
 
@@ -147,13 +149,16 @@ yields a 409, the client presents a conflict resolution UI per `docs/design/offl
 |------|---------|
 | `src/cyo_adventure/validator/gate.py` | `run_gate()`, `GateResult` |
 | `src/cyo_adventure/validator/layer1.py` | L1-1..L1-7 graph rules (networkx) |
+| `src/cyo_adventure/validator/policy.py` | PL-15..PL-21 age/scale policy (ADR-011) |
+| `src/cyo_adventure/validator/band_profile.py` | Per-age-band budgets, content ceilings, ending/decision floors |
 | `src/cyo_adventure/validator/layer2.py` | L2-9..L2-12 state-space walk |
 | `src/cyo_adventure/validator/reading_level.py` | RL-13 advisory check (textstat) |
 | `src/cyo_adventure/validator/safety.py` | SAFE-14 stub (Phase 2) |
-| `src/cyo_adventure/validator/walk.py` | BFS/DFS state-space walker |
+| `src/cyo_adventure/validator/walk.py` | `walk_configurations()` BFS state-space walker |
 | `src/cyo_adventure/validator/report.py` | `ValidationReport`, `ValidationFinding`, `Severity` |
 | `src/cyo_adventure/player/engine.py` | `StoryEngine` (Runtime Semantics v1) |
 | `src/cyo_adventure/player/state.py` | `ReadingState` dataclass |
+| `src/cyo_adventure/player/replay.py` | `validate_reading_state()` server-side save gate |
 | `src/cyo_adventure/storybook/models.py` | `Storybook`, `Node`, `Choice`, `Effect` |
 | `src/cyo_adventure/storybook/evaluator.py` | `evaluate()`, whitelisted condition ops |
 | `src/cyo_adventure/storybook/condition.py` | Condition DSL validator |

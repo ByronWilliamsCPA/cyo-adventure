@@ -44,14 +44,14 @@ a more mechanical altitude.
   `frontend/src/router.tsx`), the **Admin** holds the mandatory
   approval gate, and **System** collapses the behind-the-scenes generation and
   safety work into user-facing waits.
-- **Node fill marks maturity.** White nodes are shipped in the app today.
-  Rose nodes are planned target-state steps that are not yet built, so the
-  diagram doubles as a gap map. The unbuilt steps line up with the gaps tracked
-  in the R1 deployment review.
-- **Primary path is child-initiated.** The diagram shows the intended future
-  where a child asks for a story and the guardian approves the request. Today
-  the entry point is reversed: a guardian starts requests from the Intake page.
-  See the note under Act 2.
+- **Node fill marks maturity.** White nodes are shipped in the app today; rose
+  is the key for a planned, not-yet-built step. Every step in the current
+  end-to-end loop is shipped, so the diagram carries no rose nodes now; the key
+  is retained for future additions.
+- **Primary path is child-initiated.** A child asks for a story from their
+  library and a guardian (or an admin) approves the request; this path is
+  shipped (WS-B). A guardian can also start a request directly from the Intake
+  page. See Act 2.
 
 ## The journey, act by act
 
@@ -90,15 +90,16 @@ route map and the two boundary crossings (`DeviceAuthorizedRoute`, `AdultGate`).
 
 ### Act 2: Requesting a story
 
-**Target state (primary path, planned):** a child opens the kid app, taps their
-avatar on the Profile Picker (`/`), taps "I want a new story," and says what it
-is about. That request surfaces to the guardian, who approves or tweaks it.
+**Child-initiated (primary path, shipped):** a child opens the kid app, picks
+their avatar (`/kids`), opens their Library (`/library/:profileId`), taps
+"Request a story," and says what it is about. That request surfaces to a
+guardian (or an admin), who approves or declines it at `/guardian/requests`
+(guardian-own-family) or `/admin/requests` (admin, cross-family). Approval
+builds a `Concept` and enqueues generation (WS-B).
 
-**Shipped today:** the request is guardian-initiated. A guardian uses the Intake
-page (`/guardian/intake`) with "Who's it for?" first, then a topic and tone,
-then "Request Story." The child-tap entry point and the guardian
-request-approval step (the two rose nodes in Act 2) are the not-yet-built delta
-between these two flows.
+**Guardian-initiated (also shipped):** a guardian can instead author a request
+directly from the Intake page (`/guardian/intake`) with "Who's it for?" first,
+then a topic and tone, then "Request Story." Both entry points are live.
 
 ### Act 3: Behind the scenes
 
@@ -114,8 +115,8 @@ For the engineering detail behind this lane, see the
 This is the single mandatory checkpoint before any story reaches a child. In the
 Admin Console (`/admin`, the parallel adult surface for the admin capability),
 the review queue is ordered Flagged, then Ready to review, then Still
-processing. Opening a story (`/admin/review/:id`) surfaces its flagged passages
-first, then the full text. The reviewer either **approves** or **sends it
+processing. Opening a story (`/admin/review/:storybookId`) surfaces its flagged
+passages first, then the full text. The reviewer either **approves** or **sends it
 back** with a note; a sent-back story is rewritten and re-enters the queue (the
 inner loop in the diagram).
 
@@ -126,6 +127,14 @@ One adult may hold both roles (guardian plus the `is_admin` capability) and
 switches between `/guardian` and `/admin` via the shell nav. The diagram places
 the whole review-and-approve sequence in the Admin lane to keep that gate
 visually unambiguous.
+
+Beyond this approval gate, the admin console also holds cross-family and
+operational surfaces this journey does not draw: user management
+(`/admin/users`: guardians/admins, child profiles, families, and directional
+family connections; WS-J #267), the authoring queue
+(`/admin/authoring-queue`), the moderation dashboard and thresholds, and the
+provider allowlist (`/admin/provider-allowlist`). See
+[sitemap-and-flows](diagrams/sitemap-and-flows.svg) for the full admin map.
 
 ### Act 5: Assignment
 
@@ -158,8 +167,8 @@ onboarding in Act 1 is not repeated.
 | ------------ | -------------- | ------ |
 | Guardian sign-in | `/guardian/login` | Shipped |
 | Create child profiles | `/guardian/profiles` | Shipped |
-| Child taps "I want a new story" | Profile Picker (`/`) | Planned |
-| Guardian approves the child's request | (new) | Planned |
+| Child requests a story | Library (`/library/:profileId`) | Shipped |
+| Guardian/admin approves the child's request | `/guardian/requests`, `/admin/requests` | Shipped |
 | Generation + safety validation | generation pipeline | Shipped |
 | Guardian-initiated request | `/guardian/intake` | Shipped |
 | Admin review + approve/send-back | `/admin`, `/admin/review/:id` | Shipped |
@@ -242,12 +251,14 @@ This is the same end-to-end backbone recolored by automated test coverage, so
 the journey doubles as a Playwright/e2e gap map. It is the diagram to consult
 when deciding what e2e tests to write next.
 
-> **Deferred (2026-07-13):** this diagram derives its backbone from
-> `journey-end-to-end.puml` and has not been re-synced for the ADR-014 device-
-> authorization and single-AdultGate changes above. Its coverage coloring is
-> still accurate for the steps it shows; only the not-yet-recolored device-grant
-> and step-up-boundary steps are the gap. Refresh it alongside the next e2e
-> coverage pass rather than as part of this diagram update.
+> **Interim (updated 2026-07-17):** this diagram derives its backbone from
+> `journey-end-to-end.puml`. Its coverage coloring is accurate for the
+> request -> approve -> read loop it shows, but the backbone has not been
+> re-drawn to add the ADR-014 device-grant / AdultGate steps or the WS-J admin
+> surfaces (user management #267, authoring queue #268, moderation
+> dashboard/thresholds, provider allowlist). Those surfaces now have their own
+> e2e specs (see the diagram's coverage-sources note); refresh the backbone
+> alongside the next e2e coverage pass rather than as part of this update.
 
 - **Green** steps are exercised end-to-end by a Playwright spec under
   `frontend/e2e/`.
@@ -273,9 +284,12 @@ when deciding what e2e tests to write next.
   `npm run test:e2e:real` (runbook: `frontend/README.md`).
 - The reader **409-conflict reconciliation** path, once amber, now has a
   dedicated spec covering both reconciliation outcomes.
-- One residual gap: the offline-queue **reconnect flush** is untested because
-  it is unimplemented, `replayQueue` is never invoked by app code. See
-  [issue #110](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/110).
+- The offline-queue **reconnect flush** is implemented and tested:
+  `replayQueue()` is invoked by `hooks/useReplayOnReconnect.ts` (mounted in
+  `reader/ReaderRoute.tsx`) on reconnect, with unit coverage in
+  `useReplayOnReconnect.test.ts` and the reconciliation path in
+  `e2e/reader-conflict.spec.ts`. This supersedes an earlier note that called it
+  unimplemented (issue #110).
 
 | Former e2e gap | Covered by |
 | -------------- | ---------- |

@@ -1,6 +1,6 @@
 @startuml er-diagram
 ' ============================================================
-' Entity-Relationship Diagram: 9 of 20 ORM Tables (partial; see note below)
+' Entity-Relationship Diagram: all 21 ORM Tables
 ' CYO Adventure
 '
 ' Source file:
@@ -8,24 +8,12 @@
 '
 ' Note: all timestamps are TIMESTAMP WITH TIME ZONE (timezone-aware).
 ' Enum columns (role, status, age_band, ...) are stored as strings, each
-' backed by a CHECK constraint (simple Alembic migrations; the closed
+' backed by a CHECK constraint (plain Supabase CLI SQL migrations; the closed
 ' vocabulary is enforced at rest as well as at the application boundary).
 '
-' STALENESS NOTE (2026-07-13): this diagram still shows only the original
-' 9-table model plus device_grant (ADR-014, added here as a targeted update).
-' Ten other tables documented in docs/architecture/data-model.md are still
-' missing from this diagram: series (WS-B PR3, series/continuation chaining),
-' rating (family-sharing), storybook_assignment (guardian read-gate),
-' story_request (child-initiated request lifecycle), moderation_threshold +
-' moderation_threshold_audit (WS-A per-band/category overrides),
-' moderation_setting (WS-A admin noise-floor scalar), pipeline_event
-' (WS-D append-only lifecycle log), provider_model_allowlist +
-' provider_model_allowlist_audit (WS-C admin-editable model allowlist).
-' storybook/storybook_version/generation_job also carry columns not yet drawn
-' here (visibility, series_id, book_index, provider, skeleton_slug,
-' cover_image_url, cover_status, authoring_metadata); see
+' This diagram draws every table in models.py (21 total). See
 ' docs/architecture/data-model.md for the full, authoritative column
-' dictionary until this diagram is brought current.
+' dictionary.
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -37,6 +25,7 @@ entity "family" as family #E8F5E9 {
   --
   name : VARCHAR(200)
   created_at : TIMESTAMPTZ
+  deactivated_at : TIMESTAMPTZ NULL [soft-deactivate; cascades to members]
 }
 
 entity "series" as series #C8E6C9 {
@@ -55,9 +44,15 @@ entity "user" as user_t #E3F2FD {
   --
   * family_id : UUID <<FK family.id>>
   role : VARCHAR(16) [guardian | child | admin]
+  is_admin : BOOLEAN [default false; capability orthogonal to role]
   authn_subject : VARCHAR(255) <<UNIQUE>>
+  email : VARCHAR(320) NULL [contact only, never an identity key]
   child_profile_id : UUID <<FK child_profile.id, NULL>>
   created_at : TIMESTAMPTZ
+  status : VARCHAR(16) [pending|active|deactivated, default active]
+  --
+  CHECK (role<>'child' OR is_admin=false)
+  CHECK (role<>'admin' OR is_admin=true)
 }
 
 entity "child_profile" as child_profile #FFF3E0 {
@@ -70,7 +65,21 @@ entity "child_profile" as child_profile #FFF3E0 {
   allowed_content_flags : JSONB
   tts_enabled : BOOLEAN
   avatar : VARCHAR(255) NULL
+  pin_hash : TEXT NULL [write-only PIN; never serialized]
   created_at : TIMESTAMPTZ
+  deactivated_at : TIMESTAMPTZ NULL [soft-remove; history preserved]
+}
+
+entity "family_connection" as family_connection #E8F5E9 {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK family.id>> [viewer / opted-in]
+  * connected_family_id : UUID <<FK family.id>> [recommendation source]
+  created_by : UUID <<FK user.id, NULL>>
+  created_at : TIMESTAMPTZ
+  --
+  UNIQUE (family_id, connected_family_id)
+  CHECK (family_id <> connected_family_id)
 }
 
 entity "storybook" as storybook #F3E5F5 {
@@ -221,10 +230,10 @@ entity "pipeline_event" as pipeline_event #ECEFF1 {
   --
   occurred_at : TIMESTAMPTZ
   actor_id : UUID <<FK user.id, NULL>> [NULL iff actor_role='system']
-  actor_role : VARCHAR(16) [system|guardian|child|admin]
+  actor_role : VARCHAR(16) [system|guardian|child|admin|device]
   entity_type : VARCHAR(32) [story_request|generation_job|storybook|...]
   entity_id : VARCHAR(255)
-  event_type : VARCHAR(48) [14 values, see EventType]
+  event_type : VARCHAR(48) [17 values, see EventType]
   from_state : VARCHAR(32) NULL
   to_state : VARCHAR(32) NULL
   payload : JSONB [PII-free, allowlisted fields only]
@@ -299,6 +308,8 @@ family ||--o{ concept : "1 family\nhas many concepts"
 family ||--o{ series : "1 family\nhas many series"
 family ||--o{ story_request : "1 family\nhas many requests"
 family ||--o{ device_grant : "1 family\nhas many device grants\n(ADR-014)"
+family ||--o{ family_connection : "family_id\nviewer opts in to\nmany connections"
+family ||--o{ family_connection : "connected_family_id\nsourced from\nmany families"
 user_t }o--o| child_profile : "child user\nassigned to 1 profile\n(NULL for guardians and admins)"
 series ||--o{ storybook : "1 series\nhas many books\n(book_index order)"
 series ||--o{ story_request : "continuation target\n(anchored requests)"
@@ -349,6 +360,7 @@ note bottom of user_t
   moderation_setting.updated_by,
   provider_model_allowlist.created_by/updated_by,
   provider_model_allowlist_audit.changed_by (NOT NULL),
+  family_connection.created_by,
   pipeline_event.actor_id (NULL iff actor_role='system').
 end note
 

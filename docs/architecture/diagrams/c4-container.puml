@@ -43,8 +43,8 @@ rectangle "PWA Container\n[React 19, TypeScript, Vite]\nServed as static assets"
 
 ' --- Backend ---
 rectangle "FastAPI Backend\n[Python 3.12, FastAPI, Pydantic v2]\nsrc/cyo_adventure/" as backend #E8F5E9 {
-  rectangle "API Routers (15)\nhealth, library, reading, generation,\nprofiles, families, ratings, assignments,\napproval [global admin], covers,\nmoderation_thresholds [admin],\nmoderation_dashboard [admin],\nprovider_allowlist [admin], me,\nstory_requests" as routers #CCEECC
-  rectangle "Auth Seam\napi/deps.py\nPrincipal / family / role" as auth #CCEECC
+  rectangle "API Routers (21)\nhealth, library, reading, generation,\nprofiles, families, ratings, assignments,\napproval [global admin], covers,\nmoderation_thresholds [admin],\nmoderation_dashboard [admin],\nprovider_allowlist [admin], me,\nstory_requests, child_sessions,\ndevice_grants, onboarding,\nadmin_users [admin], admin_profiles [admin],\nfamily_connections [admin]" as routers #CCEECC
+  rectangle "Auth Seam\napi/deps.py\nPrincipal / family / role + is_admin\n(guardian, child, admin, device)" as auth #CCEECC
   rectangle "Storybook Domain\nstorybook/models.py\nstorybook/evaluator.py\nstorybook/condition.py" as storybook_dom #CCEECC
   rectangle "Player Engine\nplayer/engine.py\nRuntime Semantics v1 (pure)" as player_eng #CCEECC
   rectangle "Validator Gate\nvalidator/gate.py\nL1+Policy+L2+RL+SAFE layers" as validator #CCEECC
@@ -59,7 +59,7 @@ rectangle "FastAPI Backend\n[Python 3.12, FastAPI, Pydantic v2]\nsrc/cyo_adventu
 rectangle "Generation Worker\n[RQ worker process]\ngeneration/worker.py" as worker #FFF3E0
 
 ' --- Data stores ---
-database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler :5432 (session mode)\n19 ORM tables:\nFamily, Series, User, ChildProfile,\nStorybook, StorybookVersion,\nReadingState, Completion, Rating,\nStorybookAssignment, Concept,\nStoryRequest, ModerationThreshold(+Audit),\nModerationSetting, PipelineEvent,\nProviderModelAllowlist(+Audit),\nGenerationJob" as postgres #E0F7FA
+database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler :5432 (session mode)\n21 ORM tables:\nFamily, FamilyConnection, Series, User,\nChildProfile, Storybook, StorybookVersion,\nReadingState, Completion, Rating,\nStorybookAssignment, Concept,\nStoryRequest, ModerationThreshold(+Audit),\nModerationSetting, PipelineEvent,\nProviderModelAllowlist(+Audit),\nGenerationJob, DeviceGrant" as postgres #E0F7FA
 
 database "Redis\n[Job broker]\nRQ queue for generation jobs" as redis #E0E0E0
 

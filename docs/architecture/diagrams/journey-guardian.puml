@@ -12,7 +12,8 @@
 '     wraps the whole adult subtree -- both /guardian and /admin -- ADR-014)
 '   frontend/src/auth/AdultGate.tsx  (ADR-014: one kid-to-adult boundary crossing,
 '     warm state in sessionStorage, 5-min TTL, parked on entering kid mode)
-'   frontend/src/guardian/LoginPage.tsx, ConsolePage.tsx, ReviewDetailPage.tsx
+'   frontend/src/guardian/LoginPage.tsx, ConsolePage.tsx (family console)
+'   frontend/src/admin/AdminConsolePage.tsx (review queue), admin/ReviewDetailPage.tsx
 '   frontend/src/guardian/IntakePage.tsx, ProfilesPage.tsx, AssignChildrenDialog.tsx
 '   frontend/src/guardian/RequestsPage.tsx  (/guardian/requests: approve/decline
 '     a child's story request, WS-B; shipped -- guardian-own-family or
@@ -89,11 +90,11 @@ repeat :pick the top of the queue;
   :Open the review queue
   (Flagged, then Ready,
   then Still processing);
-  note right: /guardian  (Console)  •  shipped
+  note right: /admin  (Review queue)  •  shipped\n(the review queue moved here from the guardian console)
   :Open a story: flagged passages
   first, then the full text
   with flags highlighted inline;
-  note right: /guardian/review/:id  •  shipped
+  note right: /admin/review/:storybookId  •  shipped
 backward:Send back with a note
 -> the story is rewritten;
 repeat while (Safe for a child?) is (no) not (yes -> approve)
@@ -122,7 +123,9 @@ legend bottom
   |<back:#FFFDF8>  white  </back>| Shipped in the guardian console today |
   |<back:#F3D9D4>  rose   </back>| Planned, not yet built |
   Columns: <b>Guardian</b> (request + assign + monitor), <b>Admin</b> (the ADR-005
-  approval gate), <b>System</b> (generation + safety, behind the scenes).
+  approval gate; the admin console also holds user management, the authoring
+  queue, the moderation dashboard/thresholds, and the provider allowlist --
+  see sitemap-and-flows), <b>System</b> (generation + safety, behind the scenes).
   ADR-014: one AdultGate at the root of the whole adult subtree (not a per-page
   gate) is the single kid-to-adult boundary; step-up fires only crossing UP from
   kid mode, never guardian<->guardian, guardian<->admin, or admin<->guardian.

@@ -11,15 +11,17 @@
 '   RED    = no automated test (mostly planned / not-yet-built steps)
 '   GREY   = backend work, covered by pytest, out of frontend-e2e scope
 '
-' Coverage sources:
-'   frontend/e2e/{reader,reader-conflict,reader-reload-resume,library,intake,
-'     guardian-auth,guardian-console,guardian-review,guardian-profiles,
-'     guardian-books,assignments,profiles,story-requests,
-'     story-requests-kid,story-requests-authored,series-continue,
-'     landing}.spec.ts
+' Coverage sources (frontend/e2e/*.spec.ts, current set):
+'   reader, reader-conflict, reader-reload-resume, library, intake,
+'   guardian-auth, guardian-console, guardian-review, guardian-profiles,
+'   guardian-books, assignments, profiles, story-requests,
+'   story-requests-kid, story-requests-authored, series-continue, landing,
+'   admin-user-management (#267), authoring-queue (#268), device-authorization,
+'   moderation, provider-allowlist, a11y, visual, and e2e/naive-user/*
 '   frontend/e2e-real/{approval-flow,authored-request,kid-reads,
-'     naive-kid-misuse-real,series-continue-real}.spec.ts
-'     (real-backend smoke, zero mocks)
+'     naive-kid-misuse-real,series-continue-real,authoring-plan-real,
+'     moderation-real,ratings-real}.spec.ts  (real-backend smoke, zero mocks)
+'   frontend/e2e-prod/ and frontend/e2e-staging/ (deployed-env smoke, own configs)
 '   frontend/src/**/*.test.ts(x)  (Vitest component + unit)
 ' ============================================================
 
@@ -131,6 +133,12 @@ legend bottom
   zero mocks).
   <b>Remaining amber:</b> "Avatar shows new story ready!" pill state is asserted
   in Vitest only, not e2e.
+  <b>Not yet recolored on this backbone (INTERIM):</b> the ADR-014 device-grant /
+  AdultGate steps and the WS-J admin surfaces (user management #267, authoring
+  queue #268, moderation dashboard/thresholds, provider allowlist) now have their
+  own e2e specs (listed above), but this journey's step nodes have not been
+  re-drawn to include them. Treat this map as current only for the
+  request -> approve -> read loop it depicts.
 endlegend
 
 @enduml

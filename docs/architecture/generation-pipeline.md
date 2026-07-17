@@ -71,14 +71,28 @@ While the gate is blocked and `attempts < max_repairs` (default 3):
 | blocked after exhausting repairs | yes | `"needs_review"` |
 | blocked, no doc produced | no | `"failed"` |
 
+## Skeleton Fill (alternate method)
+
+Fresh three-stage generation (`generate_story()`) is one of two methods. The other,
+`fill_skeleton()` (`orchestrator.py`, driven by `worker.py::_run_skeleton_fill`), fills a
+pre-authored skeleton library file's `<<FILL ...>>` directives instead of building a
+story graph from scratch. It runs its own bounded Stage-1 fidelity gate and repair loop
+(a fidelity violation downgrades the outcome), then hands off to the same validator gate
+and the same outcome mapping above. The worker selects the method per job; the cell-aware
+skeleton *selection* happens earlier, at plan time in
+`story_requests/authoring_plan.py`. A `mechanism="skill"` skeleton-fill job is parked at
+`awaiting_manual_fill` for an offline human/skill fill and resumed later via
+`generation/import_story.py`. See
+[component-generation](diagrams/component-generation.svg) for both methods.
+
 ## Provider Fallback Cascade
 
 The provider is a three-layer failure model:
 
 **Layer 1 (per adapter):** Each `OpenRouterProvider` or `OllamaProvider` retries
 transient failures (connection errors, HTTP 429, HTTP 5xx) against the **same** model
-with exponential backoff. Leg-fatal errors (HTTP 401/400/402 for OpenRouter) are not
-retried.
+with exponential backoff. Leg-fatal errors (HTTP 400/401/402/403/404 for OpenRouter, where
+404 is a churned/unavailable model, the case the fallback leg exists for) are not retried.
 
 **Layer 2 (`FallbackProvider`):** The cascade holds an ordered list of legs. On a
 `ProviderError` from one leg, it fails over to the next. Leg-fatal errors mark the
@@ -89,16 +103,19 @@ leg dead for the rest of the run (circuit breaker). A global per-run attempt cap
 **content** failure, not a provider failure. The repair loop handles it; `FallbackProvider`
 never sees it as an error.
 
-**PII invariant:** The orchestrator runs `assert_prompt_pii_safe()` before every
-`provider.complete()` call. A `ValidationError` from the PII guard propagates straight
-through `FallbackProvider` uncaught (only `ProviderError` is caught). This means a PII
-violation can never be retried or failed over.
+**PII invariant:** The orchestrator wraps the resolved provider in a
+`PiiGuardedProvider` (`generation/guarded.py`), so `assert_prompt_pii_safe()` runs on the
+prompt blocks of every `complete()` call structurally, not as a separate orchestrator
+step. A `ValidationError` from the PII guard propagates straight through
+`FallbackProvider` uncaught (only `ProviderError` is caught). This means a PII violation
+can never be retried or failed over.
 
 ## Guardian-Only Authoring Endpoints
 
-All four generation endpoints (`POST /concepts`, `POST /concepts/{id}/generate`,
-`GET /generation-jobs/{id}`, `POST /storybooks/{id}/versions/{v}/validate`) require the
-guardian role. Child tokens receive 403 immediately before any DB access.
+All five generation endpoints (`POST /concepts`, `POST /concepts/{id}/generate`,
+`GET /generation-jobs`, `GET /generation-jobs/{id}`,
+`POST /storybooks/{id}/versions/{v}/validate`) require the guardian role. Child tokens
+receive 403 immediately before any DB access.
 
 `POST /concepts` screens the brief text for real child display names (fetched from
 `child_profile.display_name` for the family) before persisting the `Concept` row.
@@ -112,9 +129,10 @@ the row is still created and a 202 is returned (the job can be recovered by a sw
 
 | File | Purpose |
 |------|---------|
-| `src/cyo_adventure/generation/orchestrator.py` | `generate_story()`: the three-stage pipeline |
+| `src/cyo_adventure/generation/orchestrator.py` | `generate_story()` (three-stage) + `fill_skeleton()` (skeleton method) |
 | `src/cyo_adventure/generation/prompts.py` | `build_structure/prose/repair_prompt()` |
 | `src/cyo_adventure/generation/pii.py` | `assert_prompt_pii_safe()`, `PiiContext` |
+| `src/cyo_adventure/generation/guarded.py` | `PiiGuardedProvider` (structural PII wrapper) |
 | `src/cyo_adventure/generation/providers/fallback.py` | `FallbackProvider` cascade |
 | `src/cyo_adventure/generation/providers/openrouter.py` | OpenRouter adapter (Layer 1) |
 | `src/cyo_adventure/generation/providers/ollama.py` | Ollama adapter (Layer 1) |

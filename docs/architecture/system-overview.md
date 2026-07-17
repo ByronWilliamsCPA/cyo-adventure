@@ -55,7 +55,7 @@ The container diagram shows how the system is split across runtime boundaries.
 | PWA | React 19, TypeScript, Vite | Reader UI, library, offline cache, XState player |
 | FastAPI Backend | Python 3.12, FastAPI, Pydantic v2 | API routers, auth, validator, generation dispatch |
 | Generation Worker | RQ, Python | Async staged generation; long-running, separate container |
-| PostgreSQL | PostgreSQL 16, SQLAlchemy 2 | All operational entities (9 ORM tables) |
+| PostgreSQL | PostgreSQL 16, SQLAlchemy 2 | All operational entities (21 ORM tables) |
 | Redis | Redis 7, RQ | Generation job queue and broker |
 | MinIO | MinIO / S3 API | Story blob storage (deferred to Phase 5; Phase 1 uses inline JSONB) |
 
@@ -108,7 +108,7 @@ in `published`.
 
 - [Generation Pipeline](generation-pipeline.md): staged LLM generation and provider cascade
 - [Validation and Player](validation-and-player.md): validator gate and story engine
-- [Data Model](data-model.md): the 9 ORM tables and their relationships
+- [Data Model](data-model.md): the 21 ORM tables and their relationships
 - [Deployment](deployment.md): homelab Docker deployment
 - ADR-005: [Mandatory Human Approval](../planning/adr/adr-005-mandatory-human-approval.md)
 - ADR-002: [Client: Progressive Web App](../planning/adr/adr-002-client-pwa.md)
