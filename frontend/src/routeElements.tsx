@@ -97,6 +97,9 @@ export const IntakePage = lazyWithReload('IntakePage', () =>
 export const BooksPage = lazyWithReload('BooksPage', () =>
   import('./guardian/BooksPage').then((m) => ({ default: m.BooksPage }))
 )
+export const ReadingPage = lazyWithReload('ReadingPage', () =>
+  import('./guardian/ReadingPage').then((m) => ({ default: m.ReadingPage }))
+)
 export const RequestsPage = lazyWithReload('RequestsPage', () =>
   import('./guardian/RequestsPage').then((m) => ({ default: m.RequestsPage }))
 )
