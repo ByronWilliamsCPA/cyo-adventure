@@ -1,0 +1,589 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_school_garden_mystery",
+  "version": 1,
+  "title": "The School Garden Mystery",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "curiosity",
+      "kindness",
+      "nature",
+      "problem-solving"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 7,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=85 beats='on a sunny Monday morning the class files into the school garden and Ms. Flores lifts the row cover with a gasp; the lettuce leaves are full of tiny half-moon bites; Priya, who keeps a detective notebook in her pocket, raises her hand to take the case; her friends cheer her on; curious and excited, never scared'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_look",
+          "label": "Take a closer look at the nibbled lettuce.",
+          "target": "n_clue"
+        }
+      ]
+    },
+    {
+      "id": "n_clue",
+      "body": "<<FILL role=setup words=80 beats='Priya kneels by the lettuce bed and studies the bites like a real detective; the nibbles are small and neat, not torn or stomped, so the visitor must be little and gentle; she writes CLUE ONE, tiny teeth, in her notebook; the best place to start looking is the path circle where every garden path begins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_clue_hub",
+          "label": "Start at the path circle where all the paths meet.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL role=choice words=90 beats='Priya stands on the round brick path circle by the garden gate; paths spread out like wheel spokes to the lettuce beds, the compost corner, the tool shed, the sunflower row, and the pond edge, with the quiet willow corner waiting at the very back of the garden; she flips through her notebook, taps her pencil, and picks where to look next; keep this scene general so it reads naturally on a first visit or on any return trip between corners'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_lettuce",
+          "label": "Search the lettuce beds for footprints.",
+          "target": "lb_prints"
+        },
+        {
+          "id": "c_hub_compost",
+          "label": "Poke around the compost corner.",
+          "target": "cc_tunnel"
+        },
+        {
+          "id": "c_hub_shed",
+          "label": "Check inside the tool shed.",
+          "target": "ts_shed"
+        },
+        {
+          "id": "c_hub_sunflower",
+          "label": "Walk down the sunflower row.",
+          "target": "sf_row"
+        },
+        {
+          "id": "c_hub_pond",
+          "label": "Look for clues along the pond edge.",
+          "target": "pe_pond"
+        },
+        {
+          "id": "c_hub_willow",
+          "label": "Follow the clues to the quiet willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "lb_prints",
+      "body": "<<FILL role=choice words=78 beats='in the soft dark soil between the lettuce rows Priya spots a line of tiny footprints, little round front paws and long back feet landing in hoppy pairs; a hopping visitor, she whispers, and grips her pencil; she decides whether to sketch the prints carefully in her notebook or crawl along and follow them right away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_sketch",
+          "label": "Sketch the footprints in your notebook.",
+          "target": "lb_sketch"
+        },
+        {
+          "id": "c_lb_follow",
+          "label": "Follow the footprints right away.",
+          "target": "lb_follow"
+        }
+      ]
+    },
+    {
+      "id": "lb_sketch",
+      "body": "<<FILL role=rising words=68 beats='Priya draws the footprints slowly and neatly, and the sketch makes the answer clearer, big back feet mean a hopper; the trail of prints points straight toward the willow corner at the back of the garden; she can go back to the path circle to check another corner or follow the prints toward the willow now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_sketch_hub",
+          "label": "Go back to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_lb_sketch_willow",
+          "label": "Follow the prints toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "lb_follow",
+      "body": "<<FILL role=rising words=68 beats='Priya scoots along after the prints so fast that her knees smudge a few, oops; she slows down, detective style, and the trail still shows where it is going, straight toward the willow corner; a small lesson learned, move slowly; she can head back to the path circle or trail the prints onward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_follow_hub",
+          "label": "Head back to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_lb_follow_willow",
+          "label": "Trail the prints toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "cc_tunnel",
+      "body": "<<FILL role=choice words=80 beats='the compost corner smells warm and earthy, and behind the bins Priya finds a fresh little tunnel dug right under the garden fence; the tunnel is round and smooth and just the size of a loaf of bread; she chooses whether to peek inside it, to check where it comes out past the fence, or to dig through the compost heap for buried clues'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cc_peek",
+          "label": "Lie down and peek into the tunnel.",
+          "target": "cc_peek"
+        },
+        {
+          "id": "c_cc_fence",
+          "label": "Check where the tunnel comes out past the fence.",
+          "target": "cc_fence"
+        },
+        {
+          "id": "c_cc_dig",
+          "label": "Dig through the compost heap for buried clues.",
+          "target": "e_set_compost"
+        }
+      ]
+    },
+    {
+      "id": "cc_peek",
+      "body": "<<FILL role=rising words=65 beats='Priya lies on her tummy and peeks into the tunnel; it is tidy and round, with a wisp of soft gray fluff caught on a root, a brand new clue for the notebook; the tunnel aims toward the willow corner; she can return to the path circle or head toward the willow now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cc_peek_hub",
+          "label": "Return to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_cc_peek_willow",
+          "label": "Head toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "cc_fence",
+      "body": "<<FILL role=rising words=65 beats='on the far side of the fence the tunnel pops out under a patch of dandelions, and every stem nearby is nibbled with the same tiny half-moon bites; the visitor loves greens; the nibbled trail wanders toward the willow corner; Priya can go back to the path circle or follow the trail onward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cc_fence_hub",
+          "label": "Go back to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_cc_fence_willow",
+          "label": "Follow the nibbled trail to the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "ts_shed",
+      "body": "<<FILL role=choice words=80 beats='the tool shed door is open a crack, and inside, between flowerpots and watering cans, sits a battered blue lunchbox that does not belong on the shelf; a bag of lettuce seeds lies tipped over beside it; very suspicious; Priya decides whether to open the lunchbox carefully or to look around the shed for more signs first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ts_open",
+          "label": "Open the lunchbox carefully.",
+          "target": "ts_open"
+        },
+        {
+          "id": "c_ts_look",
+          "label": "Look around the shed for more signs.",
+          "target": "ts_look"
+        }
+      ]
+    },
+    {
+      "id": "ts_open",
+      "body": "<<FILL role=choice words=72 beats='inside the lunchbox Priya finds crisp lettuce leaves packed like a tiny picnic and a name tag that reads MARCO; so a classmate has been sneaking lettuce snacks into the garden, but who are the snacks for; she can go ask Marco about the lunchbox or carry this clue back to the path circle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ts_open_marco",
+          "label": "Go ask Marco about the lunchbox.",
+          "target": "ts_marco"
+        },
+        {
+          "id": "c_ts_open_hub",
+          "label": "Take the clue back to the path circle.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ts_look",
+      "body": "<<FILL role=rising words=68 beats='behind the watering cans a trail of shredded lettuce bits leads from the lunchbox across the shed floor to a small gap under the wall; Priya follows the crumbs with her eyes; the gap faces the willow corner at the back of the garden; she can head back to the path circle or go toward the willow now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ts_look_hub",
+          "label": "Head back to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ts_look_willow",
+          "label": "Follow the crumb trail toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "ts_marco",
+      "body": "<<FILL role=rising words=72 beats='Priya finds Marco watering the beans, and he turns pink and spills the secret; he saw something small and fluffy near the willow corner last week and left lettuce so it would not go hungry; he was being kind, not naughty; he points her toward the willow corner and stays behind to finish his watering job'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ts_marco_hub",
+          "label": "Go back to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ts_marco_willow",
+          "label": "Head for the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "sf_row",
+      "body": "<<FILL role=choice words=78 beats='the sunflower row towers like a green hallway, and some of the low leaves wear the same tiny half-moon bites; under the stems the mulch is pressed down into a narrow secret path, only knee high; Priya decides whether to crawl along the tiny path under the stems or to climb the garden bench and look over the whole row from above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_crawl",
+          "label": "Crawl along the tiny path under the stems.",
+          "target": "sf_crawl"
+        },
+        {
+          "id": "c_sf_bench",
+          "label": "Climb the bench to look over the whole row.",
+          "target": "sf_bench"
+        }
+      ]
+    },
+    {
+      "id": "sf_crawl",
+      "body": "<<FILL role=rising words=65 beats='Priya crawls under the sunflowers along the pressed-down path and finds a cozy flattened rest spot with a wisp of gray fluff, like a tiny travelers inn; the little path keeps going toward the willow corner; she can back out and return to the path circle or keep following the path'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_crawl_hub",
+          "label": "Back out to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_sf_crawl_willow",
+          "label": "Keep following the tiny path to the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "sf_bench",
+      "body": "<<FILL role=rising words=65 beats='from the top of the bench the garden looks like a map, and Priya can see faint little trails through the beds and the mulch, all bending toward the willow corner like arrows; she writes THE TRAILS ALL POINT ONE WAY in her notebook; she can hop down to the path circle or head straight for the willow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_bench_hub",
+          "label": "Hop down and go to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_sf_bench_willow",
+          "label": "Head straight for the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "pe_pond",
+      "body": "<<FILL role=choice words=80 beats='the pond edge is soft and muddy, perfect for prints, and there they are, tiny hoppy footprints stopping right at the waterline for a drink; a frog plops into the water and makes Priya jump, then laugh; she chooses to follow the prints along the mud, to check the rustling reeds, or to lean way out over the water for a closer look'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_mud",
+          "label": "Follow the little prints along the mud.",
+          "target": "pe_mud"
+        },
+        {
+          "id": "c_pe_reeds",
+          "label": "Check the rustling reeds.",
+          "target": "pe_reeds"
+        },
+        {
+          "id": "c_pe_lean",
+          "label": "Lean way out over the water for a closer look.",
+          "target": "e_set_splash"
+        }
+      ]
+    },
+    {
+      "id": "pe_mud",
+      "body": "<<FILL role=rising words=62 beats='the mud keeps the footprints crisp and clear like stamps; Priya reads the story in them, a drink at the pond, a nibble of clover, then hop hop hop away toward the willow corner; she can return to the path circle or follow the hops toward the willow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_mud_hub",
+          "label": "Return to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pe_mud_willow",
+          "label": "Follow the hops toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "pe_reeds",
+      "body": "<<FILL role=rising words=65 beats='the rustle in the reeds turns out to be a sleepy toad under a leaf, a friendly false alarm; but from down low Priya spots the hoppy prints leaving the mud and heading toward the willow corner; she says goodbye to the toad; she can go back to the path circle or follow the prints'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_reeds_hub",
+          "label": "Go back to the path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pe_reeds_willow",
+          "label": "Follow the prints to the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "wc_approach",
+      "body": "<<FILL role=choice words=88 beats='the willow corner is a hushed leafy nook behind the bean teepee where the garden goes quiet; under the willow roots Priya sees a low round burrow, a wisp of gray fluff on a twig, and tiny hoppy prints in the dust right at her feet; the clues line up here all by themselves, whichever corners she has already checked; she decides whether to tiptoe close and wait like a statue, to sit in the clover holding out a lettuce leaf, or to dash over for a quick peek'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wc_wait",
+          "label": "Tiptoe close and wait as still as a statue.",
+          "target": "wc_wait"
+        },
+        {
+          "id": "c_wc_offer",
+          "label": "Sit in the clover and hold out a lettuce leaf.",
+          "target": "wc_offer"
+        },
+        {
+          "id": "c_wc_dash",
+          "label": "Dash over for a quick peek.",
+          "target": "e_set_dash"
+        }
+      ]
+    },
+    {
+      "id": "wc_wait",
+      "body": "<<FILL role=rising words=72 beats='Priya tiptoes behind the bean teepee and waits, still as a garden statue, counting her own quiet breaths; after a long hush a twitchy whiskery nose pokes out of the burrow, then soft ears, then careful round eyes; something small and brown hops one brave hop into the light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wc_wait_watch",
+          "label": "Keep watching quietly.",
+          "target": "wc_watch"
+        }
+      ]
+    },
+    {
+      "id": "wc_offer",
+      "body": "<<FILL role=rising words=72 beats='Priya sits down in the clover and holds a lettuce leaf out low and still, the way you offer a snack to somebody shy; the leaf trembles a tiny bit in the breeze; soon a whiskery nose sniffs from the burrow doorway, and a small brown visitor hops one brave hop toward her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wc_offer_watch",
+          "label": "Stay very still and watch.",
+          "target": "wc_watch"
+        }
+      ]
+    },
+    {
+      "id": "wc_watch",
+      "body": "<<FILL role=rising words=70 beats='out comes a mother rabbit, and tumbling after her come two round baby bunnies who bounce into the clover and nibble; Priya checks her notebook without making a sound, hoppy prints, rabbit-size tunnel, gray fluff, tiny bites, every single clue fits; the lettuce mystery has a soft, whiskery answer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wc_watch_reveal",
+          "label": "Put all the clues together.",
+          "target": "wc_reveal"
+        }
+      ]
+    },
+    {
+      "id": "wc_reveal",
+      "body": "<<FILL role=choice words=85 beats='mystery solved, the lettuce visitors are a hungry rabbit family living under the willow, a mama and two kits with wiggly noses; nobody is in trouble, they were only hungry; now Priya, junior garden detective, gets to choose a kind ending; she can plant a bunny patch of greens just for the rabbits, plan a low fence with a gate to share the garden politely, or run and tell Ms. Flores and the class the news'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wcr_patch",
+          "label": "Plant a bunny patch just for the rabbits.",
+          "target": "r_patch"
+        },
+        {
+          "id": "c_wcr_fence",
+          "label": "Plan a low fence with a gate around the lettuce.",
+          "target": "r_fence"
+        },
+        {
+          "id": "c_wcr_tell",
+          "label": "Go tell Ms. Flores and the class.",
+          "target": "r_tell"
+        }
+      ]
+    },
+    {
+      "id": "r_patch",
+      "body": "<<FILL role=rising words=72 beats='the class loves the plan, and everyone helps plant a bunny patch by the willow corner, rows of clover, crunchy lettuce, and dandelion greens just for the rabbit family; Priya paints a little wooden sign for it; soon the patch is ready for its very first furry customers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_patch_end",
+          "label": "Open the bunny buffet.",
+          "target": "e_patch"
+        }
+      ]
+    },
+    {
+      "id": "r_fence",
+      "body": "<<FILL role=rising words=72 beats='with Ms. Flores helping, the class builds a knee-high fence around the lettuce beds with a small gate for gardeners; the willow corner stays wild and cozy for the rabbit family; Priya taps the last post into place, and the garden feels fair for everyone, people veggies here, rabbit snacks there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_fence_end",
+          "label": "Finish the little fence together.",
+          "target": "e_fence"
+        }
+      ]
+    },
+    {
+      "id": "r_tell",
+      "body": "<<FILL role=rising words=70 beats='Priya opens her notebook on Ms. Flores helper table and walks the class through the case clue by clue, the tiny bites, the hoppy prints, the tunnel under the fence, the gray fluff; everyone gasps at the answer; then the whole class lines up to tiptoe out and meet the rabbit family'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_tell_show",
+          "label": "Lead everyone to the willow corner on tiptoe.",
+          "target": "r_show"
+        }
+      ]
+    },
+    {
+      "id": "r_show",
+      "body": "<<FILL role=choice words=75 beats='the class peeks around the bean teepee in a quiet wiggly line and spots the mama rabbit and her two kits nibbling clover; happy whispers everywhere; now the class decides together how to share the garden, hang a friendly RABBIT CROSSING sign by the willow corner, or make rabbit watching an official class job'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_show_share",
+          "label": "Hang a friendly Rabbit Crossing sign.",
+          "target": "e_share"
+        },
+        {
+          "id": "c_r_show_watch",
+          "label": "Make rabbit watching a class job.",
+          "target": "e_watch"
+        }
+      ]
+    },
+    {
+      "id": "e_set_compost",
+      "body": "<<FILL role=ending words=70 beats='Priya digs and sifts through the warm compost heap and finds wiggly worms, a giggle, and not one single clue; the tidy-up bell rings before she can search anywhere else; she dusts off her hands, smiling, and writes TOMORROW, follow the tunnel, in her notebook; a gentle try-again, nobody sad or hurt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_compost",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wiggly Worm Detour"
+      }
+    },
+    {
+      "id": "e_set_splash",
+      "body": "<<FILL role=ending words=70 beats='Priya leans out one lean too far and her boot slips into the shallow pond edge with a squelchy splash; she is perfectly fine, just soggy to the ankle, but squishy socks mean a trip inside to change; the mystery will wait until tomorrow, she grins, and the frog seems to wave goodbye; gentle, never scary'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_splash",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "One Squishy Boot"
+      }
+    },
+    {
+      "id": "e_set_dash",
+      "body": "<<FILL role=ending words=72 beats='Priya dashes toward the burrow and THUMP, a big back foot drums the ground and a flash of white tail zips underground before she can blink; the willow corner goes still; she whispers sorry, writes RULE ONE, move slowly, in her notebook, and plans to come back quietly tomorrow; a friendly miss, ready to try again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_dash",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Flash of White Tail"
+      }
+    },
+    {
+      "id": "e_patch",
+      "body": "<<FILL role=completion words=80 beats='the bunny patch works like a charm; the rabbit family nibbles clover on their own side of the garden and the class lettuce grows back big and crunchy; every morning the class checks the patch, and every morning there are happy new footprints; Priya adds the last note to the case in her notebook, SOLVED, with kindness'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_patch",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Bunny Buffet"
+      }
+    },
+    {
+      "id": "e_fence",
+      "body": "<<FILL role=completion words=80 beats='the little fence keeps the lettuce safe without scaring anyone, and the rabbit family stays snug in the wild willow corner; at harvest time the class shares a leaf or two over the gate anyway; Priya clips her notebook shut with a happy snap, case closed, garden shared, everybody fed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fence",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Fence with a Gate"
+      }
+    },
+    {
+      "id": "e_share",
+      "body": "<<FILL role=completion words=80 beats='the RABBIT CROSSING sign goes up by the willow corner and the whole school learns to walk softly past it; the garden becomes famous for its smallest neighbors, and visitors tiptoe just to peek; Priya signs the bottom corner of the sign, junior garden detective, and the mama rabbit watches as if she approves'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_share",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Shared Garden"
+      }
+    },
+    {
+      "id": "e_watch",
+      "body": "<<FILL role=completion words=80 beats='rabbit watching becomes a real class job with a clipboard and everything, and everyone gets a turn counting bunnies at quiet time; the two kits grow bigger and bolder all spring long; Priya starts a brand new notebook page titled MORE GARDEN MYSTERIES PLEASE, because the best detective work ends kindly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_watch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Rabbit Watchers on Duty"
+      }
+    }
+  ]
+}
