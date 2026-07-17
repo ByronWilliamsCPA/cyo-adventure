@@ -109,6 +109,17 @@ export async function getReadingState(
   return db.get('reading_states', stateKey(profileId, storybookId))
 }
 
+/**
+ * Clear every cached reading state.
+ *
+ * Called on guardian sign-out / device handover so a returned device does not
+ * retain any child's reading progress at rest (SEC-F5).
+ */
+export async function clearReadingStates(): Promise<void> {
+  const db = await getDb()
+  await db.clear('reading_states')
+}
+
 /** Queue a reading-state write made while offline. */
 export async function enqueueWrite(item: QueuedWrite): Promise<void> {
   const db = await getDb()

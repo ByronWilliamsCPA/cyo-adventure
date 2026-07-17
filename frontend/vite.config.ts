@@ -157,7 +157,11 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    // 'hidden' emits source maps for upload to an error tracker but does NOT
+    // reference them from the shipped bundle, so production source (including
+    // the auth-seam comments) is not exposed to anyone opening devtools
+    // (SEC-F4). Use `true` only for local debugging.
+    sourcemap: 'hidden',
   },
   test: {
     globals: true,
