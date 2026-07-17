@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 
 import { Button } from '@ds/components/Button'
@@ -460,6 +460,20 @@ export function ReviewDetailPage() {
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
   const coverApi = useMemo(() => makeCoverApi(api), [api])
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // The ordered review-queue ids the console handed off (UX-A1), so this page
+  // can show "Reviewing N of M" and auto-advance to the next item after a
+  // decision. Absent on a direct deep-link, which degrades to the old
+  // back-to-queue behavior.
+  const reviewQueue = useMemo<string[]>(() => {
+    const raw = (location.state as { reviewQueue?: unknown } | null)?.reviewQueue
+    return Array.isArray(raw) && raw.every((v): v is string => typeof v === 'string')
+      ? raw
+      : []
+  }, [location.state])
+  const queueIndex = reviewQueue.indexOf(storybookId)
+  const nextInQueue = queueIndex >= 0 ? reviewQueue[queueIndex + 1] : undefined
 
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [dialog, setDialog] = useState<ActionDialog>(null)
@@ -659,7 +673,14 @@ export function ReviewDetailPage() {
     setActionError(false)
     try {
       await action()
-      void navigate('/admin')
+      // UX-A1: after a decision, advance to the next item in the handed-off
+      // queue instead of always bouncing back to the list; on the last item (or
+      // a direct deep-link with no queue) return to the queue as before.
+      if (nextInQueue !== undefined) {
+        void navigate(`/admin/review/${nextInQueue}`, { state: { reviewQueue } })
+      } else {
+        void navigate('/admin')
+      }
     } catch (err) {
       console.error('review action failed:', err instanceof Error ? err.message : err)
       setActionError(true)
@@ -714,6 +735,11 @@ export function ReviewDetailPage() {
 
   return (
     <section className="review-detail">
+      {queueIndex >= 0 ? (
+        <p className="review-detail__queue-position cyo-text-muted">
+          Reviewing {queueIndex + 1} of {reviewQueue.length} in the queue
+        </p>
+      ) : null}
       <h1>{title}</h1>
 
       {!surface.screened ? (

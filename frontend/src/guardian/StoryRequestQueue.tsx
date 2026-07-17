@@ -8,7 +8,14 @@ import { useApi } from '../hooks/useApi'
 import { useToast } from '../notifications/useToast'
 import { FlagBadge, verdictTone } from './FlagBadge'
 import { formatRelativeTime } from './intakeApi'
-import { AGE_BANDS, LENGTHS, TEEN_BANDS, ageBandLabel } from './storyRequestOptions'
+import {
+  AGE_BANDS,
+  LENGTHS,
+  TEEN_BANDS,
+  ageBandLabel,
+  lengthLabel,
+  narrativeStyleLabel,
+} from './storyRequestOptions'
 import {
   makeStoryRequestQueueApi,
   STORY_REQUESTS_CHANGED_EVENT,
@@ -368,7 +375,7 @@ export function StoryRequestQueue({
                       <option value="">Choose…</option>
                       {LENGTHS.map((l) => (
                         <option key={l} value={l}>
-                          {l}
+                          {lengthLabel(l)}
                         </option>
                       ))}
                     </select>
@@ -380,8 +387,8 @@ export function StoryRequestQueue({
                         value={decision.narrative_style}
                         onChange={(e) => setDecision(req, { narrative_style: e.target.value })}
                       >
-                        <option value="prose">prose</option>
-                        <option value="gamebook">gamebook</option>
+                        <option value="prose">{narrativeStyleLabel('prose')}</option>
+                        <option value="gamebook">{narrativeStyleLabel('gamebook')}</option>
                       </select>
                     </label>
                   ) : null}

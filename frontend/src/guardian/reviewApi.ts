@@ -28,6 +28,10 @@ export interface ReviewQueueItem {
   screened: boolean
   flagged_count: number
   summary: ReviewSummary | null
+  /** Target age band, for at-a-glance triage (UX-A3). Optional if unknown. */
+  age_band?: string | null
+  /** When this version was created, a "waiting since" proxy (UX-A3). */
+  waiting_since?: string | null
 }
 
 export interface FindingView {

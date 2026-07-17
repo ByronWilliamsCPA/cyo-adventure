@@ -32,3 +32,29 @@ export const AGE_BAND_LABELS: Record<string, string> = {
 export function ageBandLabel(band: string): string {
   return AGE_BAND_LABELS[band] ?? `Ages ${band}`
 }
+
+/**
+ * Human-readable labels for the raw length and narrative-style values (UX-G4).
+ * The VALUES stay the API contract; only the rendered <option> text is
+ * humanized, so tests and e2e specs keep selecting by value.
+ */
+export const LENGTH_LABELS: Record<string, string> = {
+  short: 'Short (a quick read)',
+  medium: 'Medium',
+  long: 'Long (a big adventure)',
+}
+
+/** Label for a length value; falls back to a capitalized token if unknown. */
+export function lengthLabel(length: string): string {
+  return LENGTH_LABELS[length] ?? length
+}
+
+export const NARRATIVE_STYLE_LABELS: Record<string, string> = {
+  prose: 'Prose (a story to read)',
+  gamebook: 'Gamebook (pick-a-path)',
+}
+
+/** Label for a narrative-style value; falls back to the raw token if unknown. */
+export function narrativeStyleLabel(style: string): string {
+  return NARRATIVE_STYLE_LABELS[style] ?? style
+}

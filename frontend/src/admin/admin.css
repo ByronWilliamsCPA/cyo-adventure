@@ -127,3 +127,39 @@
   color: var(--color-amber-text, #87561d);
   font-size: 0.8125rem;
 }
+
+/* UX-A3: the moderation dashboard's native action buttons meet the 44px tap
+   floor and read as buttons rather than default browser chrome. */
+.moderation-dashboard__button {
+  min-height: 44px;
+  padding: 0 var(--space-3, 0.75rem);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold, 600);
+  color: var(--color-ink, #2c1a0e);
+  background: var(--color-parchment, #f8f3e8);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  border-radius: var(--radius-md, 12px);
+  cursor: pointer;
+}
+
+.moderation-dashboard__button:hover:not(:disabled),
+.moderation-dashboard__button:focus-visible {
+  border-color: var(--color-amber, #e07f2e);
+}
+
+.moderation-dashboard__button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* UX-A1: the review-detail queue-position line above the story title. */
+.review-detail__queue-position {
+  margin: 0 0 var(--space-1, 0.25rem);
+  font-size: var(--text-sm);
+}
+
+/* UX-A3: at-a-glance triage metadata (age band, waiting time) on a queue row. */
+.console-row__meta {
+  font-size: var(--text-sm);
+  margin-left: var(--space-2, 0.5rem);
+}

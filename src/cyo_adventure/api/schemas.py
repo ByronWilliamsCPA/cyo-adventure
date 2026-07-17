@@ -1032,6 +1032,11 @@ class ReviewQueueItem(BaseModel):
     screened: bool
     flagged_count: int = Field(ge=0)
     summary: ReviewSummary | None
+    # Triage metadata for the console (UX-A3): the story's target age band and
+    # when this version was created (a "waiting since" proxy). Both optional so a
+    # blob missing metadata still projects a valid queue item.
+    age_band: str | None = None
+    waiting_since: datetime | None = None
 
 
 class ReviewQueueView(BaseModel):

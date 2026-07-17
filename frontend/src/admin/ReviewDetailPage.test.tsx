@@ -404,6 +404,32 @@ describe('ReviewDetailPage', () => {
     expect(await screen.findByText('CONSOLE HOME')).toBeInTheDocument()
   })
 
+  it('shows queue position and auto-advances to the next item after a decision (UX-A1)', async () => {
+    const user = userEvent.setup()
+    mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+    render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: '/admin/review/s1', state: { reviewQueue: ['s1', 's2'] } },
+        ]}
+      >
+        <Routes>
+          <Route path="/admin/review/:storybookId" element={<ReviewDetailPage />} />
+          <Route path="/admin" element={<div>CONSOLE HOME</div>} />
+        </Routes>
+      </MemoryRouter>
+    )
+    // Position indicator for the first item.
+    expect(await screen.findByText(/Reviewing 1 of 2 in the queue/i)).toBeInTheDocument()
+
+    await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+    await user.click(await screen.findByRole('button', { name: /Confirm approve/i }))
+
+    // Auto-advanced to s2 (the next item), not back to the console home.
+    expect(await screen.findByText(/Reviewing 2 of 2 in the queue/i)).toBeInTheDocument()
+    expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
+  })
+
   it('approves to the catalog when the admin selects it', async () => {
     const user = userEvent.setup()
     mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })

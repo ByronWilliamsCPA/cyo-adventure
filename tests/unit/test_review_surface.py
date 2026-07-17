@@ -358,6 +358,42 @@ def test_queue_item_flagged_counts_all_findings() -> None:
 
 
 @pytest.mark.unit
+def test_queue_item_carries_age_band_and_waiting_since() -> None:
+    """UX-A3: the queue item surfaces triage metadata from the blob + version."""
+    from datetime import UTC, datetime
+
+    created = datetime(2026, 7, 1, tzinfo=UTC)
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob={
+            "title": "The Lantern",
+            "metadata": {"age_band": "6-8"},
+            "nodes": [{"id": "n1", "body": "Hi."}],
+        },
+        moderation_report=None,
+        created_at=created,
+    )
+    assert item.age_band == "6-8"
+    assert item.waiting_since == created
+
+
+@pytest.mark.unit
+def test_queue_item_age_band_absent_when_metadata_missing() -> None:
+    """A blob with no metadata leaves age_band/waiting_since None (still valid)."""
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob={"title": "T", "nodes": [{"id": "n1", "body": "Hi."}]},
+        moderation_report=None,
+    )
+    assert item.age_band is None
+    assert item.waiting_since is None
+
+
+@pytest.mark.unit
 def test_queue_item_screened_clean_has_zero_flags() -> None:
     """A screened-clean story reports screened=True, flagged_count=0."""
     item = build_review_queue_item(

@@ -2028,6 +2028,14 @@ export type ReviewQueueItem = {
      */
     flagged_count: number;
     summary: ReviewSummary | null;
+    /**
+     * Age Band
+     */
+    age_band?: string | null;
+    /**
+     * Waiting Since
+     */
+    waiting_since?: string | null;
 };
 
 /**

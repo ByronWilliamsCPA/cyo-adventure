@@ -377,6 +377,7 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
                     blob=row.blob,
                     moderation_report=row.moderation_report,
                     admin_noise_floor=floor,
+                    created_at=row.created_at,
                 )
             )
         except ValidationError as exc:
