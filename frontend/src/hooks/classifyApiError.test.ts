@@ -22,28 +22,47 @@ describe('classifyApiError', () => {
     expect(result.message).toMatch(/permission/i)
   })
 
-  it('classifies a 5xx as transient', () => {
-    expect(classifyApiError(axiosErrorWithStatus(503)).kind).toBe('transient')
+  it('classifies a 429 as rateLimited with a slow-down message', () => {
+    const result = classifyApiError(axiosErrorWithStatus(429))
+    expect(result.kind).toBe('rateLimited')
+    expect(result.message).toMatch(/wait a moment/i)
   })
 
-  it('classifies a network failure (no response) as transient', () => {
-    expect(classifyApiError({ isAxiosError: true }).kind).toBe('transient')
+  it('classifies a 5xx as server, not the generic transient bucket', () => {
+    const result = classifyApiError(axiosErrorWithStatus(503))
+    expect(result.kind).toBe('server')
+    expect(result.message).toMatch(/our end/i)
   })
 
-  it('classifies a timeout (ECONNABORTED, no response) as transient', () => {
+  it('classifies an unhandled status (404) as the residual transient bucket', () => {
+    expect(classifyApiError(axiosErrorWithStatus(404)).kind).toBe('transient')
+  })
+
+  it('classifies a network failure (no response at all) as offline', () => {
+    const result = classifyApiError({ isAxiosError: true })
+    expect(result.kind).toBe('offline')
+    expect(result.message).toMatch(/offline/i)
+  })
+
+  it('classifies a timeout (ECONNABORTED, no response) as offline', () => {
     const timeout = new AxiosError('timeout of 10000ms exceeded', AxiosError.ECONNABORTED)
-    expect(classifyApiError(timeout).kind).toBe('transient')
+    expect(classifyApiError(timeout).kind).toBe('offline')
   })
 
   it('classifies a non-axios error as transient', () => {
     expect(classifyApiError(new Error('boom')).kind).toBe('transient')
   })
 
-  it('gives the three kinds textually distinct default messages', () => {
-    const messages = [401, 403, 500].map(
-      (status) => classifyApiError(axiosErrorWithStatus(status)).message
-    )
-    expect(new Set(messages).size).toBe(3)
+  it('gives every kind a textually distinct default message', () => {
+    const messages = [
+      classifyApiError(axiosErrorWithStatus(401)).message,
+      classifyApiError(axiosErrorWithStatus(403)).message,
+      classifyApiError(axiosErrorWithStatus(429)).message,
+      classifyApiError(axiosErrorWithStatus(500)).message,
+      classifyApiError({ isAxiosError: true }).message,
+      classifyApiError(new Error('boom')).message,
+    ]
+    expect(new Set(messages).size).toBe(messages.length)
   })
 
   it('applies a per-kind message override', () => {
@@ -58,7 +77,7 @@ describe('classifyApiError', () => {
     const result = classifyApiError(axiosErrorWithStatus(500), {
       forbidden: 'custom forbidden copy',
     })
-    expect(result.kind).toBe('transient')
+    expect(result.kind).toBe('server')
     expect(result.message).toMatch(/try again/i)
   })
 })

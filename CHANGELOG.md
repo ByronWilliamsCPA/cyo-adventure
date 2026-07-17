@@ -22,6 +22,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   family cascades to deactivate its members in one transaction; reactivating
   a family does not auto-reactivate them.
 
+## [0.6.0] - 2026-07-16
+
+### Added
+
+- Comprehensive UX pass across the app. Kid readers can undo their last
+  choice (go back one page), see clearer library actions with PIN badges
+  and rating feedback, and get kid-safe polish for loading, conflicts, and
+  endings. Guardians get responsive intake forms with hints and counters,
+  request-age and recovery context on pending requests, confirm-before
+  dialogs for approve and decline, and a pending-request badge. Admins get
+  a severity/search/refresh review queue, a navigable story-graph
+  read-through, guarded moderation-config changes with readable history,
+  and a side-by-side compare view against a story's previous version. A
+  global toast channel confirms actions, including synced reading, across
+  the app. The app is installable as a PWA, and the design system supports
+  dark mode via `prefers-color-scheme`.
+
+### Fixed
+
+- Distinguish offline, rate-limit, and server errors in the error boundary
+  instead of a single generic failure message.
+- Honor the login return path after sign-in, style dead-end states, and
+  add a sign-in watchdog.
+- Give permanently lost reading-progress saves honest copy distinct from a
+  save that is still retrying.
+- Hide the read-aloud toggle until the reader ships text-to-speech.
+- Fix two real phone-width layout bugs in the guardian console found by
+  measurement.
+- Meet AA contrast, 44px touch targets, and reduced motion in the design
+  system.
+- Fix cross-origin service worker caching so the app installs and updates
+  correctly as a PWA.
+
 ## [0.5.2] - 2026-07-15
 
 ### Fixed
@@ -1717,7 +1750,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.4.0...v0.5.0

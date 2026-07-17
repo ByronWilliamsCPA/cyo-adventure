@@ -8,18 +8,21 @@ function setOnLine(value: boolean) {
 afterEach(() => setOnLine(true))
 
 describe('ReaderChrome', () => {
-  it('shows connected status and a progressbar', () => {
+  it('shows no connection badge while online, just the progressbar', () => {
     setOnLine(true)
     render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
-    expect(screen.getByText('Connected')).toBeTruthy()
+    // Online is the unremarkable normal: no badge (and no jargon) renders.
+    expect(screen.queryByText('Connected')).toBeNull()
+    expect(screen.queryByRole('status')).toBeNull()
     const bar = screen.getByRole('progressbar')
     expect(bar.getAttribute('aria-valuenow')).toBe('40')
   })
 
-  it('shows offline status when the device is offline', () => {
+  it('shows a kid-readable "No internet" badge when the device is offline', () => {
     setOnLine(false)
     render(<ReaderChrome percent={0} label="Not started" />)
-    expect(screen.getByText('Offline')).toBeTruthy()
+    expect(screen.getByText('No internet')).toBeTruthy()
+    expect(screen.queryByText('Offline')).toBeNull()
   })
 
   it('hides the numeric label by default (the total is not reliable)', () => {

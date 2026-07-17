@@ -71,6 +71,131 @@
   font-size: var(--text-sm);
 }
 
+/* The banner's kid-facing OK: 44px tap target, mirroring the toast's OK
+   button (toast.css .toast__ok). */
+.replay-failed-banner__ok {
+  font: inherit;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 2px solid currentColor;
+  background: var(--surface-raised);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.replay-failed-banner__ok:hover,
+.replay-failed-banner__ok:focus-visible {
+  background: var(--color-parchment);
+}
+
+/* Branded loading state while a story is fetched (Pip + short reassurance),
+   mirroring the library's role="status" loading pattern. */
+.reader-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  min-height: 60vh;
+  padding: var(--space-8) var(--space-4);
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  text-align: center;
+}
+
+.reader-loading__text {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+}
+
+.reader-loading__mascot {
+  animation: reader-mascot-bob 1.6s var(--easing-default) infinite;
+}
+
+@keyframes reader-mascot-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(calc(-1 * var(--space-2)));
+  }
+}
+
+/* Multi-device conflict dialog: fixed dimmed overlay with a centered
+   parchment card. Deliberately NOT the design-system Dialog (that one
+   dismisses on Escape/backdrop click; this dialog is blocking), but it sits
+   at the same z-index and uses the same tokens so the two read as siblings. */
+.conflict-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(44, 26, 14, 0.5);
+  animation: conflict-fade-in var(--duration-normal) var(--easing-default);
+}
+
+.conflict-dialog {
+  width: 100%;
+  max-width: 30rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  box-shadow:
+    0 0 0 1px var(--color-amber-light),
+    var(--shadow-lg);
+}
+
+.conflict-dialog__title {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.conflict-dialog__body {
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-ink-secondary);
+}
+
+.conflict-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.conflict-actions .cyo-btn {
+  flex: 1 1 auto;
+  min-height: 44px;
+}
+
+@keyframes conflict-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .reader,
 .reader-ending {
   display: flex;
@@ -96,6 +221,89 @@
   margin-bottom: calc(-1 * var(--space-2));
 }
 
+/* Programmatic focus target for the new-passage announcement (tabIndex={-1}):
+   the moved focus must not paint a ring around the whole passage. */
+.reader-passage:focus,
+.reader-ending__body:focus {
+  outline: none;
+}
+
+/* Ending celebration: a small burst of warm stars over the mascot. Pure CSS,
+   no dependencies. The --celebrate modifier adds the pop-in (and a gentle
+   mascot cheer); without it (negative-valence endings) the same stars render
+   static so the screen stays warm rather than gleeful. Both animations are
+   stilled under prefers-reduced-motion below, leaving the static stars. */
+.reader-ending__stars {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin-bottom: calc(-1 * var(--space-3));
+  font-size: var(--text-2xl);
+  line-height: 1;
+  color: var(--color-amber-deep);
+  user-select: none;
+}
+
+.reader-ending__stars > span {
+  display: inline-block;
+}
+
+.reader-ending__stars > span:nth-child(2) {
+  font-size: 1.3em;
+}
+
+.reader-ending__stars--celebrate > span {
+  animation: reader-star-pop var(--duration-slow) var(--easing-default) backwards;
+}
+
+.reader-ending__stars--celebrate > span:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.reader-ending__stars--celebrate > span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.reader-ending__mascot--celebrate {
+  animation: reader-mascot-cheer 700ms var(--easing-default) 240ms backwards;
+}
+
+@keyframes reader-star-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(var(--space-2));
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.2) translateY(calc(-1 * var(--space-1)));
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes reader-mascot-cheer {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  30% {
+    transform: translateY(calc(-1 * var(--space-3)));
+  }
+
+  60% {
+    transform: translateY(0);
+  }
+
+  80% {
+    transform: translateY(calc(-1 * var(--space-1)));
+  }
+}
+
 .reader-choices {
   list-style: none;
   margin: 0;
@@ -113,6 +321,14 @@
   width: 100%;
 }
 
+/* Go back one page: a modest ghost action under the choice list, left-aligned
+   so it reads as reader chrome rather than another story choice. The 44px tap
+   target comes from the design-system button floor (Button.css .cyo-btn). */
+.reader-back-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .reader-ending__title {
   font-family: var(--font-serif);
   font-size: var(--text-2xl);
@@ -126,9 +342,51 @@
   gap: var(--space-3);
 }
 
+/* Rare defensive screen: a structurally invalid transition (corrupted cached
+   story data). Reuses the ending screen's centered, calm framing so it never
+   reads as a crash. */
+.reader-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+.reader-error__mascot {
+  margin-bottom: calc(-1 * var(--space-2));
+}
+
+.reader-error__title {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.reader-error__body {
+  color: var(--color-ink-secondary);
+  margin: 0;
+}
+
+.reader-error__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 @media (min-width: 40rem) {
   .reader .cyo-passage,
   .reader-ending .cyo-passage {
     font-size: var(--text-xl);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-loading__mascot,
+  .conflict-overlay,
+  .reader-ending__stars--celebrate > span,
+  .reader-ending__mascot--celebrate {
+    animation: none;
   }
 }

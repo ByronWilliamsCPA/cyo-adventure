@@ -37,13 +37,13 @@ export function LibraryPage() {
   const [continueAnchor, setContinueAnchor] = useState<ContinueAnchor | null>(null)
   const requestStoryRef = useRef<HTMLDivElement>(null)
 
-  const continueThisStory = useCallback(
+  const askForNextBook = useCallback(
     (item: LibraryItemView) => setContinueAnchor({ id: item.id, title: item.title }),
     []
   )
   const clearContinueAnchor = useCallback(() => setContinueAnchor(null), [])
 
-  // #ASSUME: UI state: tapping "Continue this story" opens the RequestStory
+  // #ASSUME: UI state: tapping "Ask for the next book" opens the RequestStory
   // form at the top of the page with no visual cue near the tapped card;
   // without moving focus/scroll, a keyboard or low-vision user has no way to
   // notice the form appeared.
@@ -235,7 +235,7 @@ export function LibraryPage() {
             profileId={profileId}
             hero
             onRate={rate}
-            onContinue={continueThisStory}
+            onContinue={askForNextBook}
           />
         </section>
       ) : null}
@@ -249,7 +249,7 @@ export function LibraryPage() {
                   item={item}
                   profileId={profileId}
                   onRate={rate}
-                  onContinue={continueThisStory}
+                  onContinue={askForNextBook}
                 />
               </li>
             ))}

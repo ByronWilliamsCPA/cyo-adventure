@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -38,6 +38,9 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers()
+  // Restores Date.now spies from the request-age tests; mockGet/mockPost get
+  // fresh implementations in beforeEach either way.
+  vi.restoreAllMocks()
 })
 
 // IntakePage now renders a react-router <Link> (the add-child hint), so every
@@ -125,10 +128,175 @@ describe('IntakePage', () => {
     expect(screen.getByTestId('request-status-jf')).toHaveTextContent('Failed')
     expect(screen.getByTestId('request-jf')).toHaveTextContent('pipeline blew up')
     // Gate-failed needs_review (no storybook) is Failed, not a phantom
-    // review-pending row; with no error field only the friendly pill shows.
+    // review-pending row; with no error field it shows the friendly cause
+    // and no technical detail line.
     expect(screen.getByTestId('request-status-jn')).toHaveTextContent('Failed')
+    expect(screen.getByTestId('request-jn')).toHaveTextContent('This story could not be made.')
     // The raw report is never fetched or rendered.
     expect(screen.queryByText(/raw-model-output/)).toBeNull()
+  })
+
+  it('shows when each request was made, with the absolute time on hover', async () => {
+    // Freeze "now" 4 minutes after the job's created_at; the component reads
+    // Date.now() once per render, so the age line is deterministic here.
+    vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-07-02T00:04:00Z'))
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/generation-jobs')
+        return Promise.resolve({
+          data: {
+            jobs: [
+              { id: 'jw', status: 'passed', storybook_status: 'in_review', error: null,
+                title: 'W', premise_snippet: 'w', age_band: '8-11', storybook_id: 's1',
+                version: 1, created_at: '2026-07-02T00:00:00Z' },
+            ],
+          },
+        })
+      throw new Error(`unexpected GET ${url}`)
+    })
+    renderPage()
+
+    const row = await screen.findByTestId('request-jw')
+    const age = within(row).getByText('Requested 4 minutes ago')
+    // Hover shows the absolute time (locale-formatted from the same ISO input).
+    expect(age).toHaveAttribute('title', new Date('2026-07-02T00:00:00Z').toLocaleString())
+  })
+
+  it('shows expectation sublines for Generating and Waiting for review rows only', async () => {
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/generation-jobs')
+        return Promise.resolve({
+          data: {
+            jobs: [
+              { id: 'jq', status: 'queued', storybook_status: null, error: null,
+                title: 'Q', premise_snippet: 'q', age_band: '8-11', storybook_id: null,
+                version: null, created_at: '2026-07-02T00:00:00Z' },
+              { id: 'jw', status: 'passed', storybook_status: 'in_review', error: null,
+                title: 'W', premise_snippet: 'w', age_band: '8-11', storybook_id: 's1',
+                version: 1, created_at: '2026-07-02T00:00:00Z' },
+              { id: 'ja', status: 'passed', storybook_status: 'published', error: null,
+                title: 'A', premise_snippet: 'a', age_band: '8-11', storybook_id: 's2',
+                version: 1, created_at: '2026-07-02T00:00:00Z' },
+            ],
+          },
+        })
+      throw new Error(`unexpected GET ${url}`)
+    })
+    renderPage()
+
+    const genRow = await screen.findByTestId('request-jq')
+    expect(genRow).toHaveTextContent('Usually ready in a few minutes.')
+    const reviewRow = screen.getByTestId('request-jw')
+    expect(reviewRow).toHaveTextContent(
+      'A grown-up reviewer checks every story before kids can read it.'
+    )
+    // The pill itself is unchanged and terminal rows carry no subline.
+    expect(within(genRow).getByTestId('request-status-jq')).toHaveTextContent('Generating')
+    const approvedRow = screen.getByTestId('request-ja')
+    expect(approvedRow).not.toHaveTextContent('Usually ready in a few minutes.')
+    expect(approvedRow).not.toHaveTextContent('grown-up reviewer')
+  })
+
+  it('shows an inline success notice after a submit and still clears the premise', async () => {
+    const user = userEvent.setup()
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/concepts') return Promise.resolve({ data: { concept_id: 'c1' } })
+      if (url === '/v1/concepts/c1/generate')
+        return Promise.resolve({ data: { job_id: 'j1', status: 'queued' } })
+      throw new Error(`unexpected POST ${url}`)
+    })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /Reader A/i }))
+    await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
+    await user.click(screen.getByRole('button', { name: /Request Story/i }))
+
+    const notice = await screen.findByRole('status')
+    expect(notice).toHaveTextContent(
+      'Request sent! Your story is being made; watch My Requests below.'
+    )
+    expect(screen.getByLabelText(/What's it about/i)).toHaveValue('')
+  })
+
+  it('shows a friendly failure cause and Try again prefills the form without submitting', async () => {
+    const user = userEvent.setup()
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/generation-jobs')
+        return Promise.resolve({
+          data: {
+            jobs: [
+              { id: 'jf', status: 'failed', storybook_status: null,
+                error: 'pipeline blew up', title: 'F',
+                premise_snippet: 'tide pools and brave crabs', age_band: '8-11',
+                storybook_id: null, version: null,
+                created_at: '2026-07-02T00:00:00Z' },
+            ],
+          },
+        })
+      throw new Error(`unexpected GET ${url}`)
+    })
+    renderPage()
+
+    const row = await screen.findByTestId('request-jf')
+    expect(within(row).getByText('This story could not be made.')).toBeInTheDocument()
+    // The technical error stays visible for debugging, demoted to secondary text.
+    expect(within(row).getByText('pipeline blew up')).toHaveClass(
+      'intake-request__error-detail'
+    )
+
+    await user.click(within(row).getByRole('button', { name: /Try again/i }))
+
+    // Prefilled from the job summary: the premise snippet plus the single
+    // band-matching child chip; focus lands on the premise for confirmation.
+    const premiseField = screen.getByLabelText(/What's it about/i)
+    expect(premiseField).toHaveValue('tide pools and brave crabs')
+    expect(screen.getByTestId('child-chip-p1')).toHaveAttribute('aria-pressed', 'true')
+    expect(premiseField).toHaveFocus()
+    // Try again NEVER auto-submits: no concept/generate POST fires.
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
+  it('confirms inline after assigning children from the dialog', async () => {
+    const user = userEvent.setup()
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/generation-jobs')
+        return Promise.resolve({
+          data: {
+            jobs: [
+              { id: 'ja', status: 'passed', storybook_status: 'published', error: null,
+                title: 'A', premise_snippet: 'a', age_band: '8-11', storybook_id: 's2',
+                version: 1, created_at: '2026-07-02T00:00:00Z' },
+            ],
+          },
+        })
+      if (url === '/v1/storybooks/s2/assignments')
+        return Promise.resolve({ data: { storybook_id: 's2', profile_ids: [] } })
+      if (url === '/v1/storybooks/s2/content-summary')
+        return Promise.resolve({
+          data: {
+            storybook_id: 's2', version: 1, screened: true, summary: null,
+            flagged_count: 0, findings: [],
+          },
+        })
+      throw new Error(`unexpected GET ${url}`)
+    })
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/storybooks/s2/assignments')
+        return Promise.resolve({ data: { storybook_id: 's2', profile_ids: ['p1'] } })
+      throw new Error(`unexpected POST ${url}`)
+    })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /Assign more/i }))
+    await user.click(await screen.findByRole('checkbox', { name: /Reader A/i }))
+    await user.click(screen.getByRole('button', { name: /^Assign$/ }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    // The saved assignment list (the server's full post-save set) confirms inline.
+    expect(screen.getByRole('status')).toHaveTextContent('Assigned to 1 child.')
   })
 
   it('surfaces a load error with a retry when the initial fetch fails', async () => {

@@ -16,7 +16,13 @@ export function RequestsPage() {
   return (
     <>
       {principal?.role === 'guardian' ? <RequestStoryForm mode="guardian" /> : null}
-      <StoryRequestQueue scope="family" />
+      {/* The tracking hint is guardian-specific (this family's Story
+          requests view); the admin cross-family queue keeps the component's
+          neutral default message. */}
+      <StoryRequestQueue
+        scope="family"
+        approveSuccessMessage="Approved! The story is being made; track it under Story requests."
+      />
     </>
   )
 }

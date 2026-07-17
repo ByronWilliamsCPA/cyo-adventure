@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import { choose, currentEndingId, start, startContinuation, visibleChoices } from './engine'
+import { back, canGoBack, choose, currentEndingId, start, startContinuation, visibleChoices } from './engine'
 import type { ReadingState, Storybook, VarState } from './types'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -174,5 +174,87 @@ describe('startContinuation', () => {
     const state = startContinuation(story, 'n_two', undefined)
     expect(state.var_state).toEqual({ courage: 1, brave: false })
     expect(state.visit_set).toEqual(['n_two'])
+  })
+})
+
+describe('back / canGoBack (go back one page via replay)', () => {
+  const lantern = corpus.traces[0].story
+  const onceLoop = corpus.traces[2].story
+
+  it('is unavailable at the start node with an empty choice history', () => {
+    const state = start(lantern)
+    expect(canGoBack(lantern, state)).toBe(false)
+    expect(back(lantern, state)).toBeNull()
+  })
+
+  it('returns the state of the shorter read after one choice, without mutating the input', () => {
+    const state = choose(lantern, start(lantern), 'c_take_lantern')
+    const previous = back(lantern, state)
+    expect(previous).toEqual(start(lantern))
+    // The input state is untouched (engine purity, same contract as choose).
+    expect(state.current_node).toBe('n_cave_fork')
+    expect(state.path).toEqual(['n_entrance', 'n_cave_fork'])
+  })
+
+  it('recomputes once-only on_enter effects by replay, never by reversing', () => {
+    // n_room's on_enter inc is once:true, so both the two-step and the
+    // one-step read have counter 1; a naive reversal would decrement it.
+    const state = choose(onceLoop, start(onceLoop), 'c_again')
+    expect(state.var_state).toEqual({ counter: 1 })
+    const previous = back(onceLoop, state)
+    expect(previous?.current_node).toBe('n_room')
+    expect(previous?.path).toEqual(['n_room'])
+    expect(previous?.var_state).toEqual({ counter: 1 })
+  })
+
+  it('reconstructs the same-target sibling branch actually taken', () => {
+    // Both entrance choices target n_cave_fork; only the ignore branch leaves
+    // has_lantern false, and the replay must find it despite trying siblings.
+    const state = choose(lantern, start(lantern), 'c_ignore_lantern')
+    const previous = back(lantern, state)
+    expect(previous).toEqual(start(lantern))
+  })
+
+  it('carries the live server-revision counter over instead of rewinding it', () => {
+    const state = { ...choose(lantern, start(lantern), 'c_take_lantern'), state_revision: 7 }
+    expect(back(lantern, state)?.state_revision).toBe(7)
+  })
+
+  it('fails closed for a continuation state (path does not begin at start_node)', () => {
+    const story: Storybook = {
+      schema_version: '2.0',
+      id: 's_cont_back',
+      version: 1,
+      title: 'Continuation Back',
+      metadata: {},
+      variables: [],
+      start_node: 'n_one',
+      nodes: [
+        {
+          id: 'n_one',
+          body: 'one',
+          is_ending: false,
+          choices: [{ id: 'c_a', label: 'On.', target: 'n_two' }],
+        },
+        {
+          id: 'n_two',
+          body: 'two',
+          is_ending: false,
+          choices: [{ id: 'c_b', label: 'On.', target: 'n_three' }],
+        },
+        { id: 'n_three', body: 'three', is_ending: false, choices: [] },
+      ],
+    }
+    const state = choose(story, startContinuation(story, 'n_two'), 'c_b')
+    expect(state.path).toEqual(['n_two', 'n_three'])
+    expect(canGoBack(story, state)).toBe(false)
+    expect(back(story, state)).toBeNull()
+  })
+
+  it('fails closed when no replay of the recorded path reproduces the live state', () => {
+    const state = choose(lantern, start(lantern), 'c_take_lantern')
+    const forged = { ...state, visit_set: [...state.visit_set, 'n_exit'] }
+    expect(canGoBack(lantern, forged)).toBe(false)
+    expect(back(lantern, forged)).toBeNull()
   })
 })

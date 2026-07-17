@@ -272,6 +272,28 @@
   font-size: var(--text-lg, 1.25rem);
 }
 
+/* Pending story-request count on the "Story requests" nav link
+   (GuardianShell.tsx). Same small-text contrast constraint as
+   .flag-badge--flag below: a solid amber-deep fill with ink text (4.86:1),
+   because amber-deep text on parchment cannot clear 4.5:1 at this size.
+   Hidden entirely at zero or on a failed fetch; progressive enhancement,
+   never an error surface. */
+.guardian-shell__nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  margin-left: var(--space-2, 0.5rem);
+  padding: 0 0.35rem;
+  border-radius: var(--radius-full, 999px);
+  background: var(--color-amber-deep, #c17b2a);
+  color: var(--color-ink, #2c1a0e);
+  font-size: 0.8125rem;
+  font-weight: var(--weight-bold, 700);
+  line-height: 1;
+}
+
 /* ============================================================================
    Shared surface patterns (C2 consolidation)
 
@@ -292,11 +314,46 @@
   font-size: 0.875rem;
 }
 
+/* Demoted technical detail under the friendly failure line: kept visible
+   for debugging but smaller; color comes from cyo-text-muted in
+   IntakePage.tsx. */
+.intake-request__error-detail {
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+/* "Requested N minutes ago" age line and the per-status expectation
+   subline; color comes from cyo-text-muted in IntakePage.tsx. */
+.intake-request__age,
+.intake-request__hint {
+  font-size: 0.8125rem;
+}
+
+/* Inline success confirmations (request sent, story assigned); same forest
+   tone as .request-form__notice below. */
+.intake-form__notice,
+.intake-assign-notice {
+  color: var(--color-forest, #2d5a3d);
+  margin: 0;
+}
+
 /* color comes from the cyo-text-muted class added alongside this one in
    IntakePage.tsx; font-size/margin stay local. */
 .intake-form__hint {
   font-size: 0.875rem;
   margin: 0;
+}
+
+/* Live "N / MAX" character counters under the premise (IntakePage.tsx) and
+   request-text (RequestStoryForm.tsx) textareas. Rendered as a sibling of
+   the label (never inside it, which would leak into the field's accessible
+   name); the negative top margin tucks it under its textarea despite the
+   form's 1rem flex gap. Color comes from cyo-text-muted. */
+.intake-form__counter,
+.request-form__counter {
+  margin: -0.75rem 0 0;
+  align-self: flex-end;
+  font-size: 0.75rem;
 }
 
 .profiles__header {
@@ -438,8 +495,10 @@
 /* This pill's text can't clear 4.5:1 with amber-deep at any font weight
    without growing past its compact inline size, so it uses an amber-deep
    fill with ink text (4.86:1) instead of the white-on-amber-deep pairing
-   used where text can be sized large (see .intake-chip--on above). */
-.intake-request__assign {
+   used where text can be sized large (see .intake-chip--on above). The
+   Failed-row "Try again" prefill button shares the treatment. */
+.intake-request__assign,
+.intake-request__retry {
   border: 1px solid var(--color-amber-deep, #c17b2a);
   background: var(--color-amber-deep, #c17b2a);
   color: var(--color-ink, #2c1a0e);
@@ -451,12 +510,14 @@
   white-space: nowrap;
 }
 
-.intake-request__assign:hover {
+.intake-request__assign:hover,
+.intake-request__retry:hover {
   background: var(--color-amber-hover, #c4681c);
   border-color: var(--color-amber-hover, #c4681c);
 }
 
-.intake-request__assign:focus-visible {
+.intake-request__assign:focus-visible,
+.intake-request__retry:focus-visible {
   outline: 2px solid var(--color-amber-deep, #c17b2a);
   outline-offset: 2px;
 }
@@ -556,13 +617,49 @@
 
 .console-row__actions {
   display: flex;
+  align-items: flex-end;
+  /* Up to 4 selects + 2 buttons share this row; let controls fall to the
+     next line instead of squeezing or overflowing at middling widths. The
+     ~640px query below stacks the row to a full-width column. */
+  flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0 1rem 0.75rem;
+}
+
+.console-row__actions select,
+.console-row__actions input[type='text'] {
+  /* Touch-target floor: native form controls do not inherit the design
+     system Button's 44px minimum. */
+  min-height: 44px;
+}
+
+/* "Asked N minutes ago" provenance line under the request text; color comes
+   from the cyo-text-muted class added alongside it in StoryRequestQueue.tsx. */
+.console-row__age {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+/* Inline reason next to the disabled Approve while no length is chosen;
+   color comes from the cyo-text-muted class added alongside it. */
+.console-row__approve-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  align-self: center;
 }
 
 /* color comes from the cyo-text-muted class added alongside this one in
    RequestsPage.tsx; italic stays local. */
 .console-row__series-note {
+  font-style: italic;
+}
+
+/* Quoted request text in the decline-confirm dialog (StoryRequestQueue.tsx);
+   color comes from the cyo-text-muted class added alongside it. */
+.decline-confirm__quote {
+  margin: 0.5rem 0 0;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--color-amber-deep, #c17b2a);
   font-style: italic;
 }
 
@@ -600,10 +697,156 @@
   color: var(--color-ink-secondary, #5a3e28);
 }
 
+/* Moderation verdict strip under the title (summary badges + finding count). */
+.review-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.review-summary__count {
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; size/margin stay local. */
+.review-coverage {
+  margin: 0.25rem 0 1rem;
+  font-size: 0.875rem;
+}
+
+.review-node {
+  margin-bottom: 1.25rem;
+  border-radius: 8px;
+  transition: background var(--duration-fast, 120ms) var(--easing-default, ease-in-out);
+}
+
 .review-node--flagged {
   border-left: 3px solid var(--color-amber, #e07f2e);
   padding-left: 0.75rem;
   background: rgb(193 123 42 / 8%);
+}
+
+/* Brief landing tint after a jump; stronger than the flagged tint so the
+   target passage stands out even when it is itself flagged. Declared after
+   --flagged so it wins their shared specificity. */
+.review-node--highlight {
+  background: rgb(224 127 46 / 22%);
+}
+
+.review-node__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.25rem;
+}
+
+.review-node__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.review-node__badge--start {
+  background: rgb(45 90 61 / 12%);
+  color: var(--color-forest, #2d5a3d);
+}
+
+.review-node__badge--ending {
+  background: var(--color-parchment-dark, #ede6d0);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.review-choices {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.review-choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.review-choice__label {
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* color comes from the cyo-text-error class added alongside this one in
+   ReviewDetailPage.tsx; size stays local. */
+.review-choice__missing {
+  font-size: 0.8125rem;
+}
+
+/* Compact jump pill (choice targets, flagged-card "Show in story"). Same
+   small-text contrast constraint as .intake-request__assign above: a solid
+   amber-deep fill with ink text (4.86:1), because amber-deep text on
+   parchment cannot clear 4.5:1 at this size. */
+.review-jump {
+  border: 1px solid var(--color-amber-deep, #c17b2a);
+  background: var(--color-amber-deep, #c17b2a);
+  color: var(--color-ink, #2c1a0e);
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.8125rem;
+  font-weight: var(--weight-semibold, 600);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.review-jump:hover {
+  background: var(--color-amber-hover, #c4681c);
+  border-color: var(--color-amber-hover, #c4681c);
+}
+
+.review-jump:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}
+
+.review-card__jump {
+  margin-top: 0.5rem;
+  align-self: flex-start;
+}
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; size/margin stay local. */
+.review-card__missing-node {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.review-unreachable {
+  margin-top: 1.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+.review-unreachable__heading {
+  margin: 0 0 0.25rem;
+  font-size: var(--text-base, 1.125rem);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; size/margin stay local. */
+.review-unreachable__note {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
 }
 
 .review-detail__unscreened {
@@ -665,6 +908,119 @@
   text-align: center;
 }
 
+/* ============================================================================
+   Version compare (ReviewDetailPage.tsx): the "Compare with version N-1"
+   toggle and its collapsible diff panel, plus the auto-repaired hint that
+   points a reviewer at it. Sits between the moderation summary strip and the
+   flagged-passages section.
+   ============================================================================ */
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; margin stays local. */
+.review-repaired-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
+.review-compare {
+  margin-top: 0.75rem;
+}
+
+.review-compare__panel {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 8px;
+  background: var(--color-parchment-dark, #ede6d0);
+}
+
+.review-compare__status {
+  margin: 0;
+}
+
+.review-compare__summary {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.review-compare__list {
+  margin: 0 0 0.5rem;
+  padding-left: 1.25rem;
+}
+
+.review-compare__node {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+.review-compare__node summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.review-compare__body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.review-compare__before,
+.review-compare__after {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.review-compare__before h4,
+.review-compare__after h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.review-compare__choices {
+  margin-top: 0.5rem;
+}
+
+.review-compare__choices p {
+  margin: 0 0 0.25rem;
+}
+
+.review-compare__choices ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+/* ============================================================================
+   Family console device section (ConsolePage.tsx, ADR-014 Phase 3): each
+   device action pairs its button with a one-line consequence so a guardian
+   knows what Hand-to-a-child and Remove actually do before clicking.
+   ============================================================================ */
+.console-device__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.console-device__action {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Consequence line under its device action button; color comes from the
+   cyo-text-muted class added alongside it in ConsolePage.tsx. */
+.console-device__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
 .assign__list {
   list-style: none;
   margin: 0;
@@ -672,6 +1028,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+/* No-profiles guidance inside the assign dialog (AssignChildrenDialog.tsx);
+   color comes from the cyo-text-muted class added alongside it. */
+.assign__empty {
+  margin: 0;
 }
 
 .assign__row label {
@@ -719,6 +1081,13 @@
 
 .request-form__notice--blocked {
   color: var(--color-error, #9b2c2c);
+}
+
+/* Disabled-submit reason above Send request; color comes from the
+   cyo-text-muted class added alongside it in RequestStoryForm.tsx. */
+.request-form__hint {
+  font-size: 0.875rem;
+  margin: 0;
 }
 
 /* ============================================================================
@@ -786,4 +1155,79 @@
   padding: 0.3rem 0.6rem;
   text-align: left;
   border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+/* Moderation dashboard (ModerationDashboardPage.tsx): an override-evidence
+   row at or above the suggestion gate reuses the .review-node--flagged amber
+   wash so gate-crossing evidence stands out at a glance. */
+.moderation-insight--at-gate {
+  background: rgb(193 123 42 / 8%);
+}
+
+/* ============================================================================
+   Mobile breakpoint (~640px): guardian surfaces are managed from a phone as
+   often as a desktop. Desktop layouts above are left untouched; this block
+   only relaxes the row/action layouts that would otherwise overflow or
+   crush controls on a narrow screen. */
+@media (max-width: 640px) {
+  .console-row__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .console-row__actions select,
+  .console-row__actions input[type='text'],
+  .console-row__actions label {
+    width: 100%;
+  }
+
+  .console-row__actions > .cyo-btn {
+    width: 100%;
+  }
+
+  .profiles__card,
+  .books__row .books__main {
+    flex-wrap: wrap;
+  }
+
+  .profiles__card {
+    align-items: flex-start;
+  }
+
+  .guardian-shell__main table,
+  .guardian-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  /* Device actions (ConsolePage.tsx): each action's width is otherwise
+     driven by its own hint paragraph's wrapped width, so a hint-less
+     button (Re-authorize) renders far narrower than its hint-bearing
+     siblings (Hand device to a child, Remove from this device) and looks
+     broken stacked next to them at phone widths. Match every device
+     button to the full row width instead, the same treatment
+     .console-row__actions gets above. */
+  .console-device__action {
+    width: 100%;
+  }
+
+  .console-device > .cyo-btn {
+    width: 100%;
+  }
+
+  /* "My Requests" rows (IntakePage.tsx): the pill and, on an Approved or
+     Failed row, the assign/retry button never shrink (both are
+     white-space: nowrap), so at phone-to-intermediate widths the title
+     column was squeezed down to a few characters per line to make room
+     for them on the same line. Letting the row wrap, with a floor on the
+     title column, moves the pill/button to their own line instead of
+     crushing the title; a pill-only row still fits on one line whenever
+     it has room and is untouched. */
+  .intake-request {
+    flex-wrap: wrap;
+  }
+
+  .intake-request__body {
+    min-width: 12rem;
+  }
 }

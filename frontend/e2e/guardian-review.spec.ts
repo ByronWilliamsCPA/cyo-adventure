@@ -23,9 +23,14 @@ const SURFACE = {
   },
   blob: {
     title: 'The Cave',
+    start_node: 'n1',
     nodes: [
-      { id: 'n1', body: 'A dark cave yawned ahead.' },
-      { id: 'n2', body: 'The path forked left and right.' },
+      {
+        id: 'n1',
+        body: 'A dark cave yawned ahead.',
+        choices: [{ label: 'Step inside', target: 'n2' }],
+      },
+      { id: 'n2', body: 'The path forked left and right.', choices: [] },
     ],
   },
   flagged_passages: [

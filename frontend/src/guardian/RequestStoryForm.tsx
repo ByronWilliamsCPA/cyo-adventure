@@ -12,15 +12,12 @@ import type {
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeAuthoredRequestApi } from './authoredRequestApi'
-import { AGE_BANDS, LENGTHS, TEEN_BANDS } from './storyRequestOptions'
+import { AGE_BANDS, LENGTHS, TEEN_BANDS, ageBandLabel } from './storyRequestOptions'
 
 type LoadState = { kind: 'loading' } | { kind: 'error' } | { kind: 'ready' }
 
 type SubmitResult =
-  | { kind: 'idle' }
-  | { kind: 'success' }
-  | { kind: 'blocked' }
-  | { kind: 'error'; message: string }
+  { kind: 'idle' } | { kind: 'success' } | { kind: 'blocked' } | { kind: 'error'; message: string }
 
 interface RequestStoryFormProps {
   mode: 'guardian' | 'admin'
@@ -37,6 +34,22 @@ const UNSELECTED = ''
 // (library/RequestStory.tsx). A looser client cap would let the author type
 // past the contract and hit a 422 the form can only render generically.
 const REQUEST_TEXT_MAX = 500
+
+// The "N / 500" counter is always visible but only becomes a polite live
+// region near the cap (>=90%), so screen readers hear the shrinking budget
+// when it matters instead of on every keystroke.
+const REQUEST_TEXT_WARN_AT = REQUEST_TEXT_MAX * 0.9
+
+/**
+ * Oxford-comma join for the disabled-submit hint ("a, b, and c"). Local to
+ * this module on purpose: the other guardian forms have at most two missing
+ * inputs and spell their hints out directly.
+ */
+function joinPhrases(phrases: string[]): string {
+  if (phrases.length <= 1) return phrases[0] ?? ''
+  if (phrases.length === 2) return `${phrases[0]} and ${phrases[1]}`
+  return `${phrases.slice(0, -1).join(', ')}, and ${phrases[phrases.length - 1]}`
+}
 
 /**
  * Guardian/admin "authored" story request (WS-B PR2): a pre-approved request
@@ -132,6 +145,20 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
     (mode === 'guardian' || familyId !== UNSELECTED) &&
     !submitting
 
+  // Names what still blocks Send request while it is disabled for missing
+  // inputs (null while submitting or once everything is filled). Derived from
+  // the same conditions as canSubmit so the hint can never contradict the
+  // button.
+  const missingInputs: string[] = []
+  if (mode === 'admin' && familyId === UNSELECTED) missingInputs.push('pick a family')
+  if (requestText.trim().length === 0) missingInputs.push('describe the story')
+  if (band === '') missingInputs.push('pick an age band')
+  if (length === '') missingInputs.push('pick a story length')
+  const submitHint =
+    !submitting && missingInputs.length > 0
+      ? `To send this request: ${joinPhrases(missingInputs)}.`
+      : null
+
   // #CRITICAL: concurrency: the submit button is only re-enabled once the
   // in-flight request settles (canSubmit includes !submitting), so a
   // double-click cannot fire a second authored-request POST for the same
@@ -190,6 +217,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         kind: 'error',
         message: classifyApiError(err, {
           transient: 'We could not send this request. Please try again.',
+          server: 'We could not send this request. Please try again.',
         }).message,
       })
     } finally {
@@ -286,6 +314,14 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
           required
         />
       </label>
+      {/* Sibling of the label, not a child: the counter must not leak into
+          the textarea's accessible name. */}
+      <p
+        className="request-form__counter cyo-text-muted"
+        aria-live={requestText.length >= REQUEST_TEXT_WARN_AT ? 'polite' : 'off'}
+      >
+        {requestText.length} / {REQUEST_TEXT_MAX}
+      </p>
 
       <label className="request-form__field cyo-field" htmlFor="request-form-band">
         Age band
@@ -299,7 +335,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
           <option value="">Choose…</option>
           {AGE_BANDS.map((b) => (
             <option key={b} value={b}>
-              {b}
+              {ageBandLabel(b)}
             </option>
           ))}
         </select>
@@ -350,6 +386,9 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         />
       </label>
 
+      {submitHint !== null ? (
+        <p className="request-form__hint cyo-text-muted">{submitHint}</p>
+      ) : null}
       <Button type="submit" disabled={!canSubmit}>
         {submitting ? 'Sending…' : 'Send request'}
       </Button>

@@ -115,7 +115,7 @@ test('filling the series name posts the proposed series title, not an anchor', a
   })
 })
 
-test('tapping "Continue this story" anchors the request to that book', async ({ page }) => {
+test('tapping "Ask for the next book" anchors the request to that book', async ({ page }) => {
   const stories = {
     stories: [
       {
@@ -165,7 +165,7 @@ test('tapping "Continue this story" anchors the request to that book', async ({ 
   await shelf
     .getByRole('listitem')
     .filter({ hasText: 'The Lantern' })
-    .getByRole('button', { name: 'Continue this story' })
+    .getByRole('button', { name: 'Ask for the next book' })
     .click()
 
   await expect(page.getByText('Continuing: The Lantern')).toBeVisible()

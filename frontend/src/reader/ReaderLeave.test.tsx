@@ -99,7 +99,9 @@ describe('ReaderPage Leave with an in-flight save', () => {
 
     // The failure surfaces and this tap does NOT navigate: the page (and its
     // role="alert" banner) must stay mounted so the loss is actually seen.
-    expect(await screen.findByTestId('save-warning')).toHaveTextContent("couldn't save that step")
+    expect(await screen.findByTestId('save-warning')).toHaveTextContent(
+      "We couldn't save your last step."
+    )
     expect(screen.queryByText('Library Page')).toBeNull()
     expect(screen.getByTestId('reader')).toBeTruthy()
 
