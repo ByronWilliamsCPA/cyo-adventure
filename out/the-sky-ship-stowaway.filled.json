@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Wren had dreamed of the sky her whole life, and now, at last, she was living inside that dream. The great airship Cirrus had cast off from its mooring tower with a groan of ropes and a hiss of steam, and she was already aboard, curled small inside a coil of rope on the boarding deck, a real stowaway. Around her the deck hummed with distant engines and hurrying boots, and so far not one crew member had spotted her. Four passages led away into the belly of the ship: one rumbling with machinery, one dim with stacked crates, one climbing toward open sky, and one bright with music and laughter. She had only a moment to choose before someone turned around.",
+      "body": "Wren had always dreamed of the sky. Now, at last, she was flying in it. The great airship Cirrus had just cast off. Ropes creaked. Steam hissed. Wren was already on board, curled up small inside a coil of rope. She was a real stowaway now. The deck hummed with far-off engines. Boots thumped past her hiding place. So far, no one had spotted her. Four passages led away from the deck. One rumbled with loud machines. One was dark and full of crates. One climbed up toward the open sky. One was bright with music and laughing voices. Wren had only a moment to choose. Soon someone would turn around.",
       "is_ending": false,
       "choices": [
         {
@@ -61,7 +61,7 @@
     },
     {
       "id": "a_eng1",
-      "body": "The engine room roared with brass pistons and the warm, oily smell of hot metal. A broad-shouldered stoker stood with his back to her, shovel ringing as he fed the fire, never once looking round. Above the machines ran a narrow catwalk, its rail sturdy under her palm when she tested it, leading toward a quieter corner where the pipes glowed a soft, banked orange. Wren could creep along that catwalk, keeping low and careful, or risk crossing the open floor where the stoker might turn at any moment and catch her in the lamplight.",
+      "body": "The engine room roared with noise. Brass pistons pumped up and down. Hot oil smells filled the air. A big stoker stood with his back to her. He was busy shoveling coal into the fire. He did not turn around. Above the machines ran a narrow catwalk. Wren tested the rail with her hand. It felt sturdy and safe. The catwalk led toward a quiet corner. There, pipes glowed a soft orange. Wren could creep along the catwalk, slow and careful. Or she could dash straight across the open floor. The stoker might turn at any moment.",
       "is_ending": false,
       "choices": [
         {
@@ -78,7 +78,7 @@
     },
     {
       "id": "a_eng_deep",
-      "body": "Past the pistons, the engine room opened into a humming maze of pipes, warm to the touch and never quite still. One way led toward a wall bright with dials and gauges, ticking out the ship's steady heartbeat. The other dropped down a short ladder toward the coal bunkers, where something small was scuffling about in the dark. Wren paused at the fork, deciding whether to study the glowing dials or climb down to see what was making that scuffling sound below.",
+      "body": "Past the pistons, the engine room opened wider. Pipes ran everywhere, warm under her hand. One way led to a wall of dials. The dials showed the ship's steady heartbeat. The other way dropped down a short ladder. It led toward the dark coal bunkers. Something small was scuffling down there. Wren stopped at the fork. She could study the glowing dials. Or she could climb down to find that scuffling sound.",
       "is_ending": false,
       "choices": [
         {
@@ -95,7 +95,7 @@
     },
     {
       "id": "a_eng_a",
-      "body": "The dials ticked and trembled, their needles dancing between marks for steam, lift, and altitude. Watching them, Wren slowly worked out how the great engine breathed in and out, drawing power from fire and turning it into flight. Beyond the gauges a low hatch stood ajar, warm air sighing through the gap. It seemed to lead toward the middle of the ship, where she guessed all the ship's corridors must join, and ducking low, she decided that hatch was worth exploring.",
+      "body": "The dials ticked and trembled. Little needles jumped between marks. One mark said steam. One said lift. One said altitude. Wren watched closely. Slowly she worked out how the engine breathed. Fire turned into flight, right before her eyes. Past the dials stood a low hatch. It was open just a crack. Warm air sighed through the gap. The hatch seemed to lead toward the middle of the ship. Ducking low, Wren decided to go through it.",
       "is_ending": false,
       "choices": [
         {
@@ -107,7 +107,7 @@
     },
     {
       "id": "a_eng_a2",
-      "body": "Through the hatch, a snug maintenance passage stretched away, warmed by the engines and lit by oil lamps that swung gently on their hooks. The roar behind her faded to a low, friendly rumble. Then Wren heard it: a faint mewing sound, drifting down the passage from somewhere near the very heart of the ship. It did not sound frightened, only curious, and it was far too interesting to ignore.",
+      "body": "Through the hatch was a small, warm passage. Oil lamps swung gently on their hooks. The loud roar behind her faded away. Now it was just a friendly rumble. Then Wren heard something new. A faint mewing sound drifted down the passage. It came from somewhere near the heart of the ship. It did not sound scared. It sounded curious, and hopeful. Wren wanted to know what it was.",
       "is_ending": false,
       "choices": [
         {
@@ -119,7 +119,7 @@
     },
     {
       "id": "a_eng_b",
-      "body": "The coal bunkers were hot, dim, and full of shifting shadows. The scuffling sound turned out to be nothing frightening at all, only a loose hatch swinging on its hinge with the sway of the ship. Through the gap Wren glimpsed a warmer passage beyond, and carried on the draft came a small, hopeful sound, half mew and half chirp. Whatever was making it did not sound like trouble. It sounded like it wanted to be found.",
+      "body": "The coal bunkers were hot and dim. Shadows shifted with every sway of the ship. The scuffling sound was not scary at all. It was only a loose hatch swinging on its hinge. Through the gap, Wren saw a warmer passage. A small sound drifted through the gap too. It was half mew, half chirp. It did not sound like trouble. It sounded like it wanted to be found.",
       "is_ending": false,
       "choices": [
         {
@@ -131,7 +131,7 @@
     },
     {
       "id": "a_eng_b2",
-      "body": "Beyond the hatch, a service corridor ran warm and quiet along the engine's flank, the roar of pistons fading behind her with every step. The mewing sound came again, closer now, drifting from somewhere near the middle of the ship, where all these low, warm passages seemed to gather together. Wren followed it eagerly, sure she was close to whatever, or whoever, was calling.",
+      "body": "Beyond the hatch ran a service passage. It was warm along the engine's side. The roar of pistons faded behind her, step by step. The little mewing sound came again. It was closer now. It seemed to come from the middle of the ship. That was where all these warm passages seemed to meet. Wren followed the sound eagerly. She was sure she was getting close.",
       "is_ending": false,
       "choices": [
         {
@@ -143,7 +143,7 @@
     },
     {
       "id": "a_eng_conv",
-      "body": "The warm engine passages funneled Wren into a snug junction stacked with spare rope and folded canvas, a quiet nook tucked away from the noise of the ship. The mewing was very near now, right behind the nearest crate. Holding her breath, Wren crouched down, and a small pair of eyes caught the lamplight and blinked back at her, bright and curious and not afraid at all.",
+      "body": "The warm passages led Wren to a snug little junction. Spare rope and folded canvas were piled here. It was quiet, tucked away from the noise. The mewing sound was very near now. It came from right behind a crate. Wren held her breath and crouched down low. A small pair of eyes caught the lamplight. They blinked back at her. They did not look scared at all.",
       "is_ending": false,
       "choices": [
         {
@@ -155,7 +155,7 @@
     },
     {
       "id": "a_eng_risk",
-      "body": "Wren dashed straight across the open floor, boots light on the metal grating. Halfway over, the stoker began to turn, his shovel scraping to a stop. There was no time to think, only to choose. She could throw herself flat behind the coal chute and hope the shadows hid her, or she could freeze exactly where she stood, caught out in the lamplight with nowhere left to run.",
+      "body": "Wren dashed straight across the open floor. Her boots were light on the metal grating. Halfway across, the stoker began to turn. His shovel scraped to a stop. There was no time to think. Wren had to choose, right now. She could throw herself flat behind the coal chute. Maybe the shadows would hide her there. Or she could freeze exactly where she stood. She would be caught in the lamplight, with nowhere left to run.",
       "is_ending": false,
       "choices": [
         {
@@ -172,7 +172,7 @@
     },
     {
       "id": "a_eng_recover",
-      "body": "Crouched behind the coal chute, Wren held her breath until her chest ached. The stoker frowned, shrugged, and turned back to his fire, muttering to himself about tricks of the light. The moment his shovel began to scrape again, Wren let her breath out slow and quiet, then slipped away deeper into the humming maze of pipes.",
+      "body": "Crouched behind the coal chute, Wren held her breath. Her chest ached with the effort. The stoker frowned and shrugged. He turned back to his fire, muttering about tricks of the light. His shovel began to scrape again. Wren let her breath out, slow and quiet. Then she slipped away, deeper into the maze of pipes.",
       "is_ending": false,
       "choices": [
         {
@@ -184,7 +184,7 @@
     },
     {
       "id": "e_set_eng",
-      "body": "The stoker spotted her before she had gone three steps, but he was not unkind about it. He set down his shovel, took her gently by the shoulder, and walked her straight up to the purser's office. There Wren waited on a hard little bench while the Cirrus flew on without her secret. At the very next mooring tower, the purser saw her safely down to the ground, her great stowaway voyage over almost before it had begun.",
+      "body": "The stoker spotted her before she had gone three steps. He was not unkind about it, though. He set down his shovel. Gently, he took her by the shoulder. He walked her straight to the purser's office. Wren waited there on a hard little bench. The Cirrus flew on without her secret. At the very next mooring tower, the purser walked her safely down to the ground. Her stowaway voyage was over, almost before it began.",
       "is_ending": true,
       "ending": {
         "id": "e_set_eng",
@@ -195,7 +195,7 @@
     },
     {
       "id": "b_hold1",
-      "body": "The cargo hold was a whole cavern of lashed crates and swaying lanterns, the ropes overhead creaking with every roll of the ship. Two ways beckoned from where Wren crouched. One was a tidy aisle between rows of neatly labelled boxes, orderly and inviting. The other was a shadowed gap where a length of cargo netting had come loose and hung open like a doorway into the dark. She had to choose which way to slip through before a lantern swung close enough to catch her in its light.",
+      "body": "The cargo hold was a whole cave of crates. Lanterns swayed from ropes overhead. The ropes creaked with every roll of the ship. Two ways opened up from where Wren crouched. One was a tidy aisle between rows of boxes. Neat labels covered every crate. The other way was a shadowed gap. Cargo netting had come loose there, hanging open like a doorway. Wren had to pick her way fast. A lantern was swinging closer to her hiding spot.",
       "is_ending": false,
       "choices": [
         {
@@ -212,7 +212,7 @@
     },
     {
       "id": "b_hold_deep",
-      "body": "The aisle ran deep into the hold, past row after row of crates. One stack was stamped with the crest of a faraway city, and beside it a low tunnel formed by stacked barrels curved away toward the warmer middle of the ship. Wren crouched at the choice, wondering whether to stop and study that curious crest or duck straight into the barrel tunnel and keep moving.",
+      "body": "The aisle ran deep into the hold. Row after row of crates lined the way. One stack was stamped with a strange mark. It was the crest of some faraway city. Beside it, stacked barrels formed a low tunnel. The tunnel curved toward the warmer part of the ship. Wren paused at the fork. She could stop and study that curious crest. Or she could duck into the barrel tunnel and keep moving.",
       "is_ending": false,
       "choices": [
         {
@@ -229,7 +229,7 @@
     },
     {
       "id": "b_hold_a",
-      "body": "The crest showed a leaping silver fish above three curling clouds, the mark of a faraway coast Wren had only ever read about in books. The crates beneath it hummed faintly with the vibration of the engines. Past them, a narrow gap opened in the stacked cargo, leading on toward the heart of the Cirrus. Curiosity satisfied for now, Wren slipped through the gap to see where it led.",
+      "body": "The crest showed a silver fish leaping above three clouds. It was the mark of a faraway coast. Wren had only read about that coast in books. The crates beneath the crest hummed faintly. The engines shook them, ever so gently. Past the crates, a narrow gap opened in the cargo. It led on toward the heart of the Cirrus. Her curiosity satisfied, Wren slipped through the gap to see what came next.",
       "is_ending": false,
       "choices": [
         {
@@ -241,7 +241,7 @@
     },
     {
       "id": "b_hold_a2",
-      "body": "The gap became a snug walkway squeezed between towers of freight, a single lantern swaying overhead and throwing soft, shifting light. Somewhere ahead in the dimness, a small pair of eyes caught that glow and blinked back at her. Wren froze for a heartbeat, then realized whatever it was seemed just as curious about her as she was about it.",
+      "body": "The gap became a snug walkway. Towers of freight rose up on both sides. One lantern swayed overhead, throwing soft light. Somewhere ahead, in the dim glow, two small eyes blinked. Wren froze for a moment. Then she understood. Whatever was watching her seemed just as curious as she was. She stepped forward slowly, wanting to see more.",
       "is_ending": false,
       "choices": [
         {
@@ -253,7 +253,7 @@
     },
     {
       "id": "b_hold_b",
-      "body": "The barrel tunnel was snug and creaked alarmingly with every sway of the ship, but it held firm around her. Wren wriggled along it on hands and knees and came out the far end into a warmer part of the hold, where the stacked cargo thinned out and a narrow walkway led on toward the middle of the ship.",
+      "body": "The barrel tunnel was snug and dim. It creaked loudly with every sway of the ship. Still, it held firm around her. Wren wriggled along on her hands and knees. At last she came out the far end. The cargo here was thinner, and the air felt warmer. A narrow walkway led on, deeper into the hold. Wren followed it, curious to see where it went.",
       "is_ending": false,
       "choices": [
         {
@@ -265,7 +265,7 @@
     },
     {
       "id": "b_hold_b2",
-      "body": "The walkway was lit by a single swinging lantern, and the deep, steady roar of the engines softened the further Wren went. Then she heard it: a small, hopeful sound, half mew and half chirp, drifting from somewhere ahead. It seemed to be guiding her onward, toward the middle of the ship, and she found she could not resist following.",
+      "body": "The walkway was lit by a single swinging lantern. The deep roar of the engines grew softer here. Then Wren heard it: a small, hopeful sound. It was half mew, half chirp. It seemed to be calling her onward. She followed it toward the middle of the ship. She could not help herself. She simply had to know what it was.",
       "is_ending": false,
       "choices": [
         {
@@ -277,7 +277,7 @@
     },
     {
       "id": "b_hold_conv",
-      "body": "The hold's winding walkways brought Wren at last to a snug nook stacked with coiled rope and spare canvas, tucked close to the very heart of the ship. The little sound came again, closer now. Wren knelt down slowly, and two bright eyes peeped out at her from behind a crate, blinking, unafraid, and clearly hoping to be noticed.",
+      "body": "The hold's winding paths led Wren to a snug little nook. Coiled rope and spare canvas were piled here, close to the ship's heart. The small sound came again, closer than before. Wren knelt down slowly. Two bright eyes peeped out at her from behind a crate. They blinked, unafraid. Whatever it was seemed to be hoping she would notice.",
       "is_ending": false,
       "choices": [
         {
@@ -289,7 +289,7 @@
     },
     {
       "id": "b_hold_risk",
-      "body": "The loose netting dropped Wren into a maze of crates that had come unlashed, shifting and groaning as the ship rolled beneath her. Without warning, a whole wall of cargo leaned toward her, timbers creaking under the strain. She had only a heartbeat to decide: scramble clear at once before it settled, or squeeze into a narrow gap between the boxes and wait for the lurch to pass.",
+      "body": "The loose netting dropped Wren into a tangle of crates. They had come unlashed, and now they shifted with every roll of the ship. Suddenly, a whole wall of cargo leaned toward her. The timbers creaked under the strain. Wren had only a heartbeat to decide. She could scramble clear at once, before it settled. Or she could squeeze into a narrow gap between the boxes. There, she could wait for the lurch to pass.",
       "is_ending": false,
       "choices": [
         {
@@ -306,7 +306,7 @@
     },
     {
       "id": "b_hold_recover",
-      "body": "Wren rolled clear just as the crates settled back into place with a heavy groan, dust sifting down around her. Heart thumping, she reached out and steadied the nearest box so it would not shift again, then picked her way carefully back toward the tidy aisle, choosing the safer route deeper into the hold.",
+      "body": "Wren rolled clear just as the crates settled back with a heavy groan. Dust sifted down around her. Her heart was thumping hard. She reached out and steadied the nearest box, so it would not shift again. Then she picked her way back, carefully, toward the tidy aisle. This time, she chose the safer route deeper into the hold.",
       "is_ending": false,
       "choices": [
         {
@@ -318,7 +318,7 @@
     },
     {
       "id": "e_set_hold",
-      "body": "The shifting cargo boxed Wren into a snug corner she could not climb out of on her own, and after a long, dusty wait she finally called out for help. A surprised deckhand lifted the crates aside and lifted her free. Once she was safe, the purser saw her ashore at the very next port, dusty and disappointed, but not one bit hurt.",
+      "body": "The shifting cargo boxed Wren into a snug little corner. She could not climb out on her own. After a long, dusty wait, she finally called for help. A surprised deckhand heard her and lifted the crates aside. Once she was safe, the purser took charge of her. He saw her ashore at the very next port. Wren was dusty and disappointed. But she was not hurt, not even a little.",
       "is_ending": true,
       "ending": {
         "id": "e_set_hold",
@@ -329,7 +329,7 @@
     },
     {
       "id": "c_nest1",
-      "body": "The ladder to the crow's nest climbed up through cold, whistling air, and far below Wren could see the deck tilting gently as clouds slid silently past. Two ways offered themselves from where she clung. A sheltered inner ladder wound up out of the wind, safe and enclosed. An open run of rungs led straight up the swaying mast itself, thrilling but exposed to every gust. Wren gripped the cold metal and chose her way up.",
+      "body": "The ladder to the crow's nest climbed through cold, whistling air. Far below, the deck tilted gently. Clouds slid silently past. Two ways opened up from where Wren clung. A sheltered inner ladder wound up, safe and out of the wind. An open run of rungs led straight up the swaying mast. That way was thrilling, but every gust of wind could reach her there. Wren gripped the cold metal. She had to choose her way up.",
       "is_ending": false,
       "choices": [
         {
@@ -346,7 +346,7 @@
     },
     {
       "id": "c_nest_deep",
-      "body": "The inner ladder brought Wren up into the little round crow's nest, where a brass spyglass hung ready on a hook. From here she could turn the spyglass upward to study the great silver envelope towering overhead, or she could grab the coiled rope-run and slide back down toward the warmer decks inside the ship. Both seemed too good to pass up, so she had to pick just one.",
+      "body": "The inner ladder brought Wren up into the little round crow's nest. A brass spyglass hung ready on a hook. From here, she could turn the spyglass up. She could study the great silver balloon towering overhead. Or she could grab the coiled rope-run. It would slide her back down toward the warmer decks. Both choices seemed too good to pass up. Wren had to pick just one.",
       "is_ending": false,
       "choices": [
         {
@@ -363,7 +363,7 @@
     },
     {
       "id": "c_nest_a",
-      "body": "Through the spyglass, the envelope became a whole silver sky of ribs and seams stretched overhead, vast and gleaming. Wren watched, fascinated, as she worked out how the great gasbags inside gave the Cirrus its lift, holding the whole ship afloat on nothing but air. Satisfied, she lowered the spyglass and followed a rigging line down toward the warmer inner decks below.",
+      "body": "Through the spyglass, the great balloon became a whole silver sky. Ribs and seams stretched overhead, vast and gleaming. Wren watched closely. She worked out how the huge gasbags gave the Cirrus its lift. The whole ship floated on nothing but air. Satisfied, she lowered the spyglass. Then she followed a rigging line down, toward the warmer decks below.",
       "is_ending": false,
       "choices": [
         {
@@ -375,7 +375,7 @@
     },
     {
       "id": "c_nest_a2",
-      "body": "The rigging line led down to a sheltered gangway, tucked safely out of the biting wind. The great roar of the open sky faded to a hush, lanterns glowed warm along the passage, and a small, curious sound drifted up from somewhere near the heart of the ship. Wren tilted her head, listening, and decided to follow it down.",
+      "body": "The rigging line led down to a sheltered gangway. It was tucked safely out of the biting wind. The roar of the open sky faded to a hush. Lanterns glowed warm along the passage. A small, curious sound drifted up from somewhere below. It seemed to come from the heart of the ship. Wren tilted her head and listened. Then she followed the sound down.",
       "is_ending": false,
       "choices": [
         {
@@ -387,7 +387,7 @@
     },
     {
       "id": "c_nest_b",
-      "body": "The rope-run carried Wren quickly down out of the biting wind, hand over hand, until she landed soft on a thick coil of canvas below. A warm inner passage opened ahead of her, humming faintly with the sound of distant engines. After the cold of the mast, the warmth felt like a welcome, and she stepped gladly into it.",
+      "body": "The rope-run carried Wren quickly down, out of the biting wind. She went hand over hand. At last she landed soft on a thick coil of canvas. A warm inner passage opened up ahead of her. It hummed faintly with the sound of far-off engines. After the cold of the mast, the warmth felt like a hug. Wren stepped gladly into the passage.",
       "is_ending": false,
       "choices": [
         {
@@ -399,7 +399,7 @@
     },
     {
       "id": "c_nest_b2",
-      "body": "The inner passage was snug and lamplit, and already the wind felt like nothing more than a memory. A small, hopeful mewing echoed along the corridor ahead of her, drawing Wren steadily onward, toward the middle of the Cirrus, where the sound seemed to be coming from.",
+      "body": "The inner passage was snug and lit by lamps. Already, the wind felt like nothing more than a memory. A small, hopeful mewing echoed along the corridor. It came from somewhere ahead. Wren felt herself drawn steadily onward. She was heading toward the middle of the Cirrus now. The sound seemed to be coming from right there.",
       "is_ending": false,
       "choices": [
         {
@@ -411,7 +411,7 @@
     },
     {
       "id": "c_nest_conv",
-      "body": "The inner passages gathered Wren into a cosy nook of coiled rope and folded sail, close to the very heart of the ship. The mewing sounded again, close by this time. Wren looked softly behind the nearest crate, and there, two shining eyes watched her back, patient and hopeful, waiting to see what she would do.",
+      "body": "The inner passages gathered Wren into a cosy nook. Coiled rope and folded sail filled the little space. It was close to the very heart of the ship. The mewing sounded again, close by this time. Wren looked softly behind the nearest crate. Two shining eyes watched her back. They looked patient, and hopeful, waiting to see what she would do.",
       "is_ending": false,
       "choices": [
         {
@@ -423,7 +423,7 @@
     },
     {
       "id": "c_nest_risk",
-      "body": "Out on the open rungs, the wind snatched hard at Wren's coat and the whole mast swayed beneath her hands. A sudden gust rocked the ship, and the rung under her foot trembled. There was no time to waste. She could grab for the safety line clipped along the mast and hold on tight, or try to scramble higher before the next gust struck.",
+      "body": "Out on the open rungs, the wind snatched hard at Wren's coat. The whole mast swayed beneath her hands. Suddenly, a gust rocked the ship. The rung under her foot trembled. There was no time to waste. She could grab for the safety line clipped along the mast, and hold on tight. Or she could try to scramble higher, before the next gust struck.",
       "is_ending": false,
       "choices": [
         {
@@ -440,7 +440,7 @@
     },
     {
       "id": "c_nest_recover",
-      "body": "Wren clipped the safety line fast to her belt just as the gust punched past, tearing at her coat but not at her grip. Knuckles white, she waited until the wild air steadied around her, heart hammering. Only then did she climb carefully back to the sheltered inner ladder, glad of its walls at her back.",
+      "body": "Wren clipped the safety line fast to her belt. Just in time. The gust punched past, tearing at her coat but not her grip. Knuckles white, she waited until the wild air steadied. Her heart hammered the whole time. Only then did she climb back to the sheltered inner ladder. She was glad of its walls at her back.",
       "is_ending": false,
       "choices": [
         {
@@ -452,7 +452,7 @@
     },
     {
       "id": "e_set_nest",
-      "body": "The gust left Wren clinging tight and calling out until the ship's lookout heard her and hauled her safely in over the rail of the nest, shaking but whole. Kindly, he wrapped her in his own coat and kept her warm until the Cirrus reached port. There she was helped down to solid ground, her stowaway plans foiled for now, but not one bit hurt.",
+      "body": "The gust left Wren clinging tight and calling for help. The ship's lookout heard her, and hauled her safely in over the rail. She was shaking, but whole. Kindly, he wrapped her in his own coat. He kept her warm until the Cirrus reached port. There, she was helped down to solid ground. Her stowaway plan was foiled, for now. But she was not hurt, not one bit.",
       "is_ending": true,
       "ending": {
         "id": "e_set_nest",
@@ -463,7 +463,7 @@
     },
     {
       "id": "d_salon1",
-      "body": "The grand saloon glowed with polished brass and velvet, and passengers laughed together over their supper as if nothing in the world could go wrong. A waiter's trolley rolled past, wheels clicking on the floor. Wren spied two ways to slip through unseen. She could edge along the curtained wall, staying close to the shadows, or duck low and creep beneath the long linen tables, hidden by the cloth. Either way, she needed to move before someone glanced down.",
+      "body": "The grand saloon glowed with brass and velvet. Passengers laughed together over their supper. Nothing seemed able to go wrong in here. A waiter's trolley rolled past, wheels clicking on the floor. Wren spotted two ways to slip through unseen. She could edge along the curtained wall, staying close to the shadows. Or she could duck low, and creep beneath the long linen tables. Either way, she had to move fast. Someone might glance down at any moment.",
       "is_ending": false,
       "choices": [
         {
@@ -480,7 +480,7 @@
     },
     {
       "id": "d_salon_deep",
-      "body": "The curtains hid a small service alcove, quiet and out of sight. A glass case of tiny ship's models caught Wren's eye at once, each one carved and painted with care. Beside the case, a steward's door swung gently on its hinge, leading toward the working heart of the Cirrus. Wren lingered a moment, torn between peering at the models and slipping straight through the door.",
+      "body": "The curtains hid a small service room, quiet and out of sight. A glass case of tiny ship models caught Wren's eye at once. Each model was carved and painted with care. Beside the case, a steward's door swung on its hinge. It led toward the busy heart of the Cirrus. Wren lingered a moment. She was torn between the models and the door.",
       "is_ending": false,
       "choices": [
         {
@@ -497,7 +497,7 @@
     },
     {
       "id": "d_salon_a",
-      "body": "One model showed the Cirrus in careful cutaway, every deck marked and labelled, except for a single deck that had been painted over as if someone wanted it hidden on purpose. Puzzled, Wren tucked that little mystery away to think about later, then followed the steward's corridor onward, deeper toward the inner decks of the ship.",
+      "body": "One model showed the Cirrus cut open, like a picture book. Every deck was marked and named. Except for one deck, which had been painted over. It looked hidden on purpose. Puzzled, Wren tucked that little mystery away, to think about later. Then she followed the steward's corridor onward. It led deeper toward the inner decks of the ship.",
       "is_ending": false,
       "choices": [
         {
@@ -509,7 +509,7 @@
     },
     {
       "id": "d_salon_a2",
-      "body": "The corridor left the music and laughter behind, growing plain and warm the further Wren walked. Lanterns hung low along the walls, and a small, hopeful sound, half mew and half chirp, echoed from somewhere near the ship's heart. It was impossible to ignore, so she followed it, curious about who or what was calling.",
+      "body": "The corridor left the music and laughter behind. It grew plain and warm the further Wren walked. Lanterns hung low along the walls. A small, hopeful sound drifted to her, half mew and half chirp. It came from somewhere near the ship's heart. It was impossible to ignore. So Wren followed it, curious to see who was calling.",
       "is_ending": false,
       "choices": [
         {
@@ -521,7 +521,7 @@
     },
     {
       "id": "d_salon_b",
-      "body": "The steward's door let onto a pantry passage stacked high with trays of bread and cheese. Quietly, Wren pinched a crust of bread for later and tucked it into her pocket, then followed the plain corridor away from the saloon's noise, deeper toward the working decks of the ship.",
+      "body": "The steward's door opened onto a pantry passage. Trays of bread and cheese were stacked everywhere. Quietly, Wren pinched a crust of bread, and tucked it into her pocket for later. Then she followed the plain corridor, away from the saloon's noise. It led deeper toward the working decks of the ship.",
       "is_ending": false,
       "choices": [
         {
@@ -533,7 +533,7 @@
     },
     {
       "id": "d_salon_b2",
-      "body": "The corridor turned snug and dim, warmed faintly by the engines somewhere below. A small mewing drifted to her on the mingled smell of oil and fresh bread, and Wren followed it steadily onward, deeper toward the middle of the Cirrus, wondering just what she was about to find.",
+      "body": "The corridor turned snug and dim. It was warmed faintly by engines somewhere below. A small mewing sound drifted to her, mixed with the smell of oil and fresh bread. Wren followed it steadily onward. She was heading deeper toward the middle of the Cirrus now. She wondered just what she was about to find.",
       "is_ending": false,
       "choices": [
         {
@@ -545,7 +545,7 @@
     },
     {
       "id": "d_salon_conv",
-      "body": "The inner corridors gathered Wren into a quiet nook of coiled rope and folded sailcloth, tucked close to the heart of the ship. The little sound came once more, right behind the nearest crate. Wren looked gently around it, and two bright eyes shone back at her, hopeful and entirely unafraid.",
+      "body": "The inner corridors gathered Wren into a quiet nook. Coiled rope and folded sailcloth filled the little space, tucked close to the ship's heart. The little sound came once more, right behind the nearest crate. Wren looked gently around it. Two bright eyes shone back at her. They looked hopeful, and not one bit afraid.",
       "is_ending": false,
       "choices": [
         {
@@ -557,7 +557,7 @@
     },
     {
       "id": "d_salon_risk",
-      "body": "Under the tables, Wren froze between a forest of passengers' shoes, hardly daring to breathe. Then a waiter's foot swung straight toward her, and she knew she had only a moment left. She could roll aside behind the serving trolley and stay hidden in its shadow, or bolt for the nearest door and risk being seen out in the open.",
+      "body": "Under the tables, Wren froze between a forest of shoes. She hardly dared to breathe. Then a waiter's foot swung straight toward her. She had only a moment left. She could roll aside behind the serving trolley, and stay hidden in its shadow. Or she could bolt for the nearest door, and risk being seen out in the open.",
       "is_ending": false,
       "choices": [
         {
@@ -574,7 +574,7 @@
     },
     {
       "id": "d_salon_recover",
-      "body": "Wren tucked herself behind the trolley just as the waiter passed, so close she could smell the hot soup on its tray. She held perfectly still until the coast was clear, then slipped out the other side and made her way toward the curtained service alcove she had spotted earlier.",
+      "body": "Wren tucked herself behind the trolley just as the waiter passed. She was close enough to smell the hot soup on his tray. She held perfectly still until the coast was clear. Then she slipped out the other side. She made her way toward the curtained service room she had spotted earlier.",
       "is_ending": false,
       "choices": [
         {
@@ -586,7 +586,7 @@
     },
     {
       "id": "e_set_salon",
-      "body": "Wren bolted into full view, and a startled passenger cried out in surprise. The steward caught her gently by the sleeve, more amused than angry, and sat her down in the purser's office with a warm bun to eat while the Cirrus flew on. At the next port he saw her safely ashore, her secret discovered a little too soon for her liking.",
+      "body": "Wren bolted into full view. A startled passenger cried out in surprise. The steward caught her gently by the sleeve. He was more amused than angry. He sat her down in the purser's office, with a warm bun to eat, while the Cirrus flew on. At the next port, he saw her safely ashore. Her secret was found out, a little too soon for her liking.",
       "is_ending": true,
       "ending": {
         "id": "e_set_salon",
@@ -597,7 +597,7 @@
     },
     {
       "id": "n_friend",
-      "body": "However Wren had made her way there, every inner passage of the Cirrus seemed to meet at this cosy nook of rope and canvas. Here she found the secret the ship had been keeping: a small grey cat, thin from living on scraps and hiding from the crew. He blinked up at her, then pressed his head against her hand as though he had been waiting for exactly this moment. Wren named him Pip, and just like that she had a friend aboard the Cirrus. Three ways led onward from the nook: one toward the warm smells of the galley, one toward the captain's quiet cabin, and one climbing up into the rigging overhead.",
+      "body": "However Wren had made her way there, every inner passage of the Cirrus seemed to meet at this one cosy nook. Rope and canvas filled the space. Here, at last, she found the secret the ship had been keeping. It was a small grey cat, thin from living on scraps. He had been hiding from the crew all this time. He blinked up at Wren. Then he pressed his head against her hand, as if he had been waiting for exactly this moment. Wren named him Pip. Just like that, she had a friend aboard the Cirrus. Three ways led onward from the nook. One went toward the warm smells of the galley. One went toward the captain's quiet cabin. One climbed up into the rigging overhead.",
       "is_ending": false,
       "choices": [
         {
@@ -619,7 +619,7 @@
     },
     {
       "id": "f_galley1",
-      "body": "The galley steamed with the rich smell of stew, pots bubbling away on the stove. The cook stood busy at the far end, his back turned, and beside her Pip's nose twitched eagerly at the smell. Wren could creep across to the open larder, where good things to eat were sure to be waiting, or wait quietly behind the flour sacks until a clearer moment came along.",
+      "body": "The galley steamed with the rich smell of stew. Pots bubbled away on the stove. The cook stood busy at the far end, his back turned. Beside her, Pip's nose twitched eagerly at the smell. Wren had a choice to make. She could creep across to the open pantry, where good things to eat were sure to be waiting. Or she could wait quietly behind the flour sacks, until a clearer moment came along.",
       "is_ending": false,
       "choices": [
         {
@@ -636,7 +636,7 @@
     },
     {
       "id": "f_galley_a",
-      "body": "The larder was a treasure of fresh bread and cheese, and Wren filled her pockets quickly, setting a small scrap down for Pip. They had only just begun to eat when the deck gave a sudden, uneasy lurch, and the hanging lamps swung hard against their chains. Something outside had changed, and it did not feel good.",
+      "body": "The pantry was a treasure of fresh bread and cheese. Wren filled her pockets quickly. She set a small scrap down for Pip too. They had only just begun to eat when the deck gave a sudden, uneasy lurch. The hanging lamps swung hard against their chains. Something outside had changed. It did not feel good at all.",
       "is_ending": false,
       "choices": [
         {
@@ -648,7 +648,7 @@
     },
     {
       "id": "f_galley_b",
-      "body": "Behind the flour sacks, Wren waited as quietly as she could, but the dust tickled Pip's nose and he let out a small, sudden sneeze. The cook's head began to turn toward the sound. There was no time to think twice. She could scoop Pip up and slip out fast before he looked properly, or hold perfectly still and hope he had not really heard.",
+      "body": "Behind the flour sacks, Wren waited as quietly as she could. But the dust tickled Pip's nose. He let out a small, sudden sneeze. The cook's head began to turn toward the sound. There was no time to think twice. She could scoop Pip up, and slip out fast, before he looked properly. Or she could hold perfectly still, and hope he had not really heard.",
       "is_ending": false,
       "choices": [
         {
@@ -665,7 +665,7 @@
     },
     {
       "id": "f_galley_mid",
-      "body": "Out in the corridor, the whole ship groaned and tilted beneath her feet. Loose tins rolled past along the floor, and somewhere above a bell began to clang, urgent and insistent. Wren tucked Pip safely into her coat and hurried toward the noise, following the swaying lanterns deeper into the ship to see what was wrong.",
+      "body": "Out in the corridor, the whole ship groaned and tilted beneath her feet. Loose tins rolled past along the floor. Somewhere above, a bell began to clang, loud and urgent. Wren tucked Pip safely into her coat. She hurried toward the noise. The swaying lanterns lit her way, deeper into the ship, to see what was wrong.",
       "is_ending": false,
       "choices": [
         {
@@ -677,7 +677,7 @@
     },
     {
       "id": "e_set_galley",
-      "body": "The cook turned and found a girl and a small grey cat hiding among his flour sacks. He was far more astonished than angry, and after feeding them both a warm bowl of stew, he marched Wren gently to the purser. She stayed safe there until the ship landed, and was sent home from the next port, well fed and thoroughly foiled.",
+      "body": "The cook turned around, and found a girl and a small grey cat hiding among his flour sacks. He was far more surprised than angry. He fed them both a warm bowl of stew. Then he marched Wren gently to the purser. She stayed safe there until the ship landed. She was sent home from the next port, well fed, and thoroughly caught.",
       "is_ending": true,
       "ending": {
         "id": "e_set_galley",
@@ -688,7 +688,7 @@
     },
     {
       "id": "f_cabin1",
-      "body": "The captain's cabin door stood ajar, showing a room full of charts and gleaming instruments. The captain herself was not there, but voices murmured somewhere close by. Wren could slip quietly inside for a quick look at those tempting charts, or she could listen carefully at the door first, to find out what the voices were saying before she risked going any further.",
+      "body": "The captain's cabin door stood open a crack. Inside was a room full of charts and shining tools. The captain herself was not there. But voices murmured somewhere close by. Wren had a choice. She could slip quietly inside, for a quick look at those tempting charts. Or she could listen carefully at the door first, to hear what the voices were saying, before going any further.",
       "is_ending": false,
       "choices": [
         {
@@ -705,7 +705,7 @@
     },
     {
       "id": "f_cabin_a",
-      "body": "Through the gap in the door, Wren heard the officers speaking low about a secret cargo, and a course set to try to outrun weather that was coming in fast. She strained to hear more, but before she could, the whole ship shuddered beneath her and a warning bell began to ring out through the corridors.",
+      "body": "Through the gap in the door, Wren heard the officers speaking low. They talked of a secret cargo. They spoke of a course set to outrun the coming weather. She strained to hear more. But before she could, the whole ship shuddered beneath her. A warning bell began to ring out through the corridors.",
       "is_ending": false,
       "choices": [
         {
@@ -717,7 +717,7 @@
     },
     {
       "id": "f_cabin_b",
-      "body": "Inside, the charts on the table showed the ship's route bending sharply around a great grey smudge marked as storm. Before Wren could look any closer, footsteps sounded right outside the door, coming closer fast. She had to hide at once. She could duck behind the long curtain by the window, or dive quickly beneath the chart table itself.",
+      "body": "Inside, the charts on the table showed the ship's course. It bent sharply around a great grey smudge marked storm. Before Wren could look any closer, footsteps sounded right outside the door. They were coming closer, fast. She had to hide, right now. She could duck behind the long curtain by the window. Or she could dive quickly beneath the chart table.",
       "is_ending": false,
       "choices": [
         {
@@ -734,7 +734,7 @@
     },
     {
       "id": "f_cabin_mid",
-      "body": "Outside in the corridor, the whole ship pitched hard as it met rough air. The warning bell clanged louder now, and boots pounded across the deck overhead. Wren held Pip close against her chest and followed the running crew, letting their hurrying feet lead her straight toward whatever trouble had found the Cirrus.",
+      "body": "Outside in the corridor, the whole ship pitched hard. It had met rough air. The warning bell clanged louder now. Boots pounded across the deck overhead. Wren held Pip close against her chest. She followed the running crew. Their hurrying feet led her straight toward whatever trouble had found the Cirrus.",
       "is_ending": false,
       "choices": [
         {
@@ -746,7 +746,7 @@
     },
     {
       "id": "e_set_cabin",
-      "body": "The first officer strode in and found two small feet poking out from under the chart table. Surprised but gentle about it, she handed Wren over to the purser, who kept her safe for the rest of the flight. At the next port Wren was sent ashore, her peek at the captain's secret cut rather short.",
+      "body": "The first officer strode in. She found two small feet poking out from under the chart table. Surprised, but gentle about it, she handed Wren over to the purser. He kept her safe for the rest of the flight. At the next port, Wren was sent ashore. Her peek at the captain's secret was cut rather short.",
       "is_ending": true,
       "ending": {
         "id": "e_set_cabin",
@@ -757,7 +757,7 @@
     },
     {
       "id": "f_rig1",
-      "body": "The inner rigging was a warm forest of ropes strung between the decks, and Pip scampered ahead, sure-footed as anything, while Wren followed more carefully behind. Before trusting her weight to either path, she gave each rope a firm tug to test it. A steady catwalk led one way, solid boards under her feet, while a swinging rope-bridge swayed the other way, out toward the great envelope overhead.",
+      "body": "The inner rigging was a warm forest of ropes, strung between the decks. Pip scampered ahead, sure-footed as anything. Wren followed more carefully behind. Before she trusted her weight to either path, she gave each rope a firm tug, to test it. A steady catwalk led one way, solid boards under her feet. A swinging rope-bridge led the other way, out toward the great balloon overhead.",
       "is_ending": false,
       "choices": [
         {
@@ -774,7 +774,7 @@
     },
     {
       "id": "f_rig_a",
-      "body": "The catwalk gave Wren a grand view of the envelope's inner sky, a whole ceiling of great gasbags stretched overhead. Pip trotted along the rail like a tiny rope-dancer, utterly unbothered. Then, without warning, the whole ship leaned hard as the first gust of the coming storm shoved against the hull, and Wren grabbed the rail tight to keep her footing.",
+      "body": "The catwalk gave Wren a grand view. The balloon's inner sky stretched overhead, a whole ceiling of great gasbags. Pip trotted along the rail like a tiny rope-dancer, not bothered one bit. Then, without warning, the whole ship leaned hard. The first gust of the coming storm had shoved against the hull. Wren grabbed the rail tight, to keep her footing.",
       "is_ending": false,
       "choices": [
         {
@@ -786,7 +786,7 @@
     },
     {
       "id": "f_rig_b",
-      "body": "Halfway across the rope-bridge, a sudden gust set it swinging wildly from side to side, and Pip dug his claws in gently as he clung to Wren's shoulder. She gripped the rope handholds tight and had to decide fast. She could lunge for the far platform while she had the chance, or freeze where she was and grip the swinging ropes until the worst of it settled.",
+      "body": "Halfway across the rope-bridge, a sudden gust set it swinging wildly. Pip dug his claws in gently, clinging to Wren's shoulder. She gripped the rope handholds tight. She had to decide, fast. She could lunge for the far platform, while she had the chance. Or she could freeze right where she was, and grip the swinging ropes until the worst of it settled.",
       "is_ending": false,
       "choices": [
         {
@@ -803,7 +803,7 @@
     },
     {
       "id": "f_rig_mid",
-      "body": "The whole rigging shook as the storm properly took hold of the ship. Below, a bell clanged without stopping, and officers shouted orders back and forth across the deck. Wren tucked Pip safely against her, checked her grip on each rung, and climbed steadily down toward the noise to see just what was happening to the Cirrus.",
+      "body": "The whole rigging shook, as the storm took proper hold of the ship. Below, a bell clanged without stopping. Officers shouted orders back and forth across the deck. Wren tucked Pip safely against her. She checked her grip on each rung. Then she climbed steadily down, toward the noise, to see what was happening to the Cirrus.",
       "is_ending": false,
       "choices": [
         {
@@ -815,7 +815,7 @@
     },
     {
       "id": "e_set_rig",
-      "body": "The bridge bucked wildly until a rigger swung across on his own line, scooped up Wren and Pip together, and carried them both back to solid footing, safe but thoroughly scolded for the risk. He kept them close beside him, out of the wind, for the rest of the flight, and at the next port Wren was helped down to the ground, grounded from the sky for now.",
+      "body": "The bridge bucked wildly, until a rigger swung across on his own line. He scooped up Wren and Pip together. He carried them both back to solid footing, safe, but thoroughly scolded for the risk. He kept them close beside him, out of the wind, for the rest of the flight. At the next port, Wren was helped down to the ground. She was grounded from the sky, for now.",
       "is_ending": true,
       "ending": {
         "id": "e_set_rig",
@@ -826,7 +826,7 @@
     },
     {
       "id": "n_storm",
-      "body": "Every path through the ship had brought Wren to its very heart just as the storm truly hit. Rain lashed the portholes, the Cirrus pitched hard beneath her feet, and the great envelope overhead strained as its lift began to fail. The crew were stretched thin and frightened, shouting to each other over the wind, and Wren realized that a small stowaway who already knew her way around this ship might actually be able to help. She could fight her way out to the open weather deck, join the crew struggling to hold the ship together, or go down to the deep hold, where the groaning of the ship's timbers sounded worst of all.",
+      "body": "Every path through the ship had brought Wren to its very heart, just as the storm truly hit. Rain lashed the windows. The Cirrus pitched hard beneath her feet. The great balloon overhead strained, and its lift began to fail. The crew were stretched thin, and scared. They shouted to each other over the wind. Wren realized something important. A small stowaway, who already knew her way around this ship, might actually be able to help. She could fight her way out to the open weather deck. She could join the crew struggling to hold the ship together. Or she could go down to the deep hold, where the ship's timbers groaned worst of all.",
       "is_ending": false,
       "choices": [
         {
@@ -848,7 +848,7 @@
     },
     {
       "id": "s_deck1",
-      "body": "The weather deck was a roar of wind and stinging spray, the whole world tilted sideways by the storm. A control line had whipped loose near the rail and was snapping wildly back and forth, and the deck tilted hard beneath her boots. Wren could crawl low across the deck to catch that loose line before it did any damage, or grab the nearest stanchion first and steady herself before trying anything else.",
+      "body": "The weather deck was a roar of wind and stinging spray. The whole world seemed tilted sideways by the storm. A control line had whipped loose near the rail. It snapped wildly back and forth. The deck tilted hard beneath her boots. Wren had a choice. She could crawl low across the deck, to catch that loose line before it did any damage. Or she could grab the nearest post first, and steady herself before trying anything else.",
       "is_ending": false,
       "choices": [
         {
@@ -865,7 +865,7 @@
     },
     {
       "id": "s_deck_a",
-      "body": "Flat on her belly, Wren snagged the whipping line and looped it firmly round a cleat, just the way she had seen the crew do it. A soaked officer spotted her from across the deck and gave a startled, grateful nod, then pointed her toward a hatch that dropped down into the ship's deep hold, as if he trusted her to go and check on it.",
+      "body": "Flat on her belly, Wren snagged the whipping line. She looped it firmly round a cleat, just the way she had seen the crew do it. A soaked officer spotted her from across the deck. He gave a startled, grateful nod. Then he pointed her toward a hatch. It dropped down into the ship's deep hold, as if he trusted her to go and check on it.",
       "is_ending": false,
       "choices": [
         {
@@ -877,7 +877,7 @@
     },
     {
       "id": "s_deck_b",
-      "body": "Clinging to the stanchion, Wren caught her breath for just a moment, but a sudden wave of wind sent a loose crate skidding straight toward her. There was no time to waste. She could scramble down through the nearest deck hatch to safety right away, or make a dash across the open, wind-lashed deck toward the distant wheelhouse instead.",
+      "body": "Clinging to the post, Wren caught her breath, just for a moment. But a sudden wave of wind sent a loose crate skidding straight toward her. There was no time to waste. She could scramble down through the nearest deck hatch, to safety, right away. Or she could make a dash across the open, wind-lashed deck, toward the distant wheelhouse instead.",
       "is_ending": false,
       "choices": [
         {
@@ -894,7 +894,7 @@
     },
     {
       "id": "s_deck_mid",
-      "body": "Below decks, the howling wind softened into a deep, steady groan of straining timber. The sound was worst of all far down in the hold, as though the ship itself were fighting hard to hold something inside it. Wren followed that groan downward, step by careful step, drawn by a feeling she could not quite explain.",
+      "body": "Below decks, the howling wind softened into a deep, steady groan. It was the sound of straining timber. The sound was worst of all, far down in the hold. It was as though the ship itself were fighting hard to hold something inside it. Wren followed that groan downward, step by careful step. She was drawn by a feeling she could not quite explain.",
       "is_ending": false,
       "choices": [
         {
@@ -906,7 +906,7 @@
     },
     {
       "id": "e_set_storm1",
-      "body": "The wind was far too strong for a dash across the open deck, and a rigger caught Wren by the arm and bundled her below to a safe cabin, cat and all, to wait out the worst of the blow. She stayed warm and completely unhurt, but by the time the storm finally passed, the crew had set everything right without her, and she rode the rest of the way to port quietly, wrapped in a blanket with Pip.",
+      "body": "The wind was far too strong for a dash across the open deck. A rigger caught Wren by the arm. He bundled her below, to a safe cabin, cat and all, to wait out the worst of the blow. She stayed warm, and completely unhurt. But by the time the storm finally passed, the crew had set everything right without her. She rode the rest of the way to port quietly, wrapped in a blanket with Pip.",
       "is_ending": true,
       "ending": {
         "id": "e_set_storm1",
@@ -917,7 +917,7 @@
     },
     {
       "id": "s_crew1",
-      "body": "The crew heaved together on a straining halyard, their boots sliding on the wet deck. They were one pair of hands short, and shouted for anyone who could help. Wren was small, but she was willing, and she had to decide fast. She could grab the rope's end and add her weight to the pull, or run instead for the heavy sand-buckets the crew kept calling for.",
+      "body": "The crew heaved together on a straining rope. Their boots slid on the wet deck. They were one pair of hands short, and they shouted for anyone who could help. Wren was small, but she was willing. She had to decide, fast. She could grab the rope's end, and add her weight to the pull. Or she could run instead for the heavy sand-buckets the crew kept calling for.",
       "is_ending": false,
       "choices": [
         {
@@ -934,7 +934,7 @@
     },
     {
       "id": "s_crew_a",
-      "body": "Wren threw her whole weight onto the rope, and her small extra pull turned out to be just enough. The halyard held fast, and the crew let out a hoarse cheer of relief. Grinning, the bosun jerked a thumb toward a ladder leading down into the deep hold, where it seemed help was needed next.",
+      "body": "Wren threw her whole weight onto the rope. Her small extra pull turned out to be just enough. The rope held fast. The crew let out a hoarse cheer of relief. Grinning, the bosun jerked a thumb toward a ladder. It led down into the deep hold, where it seemed help was needed next.",
       "is_ending": false,
       "choices": [
         {
@@ -946,7 +946,7 @@
     },
     {
       "id": "s_crew_b",
-      "body": "Wren hauled the heavy sand-buckets across the deck, but just then it heaved beneath her and one bucket tipped dangerously to the side. She had to decide in an instant. She could steady the load with both hands and finish the job properly, or let it go entirely and scramble clear as it slid away across the wet boards.",
+      "body": "Wren hauled the heavy sand-buckets across the deck. Just then, it heaved beneath her, and one bucket tipped dangerously to the side. She had to decide in an instant. She could steady the load with both hands, and finish the job properly. Or she could let it go entirely, and scramble clear as it slid away across the wet boards.",
       "is_ending": false,
       "choices": [
         {
@@ -963,7 +963,7 @@
     },
     {
       "id": "s_crew_mid",
-      "body": "The crew had Wren's measure now, and waved her onward without a second thought. Then a deep, sad groan rolled up from the very bottom of the ship, a sound unlike anything the storm itself could make. The bosun frowned and muttered that whatever the trouble was, it must be down in the sealed hold below.",
+      "body": "The crew had Wren's measure now. They waved her onward without a second thought. Then a deep, sad groan rolled up from the very bottom of the ship. It was a sound unlike anything the storm itself could make. The bosun frowned. He muttered that whatever the trouble was, it must be down in the sealed hold below.",
       "is_ending": false,
       "choices": [
         {
@@ -975,7 +975,7 @@
     },
     {
       "id": "e_set_storm2",
-      "body": "The sliding buckets knocked Wren clean off her feet, but a big, kind hand caught her before she could tumble any further. The bosun sat her safely out of the way with Pip until the worst of the storm had passed. She was quite unhurt, though the ship was steadied without her help this time, and carried safely on to port.",
+      "body": "The sliding buckets knocked Wren clean off her feet. But a big, kind hand caught her, before she could tumble any further. The bosun sat her safely out of the way, with Pip, until the worst of the storm had passed. She was quite unhurt. But the ship was steadied without her help this time, and carried safely on to port.",
       "is_ending": true,
       "ending": {
         "id": "e_set_storm2",
@@ -986,7 +986,7 @@
     },
     {
       "id": "s_hold1",
-      "body": "The deep hold was where the ship groaned loudest of all, and the sound was not only timber creaking. It was something alive, and something afraid. A great sealed door blocked the way ahead, with a small inspection hatch set into it and a keyed control panel mounted just above. Wren had to choose how she wanted to look closer, through the hatch or over the panel.",
+      "body": "The deep hold was where the ship groaned loudest of all. The sound was not only timber creaking. It was something alive, and something scared. A great sealed door blocked the way ahead. A small window was set into the door. A locked control panel sat mounted just above it. Wren had to choose how she wanted to look closer, through the window or over the panel.",
       "is_ending": false,
       "choices": [
         {
@@ -1003,7 +1003,7 @@
     },
     {
       "id": "s_hold_a",
-      "body": "Through the hatch, Wren saw a vast, dim chamber, and inside it something huge, gentle, and frightened, pale as a bank of cloud. Pip pressed his nose to the glass and let out a soft mew, and the great shape beyond answered back with a low, sad note that seemed to shiver right through the ship.",
+      "body": "Through the window, Wren saw a vast, dim chamber. Inside it was something huge, gentle, and scared, pale as a bank of cloud. Pip pressed his nose to the glass, and let out a soft mew. The great shape beyond answered back with a low, sad note. It seemed to shiver right through the ship.",
       "is_ending": false,
       "choices": [
         {
@@ -1015,7 +1015,7 @@
     },
     {
       "id": "s_hold_b",
-      "body": "The panel was labelled in the captain's own careful hand: tending, feeding, calming. This was no ordinary cargo lock at all, but the door to some living creature's shelter, and with the storm rattling the whole ship it now stood ajar. Wren stared at the words, understanding slowly dawning on her.",
+      "body": "The panel was labeled in the captain's own careful hand. It said tending, feeding, calming. This was no ordinary cargo lock at all. It was the door to some living creature's shelter. The storm rattling the whole ship had shaken it open, just a little. Wren stared at the words. Slowly, understanding dawned on her.",
       "is_ending": false,
       "choices": [
         {
@@ -1027,7 +1027,7 @@
     },
     {
       "id": "s_hold_mid",
-      "body": "Wren slipped quietly inside the great chamber. The storm boomed against the hull all around her, and the huge, pale shape before her shivered from nose to tail. She understood, all at once, that she was standing at the ship's deepest secret, close enough now to see exactly what the Cirrus truly carried.",
+      "body": "Wren slipped quietly inside the great chamber. The storm boomed against the hull, all around her. The huge, pale shape before her shivered from nose to tail. All at once, she understood something big. She was standing at the ship's deepest secret. She was close enough now to see exactly what the Cirrus truly carried.",
       "is_ending": false,
       "choices": [
         {
@@ -1039,7 +1039,7 @@
     },
     {
       "id": "n_secret",
-      "body": "However Wren had reached it, every road through the storm had led to this sealed heart of the ship, and here she learned the secret the Cirrus had been keeping all along. Curled in the great chamber was a young sky-whale, a wondrous cloud-grey creature the captain had rescued and was smuggling to a safe sanctuary, far from anyone who might wish to hunt it. The calf was called Nimbus, and the storm had it thoroughly panicked, its frightened thrashing making the ship pitch worse with every passing minute. Wren had to decide quickly what to do: try to help calm Nimbus herself and save the ship, hurry to the bridge to reveal the secret to those who could steer, or go and fetch the crew and the captain to help.",
+      "body": "However Wren had reached it, every road through the storm had led to this sealed heart of the ship. Here, she learned the secret the Cirrus had been keeping all along. Curled in the great chamber was a young sky-whale. It was a wonderful, cloud-grey creature. The captain had rescued it. She was smuggling it to a safe home, far from anyone who might wish to hunt it. The calf was called Nimbus. The storm had it thoroughly scared. Its frightened thrashing was making the ship pitch worse, with every passing minute. Wren had to decide quickly what to do. She could try to help calm Nimbus herself, and save the ship. She could hurry to the bridge, to reveal the secret to those who could steer. Or she could go and fetch the crew and the captain to help.",
       "is_ending": false,
       "choices": [
         {
@@ -1061,7 +1061,7 @@
     },
     {
       "id": "p_save1",
-      "body": "Nimbus rolled and bumped against the hull, and every bump threw the whole ship sideways. Wren edged closer with Pip trotting fearlessly at her heels, utterly unbothered by the great creature's size. She had to choose how to help. She could hum the same low, soothing sound Pip made when he was content, hoping it might calm the frightened calf, or she could reach up and try to loosen a tangled harness that was pinning one of Nimbus's great fins.",
+      "body": "Nimbus rolled and bumped against the hull. Every bump threw the whole ship sideways. Wren edged closer, with Pip trotting fearlessly at her heels. He was not bothered one bit by the great creature's size. Wren had to choose how to help. She could hum the same low, soothing sound Pip made when he was happy. Maybe it would calm the scared calf. Or she could reach up, and try to loosen a tangled harness. It was pinning one of Nimbus's great fins.",
       "is_ending": false,
       "choices": [
         {
@@ -1078,7 +1078,7 @@
     },
     {
       "id": "p_save_a",
-      "body": "Wren hummed low in her throat, just the way Pip did, and the great calf slowly stilled, one huge, cloudy eye fixing on her with something like trust. Its thrashing slowed, and with it the ship's wild pitching eased, just a little, but enough for Wren to catch her breath and think clearly about what to do next.",
+      "body": "Wren hummed low in her throat, just the way Pip did. The great calf slowly grew still. One huge, cloudy eye fixed on her, with something like trust. Its thrashing slowed. With it, the ship's wild pitching eased, just a little. It was enough for Wren to catch her breath. Enough to think clearly about what to do next.",
       "is_ending": false,
       "choices": [
         {
@@ -1090,7 +1090,7 @@
     },
     {
       "id": "p_save_b",
-      "body": "Wren worked carefully at the twisted harness until it came free of the calf's fin. Nimbus gave a great, grateful shudder and settled lower in the hold, steadier now than before. Beneath her feet, Wren felt the ship stop lurching quite so hard, as though the whole Cirrus had let out a breath of relief.",
+      "body": "Wren worked carefully at the twisted harness. At last, it came free of the calf's fin. Nimbus gave a great, grateful shudder. He settled lower in the hold, steadier now than before. Beneath her feet, Wren felt the ship stop lurching quite so hard. It was as though the whole Cirrus had let out a breath of relief.",
       "is_ending": false,
       "choices": [
         {
@@ -1102,7 +1102,7 @@
     },
     {
       "id": "p_save_mid",
-      "body": "Calmer now, Nimbus settled at Wren's presence, as though her nearness alone was enough to ease him. She realized that if she could reach the bridge, she might be able to tell the captain what she had just learned, that the calf grew steadier whenever someone stayed close and gentle with him. With that thought firmly in mind, she climbed toward the wheelhouse, Pip leading the way ahead of her.",
+      "body": "Calmer now, Nimbus settled at Wren's touch and her presence nearby. It seemed her closeness alone was enough to ease him. Wren realized something important. If she could reach the bridge, she might tell the captain what she had learned. The calf grew steadier whenever someone stayed close and gentle with him. With that thought firm in her mind, Wren climbed toward the wheelhouse. Pip led the way ahead of her.",
       "is_ending": false,
       "choices": [
         {
@@ -1114,7 +1114,7 @@
     },
     {
       "id": "p_reveal1",
-      "body": "Wren turned to race for the bridge with her news, but the storm had jammed the main companionway shut. Two other ways remained. She could take the long, safe stair that wound around the outside, slower but sure, or risk the short passage that cut straight through, quicker, but already rising with rainwater from the storm.",
+      "body": "Wren turned to race for the bridge with her news. But the storm had jammed the main stairway shut. Two other ways remained. She could take the long, safe stair that wound around the outside, slower but sure. Or she could risk the short passage that cut straight through. It was quicker, but already rising with rainwater from the storm.",
       "is_ending": false,
       "choices": [
         {
@@ -1131,7 +1131,7 @@
     },
     {
       "id": "p_reveal_a",
-      "body": "The long stair was slow, but it was sound. Wren climbed it two steps at a time, Pip clinging tight to her collar, rehearsing over and over what she would say: that the hold held a living, breathing calf, and its fear was what was rocking the ship so badly.",
+      "body": "The long stair was slow, but it was sound. Wren climbed it two steps at a time. Pip clung tight to her collar. Over and over, she rehearsed what she would say. The hold held a living, breathing calf. Its fear was what was rocking the ship so badly.",
       "is_ending": false,
       "choices": [
         {
@@ -1143,7 +1143,7 @@
     },
     {
       "id": "p_reveal_a2",
-      "body": "Near the top, the stair opened onto the officers' corridor, loud with shouted orders and the boom of the storm outside. The wheelhouse door stood just ahead of her now. Wren gathered her breath, steadied Pip against her shoulder, and got ready to burst in with the truth.",
+      "body": "Near the top, the stair opened onto the officers' corridor. It was loud with shouted orders, and the boom of the storm outside. The wheelhouse door stood just ahead of her now. Wren gathered her breath. She steadied Pip against her shoulder. Then she got ready to burst in with the truth.",
       "is_ending": false,
       "choices": [
         {
@@ -1155,7 +1155,7 @@
     },
     {
       "id": "p_reveal_mid",
-      "body": "Wren reached the wheelhouse door just as the ship shuddered again, hard enough to rattle the glass. Inside, she could hear the captain calling for anything, anything at all, that might help steady the vessel. Wren knew the answer already: a frightened calf, alone in the hold. Taking a breath, she stepped inside.",
+      "body": "Wren reached the wheelhouse door, just as the ship shuddered again. It was hard enough to rattle the glass. Inside, she could hear the captain calling for anything at all that might help steady the vessel. Wren already knew the answer. A scared calf, alone in the hold. Taking a breath, she stepped inside.",
       "is_ending": false,
       "choices": [
         {
@@ -1167,7 +1167,7 @@
     },
     {
       "id": "e_set_reveal",
-      "body": "The flooded passage rose faster than Wren expected, and she had to wade back before the water grew too deep, cold, dripping, and badly delayed. By the time she finally reached the bridge, the crew had already wrestled the ship level on their own. She was bundled off to dry out by a warm stove, and rode the rest of the way safely to port.",
+      "body": "The flooded passage rose faster than Wren expected. She had to wade back, before the water grew too deep. She was cold, dripping, and badly delayed. By the time she finally reached the bridge, the crew had already wrestled the ship level on their own. She was bundled off to dry out by a warm stove. She rode the rest of the way safely to port.",
       "is_ending": true,
       "ending": {
         "id": "e_set_reveal",
@@ -1178,7 +1178,7 @@
     },
     {
       "id": "p_people1",
-      "body": "Wren decided she could not fix this on her own, and that she needed to find help right away. She could look for the friendly bosun she had pulled ropes alongside earlier, trusting he would listen, or she could go straight to the captain herself, since only the captain truly knew the calf's ways.",
+      "body": "Wren decided she could not fix this on her own. She needed to find help, and fast. She could look for the friendly bosun she had pulled ropes alongside earlier. He seemed kind, and he might listen well. Or she could go straight to the captain herself. Only the captain truly understood the calf's ways. Both choices felt right, and both felt risky. Wren had to pick one, and pick it now.",
       "is_ending": false,
       "choices": [
         {
@@ -1195,7 +1195,7 @@
     },
     {
       "id": "p_people_a",
-      "body": "The bosun listened wide-eyed as Wren gasped out the whole secret in a rush. Then he grinned and said the captain would want to hear this straight from her own mouth. Together they pushed up through the battering storm, side by side, making their way toward the wheelhouse.",
+      "body": "The bosun listened wide-eyed, as Wren gasped out the whole secret in a rush. Then he grinned. He said the captain would want to hear this straight from her own mouth. Together, they pushed up through the battering storm, side by side. They made their way toward the wheelhouse, hand in hand against the wind.",
       "is_ending": false,
       "choices": [
         {
@@ -1207,7 +1207,7 @@
     },
     {
       "id": "p_people_b",
-      "body": "Wren found the captain braced at a rain-streaked porthole, looking grim and tired from the fight against the storm. When Wren blurted out that she had seen Nimbus, and that she thought she could calm the calf, the captain's eyes went sharp with sudden hope. She waved Wren quickly toward the wheel.",
+      "body": "Wren found the captain braced at a rain-streaked window. She looked grim, and tired from the fight against the storm. Wren blurted out that she had seen Nimbus. She said she thought she could calm the calf. The captain's eyes went sharp, with sudden hope. She waved Wren quickly toward the wheel.",
       "is_ending": false,
       "choices": [
         {
@@ -1219,7 +1219,7 @@
     },
     {
       "id": "p_people_mid",
-      "body": "Crew, captain, and stowaway crowded together toward the bridge, all sharing one hope now. The ship pitched hard beneath them, but for the first time, the grown-ups aboard were truly listening to Wren. Ahead of them, the wheelhouse doors swung open, letting in a gust of storm and noise.",
+      "body": "Crew, captain, and stowaway crowded together, toward the bridge. They all shared one hope now. The ship pitched hard beneath them. But for the first time, the grown-ups aboard were truly listening to Wren. Ahead of them, the wheelhouse doors swung open. A gust of storm and noise blew in with them.",
       "is_ending": false,
       "choices": [
         {
@@ -1231,7 +1231,7 @@
     },
     {
       "id": "n_bridge",
-      "body": "Every route through the storm had led to this one place: the tossed and shuddering bridge, where captain and crew turned to Wren as the one person who had managed to calm the frightened sky-whale below. The Cirrus was losing height, and the storm was close to winning. There was time for one clear choice that might save the ship, and Wren had to decide how she could help best. She could go below to keep steadying Nimbus so the ship could fly true, help patch the envelope where it strained against the wind, help ease Nimbus out to open air where the calf longed to be, or tell the whole secret aloud so that everyone aboard could act together as one.",
+      "body": "Every route through the storm had led to this one place: the tossed and shaking bridge. Here, captain and crew turned to Wren. She was the one person who had managed to calm the scared sky-whale below. The Cirrus was losing height. The storm was close to winning. There was time for one clear choice that might save the ship. Wren had to decide how she could help best. She could go below, to keep steadying Nimbus, so the ship could fly true. She could help patch the balloon, where it strained against the wind. She could help ease Nimbus out to open air, where the calf longed to be. Or she could tell the whole secret aloud, so everyone aboard could act together, as one.",
       "is_ending": false,
       "choices": [
         {
@@ -1258,7 +1258,7 @@
     },
     {
       "id": "b_steer1",
-      "body": "The captain asked Wren to keep Nimbus calm through a long speaking-tube that ran down to the hold, while the crew fought to fly the ship above. Steadiness, the captain said, was everything now. Wren could hum slow and sure into the tube, keeping her voice as calm as she could manage, or let her fear get the better of her and rush the song out in a frightened hurry as the storm howled around them.",
+      "body": "The captain asked Wren to keep Nimbus calm. She would do it through a long speaking-tube that ran down to the hold. The crew, meanwhile, fought to fly the ship above. Steadiness, the captain said, was everything now. Wren had a choice. She could hum slow and sure into the tube, keeping her voice as calm as she could manage. Or she could let her fear win, and rush the song out in a frightened hurry, as the storm howled around them.",
       "is_ending": false,
       "choices": [
         {
@@ -1275,7 +1275,7 @@
     },
     {
       "id": "b_steer_ok",
-      "body": "Wren kept her voice slow and warm, humming the same steady note again and again into the tube. Far below, Nimbus answered, growing still bit by bit. With the calf calm at last, the ship stopped fighting itself, and up on the bridge the crew felt the great wheel come alive under their hands once more.",
+      "body": "Wren kept her voice slow and warm. She hummed the same steady note, again and again, into the tube. Far below, Nimbus answered. Bit by bit, he grew still. With the calf calm at last, the ship stopped fighting itself. Up on the bridge, the crew felt the great wheel come alive under their hands once more.",
       "is_ending": false,
       "choices": [
         {
@@ -1287,7 +1287,7 @@
     },
     {
       "id": "b_steer_ok2",
-      "body": "Minute by minute, Wren hummed the great sky-whale through the very heart of the storm while the crew held their course above her. Slowly the lift steadied, the wild pitching faded to a gentle sway, and at last the Cirrus broke free above the clouds into calm, moonlit air. The ship had been saved, in the end, by one small stowaway and her steady, patient song.",
+      "body": "Minute by minute, Wren hummed the great sky-whale through the very heart of the storm. The crew held their course above her, the whole time. Slowly, the lift steadied. The wild pitching faded to a gentle sway. At last, the Cirrus broke free above the clouds, into calm, moonlit air. The ship had been saved, in the end, by one small stowaway, and her steady, patient song.",
       "is_ending": false,
       "choices": [
         {
@@ -1299,7 +1299,7 @@
     },
     {
       "id": "e_set_final",
-      "body": "Wren's song came out too fast and too frightened, and Nimbus simply would not settle. The crew had to fight the storm the hard way after that, and they won through without her help, safe but thoroughly exhausted. Grateful all the same for her courage, the captain landed at the next port to set Wren gently ashore, with a promise that she might try again someday.",
+      "body": "Wren's song came out too fast, and too scared. Nimbus simply would not settle. After that, the crew had to fight the storm the hard way. They won through without her help, safe, but thoroughly worn out. Grateful all the same for her courage, the captain landed at the next port. She set Wren gently ashore, with a promise that she might try again someday.",
       "is_ending": true,
       "ending": {
         "id": "e_set_final",
@@ -1310,7 +1310,7 @@
     },
     {
       "id": "e_win_save_ship",
-      "body": "The Cirrus sailed on through clean, quiet night air, saved because one small stowaway had kept a great sky-whale calm through the worst of the storm. Before the whole assembled crew, the captain shook Wren's hand and declared her one of the ship's own, and word came later that Nimbus had reached the sanctuary safe and sound. Wren had found her place in the sky at last, with Pip purring warm against her shoulder, and it felt, in every way, like the very best ending she could have imagined.",
+      "body": "The Cirrus sailed on, through clean, quiet night air. It was saved, because one small stowaway had kept a great sky-whale calm through the worst of the storm. Before the whole crew, the captain shook Wren's hand. She called her one of the ship's own. Word came later that Nimbus had reached the safe home, sound and well. Wren had found her place in the sky at last, with Pip purring warm against her shoulder. It felt, in every way, like the very best ending she could have imagined.",
       "is_ending": true,
       "ending": {
         "id": "e_win_save_ship",
@@ -1321,7 +1321,7 @@
     },
     {
       "id": "b_patch1",
-      "body": "High above, the great envelope was tearing where the gasbags strained against the storm, and a rigger called out for a small, brave pair of hands, someone light enough to reach where he could not. Wren could climb the inner rigging herself to reach the tear directly, testing each handhold as she went, or she could work the winch down below instead, the one that pulled the patch tight from a safer distance.",
+      "body": "High above, the great balloon was tearing, where the gasbags strained against the storm. A rigger called out for a small, brave pair of hands. He needed someone light enough to reach where he could not. Wren had a choice. She could climb the inner rigging herself, to reach the tear directly, testing each handhold as she went. Or she could work the winch down below instead. That was the one that pulled the patch tight, from a safer distance.",
       "is_ending": false,
       "choices": [
         {
@@ -1338,7 +1338,7 @@
     },
     {
       "id": "b_patch_ok",
-      "body": "Light and quick, Wren scrambled into gaps where a grown rigger could never have fit, threading the patch-line carefully through the straining ribs of the envelope. The rigger hauled it tight from below, and slowly the tear closed. The ship stopped bleeding away its precious lift, and beneath her Wren felt the whole Cirrus steady.",
+      "body": "Light and quick, Wren scrambled into gaps where a grown rigger could never fit. Carefully, she threaded the patch-line through the straining ribs of the balloon. The rigger hauled it tight from below. Slowly, the tear closed. The ship stopped losing its precious lift. Beneath her, Wren felt the whole Cirrus steady.",
       "is_ending": false,
       "choices": [
         {
@@ -1350,7 +1350,7 @@
     },
     {
       "id": "b_patch_alt",
-      "body": "Wren threw herself onto the winch handle and cranked it round with all her weight, again and again until her arms ached. Slowly the patch drew tight over the tear above, and the rigger let out a cheer of relief. Steady lift returned just as the crew, high above, finally wrestled the ship level once more.",
+      "body": "Wren threw herself onto the winch handle. She cranked it round with all her weight, again and again, until her arms ached. Slowly, the patch drew tight over the tear above. The rigger let out a cheer of relief. Steady lift returned, just as the crew, high above, finally wrestled the ship level once more.",
       "is_ending": false,
       "choices": [
         {
@@ -1362,7 +1362,7 @@
     },
     {
       "id": "e_win_patch",
-      "body": "With the envelope patched, the Cirrus rode out the last of the storm and climbed steadily into a sky full of stars. The riggers swore up and down that the little stowaway had saved them all, and the captain, hearing the whole story, let Wren stay aboard as a proper helper to the crew. Nimbus, meanwhile, reached safe harbour at last. Wren had earned her passage through the sky, fair and square.",
+      "body": "With the balloon patched, the Cirrus rode out the last of the storm. It climbed steadily into a sky full of stars. The riggers swore, up and down, that the little stowaway had saved them all. The captain heard the whole story. She let Wren stay aboard, as a proper helper to the crew. Nimbus, meanwhile, reached safe harbor at last. Wren had earned her passage through the sky, fair and square.",
       "is_ending": true,
       "ending": {
         "id": "e_win_patch",
@@ -1373,7 +1373,7 @@
     },
     {
       "id": "e_win_steer",
-      "body": "Steady lift won the day, and the ship righted herself gently over a calming sea of cloud below. The crew lifted Wren onto their shoulders in triumph, and the captain, laughing for the first time all night, declared that any sailor who could work a winch like that had a berth on the Cirrus whenever she liked to sail.",
+      "body": "Steady lift won the day. The ship righted herself gently, over a calming sea of cloud below. The crew lifted Wren onto their shoulders in triumph. The captain laughed, for the first time all night. She said any sailor who could work a winch like that had a berth on the Cirrus, whenever she liked to sail.",
       "is_ending": true,
       "ending": {
         "id": "e_win_steer",
@@ -1384,7 +1384,7 @@
     },
     {
       "id": "b_free1",
-      "body": "Wren realized Nimbus was frantic not just from fear, but because the calf longed for the open sky. Nimbus was nearly grown now, and the storm had torn loose a great cargo door nearby. She could help ease the sky-whale out through that opening to fly free beside the ship, testing first that the way was clear and safe, or she could coax Nimbus instead to a calmer inner bay where the calf could settle without such a risk.",
+      "body": "Wren realized Nimbus was scared, not just from fear. The calf longed for the open sky. Nimbus was nearly grown now. The storm had torn loose a great cargo door nearby. Wren had a choice. She could help ease the sky-whale out through that opening, to fly free beside the ship, testing first that the way was clear and safe. Or she could coax Nimbus instead, to a calmer inner bay, where the calf could settle without such a risk.",
       "is_ending": false,
       "choices": [
         {
@@ -1401,7 +1401,7 @@
     },
     {
       "id": "b_free_ok",
-      "body": "With the captain's careful nod, Wren hummed low and steady, guiding Nimbus toward the torn door. The great calf gathered itself, hesitated only a moment, then slipped out into the storm-wind. Instead of falling, it rose, spreading its great cloud-grey fins wide, wheeling free at last beside the labouring ship.",
+      "body": "With the captain's careful nod, Wren hummed low and steady. She guided Nimbus toward the torn door. The great calf gathered itself. It hesitated, just a moment. Then it slipped out into the storm-wind. Instead of falling, it rose, spreading its great cloud-grey fins wide. It wheeled free, at last, beside the laboring ship.",
       "is_ending": false,
       "choices": [
         {
@@ -1413,7 +1413,7 @@
     },
     {
       "id": "b_free_ok2",
-      "body": "Free at last, Nimbus swam through the storm as easily as through calm water, and wherever the great calf flew, the winds seemed to gentle around it. The sky-whale shepherded the Cirrus safely out of the very worst of the weather, then soared on ahead, guiding the ship through its last miles toward the safe harbour waiting beyond the clouds.",
+      "body": "Free at last, Nimbus swam through the storm as easily as through calm water. Wherever the great calf flew, the winds seemed to grow gentle around it. The sky-whale shepherded the Cirrus safely out of the very worst of the weather. Then it soared on ahead. It guided the ship through its last miles, toward the safe harbor waiting beyond the clouds.",
       "is_ending": false,
       "choices": [
         {
@@ -1425,7 +1425,7 @@
     },
     {
       "id": "e_win_free",
-      "body": "The sky-whale led the Cirrus safely out of the storm and all the way home, and the whole crew watched in wonder as Nimbus circled the mooring tower once, gracefully, before winging off toward the wild open sky. The captain told Wren that the calf owed its freedom entirely to her courage, and that she was welcome to sail with the Cirrus always. It was a soaring, joyful ending to her very first voyage.",
+      "body": "The sky-whale led the Cirrus safely out of the storm, and all the way home. The whole crew watched in wonder, as Nimbus circled the mooring tower once, gracefully, before winging off toward the wild open sky. The captain told Wren that the calf owed its freedom entirely to her courage. She was welcome to sail with the Cirrus always. It was a soaring, joyful end to her very first voyage.",
       "is_ending": true,
       "ending": {
         "id": "e_win_free",
@@ -1436,7 +1436,7 @@
     },
     {
       "id": "b_free_alt",
-      "body": "Judging the storm far too wild for such a young calf, Wren instead hummed Nimbus toward a sheltered inner bay and padded the space round with soft canvas. Safe and calm at last, the sky-whale stopped its thrashing, and the ship steadied just enough for the crew, high above, to fly it clear of the worst weather.",
+      "body": "Judging the storm far too wild for such a young calf, Wren hummed Nimbus toward a sheltered inner bay instead. She padded the space round with soft canvas. Safe and calm at last, the sky-whale stopped its thrashing. The ship steadied just enough. High above, the crew could fly it clear of the worst weather.",
       "is_ending": false,
       "choices": [
         {
@@ -1448,7 +1448,7 @@
     },
     {
       "id": "e_win_friend",
-      "body": "Snug in its padded bay, Nimbus rode out the rest of the storm calm and safe, and the Cirrus carried the calf gently on to the sanctuary at journey's end. The keepers there marveled that a stowaway had managed to keep Nimbus so quiet and content. Best of all, Wren got to watch as Nimbus was set free at last among its own kind, a warm and tender ending to a remarkable voyage.",
+      "body": "Snug in its padded bay, Nimbus rode out the rest of the storm, calm and safe. The Cirrus carried the calf gently on, to the safe home at journey's end. The keepers there marveled. A stowaway had kept Nimbus so quiet and content. Best of all, Wren got to watch as Nimbus was set free at last, among its own kind. It was a warm and tender end to a remarkable voyage.",
       "is_ending": true,
       "ending": {
         "id": "e_win_friend",
@@ -1459,7 +1459,7 @@
     },
     {
       "id": "b_tell1",
-      "body": "Wren decided the ship's best chance now was everyone pulling together, and so she told the whole secret aloud for all to hear. How she chose to share it would shape what happened next. She could rally the working crew, who could act on the news at once, put the choice to the captain, who alone could decide what to do, or lead them all down to show them Nimbus with their own eyes.",
+      "body": "Wren decided the ship's best chance now was everyone pulling together. So she told the whole secret aloud, for all to hear. How she chose to share it would shape what happened next. She could rally the working crew, who could act on the news at once. She could put the choice to the captain, who alone could decide what to do. Or she could lead them all down, to show them Nimbus with their own eyes.",
       "is_ending": false,
       "choices": [
         {
@@ -1481,7 +1481,7 @@
     },
     {
       "id": "b_tell_crew",
-      "body": "The crew took Wren's word without so much as a blink, splitting at once into teams, some hurrying to soothe the calf and others rushing to fly the ship. With everyone working together as one, the Cirrus fought its way clear of the storm, and by the time it was over, the sailors counted Wren as one of their very own.",
+      "body": "The crew took Wren's word without so much as a blink. At once, they split into teams. Some hurried to soothe the calf. Others rushed to fly the ship. Everyone worked together, as one. The Cirrus fought its way clear of the storm. By the time it was over, the sailors counted Wren as one of their very own.",
       "is_ending": false,
       "choices": [
         {
@@ -1493,7 +1493,7 @@
     },
     {
       "id": "e_win_crew",
-      "body": "The crew won through the storm together, and afterward they hung a hammock for Wren in their own quarters and stitched her name onto a spare jersey, just her size. The bosun declared that a girl who worked this hard was no stowaway at all, but a proper shipmate. Wren sailed on as the youngest member of the Cirrus crew, proud and thoroughly happy with how her adventure had turned out.",
+      "body": "The crew won through the storm together. Afterward, they hung a hammock for Wren, in their own quarters. They stitched her name onto a spare jersey, just her size. The bosun declared that a girl who worked this hard was no stowaway at all, but a proper shipmate. Wren sailed on, as the youngest member of the Cirrus crew, proud and thoroughly happy with how her adventure had turned out.",
       "is_ending": true,
       "ending": {
         "id": "e_win_crew",
@@ -1504,7 +1504,7 @@
     },
     {
       "id": "b_tell_captain",
-      "body": "The captain listened to Wren carefully, then had to make a decision of her own. She could trust this brave young stowaway with a real task at the calf's side, letting her help properly, or she could thank Wren kindly for her courage and send her below to safety while the officers handled the rest of the storm themselves.",
+      "body": "The captain listened to Wren carefully. Then she had to make a decision of her own. She could trust this brave young stowaway with a real task, at the calf's side, letting her help properly. Or she could thank Wren kindly for her courage, and send her below to safety, while the officers handled the rest of the storm themselves.",
       "is_ending": false,
       "choices": [
         {
@@ -1521,7 +1521,7 @@
     },
     {
       "id": "e_win_captain",
-      "body": "The captain gave Wren a real task, and she rose to it fully, keeping Nimbus calm at the officers' side until at last the storm broke apart. When the sky cleared, the captain entered Wren's name into the ship's log with her own hand, and called her, in front of everyone, the bravest passenger the Cirrus had ever carried. It was a triumphant, deeply honoured ending to her stowaway voyage.",
+      "body": "The captain gave Wren a real task. She rose to it fully, keeping Nimbus calm at the officers' side, until at last the storm broke apart. When the sky cleared, the captain entered Wren's name into the ship's log, with her own hand. She called her, in front of everyone, the bravest passenger the Cirrus had ever carried. It was a proud, happy end to her stowaway voyage.",
       "is_ending": true,
       "ending": {
         "id": "e_win_captain",
@@ -1532,7 +1532,7 @@
     },
     {
       "id": "e_neu_home",
-      "body": "Wren let the captain tuck her safely below with Pip, and the crew brought the ship through the storm without her help. She never did get to save the day herself, but she had ridden out a real storm aboard a real sky-ship, and she had glimpsed a living sky-whale with her own eyes. She was set down at port with a friendly wave and a wonderful secret all her own to keep forever.",
+      "body": "Wren let the captain tuck her safely below, with Pip. The crew brought the ship through the storm, without her help. She never did get to save the day herself. But she had ridden out a real storm, aboard a real sky-ship. She had seen a living sky-whale, with her own eyes. She was set down at port with a friendly wave, and a wonderful secret all her own, to keep forever.",
       "is_ending": true,
       "ending": {
         "id": "e_neu_home",
@@ -1543,7 +1543,7 @@
     },
     {
       "id": "b_tell_reveal",
-      "body": "Instead of only telling them, Wren led the captain and crew straight down to the hatch and showed them Nimbus in the flesh, cloud-grey and gentle despite all its fear. The sight melted away every last doubt in an instant, and together, awed and united, the whole crew set about calming the calf and saving the ship.",
+      "body": "Instead of only telling them, Wren led the captain and crew straight down to the hatch. She showed them Nimbus in the flesh, cloud-grey and gentle, despite all his fear. The sight melted away every last doubt, in an instant. Together, amazed and united, the whole crew set about calming the calf, and saving the ship.",
       "is_ending": false,
       "choices": [
         {
@@ -1555,7 +1555,7 @@
     },
     {
       "id": "e_win_discovery",
-      "body": "With the whole ship let in on the wonder, crew and captain worked as one to soothe Nimbus and fly the Cirrus safely through the rest of the storm. The secret was a secret no longer, but a marvel shared by everyone aboard. Wren, the stowaway who had revealed it, was thanked warmly by every soul on the ship and welcomed to sail on with them, her wondrous secret now everyone's to treasure.",
+      "body": "With the whole ship let in on the wonder, crew and captain worked as one. They soothed Nimbus, and flew the Cirrus safely through the rest of the storm. The secret was a secret no longer, but a marvel shared by everyone aboard. Wren, the stowaway who had revealed it, was thanked warmly by every soul on the ship. She was welcomed to sail on with them, her wonderful secret now everyone's to treasure.",
       "is_ending": true,
       "ending": {
         "id": "e_win_discovery",

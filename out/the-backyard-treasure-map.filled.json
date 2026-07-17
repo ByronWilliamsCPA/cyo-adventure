@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Nina and Theo are best friends who love adventure. One sunny afternoon, they explore Grandpa's big backyard and find something special under the old oak tree. It is a dusty jar with a rolled-up map inside. The map is hand-drawn with a dotted line that twists and turns. A red X marks the very end. Nina grins wide and Theo grins too. Which landmark should they follow first? They look at each other, ready for their adventure.",
+      "body": "Nina and Theo are best friends. One sunny afternoon they explore Grandpa's backyard and find something special under the big oak tree. It is a dusty jar with a rolled-up map. The map is hand-drawn with a dotted line twisting and turning. A red X marks the very end. Nina grins wide. Theo grins too. Which landmark should they follow first? They look at each other, ready for adventure.",
       "is_ending": false,
       "choices": [
         {
@@ -149,7 +149,7 @@
     },
     {
       "id": "o_hollow_4",
-      "body": "The path dips down and they walk into a shady green hollow below them. It is cool and the ground is soft with smooth flat stones dotting the earth. Each stone looks like a tiny doorway or perhaps a little home for someone small. The friends step with care and follow the dotted line deeper into the shade that surrounds them.",
+      "body": "The path dips down into a shady green hollow that is cool and deep. The ground is soft with smooth flat stones. Each stone looks like a tiny doorway. Like a little home for someone. The friends step with care and follow the line. They go deeper into the shade.",
       "is_ending": false,
       "choices": [
         {
@@ -173,7 +173,7 @@
     },
     {
       "id": "o_hollow_6",
-      "body": "The biggest toad wears a crown made from clover leaves that are green and fresh. The toad blinks slowly and it looks wise and ancient and powerful. Nina and Theo kneel down very gently so they will not frighten anyone here. And there in the corner the map's red X is drawn right where the king sits.",
+      "body": "The biggest toad wears a crown made of clover leaves. The toad blinks slowly. It looks wise and ancient. Nina and Theo kneel down very gently. They do not want to frighten anyone. And there, in the corner, the map's red X is drawn.",
       "is_ending": false,
       "choices": [
         {
@@ -237,7 +237,7 @@
     },
     {
       "id": "e_set_swing",
-      "body": "The prickly left branch is tangled and full of twigs and branches going nowhere good. It leads to an old bird box that is empty with no treasure and no X marked anywhere. The friends giggle at the silly dead end and hop off the branch. They head back to the porch because they know the X is hiding somewhere else.",
+      "body": "The prickly left branch is tangled with twigs going nowhere. It leads to an old bird box that is empty. No treasure. No X. The friends giggle at the silly dead end. They hop off the branch. They head back to the porch knowing the X is somewhere else.",
       "is_ending": true,
       "ending": {
         "id": "end_set_swing",
@@ -296,7 +296,7 @@
     },
     {
       "id": "e_chime",
-      "body": "The friends have found a secret wind-chime tree that sings and makes music all by itself. It sings whenever the breeze blows and moves the hanging things. They add one small shell of their own to the branches so the tree will change. Now the tree will sing louder and sweeter and happier than before. They walk home humming and the song stays with them all the way.",
+      "body": "The friends have found a secret wind-chime tree that sings all by itself. It sings whenever the breeze blows. They add one small shell to the branches. Now the tree will sing louder and sweeter. They walk home humming the song.",
       "is_ending": true,
       "ending": {
         "id": "end_chime",
@@ -651,7 +651,7 @@
     },
     {
       "id": "s_bramble_4",
-      "body": "A fluffy grey cat sits there with white paws that are soft and clean. So soft looking and nice to see. It does not run away at all or hide. It stays and stretches big and yawns very wide. It pads right over. A little bell hangs on its neck and jingles softly. Jingle jingle. A friendly sound that greets them.",
+      "body": "A fluffy grey cat sits there with white paws that look so soft. It does not run away but stays and stretches. It yawns big and pads over to say hello. A little bell hangs on its neck and jingles softly. Jingle jingle makes a friendly sound.",
       "is_ending": false,
       "choices": [
         {
