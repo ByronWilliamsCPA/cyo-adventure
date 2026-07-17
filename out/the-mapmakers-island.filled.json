@@ -2498,7 +2498,7 @@
     },
     {
       "id": "ch_seal_final",
-      "body": "The masterwork was drawn and signed, the little boat waiting below, and Wren had one last choice as the light went gold. Hand the chart over now, clean and certain, sure of the work. Or take a few more minutes to ring its margins with the island's living things. The seals that basked on its rocks and the turtles of its reef. The vanished fishing camp, the star slab above the cove. Then the map would hold not just the shape of the island but its life, all the wonders a bare survey leaves out. Both were true to the day. Add the living island to the margins, or hand over the clean masterwork as it is.",
+      "body": "The masterwork was drawn and signed, the little boat waiting below, and Wren had one last choice as the light went gold. Hand the chart over now, clean and certain, sure of the work. Or take a few more minutes to ring its margins with the island's living things, all of it plain from this high vantage. The seals hauled out on the rocks and the turtles working the reef. The wheeling seabirds, the quiet coves, the green ridges rolling down to the shore. Then the map would hold not just the shape of the island but its life, all the wonders a bare survey leaves out. Both were true to the day. Add the living island to the margins, or hand over the clean masterwork as it is.",
       "is_ending": false,
       "choices": [
         {
@@ -2515,7 +2515,7 @@
     },
     {
       "id": "e_ch_living",
-      "body": "Wren ringed the finished chart with tiny true drawings. A seal pup and a turtle at the shore, the vanished fishing camp among its trees, the star slab tilted above the cove. Now the map held not just the island's shape but its whole living self. The mate turned it slowly in the last of the light, taking in the margins, the small careful wonders crowded around the sure coastline. This is more than a survey, the mate said quietly. It is the island itself, on paper. And there on the darkening beach the mate gave Wren the apprenticeship, and something more besides. The honour of naming the next island the House would send a mapmaker to find.",
+      "body": "Wren ringed the finished chart with tiny true drawings, all of it seen plain from the summit. Seals hauled out on the shore rocks, turtles working the reef, seabirds wheeling above the cliffs. The quiet coves, the green ridges rolling down to the water. Now the map held not just the island's shape but its whole living self. The mate turned it slowly in the last of the light, taking in the margins, the small careful wonders crowded around the sure coastline. This is more than a survey, the mate said quietly. It is the island itself, on paper. And there on the darkening beach the mate gave Wren the apprenticeship, and something more besides. The honour of naming the next island the House would send a mapmaker to find.",
       "is_ending": true,
       "ending": {
         "id": "e_living_chart",
