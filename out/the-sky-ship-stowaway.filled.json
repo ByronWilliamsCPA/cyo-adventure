@@ -195,7 +195,7 @@
     },
     {
       "id": "b_hold1",
-      "body": "The cargo hold was a whole cave of lashed crates, with lanterns swaying gently from the ropes overhead. The ropes creaked with every roll of the ship, a steady, familiar sound. Two ways opened up from where Wren crouched low. One was a tidy aisle between rows of neatly labeled boxes, orderly and inviting. The other was a shadowed gap, where a length of cargo netting had come loose and hung open like a doorway into the dark. Wren had to pick her way fast. A swinging lantern might catch her in its light at any moment.",
+      "body": "The cargo hold was a whole cave of lashed crates, with lanterns swaying gently from the ropes overhead. The ropes creaked with every roll of the ship, a steady, familiar sound. Two ways opened up from where Wren crouched low. One was a tidy aisle between rows of neatly labeled boxes, orderly and inviting. The other was a shadowed gap. There, a length of cargo netting had come loose and hung open like a doorway into the dark. Wren had to pick her way fast. A swinging lantern might catch her in its light at any moment.",
       "is_ending": false,
       "choices": [
         {
@@ -1102,7 +1102,7 @@
     },
     {
       "id": "p_save_mid",
-      "body": "Calmer now, Nimbus settled at Wren's touch. He seemed eased simply by her being near. It seemed her closeness alone was enough, more than anything else. Wren realized something important just then. If she could reach the bridge, she might be able to tell the captain what she had learned: that the calf grew steadier whenever someone stayed close and gentle beside him. With that thought firm in her mind, she climbed toward the wheelhouse, Pip leading the way just ahead of her.",
+      "body": "Calmer now, Nimbus settled at Wren's touch. He seemed eased simply by her being near. It seemed her closeness alone was enough, more than anything else. Wren realized something important just then. If she could reach the bridge, she might tell the captain what she had learned. The calf grew steadier whenever someone stayed close and gentle beside him. With that thought firm in her mind, she climbed toward the wheelhouse, Pip leading the way just ahead of her.",
       "is_ending": false,
       "choices": [
         {

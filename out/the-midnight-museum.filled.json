@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Nadia bent down to retie her shoe. When she looked up, the school group was gone. So was the guard, and so were most of the lights, leaving only a few dim bulbs on the walls. She ran to the main doors and pushed, but they would not move. In her coat pocket she found a note she did not remember keeping. Folded inside it was a half-torn map of the museum, its paper soft and gray with age. Someone had circled a wing that no longer stood and scrawled a line about a hidden collection from the old founder. Nadia stood alone in the dark, round rotunda, where three halls opened off into black and quiet. She had all night. She had better start walking.",
+      "body": "Nadia bent down to retie her shoe. When she looked up, the school group was gone. So was the guard, and so were most of the lights, leaving only a few dim bulbs on the walls of the Ellery Museum. She ran to the main doors and pushed, but they would not move. In her coat pocket she found a note she did not remember keeping. Folded inside it was a half-torn map of the museum, its paper soft and gray with age and one corner marked with a small brass symbol, a circle crossed by two lines. Someone had circled a wing that no longer stood and scrawled a line about a hidden collection from the old founder. Nadia stood alone in the dark, round rotunda, where moonlight through the dome caught three brass signs above three archways: the Gallery of Gems, the Egyptian Wing, and the Archive. She had all night. She had better start walking.",
       "is_ending": false,
       "choices": [
         {
@@ -126,7 +126,7 @@
     },
     {
       "id": "a_gems_alarm",
-      "body": "Nadia followed the beeping past three cases of rings and one of loose, uncut stones. It led her to a small panel on the wall. Its light blinked amber in slow, steady pulses, a sensor doing exactly what it was built to do. She was still staring at it when a beam of light swept across the far end of the gallery. It was a night guard's torch, moving slow and steady, checking case after case. It was not pointed at her yet. But it was getting closer with every pass, and the gallery gave her almost nowhere to hide.",
+      "body": "Nadia followed the beeping past three cases of rings and one of loose, uncut stones. It led her to a small panel on the wall, beside a wide stone plinth that once held a display long since moved away. Its light blinked amber in slow, steady pulses, a sensor doing exactly what it was built to do. She was still staring at it when a beam of light swept across the far end of the gallery. It was a night guard's torch, moving slow and steady, checking case after case. It was not pointed at her yet, but it was getting closer with every pass, and the plinth beside her looked like the only place left to hide.",
       "is_ending": false,
       "choices": [
         {
@@ -143,7 +143,7 @@
     },
     {
       "id": "a_gems_hide",
-      "body": "Nadia dropped behind the nearest stand and made herself as small as she could, knees to her chest, breath held tight. The torch beam swept once across the spot where she had been standing, then moved on. She counted the guard's footsteps as they faded toward the far doors, slow and unhurried. When the gallery was quiet again, she looked up. She noticed something she had missed before: a narrow door in the back wall, standing open just a crack. It was as if someone had gone through it and forgotten to shut it.",
+      "body": "Nadia dropped behind the plinth and made herself as small as she could, knees to her chest, breath held tight. The torch beam swept once across the spot where she had been standing, then moved on. She counted the guard's footsteps as they faded toward the far doors, slow and unhurried. When the gallery was quiet again, she looked up. She noticed something she had missed before: a narrow door in the back wall, standing open just a crack. It was as if someone had gone through it and forgotten to shut it.",
       "is_ending": false,
       "choices": [
         {
@@ -201,7 +201,7 @@
     },
     {
       "id": "b_egypt_amulet",
-      "body": "The little card beside the empty dent was labelled in the founder's own thin hand. Though the words had worn away to almost nothing. What had not worn away was a thin arrow, scratched right into the glass of the case. It was so faint Nadia only saw it because the low light caught the edge of the scratch. It pointed past the sarcophagus, toward a gap in the wall where a hall opened into darkness. Someone had left that arrow on purpose, meant for whoever came looking after them.",
+      "body": "The little card beside the empty dent was labelled in the founder's own thin hand, though the words had worn away to almost nothing. What had not worn away was a thin arrow, scratched right into the glass of the case. It was so faint Nadia only saw it because the low light caught the edge of the scratch. It pointed past the sarcophagus, toward a gap in the wall where a hall opened into darkness. Someone had left that arrow on purpose, meant for whoever came looking after them.",
       "is_ending": false,
       "choices": [
         {
@@ -288,7 +288,7 @@
     },
     {
       "id": "c_archive_index",
-      "body": "Nadia flipped through the index card by card until one stopped her. It was out of order, tucked a full letter early. And stamped in the corner with the same brass mark from her map, a circle crossed by two lines. The card's faded writing mentioned a locked cabinet, though not exactly where. It only said the cabinet waited somewhere deep in the stacks, past the reach of the reading lamps. She slid the card back into place and turned toward the dark shelves.",
+      "body": "Nadia flipped through the index card by card until one stopped her. It was out of order, tucked a full letter early, and stamped in the corner with the same brass mark from her map, a circle crossed by two lines. The card's faded writing mentioned a locked cabinet, though not exactly where. It only said the cabinet waited somewhere deep in the stacks, past the reach of the reading lamps. She slid the card back into place and turned toward the dark shelves.",
       "is_ending": false,
       "choices": [
         {
@@ -515,7 +515,7 @@
     },
     {
       "id": "k_stairs_base",
-      "body": "Nadia crouched and opened the small cupboard the rest of the way. Inside lay a rolled chart, its edges brittle. And beside it a pair of the founder's own spare glasses, the lenses thick and slightly scratched. She unrolled the chart just enough to see rows of coded lines marching across the paper. It was clearly meant to be studied somewhere calm and well lit, not crouched in a stairwell. She rolled it back up to carry toward a proper table.",
+      "body": "Nadia crouched and opened the small cupboard the rest of the way. Inside lay a rolled chart, its edges brittle, and beside it a pair of the founder's own spare glasses, the lenses thick and slightly scratched. She unrolled the chart just enough to see rows of coded lines marching across the paper. It was clearly meant to be studied somewhere calm and well lit, not crouched in a stairwell. She rolled it back up to carry toward a proper table.",
       "is_ending": false,
       "choices": [
         {
@@ -752,7 +752,7 @@
     },
     {
       "id": "ro_align",
-      "body": "Nadia reached up and set her hands against the nearest ring of brass. It turned with barely a whisper, smoother than she expected for something so old. The cipher had given her an exact setting, a string of numbers she had already learned by heart on the stairs down. But the rings themselves were stiff in places and eager to spin right past the mark if she was not careful. She lined her thumb up with the first number, feeling the slow push of old gears. And knew this would take patience more than strength.",
+      "body": "Nadia reached up and set her hands against the nearest ring of brass. It turned with barely a whisper, smoother than she expected for something so old. The cipher had given her an exact setting, a string of numbers she had already learned by heart on the stairs down. But the rings themselves were stiff in places and eager to spin right past the mark if she was not careful. She lined her thumb up with the first number, feeling the slow push of old gears, and knew this would take patience more than strength.",
       "is_ending": false,
       "choices": [
         {
@@ -880,7 +880,7 @@
     },
     {
       "id": "ro_records_guard",
-      "body": "Nadia flipped the rounds log back past weeks of ordinary lines until she reached the very oldest page. It was written not by any guard. But in the founder's own careful hand. It noted, plainly, that a stair opened beneath the globe at a certain hour, the same hour the cipher had given her. She checked the clock on the wall and bolted back toward the rotunda. She arrived just as the marble floor beneath the stand was already sliding open on its own, right on time. Exactly as he had promised.",
+      "body": "Nadia flipped the rounds log back past weeks of ordinary lines until she reached the very oldest page. It was written not by any guard, but in the founder's own careful hand. It noted, plainly, that a stair opened beneath the globe at a certain hour, the same hour the cipher had given her. She checked the clock on the wall and bolted back toward the rotunda. She arrived just as the marble floor beneath the stand was already sliding open on its own, right on time, exactly as he had promised.",
       "is_ending": false,
       "choices": [
         {
@@ -1151,7 +1151,7 @@
     },
     {
       "id": "e_set_stuck_dark",
-      "body": "Blind in the endless stacks, Nadia turned one too many corners and lost her sense of direction completely. She could not tell which way led back toward the lamps and which way led deeper into the dark. Rather than risk wandering further, she found a clear patch of floor and simply sat down to wait. It was uncomfortable. And dusty, and more than a little boring. But nothing about it was dangerous. Eventually, she knew, the museum's morning lights would click on overhead, and the locked cabinet would stay a mystery until then.",
+      "body": "Blind in the endless stacks, Nadia turned one too many corners and lost her sense of direction completely. She could not tell which way led back toward the lamps and which way led deeper into the dark. Rather than risk wandering further, she found a clear patch of floor and simply sat down to wait. It was uncomfortable and dusty, and more than a little boring, but nothing about it was dangerous. Eventually, she knew, the museum's morning lights would click on overhead, and the locked cabinet would stay a mystery until then.",
       "is_ending": true,
       "ending": {
         "id": "e_stuck_dark",
@@ -1195,7 +1195,7 @@
     },
     {
       "id": "e_set_jammed_globe",
-      "body": "Forced too hard and too fast, the brass rings locked solid, refusing to turn either way no matter how Nadia pulled or pushed. The hidden stair, wherever it led, stayed firmly shut beneath the stand. She sat down beside the silent globe, catching her breath and staring at the gears that would not budge for her tonight. It felt strange, being this close to whatever the founder had hidden. And still completely unable to reach it. But there was nothing left to do except wait quietly for the museum to open in the morning.",
+      "body": "Forced too hard and too fast, the brass rings locked solid, refusing to turn either way no matter how Nadia pulled or pushed. The hidden stair, wherever it led, stayed firmly shut beneath the stand. She sat down beside the silent globe, catching her breath and staring at the gears that would not budge for her tonight. It felt strange, being this close to whatever the founder had hidden, and still completely unable to reach it. There was nothing left to do now except wait quietly for the museum to open in the morning.",
       "is_ending": true,
       "ending": {
         "id": "e_jammed_globe",
@@ -1305,7 +1305,7 @@
     },
     {
       "id": "e_neutral_call_home",
-      "body": "Nadia called home from the guard's desk and curled up in the warm lobby to wait for someone to come get her. The mystery was still only half solved. But safely written down in her own careful notes. It was not the full triumph she might have pictured: no crowd, no headline, no big reveal. But it had been a real adventure all the same, and she made herself a quiet promise to come back properly and finish what tonight had only started. For now, safe and a little proud, that felt like enough.",
+      "body": "Nadia called home from the guard's desk and curled up in the warm lobby to wait for someone to come get her. The mystery was still only half solved, but safely written down in her own careful notes. It was not the full triumph she might have pictured: no crowd, no headline, no big reveal. But it had been a real adventure all the same, and she made herself a quiet promise to come back properly and finish what tonight had only started. For now, safe and a little proud, that felt like enough.",
       "is_ending": true,
       "ending": {
         "id": "e_call_home",
@@ -1316,7 +1316,7 @@
     },
     {
       "id": "e_neutral_evidence",
-      "body": "With the map safe on her phone and the hidden room left exactly as she had found it, Nadia slipped out into the gray dawn light without waking anyone. She had proof enough now to bring the right people back the right way, in daylight, with all the care the discovery deserved. It was not her place, she decided, to make every choice alone in the dark. She would let the grown-ups take it from here. And simply feel proud of everything she had managed to find on her own.",
+      "body": "With the map safe on her phone and the hidden room left exactly as she had found it, Nadia slipped out into the gray dawn light without waking anyone. She had proof enough now to bring the right people back the right way, in daylight, with all the care the discovery deserved. It was not her place, she decided, to make every choice alone in the dark. She would let the grown-ups take it from here, and simply feel proud of everything she had managed to find on her own.",
       "is_ending": true,
       "ending": {
         "id": "e_evidence",
