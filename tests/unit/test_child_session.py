@@ -376,3 +376,41 @@ def test_local_needs_no_child_secret() -> None:
     """Local development constructs with no child-session secret."""
     settings = Settings(environment="local")
     assert settings.child_session_secret is None
+
+
+# ---------------------------------------------------------------------------
+# Time-boundary / clock-skew edge cases (PyJWT leeway defaults to 0).
+#
+# Child-session tokens are minted and verified by the SAME backend, so there is
+# no cross-service clock skew and the strict leeway=0 boundary is exactly right.
+# These pin that boundary so a future leeway change is a conscious one.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_expiry_exactly_at_now_is_rejected() -> None:
+    """A token whose exp equals the current instant fails verification."""
+    now = datetime.now(UTC)
+    token = _encode(_claims(iat=now - timedelta(minutes=5), exp=now))
+    with pytest.raises(AuthenticationError):
+        verify_child_session_token(token)
+
+
+@pytest.mark.unit
+def test_future_issued_at_is_rejected_under_zero_leeway() -> None:
+    """An iat in the future is rejected (no clock-skew tolerance)."""
+    now = datetime.now(UTC)
+    token = _encode(
+        _claims(iat=now + timedelta(minutes=5), exp=now + timedelta(hours=1))
+    )
+    with pytest.raises(AuthenticationError):
+        verify_child_session_token(token)
+
+
+@pytest.mark.unit
+def test_future_not_before_is_rejected() -> None:
+    """An nbf in the future is rejected even though it is not in the require set."""
+    now = datetime.now(UTC)
+    token = _encode(_claims(nbf=now + timedelta(minutes=5)))
+    with pytest.raises(AuthenticationError):
+        verify_child_session_token(token)
