@@ -94,6 +94,27 @@ NON_FIPS_CIPHERS = {
     "seed",
 }
 
+# Cipher names that are also ordinary English identifiers. Matching them as
+# bare attribute names produces false positives (a `seed_staging.seed()` call
+# is database seeding, not the SEED block cipher of RFC 4269), so these names
+# are only flagged when the call carries cryptographic context: the module
+# imports a crypto library, or the call's attribute chain passes through a
+# known crypto namespace. Unambiguous names (des, rc4, blowfish, ...) are
+# flagged unconditionally as before.
+AMBIGUOUS_CIPHER_NAMES = {"seed", "idea"}
+
+# Lowercased module-path or attribute-chain segments that mark code as
+# cryptographic for the ambiguous-name gate above.
+CRYPTO_NAMESPACE_SEGMENTS = {
+    "crypto",  # pycrypto / pycryptodome (Crypto.Cipher.*)
+    "cryptodome",  # pycryptodomex (Cryptodome.Cipher.*)
+    "cryptography",  # pyca/cryptography
+    "hazmat",
+    "ciphers",
+    "cipher",
+    "m2crypto",
+}
+
 # NIST-finalized post-quantum algorithms (FIPS 203/204/205) and the hybrid TLS
 # key-exchange group built on them. These are FIPS-approved (ADR-013) and must
 # never be flagged, including by any future substring or name-list matching.
@@ -136,12 +157,81 @@ class FipsIssue:
     fix_hint: str | None = None
 
 
+def _module_imports_crypto(tree: ast.AST) -> bool:
+    """Report whether a module imports any known cryptography library.
+
+    Scans every ``import``/``from ... import`` in the tree (not just
+    top-of-file ones) so the result does not depend on statement order
+    relative to the calls being checked.
+
+    Args:
+        tree: Parsed AST of the module under inspection.
+
+    Returns:
+        True when any imported module path contains a segment from
+        CRYPTO_NAMESPACE_SEGMENTS.
+    """
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            modules = [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom):
+            modules = [node.module] if node.module else []
+        else:
+            continue
+        for module in modules:
+            segments = {part.lower() for part in module.split(".")}
+            if segments & CRYPTO_NAMESPACE_SEGMENTS:
+                return True
+    return False
+
+
+def _attribute_chain(node: ast.expr) -> list[str]:
+    """Return the lowercased dotted-name chain of an expression.
+
+    ``Crypto.Cipher.SEED.new`` yields ``["crypto", "cipher", "seed", "new"]``.
+    Non-name path elements (calls, subscripts) terminate the walk, so only
+    the trailing plain-attribute suffix is returned.
+
+    Args:
+        node: The expression to unwind (typically ``ast.Call.func``).
+
+    Returns:
+        Chain segments from base to attribute, lowercased.
+    """
+    parts: list[str] = []
+    current: ast.expr = node
+    while isinstance(current, ast.Attribute):
+        parts.append(current.attr.lower())
+        current = current.value
+    if isinstance(current, ast.Name):
+        parts.append(current.id.lower())
+    return list(reversed(parts))
+
+
 class FipsCodeVisitor(ast.NodeVisitor):
     """AST visitor to detect FIPS-incompatible code patterns."""
 
-    def __init__(self, file_path: Path) -> None:
+    def __init__(self, file_path: Path, has_crypto_import: bool = False) -> None:
         self.file_path = file_path
+        self.has_crypto_import = has_crypto_import
         self.issues: list[FipsIssue] = []
+
+    def _call_has_crypto_context(self, node: ast.Call) -> bool:
+        """Decide whether a call is plausibly cryptographic.
+
+        Used only to gate AMBIGUOUS_CIPHER_NAMES; unambiguous cipher names
+        never consult this.
+
+        Args:
+            node: The call under inspection.
+
+        Returns:
+            True when the module imports a crypto library or the call's
+            attribute chain passes through a crypto namespace segment.
+        """
+        if self.has_crypto_import:
+            return True
+        return bool(set(_attribute_chain(node.func)) & CRYPTO_NAMESPACE_SEGMENTS)
 
     def _check_hashlib_call(self, node: ast.Call) -> None:
         """Detect hashlib.md5(), hashlib.sha1(), and similar non-FIPS hash calls.
@@ -233,6 +323,10 @@ class FipsCodeVisitor(ast.NodeVisitor):
             return
         if func_name not in NON_FIPS_CIPHERS:
             return
+        if func_name in AMBIGUOUS_CIPHER_NAMES and not self._call_has_crypto_context(
+            node
+        ):
+            return
         self.issues.append(
             FipsIssue(
                 file_path=self.file_path,
@@ -259,6 +353,10 @@ class FipsCodeVisitor(ast.NodeVisitor):
             if self._check_pqc_pre_standard_name(node, algo):
                 continue
             if algo not in NON_FIPS_HASHES and algo not in NON_FIPS_CIPHERS:
+                continue
+            if algo in AMBIGUOUS_CIPHER_NAMES and not self._call_has_crypto_context(
+                node
+            ):
                 continue
             self.issues.append(
                 FipsIssue(
@@ -305,7 +403,9 @@ def check_python_file(file_path: Path) -> list[FipsIssue]:
         content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content, filename=str(file_path))
 
-        visitor = FipsCodeVisitor(file_path)
+        visitor = FipsCodeVisitor(
+            file_path, has_crypto_import=_module_imports_crypto(tree)
+        )
         visitor.visit(tree)
         issues.extend(visitor.issues)
 

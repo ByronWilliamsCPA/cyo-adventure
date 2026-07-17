@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 from scripts.check_fips_compatibility import (
+    AMBIGUOUS_CIPHER_NAMES,
     FIPS_PQC_APPROVED,
     NON_FIPS_CIPHERS,
     NON_FIPS_HASHES,
@@ -138,3 +139,74 @@ def test_pre_standard_match_is_substring_and_warn_only(tmp_path: Path) -> None:
 
     clean = _issues_for(tmp_path, "def use(factory):\n    factory.ed25519_sign()\n")
     assert clean == []
+
+
+@pytest.mark.unit
+def test_ambiguous_names_are_subset_of_cipher_denylist() -> None:
+    """The context gate only narrows existing findings, never adds names.
+
+    Every ambiguous name must already be in NON_FIPS_CIPHERS; an entry
+    outside the denylist would be dead configuration that silently gates
+    nothing.
+    """
+    assert AMBIGUOUS_CIPHER_NAMES <= NON_FIPS_CIPHERS
+
+
+@pytest.mark.unit
+def test_bare_seed_call_without_crypto_context_not_flagged(tmp_path: Path) -> None:
+    """A domain seed() call is not the SEED cipher (the PR #205 regression).
+
+    ``seed_staging.seed()`` and ``random.seed()`` carry no cryptographic
+    context and must report nothing.
+    """
+    source = (
+        "import random\n"
+        "from scripts import seed_staging\n"
+        "async def run():\n"
+        "    random.seed(42)\n"
+        "    await seed_staging.seed()\n"
+    )
+    assert _issues_for(tmp_path, source) == []
+
+
+@pytest.mark.unit
+def test_seed_call_with_crypto_import_flagged_regardless_of_order(
+    tmp_path: Path,
+) -> None:
+    """A seed() call in a module importing a crypto library errors.
+
+    The import appears after the call: crypto context is a whole-module
+    pre-scan, not a statement-order accident.
+    """
+    source = "def use(c, key):\n    c.seed(key)\nfrom Crypto.Cipher import SEED\n"
+    issues = _issues_for(tmp_path, source)
+    assert [issue.severity for issue in issues] == ["error"]
+    assert "seed" in issues[0].message
+
+
+@pytest.mark.unit
+def test_seed_call_via_crypto_attribute_chain_flagged(tmp_path: Path) -> None:
+    """An attribute chain through a crypto namespace supplies context alone."""
+    issues = _issues_for(tmp_path, "def use(lib, key):\n    lib.cipher.seed(key)\n")
+    assert [issue.severity for issue in issues] == ["error"]
+
+
+@pytest.mark.unit
+def test_seed_string_in_new_call_follows_the_same_gate(tmp_path: Path) -> None:
+    """.new("seed") is gated identically to the attribute-call form."""
+    assert _issues_for(tmp_path, 'def use(f):\n    f.new("seed")\n') == []
+
+    with_context = _issues_for(
+        tmp_path,
+        'import Cryptodome.Cipher\ndef use(f):\n    f.new("seed")\n',
+    )
+    assert [issue.severity for issue in with_context] == ["error"]
+
+
+@pytest.mark.unit
+def test_unambiguous_cipher_call_flagged_without_any_context(tmp_path: Path) -> None:
+    """Names with no benign reading (rc4, blowfish) never need context."""
+    issues = _issues_for(
+        tmp_path, "def use(x, data):\n    x.rc4(data)\n    x.blowfish(data)\n"
+    )
+    assert [issue.severity for issue in issues] == ["error", "error"]
