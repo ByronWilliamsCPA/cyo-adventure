@@ -240,7 +240,7 @@
     },
     {
       "id": "a_corridor",
-      "body": "Whatever Mira carried with her now, the hallway ahead ran the same way. It led straight toward the tower's inner door, a heavy shape at the far end of the passage. A side corridor branched off toward the kitchen, dark and silent. A thin draught stirred the dust along its floor, like something breathing from underneath. She could go straight on, following the hall to the door. Or she could take the kitchen's crooked route instead. Either path, she was fairly sure, would bring her out at the very same locked door in the end.",
+      "body": "Whatever Mira carried with her now, the hallway ahead ran the same way. It led straight toward the tower's inner door, a heavy shape at the far end of the passage. A side corridor branched off toward the kitchen, dark and silent. A thin draught stirred the dust along its floor, like something breathing from underneath. Straight on lay the door itself. Sideways lay the kitchen's crooked shortcut. Either path, she was fairly sure, would bring her out at the very same locked door in the end.",
       "is_ending": false,
       "choices": [
         {
@@ -344,7 +344,7 @@
     },
     {
       "id": "b_gallery",
-      "body": "The gallery walk ringed the lamp room on the outside, open to the fog. The wind tugged at Mira's jacket the moment she stepped near the door. The iron rail running along its edge was furred thick with rust. It flaked under her fingers when she touched it. Below, the mist hung so thick she could not see the rocks at all. She could only guess at the long drop waiting somewhere beneath it. She could step out onto the walk and trust the old rail to hold her steady. Or she could stay inside and peer through the fogged window instead.",
+      "body": "The gallery walk ringed the lamp room on the outside, open to the fog. The wind tugged at Mira's jacket the moment she stepped near the door. The iron rail running along its edge was furred thick with rust. It flaked under her fingers when she touched it. Below, the mist hung so thick she could not see the rocks at all, only guess at the long drop waiting somewhere beneath it. Did the old rail deserve her trust, or was the fogged window the wiser way to look? Mira lingered at the threshold, weighing it.",
       "is_ending": false,
       "choices": [
         {
@@ -390,7 +390,7 @@
     },
     {
       "id": "b_clock",
-      "body": "The clockwork weight hung heavy on a chain gone stiff with rust. It was the very mechanism that had once turned the great lamp through each long night. Mira gave the chain an experimental tug. Somewhere deep in the works, something groaned like it remembered how to move. She could wind the mechanism properly and see what, if anything, woke up inside the tower. Or she could leave the gears alone and follow the chain instead, down through its narrow shaft, to wherever it led at the bottom.",
+      "body": "The clockwork weight hung heavy on a chain gone stiff with rust. It was the very mechanism that had once turned the great lamp through each long night. Mira gave the chain an experimental tug. Somewhere deep in the works, something groaned like it remembered how to move. Should she wind the mechanism properly and see what woke inside the tower? Or should she simply follow the chain down through its narrow shaft to wherever it led at the bottom?",
       "is_ending": false,
       "choices": [
         {
@@ -494,7 +494,7 @@
     },
     {
       "id": "c_pass",
-      "body": "The passage narrowed quickly. The walls pressed close on both sides. Mira noticed the water at her boots had begun creeping steadily higher. The tide was coming in, filling the cave from somewhere out beyond the entrance, and it was rising faster than she liked. She could push on while the way was still clear enough to pass, trusting she had time before the water rose too far. Or she could listen to the small, sensible voice telling her the sea did not wait for anyone.",
+      "body": "The passage narrowed quickly. The walls pressed close on both sides. Mira noticed the water at her boots had begun creeping steadily higher. The tide was coming in, filling the cave from somewhere out beyond the entrance, rising faster than she liked. She stood torn between two urges: the pull to push on while the way was still clear, and the small, sensible voice telling her the sea did not wait for anyone.",
       "is_ending": false,
       "choices": [
         {
@@ -564,7 +564,7 @@
     },
     {
       "id": "c_arch",
-      "body": "The low arch was scratched all over with tally marks, rows and rows of them. Beneath the marks, someone had scrawled a warning in a cramped shorthand Mira could barely puzzle out. It looked like a record of something counted, again and again, over a long time. Beyond the arch, the passage narrowed sharply into a gap barely wide enough for her shoulders. She could take her time studying the carved marks first. Or she could turn sideways and squeeze straight through the narrow gap to see what waited on the other side.",
+      "body": "The low arch was scratched all over with tally marks, rows and rows of them. Beneath the marks, someone had scrawled a warning in a cramped shorthand Mira could barely puzzle out. It looked like a record of something counted, again and again, over a long time. Beyond the arch, the passage narrowed sharply into a gap barely wide enough for her shoulders. Mira crouched between two puzzles, marks on one side and stone on the other, and had to pick which one to trust first.",
       "is_ending": false,
       "choices": [
         {
@@ -755,7 +755,7 @@
     },
     {
       "id": "d_loft",
-      "body": "The ladder to the loft was missing more rungs than it had left, gaps yawning where the wood had long since rotted away. Mira could see one rung near the top that looked cracked clean through, ready to give at the slightest weight. She could pick her way up carefully, testing each remaining rung before trusting her full weight to it. Or she could simply reach for the cracked one and hope it held, saving herself a slower, more careful climb. Her hand hovered over the first rung.",
+      "body": "The ladder to the loft was missing more rungs than it had left, gaps yawning where the wood had long since rotted away. Mira could see one rung near the top that looked cracked clean through, ready to give at the slightest weight. Was it worth testing every remaining rung on the slow way up? Or would the cracked one hold just long enough to save her the trouble? Her hand hovered over the first rung.",
       "is_ending": false,
       "choices": [
         {
@@ -784,7 +784,7 @@
     },
     {
       "id": "d_hatch",
-      "body": "Whichever way had led Mira here, the floor hatch itself sat stiff and stubborn beneath her hands. Behind her, the boathouse's loose door rattled and banged in a rising wind. It worried at its hinges like it wanted to tear free entirely. She could pry the hatch up now. She could follow the passage it hid, down and under the boathouse floor, out toward the tower somewhere below. Or she could turn and deal with that slamming door first, before the storm outside got any worse. The wind gusted again, hard. It seemed to decide for her almost before she chose.",
+      "body": "Whichever way had led Mira here, the floor hatch itself sat stiff and stubborn beneath her hands. Behind her, the boathouse's loose door rattled and banged in a rising wind, worrying at its hinges like it wanted to tear free entirely. Down below the hatch waited the passage toward the tower. Right behind her waited the slamming door and the worsening storm. The wind gusted again, hard, deciding for her almost before she chose.",
       "is_ending": false,
       "choices": [
         {
@@ -975,7 +975,7 @@
     },
     {
       "id": "jr_tunnel",
-      "body": "The sketch near the back of the journal showed a tunnel running from somewhere beneath the tower. It ran out under a sea gate marked with careful, hurried lines. Mira studied the drawing closely and traced the tunnel's path with her finger. Then something on the landing floor caught her eye: a single flagstone, slightly loose beneath her boot. It was marked with the very same small cross drawn on the sketch beside the tunnel's start. She could study the sketch further to understand the route. Or she could test the marked flagstone right where she stood to see what it hid.",
+      "body": "The sketch near the back of the journal showed a tunnel running from somewhere beneath the tower. It ran out under a sea gate marked with careful, hurried lines. Mira studied the drawing closely and traced the tunnel's path with her finger. Then something on the landing floor caught her eye: a single flagstone, slightly loose beneath her boot, marked with the very same small cross drawn on the sketch beside the tunnel's start. She crouched between paper and stone, unsure which would tell her more.",
       "is_ending": false,
       "choices": [
         {
@@ -1258,7 +1258,7 @@
     },
     {
       "id": "li_ladder",
-      "body": "The outer ladder ran straight down the tower's flank, exposed to the thick fog pressing in from every side. The rungs were slick with damp under Mira's palms. The mist grew so dense as she began her descent that she could barely make out her own hands gripping the metal. She could keep climbing down carefully through the blinding fog, trusting her grip and her memory of each rung. Or she could judge the conditions too risky and climb back up to safer ground.",
+      "body": "The outer ladder ran straight down the tower's flank, exposed to the thick fog pressing in from every side. The rungs were slick with damp under Mira's palms. The mist grew so dense as she began her descent that she could barely make out her own hands gripping the metal. Could she trust her grip and her memory of each rung enough to keep going blind? Or was climbing back up to safer ground the wiser choice?",
       "is_ending": false,
       "choices": [
         {
@@ -1309,7 +1309,7 @@
     },
     {
       "id": "tn_keeper",
-      "body": "The sealed door ahead was solid oak bound in brass. The keeper's own mark was burned deep into the wood at its center. It looked like it hadn't been opened in a very long time. But just before Mira could reach it, a heavy wooden beam lay fallen clean across the passage. It blocked the way entirely. She could try the brass key she carried on the door itself, right from where she stood. Or she could deal with the fallen beam first and clear a proper path forward. The smell of damp timber hung thick in the narrow air.",
+      "body": "The sealed door ahead was solid oak bound in brass, the keeper's own mark burned deep into the wood at its center. It looked like it hadn't been opened in a very long time. A stiff old key still sat in the lock, left there and forgotten, spotted with rust and dried salt. Mira crouched between two problems at once: the door itself, and the heavy wooden beam that had fallen clean across the passage just behind her, blocking the way entirely. She reached for the key first, then glanced back at the beam, and had to pick where to spend her strength.",
       "is_ending": false,
       "choices": [
         {
@@ -1326,7 +1326,7 @@
     },
     {
       "id": "tn_keep_door",
-      "body": "Mira slid the brass key into the lock. It turned smoothly at first, a full half circle, before catching hard against a knot of rust deep inside the mechanism. It would go no further without help. She could work the key gently, coaxing it back and forth to loosen whatever had seized inside, patient and careful. Or she could grip it firmly and give it one hard, decisive shove, trusting the old lock to survive the force. Mira's fingers tightened around the key.",
+      "body": "Mira gripped the old key still fitted in the lock and turned it. It moved smoothly at first, a full half circle, before catching hard against a knot of rust deep inside the mechanism. It would go no further without help. She could work the key gently, coaxing it back and forth to loosen whatever had seized inside, patient and careful. Or she could grip it firmly and give it one hard, decisive shove, trusting the old lock to survive the force. Mira's fingers tightened around the key.",
       "is_ending": false,
       "choices": [
         {
@@ -1389,7 +1389,7 @@
     },
     {
       "id": "tn_store",
-      "body": "The store was stacked nearly to the brick roof with crates and barrels, none of them stamped with any mark to say where they had come from or where they were meant to go. It felt like a room built entirely to keep secrets. On top of the nearest stack sat a small locked ledger box, its metal corners dulled with age. She could prise open one of the crates to see what it held. Or she could work at the ledger box instead, hoping it might explain everything at once.",
+      "body": "The store was stacked nearly to the brick roof with crates and barrels, none of them stamped with any mark to say where they had come from or where they were meant to go. It felt like a room built entirely to keep secrets. On top of the nearest stack sat a small locked ledger box, its metal corners dulled with age. Mira stood between the two, crate and box, unsure which would give up its secret faster.",
       "is_ending": false,
       "choices": [
         {
@@ -1418,7 +1418,7 @@
     },
     {
       "id": "tn_store_box",
-      "body": "The ledger box, once Mira worked it open, matched the torn page from the journal exactly. The same handwriting, the same careful columns of figures. Together, the two pieces sealed the case beyond any doubt at all. She held both up to the dim light, satisfied. A low door at the back of the store led onward, deeper still, toward what she guessed must be the keeper's sealed room somewhere ahead. Mira tucked the box under her arm and ducked through the doorway.",
+      "body": "The ledger box, once Mira worked it open, held its own neat lists of names, dates, and figures, page after careful page. The handwriting was cramped and hurried, tallying goods that had clearly never passed through any honest customs house. It was proof enough on its own, whatever else she had found tonight. She held it up to the dim light, satisfied. A low door at the back of the store led onward, deeper still, toward what she guessed must be the keeper's sealed room somewhere ahead. Mira tucked the box under her arm and ducked through the doorway.",
       "is_ending": false,
       "choices": [
         {
@@ -1430,7 +1430,7 @@
     },
     {
       "id": "tn_store_join",
-      "body": "Whichever discovery Mira carried with her now, the low door opened onto a narrow passage. It led straight toward the keeper's sealed room somewhere ahead. But her borrowed lantern chose that exact moment to gutter. Its flame shrank to a weak, uncertain flicker. That threatened to leave her stumbling in the dark. She could press on quickly before the light failed entirely. Or she could stop right here to trim the wick. She could coax the flame back to something steadier first. The tunnel pressed close and silent around her.",
+      "body": "Whichever discovery Mira carried with her now, the low door opened onto a narrow passage. It led straight toward the keeper's sealed room somewhere ahead. A cold draft breathed up from somewhere in the tunnel, and it caught the lantern's small flame, worrying it down to a weak, uncertain flicker. That threatened to leave her stumbling in the dark. She could press on quickly before the light failed entirely. Or she could stop right here to trim the wick. She could coax the flame back to something steadier first. The tunnel pressed close and silent around her.",
       "is_ending": false,
       "choices": [
         {
@@ -1505,7 +1505,7 @@
     },
     {
       "id": "n_chamber",
-      "body": "Whichever route had brought her here, Mira found herself at last in the keeper's sealed room. It was snug and dry despite lying somewhere under the restless sea outside. A small lamp sat unlit on a shelf. A narrow bunk stood made along one wall. A plain desk held, at its center, a sealed letter that seemed to answer everything at once. Here, she sensed, was the truth of where old Ferris had really gone. Here too was the truth of the smuggler who had driven him from his own tower. And here was the truth behind the false light he had left burning as a quiet warning. Mira looked around the small room. The whole strange night was finally within reach of an ending, and she had to decide what to do with all of it.",
+      "body": "Whichever route had brought her here, Mira found herself at last in the keeper's sealed room. It was snug and dry despite lying somewhere under the restless sea outside. A small lamp sat unlit on a shelf. A narrow bunk stood made along one wall. A plain desk held, at its center, a sealed letter that seemed to answer everything at once. Here, she sensed, was the truth of where old Ferris had really gone. Here too was the truth of the smuggler who had driven him from his own tower. And here was the truth behind the false light he had left burning as a quiet warning. Mira looked around the small room. It was very late now, and the cold and the long night were finally catching up with her all at once. She had to decide: read on, deal with what she had found, or simply admit how tired she was and start the walk back to town.",
       "is_ending": false,
       "choices": [
         {
@@ -1624,7 +1624,7 @@
     },
     {
       "id": "cm_smug",
-      "body": "The smugglers' store lay the whole case bare before her, crates and ledger and all. Mira could pull out her phone and photograph everything carefully, crate by crate. That would build evidence nobody could later deny. Or she could leave the photographing for later. She could follow the passage deeper instead. She was curious to see exactly where all these goods were truly meant to end up once they left the tower. Both choices, she suspected, would matter a great deal by morning.",
+      "body": "The smugglers' store lay the whole case bare before her, crates and ledger and all. One path forward was quick and careful: her phone out, photographing everything crate by crate, evidence nobody could later deny. The other led deeper still, down the passage, toward wherever these goods were truly meant to end up once they left the tower. Both choices, she suspected, would matter a great deal by morning.",
       "is_ending": false,
       "choices": [
         {
@@ -1704,7 +1704,7 @@
     },
     {
       "id": "cm_light",
-      "body": "The false-light rig, clever as it was, could still be turned to some real good. Its secret was out now, after all. Mira ran her hand along the old mirrors, thinking. She could work to relight the tower's true lamp properly. That would restore the honest beam that once guided ships safely past these rocks. Or she could study the keeper's signal more closely instead. She was curious about the coded warning system. Ferris had built it to alert passing ships to danger without ever giving himself away.",
+      "body": "The false-light rig, clever as it was, could still be turned to some real good. Its secret was out now, after all. Mira ran her hand along the old mirrors, thinking. Should she work to relight the tower's true lamp properly, restoring the honest beam that once guided ships safely past these rocks? Or was the keeper's signal worth studying more closely first, that coded warning system Ferris had built to alert passing ships to danger without ever giving himself away?",
       "is_ending": false,
       "choices": [
         {
@@ -1767,7 +1767,7 @@
     },
     {
       "id": "cm_leave",
-      "body": "The fog outside was thick. Mira was tired in a way that had settled deep into her bones. The whole strange night was finally catching up with her all at once. She could head straight back to town now, carrying everything she had learned in her own head and pockets. Or she could take a few extra minutes here first, marking the route carefully. That way, whoever came looking after her would be able to follow the same path without getting lost. She weighed the tiredness against the responsibility.",
+      "body": "The fog outside was thick. Mira was tired in a way that had settled deep into her bones. The whole strange night was finally catching up with her all at once. Town lay one direction, close and simple, everything she had learned already safe in her head and pockets. A few careful minutes marking the route lay the other way, a kindness to whoever came looking after her. She weighed the tiredness against the responsibility.",
       "is_ending": false,
       "choices": [
         {
@@ -1813,7 +1813,7 @@
     },
     {
       "id": "e_set_a_drawer",
-      "body": "Mira wrenched hard at the stubborn drawer. It gave all at once, splitting along its seam. It jammed the whole desk shut, catching the edge of her sleeve as it went. By the time she worked herself free, the fog outside had thickened considerably. It pressed close against the cottage windows. She decided the old desk had kept its secrets well enough for one night. Safe, if no wiser, Mira pulled her jacket straight and headed out to wait quietly for morning.",
+      "body": "Mira wrenched hard at the stubborn drawer. It gave all at once, splitting along its seam. It jammed the whole desk shut, catching the edge of her sleeve as it went. By the time she worked herself free, the fog outside had thickened considerably. It pressed close against the cottage windows. She decided the old desk had kept its secrets well enough for one night. Mira let the cottage keep the rest of them, stepped back out into the fog, and let morning arrive in its own good time.",
       "is_ending": true,
       "ending": {
         "id": "e_a_drawer",
@@ -1890,7 +1890,7 @@
     },
     {
       "id": "e_set_cellar",
-      "body": "The low cellar door gave all at once. It swung open onto a cold blackness so complete that Mira's borrowed lantern chose that exact moment to gutter and die. She did not want to grope forward blind into whatever waited down there. She eased the door carefully shut again. She felt her way back to the landing. Some mysteries, she decided, deserved better light than this. Mira settled herself to wait for a safer hour, or a steadier flame, whichever came first in the long, patient night ahead.",
+      "body": "The low cellar door gave all at once. It swung open onto a cold blackness so complete that Mira's borrowed lantern chose that exact moment to gutter and die. She did not want to grope forward blind into whatever waited down there. She eased the door carefully shut again and felt her way back to the landing. Some mysteries, she decided, deserved better light than this. Mira sat down against the passage wall, listening to her own breathing steady in the dark, and let the long night carry itself toward morning.",
       "is_ending": true,
       "ending": {
         "id": "e_cellar",
@@ -1945,7 +1945,7 @@
     },
     {
       "id": "e_set_beam",
-      "body": "Halfway under the fallen beam, it shifted with a low groan. It settled heavier, pinning the edge of Mira's coat fast against the stone floor. She twisted and pulled until the fabric finally tore free. Her heart hammered at how close that had been. The near miss was enough for one night. Mira backed carefully out of the passage. She decided the way forward would have to wait for steadier hands and a safer day, one with proper tools and someone else standing watch.",
+      "body": "Halfway under the fallen beam, it shifted with a low groan. It settled heavier, pinning the edge of Mira's coat fast against the stone floor. She twisted and pulled until the fabric finally tore free. Her heart hammered at how close that had been. The near miss was enough for one night. Mira backed carefully out of the passage. She decided the way forward would have to wait for a calmer head and a safer day, one with proper tools and someone else standing watch.",
       "is_ending": true,
       "ending": {
         "id": "e_beam",
@@ -1956,7 +1956,7 @@
     },
     {
       "id": "e_set_gate",
-      "body": "The sea gate's lower bars were already awash by the time Mira reached them. Cold water surged suddenly to her waist, stronger than she had expected. She gasped at the shock of it. She waded quickly back toward the dry passage behind her. The tide, she decided, had clearly won this round. There was no shame in admitting it. Safe, if soaked through and stopped short of the gate, Mira settled in to wait for the water to fall.",
+      "body": "The sea gate's lower bars were already awash by the time Mira reached them. Cold water surged suddenly to her waist, stronger than she had expected. She gasped at the shock of it. She waded quickly back toward the dry passage behind her. The tide, she decided, had clearly won this round, and there was no shame in admitting it. Mira wrung the worst of the seawater from her sleeve and watched the water climb the bars, patient now that patience was all that was left to her.",
       "is_ending": true,
       "ending": {
         "id": "e_gate",
@@ -1978,7 +1978,7 @@
     },
     {
       "id": "e_set_gears",
-      "body": "Mira forced the stiff gears with all the strength she had. They locked solid with a sharp, final crack. The whole lamp mechanism jammed for good. No amount of coaxing would free them now. The tower would not light tonight after all, whatever she tried. Disappointed, Mira climbed back down through the tower's cold dark. She left the great lamp exactly as broken as she had found it. Its beam stayed dark over the restless water below, waiting, perhaps, for someone with steadier hands.",
+      "body": "Mira forced the stiff gears with all the strength she had. They locked solid with a sharp, final crack. The whole lamp mechanism jammed for good. No amount of coaxing would free them now. The tower would not light tonight after all, whatever she tried. Disappointed, Mira climbed back down through the tower's cold dark. She left the great lamp exactly as broken as she had found it. Its beam stayed dark over the restless water below, a puzzle left for daylight and someone handier than her.",
       "is_ending": true,
       "ending": {
         "id": "e_gears",
@@ -2110,7 +2110,7 @@
     },
     {
       "id": "e_neutral_honest",
-      "body": "Mira left the jeweled compass exactly where it lay. She resisted the pull of it one last time. She photographed the hidden hoard carefully instead. Then she climbed back out with clean hands and a clear conscience. She hadn't caught anyone tonight. The smuggler's scheme remained, for now, only half uncovered. But she had learned something quietly important about herself. She learned what she would do, and what she simply would not, whatever the temptation. Mira walked home through the thinning fog, tired but wiser.",
+      "body": "Mira left the jeweled compass exactly where it lay, resisting the pull of it one last time. Instead, she photographed the hidden hoard carefully, then climbed back out with clean hands and a clear conscience. She hadn't caught anyone tonight, and the smuggler's scheme remained, for now, only half uncovered. But something quietly important had settled into her, a clearer sense of what she would do and what she simply would not, whatever the temptation. Mira walked home through the thinning fog, tired but wiser.",
       "is_ending": true,
       "ending": {
         "id": "e_honest",
