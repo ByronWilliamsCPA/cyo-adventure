@@ -641,7 +641,7 @@
     },
     {
       "id": "cv_knock",
-      "body": "<<FILL role=rising words=90 beats='the door opens before her knuckles land twice; the caretaker, wiry and white-whiskered, looks down at the girl on his step at midnight and does not even blink; well now, he says, you have Edith Marlow's chin; he introduces himself as Mr. Sorrel, and the name tugs at something; the kettle is already singing behind him and the caravan smells of cocoa and brass polish'>>",
+      "body": "<<FILL role=rising words=90 beats='the door opens before her knuckles land twice; the caretaker, wiry and white-whiskered, looks at the girl on his step at midnight and does not even blink, just says, well now, you have Edith Marlow's chin, and waves her in out of the sea air; a small painted sign on the door reads S. SORREL, CARETAKER, so the name is there for anyone who reads it; write his welcome warm and general, the kind that works the same whether this is a first meeting or he is simply glad to see her again; the kettle is singing and the caravan smells of cocoa and brass polish'>>",
       "is_ending": false,
       "choices": [
         {
@@ -653,7 +653,7 @@
     },
     {
       "id": "cv_table",
-      "body": "<<FILL role=choice words=115 beats='over cocoa Mr. Sorrel lays the whole truth on the table like cards: the surveyor found a crack in the kingpost, the repair quote is more than the fair earns in a year, the council chained the carousel to keep people safe, and at season's end she is to be taken apart and sold off horse by horse unless a proper certified repair happens first; he has been shimming the beam himself at night but he is no engineer without the original drawings, and Edith, he says, always joked her horses kept her measures safe, he thought it was just her way of talking; three threads to pull, her favorite horse, those midnight shims, or every story about Gran he has'>>",
+      "body": "<<FILL role=choice words=115 beats='over cocoa Mr. Sorrel shares what has been weighing on him about the carousel: the surveyor found a crack in the kingpost, the repair quote is more than the fair earns in a year, the council chained her to keep people safe, and at season's end she is to be taken apart and sold off horse by horse unless a proper certified repair happens first; he has been shimming the beam himself at night but he is no engineer without the original drawings, and Edith, he says, always joked her horses kept her measures safe, he thought it was just her way of talking; phrase his unburdening so it reads as the full truth told fresh on a first visit and as him turning the same worry over, going deeper, if the two of them have talked before; three threads to pull, her favorite horse, those midnight shims, or every story about Gran he has'>>",
       "is_ending": false,
       "choices": [
         {
@@ -905,7 +905,7 @@
     },
     {
       "id": "fin_climb",
-      "body": "<<FILL role=choice words=105 beats='under the chain, up onto the still platform, boards breathing softly with the sea below; Ondine towers over Nell, then is exactly at eye level once she climbs onto the running board; the carved saddle rose sits under her torch, its center petal worn glass-smooth, polished by a thumb over years and years, and the seam around it is joinery so fine you would never see it unless you already believed in it; press the smooth rose, or try the seam with the little blade on Gran's key ring'>>",
+      "body": "<<FILL role=choice words=105 beats='under the chain and up onto the still platform, calm and unhurried, the tide out and the boards firm and quiet underfoot as she tests each step the careful way, this is a slow respectful visit to a resting friend, never a stunt; Ondine towers over Nell, then is exactly at eye level once she steps gently onto the running board; the carved saddle rose sits under her torch, its center petal worn glass-smooth, polished by a thumb over years and years, and the seam around it is joinery so fine you would never see it unless you already believed in it; press the smooth rose, or try the seam with the little blade on Gran's key ring'>>",
       "is_ending": false,
       "choices": [
         {
