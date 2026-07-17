@@ -42,6 +42,43 @@ When working on this project, if you discover any issue that originates from the
 
 <!-- Add your feedback below this line -->
 
+### `tests/CLAUDE.md` claims BasedPyright strict-checks `tests/`, but the template's `pyproject.toml` never includes that path
+
+- **Priority**: Low
+- **Category**: Documentation
+- **Discovered**: 2026-07-16
+
+**Issue**: `tests/CLAUDE.md`'s "Ruff and type checking in tests" section states
+"BasedPyright runs in strict mode over `tests/`; type annotations are required
+on all fixtures and helpers." The generated `[tool.basedpyright]` block,
+however, sets `include = ["src"]` only (`pyproject.toml`), and the `typecheck`
+nox session (`noxfile.py`) runs `basedpyright src` with no `tests` argument.
+Running `basedpyright` against an explicit test-file path (overriding
+`include`) surfaces real strict-mode errors in existing test helpers (e.g.
+`tests/unit/test_api_deps.py`'s hand-rolled fake session/context helpers
+predating this feature, which mismatch `AsyncSession`/`Role` in ways the
+project's own `# pyright: ignore[arg-type]` comments already work around),
+confirming the project has never actually run BasedPyright over `tests/` in
+CI. A contributor who follows the docstring's claim literally would spend
+time chasing type errors CI never checks, or waste time turning off warnings
+that are already silently out of scope.
+
+**Context**: Discovered while adding WS-J (admin user management) integration
+tests and running `basedpyright` against the new/changed test files directly
+to sanity-check them before committing; the explicit-path invocation type-checks
+files the configured `include` normally excludes, exposing the doc/config gap.
+
+**Suggested Fix**: Either add `tests` to `[tool.basedpyright].include` (and fix
+the resulting strict-mode fallout project-wide, which is a larger one-time
+cost), or correct `tests/CLAUDE.md` to describe the actual policy (e.g.
+"BasedPyright is not run over `tests/` in CI; keep annotations reasonable but
+don't expect strict-mode enforcement here").
+
+**Affected Files**: template `tests/CLAUDE.md` (or template `pyproject.toml`'s
+`[tool.basedpyright]` block, whichever direction the fix should take)
+
+---
+
 ### Semantic Release baseline pins an invalid `commit_parser` value for python-semantic-release v10
 
 - **Priority**: Critical

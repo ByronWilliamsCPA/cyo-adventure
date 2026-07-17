@@ -1,8 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { ToastProvider } from '../notifications/ToastProvider'
 import { RequestsPage } from './RequestsPage'
+import { STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 
 const mockGet = vi.fn()
 const mockPost = vi.fn()
@@ -83,6 +85,17 @@ function mockPending(requests: unknown[]) {
   )
 }
 
+// ToastProvider wraps every render, mirroring App.tsx's production mounting:
+// StoryRequestQueue calls useToast() unconditionally, so a bare render would
+// throw its outside-provider error (same pattern as ReaderRoute.test.tsx).
+function renderPage() {
+  return render(
+    <ToastProvider>
+      <RequestsPage />
+    </ToastProvider>
+  )
+}
+
 beforeEach(() => {
   mockGet.mockReset()
   mockPost.mockReset()
@@ -94,7 +107,7 @@ beforeEach(() => {
 describe('RequestsPage', () => {
   it('renders pending rows with their request text', async () => {
     mockPending([DRAGON_REQUEST, FLAGGED_REQUEST])
-    render(<RequestsPage />)
+    renderPage()
     expect(await screen.findByText('A story about a friendly dragon')).toBeInTheDocument()
     expect(screen.getByText('A pirate adventure')).toBeInTheDocument()
     expect(screen.getByText('violence')).toBeInTheDocument()
@@ -102,7 +115,7 @@ describe('RequestsPage', () => {
 
   it('shows a redacted note for a blocked row with no request text', async () => {
     mockPending([BLOCKED_REQUEST])
-    render(<RequestsPage />)
+    renderPage()
     expect(await screen.findByText('Idea hidden by content check')).toBeInTheDocument()
     expect(screen.getByText('unsafe')).toBeInTheDocument()
   })
@@ -111,7 +124,7 @@ describe('RequestsPage', () => {
     mockPost.mockResolvedValue({
       data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
     })
-    render(<RequestsPage />)
+    renderPage()
     const title = await screen.findByText('A story about a friendly dragon')
     fireEvent.change(screen.getByLabelText('Story length'), {
       target: { value: 'medium' },
@@ -131,7 +144,7 @@ describe('RequestsPage', () => {
     mockPost.mockResolvedValue({
       data: { id: 'req-1', status: 'approved', concept_id: 'concept-1' },
     })
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
     const approveButton = screen.getByRole('button', { name: 'Approve' })
     expect(approveButton).toBeDisabled()
@@ -152,7 +165,7 @@ describe('RequestsPage', () => {
 
   it('style select renders only for teen bands', async () => {
     mockPending([{ ...DRAGON_REQUEST, age_band: '13-16' }])
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
     expect(screen.getByLabelText('Story style')).toBeInTheDocument()
   })
@@ -160,7 +173,7 @@ describe('RequestsPage', () => {
   it('changing the age band select updates the row and hides the style select when leaving a teen band', async () => {
     const user = userEvent.setup()
     mockPending([{ ...DRAGON_REQUEST, age_band: '13-16' }])
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
     expect(screen.getByLabelText('Story style')).toBeInTheDocument()
 
@@ -178,7 +191,7 @@ describe('RequestsPage', () => {
     // to a teen band must show the reset value, not a stale 'gamebook' pick.
     const user = userEvent.setup()
     mockPending([{ ...DRAGON_REQUEST, age_band: '13-16' }])
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
 
     await user.selectOptions(screen.getByLabelText('Story style'), 'gamebook')
@@ -197,7 +210,7 @@ describe('RequestsPage', () => {
     mockPost.mockResolvedValue({
       data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
     })
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
 
     await user.selectOptions(screen.getByLabelText('Story style'), 'gamebook')
@@ -220,7 +233,7 @@ describe('RequestsPage', () => {
     mockPost.mockResolvedValue({
       data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
     })
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
     const seriesInput = screen.getByLabelText<HTMLInputElement>('Series title (optional)')
     expect(seriesInput.value).toBe('Fox Tales')
@@ -243,7 +256,7 @@ describe('RequestsPage', () => {
     mockPost.mockResolvedValue({
       data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
     })
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
     fireEvent.change(screen.getByLabelText('Series title (optional)'), {
       target: { value: '' },
@@ -263,37 +276,147 @@ describe('RequestsPage', () => {
 
   it('shows a continuation note and disables the band select for an anchored row', async () => {
     mockPending([{ ...DRAGON_REQUEST, anchor_storybook_id: 's_1' }])
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
     expect(screen.getByText('Continues an existing series')).toBeInTheDocument()
     expect(screen.queryByLabelText('Series title (optional)')).not.toBeInTheDocument()
     expect(screen.getByLabelText('Age band')).toBeDisabled()
   })
 
-  it('decline calls the adapter and removes the row', async () => {
-    mockPost.mockResolvedValue({ data: { id: 'req-1', status: 'declined' } })
-    render(<RequestsPage />)
+  // Decline is gated behind a confirm dialog (one misclick must not silently
+  // dismiss a child's idea); Approve stays one-click.
+  it('decline opens a confirm dialog quoting the request and fires no call yet', async () => {
+    renderPage()
+    await screen.findByText('A story about a friendly dragon')
+    fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    const dialog = screen.getByRole('dialog', { name: /decline this request/i })
+    expect(within(dialog).getByText('A story about a friendly dragon')).toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
+  it('Keep it closes the dialog, keeps the row, and fires no call', async () => {
+    renderPage()
     const title = await screen.findByText('A story about a friendly dragon')
     fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Keep it' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(title).toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
+  it('confirming decline calls the adapter and removes the row', async () => {
+    mockPost.mockResolvedValue({ data: { id: 'req-1', status: 'declined' } })
+    renderPage()
+    const title = await screen.findByText('A story about a friendly dragon')
+    fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Decline request' }))
     await waitFor(() => expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/req-1/decline'))
     await waitFor(() => expect(title).not.toBeInTheDocument())
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('shows the guardian-specific success toast after a successful approve', async () => {
+    // The guardian call site passes the family-scoped tracking hint; the
+    // component default (no prop) is covered in AdminRequestsPage.test.tsx.
+    mockPost.mockResolvedValue({
+      data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
+    })
+    renderPage()
+    await screen.findByText('A story about a friendly dragon')
+    fireEvent.change(screen.getByLabelText('Story length'), {
+      target: { value: 'medium' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
+    expect(
+      await screen.findByText('Approved! The story is being made; track it under Story requests.')
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('toast')).toHaveClass('toast--success')
+  })
+
+  it('shows an info toast after a confirmed decline', async () => {
+    mockPost.mockResolvedValue({ data: { id: 'req-1', status: 'declined' } })
+    renderPage()
+    await screen.findByText('A story about a friendly dragon')
+    fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Decline request' }))
+    expect(await screen.findByText('Request declined.')).toBeInTheDocument()
+    expect(screen.getByTestId('toast')).toHaveClass('toast--info')
+  })
+
+  it('dismissing the decline dialog with "Keep it" shows no toast', async () => {
+    renderPage()
+    await screen.findByText('A story about a friendly dragon')
+    fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Keep it' }))
+    expect(screen.queryByTestId('toast')).not.toBeInTheDocument()
+  })
+
+  it('dispatches the story-requests-changed event after a confirmed action (badge refresh signal)', async () => {
+    // #VERIFY (StoryRequestQueue.tsx runRowAction): GuardianShell's nav badge
+    // refetches on this event; it must fire only after the backend confirmed
+    // the transition.
+    const listener = vi.fn()
+    window.addEventListener(STORY_REQUESTS_CHANGED_EVENT, listener)
+    try {
+      mockPost.mockResolvedValue({
+        data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
+      })
+      renderPage()
+      await screen.findByText('A story about a friendly dragon')
+      fireEvent.change(screen.getByLabelText('Story length'), {
+        target: { value: 'medium' },
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
+      await waitFor(() => expect(listener).toHaveBeenCalledTimes(1))
+    } finally {
+      window.removeEventListener(STORY_REQUESTS_CHANGED_EVENT, listener)
+    }
+  })
+
+  it('fires no changed event and shows no toast when approve is rejected', async () => {
+    const listener = vi.fn()
+    window.addEventListener(STORY_REQUESTS_CHANGED_EVENT, listener)
+    try {
+      mockPost.mockRejectedValueOnce(new Error('boom'))
+      renderPage()
+      await screen.findByText('A story about a friendly dragon')
+      fireEvent.change(screen.getByLabelText('Story length'), {
+        target: { value: 'medium' },
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
+      expect(await screen.findByRole('alert')).toHaveTextContent(/could not update/i)
+      expect(screen.queryByTestId('toast')).not.toBeInTheDocument()
+      expect(listener).not.toHaveBeenCalled()
+    } finally {
+      window.removeEventListener(STORY_REQUESTS_CHANGED_EVENT, listener)
+    }
+  })
+
+  it('truncates a long request text in the decline confirm dialog', async () => {
+    const longText = 'x'.repeat(200)
+    mockPending([{ ...DRAGON_REQUEST, request_text: longText }])
+    renderPage()
+    await screen.findByText(longText)
+    fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    const dialog = screen.getByRole('dialog', { name: /decline this request/i })
+    expect(within(dialog).getByText(`${'x'.repeat(160)}…`)).toBeInTheDocument()
   })
 
   it('shows the safety-reviewer notice on a 403 (plain guardian token)', async () => {
     mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 403 } })
-    render(<RequestsPage />)
+    renderPage()
     expect(await screen.findByText(/safety reviewer/i)).toBeInTheDocument()
   })
 
   it('shows a generic error when the queue fails for another reason', async () => {
     mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
-    render(<RequestsPage />)
+    renderPage()
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not load/i)
   })
 
   it('shows the empty state when there are no pending requests', async () => {
     mockPending([])
-    render(<RequestsPage />)
+    renderPage()
     expect(await screen.findByText(/No requests to review/i)).toBeInTheDocument()
   })
 
@@ -305,7 +428,7 @@ describe('RequestsPage', () => {
           resolvePost = resolve
         })
     )
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
     fireEvent.change(screen.getByLabelText('Story length'), {
       target: { value: 'medium' },
@@ -328,7 +451,7 @@ describe('RequestsPage', () => {
           resolvePost = resolve
         })
     )
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
     fireEvent.change(screen.getByLabelText('Story length'), {
       target: { value: 'medium' },
@@ -346,7 +469,7 @@ describe('RequestsPage', () => {
 
   it('shows a visible alert and keeps the row when approve is rejected', async () => {
     mockPost.mockRejectedValueOnce(new Error('boom'))
-    render(<RequestsPage />)
+    renderPage()
     const title = await screen.findByText('A story about a friendly dragon')
     fireEvent.change(screen.getByLabelText('Story length'), {
       target: { value: 'medium' },
@@ -367,12 +490,12 @@ describe('RequestsPage', () => {
           ? Promise.resolve({ data: { profiles: [] } })
           : Promise.reject(new Error(`unexpected GET ${url}`))
     )
-    render(<RequestsPage />)
+    renderPage()
     expect(await screen.findByLabelText(/what should the story be about/i)).toBeInTheDocument()
   })
 
   it('does not render the request-a-story form for an admin principal', async () => {
-    render(<RequestsPage />)
+    renderPage()
     await screen.findByText('A story about a friendly dragon')
     expect(screen.queryByLabelText(/what should the story be about/i)).not.toBeInTheDocument()
   })

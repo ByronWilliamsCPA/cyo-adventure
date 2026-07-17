@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
+import { Dialog } from '@ds/components/Dialog'
 import { EmptyState } from '@ds/components/EmptyState'
 import {
   clearDeviceGrant,
@@ -58,6 +59,12 @@ export function ConsolePage() {
   // side.
   const [grant, setGrant] = useState(() => getDeviceGrant())
   const [deviceStatus, setDeviceStatus] = useState<DeviceActionStatus>('idle')
+  // Guards the one-click "Remove from this device" action behind a confirm
+  // step: a misclick would otherwise lock kids out of reading on this device
+  // until a guardian re-authorizes it.
+  // #VERIFY: ConsolePage.test.tsx "asks for confirmation before removing the
+  // device grant" and "does not revoke when the confirmation is cancelled".
+  const [confirmingRemove, setConfirmingRemove] = useState(false)
 
   async function authorizeDevice() {
     setDeviceStatus('busy')
@@ -226,31 +233,46 @@ export function ConsolePage() {
                   // that gate would immediately bounce the child back to
                   // guardian login. handDeviceToChild() sheds the guardian
                   // session before navigating (see its #CRITICAL note).
+                  <div className="console-device__action">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      disabled={deviceStatus === 'busy'}
+                      aria-describedby="device-hand-hint"
+                      onClick={() => handDeviceToChild()}
+                    >
+                      Hand device to a child
+                    </Button>
+                    <p id="device-hand-hint" className="console-device__hint cyo-text-muted">
+                      This signs you out so your child can read safely.
+                    </p>
+                  </div>
+                ) : null}
+                <div className="console-device__action">
                   <Button
-                    variant="primary"
+                    variant="ghost"
                     size="sm"
                     disabled={deviceStatus === 'busy'}
-                    onClick={() => handDeviceToChild()}
+                    onClick={() => void authorizeDevice()}
                   >
-                    Hand device to a child
+                    Re-authorize this device
                   </Button>
-                ) : null}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={deviceStatus === 'busy'}
-                  onClick={() => void authorizeDevice()}
-                >
-                  Re-authorize this device
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  disabled={deviceStatus === 'busy'}
-                  onClick={() => void removeFromThisDevice()}
-                >
-                  Remove from this device
-                </Button>
+                </div>
+                <div className="console-device__action">
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    disabled={deviceStatus === 'busy'}
+                    aria-describedby="device-remove-hint"
+                    onClick={() => setConfirmingRemove(true)}
+                  >
+                    Remove from this device
+                  </Button>
+                  <p id="device-remove-hint" className="console-device__hint cyo-text-muted">
+                    Kids can no longer read on this device until you authorize
+                    it again.
+                  </p>
+                </div>
               </div>
             </>
           ) : (
@@ -275,6 +297,30 @@ export function ConsolePage() {
           ) : null}
         </section>
       )}
+      {confirmingRemove ? (
+        <Dialog
+          title="Remove this device?"
+          onClose={() => setConfirmingRemove(false)}
+          actions={
+            <>
+              <Button variant="ghost" onClick={() => setConfirmingRemove(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  setConfirmingRemove(false)
+                  void removeFromThisDevice()
+                }}
+              >
+                Remove device
+              </Button>
+            </>
+          }
+        >
+          <p>Kids will not be able to read on this device until you authorize it again.</p>
+        </Dialog>
+      ) : null}
     </section>
   )
 }

@@ -92,8 +92,12 @@ export function ProfilesPage() {
               <div className="profiles__card-body">
                 <span className="profiles__name">{profile.display_name}</span>
                 <span className="profiles__caps">
-                  Ages {profile.age_band} · Reading cap {profile.reading_level_cap}
-                  {profile.tts_enabled ? ' · Read-aloud on' : ''}
+                  {/* 99 is the unset-ceiling sentinel (profilesApi.ts), not a
+                      real grade level, so it reads as "no limit" here. */}
+                  Ages {profile.age_band} ·{' '}
+                  {profile.reading_level_cap === 99
+                    ? 'No reading limit'
+                    : `Reading level ${profile.reading_level_cap}`}
                 </span>
               </div>
               <Button

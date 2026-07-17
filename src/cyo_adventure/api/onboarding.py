@@ -8,12 +8,17 @@ token whose subject has no ``User`` row yet (see
 ``deps.require_onboarding_identity``); every other endpoint keeps rejecting an
 unknown subject as before.
 
-ANY unknown verified subject is provisioned as ``role="guardian"`` with a
-fresh family; the endpoint cannot tell an intended admin apart from a
-guardian. Admin accounts MUST therefore be seeded before their first sign-in:
-a seeded admin resolves to its existing row and is returned unchanged (no
-family is created), while an unseeded admin's first call would silently create
-a guardian row plus a family that account should never hold.
+ANY unknown verified subject with no matching pending invite is provisioned
+as ``role="guardian"`` with a fresh family; the endpoint cannot tell an
+intended admin apart from a guardian. Admin accounts MUST therefore either be
+seeded before their first sign-in, or admin-invited via ``POST
+/api/v1/admin/users`` (WS-J admin user management): a seeded admin resolves
+to its existing row and is returned unchanged (no family is created); an
+admin-invited (``status="pending"``) row is bound to the verified subject by
+exact email match (see ``_bind_pending_invite``) instead of falling through
+to guardian provisioning; an unseeded, uninvited admin's first call would
+still silently create a guardian row plus a family that account should never
+hold.
 """
 
 from __future__ import annotations
@@ -155,6 +160,50 @@ async def _provision_guardian(
     return user, True
 
 
+async def _bind_pending_invite(
+    session: AsyncSession, identity: OnboardingIdentity
+) -> User | None:
+    """Bind a verified subject to a matching admin-created pending invite.
+
+    Args:
+        session: The request unit-of-work session.
+        identity: The verified onboarding identity (subject + optional email).
+
+    Returns:
+        User | None: The now-``active`` user row, or ``None`` when no
+        ``status="pending"`` row matches this identity's email (the caller
+        falls back to ``_provision_guardian``).
+    """
+    # #ASSUME: security: the match is an exact string comparison against the
+    # verified Supabase email claim (no case-folding); an invite typed with
+    # different casing than the identity provider reports falls through to
+    # _provision_guardian instead of binding, which surfaces as an
+    # unexpected extra family rather than a silent takeover of another
+    # pending row, so the failure mode is safe.
+    # #VERIFY: tests/integration/test_admin_users_api.py::
+    # test_pending_invite_binds_on_first_login_by_email.
+    if identity.email is None:
+        return None
+    pending = await session.scalar(
+        select(User).where(User.status == "pending", User.email == identity.email)
+    )
+    if pending is None:
+        return None
+    # #CRITICAL: concurrency: two concurrent first-logins for the SAME
+    # invited identity race to set the same authn_subject on the same row.
+    # Unlike _provision_guardian's race (two DIFFERENT rows competing to
+    # insert one unique value), both writers here converge on the identical
+    # subject, so there is no conflicting insert to recover from; the second
+    # writer's UPDATE just repeats the first's.
+    # #VERIFY: tests/integration/test_admin_users_api.py::
+    # test_pending_invite_bind_race_is_idempotent.
+    pending.authn_subject = identity.subject
+    pending.status = "active"
+    await session.flush()
+    logger.info("onboarding.pending_invite_bound", user_id=str(pending.id))
+    return pending
+
+
 @router.post(
     "/onboarding",
     status_code=201,
@@ -200,11 +249,19 @@ async def onboard(
     )
     if existing is not None:
         # Idempotent retry, or an already-provisioned guardian/admin. A SEEDED
-        # admin resolves here and is returned unchanged; an unseeded admin
-        # falls through and is provisioned as a guardian (see the module
-        # docstring: seed admin rows before first sign-in).
+        # admin resolves here and is returned unchanged; an unseeded,
+        # uninvited admin falls through and is provisioned as a guardian (see
+        # the module docstring: seed or invite admin rows before first
+        # sign-in).
         response.status_code = 200
         return _view(existing, created=False)
+
+    bound = await _bind_pending_invite(session, identity)
+    if bound is not None:
+        # Binding an existing (admin-created) row, not creating one: 200,
+        # same as any other already-provisioned identity.
+        response.status_code = 200
+        return _view(bound, created=False)
 
     user, created = await _provision_guardian(session, identity)
     response.status_code = 201 if created else 200

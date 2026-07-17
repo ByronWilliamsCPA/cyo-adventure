@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react'
 
 import { Button } from '@ds/components/Button'
+import { Dialog } from '@ds/components/Dialog'
 import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { useToast } from '../notifications/useToast'
 import { FlagBadge, verdictTone } from './FlagBadge'
-import { AGE_BANDS, LENGTHS, TEEN_BANDS } from './storyRequestOptions'
+import { formatRelativeTime } from './intakeApi'
+import { AGE_BANDS, LENGTHS, TEEN_BANDS, ageBandLabel } from './storyRequestOptions'
 import {
   makeStoryRequestQueueApi,
+  STORY_REQUESTS_CHANGED_EVENT,
   type StoryRequestQueueScope,
   type StoryRequestView,
 } from './storyRequestQueueApi'
@@ -25,6 +29,18 @@ type RowDecision = {
   series_title: string
 }
 
+// Cap the quoted request text inside the decline-confirm dialog; the full
+// text already renders in the row, the dialog only needs enough of it to
+// identify what is being declined.
+const DECLINE_PREVIEW_MAX = 160
+
+function declinePreview(req: StoryRequestView): string {
+  const text = req.request_text ?? 'Idea hidden by content check'
+  return text.length > DECLINE_PREVIEW_MAX
+    ? `${text.slice(0, DECLINE_PREVIEW_MAX)}…`
+    : text
+}
+
 /**
  * The pending story-request review queue, shared by both adult surfaces
  * (Task 3.0). Lists pending child requests with the (screened) text and
@@ -35,14 +51,42 @@ type RowDecision = {
  * family's requests ('family'), the admin console reviews every family's
  * ('all', backed by the admin-only GET /v1/admin/story-requests).
  * Approve/decline are the same per-id endpoints either way.
+ *
+ * A server-confirmed approve or decline shows a closing toast (the removed
+ * row is otherwise the only signal the action landed) and dispatches
+ * STORY_REQUESTS_CHANGED_EVENT so the guardian shell's nav badge refreshes.
  */
-export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) {
+export function StoryRequestQueue({
+  scope,
+  approveSuccessMessage = 'Approved! The story is being made.',
+}: {
+  scope: StoryRequestQueueScope
+  /**
+   * Toast copy for a successful Approve. The default stays neutral so the
+   * shared queue is truthful on any surface; the guardian call site
+   * (RequestsPage) overrides it with a family-scoped tracking hint that
+   * would be wrong on the admin cross-family queue.
+   */
+  approveSuccessMessage?: string
+}) {
   const api = useApi()
+  const { showToast } = useToast()
   const queueApi = useMemo(() => makeStoryRequestQueueApi(api, scope), [api, scope])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
+  // "Now" for the "Asked N minutes ago" provenance lines, stamped when the
+  // list loads (IntakePage's jobsSyncedAt pattern): render stays pure (the
+  // react-hooks/purity rule forbids Date.now() during render) and rows only
+  // exist after a fetch has stamped it, so the 0 initial value never shows.
+  const [loadedAt, setLoadedAt] = useState(0)
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set())
   const [rowErrors, setRowErrors] = useState<Record<string, boolean>>({})
   const [decisions, setDecisions] = useState<Record<string, RowDecision>>({})
+  // The request awaiting decline confirmation (null when the dialog is
+  // closed). Decline is destructive from the child's point of view (the idea
+  // silently disappears from the queue), so it gets a confirm step; Approve
+  // stays one-click. Role-agnostic: both the guardian and admin queues share
+  // this component.
+  const [confirmingDecline, setConfirmingDecline] = useState<StoryRequestView | null>(null)
 
   function decisionFor(req: StoryRequestView): RowDecision {
     return (
@@ -78,7 +122,10 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
     async function load() {
       try {
         const requests = await queueApi.listPending()
-        if (!cancelled) setState({ kind: 'ready', requests })
+        if (!cancelled) {
+          setLoadedAt(Date.now())
+          setState({ kind: 'ready', requests })
+        }
       } catch (err) {
         // #CRITICAL: security: a 403 is an expected capability outcome (e.g.
         // an adult whose admin capability was just revoked still has the
@@ -124,8 +171,12 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
   // #VERIFY: RequestsPage.test.tsx double-click test asserts exactly one
   // adapter call and that both buttons are disabled while the promise is
   // unresolved.
-  async function runRowAction(id: string, action: () => Promise<unknown>) {
-    if (pendingIds.has(id)) return
+  //
+  // Returns whether the action was confirmed by the backend, so callers can
+  // attach success-only feedback (toasts) without duplicating the error
+  // handling below.
+  async function runRowAction(id: string, action: () => Promise<unknown>): Promise<boolean> {
+    if (pendingIds.has(id)) return false
     setPendingIds((prev) => new Set(prev).add(id))
     setRowErrors((prev) => {
       if (!(id in prev)) return prev
@@ -136,6 +187,11 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
     try {
       await action()
       removeRow(id)
+      // Signal passive listeners (GuardianShell's pending-count badge) to
+      // refetch. Fired only after the backend confirmed the transition, so
+      // the badge never drops a request the server still holds as pending.
+      window.dispatchEvent(new Event(STORY_REQUESTS_CHANGED_EVENT))
+      return true
     } catch (err) {
       // #ASSUME: external-resources: approve/decline call the backend, which
       // can fail (network, session expiry, server error, a race with another
@@ -147,6 +203,7 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
       // visible alert and that the row remains in the list.
       console.error('story-request action failed:', err instanceof Error ? err.message : err)
       setRowErrors((prev) => ({ ...prev, [id]: true }))
+      return false
     } finally {
       setPendingIds((prev) => {
         const next = new Set(prev)
@@ -165,11 +222,27 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
       narrative_style: decision.narrative_style,
       ...(title.length > 0 ? { series_title: title } : {}),
     }
-    await runRowAction(req.id, () => queueApi.approve(req.id, payload))
+    const approved = await runRowAction(req.id, () => queueApi.approve(req.id, payload))
+    // Success-only: a failed action keeps the row visible with its inline
+    // alert (runRowAction's catch), so a toast would be contradictory noise.
+    if (approved) showToast(approveSuccessMessage, { tone: 'success' })
   }
 
   async function decline(id: string) {
-    await runRowAction(id, () => queueApi.decline(id))
+    const declined = await runRowAction(id, () => queueApi.decline(id))
+    // Closure for the reviewer: the row disappearing is otherwise the only
+    // signal the (confirmed) decline actually landed.
+    if (declined) showToast('Request declined.', { tone: 'info' })
+  }
+
+  // Close the dialog before firing so the row-level error/pending states stay
+  // the single source of feedback; runRowAction's pendingIds guard still
+  // covers any duplicate submission.
+  function confirmDecline() {
+    if (confirmingDecline === null) return
+    const id = confirmingDecline.id
+    setConfirmingDecline(null)
+    void decline(id)
   }
 
   let content: ReactElement
@@ -222,6 +295,11 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
             // machine holds if the fetch ever widens.
             const isActionable = req.status === 'pending'
             const decision = decisionFor(req)
+            // Approve stays disabled until a length is chosen; without a
+            // visible reason that reads as a broken button, so name the one
+            // missing input while that is the only thing blocking it.
+            const needsLength = isActionable && !isInFlight && decision.length === ''
+            const askedAgo = formatRelativeTime(req.created_at, loadedAt)
             return (
               <li key={req.id} className="console-row cyo-card" data-testid={`request-${req.id}`}>
                 <div className="console-row__body">
@@ -231,6 +309,14 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
                   <p className="console-row__title">
                     {req.request_text ?? 'Idea hidden by content check'}
                   </p>
+                  {askedAgo !== null ? (
+                    <p
+                      className="console-row__age cyo-text-muted"
+                      title={new Date(req.created_at).toLocaleString()}
+                    >
+                      Asked {askedAgo}
+                    </p>
+                  ) : null}
                   {req.moderation_flags.length > 0 ? (
                     <div className="console-row__flags">
                       {req.moderation_flags.map((flag, i) => (
@@ -261,7 +347,7 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
                     >
                       {AGE_BANDS.map((b) => (
                         <option key={b} value={b}>
-                          {b}
+                          {ageBandLabel(b)}
                         </option>
                       ))}
                     </select>
@@ -319,10 +405,15 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
                   <Button
                     variant="danger"
                     disabled={isInFlight || !isActionable}
-                    onClick={() => void decline(req.id)}
+                    onClick={() => setConfirmingDecline(req)}
                   >
                     Decline
                   </Button>
+                  {needsLength ? (
+                    <p className="console-row__approve-hint cyo-text-muted">
+                      Choose a length to approve
+                    </p>
+                  ) : null}
                 </div>
               </li>
             )
@@ -332,5 +423,30 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
     )
   }
 
-  return content
+  return (
+    <>
+      {content}
+      {confirmingDecline !== null ? (
+        <Dialog
+          title="Decline this request?"
+          onClose={() => setConfirmingDecline(null)}
+          actions={
+            <>
+              <Button variant="ghost" onClick={() => setConfirmingDecline(null)}>
+                Keep it
+              </Button>
+              <Button variant="danger" onClick={confirmDecline}>
+                Decline request
+              </Button>
+            </>
+          }
+        >
+          <p>No story will be made from this idea:</p>
+          <blockquote className="decline-confirm__quote cyo-text-muted">
+            {declinePreview(confirmingDecline)}
+          </blockquote>
+        </Dialog>
+      ) : null}
+    </>
+  )
 }

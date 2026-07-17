@@ -4,10 +4,21 @@ import { fileURLToPath } from 'node:url'
 
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { choose } from '../player/engine'
 import type { Storybook } from '../player/types'
 import { Reader } from './Reader'
+
+// choose() wraps the real implementation by default (every existing test
+// below exercises genuine transitions); only the corrupted-transition test
+// overrides it once to simulate a structurally invalid choice (a dangling
+// target in corrupted cached data), which the real engine would reject with
+// a throw. See "Reader corrupted-transition recovery" below.
+vi.mock('../player/engine', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../player/engine')>()
+  return { ...actual, choose: vi.fn(actual.choose) }
+})
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const tracesPath = path.resolve(here, '../../../schema/conformance/player_traces.json')
@@ -17,7 +28,20 @@ const lantern = (
   }
 ).traces[0].story
 
-afterEach(cleanup)
+// jsdom's window.scrollTo exists but only logs "Not implemented"; the reader
+// scrolls on every passage change, so stub it once per test to keep output
+// quiet and make the scroll behavior assertable.
+const scrollToMock = vi.fn()
+
+beforeEach(() => {
+  vi.stubGlobal('scrollTo', scrollToMock)
+})
+
+afterEach(() => {
+  cleanup()
+  scrollToMock.mockClear()
+  vi.unstubAllGlobals()
+})
 
 describe('Reader', () => {
   it('renders the start passage and its visible choices', () => {
@@ -235,5 +259,175 @@ describe('Reader series continuation', () => {
       endedSeriesStory({ id: 'e_done', kind: 'completion', valence: 'neutral', title: 'Done' })
     )
     expect(await screen.findByTestId('continue-series')).toBeTruthy()
+  })
+})
+
+describe('Reader passage change scroll and focus', () => {
+  function renderLantern() {
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" />
+      </MemoryRouter>
+    )
+  }
+
+  it('does not scroll or steal focus on the initial mount', () => {
+    renderLantern()
+    expect(scrollToMock).not.toHaveBeenCalled()
+    expect(document.activeElement).not.toBe(screen.getByTestId('passage-body'))
+  })
+
+  it('scrolls smoothly to the top and focuses the new passage after a choice', () => {
+    renderLantern()
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    expect(scrollToMock).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' })
+    // Focus lands on the passage container so screen readers announce the new
+    // passage from its start.
+    expect(document.activeElement).toBe(screen.getByTestId('passage-body'))
+  })
+
+  it('scrolls without animation when the user prefers reduced motion', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(
+        (query: string) =>
+          ({ matches: query === '(prefers-reduced-motion: reduce)' }) as unknown as MediaQueryList
+      )
+    )
+    renderLantern()
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    expect(scrollToMock).toHaveBeenCalledWith({ top: 0, behavior: 'auto' })
+  })
+})
+
+describe('Reader ending progress and celebration', () => {
+  function endedStory(ending: NonNullable<Storybook['nodes'][number]['ending']>): Storybook {
+    return {
+      schema_version: '2.0',
+      id: 's_valence',
+      version: 1,
+      title: 'Valence',
+      metadata: {},
+      variables: [],
+      start_node: 'n_start',
+      nodes: [
+        {
+          id: 'n_start',
+          body: 'begin',
+          is_ending: false,
+          choices: [{ id: 'c_end', label: 'End it', target: 'n_end' }],
+        },
+        { id: 'n_end', body: 'done', is_ending: true, choices: [], ending },
+      ],
+    }
+  }
+
+  function reachLanternEnding() {
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+  }
+
+  function reachEndingOf(story: Storybook) {
+    render(
+      <MemoryRouter>
+        <Reader story={story} profileId="p1" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_end'))
+  }
+
+  it('shows a full progress bar with a finished label at an ending', () => {
+    reachLanternEnding()
+    const bar = screen.getByRole('progressbar')
+    // A finished story never looks unfinished, even though the all-nodes
+    // denominator means a single playthrough cannot visit every node.
+    expect(bar.getAttribute('aria-valuenow')).toBe('100')
+    expect(bar.getAttribute('aria-label')).toBe('You finished this story!')
+  })
+
+  it('keeps the progress bar partial before the ending', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" />
+      </MemoryRouter>
+    )
+    const bar = screen.getByRole('progressbar')
+    expect(bar.getAttribute('aria-valuenow')).not.toBe('100')
+  })
+
+  it('celebrates a positive ending with the animated stars', () => {
+    reachLanternEnding()
+    const stars = screen.getByTestId('ending-celebration')
+    expect(stars.className).toContain('reader-ending__stars--celebrate')
+    expect(stars.getAttribute('aria-hidden')).toBe('true')
+  })
+
+  it('celebrates a neutral ending too', () => {
+    reachEndingOf(
+      endedStory({ id: 'e_done', kind: 'completion', valence: 'neutral', title: 'Done' })
+    )
+    expect(screen.getByTestId('ending-celebration').className).toContain(
+      'reader-ending__stars--celebrate'
+    )
+  })
+
+  it('gives a negative ending the static warm treatment, not the celebration', () => {
+    reachEndingOf(endedStory({ id: 'e_lost', kind: 'death', valence: 'negative', title: 'Lost' }))
+    const stars = screen.getByTestId('ending-celebration')
+    expect(stars.className).toBe('reader-ending__stars')
+    expect(stars.className).not.toContain('--celebrate')
+  })
+})
+
+describe('Reader corrupted-transition recovery', () => {
+  it('recovers from a corrupted transition instead of crashing the reader', () => {
+    // engine.choose() throws by contract on a structurally invalid choice (a
+    // dangling target in corrupted cached data); this must never reach the
+    // child as an uncaught exception mid-story.
+    vi.mocked(choose).mockImplementationOnce(() => {
+      throw new Error('dangling choice target')
+    })
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      render(
+        <MemoryRouter>
+          <Reader story={lantern} profileId="p1" />
+        </MemoryRouter>
+      )
+      fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+
+      expect(screen.getByRole('alert')).toHaveTextContent(/stuck/i)
+      expect(screen.queryByTestId('passage-body')).not.toBeInTheDocument()
+
+      // "Start over" clears the error and resets to the start passage.
+      fireEvent.click(screen.getByRole('button', { name: /start over/i }))
+      expect(screen.getByTestId('passage-body').textContent).toContain('lantern')
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    } finally {
+      logSpy.mockRestore()
+    }
+  })
+
+  it('still offers a way back to the library from the corrupted-transition screen', () => {
+    vi.mocked(choose).mockImplementationOnce(() => {
+      throw new Error('dangling choice target')
+    })
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      render(
+        <MemoryRouter>
+          <Reader story={lantern} profileId="p1" />
+        </MemoryRouter>
+      )
+      fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+      expect(screen.getByRole('button', { name: /back to my books/i })).toBeInTheDocument()
+    } finally {
+      logSpy.mockRestore()
+    }
   })
 })

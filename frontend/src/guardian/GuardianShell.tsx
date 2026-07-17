@@ -1,8 +1,10 @@
-import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuth } from '../auth/useAuth'
+import { useApi } from '../hooks/useApi'
 import { ADMIN_CONSOLE_PATH } from '../routes'
+import { makeStoryRequestQueueApi, STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 import './guardian.css'
 
 /**
@@ -12,6 +14,51 @@ import './guardian.css'
 export function GuardianShell() {
   const { principal, signOut } = useAuth()
   const [signOutError, setSignOutError] = useState(false)
+  const api = useApi()
+  const queueApi = useMemo(() => makeStoryRequestQueueApi(api, 'family'), [api])
+  const location = useLocation()
+  const [pendingCount, setPendingCount] = useState(0)
+  // Bumped by StoryRequestQueue's post-action event so an approve/decline
+  // updates the badge immediately instead of waiting for the next navigation.
+  const [badgeRefresh, setBadgeRefresh] = useState(0)
+  const hasPrincipal = principal !== null
+
+  useEffect(() => {
+    const bump = () => setBadgeRefresh((n) => n + 1)
+    window.addEventListener(STORY_REQUESTS_CHANGED_EVENT, bump)
+    return () => window.removeEventListener(STORY_REQUESTS_CHANGED_EVENT, bump)
+  }, [])
+
+  // Pending story-request count for the nav badge. Fetched on mount and
+  // refreshed on every route change within the shell (location.pathname) and
+  // on the queue's post-action event (badgeRefresh); no polling.
+  //
+  // #EDGE: external-resources: the badge is progressive enhancement, never an
+  // error surface. Any failure (network, 403 for a non-reviewer guardian or
+  // family-less admin, session expiry) silently hides it; the queue page owns
+  // visible error states.
+  // #VERIFY: GuardianShell.test.tsx badge-hidden-on-fetch-failure test.
+  useEffect(() => {
+    // No principal, no fetch; the render gate below hides any stale count.
+    if (!hasPrincipal) return undefined
+    let cancelled = false
+    async function load() {
+      try {
+        const requests = await queueApi.listPending()
+        if (!cancelled) setPendingCount(requests.length)
+      } catch {
+        if (!cancelled) setPendingCount(0)
+      }
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [queueApi, hasPrincipal, location.pathname, badgeRefresh])
+
+  // Derived, not reset in the effect: a principal-less shell (or one whose
+  // principal was just cleared) shows no badge even if a count is still held.
+  const pendingBadgeCount = hasPrincipal ? pendingCount : 0
 
   // #EDGE: external-resources: signOut rejects when Supabase cannot revoke
   // the session (network down). Surface it so the tap doesn't silently no-op
@@ -66,7 +113,23 @@ export function GuardianShell() {
         {principal?.role === 'guardian' ? (
           <NavLink to="/guardian/books">Books</NavLink>
         ) : null}
-        <NavLink to="/guardian/requests">Story requests</NavLink>
+        {/* aria-label folds the count into the accessible name; when the
+            badge is hidden (zero or failed fetch) the name stays the plain
+            link text. The span is aria-hidden so the bare number is never
+            announced separately from that label. */}
+        <NavLink
+          to="/guardian/requests"
+          aria-label={
+            pendingBadgeCount > 0 ? `Story requests, ${pendingBadgeCount} waiting` : undefined
+          }
+        >
+          Story requests
+          {pendingBadgeCount > 0 ? (
+            <span className="guardian-shell__nav-badge" aria-hidden="true">
+              {pendingBadgeCount}
+            </span>
+          ) : null}
+        </NavLink>
         {principal?.role === 'guardian' ? (
           <NavLink to="/guardian/profiles">Profiles</NavLink>
         ) : null}

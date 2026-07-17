@@ -4,13 +4,15 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { GUARDIAN_CONSOLE_PATH } from '../routes'
 import '../guardian/guardian.css'
+import './admin.css'
 
 /**
  * Layout chrome for the admin console, the parallel adult surface for
  * admin-capability functions (review queue, global story-request queue,
  * moderation admin). Mirrors GuardianShell's structure and reuses its
- * stylesheet so the two consoles read as siblings; an adult holding both
- * capabilities switches back to the guardian console via the nav link.
+ * stylesheet so the two consoles read as siblings (admin.css layers the
+ * admin-only styles on top); an adult holding both capabilities switches
+ * back to the guardian console via the nav link.
  */
 export function AdminShell() {
   const { principal, signOut } = useAuth()
@@ -55,6 +57,7 @@ export function AdminShell() {
         <NavLink to="/admin/moderation-dashboard">Moderation dashboard</NavLink>
         <NavLink to="/admin/moderation-thresholds">Moderation thresholds</NavLink>
         <NavLink to="/admin/provider-allowlist">Provider allowlist</NavLink>
+        <NavLink to="/admin/users">User management</NavLink>
         {principal?.role === 'guardian' ? (
           <NavLink to={GUARDIAN_CONSOLE_PATH}>Guardian console</NavLink>
         ) : null}

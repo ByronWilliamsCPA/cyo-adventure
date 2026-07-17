@@ -147,6 +147,44 @@ describe('ProfileFormDialog', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
+  // The read-aloud (TTS) toggle is hidden until the reader ships read-aloud
+  // support; tts_enabled still travels in the payload (false on create, the
+  // stored value passed through unchanged on edit).
+  it('renders no read-aloud checkbox and defaults tts_enabled to false on create', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+
+    expect(screen.queryByRole('checkbox', { name: /read-aloud/i })).not.toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ tts_enabled: false }))
+    )
+  })
+
+  it('passes an edited profile tts_enabled value through unchanged', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={{ ...existingProfile(false), tts_enabled: true }}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    expect(screen.queryByRole('checkbox', { name: /read-aloud/i })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ tts_enabled: true }))
+    )
+  })
+
   it('selects an avatar via its radio input', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockResolvedValue(undefined)

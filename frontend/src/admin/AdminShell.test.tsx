@@ -58,6 +58,10 @@ describe('AdminShell', () => {
       'href',
       '/admin/provider-allowlist'
     )
+    expect(screen.getByRole('link', { name: 'User management' })).toHaveAttribute(
+      'href',
+      '/admin/users'
+    )
     expect(screen.getByText('Admin')).toBeInTheDocument()
   })
 

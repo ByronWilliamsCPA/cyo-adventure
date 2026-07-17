@@ -30,6 +30,7 @@ import {
   ReviewDetailPage,
   RouteError,
   RouteFallback,
+  UserManagementPage,
 } from './routeElements'
 import {
   ADMIN_CONSOLE_PATH,
@@ -201,6 +202,10 @@ export const routes = [
                     path: 'provider-allowlist',
                     element: suspended(<ProviderAllowlistPage />),
                   },
+                  {
+                    path: 'users',
+                    element: suspended(<UserManagementPage />),
+                  },
                 ],
               },
             ],
@@ -209,7 +214,14 @@ export const routes = [
       },
     ],
   },
-  { path: '*', element: <NotFoundPage /> },
+  {
+    // Catch-all 404. Like the two trees above, it carries an errorElement so
+    // an unexpected throw on the unmatched-URL path degrades to the styled
+    // RouteError instead of React Router's default unstyled boundary.
+    path: '*',
+    element: <NotFoundPage />,
+    errorElement: <RouteError />,
+  },
 ]
 
 export const router = createBrowserRouter(routes)

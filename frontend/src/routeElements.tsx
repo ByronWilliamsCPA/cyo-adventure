@@ -1,11 +1,20 @@
-import { useRouteError } from 'react-router-dom'
+import { Link, useRouteError } from 'react-router-dom'
 
 import { lazyWithReload } from './lazyWithReload'
+import { KID_PICKER_PATH } from './routes'
+import './routeElements.css'
 
+/**
+ * Suspense fallback for every lazy route chunk. It renders on ALL surfaces
+ * (landing, kid, guardian, admin), so it must stay dependency-free: importing
+ * a kid-only module here (e.g. the Mascot glyph) would pull kid code into the
+ * guardian/admin bundles and defeat the router's per-audience chunk split.
+ * Neutral centered framing plus copy calm enough for a young reader.
+ */
 export function RouteFallback() {
   return (
-    <div role="status" aria-live="polite">
-      Loading…
+    <div className="route-fallback" role="status" aria-live="polite">
+      Just a sec...
     </div>
   )
 }
@@ -36,13 +45,30 @@ export function RouteError() {
   )
 }
 
-/** Catch-all for unmatched URLs and stale deep links. */
+/**
+ * Catch-all for unmatched URLs and stale deep links. It renders outside every
+ * shell, so it carries its own app framing (parchment tokens in
+ * routeElements.css) and offers both audiences a way home: the landing page
+ * and the kid profile picker. Plain <Link>s only; like RouteFallback above,
+ * this sits in the always-loaded router chunk and must not import any
+ * surface-specific module.
+ */
 export function NotFoundPage() {
   return (
-    <div role="alert">
-      <h1>Page not found</h1>
-      <p>The page you were looking for does not exist.</p>
-    </div>
+    <main className="route-not-found">
+      <h1 className="route-not-found__title">We can&apos;t find that page.</h1>
+      <p className="route-not-found__hint">
+        That link may be old, or the address may have a typo.
+      </p>
+      <nav className="route-not-found__links" aria-label="Ways back in">
+        <Link className="route-not-found__link" to="/">
+          Go to the start
+        </Link>
+        <Link className="route-not-found__link" to={KID_PICKER_PATH}>
+          Who&apos;s reading?
+        </Link>
+      </nav>
+    </main>
   )
 }
 
@@ -119,6 +145,11 @@ export const ProviderAllowlistPage = lazyWithReload('ProviderAllowlistPage', () 
 export const AuthoringQueuePage = lazyWithReload('AuthoringQueuePage', () =>
   import('./admin/AuthoringQueuePage').then((m) => ({
     default: m.AuthoringQueuePage,
+  }))
+)
+export const UserManagementPage = lazyWithReload('UserManagementPage', () =>
+  import('./admin/UserManagementPage').then((m) => ({
+    default: m.UserManagementPage,
   }))
 )
 export const ReaderRoute = lazyWithReload('ReaderRoute', () =>

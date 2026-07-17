@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { Button } from '@ds/components/Button'
+import { Dialog } from '@ds/components/Dialog'
 import type {
   ModerationDashboardView,
   SuggestionListView,
+  ThresholdChangeView,
   ThresholdSuggestionView,
 } from '../client/types.gen'
 import { classifyApiError } from '../hooks/classifyApiError'
@@ -18,6 +21,40 @@ type LoadState =
       dashboard: ModerationDashboardView
       suggestions: SuggestionListView
     }
+
+/**
+ * Human-readable line for one recent threshold/noise-floor change.
+ *
+ * The wire payload is an untyped blob ({[key: string]: unknown}), so every
+ * field is type-checked before use. Returns null when the payload lacks the
+ * fields for a readable sentence, letting the caller fall back to the raw
+ * event_type. The event log carries no actor field, so no author is shown.
+ */
+function describeChange(change: ThresholdChangeView): string | null {
+  const text = (key: string): string | null => {
+    const value = change.payload[key]
+    return typeof value === 'string' ? value : null
+  }
+  const num = (key: string): number | null => {
+    const value = change.payload[key]
+    return typeof value === 'number' ? value : null
+  }
+  const floor = num('value')
+  if (change.event_type === 'noise_floor_changed' && floor != null) {
+    return `Admin noise floor set to ${floor}`
+  }
+  const category = text('category')
+  const ageBand = text('age_band')
+  if (category == null || ageBand == null) return null
+  if (text('action') === 'delete') {
+    return `${category} in ${ageBand}: override removed, the default applies again`
+  }
+  const verdict = text('min_verdict')
+  if (verdict == null) return null
+  const score = num('min_score')
+  const scoreSuffix = score == null ? '' : ` (score floor ${score})`
+  return `${category} in ${ageBand}: now surfaces at ${verdict}${scoreSuffix}`
+}
 
 /**
  * Admin-only moderation dashboard (WS-F): override evidence per age band and
@@ -53,6 +90,10 @@ export function ModerationDashboardPage() {
   // while applies are in flight" test in ModerationDashboardPage.test.tsx.
   const [applying, setApplying] = useState<ReadonlySet<string>>(new Set())
   const [reloadKey, setReloadKey] = useState(0)
+  // Suggestion awaiting confirmation. Applying a suggestion changes live
+  // surfacing behavior, so the upsert only fires from the confirm dialog,
+  // never straight off the list button.
+  const [confirming, setConfirming] = useState<ThresholdSuggestionView | null>(null)
 
   // Mount-time (and post-apply) load, matching ModerationThresholdsPage's
   // cancelled-guard idiom so an unmount before the request resolves never
@@ -83,6 +124,7 @@ export function ModerationDashboardPage() {
             setRefreshError(
               classifyApiError(err, {
                 transient: 'We could not refresh the dashboard; showing the last loaded data.',
+                server: 'We could not refresh the dashboard; showing the last loaded data.',
               }).message
             )
           } else {
@@ -90,6 +132,7 @@ export function ModerationDashboardPage() {
               kind: 'error',
               message: classifyApiError(err, {
                 transient: 'We could not load the moderation dashboard. Please reload.',
+                server: 'We could not load the moderation dashboard. Please reload.',
               }).message,
             })
           }
@@ -124,6 +167,7 @@ export function ModerationDashboardPage() {
       setActionError(
         classifyApiError(err, {
           transient: `We could not apply the suggestion for ${suggestion.category} in ${suggestion.age_band}. Please try again.`,
+          server: `We could not apply the suggestion for ${suggestion.category} in ${suggestion.age_band}. Please try again.`,
         }).message
       )
     } finally {
@@ -151,6 +195,12 @@ export function ModerationDashboardPage() {
   }
 
   const { dashboard, suggestions } = state
+  // Strongest override evidence first; rows with no decided versions (null
+  // rate) sort last. Array.prototype.sort is stable, so equal rates keep the
+  // API's (age_band, category) ordering.
+  const sortedInsights = [...dashboard.insights].sort(
+    (a, b) => (b.override_rate ?? -1) - (a.override_rate ?? -1)
+  )
   return (
     <main>
       <h1>Moderation dashboard</h1>
@@ -192,11 +242,20 @@ export function ModerationDashboardPage() {
                   despite the finding ({Math.round(suggestion.override_rate * 100)}%). Suggested new
                   surfacing level: {suggestion.suggested_min_verdict} (currently{' '}
                   {suggestion.current_min_verdict}).
+                  {/*
+                    #CRITICAL: security: applying a suggestion changes what
+                    this band/category surfaces to families, so the button
+                    only opens a confirm dialog echoing the change; the upsert
+                    fires from the dialog's confirm action.
+                    #VERIFY: ModerationDashboardPage.test.tsx confirm and
+                    cancel tests (cancel fires no PUT; confirm fires exactly
+                    one).
+                  */}
                   <button
                     type="button"
                     disabled={applying.has(key)}
                     aria-label={`Apply: raise ${suggestion.category} (${suggestion.age_band}) to ${suggestion.suggested_min_verdict}`}
-                    onClick={() => void applySuggestion(suggestion)}
+                    onClick={() => setConfirming(suggestion)}
                   >
                     {applying.has(key)
                       ? 'Applying…'
@@ -212,7 +271,9 @@ export function ModerationDashboardPage() {
       <section aria-labelledby="insights-heading">
         <h2 id="insights-heading">Override evidence</h2>
         {dashboard.insights.length === 0 ? (
-          <p className="console__muted cyo-text-muted">No moderated books with advisory or flag findings yet.</p>
+          <p className="console__muted cyo-text-muted">
+            No moderated books with advisory or flag findings yet.
+          </p>
         ) : (
           <table>
             <thead>
@@ -224,22 +285,33 @@ export function ModerationDashboardPage() {
                 <th scope="col">Decided</th>
                 <th scope="col">Released</th>
                 <th scope="col">Override rate</th>
+                <th scope="col">Last seen</th>
               </tr>
             </thead>
             <tbody>
-              {dashboard.insights.map((row) => (
-                <tr key={`${row.age_band}:${row.category}`}>
-                  <td>{row.age_band}</td>
-                  <td>{row.category}</td>
-                  <td>{row.advisory_findings}</td>
-                  <td>{row.flag_findings}</td>
-                  <td>{row.decided_versions}</td>
-                  <td>{row.released_versions}</td>
-                  <td>
-                    {row.override_rate == null ? 'n/a' : `${Math.round(row.override_rate * 100)}%`}
-                  </td>
-                </tr>
-              ))}
+              {sortedInsights.map((row) => {
+                // At or above the gate that generates suggestions: emphasize
+                // the row so gate-crossing evidence stands out at a glance.
+                const atGate =
+                  row.override_rate != null && row.override_rate >= suggestions.min_override_rate
+                const rate =
+                  row.override_rate == null ? 'n/a' : `${Math.round(row.override_rate * 100)}%`
+                return (
+                  <tr
+                    key={`${row.age_band}:${row.category}`}
+                    className={atGate ? 'moderation-insight--at-gate' : undefined}
+                  >
+                    <td>{row.age_band}</td>
+                    <td>{row.category}</td>
+                    <td>{row.advisory_findings}</td>
+                    <td>{row.flag_findings}</td>
+                    <td>{row.decided_versions}</td>
+                    <td>{row.released_versions}</td>
+                    <td>{atGate ? <strong>{rate}</strong> : rate}</td>
+                    <td>{new Date(row.last_seen).toLocaleString()}</td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         )}
@@ -251,15 +323,51 @@ export function ModerationDashboardPage() {
           <p className="console__muted cyo-text-muted">No threshold changes recorded.</p>
         ) : (
           <ul>
-            {dashboard.recent_changes.map((change) => (
-              <li key={`${change.event_type}:${change.entity_id}:${change.occurred_at}`}>
-                <code>{change.event_type}</code> {change.entity_id} at{' '}
-                {new Date(change.occurred_at).toLocaleString()}
-              </li>
-            ))}
+            {dashboard.recent_changes.map((change) => {
+              const description = describeChange(change)
+              return (
+                <li key={`${change.event_type}:${change.entity_id}:${change.occurred_at}`}>
+                  {description ?? (
+                    <>
+                      <code>{change.event_type}</code> {change.entity_id}
+                    </>
+                  )}{' '}
+                  at {new Date(change.occurred_at).toLocaleString()}
+                </li>
+              )
+            })}
           </ul>
         )}
       </section>
+
+      {confirming ? (
+        <Dialog
+          title="Apply this threshold suggestion?"
+          onClose={() => setConfirming(null)}
+          actions={
+            <>
+              <Button variant="ghost" onClick={() => setConfirming(null)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  const suggestion = confirming
+                  setConfirming(null)
+                  void applySuggestion(suggestion)
+                }}
+              >
+                Confirm apply
+              </Button>
+            </>
+          }
+        >
+          <p>
+            {confirming.category} in {confirming.age_band}: surfacing level changes from{' '}
+            <strong>{confirming.current_min_verdict}</strong> to{' '}
+            <strong>{confirming.suggested_min_verdict}</strong>.
+          </p>
+        </Dialog>
+      ) : null}
     </main>
   )
 }

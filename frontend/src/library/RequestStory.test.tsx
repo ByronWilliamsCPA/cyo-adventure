@@ -312,6 +312,79 @@ describe('RequestStory', () => {
     expect(onClearAnchor).toHaveBeenCalled()
   })
 
+  it('opening the form never shows a stale error from an earlier attempt (debt T3: error-clears-on-open)', async () => {
+    // Debt U1: a rejection that lands after the dialog has closed can re-arm
+    // `error`; the guard is that OPENING always clears it, so whatever raced
+    // in while the form was closed is never shown on the next open.
+    const user = userEvent.setup()
+    mockPost.mockRejectedValue(new Error('network exploded'))
+
+    render(<RequestStory profileId="p1" />)
+    await user.click(await screen.findByRole('button', { name: /request a story/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /what should your story be about/i }),
+      'A brave mouse'
+    )
+    await user.click(screen.getByRole('button', { name: /^send$/i }))
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }))
+    await user.click(screen.getByRole('button', { name: /request a story/i }))
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it("an anchor-driven open clears the previous attempt's error (debt T3)", async () => {
+    // The child's failed free-idea send leaves an error showing; tapping
+    // "Ask for the next book" on a card re-opens the form in anchor mode,
+    // which is a fresh start: the old error must not greet the child there.
+    const user = userEvent.setup()
+    mockPost.mockRejectedValue(new Error('network exploded'))
+
+    const { rerender } = render(<RequestStory profileId="p1" />)
+    await user.click(await screen.findByRole('button', { name: /request a story/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /what should your story be about/i }),
+      'A brave mouse'
+    )
+    await user.click(screen.getByRole('button', { name: /^send$/i }))
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+
+    rerender(<RequestStory profileId="p1" anchor={{ id: 's_1', title: 'The Fox' }} />)
+
+    expect(await screen.findByText(/continuing: the fox/i)).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('Cancel is disabled while a send is in flight', async () => {
+    // Companion to the error-clears-on-open guard (debt U1): the child cannot
+    // close the form mid-send, so the in-flight outcome always lands on an
+    // open form.
+    let resolveCreate: (() => void) | undefined
+    mockPost.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveCreate = () => resolve({ data: { id: 'req1', status: 'pending' } })
+        })
+    )
+
+    render(<RequestStory profileId="p1" />)
+    fireEvent.click(await screen.findByRole('button', { name: /request a story/i }))
+    fireEvent.change(screen.getByRole('textbox', { name: /what should your story be about/i }), {
+      target: { value: 'A brave mouse' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /^send$/i }))
+
+    expect(screen.getByRole('button', { name: /cancel/i })).toBeDisabled()
+
+    resolveCreate?.()
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('textbox', { name: /what should your story be about/i })
+      ).not.toBeInTheDocument()
+    )
+  })
+
   it('"Not this one" calls onClearAnchor', async () => {
     const onClearAnchor = vi.fn()
     render(

@@ -5,6 +5,11 @@
   gap: var(--space-2);
   font-family: var(--font-serif);
   font-weight: var(--weight-semibold);
+  /* 44px touch-target floor (WCAG 2.5.5) for every size: md computed to
+     ~43px and sm to ~30px without it. sm's only consumers are the guardian
+     console device-setup actions, which live on the shared-tablet handoff
+     flow, so sm gets the same floor rather than a dense-table exemption. */
+  min-height: 44px;
   border-radius: var(--radius-md);
   border: 2px solid transparent;
   cursor: pointer;
@@ -18,8 +23,10 @@
   letter-spacing: 0.01em;
 }
 
+/* Focus indicators are non-text UI (3:1 minimum): bright amber only reaches
+   2.62:1 on parchment, amber-deep clears it at 3.09:1. */
 .cyo-btn:focus-visible {
-  outline: 3px solid var(--color-amber);
+  outline: 3px solid var(--color-amber-deep);
   outline-offset: 3px;
 }
 
@@ -51,14 +58,14 @@
   line-height: var(--leading-tight);
 }
 
-/* Primary: amber-deep fill with ink text (4.86:1), the guardian.css
-   .intake-request__assign / .flag-badge--flag precedent, closing the AA gap
-   the parchment-text pairing left (2026-07-16 accessibility audit,
-   e2e/a11y.spec.ts): parchment text on this fill sits at only 3.09:1,
-   clearing the 3:1 WCAG 1.4.11 non-text / 1.4.3 large-text threshold but not
-   the 4.5:1 AA normal-text minimum, since labels are semibold (600) at every
-   button size, never bold (700), so none qualify for the large-text
-   exemption. */
+/* Primary: amber-deep fill with an ink label at 4.86:1 (WCAG 1.4.3 AA for
+   normal text; the guardian.css visibility-pill precedent). The former
+   parchment label managed only 3.09:1, and semibold (600) labels never
+   qualify for the large-text exemption. The fill itself holds 3.09:1
+   against parchment (1.4.11 non-text). Hover deliberately keeps the
+   amber-deep fill: darkening it to --color-amber-hover would drop the ink
+   label to 4.24:1, so hover signals with the darker border (3.55:1 on
+   parchment) and a raised shadow instead. */
 .cyo-btn--primary {
   background-color: var(--color-amber-deep);
   color: var(--color-ink);
@@ -67,20 +74,21 @@
 }
 
 .cyo-btn--primary:hover:not(:disabled) {
-  background-color: var(--color-amber-hover);
   border-color: var(--color-amber-hover);
   box-shadow: var(--shadow-md);
 }
 
-/* Ghost: outlined. The border stays --color-amber-deep (3:1-safe, non-text);
-   the label uses --color-amber-deep-text, a darker same-hue variant that
-   clears the 4.5:1 AA normal-text minimum against both parchment shades
-   (2026-07-16 accessibility audit, e2e/a11y.spec.ts) since a solid fill with
-   ink text (the primary variant's fix above) isn't available on a
-   transparent-background ghost button. */
+/* Ghost: outlined. Border standardized on --color-amber-deep (3.09:1 on
+   parchment, clearing the 3:1 WCAG 1.4.11 non-text minimum; the bright
+   --color-amber sat at 2.62:1 and failed it). The LABEL needs the 4.5:1 AA
+   normal-text minimum, which amber-deep misses, so text uses the dedicated
+   --color-amber-text token (5.62:1 on parchment, 4.98:1 on
+   parchment-dark; a ghost button can sit on either shade, e.g.
+   library.css's .book-card). This is the once-for-all-surfaces decision
+   the guardian surfaces previously approximated locally with amber-deep. */
 .cyo-btn--ghost {
   background-color: transparent;
-  color: var(--color-amber-deep-text);
+  color: var(--color-amber-text);
   border-color: var(--color-amber-deep);
 }
 
@@ -99,4 +107,17 @@
 .cyo-btn--danger:hover:not(:disabled) {
   filter: brightness(0.88);
   box-shadow: var(--shadow-md);
+}
+
+/* Reduced motion: remove the press nudge (transform) and the animated
+   transition duration; color, border, and shadow feedback still apply,
+   just as an instant change instead of an animated one. */
+@media (prefers-reduced-motion: reduce) {
+  .cyo-btn {
+    transition: none;
+  }
+
+  .cyo-btn:active:not(:disabled) {
+    transform: none;
+  }
 }

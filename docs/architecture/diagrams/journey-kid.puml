@@ -18,6 +18,15 @@
 '   frontend/src/reader/Reader.tsx, ReaderRoute.tsx, ConflictDialog.tsx
 '   Phase 4a mobile UI wireframe concept spec (PR #47, shipped; the source doc under
 '     docs/superpowers/specs/ was retired as scratch output once its work merged)
+'
+' 2026-07-15: the .svg was hand-patched (not regenerated) to match this source's
+'   "Ask for the next book" label (renamed from "Continue this story"): no
+'   PlantUML renderer producing output consistent with this file's existing
+'   layout was available in that session (only an old bundled 2019 jar, whose
+'   output differs enough in dimensions/style to make a full regen a much
+'   noisier diff than the one-label change it would represent). Regenerate
+'   properly with a current PlantUML next time this diagram needs a real
+'   layout change.
 ' ============================================================
 
 title Kid-Surface Journey\n(child-facing app "/"; rose = planned, not yet built)
@@ -61,7 +70,7 @@ note right: /library/:profileId  •  shipped
 
 :Tap "Request a story"
 and say what it's about
-(or "Continue this story"
+(or "Ask for the next book"
 on a series book);
 note right: RequestStory on the library page  •  shipped\nsurfaces to a guardian/admin to approve or decline\n(no moderation detail ever shown to the child)
 :See my own requests'

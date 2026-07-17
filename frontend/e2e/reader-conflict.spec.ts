@@ -9,11 +9,15 @@ const lantern = loadLanternStory()
 const READER_PATH = '/read/child-a/s_lantern_cave/1'
 
 /**
- * 409 reconciliation (the last amber gap). NOTE the scope: the app has no
- * reconnect flush for the offline queue (replayQueue in offline/sync.ts is
- * never invoked by app code; see the tracking issue filed with this suite),
- * so the wired conflict path is a LIVE save returning 409, which opens
- * ConflictDialog with two resolutions. Both are covered here.
+ * 409 reconciliation (the last amber gap). NOTE the scope: this suite drives
+ * the LIVE-save conflict path (a save returning 409 opens ConflictDialog with
+ * two resolutions; both are covered here). The other wired path, the offline
+ * queue's reconnect flush (useReplayOnReconnect in ReaderRoute invokes
+ * replayQueue on mount and on 'online'), is covered component-side in
+ * src/reader/ReaderRoute.test.tsx, including its conflict dialog, failed
+ * banner, and the "All caught up!" success toast for a clean replay. The
+ * fresh browser context here has an empty queue, so the mount-time flush is
+ * a no-op (replayed 0) and never toasts into these assertions.
  *
  * ReaderPage persists on mount, not only on the first choice: Reader.tsx's
  * progress effect fires `onProgress` for the initial reading state as soon

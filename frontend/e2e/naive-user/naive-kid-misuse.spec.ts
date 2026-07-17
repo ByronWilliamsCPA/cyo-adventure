@@ -288,18 +288,18 @@ test.describe('rating twice', () => {
 
     await page.goto('/library/p1')
     const shelf = page.getByRole('region', { name: 'More to Explore' })
-    await shelf.getByRole('button', { name: '5 stars' }).click()
-    await shelf.getByRole('button', { name: '3 stars' }).click()
+    await shelf.getByRole('button', { name: 'Rate 5 stars' }).click()
+    await shelf.getByRole('button', { name: 'Rate 3 stars' }).click()
 
     expect(ratingBodies).toEqual([
       { profile_id: 'p1', storybook_id: 's3', value: 5 },
       { profile_id: 'p1', storybook_id: 's3', value: 3 },
     ])
-    await expect(shelf.getByRole('button', { name: '3 stars' })).toHaveAttribute(
+    await expect(shelf.getByRole('button', { name: 'Rate 3 stars' })).toHaveAttribute(
       'aria-pressed',
       'true'
     )
-    await expect(shelf.getByRole('button', { name: '5 stars' })).toHaveAttribute(
+    await expect(shelf.getByRole('button', { name: 'Rate 5 stars' })).toHaveAttribute(
       'aria-pressed',
       'false'
     )

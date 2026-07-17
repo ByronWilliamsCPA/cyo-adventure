@@ -60,6 +60,14 @@ export type StoryRequestApproveBody = {
  */
 export type StoryRequestQueueScope = 'family' | 'all'
 
+/**
+ * Window event dispatched by StoryRequestQueue after a server-confirmed
+ * approve or decline, so passive listeners (GuardianShell's pending-count
+ * nav badge) can refetch without polling. Fire-and-forget with no payload:
+ * listeners re-read the pending list themselves.
+ */
+export const STORY_REQUESTS_CHANGED_EVENT = 'cyo:story-requests-changed'
+
 export interface StoryRequestQueueApi {
   listPending(): Promise<StoryRequestView[]>
   approve(id: string, body: StoryRequestApproveBody): Promise<StoryRequestApproved>

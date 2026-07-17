@@ -5,6 +5,129 @@ export type ClientOptions = {
 };
 
 /**
+ * AdminProfileCreateBody
+ *
+ * An admin's request to create a child profile in any family.
+ */
+export type AdminProfileCreateBody = {
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
+    age_band: AgeBand;
+    /**
+     * Reading Level Cap
+     */
+    reading_level_cap?: number;
+    /**
+     * Avatar
+     */
+    avatar?: 'fox' | 'owl' | 'dragon' | 'cat' | 'unicorn' | 'robot' | 'rocket' | 'frog' | 'wolf' | 'panther' | 'ember-dragon' | 'hawk' | 'raven' | 'pegasus' | 'alicorn' | 'butterfly' | 'shark' | 'soccer' | 'baseball-gear' | 'cheer-gear' | 'baseball-kid' | 'cheer-kid' | null;
+    /**
+     * Tts Enabled
+     */
+    tts_enabled?: boolean;
+};
+
+/**
+ * AdminProfileListView
+ *
+ * Child profiles across families, optionally filtered by family_id.
+ */
+export type AdminProfileListView = {
+    /**
+     * Profiles
+     */
+    profiles: Array<AdminProfileView>;
+};
+
+/**
+ * AdminProfileUpdateBody
+ *
+ * An admin's partial update to a child profile in any family.
+ *
+ * Mirrors ``ProfileUpdateBody``'s omitted-vs-explicit-null semantics for
+ * ``avatar``/``pin``, plus a ``status`` toggle absent from the
+ * guardian-scoped body.
+ */
+export type AdminProfileUpdateBody = {
+    /**
+     * Display Name
+     */
+    display_name?: string | null;
+    age_band?: AgeBand | null;
+    /**
+     * Reading Level Cap
+     */
+    reading_level_cap?: number | null;
+    /**
+     * Avatar
+     */
+    avatar?: 'fox' | 'owl' | 'dragon' | 'cat' | 'unicorn' | 'robot' | 'rocket' | 'frog' | 'wolf' | 'panther' | 'ember-dragon' | 'hawk' | 'raven' | 'pegasus' | 'alicorn' | 'butterfly' | 'shark' | 'soccer' | 'baseball-gear' | 'cheer-gear' | 'baseball-kid' | 'cheer-kid' | null;
+    /**
+     * Tts Enabled
+     */
+    tts_enabled?: boolean | null;
+    /**
+     * Pin
+     */
+    pin?: string | null;
+    /**
+     * Status
+     */
+    status?: 'active' | 'deactivated' | null;
+};
+
+/**
+ * AdminProfileView
+ *
+ * A child profile as seen by the admin console, across any family.
+ */
+export type AdminProfileView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
+    age_band: AgeBand;
+    /**
+     * Reading Level Cap
+     */
+    reading_level_cap: number;
+    /**
+     * Avatar
+     */
+    avatar: string | null;
+    /**
+     * Tts Enabled
+     */
+    tts_enabled: boolean;
+    /**
+     * Has Pin
+     */
+    has_pin: boolean;
+    /**
+     * Status
+     */
+    status: 'active' | 'deactivated';
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
  * AgeBand
  *
  * The reading age band a story targets.
@@ -762,6 +885,78 @@ export type DeviceGrantView = {
 };
 
 /**
+ * FamilyConnectionCreateBody
+ *
+ * An admin's request to opt one family in to another's recommendations.
+ */
+export type FamilyConnectionCreateBody = {
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Connected Family Id
+     */
+    connected_family_id: string;
+};
+
+/**
+ * FamilyConnectionListView
+ *
+ * All family connections, admin-only.
+ */
+export type FamilyConnectionListView = {
+    /**
+     * Connections
+     */
+    connections: Array<FamilyConnectionView>;
+};
+
+/**
+ * FamilyConnectionView
+ *
+ * One directional family-connection row, with both family names.
+ */
+export type FamilyConnectionView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Family Name
+     */
+    family_name: string;
+    /**
+     * Connected Family Id
+     */
+    connected_family_id: string;
+    /**
+     * Connected Family Name
+     */
+    connected_family_name: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * FamilyCreateBody
+ *
+ * An admin's request to create a family (WS-J).
+ */
+export type FamilyCreateBody = {
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
  * FamilyListView
  *
  * All families, admin-only (powers the required family selector).
@@ -774,9 +969,35 @@ export type FamilyListView = {
 };
 
 /**
+ * FamilyUpdateBody
+ *
+ * An admin's partial update to a family: rename and/or status (WS-J).
+ *
+ * Deactivating a family cascades to deactivate every member ``User`` and
+ * ``ChildProfile`` in the same transaction; reactivating a family does NOT
+ * auto-reactivate its members (deliberate asymmetry, see
+ * ``api/families.py``).
+ */
+export type FamilyUpdateBody = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Status
+     */
+    status?: 'active' | 'deactivated' | null;
+};
+
+/**
  * FamilyView
  *
  * A family as listed for the admin authored-request form.
+ *
+ * ``status``/``guardian_count``/``kid_count``/``created_at`` were added for
+ * the WS-J admin user-management console; they are additive to the
+ * original id/name shape the authored-request family selector already
+ * consumes, so that consumer is unaffected.
  */
 export type FamilyView = {
     /**
@@ -787,6 +1008,22 @@ export type FamilyView = {
      * Name
      */
     name: string;
+    /**
+     * Status
+     */
+    status: 'active' | 'deactivated';
+    /**
+     * Guardian Count
+     */
+    guardian_count: number;
+    /**
+     * Kid Count
+     */
+    kid_count: number;
+    /**
+     * Created At
+     */
+    created_at: string;
 };
 
 /**
@@ -2368,6 +2605,114 @@ export type ThresholdView = {
 };
 
 /**
+ * UserCreateBody
+ *
+ * An admin's request to invite a guardian or admin (WS-J).
+ *
+ * Creates a ``status="pending"`` row with a synthetic placeholder
+ * ``authn_subject``; it becomes ``active`` when that email signs in via
+ * Supabase for the first time (``api/onboarding.py::_bind_pending_invite``).
+ */
+export type UserCreateBody = {
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Role
+     */
+    role: 'guardian' | 'admin';
+    /**
+     * Is Admin
+     */
+    is_admin?: boolean;
+};
+
+/**
+ * UserListView
+ *
+ * Guardians/admins across all families, optionally filtered (WS-J).
+ */
+export type UserListView = {
+    /**
+     * Users
+     */
+    users: Array<UserView>;
+};
+
+/**
+ * UserUpdateBody
+ *
+ * An admin's partial update to a guardian/admin account (WS-J).
+ *
+ * Reassigning ``family_id`` moves the user to a different family without
+ * touching any ``ChildProfile`` (kid profiles belong to the family, not to
+ * a guardian, so they are unaffected by a guardian's own reassignment).
+ */
+export type UserUpdateBody = {
+    /**
+     * Family Id
+     */
+    family_id?: string | null;
+    /**
+     * Role
+     */
+    role?: 'guardian' | 'admin' | null;
+    /**
+     * Is Admin
+     */
+    is_admin?: boolean | null;
+    /**
+     * Status
+     */
+    status?: 'pending' | 'active' | 'deactivated' | null;
+};
+
+/**
+ * UserView
+ *
+ * A guardian or admin account as seen by the admin console (WS-J).
+ *
+ * Never includes ``authn_subject``: it is bearer-adjacent identity material
+ * with no admin-console use, mirroring why ``pin_hash`` is never
+ * serialized on ``ProfileView``.
+ */
+export type UserView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Email
+     */
+    email: string | null;
+    /**
+     * Role
+     */
+    role: 'guardian' | 'admin';
+    /**
+     * Is Admin
+     */
+    is_admin: boolean;
+    /**
+     * Status
+     */
+    status: 'pending' | 'active' | 'deactivated';
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
  * ValidateResponse
  *
  * Response returned by the re-validate endpoint.
@@ -3016,6 +3361,73 @@ export type ListFamiliesApiV1AdminFamiliesGetResponses = {
 };
 
 export type ListFamiliesApiV1AdminFamiliesGetResponse = ListFamiliesApiV1AdminFamiliesGetResponses[keyof ListFamiliesApiV1AdminFamiliesGetResponses];
+
+export type CreateFamilyApiV1AdminFamiliesPostData = {
+    body: FamilyCreateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/families';
+};
+
+export type CreateFamilyApiV1AdminFamiliesPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateFamilyApiV1AdminFamiliesPostError = CreateFamilyApiV1AdminFamiliesPostErrors[keyof CreateFamilyApiV1AdminFamiliesPostErrors];
+
+export type CreateFamilyApiV1AdminFamiliesPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: FamilyView;
+};
+
+export type CreateFamilyApiV1AdminFamiliesPostResponse = CreateFamilyApiV1AdminFamiliesPostResponses[keyof CreateFamilyApiV1AdminFamiliesPostResponses];
+
+export type UpdateFamilyApiV1AdminFamiliesFamilyIdPatchData = {
+    body: FamilyUpdateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Family Id
+         */
+        family_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/families/{family_id}';
+};
+
+export type UpdateFamilyApiV1AdminFamiliesFamilyIdPatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateFamilyApiV1AdminFamiliesFamilyIdPatchError = UpdateFamilyApiV1AdminFamiliesFamilyIdPatchErrors[keyof UpdateFamilyApiV1AdminFamiliesFamilyIdPatchErrors];
+
+export type UpdateFamilyApiV1AdminFamiliesFamilyIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyView;
+};
+
+export type UpdateFamilyApiV1AdminFamiliesFamilyIdPatchResponse = UpdateFamilyApiV1AdminFamiliesFamilyIdPatchResponses[keyof UpdateFamilyApiV1AdminFamiliesFamilyIdPatchResponses];
 
 export type RecordRatingApiV1RatingsPostData = {
     body: RatingBody;
@@ -4345,3 +4757,315 @@ export type OnboardApiV1OnboardingPostResponses = {
 };
 
 export type OnboardApiV1OnboardingPostResponse = OnboardApiV1OnboardingPostResponses[keyof OnboardApiV1OnboardingPostResponses];
+
+export type ListUsersApiV1AdminUsersGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: {
+        /**
+         * Family Id
+         */
+        family_id?: string | null;
+        /**
+         * Role
+         */
+        role?: 'guardian' | 'admin' | null;
+        /**
+         * Status
+         */
+        status?: 'pending' | 'active' | 'deactivated' | null;
+    };
+    url: '/api/v1/admin/users';
+};
+
+export type ListUsersApiV1AdminUsersGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListUsersApiV1AdminUsersGetError = ListUsersApiV1AdminUsersGetErrors[keyof ListUsersApiV1AdminUsersGetErrors];
+
+export type ListUsersApiV1AdminUsersGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserListView;
+};
+
+export type ListUsersApiV1AdminUsersGetResponse = ListUsersApiV1AdminUsersGetResponses[keyof ListUsersApiV1AdminUsersGetResponses];
+
+export type CreateUserApiV1AdminUsersPostData = {
+    body: UserCreateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/users';
+};
+
+export type CreateUserApiV1AdminUsersPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateUserApiV1AdminUsersPostError = CreateUserApiV1AdminUsersPostErrors[keyof CreateUserApiV1AdminUsersPostErrors];
+
+export type CreateUserApiV1AdminUsersPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: UserView;
+};
+
+export type CreateUserApiV1AdminUsersPostResponse = CreateUserApiV1AdminUsersPostResponses[keyof CreateUserApiV1AdminUsersPostResponses];
+
+export type UpdateUserApiV1AdminUsersUserIdPatchData = {
+    body: UserUpdateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/users/{user_id}';
+};
+
+export type UpdateUserApiV1AdminUsersUserIdPatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateUserApiV1AdminUsersUserIdPatchError = UpdateUserApiV1AdminUsersUserIdPatchErrors[keyof UpdateUserApiV1AdminUsersUserIdPatchErrors];
+
+export type UpdateUserApiV1AdminUsersUserIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserView;
+};
+
+export type UpdateUserApiV1AdminUsersUserIdPatchResponse = UpdateUserApiV1AdminUsersUserIdPatchResponses[keyof UpdateUserApiV1AdminUsersUserIdPatchResponses];
+
+export type ListAdminProfilesApiV1AdminProfilesGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: {
+        /**
+         * Family Id
+         */
+        family_id?: string | null;
+    };
+    url: '/api/v1/admin/profiles';
+};
+
+export type ListAdminProfilesApiV1AdminProfilesGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListAdminProfilesApiV1AdminProfilesGetError = ListAdminProfilesApiV1AdminProfilesGetErrors[keyof ListAdminProfilesApiV1AdminProfilesGetErrors];
+
+export type ListAdminProfilesApiV1AdminProfilesGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: AdminProfileListView;
+};
+
+export type ListAdminProfilesApiV1AdminProfilesGetResponse = ListAdminProfilesApiV1AdminProfilesGetResponses[keyof ListAdminProfilesApiV1AdminProfilesGetResponses];
+
+export type CreateAdminProfileApiV1AdminProfilesPostData = {
+    body: AdminProfileCreateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/profiles';
+};
+
+export type CreateAdminProfileApiV1AdminProfilesPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateAdminProfileApiV1AdminProfilesPostError = CreateAdminProfileApiV1AdminProfilesPostErrors[keyof CreateAdminProfileApiV1AdminProfilesPostErrors];
+
+export type CreateAdminProfileApiV1AdminProfilesPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: AdminProfileView;
+};
+
+export type CreateAdminProfileApiV1AdminProfilesPostResponse = CreateAdminProfileApiV1AdminProfilesPostResponses[keyof CreateAdminProfileApiV1AdminProfilesPostResponses];
+
+export type UpdateAdminProfileApiV1AdminProfilesProfileIdPatchData = {
+    body: AdminProfileUpdateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/profiles/{profile_id}';
+};
+
+export type UpdateAdminProfileApiV1AdminProfilesProfileIdPatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateAdminProfileApiV1AdminProfilesProfileIdPatchError = UpdateAdminProfileApiV1AdminProfilesProfileIdPatchErrors[keyof UpdateAdminProfileApiV1AdminProfilesProfileIdPatchErrors];
+
+export type UpdateAdminProfileApiV1AdminProfilesProfileIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: AdminProfileView;
+};
+
+export type UpdateAdminProfileApiV1AdminProfilesProfileIdPatchResponse = UpdateAdminProfileApiV1AdminProfilesProfileIdPatchResponses[keyof UpdateAdminProfileApiV1AdminProfilesProfileIdPatchResponses];
+
+export type ListFamilyConnectionsApiV1AdminFamilyConnectionsGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/family-connections';
+};
+
+export type ListFamilyConnectionsApiV1AdminFamilyConnectionsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListFamilyConnectionsApiV1AdminFamilyConnectionsGetError = ListFamilyConnectionsApiV1AdminFamilyConnectionsGetErrors[keyof ListFamilyConnectionsApiV1AdminFamilyConnectionsGetErrors];
+
+export type ListFamilyConnectionsApiV1AdminFamilyConnectionsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionListView;
+};
+
+export type ListFamilyConnectionsApiV1AdminFamilyConnectionsGetResponse = ListFamilyConnectionsApiV1AdminFamilyConnectionsGetResponses[keyof ListFamilyConnectionsApiV1AdminFamilyConnectionsGetResponses];
+
+export type CreateFamilyConnectionApiV1AdminFamilyConnectionsPostData = {
+    body: FamilyConnectionCreateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/family-connections';
+};
+
+export type CreateFamilyConnectionApiV1AdminFamilyConnectionsPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateFamilyConnectionApiV1AdminFamilyConnectionsPostError = CreateFamilyConnectionApiV1AdminFamilyConnectionsPostErrors[keyof CreateFamilyConnectionApiV1AdminFamilyConnectionsPostErrors];
+
+export type CreateFamilyConnectionApiV1AdminFamilyConnectionsPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: FamilyConnectionView;
+};
+
+export type CreateFamilyConnectionApiV1AdminFamilyConnectionsPostResponse = CreateFamilyConnectionApiV1AdminFamilyConnectionsPostResponses[keyof CreateFamilyConnectionApiV1AdminFamilyConnectionsPostResponses];
+
+export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Connection Id
+         */
+        connection_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/family-connections/{connection_id}';
+};
+
+export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteError = DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteErrors[keyof DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteErrors];
+
+export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponse = DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses[keyof DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses];

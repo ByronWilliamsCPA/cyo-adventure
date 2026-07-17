@@ -1,0 +1,129 @@
+/* ============================================================================
+   Admin console styles: loaded by AdminShell after guardian.css, which owns
+   the shared shell chrome plus the console-* and flag-badge families these
+   rules build on. Admin-only additions land here so the two stylesheets keep
+   separate ownership (guardian.css belongs to the guardian surface).
+   ============================================================================ */
+
+/* Queue toolbar: title on the left, "Updated HH:MM" plus Refresh on the
+   right; wraps on narrow viewports instead of crushing the h1. */
+.admin-console__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2, 0.5rem) var(--space-4, 1rem);
+}
+
+.admin-console__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+}
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   AdminConsolePage.tsx; size stays local. */
+.admin-console__updated {
+  font-size: var(--text-sm, 0.9375rem);
+  white-space: nowrap;
+}
+
+/* Same small-text contrast pattern as guardian.css's .intake-request__assign:
+   a solid amber-deep fill with ink text (4.86:1), because amber-deep text on
+   parchment cannot clear 4.5:1 at this size. */
+.admin-console__refresh {
+  border: 1px solid var(--color-amber-deep, #c17b2a);
+  background: var(--color-amber-deep, #c17b2a);
+  color: var(--color-ink, #2c1a0e);
+  border-radius: var(--radius-full, 999px);
+  padding: 0.3rem 0.9rem;
+  font-size: var(--text-sm, 0.9375rem);
+  font-weight: var(--weight-semibold, 600);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-console__refresh:hover:not(:disabled) {
+  background: var(--color-amber-hover, #c4681c);
+  border-color: var(--color-amber-hover, #c4681c);
+}
+
+.admin-console__refresh:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}
+
+/* Mirrors .guardian-login__provider:disabled: dim with a progress cursor
+   while the refetch is in flight. */
+.admin-console__refresh:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* Inline refresh-failure notice under the toolbar; the last good queue stays
+   on screen below it. color comes from the cyo-text-error class added
+   alongside this one in AdminConsolePage.tsx; size/margin stay local. */
+.admin-console__refresh-error {
+  margin: 0.75rem 0 0;
+  font-size: var(--text-sm, 0.9375rem);
+}
+
+/* Title search over all three buckets; the field-stack layout comes from the
+   cyo-field class added alongside this one in AdminConsolePage.tsx. */
+.admin-search {
+  max-width: 24rem;
+  margin-top: var(--space-4, 1rem);
+}
+
+/* Search miss ("No matches for ..."), deliberately styled apart from a
+   bucket's true empty state; color comes from the cyo-text-muted class added
+   alongside this one in AdminConsolePage.tsx. */
+.admin-search__no-matches {
+  margin: var(--space-4, 1rem) 0 0;
+}
+
+/* Severity badge cluster on a queue row; the pill shape comes from
+   guardian.css's .flag-badge base carried on each badge. */
+.admin-severity {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+/* Hard block: the one solid danger fill on this surface, so gate refusals
+   read as the loudest rows at a glance. White on error (#9b2c2c) is 7.5:1,
+   comfortably past the 4.5:1 small-text minimum, so this badge does not need
+   the fill+ink swap the small amber badges use. Text plus tone: the label
+   says "Hard block", color is never the only signal. */
+.admin-severity__hard-block {
+  background: var(--color-error, #9b2c2c);
+  color: #fff;
+  font-weight: var(--weight-bold, 700);
+}
+
+/* --color-error is deliberately brighter in dark mode (it is mostly used as
+   FOREGROUND text on the near-black page: see tokens.css's dark-mode block),
+   which would drop white-on-fill here to 2.52:1. A single token cannot serve
+   both roles (white text on it needs low luminance; text on a dark page needs
+   high luminance), the same tension tokens.css resolved for amber by
+   compressing a value into a shared band; here the fill role is scoped to
+   just this one badge, so it keeps the light-mode literal instead (white on
+   #9b2c2c is 7.53:1 regardless of theme, since both sides of that pairing are
+   fixed colors). */
+@media (prefers-color-scheme: dark) {
+  .admin-severity__hard-block {
+    background: #9b2c2c;
+  }
+}
+
+/* Repaired: small, calm provenance note (the pipeline rewrote a passage);
+   amber-subtle wash with the AA amber text token (--color-amber-text,
+   5.66:1 on amber-subtle), the pairing added for small amber text where a
+   solid fill would over-weight a secondary badge. */
+.admin-severity__repaired {
+  background: var(--color-amber-subtle, #fdf3e6);
+  color: var(--color-amber-text, #87561d);
+  font-size: 0.8125rem;
+}

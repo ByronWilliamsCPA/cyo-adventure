@@ -575,17 +575,60 @@ class StoryRequestAuthoredCreatedView(BaseModel):
     concept_id: str | None
 
 
+FamilyStatus = Literal["active", "deactivated"]
+
+
 class FamilyView(BaseModel):
-    """A family as listed for the admin authored-request form."""
+    """A family as listed for the admin authored-request form.
+
+    ``status``/``guardian_count``/``kid_count``/``created_at`` were added for
+    the WS-J admin user-management console; they are additive to the
+    original id/name shape the authored-request family selector already
+    consumes, so that consumer is unaffected.
+    """
 
     id: str
     name: str
+    status: FamilyStatus
+    guardian_count: int
+    kid_count: int
+    created_at: datetime
 
 
 class FamilyListView(BaseModel):
     """All families, admin-only (powers the required family selector)."""
 
     families: list[FamilyView]
+
+
+class FamilyCreateBody(BaseModel):
+    """An admin's request to create a family (WS-J)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)
+    ]
+
+
+class FamilyUpdateBody(BaseModel):
+    """An admin's partial update to a family: rename and/or status (WS-J).
+
+    Deactivating a family cascades to deactivate every member ``User`` and
+    ``ChildProfile`` in the same transaction; reactivating a family does NOT
+    auto-reactivate its members (deliberate asymmetry, see
+    ``api/families.py``).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)
+        ]
+        | None
+    ) = None
+    status: FamilyStatus | None = None
 
 
 AuthoringMethod = Literal["skeleton_fill", "fresh_generation"]
@@ -1344,3 +1387,185 @@ class SuggestionListView(BaseModel):
     min_decided_versions: int
     min_override_rate: float
     suggestions: list[ThresholdSuggestionView]
+
+
+# ---------------------------------------------------------------------------
+# Admin user-management schemas (WS-J)
+# ---------------------------------------------------------------------------
+
+# #ASSUME: data-integrity: a hand-rolled shape check, not full RFC 5322
+# validation; this field is a contact/match key (onboarding binds a pending
+# invite by exact string equality against the verified Supabase email claim),
+# never an identity or security boundary itself, so a permissive
+# local-part@domain pattern is sufficient. Adding a dependency
+# (pydantic's email-validator extra) for a stricter check was judged not
+# worth the new supply-chain surface for an admin-only input.
+# #VERIFY: tests/integration/test_admin_users_api.py::
+# test_create_invite_rejects_malformed_email.
+AdminEmail = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        max_length=320,
+        pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+    ),
+]
+
+# Only these two base roles are admin-creatable; a "child" User row is only
+# ever the synthetic row api/child_sessions.py provisions for a ChildProfile,
+# never something an admin creates directly.
+AdminManagedRole = Literal["guardian", "admin"]
+UserStatus = Literal["pending", "active", "deactivated"]
+
+
+class UserView(BaseModel):
+    """A guardian or admin account as seen by the admin console (WS-J).
+
+    Never includes ``authn_subject``: it is bearer-adjacent identity material
+    with no admin-console use, mirroring why ``pin_hash`` is never
+    serialized on ``ProfileView``.
+    """
+
+    id: str
+    family_id: str
+    email: str | None
+    role: AdminManagedRole
+    is_admin: bool
+    status: UserStatus
+    created_at: datetime
+
+
+class UserListView(BaseModel):
+    """Guardians/admins across all families, optionally filtered (WS-J)."""
+
+    users: list[UserView]
+
+
+class UserCreateBody(BaseModel):
+    """An admin's request to invite a guardian or admin (WS-J).
+
+    Creates a ``status="pending"`` row with a synthetic placeholder
+    ``authn_subject``; it becomes ``active`` when that email signs in via
+    Supabase for the first time (``api/onboarding.py::_bind_pending_invite``).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    email: AdminEmail
+    family_id: str
+    role: AdminManagedRole
+    # Only meaningful with role="guardian" (a dual-role invite); role="admin"
+    # always implies True regardless of what is sent here, mirroring the DB
+    # CHECK ck_user_admin_role_flag.
+    is_admin: bool = False
+
+
+class UserUpdateBody(BaseModel):
+    """An admin's partial update to a guardian/admin account (WS-J).
+
+    Reassigning ``family_id`` moves the user to a different family without
+    touching any ``ChildProfile`` (kid profiles belong to the family, not to
+    a guardian, so they are unaffected by a guardian's own reassignment).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    family_id: str | None = None
+    role: AdminManagedRole | None = None
+    is_admin: bool | None = None
+    status: UserStatus | None = None
+
+
+# ---------------------------------------------------------------------------
+# Admin profile-management schemas (WS-J): ChildProfile CRUD across any
+# family. Field-for-field mirrors of ProfileView/ProfileCreateBody/
+# ProfileUpdateBody above plus family_id and status, kept as separate types
+# (rather than inheritance) so the guardian-scoped schemas' self-family-only
+# contract never silently widens.
+# ---------------------------------------------------------------------------
+
+
+class AdminProfileView(BaseModel):
+    """A child profile as seen by the admin console, across any family."""
+
+    id: str
+    family_id: str
+    display_name: str
+    age_band: AgeBand
+    reading_level_cap: float
+    avatar: str | None
+    tts_enabled: bool
+    has_pin: bool
+    status: Literal["active", "deactivated"]
+    created_at: datetime
+
+
+class AdminProfileListView(BaseModel):
+    """Child profiles across families, optionally filtered by family_id."""
+
+    profiles: list[AdminProfileView]
+
+
+class AdminProfileCreateBody(BaseModel):
+    """An admin's request to create a child profile in any family."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    family_id: str
+    display_name: DisplayName
+    age_band: AgeBand
+    reading_level_cap: float = Field(default=99.0, ge=0.0, le=99.0)
+    avatar: AvatarId | None = None
+    tts_enabled: bool = False
+
+
+class AdminProfileUpdateBody(BaseModel):
+    """An admin's partial update to a child profile in any family.
+
+    Mirrors ``ProfileUpdateBody``'s omitted-vs-explicit-null semantics for
+    ``avatar``/``pin``, plus a ``status`` toggle absent from the
+    guardian-scoped body.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    display_name: DisplayName | None = None
+    age_band: AgeBand | None = None
+    reading_level_cap: float | None = Field(default=None, ge=0.0, le=99.0)
+    avatar: AvatarId | None = None
+    tts_enabled: bool | None = None
+    pin: PinCode | None = None
+    status: Literal["active", "deactivated"] | None = None
+
+
+# ---------------------------------------------------------------------------
+# Family connection schemas (WS-J): directional cross-family recommendation
+# opt-in. family_id is the "viewer"; connected_family_id is the source whose
+# stories may be recommended. The relationship does not imply its reverse.
+# ---------------------------------------------------------------------------
+
+
+class FamilyConnectionView(BaseModel):
+    """One directional family-connection row, with both family names."""
+
+    id: str
+    family_id: str
+    family_name: str
+    connected_family_id: str
+    connected_family_name: str
+    created_at: datetime
+
+
+class FamilyConnectionListView(BaseModel):
+    """All family connections, admin-only."""
+
+    connections: list[FamilyConnectionView]
+
+
+class FamilyConnectionCreateBody(BaseModel):
+    """An admin's request to opt one family in to another's recommendations."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    family_id: str
+    connected_family_id: str

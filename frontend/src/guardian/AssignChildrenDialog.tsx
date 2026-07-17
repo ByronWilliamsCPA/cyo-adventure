@@ -99,7 +99,8 @@ export function AssignChildrenDialog({
           setLoadError(
             classifyApiError(err, {
               transient: "We could not load your family's profiles and assignments.",
-            }).message,
+              server: "We could not load your family's profiles and assignments.",
+            }).message
           )
         }
       }
@@ -129,10 +130,7 @@ export function AssignChildrenDialog({
         // assignment. Log the message (not the axios error, whose config
         // headers carry the bearer token) and surface a visible notice so
         // the failure is never mistaken for "nothing was flagged".
-        console.error(
-          'content summary load failed:',
-          err instanceof Error ? err.message : err
-        )
+        console.error('content summary load failed:', err instanceof Error ? err.message : err)
         if (!cancelled) setSummaryError(true)
       }
     }
@@ -151,10 +149,7 @@ export function AssignChildrenDialog({
     })
   }
 
-  const additions = useMemo(
-    () => [...picked].filter((id) => !assigned.has(id)),
-    [picked, assigned],
-  )
+  const additions = useMemo(() => [...picked].filter((id) => !assigned.has(id)), [picked, assigned])
 
   async function save() {
     if (additions.length === 0) {
@@ -172,7 +167,8 @@ export function AssignChildrenDialog({
       setSaveError(
         classifyApiError(err, {
           transient: 'We could not assign this story. Please try again.',
-        }).message,
+          server: 'We could not assign this story. Please try again.',
+        }).message
       )
       setSaving(false)
     }
@@ -187,10 +183,7 @@ export function AssignChildrenDialog({
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
-          <Button
-            onClick={() => void save()}
-            disabled={additions.length === 0 || saving}
-          >
+          <Button onClick={() => void save()} disabled={additions.length === 0 || saving}>
             Assign
           </Button>
         </>
@@ -207,31 +200,40 @@ export function AssignChildrenDialog({
           {saveError ? <p role="alert">{saveError}</p> : null}
           {summaryError ? (
             <p className="assign__content-summary console__notice cyo-text-muted">
-              Content review unavailable right now. You can still assign, but
-              flags could not be loaded.
+              Content review unavailable right now. You can still assign, but flags could not be
+              loaded.
             </p>
           ) : summary ? (
             <ContentSummarySection summary={summary} />
           ) : null}
-          <ul className="assign__list">
-            {profiles.map((profile) => {
-              const already = assigned.has(profile.id)
-              return (
-                <li key={profile.id} className="assign__row">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={already || picked.has(profile.id)}
-                      disabled={already}
-                      onChange={() => toggle(profile.id)}
-                    />
-                    <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
-                    {profile.display_name}
-                  </label>
-                </li>
-              )
-            })}
-          </ul>
+          {profiles.length === 0 ? (
+            // A family with no profiles would otherwise see a bare empty
+            // checklist with a permanently disabled Assign button and no way
+            // to tell why.
+            <p className="assign__empty cyo-text-muted">
+              Add a child profile first, then assign books.
+            </p>
+          ) : (
+            <ul className="assign__list">
+              {profiles.map((profile) => {
+                const already = assigned.has(profile.id)
+                return (
+                  <li key={profile.id} className="assign__row">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={already || picked.has(profile.id)}
+                        disabled={already}
+                        onChange={() => toggle(profile.id)}
+                      />
+                      <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
+                      {profile.display_name}
+                    </label>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
         </>
       )}
     </Dialog>
