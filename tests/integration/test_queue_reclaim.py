@@ -335,11 +335,15 @@ async def test_requeue_stranded_jobs_second_sweep_same_row_is_queue_idempotent(
             session, stale_after=timedelta(minutes=30)
         )
 
-    # Both sweeps genuinely found the (still-stale) row a valid candidate; the
-    # second sweep's RQ-level DuplicateJobError is caught internally, not
-    # surfaced as a sweep failure.
+    # The first sweep re-enqueues the lost row and counts it. The second sweep
+    # finds the same still-stale row, but its enqueue raises the RQ-level
+    # DuplicateJobError (the row is already queued under this id); that is caught
+    # internally as a no-op and excluded from the reclaim count per the
+    # requeue_stranded_jobs contract, so the second sweep reclaims nothing.
     assert first_count == 1
-    assert second_count == 1
+    assert second_count == 0
 
+    # The invariant under test: two sweeps leave exactly one queue entry, never a
+    # duplicate that would run the job twice.
     queue = queue_mod.get_queue(queue_mod._default_settings)
     assert queue.job_ids.count(str(stale_id)) == 1
