@@ -1193,6 +1193,12 @@ class DeviceGrant(Base):
         revoked_at: Wall-clock revocation time, or ``None`` while active.
             Nullable rather than a boolean flag so the guardian-facing device
             list can show *when* a device was revoked.
+        expires_at: Wall-clock expiry (UTC, TIMESTAMPTZ), stamped at mint from
+            the same TTL the JWT is signed with. The token itself carries the
+            expiry too, but persisting it here lets the active-device list
+            exclude an unrevoked-but-expired grant (a ghost that can no longer
+            mint a child session yet would otherwise still show as active), so
+            "present in the list" means "actually usable" (#252).
     """
 
     __tablename__ = "device_grant"
@@ -1204,3 +1210,8 @@ class DeviceGrant(Base):
     jti: Mapped[uuid.UUID] = mapped_column(Uuid, unique=True)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     revoked_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # NOT NULL with no DB default: every real row supplies it (mint stamps it,
+    # the backfill migration set it for pre-existing rows), and omitting a
+    # default keeps this trivially in schema-parity with the migration. The
+    # app always provides the value, so no default is needed as a safety net.
+    expires_at: Mapped[datetime] = mapped_column(_TS)
