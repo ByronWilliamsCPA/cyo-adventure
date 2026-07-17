@@ -96,9 +96,12 @@
   color: var(--color-ink-secondary, #5a3e28);
 }
 
+/* --color-ink-secondary, not --color-ink-muted: .landing-door's background
+   is --color-parchment-dark, where ink-muted only clears 3.72:1 against the
+   4.5:1 AA minimum (2026-07-16 accessibility audit, e2e/a11y.spec.ts). */
 .landing-door__note {
   font-size: 0.8rem;
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-secondary, #5a3e28);
 }
 
 @media (prefers-reduced-motion: reduce) {

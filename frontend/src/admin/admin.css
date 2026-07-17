@@ -120,10 +120,10 @@
 
 /* Repaired: small, calm provenance note (the pipeline rewrote a passage);
    amber-subtle wash with the AA amber text token (--color-amber-text,
-   4.55:1 on amber-subtle), the pairing added for small amber text where a
+   5.66:1 on amber-subtle), the pairing added for small amber text where a
    solid fill would over-weight a secondary badge. */
 .admin-severity__repaired {
   background: var(--color-amber-subtle, #fdf3e6);
-  color: var(--color-amber-text, #a35f11);
+  color: var(--color-amber-text, #87561d);
   font-size: 0.8125rem;
 }
