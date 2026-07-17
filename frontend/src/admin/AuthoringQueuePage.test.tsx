@@ -99,4 +99,45 @@ describe('AuthoringQueuePage', () => {
       expect(screen.queryByText('A story about a friendly dragon')).not.toBeInTheDocument()
     )
   })
+
+  it('shows a generic error alert when loading the queue throws an Error', async () => {
+    mockGet.mockImplementation((path: string) => {
+      if (path === '/v1/admin/provider-allowlist') return Promise.resolve({ data: ALLOWLIST })
+      return Promise.reject(new Error('network down'))
+    })
+    render(<AuthoringQueuePage />)
+    expect(
+      await screen.findByText('We could not load the authoring queue. Please reload.')
+    ).toBeInTheDocument()
+  })
+
+  it('shows a generic error alert when the queue rejects with a non-Error value', async () => {
+    // #EDGE: data-integrity: a thrown value need not be an Error instance (a
+    // rejected promise can carry any value); the `err instanceof Error`
+    // branch in the load catch handler must not throw either way.
+    // #VERIFY: covered here by rejecting with a plain string.
+    mockGet.mockImplementation((path: string) => {
+      if (path === '/v1/admin/provider-allowlist') return Promise.resolve({ data: ALLOWLIST })
+      // Intentionally a non-Error rejection reason to exercise the
+      // `err instanceof Error` false branch below.
+      // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+      return Promise.reject('boom')
+    })
+    render(<AuthoringQueuePage />)
+    expect(
+      await screen.findByText('We could not load the authoring queue. Please reload.')
+    ).toBeInTheDocument()
+  })
+
+  it('falls back to placeholder text when request_text and length are absent', async () => {
+    mockGet.mockImplementation((path: string) => {
+      if (path === '/v1/admin/provider-allowlist') return Promise.resolve({ data: ALLOWLIST })
+      return Promise.resolve({
+        data: { requests: [{ ...APPROVED_REQUEST, request_text: null, length: null }] },
+      })
+    })
+    render(<AuthoringQueuePage />)
+    expect(await screen.findByText('Untitled request')).toBeInTheDocument()
+    expect(screen.getByText('8-11 · length not set · prose')).toBeInTheDocument()
+  })
 })
