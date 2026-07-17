@@ -84,7 +84,7 @@
     },
     {
       "id": "n_birdbath",
-      "body": "A little bird was at the bird bath. The bird was wet. It made splashes. The blue butterfly sat on the edge. Then it flew away. It went to red berries. Clover went after it.",
+      "body": "A little bird was at the bird bath. The bird was wet. It made splashes. The blue butterfly sat on the edge. Then it flew away. It went to red strawberries. Clover went after it.",
       "is_ending": false,
       "choices": [
         {
@@ -96,7 +96,7 @@
     },
     {
       "id": "n_strawberries",
-      "body": "Red berries sat under green leaves. They were sweet. The butterfly went over them. Then it went to a new spot. It went to a patch of clover. Clover came near.",
+      "body": "Red berries sat under green leaves. They were sweet. The butterfly went over them. Then it went to a new spot. It went to a patch of soft green leaves. Clover came near.",
       "is_ending": false,
       "choices": [
         {
@@ -125,7 +125,7 @@
     },
     {
       "id": "n_nose_end",
-      "body": "The butterfly sat on Clover's nose! Its wings went up and down. Up and down. Clover said a big laugh! Haha! She stayed still. She was so happy. The best day ever!",
+      "body": "The butterfly sat on Clover's nose! Its wings went up and down. Up and down. Clover giggled! Haha! She stayed still. She was so happy. The best day ever!",
       "is_ending": true,
       "ending": {
         "id": "e_nose",
@@ -136,7 +136,7 @@
     },
     {
       "id": "n_crown_end",
-      "body": "Clover found a small ring of flowers. It was like a crown! It fit her head. The butterfly went around it. One time, two times, three times. Clover put on the crown. She was so proud!",
+      "body": "Clover found a small ring of flowers. It was like a crown! It fit her head. The butterfly went around it once, so gentle. Clover put on the crown. She was so proud!",
       "is_ending": true,
       "ending": {
         "id": "e_crown",
@@ -175,7 +175,7 @@
     },
     {
       "id": "n_reeds",
-      "body": "The butterfly went through green reeds. The reeds went swish, swish. A fly went by. It was fast like a tiny plane! Zoom! The butterfly went on. There was a log with moss.",
+      "body": "The butterfly went through green reeds. The reeds went swish, swish. A dragonfly went by! Zoom! It was like a helicopter! The butterfly went on. There was a log with moss.",
       "is_ending": false,
       "choices": [
         {
@@ -199,7 +199,7 @@
     },
     {
       "id": "n_friend",
-      "body": "A little bunny was in the shade. Its name was Pip. Pip was eating clover leaves. Nom, nom, nom! The butterfly sat on a leaf up high. Pip saw Clover. Pip said hello.",
+      "body": "A little bunny was in the shade. Its name was Pip. Pip was nibbling sweet green leaves. Nom, nom, nom! The butterfly sat on a leaf up high. Pip saw Clover. Pip said hello.",
       "is_ending": false,
       "choices": [
         {
@@ -211,7 +211,7 @@
     },
     {
       "id": "n_share_end",
-      "body": "Clover and Pip found red berries. They ate them together. Munch, munch, munch! The butterfly sat and watched. Two new friends. Sticky paws. A nice day outside.",
+      "body": "Clover and Pip found red berries. They ate them together. Munch, munch, munch! The butterfly sat and watched. Two new friends. Sticky paws. A nice day outside. The best time ever!",
       "is_ending": true,
       "ending": {
         "id": "e_share",
@@ -250,7 +250,7 @@
     },
     {
       "id": "n_sunflower",
-      "body": "Tall yellow flowers were all around. They moved in the wind. The butterfly went through them. It went to a gate. The gate was made of wood. Clover went after it.",
+      "body": "Tall yellow sunflowers were all around. They moved in the wind. The butterfly went through them. It went to a gate. The gate was made of wood. Clover went after it.",
       "is_ending": false,
       "choices": [
         {
