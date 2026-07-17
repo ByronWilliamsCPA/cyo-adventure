@@ -22,3 +22,34 @@ for fuzzer in "$SRC"/cyo_adventure/fuzz/fuzz_*.py; do
         compile_python_fuzzer "$fuzzer"
     fi
 done
+
+# Seed corpora: libFuzzer picks up $OUT/<fuzzer>_seed_corpus.zip
+# automatically, so mutation-based fuzzing starts from real document
+# shapes instead of raw noise.
+#
+# - fuzz_condition_evaluator: every condition from the shared conformance
+#   corpus (schema/conformance/conditions.json), one JSON file per case.
+# - fuzz_storybook_validation: the curated valid and invalid storybook
+#   fixtures under tests/fixtures/storybook/.
+python3 - <<'PYEOF'
+import json
+import zipfile
+from pathlib import Path
+
+src = Path("/src/cyo_adventure")
+out = Path("/out")
+
+cases = json.loads(
+    (src / "schema" / "conformance" / "conditions.json").read_text(encoding="utf-8")
+)["cases"]
+with zipfile.ZipFile(out / "fuzz_condition_evaluator_seed_corpus.zip", "w") as zf:
+    for case in cases:
+        zf.writestr(f"{case['name']}.json", json.dumps(case["condition"]))
+
+fixtures = sorted((src / "tests" / "fixtures" / "storybook").rglob("*.json"))
+with zipfile.ZipFile(out / "fuzz_storybook_validation_seed_corpus.zip", "w") as zf:
+    for path in fixtures:
+        zf.writestr(path.name, path.read_text(encoding="utf-8"))
+
+print(f"seed corpora: {len(cases)} conditions, {len(fixtures)} storybooks")
+PYEOF

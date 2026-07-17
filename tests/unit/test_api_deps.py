@@ -131,6 +131,12 @@ async def test_get_db_session_commits_on_success(
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+# mutation_deselect: mutmut's trampoline wraps async generator functions in an
+# `async for`/`yield` delegator, which cannot forward athrow() into the inner
+# generator (the inner one sees GeneratorExit instead of ValueError), so the
+# rollback branch is unreachable under mutation instrumentation. The branch
+# stays covered by this test in every normal run.
+@pytest.mark.mutation_deselect
 async def test_get_db_session_rolls_back_on_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
