@@ -868,6 +868,15 @@
   padding: 0.75rem 1rem;
 }
 
+.review-detail__degraded {
+  color: var(--color-warning-ink, #7a4a00);
+  background: var(--color-warning-surface, #fff4e0);
+  border: 1px solid var(--color-warning, #b26a00);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+
 .review-detail__reason {
   display: flex;
   flex-direction: column;

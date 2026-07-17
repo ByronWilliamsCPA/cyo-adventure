@@ -325,6 +325,35 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByText('Soft flags')).not.toBeInTheDocument()
   })
 
+  it('shows a degraded-screening alert when a classifier_degraded finding is present', async () => {
+    mockGet.mockResolvedValue({
+      data: {
+        ...SURFACE,
+        story_level_findings: [
+          {
+            stage: 0,
+            source: 'openai',
+            category: 'classifier_degraded',
+            node_id: null,
+            verdict: 'advisory',
+            score: null,
+            message: 'openai classifier unavailable: not configured',
+          },
+        ],
+      },
+    })
+    renderAt('s1')
+    const alert = await screen.findByText(/Automated screening was degraded/i)
+    expect(alert).toBeInTheDocument()
+    expect(alert).toHaveTextContent('openai')
+  })
+
+  it('does not show a degraded alert when no classifier_degraded finding is present', async () => {
+    renderAt('s1')
+    await screen.findByText('1 finding')
+    expect(screen.queryByText(/Automated screening was degraded/i)).not.toBeInTheDocument()
+  })
+
   it('jumps from a flagged card to its passage in the read-through and highlights it', async () => {
     const user = userEvent.setup()
     mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })

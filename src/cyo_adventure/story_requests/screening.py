@@ -98,10 +98,12 @@ async def screen_request_text(
     # (or both keys unset) yields [] and the request proceeds to pending review
     # (the guardian is the human gate; the PII guard already ran). It never 5xxs.
     # #VERIFY: test_screen_clean_when_no_keys_and_no_pii and
-    # test_screen_fails_open_on_classifier_network_error. Fail-open is a property
-    # of run_classifiers' internal per-call except (httpx.HTTPError, ValueError)
-    # contract; if that contract changes, screening turns 500 (fail-closed), the
-    # safe direction, but revisit this call site.
+    # test_screen_fails_open_on_classifier_network_error. Fail-open holds because
+    # run_classifiers catches each classifier's failure internally and returns a
+    # non-gating ``classifier_degraded`` advisory instead of raising; screening
+    # never blocks on an advisory, so a classifier outage still proceeds to
+    # pending review. require_classifiers is left False here (intake screen), so
+    # an unset key stays a silent skip.
     async with httpx.AsyncClient(timeout=_CLIENT_TIMEOUT) as client:
         findings = await run_classifiers(
             nodes=[("request", request_text)],

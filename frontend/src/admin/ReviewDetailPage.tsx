@@ -745,6 +745,28 @@ export function ReviewDetailPage() {
         </div>
       ) : null}
 
+      {(() => {
+        // A classifier_degraded finding means an automated safety classifier was
+        // down or unconfigured when this story was screened. Surface it as a
+        // distinct alert so the reviewer does not read a thin report as "clean"
+        // when part of the automated net never ran.
+        const degradedSources = Array.from(
+          new Set(
+            surface.story_level_findings
+              .filter((finding) => finding.category === 'classifier_degraded')
+              .map((finding) => finding.source)
+              .filter((source): source is string => typeof source === 'string'),
+          ),
+        )
+        return degradedSources.length > 0 ? (
+          <p role="alert" className="review-detail__degraded">
+            Automated screening was degraded for this version:{' '}
+            {degradedSources.join(', ')} did not run. Review the prose extra carefully; the
+            automated safety net was not fully applied.
+          </p>
+        ) : null
+      })()}
+
       {surface.summary?.repaired ? (
         <p className="review-repaired-hint cyo-text-muted">
           This story was auto-repaired. Compare with the previous version to see what changed.

@@ -245,9 +245,10 @@ async def test_screen_fails_open_on_classifier_network_error(
     """When a classifier network call fails, the request proceeds (fail-open).
 
     The guardian remains the human gate; this test proves that network failures
-    in classifier APIs do not hard-block story requests. The fail-open behavior
-    is a property of run_classifiers' internal per-call except (httpx.HTTPError,
-    ValueError) contract.
+    in classifier APIs do not hard-block story requests. The failure is now
+    surfaced as a non-gating ``classifier_degraded`` advisory rather than being
+    silently dropped, so the request stays unblocked while the degradation is
+    visible.
     """
 
     class _FakeRequest:
@@ -268,7 +269,9 @@ async def test_screen_fails_open_on_classifier_network_error(
         perspective_key=None,
     )
     assert result.blocked is False
-    assert result.flags == []
+    # Fail-open: not blocked, but the outage is now visible as a non-gating
+    # degraded advisory rather than silently swallowed.
+    assert [f.category for f in result.flags] == ["classifier_degraded"]
 
 
 def test_ensure_pending_rejects_non_pending() -> None:
