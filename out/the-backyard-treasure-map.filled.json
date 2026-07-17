@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Nina and Theo are best friends. One sunny afternoon they explore Grandpa's backyard and find something special under the big oak tree. It is a dusty jar with a rolled-up map. The map is hand-drawn with a dotted line twisting and turning. A red X marks the very end. Nina grins wide. Theo grins too. Which landmark should they follow first? They look at each other, ready for adventure.",
+      "body": "Nina and Theo are best friends. One sunny afternoon they were exploring Grandpa's backyard when they found something under the big oak tree. It was a dusty jar, and inside was a rolled-up map! Someone had drawn it by hand. A dotted line twisted across the yard to a red X at the very end. The dotted line brushed the big oak, looped past the little shed, and dipped down toward the stream. Which landmark should they follow first? Nina grinned. Theo grinned too. They were ready for an adventure.",
       "is_ending": false,
       "choices": [
         {
@@ -56,7 +56,7 @@
     },
     {
       "id": "o_intro",
-      "body": "The dotted line points to the big oak tree at the top of the garden. Nina holds the map while Theo counts their paces carefully. One, two, three, four. The oak is huge and very big, so big that three kids could hide behind it. They get closer and closer and the line starts to split near the roots. It makes two faint trails that go different ways.",
+      "body": "The dotted line pointed to the great old oak at the top of the garden. Nina held the map while Theo counted their steps out loud. One, two, three, four. The oak was so big that three kids could have hidden behind it! As they walked up close, the dotted line seemed to split near the roots. It made two faint trails, and each one went a different way.",
       "is_ending": false,
       "choices": [
         {
@@ -68,7 +68,7 @@
     },
     {
       "id": "o_fork",
-      "body": "At the foot of the oak the line splits into two paths. One trail wiggles. It curves toward a mossy hollow log. Something croaks softly from inside. The other trail loops around. It goes to an old tire swing. The swing hangs from a low branch. Ribbons flutter on the rope. Which way does the map mean to go? Nina and Theo look at the map. They point and decide. Let's go this way, they say.",
+      "body": "At the foot of the oak, the dotted line split into two faint trails. One trail wiggled toward a mossy hollow log lying in the grass. Something was croaking softly inside it. The other trail looped around toward an old tire swing. The swing hung from a low branch, and bright ribbons fluttered on its rope. Which way did the map want them to go? Nina and Theo looked at the trails and pointed. Let's try this one, they said.",
       "is_ending": false,
       "choices": [
         {
@@ -85,7 +85,7 @@
     },
     {
       "id": "o_hollow_1",
-      "body": "They follow the trail to the hollow log. It sits in long grass. The log is huge. It is bigger than a barrel. One end is dark. It is cool and shady there. A friendly croaking sound comes from deep inside. It does not sound scary. It sounds warm and happy. It sounds like tiny friends. Nina and Theo step closer. The sound gets louder.",
+      "body": "They followed the trail to the hollow log. It lay in the long grass, bigger than a barrel. One end was dark and cool and shady inside. From somewhere deep in the log came a friendly croaking sound. It was not scary at all. It sounded warm and happy, like a bunch of tiny friends. Nina and Theo stepped a little closer to peek.",
       "is_ending": false,
       "choices": [
         {
@@ -97,7 +97,7 @@
     },
     {
       "id": "o_hollow_2",
-      "body": "Nina shines her flashlight into the log. The light goes far inside. Theo checks the map. The dotted line goes right through the log. It points out the other side. The croaking grows busier. The sound gets louder. It sounds like a tiny cheerful crowd. Many little voices croak and call. Nina leans in closer. She wants to see more.",
+      "body": "Nina shone her flashlight into the log. The little beam traveled far inside. Theo checked the map and grinned. The dotted line went right through the log and out the other side! The croaking grew busier now. It sounded like a tiny cheerful crowd, with lots of little voices calling all at once. Nina leaned in closer to see.",
       "is_ending": false,
       "choices": [
         {
@@ -109,7 +109,7 @@
     },
     {
       "id": "o_hollow_app",
-      "body": "Past the log they see a wet mark on the map from an old raindrop. Two little paths lead away now, and they look different from each other. One path is dry and dusty and goes back toward the fence. The other path is soft and mossy and goes down to the damp corner. Which path is the right one? Theo taps the map and asks which way. Nina points and says I think this way is correct.",
+      "body": "On the other side of the log, an old raindrop had smudged the map. Two little paths led away from there. One path was dry and dusty, and it went back toward the garden fence. The other path was soft and mossy, and it went down toward the damp corner of the yard. Which one did the mapmaker mean? Theo tapped the map and thought hard. Nina pointed one way. I think it goes here, she said.",
       "is_ending": false,
       "choices": [
         {
@@ -126,7 +126,7 @@
     },
     {
       "id": "e_set_hollow",
-      "body": "The dry path curves back and ends at old flowerpots, just pots and nothing more. There is no X here and no treasure at all in this spot. The friends look at each other and smile with a laugh. What a silly trick, they say together. They roll up the map and run back to the porch. They skip and run fast because a big cold glass of lemonade waits for them. Sweet and cold and perfect. They will try again tomorrow for sure.",
+      "body": "The dry path curved back and stopped at a pile of old flowerpots. There was no red X here, and no treasure either. Just empty pots warming in the sun. Nina and Theo looked at each other and burst out laughing. What a funny trick! they said. They rolled the map up and skipped back to the porch, where two big glasses of cold lemonade were waiting. Sweet and cold and perfect. Tomorrow they would try another trail.",
       "is_ending": true,
       "ending": {
         "id": "end_set_hollow",
@@ -137,7 +137,7 @@
     },
     {
       "id": "o_hollow_3",
-      "body": "They follow the mossy path. It is soft under their feet. So soft. It feels springy when they step. Ferns brush their knees. The leaves tickle. The croaking grows louder. It sounds happy and cheerful. Theo whispers softly. Listen, he says. It sounds like hundreds of tiny voices. All talking at once. The friends keep walking. They go deeper and deeper.",
+      "body": "They took the soft mossy path. It felt springy and cool under their sneakers. Ferns brushed against their knees and tickled as they walked. The croaking grew louder and happier with every step. Theo stopped and whispered. Listen, he said. It sounds like hundreds of tiny voices, all talking at once. The friends smiled and followed the path a little farther in.",
       "is_ending": false,
       "choices": [
         {
@@ -149,7 +149,7 @@
     },
     {
       "id": "o_hollow_4",
-      "body": "The path dips down into a shady green hollow that is cool and deep. The ground is soft with smooth flat stones. Each stone looks like a tiny doorway. Like a little home for someone. The friends step with care and follow the line. They go deeper into the shade.",
+      "body": "The path dipped down into a shady green hollow. It was cool and quiet there. The ground felt soft, and smooth flat stones were dotted all around. Each little stone looked a bit like a tiny doorway, as if someone very small might live behind it. Nina and Theo stepped with care so they would not trip. Then they followed the dotted line down into the green shade.",
       "is_ending": false,
       "choices": [
         {
@@ -161,7 +161,7 @@
     },
     {
       "id": "o_hollow_5",
-      "body": "In the hollow they find a ring. It is made of round pebbles. Like a tiny wall. Behind it sit toads. Fat spotted toads. They are big and plump. They sit on leaf-thrones. Lily-pad chairs. The toads do not hop away. They blink slowly. They look at the visitors. Welcome, the toads seem to say.",
+      "body": "In the green hollow they found a ring of round pebbles, set out like a tiny wall. Behind the little wall sat toads. Fat, spotted toads, plump as biscuits. They rested on leaf-thrones and lily-pad chairs, as if they were kings and queens. Not one of them hopped away. The toads only blinked slowly and looked at their two visitors.",
       "is_ending": false,
       "choices": [
         {
@@ -173,7 +173,7 @@
     },
     {
       "id": "o_hollow_6",
-      "body": "The biggest toad wears a crown made of clover leaves. The toad blinks slowly. It looks wise and ancient. Nina and Theo kneel down very gently. They do not want to frighten anyone. And there, in the corner, the map's red X is drawn.",
+      "body": "The biggest toad of all wore a crown made of clover leaves. It blinked slowly and looked wise and very old, like a tiny king. Nina and Theo knelt down gently in the moss. They did not want to frighten anyone, not even the smallest toad. Then Theo spotted something in the corner. It was the map's red X, drawn right beside the toad king himself. Right here! he whispered.",
       "is_ending": false,
       "choices": [
         {
@@ -185,7 +185,7 @@
     },
     {
       "id": "e_toad_king",
-      "body": "The friends have found a tiny toad kingdom. A whole kingdom in the hollow. A clover-crowned king rules from his throne. His leafy throne. Nina and Theo promise to keep it safe. They promise to keep it secret. They leave a soft green leaf as a gift. A special gift. All the way home they grin and grin. They can hardly stop grinning.",
+      "body": "Nina and Theo had found a whole toad kingdom, hidden in the shady green hollow. A little king with a clover crown ruled it all from his leafy throne. The friends promised to keep the kingdom secret and safe. Before they left, they set down a soft green leaf as a gift for the king. Then they tiptoed away. All the way home their cheeks ached from smiling, and neither one could stop.",
       "is_ending": true,
       "ending": {
         "id": "end_toad_king",
@@ -196,7 +196,7 @@
     },
     {
       "id": "o_swing_1",
-      "body": "They follow the loop trail to the tire swing that hangs from a low oak branch. The tire is old and weathered and it turns slowly in the gentle breeze. Back and forth and back and forth it moves. Someone has tied bright ribbons to the rope. The ribbons are so pretty and they flutter and dance in the wind. They shine in the sun with yellow and blue and red colors.",
+      "body": "They followed the loop of the trail to the old tire swing. It hung from a low oak branch and turned slowly in the gentle breeze. Someone had tied bright ribbons all along the rope. The ribbons were yellow and blue and red, and they fluttered and danced in the wind. In the afternoon sun they seemed to shine like little flags.",
       "is_ending": false,
       "choices": [
         {
@@ -208,7 +208,7 @@
     },
     {
       "id": "o_swing_2",
-      "body": "Theo gives the tire a soft push, a gentle push from his hand. He hears a tinkling sound that comes from high up in the tree above. Ting ting ting is the sound. Nina looks at the map and sees the dotted line climbs the trunk. It goes up and up through the branches. The tinkling sounds just like tiny bells ringing. The friends look up and say bells together.",
+      "body": "Theo gave the tire a gentle push. High up in the tree, he heard a soft, tinkling sound. Ting, ting, ting. Nina looked at the map. The dotted line climbed right up the trunk and into the branches. That tinkling sounded just like tiny bells ringing somewhere above them. The friends tipped their heads back and listened. Bells! they said together.",
       "is_ending": false,
       "choices": [
         {
@@ -220,7 +220,7 @@
     },
     {
       "id": "o_swing_app",
-      "body": "The dotted line splits at a knot in the trunk and goes two ways. One branch goes left and points toward thick prickly leaves that look sharp and mean. The other branch goes right and points along a smooth low limb that looks easy to walk on. Not scary at all to see. The friends hear the bells ringing and wonder which way to go. The bells sound happiest on the right they think.",
+      "body": "The dotted line split at a knot in the trunk and went two ways. One branch led left, toward a bunch of thick, prickly leaves. The other branch led right, along a smooth low limb that looked easy to walk on. The bells kept ringing somewhere up ahead. Which way should they follow the happy sound? Nina thought the bells rang loudest over on the right. Let's try that way, she said.",
       "is_ending": false,
       "choices": [
         {
@@ -237,7 +237,7 @@
     },
     {
       "id": "e_set_swing",
-      "body": "The prickly left branch is tangled with twigs going nowhere. It leads to an old bird box that is empty. No treasure. No X. The friends giggle at the silly dead end. They hop off the branch. They head back to the porch knowing the X is somewhere else.",
+      "body": "The prickly left branch was a tangle of twigs that went nowhere at all. At the very end hung an old bird box, and it was completely empty. No treasure. No red X. Nina and Theo giggled at the silly dead end. They climbed carefully down and hopped off the swing. Then they walked back to the porch for cold lemonade and a little rest. The X must be hiding somewhere else, they decided.",
       "is_ending": true,
       "ending": {
         "id": "end_set_swing",
@@ -248,7 +248,7 @@
     },
     {
       "id": "o_swing_3",
-      "body": "The smooth limb is easy to walk on. Very easy. The tinkling gets clearer with every step. Ting ting ting. Louder now. Nina keeps one hand on the trunk. For safety. For balance. Theo watches the map. He points the way. The limb curves ahead. It curves toward a sunny gap. A gap in the green leaves.",
+      "body": "The smooth limb was easy to balance along. With every step, the tinkling grew clearer. Ting, ting, ting. Nina kept one hand on the trunk to stay steady and safe. Theo watched the map and pointed the way ahead. Soon the branch began to curve, and it led them toward a bright, sunny gap in the green leaves. The ringing was coming from right up there.",
       "is_ending": false,
       "choices": [
         {
@@ -260,7 +260,7 @@
     },
     {
       "id": "o_swing_4",
-      "body": "They reach a special and magical place in the tree where hundreds of little things dangle. The things hang from twigs on bits of string in different lengths. Keys hang there and shells too, and spoons and buttons knock and clink together. They make a gentle sound that fills the air all around them. The whole tree seems to sing with soft music.",
+      "body": "They reached a magical spot in the tree. Hundreds of little things dangled there, hanging from the twigs on bits of string. There were keys and shells, spoons and buttons, all knocking gently together. Each little bump made a soft, ringing note. The whole tree seemed to be singing a quiet song, just for them. Nina and Theo stared up with wide eyes.",
       "is_ending": false,
       "choices": [
         {
@@ -272,7 +272,7 @@
     },
     {
       "id": "o_swing_5",
-      "body": "Someone made a wind chime long ago. On every single branch. Each chime is different and special. Sunlight bounces off the shiny bits. It scatters rainbows. Little rainbows. They dance on the green leaves. Nina and Theo stand very still. They just listen. The song is beautiful.",
+      "body": "Long ago, someone had hung a wind chime on every branch of this hidden corner. Sunlight bounced off all the shiny bits and scattered tiny rainbows across the leaves. The little rainbows danced whenever the breeze blew. Nina and Theo stood very still and did not say a word. They just listened to the soft, tinkling song. It was the loveliest sound they had ever heard.",
       "is_ending": false,
       "choices": [
         {
@@ -284,7 +284,7 @@
     },
     {
       "id": "o_swing_6",
-      "body": "In the middle hangs the biggest chime. The grandest chime. It is made from an old watering can. And shining spoons. The map's red X floats right beside it. Right here. Nina reaches out slowly. Very slowly. She gives it the gentlest touch. Ting, the chime says softly. One small, sweet sound.",
+      "body": "Right in the middle of the singing branches hung the biggest chime of all. Someone had made it from an old watering can and a row of shining spoons. And there, floating right beside it, was the map's red X! Theo held his breath and watched. Nina reached out slowly and gave the chime the gentlest little touch. Ting, it answered softly. It was one small, sweet sound, just for them.",
       "is_ending": false,
       "choices": [
         {
@@ -296,7 +296,7 @@
     },
     {
       "id": "e_chime",
-      "body": "The friends have found a secret wind-chime tree that sings all by itself. It sings whenever the breeze blows. They add one small shell to the branches. Now the tree will sing louder and sweeter. They walk home humming the song.",
+      "body": "Nina and Theo had found a secret wind-chime tree. All by itself, it sang and sang whenever the breeze blew through its branches. The friends wanted to give it a present. So they tied one small shell to a low twig, where it could ring along with the rest. Now the tree would sing a little louder and a little sweeter. All the way home, the two friends hummed its happy tune.",
       "is_ending": true,
       "ending": {
         "id": "end_chime",
@@ -307,7 +307,7 @@
     },
     {
       "id": "r_intro",
-      "body": "The dotted line points across the lawn. To the little green shed. It sits near the fence. At the back of the garden. Theo hops over a colorful flowerbed. Over the flowers he goes. Nina reads the map. She holds it high. The shed door hangs open. Just a crack. A little opening. Something inside gives a soft creak. Creak, the door says. An old, friendly sound.",
+      "body": "The dotted line pointed across the lawn to the little green shed by the back fence. Theo hopped right over a bright flowerbed to get there faster. Nina held the map up high and read it as she walked. The shed door hung open, just a crack. From somewhere inside came a soft, creaky sound. Creak, went the door. It was an old and friendly sound, not a scary one.",
       "is_ending": false,
       "choices": [
         {
@@ -319,7 +319,7 @@
     },
     {
       "id": "r_fork",
-      "body": "Behind the shed the trail splits into two paths that go different ways. One line slips inside the shed's open door into the cool shadows and darkness within. It is dark and cool inside that place. The other path runs off toward the rock pile. Big grey rocks are stacked high against the back fence. The friends pick which one to explore and follow.",
+      "body": "Behind the shed, the trail on the map split into two. One line slipped in through the shed's open door, into the cool shadows inside. The other line ran off toward the big rock pile. Tall grey rocks were stacked high against the back fence, warm in the sun. Which way should they explore first? Nina and Theo looked from the dark doorway to the rocks and back again, and then they chose.",
       "is_ending": false,
       "choices": [
         {
@@ -336,7 +336,7 @@
     },
     {
       "id": "r_shed_1",
-      "body": "They push the shed door open. Slowly. Carefully. Dusty light spills in. Golden dusty light. They see pots. Old flowerpots. And hoses. Coiled hoses. It smells like soil. Like old wood. A garden smell. The dotted line leads to the far dark corner. Behind the wheelbarrow.",
+      "body": "They pushed the shed door open slowly and carefully. Dusty golden light spilled inside. It fell across old flowerpots and coiled-up hoses. The shed smelled of soil and dry wood, a good and earthy garden smell. Nina traced the dotted line with her finger. It led all the way to the far dark corner, behind an old wheelbarrow. That was where they needed to go.",
       "is_ending": false,
       "choices": [
         {
@@ -348,7 +348,7 @@
     },
     {
       "id": "r_shed_2",
-      "body": "Nina tiptoes past rakes and watering cans. Past the garden tools. Theo holds the map steady. Very steady. In the corner is a stack of crates. Wooden crates piled up. Like steps going up. Up and up. A faint light glows from a gap. Near the roof. Up high. Something up there looks cozy. Warm and cozy.",
+      "body": "Nina tiptoed past the rakes and watering cans. Theo held the map steady so they would not lose the trail. In the far corner stood a tall stack of wooden crates, piled up like a set of steps. A faint light glowed down from a gap near the roof. Whatever was up there looked warm and cozy, tucked high above the shed floor. Nina and Theo peered at the crates.",
       "is_ending": false,
       "choices": [
         {
@@ -360,7 +360,7 @@
     },
     {
       "id": "r_shed_app",
-      "body": "The map is torn right at this spot and two ways go forward from here. A low gap leads under a workbench and goes into darkness that is very dark. A wobbly ladder of crates climbs up and up toward the glowing gap. Up toward the roof where light shines down. The crates shake a little as they climb. Which way should they go? The friends decide and choose their way forward.",
+      "body": "The map was torn right at this spot, and two ways led on. A low gap went under the workbench, into a dark and dusty space. A wobbly ladder of crates climbed up toward the glowing gap near the roof. The crates leaned a little to one side. Which way did the X want them to go? Nina looked at the dark gap. Theo looked at the tall crates. Then they made their choice.",
       "is_ending": false,
       "choices": [
         {
@@ -377,7 +377,7 @@
     },
     {
       "id": "e_set_shed",
-      "body": "The low gap under the bench is just cobwebs. And old pots. A sleepy woodlouse lives there. The friends back out. Sneezing. Laughing. Dust is everywhere. They dust the map off. Back to the porch they trot. They skip and run. Cold lemonade waits. Sweet and cold. Before they try another trail.",
+      "body": "The low gap under the workbench was just a cobwebby dead end. It was full of old plant pots, and a sleepy woodlouse curled up in one corner. There was no treasure here at all. Nina and Theo backed out, sneezing and laughing at the dust. They brushed the map clean and trotted back to the porch. A jug of cold lemonade was waiting for them there. After a rest, they would try another trail.",
       "is_ending": true,
       "ending": {
         "id": "end_set_shed",
@@ -388,7 +388,7 @@
     },
     {
       "id": "r_shed_3",
-      "body": "The crate ladder wobbles just a little bit but it is strong and holds them well. The friends climb toward the warm glowing gap that shines from high up. Up and up they go together as a team. Theo goes first and climbs higher than Nina. Then he gasps softly and says oh wow in surprise. Nina scrambles up right behind him as fast as she can. What did you see, she asks him with wonder.",
+      "body": "The crate ladder wobbled just a little, but it felt strong. Theo tested each crate with his foot before he trusted it. He climbed one at a time, slow and steady, holding on with both hands. Nina waited until he was up, then climbed the very same way. Near the top, Theo peeked through the glowing gap. Oh, wow, he gasped softly. Nina hurried up the last crate. What is it? she asked.",
       "is_ending": false,
       "choices": [
         {
@@ -400,7 +400,7 @@
     },
     {
       "id": "r_shed_4",
-      "body": "Up in the loft is a hideaway. A cozy hideaway. Someone built it long ago. It is made from old soft cushions. A milk-crate table. A lantern hangs down. It runs on batteries. It glows. A hand-painted sign hangs above. It feels warm and secret here.",
+      "body": "Up in the loft was a cozy little hideaway. Someone had built it a long time ago. There were soft old cushions to sit on and a table made from a milk crate. A small lantern hung from a nail and glowed on its batteries. Above the doorway hung a hand-painted sign. The whole loft felt warm and secret, like a place just waiting to be found.",
       "is_ending": false,
       "choices": [
         {
@@ -412,7 +412,7 @@
     },
     {
       "id": "r_shed_5",
-      "body": "Inside are two soft seats. So soft. Good for sitting. A shelf holds adventure books. Stories and stories. A jar of shiny paper stars sits there. They glimmer and gleam. A blanket is folded in the corner. Folded neatly. As if waiting. The map's red X is right here. Right in this special place.",
+      "body": "Inside the hideaway were two comfy seats, soft enough to sink right into. A little shelf held a row of adventure books. Beside it sat a jar full of shiny paper stars that glimmered in the lantern light. A blanket lay folded neatly in the corner, as if it had been waiting for visitors. And there, right in the middle of it all, was the map's red X.",
       "is_ending": false,
       "choices": [
         {
@@ -424,7 +424,7 @@
     },
     {
       "id": "r_shed_6",
-      "body": "The painted sign reads Explorers Welcome. The letters are bright and friendly. Nina and Theo realize something. This is a secret fort. Kids built it long ago. Other kids like them. They left it ready. Ready for whoever found the map. Nina and Theo step inside. Like honored guests. Like special guests.",
+      "body": "The painted sign over the doorway read Explorers Welcome. The letters were bright and friendly, painted in cheerful colors. Suddenly Nina and Theo understood. This was a secret fort! Kids had built it long, long ago and left it all ready. It had been waiting here for whoever found the map next. And that was them! They could hardly believe their luck. The two friends stepped inside like honored guests.",
       "is_ending": false,
       "choices": [
         {
@@ -436,7 +436,7 @@
     },
     {
       "id": "e_fort",
-      "body": "The friends have found a secret fort. Hidden in the top of the shed. All ready for new explorers. Ready and waiting. They write their names in a logbook. Their own names. They promise to come back. To take good care of it. This will be their headquarters. Their special place. Their own secret fort now.",
+      "body": "Nina and Theo had found a snug secret fort, hidden right at the top of the garden shed. It was all ready for new explorers, and now the new explorers were them. On the shelf they found a little logbook, and they wrote their own names inside. They promised to come back often and take good care of the place. From now on, this cozy fort would be their very own headquarters.",
       "is_ending": true,
       "ending": {
         "id": "end_fort",
@@ -447,7 +447,7 @@
     },
     {
       "id": "r_rock_1",
-      "body": "The other path leads to big grey rocks that are stacked high and warm. The sun has warmed them so they feel hot to touch. They feel warm and solid. A few marigolds grow between the rocks in the cracks and crevices. Bright yellow flowers shine there. A dotted line points to a low flat stone. Near the bottom of the pile. There it is right below them.",
+      "body": "The other line led to the big grey rock pile by the back fence. The rocks were stacked up high and warm from the afternoon sun. A few marigolds grew in the little cracks between them, bright and yellow. Nina looked at the map again. The dotted line pointed straight to a low flat stone, down near the bottom of the pile. There it is, she said.",
       "is_ending": false,
       "choices": [
         {
@@ -459,7 +459,7 @@
     },
     {
       "id": "r_rock_2",
-      "body": "Theo taps the flat stone with his finger and it sounds hollow like a drum inside. The sound tells him there is a space underneath somewhere. Nina checks the map and the red X sits below the rocks right here. Right below everything. A little ring of pebbles marks the spot and shows the way. This is it, they say together. This is the place we are looking for.",
+      "body": "Theo knocked on the flat stone with his knuckles. It sounded hollow, like there was an empty space underneath. Nina checked the map once more. The red X sat right below the rocks, exactly here. And look, a little ring of pebbles circled the spot, as if to mark it. This is it! they said together. This was the place they had been hunting for all along.",
       "is_ending": false,
       "choices": [
         {
@@ -471,7 +471,7 @@
     },
     {
       "id": "r_rock_app",
-      "body": "Two small arrows are scratched on the stone, faint and hard to see but there. One arrow points left and goes toward a gap between two mossy boulders. The other arrow points down and marks the loose sandy soil right beneath. The friends choose where to search and where to dig into the ground. Which way feels right to follow?",
+      "body": "Two tiny arrows were scratched onto the flat stone. They were faint and hard to see, but they were there. One arrow pointed left, toward a gap between two mossy boulders. The other arrow pointed straight down, at the loose sandy soil beneath the stone. Where should they dig? Nina and Theo studied both arrows for a long moment. One of them had to lead to the treasure. Which way felt right?",
       "is_ending": false,
       "choices": [
         {
@@ -488,7 +488,7 @@
     },
     {
       "id": "e_set_rock",
-      "body": "The gap between the boulders is just a snug home for a busy line of ants marching. They march back and forth and back and forth doing their work all day. No treasure here and no X is marked anywhere in this place. The friends say hello to the ants in a polite and friendly way. Goodbye ants they say together. They roll up the map and wander back.",
+      "body": "The gap between the mossy boulders was not a treasure spot at all. It was a snug little home for a busy line of ants. They marched along in a neat row, carrying crumbs to and fro. There was no red X here and no treasure either. Nina and Theo said a polite hello to the ants. Then they rolled up the map and wandered back to the porch, where a cool glass of lemonade was waiting.",
       "is_ending": true,
       "ending": {
         "id": "end_set_rock",
@@ -499,7 +499,7 @@
     },
     {
       "id": "r_rock_3",
-      "body": "They lift the flat stone. Gently. And move it to the side. The sandy soil underneath is soft. So soft. Easy to brush away. Theo digs with a small garden trowel. Scrape scrape scrape. Nina cups her hands. She brushes the dirt. Something smooth appears. Something round. What is it, they wonder.",
+      "body": "Very gently, they lifted the loose flat stone and set it to one side. The sandy soil underneath was soft and easy to brush away. Theo dug with a small garden trowel, scoop by scoop. Nina cupped her hands and swept the loose dirt aside. Then something smooth and round began to peek out of the sand. What could it be? they wondered out loud.",
       "is_ending": false,
       "choices": [
         {
@@ -511,7 +511,7 @@
     },
     {
       "id": "r_rock_4",
-      "body": "It is a small tin box. With a rusty latch. So old. It sits nestled in the sand. Just where the X promised. Exactly. It is small enough for two hands to lift. The friends wiggle it free. Very carefully. They blow off the dust. Poof poof. Dust flies everywhere.",
+      "body": "It was a little tin box with a rusty latch! It sat nestled in the sand, right where the X had promised it would be. The box was just the right size for two hands to lift. Nina and Theo carefully wiggled it loose from the ground. Then they blew the dust off the lid. Poof, went the dust, floating away in the sunny air. The box was theirs now.",
       "is_ending": false,
       "choices": [
         {
@@ -523,7 +523,7 @@
     },
     {
       "id": "r_rock_5",
-      "body": "The latch pops open. Click. A happy sound. Happy click. Inside is an old checkered cloth. Soft and worn. Under the cloth are marbles. Glass marbles. So many marbles. They catch the sunlight. Swirls of blue. Green. Gold. Nina gasps. Oh, she says. How beautiful.",
+      "body": "Nina opened the rusty latch, and it popped up with a happy little click. Inside was an old checkered cloth, soft and worn. She lifted the cloth, and underneath lay a whole heap of glass marbles. They caught the afternoon sunlight and glowed in swirls of blue, green, and gold. Oh! Nina gasped. They are beautiful! There were more marbles than she could count.",
       "is_ending": false,
       "choices": [
         {
@@ -535,7 +535,7 @@
     },
     {
       "id": "r_rock_6",
-      "body": "There are cats-eyes. And swirlies. Swirled patterns inside. One big shooter is as clear as a raindrop. Crystal clear. Dozens of marbles saved long ago. By some other kid. A tiny note says share and enjoy. The friends read it. Again and again. Share and enjoy, they whisper.",
+      "body": "Nina and Theo looked closely at the marbles. There were cats-eyes and swirlies, with pretty patterns swirled inside. One big shooter was as clear as a raindrop. Some kid must have saved dozens of them, years and years ago. Down at the bottom lay a tiny note. It said only three words: share and enjoy. The friends read the little note twice, then smiled at each other.",
       "is_ending": false,
       "choices": [
         {
@@ -547,7 +547,7 @@
     },
     {
       "id": "e_marbles",
-      "body": "The friends have dug up a treasure box. Of beautiful glass marbles. Left by a kid from long long ago. They choose two favorites to keep. To remember. The rest they tuck back in the sand. With a note of their own. A note for the next explorer. The next lucky finder. They walk home with one marble in each pocket.",
+      "body": "Nina and Theo had dug up a hidden box of glass marbles. Some kid from long ago had buried it here as treasure. The friends each picked one favorite marble to keep. Then they tucked the rest of them back into the box. They added a little note of their own, for the next lucky finder to read. All the way home, a marble clinked softly in each of their pockets.",
       "is_ending": true,
       "ending": {
         "id": "end_marbles",
@@ -558,7 +558,7 @@
     },
     {
       "id": "s_intro",
-      "body": "The last part of the dotted line runs down the sloping lawn below them. It goes to the little stream at the very bottom of the garden where it meets the park beyond. The water chatters over smooth stones in a happy way. Splash splash splash. Theo holds the map up high so it will not get wet from the water.",
+      "body": "The last part of the dotted line ran down the sloping lawn. It led all the way to the little stream at the bottom of the garden, where the yard met the park. The water chattered over the smooth stones, splashing and bubbling as it went. Theo held the map up high above his head. He did not want a single drop to get it wet on the way down.",
       "is_ending": false,
       "choices": [
         {
@@ -570,7 +570,7 @@
     },
     {
       "id": "s_fork",
-      "body": "Down by the water the line splits one final time. The last split. One branch curves into tall blackberry bushes. Along the bank. Heavy with berries. Ripe purple berries. Dark and sweet looking. The other branch hops across flat stepping stones. To the far side of the stream. The friends decide which way. Where does the treasure lie.",
+      "body": "Down by the water, the map's line split one last time. One branch curved into the tall blackberry bushes along the bank. They were heavy with ripe purple berries, dark and sweet. The other branch hopped out across a row of flat stepping stones, all the way to the far side of the stream. Which way did the treasure lie? Nina and Theo looked at both trails and picked one to follow.",
       "is_ending": false,
       "choices": [
         {
@@ -587,7 +587,7 @@
     },
     {
       "id": "s_bramble_1",
-      "body": "They follow the line into the bushes. Into the shade. Cool shade. Tall blackberry bushes surround them. Heavy with ripe purple berries. The leaves make a cool green tunnel. Like a green hall. From somewhere deep inside comes a soft meow. A friendly meow. It sounds warm and nice. Like someone is waiting.",
+      "body": "They followed the line into the shade of the tall blackberry bushes. The bushes were heavy with ripe purple berries, sweet and dark. Their leaves met overhead and made a cool green tunnel. From somewhere deeper inside came a soft little sound. Meow, it went. It was a friendly, gentle meow, not a scary one at all. It sounded as if someone was waiting for them.",
       "is_ending": false,
       "choices": [
         {
@@ -599,7 +599,7 @@
     },
     {
       "id": "s_bramble_2",
-      "body": "Nina holds a branch aside. Carefully. So no thorns catch them. No scratches. The meow comes again. Closer this time. Much closer. Theo checks the map. The dotted line goes right in. Into the middle. The friends step in gently. Very gently. Soft steps. Quiet steps.",
+      "body": "Nina held a thorny branch carefully aside, so it would not catch their sleeves. The meow came again, closer this time. Theo checked the map to be sure of the way. The dotted line wound right into the middle of the bramble patch. Come on, he whispered. The two friends stepped in gently, taking soft and quiet steps so they would not scare the little animal.",
       "is_ending": false,
       "choices": [
         {
@@ -611,7 +611,7 @@
     },
     {
       "id": "s_bramble_app",
-      "body": "Inside the bushes the trail is faded. Hard to see. Two little tunnels lead on. Through the leaves. Through the branches. One tunnel goes low. Toward a dark thorny thicket. The other goes toward bright sunlight. Warm sunshine. The meow sounds happiest there. In the warm light. They pick their way. Which tunnel calls to them.",
+      "body": "Inside the bushes, the trail on the map had faded almost away. Two little tunnels led on through the leaves. One tunnel went low, toward a dark and thorny thicket. The other tunnel led toward a patch of warm sunlight up ahead. The meowing sounded happiest over by the sunny patch. Which tunnel should they crawl through? Nina and Theo listened for the cat, then chose their way.",
       "is_ending": false,
       "choices": [
         {
@@ -628,7 +628,7 @@
     },
     {
       "id": "e_set_bramble",
-      "body": "The low tunnel just ends in a thick tangle of thorns too prickly to pass through. No way to go any further forward. A lost sock hangs on a branch there. Just a sock and nothing else. The friends back out very carefully and slowly. Not a single scratch on their skin. They laugh about the silly sock together. Up to the porch they go for a cool glass of lemonade.",
+      "body": "The low tunnel ended in a thick tangle of thorns, far too prickly to push through. The only thing there was a lost sock, caught on a branch and flapping in the breeze. Nina and Theo backed out slowly and carefully. They did not get a single scratch. A sock! they said, and laughed at the funny sight. Then up to the porch they went for a cool glass of lemonade.",
       "is_ending": true,
       "ending": {
         "id": "end_set_bramble",
@@ -639,7 +639,7 @@
     },
     {
       "id": "s_bramble_3",
-      "body": "The sunny tunnel opens up. Into a cozy clearing. A small clearing. Right in the heart of the brambles. The ground has soft dry leaves. Brown and crumbly. Nice smelling. The meow turns into a purr. A rumbly purr. Two green eyes blink at them. From a warm nest of grass.",
+      "body": "The sunny tunnel opened into a cozy little clearing, right in the heart of the brambles. The ground was covered with soft, dry leaves that smelled sweet and warm. The meowing changed into a low, rumbly purr. Then two green eyes blinked at them from a warm nest of grass. Something was curled up there in the sun, watching the two friends come closer.",
       "is_ending": false,
       "choices": [
         {
@@ -651,7 +651,7 @@
     },
     {
       "id": "s_bramble_4",
-      "body": "A fluffy grey cat sits there with white paws that look so soft. It does not run away but stays and stretches. It yawns big and pads over to say hello. A little bell hangs on its neck and jingles softly. Jingle jingle makes a friendly sound.",
+      "body": "It was a fluffy grey cat with soft white paws. The cat did not run away at all. Instead it gave a big stretch and a wide yawn. Then it padded right over to say hello, as friendly as could be. A little collar hung around its neck, with a tiny bell that jingled as it walked. Jingle, jingle, went the bell, soft and sweet.",
       "is_ending": false,
       "choices": [
         {
@@ -663,7 +663,7 @@
     },
     {
       "id": "s_bramble_5",
-      "body": "The cat winds around their ankles going around and around them both. It purrs like a tiny motor running. Purrrr is the sound it makes. A warm sound that makes them smile. It flops over on its side. For a belly rub and scratch. The friends laugh and stroke its soft fur. The map's red X is right here in this place.",
+      "body": "The cat wound in and out around their ankles, purring like a tiny engine. Purrrr, went the happy sound. It made Nina and Theo smile. Then the cat flopped over on its side, asking for a belly rub. The friends laughed and stroked its soft grey fur. And the map's red X was drawn right here, where the cat had made its cozy little home.",
       "is_ending": false,
       "choices": [
         {
@@ -675,7 +675,7 @@
     },
     {
       "id": "s_bramble_6",
-      "body": "The collar has a small tag that reads Pepper, please be my friend. No address is on it and no home is written down on the tag. The cat clearly knows this bramble clearing well and very well. It treats the friends like old pals that it has known and loved. Nina and Theo wonder if Pepper has been waiting for them.",
+      "body": "The collar had a small tag hanging from it. Please be my friend, it read, and under that was a name: Pepper. But there was no address on the tag at all. This cat knew the bramble clearing very well. He treated Nina and Theo like old friends he had known forever. The two of them began to wonder. Had Pepper been waiting here for someone to find the map?",
       "is_ending": false,
       "choices": [
         {
@@ -687,7 +687,7 @@
     },
     {
       "id": "e_cat",
-      "body": "The friends have found a cat named Pepper. Living here. In the brambles. Living happy and free. In a secret spot. They share their snack with him. Their afternoon snack. They promise to visit every day. Every single day. To help find where he belongs. Pepper walks them halfway home. His tail held high.",
+      "body": "Nina and Theo had found a friendly lost cat named Pepper. He lived happily all on his own, in his secret bramble clearing. The friends shared their afternoon snack with their new pal. They promised to visit him every single day. And they would help find out where he belonged, too. When it was time to go, Pepper walked them halfway home, his tail held high and proud.",
       "is_ending": true,
       "ending": {
         "id": "end_cat",
@@ -698,7 +698,7 @@
     },
     {
       "id": "s_bank_1",
-      "body": "The stepping stones cross the chattering stream in a neat and perfect flat row. They are dry on top and easy to hop from one stone to the next. The friends cross one careful stone at a time to the mossy far bank beyond. The dotted line points to a willow tree that leans and bends.",
+      "body": "The stepping stones crossed the chattering stream in a neat, flat row. Their tops were dry and easy to hop across. Nina and Theo crossed one careful stone at a time, so they would not slip into the water. Soon they reached the mossy far bank. On the map, the dotted line pointed straight to the roots of a big willow tree, leaning out over the stream.",
       "is_ending": false,
       "choices": [
         {
@@ -710,7 +710,7 @@
     },
     {
       "id": "s_bank_2",
-      "body": "On the far bank the willow trails long green fingers. In the water. Dripping wet. The ground beneath the roots is soft. And cool. Very cool. Theo studies the map. He holds it carefully. The red X sits. Tucked among the tangled roots. Something glints. Shines. Faintly glinting in the shade. In the cool shade.",
+      "body": "On the far bank, the willow dipped its long green branches into the water like fingers. The ground beneath its roots was soft and cool. Theo studied the map closely. The red X sat tucked right in among the tangled roots. And look, something small was glinting there, deep in the willow's shade. It shone faintly, as if it wanted to be found.",
       "is_ending": false,
       "choices": [
         {
@@ -722,7 +722,7 @@
     },
     {
       "id": "s_bank_app",
-      "body": "Two hollows show among the roots. Two little holes. One is a wet muddy dip. Right at the water's edge. Very muddy. Very wet. The other is a dry spot. A sheltered nook higher up. The glinting comes from there. From the dry spot. The friends choose where to search.",
+      "body": "Two little hollows showed among the willow roots. One was a wet, muddy dip, right down at the water's edge. The other was a dry, sheltered nook, tucked a little higher up the bank. The faint glinting seemed to come from the dry nook. Where was the X really pointing? Nina and Theo looked from the muddy dip to the dry nook, and then they made up their minds.",
       "is_ending": false,
       "choices": [
         {
@@ -739,7 +739,7 @@
     },
     {
       "id": "e_set_bank",
-      "body": "The muddy dip at the water's edge holds a shiny wet pebble and that is all. Just a pebble and nothing more. One very surprised water beetle lives there. It looks shocked and amazed to see them coming. The friends get mud on their shoes. On their feet and all around. They grin and laugh about the muddy mess. They wave to the beetle and hop back.",
+      "body": "The muddy dip at the water's edge held just one shiny wet pebble. Beside it sat a water beetle, looking very surprised to see them! There was no treasure here after all. Nina and Theo grinned at their muddy sneakers and waved goodbye to the little beetle. Then they hopped back across the stepping stones. A cool glass of lemonade was waiting up on the porch, and they had surely earned it.",
       "is_ending": true,
       "ending": {
         "id": "end_set_bank",
@@ -750,7 +750,7 @@
     },
     {
       "id": "s_bank_3",
-      "body": "The dry nook is just right. Just the right size to kneel in. To crouch down. The glinting comes from something half-buried. In the cool soil. Nina brushes the earth away. Very gently. Slowly. Theo holds the willow branches back. So they do not get in the way. A corner of metal appears. Metal gleams.",
+      "body": "The dry nook was just the right size to kneel in. The glinting was coming from something half-buried in the cool soil. Very gently, Nina brushed the earth away with her fingers. Theo held the willow branches back so they would not get in her way. Little by little, a corner of shiny metal began to show through the dirt. Almost there, Nina whispered.",
       "is_ending": false,
       "choices": [
         {
@@ -762,7 +762,7 @@
     },
     {
       "id": "s_bank_4",
-      "body": "It is a small brass tin that is green at the edges and very old. Old and special and important. It sits exactly where the map's X promised. Right here in the perfect spot. The friends work the stiff lid with careful fingers. Patient fingers that work slowly and steady. At last it opens with a soft puff. Whoooosh goes the old air.",
+      "body": "It was a small brass tin, green around the edges and still shut tight. It lay exactly where the map's X had promised. Nina and Theo worked at the stiff lid together, using slow and careful fingers. They wiggled it this way and that. At last the lid gave way and opened with a soft little puff. Whoosh, went the old air inside, as if the tin had been holding its breath.",
       "is_ending": false,
       "choices": [
         {
@@ -774,7 +774,7 @@
     },
     {
       "id": "s_bank_5",
-      "body": "Inside the tin are shiny buttons. So many buttons. A whole heap. On a bed of faded velvet. Soft velvet. Brass buttons. Glass buttons. Pearly buttons shaped like flowers. Little flower buttons. They sparkle like jewels. Like real jewels. In the dappled light. Dappled green light.",
+      "body": "Inside the tin, on a bed of soft faded velvet, lay a heap of shiny buttons. There were buttons of every kind you could think of. Brass buttons and glass buttons, and pearly ones shaped like little flowers. They gleamed and sparkled like real jewels. Bits of green light fell through the willow leaves and made them shine even brighter. Nina and Theo could only stare.",
       "is_ending": false,
       "choices": [
         {
@@ -786,7 +786,7 @@
     },
     {
       "id": "s_bank_6",
-      "body": "Someone kept these buttons safe. For many many years. Each button is different. And lovely. And unique. Each one special. A true backyard treasure. A folded slip of paper says for the finder, with love. With love, the friends whisper. They feel like they have opened a chest. A pirate's chest of gold.",
+      "body": "Someone had kept these buttons safe here for many years. Each one was different, and each one was lovely in its own way. They really were a true backyard treasure. Tucked in the corner was a folded slip of paper. The friends opened it and read the words inside: for the finder, with love. Nina and Theo felt like they had opened a chest of pirate gold.",
       "is_ending": false,
       "choices": [
         {
@@ -798,7 +798,7 @@
     },
     {
       "id": "e_buttons",
-      "body": "The friends have unearthed a hidden tin. Of dazzling shiny buttons. The real treasure. At the end of the map. They pick one gleaming button each. To keep. As memories. They rebury the tin with a note. A new note. For the next explorer. The next lucky finder. They cross the stepping stones home. Feeling rich as kings.",
+      "body": "Nina and Theo had unearthed a hidden tin of shiny buttons. This was the real treasure, waiting at the very end of the map! Each of them picked one gleaming button to keep, to help them remember this day. Then they buried the tin again, safe and sound. They tucked a new note inside for the next explorer to find. Then they crossed the stepping stones home, feeling as rich as kings.",
       "is_ending": true,
       "ending": {
         "id": "end_buttons",

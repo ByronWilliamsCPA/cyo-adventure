@@ -271,7 +271,7 @@
     },
     {
       "id": "c_archive_ledger",
-      "body": "Nadia turned the ledger's pages backward through a century of visitor names. School trips, scholars. And curious strangers filled every line, all of it ending on one blank page. It was as though whoever kept the record had simply stopped one night and never come back. Beside the stand stood a card index, its little drawers labeled in fading ink. Below it sat a low cabinet with one bottom drawer that stuck fast when she tugged it. Either one, she guessed, might hold what the founder had filed away before the museum forgot him.",
+      "body": "Nadia turned the ledger's pages backward through a century of visitor names. School trips, scholars, and curious strangers filled every line. All of it ended on one blank page. It was like whoever kept the record had stopped one night and never come back. Beside the stand stood a card index, its little drawers labeled in fading ink. Below it sat a low cabinet with one bottom drawer that stuck fast when she tugged it. Either one, she guessed, might hold what the founder had filed away before the museum forgot him.",
       "is_ending": false,
       "choices": [
         {
@@ -353,7 +353,7 @@
     },
     {
       "id": "n_key",
-      "body": "Whichever way she had opened it, the same thing waited in the dark gap beneath her fingers: a small brass key, wrapped snug in a scrap of oilcloth to keep off a century of dust. Nadia unwrapped it slowly. The key's head was stamped with the same mark from her map, a circle crossed by two lines. A short piece of string tied a small folded note to its shaft, the paper covered in careful rows of letters that made no ordinary sense. She turned the key over in her palm. It looked old enough. And important enough, to open almost anything: the founder's study, a sealed case. Or the locked service stairs.",
+      "body": "Whichever way she had opened it, the same thing waited in the dark gap beneath her fingers: a small brass key, wrapped snug in a scrap of oilcloth to keep off a century of dust. Nadia unwrapped it slowly. The key's head was stamped with the same mark from her map, a circle crossed by two lines. A short piece of string tied a small folded note to its shaft. The paper was covered in careful rows of letters that made no ordinary sense. She turned the key over in her palm. It looked old enough, and important enough, to open almost anything. It might open the founder's study, a sealed case, or the locked service stairs.",
       "is_ending": false,
       "choices": [
         {
@@ -689,7 +689,7 @@
     },
     {
       "id": "ci_clock_gears",
-      "body": "The gear room smelled of oil and warm metal, wheels and springs turning quietly behind a glass panel. In the middle stood the master clock, its hands sitting just slightly off the hour the cipher had given her. Nadia reached in carefully and nudged the minute hand forward, then the hour hand. Until both matched exactly. Somewhere below her feet, something clicked and let go. A narrow door swung open along the far wall, leading, she was fairly sure, straight back toward the round hall.",
+      "body": "The gear room smelled of oil and warm metal, wheels and springs turning quietly behind a glass panel. In the middle stood the master clock, its hands sitting just slightly off the hour the cipher had given her. Nadia reached in carefully and nudged the minute hand forward, then the hour hand. She worked until both matched exactly. Somewhere below her feet, something clicked and let go. A narrow door swung open along the far wall, leading, she was fairly sure, straight back toward the round hall.",
       "is_ending": false,
       "choices": [
         {
@@ -904,7 +904,7 @@
     },
     {
       "id": "n_vault",
-      "body": "The stair brought Nadia down into a low stone room lit by nothing but the glow of her own phone. She stopped in the doorway, breath caught in her throat. Shelves lined every wall, crowded with the kind of treasures the founder had meant the whole town to share one day: paintings and carvings and small glinting things, all of it gathered quietly and never once shown to anyone. A sealed letter sat propped against one shelf, addressed to no one in particular. Beside it lay an old, careful treasure map. Nadia stood very still in the hush of the room. And understood that whatever she did next, she was the one who got to choose.",
+      "body": "The stair brought Nadia down into a low stone room lit by nothing but the glow of her own phone. She stopped in the doorway, breath caught in her throat. Shelves lined every wall, crowded with the kind of treasures the founder had meant the whole town to share one day: paintings and carvings and small glinting things, all of it gathered quietly and never once shown to anyone. A sealed letter sat propped against one shelf, addressed to no one in particular. Beside it lay an old, careful treasure map. Nadia stood very still in the hush of the room. She understood that whatever she did next, she was the one who got to choose.",
       "is_ending": false,
       "choices": [
         {
@@ -960,7 +960,7 @@
     },
     {
       "id": "v_reveal2",
-      "body": "Nadia sat on the cold floor and read the book from its first page to its last. The founder's careful notes slowly untangled a whole history the town had half forgotten. Every rumor about him, every whispered blame, fell away line by line. In its place stood the truth of a quiet man who had only ever meant to keep his town's treasures safe until the right moment came. By the time gray dawn light crept through the rotunda far above her, Nadia understood it all: not only where the collection was. But why it had waited. And how to finally give it back.",
+      "body": "Nadia sat on the cold floor and read the book from its first page to its last. The founder's careful notes slowly untangled a whole history the town had half forgotten. Every rumor about him, every whispered blame, fell away line by line. In its place stood the truth of a quiet man who had only ever meant to keep his town's treasures safe until the right moment came. By the time gray dawn light crept through the rotunda far above her, Nadia understood it all. She knew where the collection was. She knew why it had waited, and how to finally give it back.",
       "is_ending": false,
       "choices": [
         {
@@ -972,7 +972,7 @@
     },
     {
       "id": "v_letter_keep",
-      "body": "Nadia folded the letter and slid it into her coat pocket, leaving every shelf exactly as she had found it. Something about the founder's quiet, careful words felt less like a treasure map and more like a trust, one she did not want to rush or hand over to strangers. She would honor it the right way, in daylight, when there was time to explain things right. For now, the collection could keep waiting a little longer. It had already waited a hundred years. After all.",
+      "body": "Nadia folded the letter and slid it into her coat pocket. She left every shelf exactly as she had found it. Something about the founder's quiet, careful words felt less like a treasure map and more like a trust. It was one she did not want to rush or hand over to strangers. She would honor it the right way, in daylight, when there was time to explain things right. For now, the collection could keep waiting a little longer. It had already waited a hundred years, after all.",
       "is_ending": false,
       "choices": [
         {
@@ -1173,7 +1173,7 @@
     },
     {
       "id": "e_set_stuck_dome",
-      "body": "High above the hall, the ladder finally ended at a hatch that had been bricked over so long ago the mortar had gone nearly black. There was nowhere left to climb. Nadia gripped the cold rungs and made her way carefully back down, her legs shaking slightly by the time her sneakers touched solid floor again. She was tired, and a little dizzy from the height. But entirely unhurt. The rotunda, and whatever waited beyond it, would simply have to stay out of her reach for tonight.",
+      "body": "High above the hall, the ladder finally ended at a hatch. It had been bricked over so long ago the mortar had gone nearly black. There was nowhere left to climb. Nadia gripped the cold rungs and made her way carefully back down. Her legs shook slightly by the time her sneakers touched solid floor again. She was tired, and a little dizzy from the height, but entirely unhurt. The rotunda, and whatever waited beyond it, would simply have to stay out of her reach for tonight.",
       "is_ending": true,
       "ending": {
         "id": "e_stuck_dome",
