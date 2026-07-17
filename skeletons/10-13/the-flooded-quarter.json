@@ -1,0 +1,2768 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_flooded_quarter",
+  "version": 1,
+  "title": "The Flooded Quarter",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "community",
+      "courage",
+      "responsibility",
+      "the river"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 28,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "water",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "How high the flood stands in the quarter: 0 rising, 1 high, 2 cresting. It climbs one mark each time a street's errand is finished and never falls back before dawn."
+    },
+    {
+      "name": "oil",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Lantern oil in the skiff's stern lamp, in quarter-marks. Dark interiors and night signals burn it; Warden Brice's stores refill it."
+    },
+    {
+      "name": "laden",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the skiff already carries a heavy load or a passenger. A laden skiff takes no one and nothing else aboard until dockhands unload it at the granary or the muster."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=125 beats='Deep night; a boom rolls down the valley as the upstream sluice gives way and the river slides into the low quarter street by street; Joss, the ferry-keeper's kid, wakes to bells and finds the lane below the ferry-house shining with slow black water; a note from Da, gone to secure the moorings: take the skiff to the Old Granary, Warden Brice needs runners; boots, oilskin, and the long pole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Pull on boots and oilskin and go down to the skiff.",
+          "target": "n_skiff"
+        }
+      ]
+    },
+    {
+      "id": "n_skiff",
+      "body": "<<FILL role=setup words=110 beats='The flat-bottomed skiff waits at the yard rail; Joss checks it the way Da taught: pole, coiled rope, bailing scoop, and the stern lamp filled to its third mark; then the first strange poling down a street that was dry at supper, the pole finding cobbles a forearm under the hull, doorways standing in water like people in a queue'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_skiff_1",
+          "label": "Pole down the drowned lane toward the Old Granary.",
+          "target": "n_granary"
+        }
+      ]
+    },
+    {
+      "id": "n_granary",
+      "body": "<<FILL role=setup words=115 beats='The Old Granary shelter: lamplight, families on grain-sack beds, soup steam, and Warden Brice at her street map with chalk in hand; she knows Joss and the skiff by name; her three rules for runners, stay in the skiff or above the waterline, keep to the streets you know, and come back to the dock between errands; she chalks the first needs on the tally board'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_granary_1",
+          "label": "Step out to the granary dock and read the tally board.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL role=choice words=110 beats='The granary dock, the hub of the night: lamplit, busy, the same steady scene whenever the skiff touches it; dockhands take whatever a boat carries the moment it ties up; the chalk tally board lists the streets that still need a runner; Brice matches boats to errands and trusts Joss to choose; write this arrival-neutral, no matter how often or in what state the reader lands here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_1",
+          "label": "Take the Binder's Row errand: Master Fen will not leave his shop.",
+          "target": "bk_row"
+        },
+        {
+          "id": "c_n_hub_2",
+          "label": "Take Bakery Lane: the bakery cat colony is stranded above the water.",
+          "target": "ct_lane"
+        },
+        {
+          "id": "c_n_hub_3",
+          "label": "Take Chandler's Cross: Salma the pharmacist needs her cold-chest moved.",
+          "target": "ph_cross"
+        },
+        {
+          "id": "c_n_hub_4",
+          "label": "Take Weaver's Stair: Grandmother Osei is on her rooftop and will not signal.",
+          "target": "os_stair"
+        },
+        {
+          "id": "c_n_hub_5",
+          "label": "Take Mill Lane while the low arch still clears: two lamplighter apprentices are stuck on the gantry.",
+          "target": "lp_arch",
+          "condition": {
+            "<": [
+              {
+                "var": "water"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_n_hub_6",
+          "label": "Step into the stores to refit and catch your breath.",
+          "target": "n_stores"
+        },
+        {
+          "id": "c_n_hub_7",
+          "label": "Answer the dawn muster forming at the seawall stair.",
+          "target": "fin_muster"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "laden",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "n_stores",
+      "body": "<<FILL role=choice words=95 beats='The stores under the granary: the oil drum with its brass tap, the soup kettle, a crate of dry socks; Brice looks Joss over the way she looks over boats, checking for leaks; the night outside goes on without hurrying anyone here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_stores_1",
+          "label": "Top the stern lamp from the oil drum and get back out.",
+          "target": "n_hub",
+          "effects": [
+            {
+              "op": "set",
+              "var": "oil",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": "c_n_stores_2",
+          "label": "Just soup, two minutes of warm, and back to the dock.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_n_stores_3",
+          "label": "Admit to Brice that your arms are done for the night.",
+          "target": "e_benched"
+        }
+      ]
+    },
+    {
+      "id": "e_benched",
+      "body": "<<FILL role=failure words=95 beats='Brice takes one look at Joss's hands and wraps a blanket round both kid and pride; no argument wins against a warden; the night's work goes on without Joss, but every street already reached stays chalked safe on the board, and falling asleep to the sound of other poles in the water is not nothing; a dignified early stop'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_benched",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benched at the Granary"
+      }
+    },
+    {
+      "id": "bk_row",
+      "body": "<<FILL role=choice words=105 beats='Binder's Row, where the water slides through shop doors like an uninvited customer; every window dark except one upper lamp, Master Fen's, burning stubborn over the flood; three ways to come at it: straight up the flooded front lane, around by the courtyard behind the shops, or standing off in open water to hail the lit window'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_row_1",
+          "label": "Pole straight up the front lane.",
+          "target": "bk_lane"
+        },
+        {
+          "id": "c_bk_row_2",
+          "label": "Swing around behind the shops to the courtyard.",
+          "target": "bk_court"
+        },
+        {
+          "id": "c_bk_row_3",
+          "label": "Stand off and hail the lit window.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_lane",
+      "body": "<<FILL role=choice words=100 beats='The front lane, narrow and pulling; mid-street the current braids over a hidden gutter and tugs the bow sideways; close to the shopfronts the water lies slack; Joss reads it the way Da reads the ferry reach, one line safe, one line not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_lane_1",
+          "label": "Hold the slack water and tie up at Fen's door ring.",
+          "target": "bk_ring"
+        },
+        {
+          "id": "c_bk_lane_2",
+          "label": "Drift the shopfront line further along the row first.",
+          "target": "bk_row2"
+        },
+        {
+          "id": "c_bk_lane_3",
+          "label": "Judge the pull too strong for a loaded return and turn back to report it.",
+          "target": "e_bk_turnback"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "bk_row2",
+      "body": "<<FILL role=rising words=90 beats='Drifting the row past dark shopfronts, reading tonight's water line against the old paint; the flood stands over every doorstep like it means to stay; at the row's end the courtyard opening shows, and behind, Fen's lamp keeps burning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_row2_1",
+          "label": "Cut through to the courtyard.",
+          "target": "bk_court"
+        },
+        {
+          "id": "c_bk_row2_2",
+          "label": "Come back and hail the lit window.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_ring",
+      "body": "<<FILL role=rising words=90 beats='Tied to the iron door ring, the skiff nosing the submerged step; the front door stands swollen half-open, the shop beyond breathing wet paper and glue; above, a floorboard creaks where Fen pretends not to be waiting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_ring_1",
+          "label": "Ease in through the swollen door onto the dry counter.",
+          "target": "bk_quiet"
+        },
+        {
+          "id": "c_bk_ring_2",
+          "label": "Call up to the window before going in.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_quiet",
+      "body": "<<FILL role=rising words=85 beats='Inside, the shop is an island world: the workbench standing clear of the water, tools hung in order, and the long dark of the book stacks at the back; Fen's silence upstairs is its own kind of argument'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_quiet_1",
+          "label": "Head for the dark stacks and the loft stair.",
+          "target": "bk_door"
+        },
+        {
+          "id": "c_bk_quiet_2",
+          "label": "Go back out and hail him properly first.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_court",
+      "body": "<<FILL role=rising words=90 beats='The courtyard behind the shops holds quieter water, a stone loading step, and Fen's loading door above it, shut; the yard smells of wet rope and old paper; a gull rides the flood like it owns the place'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_court_1",
+          "label": "Work the wedged loading door loose with the pole hook.",
+          "target": "bk_gate"
+        },
+        {
+          "id": "c_bk_court_2",
+          "label": "Call up to the lit window instead.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_gate",
+      "body": "<<FILL role=rising words=90 beats='The loading door gives with a groan that startles the gull; inside, the back landing stands dry above the flood; on the doorpost, someone long ago cut flood marks with dates beside them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_gate_1",
+          "label": "Go in along the landing to the stacks.",
+          "target": "bk_door"
+        },
+        {
+          "id": "c_bk_gate_2",
+          "label": "Stop to read the carved flood marks first.",
+          "target": "bk_marks"
+        }
+      ]
+    },
+    {
+      "id": "bk_marks",
+      "body": "<<FILL role=rising words=95 beats='Carved lines and dates on the doorpost, the biggest floods of a hundred years, each with initials beside it; tonight's water already stands above all but one; Joss lays a thumb on the highest mark and understands the night differently'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_marks_1",
+          "label": "Carry that understanding into the shop.",
+          "target": "bk_door"
+        }
+      ]
+    },
+    {
+      "id": "bk_hail",
+      "body": "<<FILL role=choice words=95 beats='Fen leans out at last, half relieved and half fortified: he is not leaving; the folios in the loft survived three binders' lifetimes and will not drown in his; he drops a key on a string as a compromise he pretends is a victory'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_hail_1",
+          "label": "Catch the key and let yourself in.",
+          "target": "bk_door"
+        },
+        {
+          "id": "c_bk_hail_2",
+          "label": "Argue it straight: books float, people don't.",
+          "target": "bk_terms"
+        }
+      ]
+    },
+    {
+      "id": "bk_terms",
+      "body": "<<FILL role=choice words=95 beats='Bargaining across the water, lamp to lamp; Fen offers terms like a man selling his own heart: one crate, the oldest folios, wrapped and lowered, and then, he says, maybe, himself; his voice does the arithmetic of what a life's work weighs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_terms_1",
+          "label": "Agree: one crate, then he leaves with you.",
+          "target": "bk_door"
+        },
+        {
+          "id": "c_bk_terms_2",
+          "label": "Refuse to load anything until he is in the skiff.",
+          "target": "bk_stand"
+        }
+      ]
+    },
+    {
+      "id": "bk_stand",
+      "body": "<<FILL role=choice words=95 beats='A standoff between a kid holding a lamp steady and an old man holding a lifetime; the cold argues on Joss's side; somewhere in the dark the river keeps its own counsel; patience is a kind of rope too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_stand_1",
+          "label": "Hold the lamp and wait him out.",
+          "target": "bk_relent",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_bk_stand_2",
+          "label": "Give in and go up for the crate.",
+          "target": "bk_door"
+        }
+      ]
+    },
+    {
+      "id": "bk_relent",
+      "body": "<<FILL role=rising words=90 beats='Fen climbs down stiff and quiet and empty-handed, and settles in the stern with his back to the shop; the hurt in his face is real and so is the relief; the skiff takes his weight like a promise; nobody says anything clever'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_relent_1",
+          "label": "Push off gently and let the row slide behind.",
+          "target": "bk_done"
+        }
+      ]
+    },
+    {
+      "id": "bk_door",
+      "body": "<<FILL role=choice words=100 beats='The way to the loft runs through the dark stacks, shelves like canyon walls, water lying between them over the sunken floor; the loft stair shows at the far end; Joss keeps to the raised walk boards, boots dry, the dark thick enough to lean on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_door_1",
+          "label": "Burn lamp oil and light the stacks properly.",
+          "target": "bk_stacks",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_bk_door_2",
+          "label": "Feel along the shelf line by touch, saving the lamp.",
+          "target": "bk_feel"
+        },
+        {
+          "id": "c_bk_door_3",
+          "label": "Call Fen down to talk you through his shop by heart.",
+          "target": "bk_guide"
+        }
+      ]
+    },
+    {
+      "id": "bk_stacks",
+      "body": "<<FILL role=choice words=95 beats='Lamplight over the stacks: gilt titles wink awake shelf after shelf, and the walk boards show clear all the way to the loft stair; on the workbench an old river atlas lies open to the quarter, soundings and floods in a binder's careful ink'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_stacks_1",
+          "label": "Go on up for the folio crate.",
+          "target": "bk_crate"
+        },
+        {
+          "id": "c_bk_stacks_2",
+          "label": "Stop over the river atlas and let it teach you.",
+          "target": "e_bk_lore"
+        }
+      ]
+    },
+    {
+      "id": "bk_feel",
+      "body": "<<FILL role=choice words=95 beats='Hand over hand along cold shelf edges in the dark, counting bays the way Fen called them down; halfway along, a shelf shifts under Joss's hand with a sound like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_feel_1",
+          "label": "Freeze, then ease past the leaning shelf.",
+          "target": "bk_slip"
+        },
+        {
+          "id": "c_bk_feel_2",
+          "label": "Wedge the shelf steady with a scrap block first.",
+          "target": "bk_shelf"
+        }
+      ]
+    },
+    {
+      "id": "bk_shelf",
+      "body": "<<FILL role=rising words=85 beats='A scrap of packing wood, tapped in low, and the lean goes out of the shelf; small work, done right, in the dark; the loft stair waits at the end of the bay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_shelf_1",
+          "label": "On to the loft stair.",
+          "target": "bk_crate"
+        }
+      ]
+    },
+    {
+      "id": "bk_slip",
+      "body": "<<FILL role=rising words=90 beats='The shelf tips an armload of ledgers and Joss catches two and wears one; wet to the elbow where a sleeve found the water between the boards, nothing worse; the dark forgives exactly one mistake a night, Da says'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_slip_1",
+          "label": "Steady everything and climb to the loft.",
+          "target": "bk_crate"
+        }
+      ]
+    },
+    {
+      "id": "bk_guide",
+      "body": "<<FILL role=choice words=95 beats='Fen's voice comes down the stairwell and steers Joss bay by bay, left at the sermon bindings, straight past the atlases, a man walking his shop with his eyes shut from two floors up; his knowing of it is its own book'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_guide_1",
+          "label": "Follow his voice up to the folio crate.",
+          "target": "bk_crate"
+        },
+        {
+          "id": "c_bk_guide_2",
+          "label": "Ask him about the open river atlas on the bench.",
+          "target": "e_bk_lore"
+        }
+      ]
+    },
+    {
+      "id": "bk_crate",
+      "body": "<<FILL role=choice words=105 beats='The loft: the folio crate bound in oilcloth, heavy as a sleeping dog, and the loft window opening right over the tied skiff; the arithmetic is plain and Fen knows it too: the skiff carries the crate or the binder, not both, not tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_crate_1",
+          "label": "Load the crate; Fen waits dry in the loft for the brigade barge.",
+          "target": "bk_lower",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_bk_crate_2",
+          "label": "Take Fen; the crate stays high on the strongest shelf.",
+          "target": "bk_fen",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_bk_crate_3",
+          "label": "Wrap everything in double oilcloth first, then decide at the window.",
+          "target": "bk_wrap"
+        }
+      ]
+    },
+    {
+      "id": "bk_wrap",
+      "body": "<<FILL role=choice words=95 beats='Wrapping folios with Fen in lamplight, corners folded like he taught apprentices for forty years; the work steadies both of them; at the window the skiff waits below, and the choice has not gone anywhere'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_wrap_1",
+          "label": "Lower the crate; Fen stays for the barge.",
+          "target": "bk_lower",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_bk_wrap_2",
+          "label": "Leave the crate high; hand Fen down instead.",
+          "target": "bk_fen",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bk_lower",
+      "body": "<<FILL role=rising words=95 beats='Rope through the window bracket, the crate swaying down slow to settle amidships with a grave little dip of the hull; Fen hands down a flask of tea for the shelter as if it balances the scales, and sets himself on the loft cot to wait for the brigade, lamp trimmed, dignity intact'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_lower_1",
+          "label": "Cast off careful with the crate lashed level.",
+          "target": "bk_done"
+        }
+      ]
+    },
+    {
+      "id": "bk_fen",
+      "body": "<<FILL role=rising words=95 beats='The crate goes high on the strongest shelf, wrapped double, and Fen climbs down to the skiff one deliberate rung at a time; at the bottom he looks back once at the lit window and then does not look again; the skiff takes him like it agrees'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_fen_1",
+          "label": "Push off and give the shop a moment of silence.",
+          "target": "bk_done"
+        }
+      ]
+    },
+    {
+      "id": "bk_done",
+      "body": "<<FILL role=choice words=110 beats='Pushing off from Binder's Row with what the shop entrusted to the skiff; write this neutral to which it was, crate or binder, the load rides amidships and matters; the flood stands audibly higher on the doorsteps than when Joss came, the night has moved while the work was happening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_done_1",
+          "label": "Pole back to the granary dock and hand over.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_bk_done_2",
+          "label": "Cut across to Mill Lane while the low arch still clears.",
+          "target": "lp_arch",
+          "condition": {
+            "<": [
+              {
+                "var": "water"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_bk_done_3",
+          "label": "Make for the seawall muster as the sky greys.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_bk_done_4",
+          "label": "Stay a while first, pressing wet pages flat with Fen's methods.",
+          "target": "e_bk_pages"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_bk_turnback",
+      "body": "<<FILL role=failure words=95 beats='Turning back from the braided current is a ferry-keeper's decision, not a coward's; Joss reports the pull at the granary and Brice chalks Binder's Row for the brigade barge; the rest of the night goes to smaller streets closer in; at dawn the barge brings Fen in grumbling and dry, and Joss learns you can be right and still lie awake about it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bk_turnback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Street Too Fast"
+      }
+    },
+    {
+      "id": "e_bk_lore",
+      "body": "<<FILL role=ending words=95 beats='The river atlas swallows the night: soundings, old flood lines, the quarter drawn street by street by binders who watched the water for a century; Fen talks and Joss learns the flood's own grammar; at dawn Joss carries the atlas to Brice's map table, and the morning crews route around two streets nobody else knew would still be sunk'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bk_lore",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Book of the River"
+      }
+    },
+    {
+      "id": "e_bk_pages",
+      "body": "<<FILL role=ending words=95 beats='Blotting paper, gentle weights, pages turned by their corners; the rescue of books is slow the way bread is slow; the brigade barge finds them both at first light, folios fanned out to dry like grey birds, and Joss rides in having saved fewer streets and more sentences than planned; a quiet trade, honestly made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bk_pages",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Wet-Paper Vigil"
+      }
+    },
+    {
+      "id": "ct_lane",
+      "body": "<<FILL role=choice words=105 beats='Bakery Lane, smelling of wet ash and drowned yeast; the bakery stands dark, the baker long since at the shelter, but green eyes blink at every upper window: the half-wild cat colony that runs this roofline is stranded over the flood; ways in: the delivery hatch above the water line, the outside stair to the loft, or simply sitting still and listening first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_lane_1",
+          "label": "Read the chalk sign on the bakery door on your way to the hatch.",
+          "target": "ct_sign"
+        },
+        {
+          "id": "c_ct_lane_2",
+          "label": "Pole to the outside stair up to the loft door.",
+          "target": "ct_stair"
+        },
+        {
+          "id": "c_ct_lane_3",
+          "label": "Sit still in the lane and listen before choosing.",
+          "target": "ct_listen"
+        },
+        {
+          "id": "c_ct_lane_4",
+          "label": "Judge the lane's racing gutters wrong for boatwork tonight and go report it.",
+          "target": "e_ct_wait"
+        }
+      ]
+    },
+    {
+      "id": "ct_sign",
+      "body": "<<FILL role=rising words=90 beats='The baker's chalk board still legible above the water: BACK AT DAWN. DO NOT FEED THEM, THEY LIE; underneath, in different chalk, a tally of thirteen strokes; somebody counted the colony before leaving, which is its own kind of love'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_sign_1",
+          "label": "In through the delivery hatch.",
+          "target": "ct_hatch"
+        },
+        {
+          "id": "c_ct_sign_2",
+          "label": "Hold up and listen for where they all are.",
+          "target": "ct_listen"
+        }
+      ]
+    },
+    {
+      "id": "ct_listen",
+      "body": "<<FILL role=rising words=90 beats='Stillness, water ticking against brick; then the map draws itself in sound: the crowd of them shifting and grumbling in the loft, and lower down, near the ovens, one thin repeating cry that is far too young to be up a stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_listen_1",
+          "label": "The young cry first: in through the hatch toward the ovens.",
+          "target": "ct_hatch"
+        },
+        {
+          "id": "c_ct_listen_2",
+          "label": "The crowd first: up the outside stair to the loft.",
+          "target": "ct_stair"
+        }
+      ]
+    },
+    {
+      "id": "ct_hatch",
+      "body": "<<FILL role=rising words=95 beats='Through the delivery hatch onto the flour-dusted counter, a dry road running above the flooded bakery floor; bowls stand along it, licked clean, set out before the baker left; paw prints in the flour go everywhere, like a language'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_hatch_1",
+          "label": "Follow the counter road toward the ovens.",
+          "target": "ct_counter"
+        },
+        {
+          "id": "c_ct_hatch_2",
+          "label": "Cross to the great ovens directly.",
+          "target": "ct_ovens"
+        }
+      ]
+    },
+    {
+      "id": "ct_counter",
+      "body": "<<FILL role=rising words=90 beats='Along the counter past the proofing shelves, the water below lying still as a floor you must not trust; ahead the brick ovens make their own warm weather, and behind, the inner stair to the loft creaks with waiting cats'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_counter_1",
+          "label": "To the ovens and the young cry.",
+          "target": "ct_ovens"
+        },
+        {
+          "id": "c_ct_counter_2",
+          "label": "Up the inner stair to the loft crowd.",
+          "target": "ct_loft"
+        }
+      ]
+    },
+    {
+      "id": "ct_stair",
+      "body": "<<FILL role=rising words=95 beats='The outside stair, each step a small dry island; behind the loft door a congress of cats is already voting about Joss; through a gap in the boards, lamplight catches the old grain loft, sacks and rafters and eyes, eyes, eyes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_stair_1",
+          "label": "In among the loft colony.",
+          "target": "ct_loft"
+        },
+        {
+          "id": "c_ct_stair_2",
+          "label": "Down the inner stair first, toward the crying near the ovens.",
+          "target": "ct_counter"
+        }
+      ]
+    },
+    {
+      "id": "ct_ovens",
+      "body": "<<FILL role=choice words=100 beats='The great brick ovens still breathe yesterday's warmth, which is why she chose them: in the mouth of oven three a mother cat has bedded her kittens, and the flood stands a hand below the oven door lip and thinking about it; she watches Joss with the flat gold stare of someone who has been let down by taller people before'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_ovens_1",
+          "label": "Burn lamp oil and light the oven mouth to work by.",
+          "target": "ct_kits",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_ct_ovens_2",
+          "label": "Coax her out with the sardine tin from your oilskin pocket.",
+          "target": "ct_coax"
+        },
+        {
+          "id": "c_ct_ovens_3",
+          "label": "Reach in on faith and hurry.",
+          "target": "ct_scratch"
+        }
+      ]
+    },
+    {
+      "id": "ct_kits",
+      "body": "<<FILL role=rising words=90 beats='Lamplight in the oven: four kittens like misprinted loaves and the queen deciding, in her own time, that this lamp-bearer will do; the bread basket lines itself with Joss's scarf and becomes an ark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_kits_1",
+          "label": "Settle them in the basket, queen last, and back along the counter.",
+          "target": "ct_warm"
+        }
+      ]
+    },
+    {
+      "id": "ct_warm",
+      "body": "<<FILL role=rising words=85 beats='The basket against Joss's chest breathes ember-warm; the queen rides with one paw over the rim, supervising; behind them oven three sighs its last heat at the water like a grudge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_warm_1",
+          "label": "Now the loft crowd; carry the basket up.",
+          "target": "ct_basket"
+        }
+      ]
+    },
+    {
+      "id": "ct_coax",
+      "body": "<<FILL role=rising words=90 beats='The tin held low and open, patience held lower; she comes out on her own terms, gathers her kittens to the smell one by one, and allows the scarf-lined basket the way a duchess allows a carriage'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_coax_1",
+          "label": "Carry the young family up toward the loft crowd.",
+          "target": "ct_basket"
+        }
+      ]
+    },
+    {
+      "id": "ct_scratch",
+      "body": "<<FILL role=rising words=85 beats='A scratched wrist for the hurry, fair and shallow; the queen's opinion is noted and Joss withdraws with new respect; slow is the only fast with mothers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_scratch_1",
+          "label": "Kneel back and try it her way, with the sardine tin.",
+          "target": "ct_coax"
+        }
+      ]
+    },
+    {
+      "id": "ct_loft",
+      "body": "<<FILL role=choice words=100 beats='The grain loft: a dozen cats arranged on the sacks like difficult royalty, hungry, unimpressed, and secretly relieved; over them all presides the torn-eared old tom who runs this roofline; nothing moves in this loft unless he allows it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_loft_1",
+          "label": "Pay respects to the old tom first and win the room.",
+          "target": "ct_tom"
+        },
+        {
+          "id": "c_ct_loft_2",
+          "label": "Open the loft shutter and rig the gangplank to the skiff.",
+          "target": "ct_plank"
+        }
+      ]
+    },
+    {
+      "id": "ct_tom",
+      "body": "<<FILL role=choice words=95 beats='Negotiations with the tom: a pinch of sardine, a slow blink, no sudden ambition; he inspects the basket, the lamp, and Joss's collar, then stretches, which in his court is a signature on a treaty'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_tom_1",
+          "label": "Basket the willing ones while the treaty holds.",
+          "target": "ct_basket"
+        },
+        {
+          "id": "c_ct_tom_2",
+          "label": "Open the shutter and let him lead them down the plank himself.",
+          "target": "ct_plank"
+        }
+      ]
+    },
+    {
+      "id": "ct_plank",
+      "body": "<<FILL role=rising words=95 beats='The loft shutter opens over the tied skiff and the stock plank bridges shutter to gunwale; the tom walks it first like a lord at his own coronation, and where he goes the roofline follows, one unhurried cat at a time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_plank_1",
+          "label": "Steady the plank and count them aboard.",
+          "target": "ct_basket"
+        }
+      ]
+    },
+    {
+      "id": "ct_basket",
+      "body": "<<FILL role=choice words=105 beats='The skiff becomes a low ark of judging eyes; the count comes up two short against the baker's chalk tally, and a listening pause finds them: under the proofing table, the two shyest, unmoved by treaties; the ark meanwhile will not wait forever'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_basket_1",
+          "label": "Push off with the ark and trust the barge for stragglers.",
+          "target": "ct_ferry"
+        },
+        {
+          "id": "c_ct_basket_2",
+          "label": "One more patient try for the two under the table.",
+          "target": "ct_hiders"
+        }
+      ]
+    },
+    {
+      "id": "ct_hiders",
+      "body": "<<FILL role=choice words=95 beats='Flat on the counter boards, tin extended into the dark under the proofing table, two pairs of eyes weighing the offer; every minute is a minute of rising water and a boatful of opinions behind Joss'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_hiders_1",
+          "label": "Wait them out with the last of the sardines.",
+          "target": "ct_bowl"
+        },
+        {
+          "id": "c_ct_hiders_2",
+          "label": "Leave the tin open for them and mark the spot for the brigade.",
+          "target": "e_ct_two"
+        }
+      ]
+    },
+    {
+      "id": "ct_bowl",
+      "body": "<<FILL role=rising words=90 beats='The two come, in the end, for the tin and not for Joss, which is correct cat law; before leaving, Joss fills the water bowls anyway and sets them high, because a promise to a chalk tally is still a promise'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_bowl_1",
+          "label": "Thirteen aboard; push off for the granary.",
+          "target": "ct_ferry"
+        }
+      ]
+    },
+    {
+      "id": "ct_ferry",
+      "body": "<<FILL role=rising words=100 beats='Poling home slow and level with a cargo that files complaints; the queen's basket rides under Joss's knee, the tom stands at the bow like a figurehead that bites; streets go by with their drowned doorsteps, and the skiff carries thirteen small warm reasons to keep the stroke smooth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_ferry_1",
+          "label": "Bring the ark alongside the granary dock.",
+          "target": "ct_done"
+        }
+      ]
+    },
+    {
+      "id": "ct_done",
+      "body": "<<FILL role=choice words=110 beats='The colony goes up the dock in relays of grain-sack hammocks to the warm loft, met by shelter kids with saucers of milk already poured; the tally board takes another chalk stroke; outside, the flood has climbed while the ark was loading, the night moving its own pieces; write the dockside neutral to whatever else the night has held'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_done_1",
+          "label": "Back to the tally board for the next street.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ct_done_2",
+          "label": "Head for the seawall muster forming in the grey.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ct_done_3",
+          "label": "Stay in the loft a moment among the settling fur.",
+          "target": "e_ct_ark"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_ct_wait",
+      "body": "<<FILL role=failure words=95 beats='The racing gutters of Bakery Lane were the wrong water for a skiff and Joss says so at the map table, which takes more nerve than poling in would have; Brice chalks the lane for the brigade's flat barge and finds Joss steadier work near the dock; at dawn the barge nets the colony down to the last indignant kitten, and nobody but Joss remembers the lane was ever anyone else's job'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ct_wait",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Lane Left for the Barge"
+      }
+    },
+    {
+      "id": "e_ct_two",
+      "body": "<<FILL role=ending words=95 beats='Eleven cats ride to the granary and two keep their own counsel under the proofing table with a full tin and their pride; Joss reports the count honestly and Brice chalks it without blame; the brigade nets the two holdouts at dawn, offended but dry, and Joss learns that even a good night can carry a small stone in its boot'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ct_two",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Two Who Stayed"
+      }
+    },
+    {
+      "id": "e_ct_ark",
+      "body": "<<FILL role=ending words=95 beats='The granary loft at settling time: thirteen cats claiming grain sacks like territories, shelter kids assigning names that will never come off, the old tom taking the highest beam as is right; Joss sits in the warm dark a minute longer than planned and understands what the errand actually carried; dawn can have the rest of the night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ct_ark",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Ark of Bakery Lane"
+      }
+    },
+    {
+      "id": "ph_cross",
+      "body": "<<FILL role=choice words=105 beats='Chandler's Cross, four streets of water meeting under the pharmacy's swinging pestle sign; Salma stands at her lit first-floor window with a storm lantern, and below her the dispensary drowns by inches; her voice is level as a counter-top: the zinc cold-chest must reach the shelter before the insulin warms, and there is a right way and a fast way to everything'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_cross_1",
+          "label": "Read the braided cross-current before committing the skiff.",
+          "target": "ph_current"
+        },
+        {
+          "id": "c_ph_cross_2",
+          "label": "Have Salma talk the route and the shop's insides first.",
+          "target": "ph_plan"
+        },
+        {
+          "id": "c_ph_cross_3",
+          "label": "Skip the cross entirely and slip up the side alley.",
+          "target": "ph_alley"
+        }
+      ]
+    },
+    {
+      "id": "ph_current",
+      "body": "<<FILL role=choice words=95 beats='The cross reads like four rivers arguing: two currents braid over the sunken crossroads and shed a slow spin that could turn a laden hull; along the pharmacy wall runs a lane of slack water, narrow but honest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_current_1",
+          "label": "Take the slack lane to the front steps and the ring bolt.",
+          "target": "ph_ring"
+        },
+        {
+          "id": "c_ph_current_2",
+          "label": "Call it past saving by skiff and go report for the brigade.",
+          "target": "e_ph_shy"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ph_plan",
+      "body": "<<FILL role=rising words=95 beats='Salma plans aloud the way she labels bottles, nothing wasted: the chest is zinc-lined, corner shelf of the back dispensary, handles both ends; cold packs wait in the ice room off the stair; and Joss's boots are to stay dry on the counter road or the deal is off, she has enough patients'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_plan_1",
+          "label": "In by the front steps and the ring bolt.",
+          "target": "ph_ring"
+        },
+        {
+          "id": "c_ph_plan_2",
+          "label": "In by the alley window she unlatches.",
+          "target": "ph_alley"
+        }
+      ]
+    },
+    {
+      "id": "ph_ring",
+      "body": "<<FILL role=rising words=90 beats='Tied at the ring bolt beside the front steps, in over the transom of the propped door, and onto the counter that runs the shop's length like a pier above the flooded floor; the shop smells of camphor and river'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_ring_1",
+          "label": "Along the counter road toward the back dispensary.",
+          "target": "ph_shelf"
+        },
+        {
+          "id": "c_ph_ring_2",
+          "label": "Pause under the ceiling boards where Salma is talking.",
+          "target": "ph_boy"
+        }
+      ]
+    },
+    {
+      "id": "ph_alley",
+      "body": "<<FILL role=rising words=90 beats='The alley window swings open at Salma's reach and Joss steps through onto the shelf tops, a high road of planed wood over dark water; below, glass jars catch the lamp like drowned moons'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_alley_1",
+          "label": "Work along the shelf tops to the back dispensary.",
+          "target": "ph_shelf"
+        },
+        {
+          "id": "c_ph_alley_2",
+          "label": "Stop beneath the stairwell where Salma waits with instructions.",
+          "target": "ph_boy"
+        }
+      ]
+    },
+    {
+      "id": "ph_shelf",
+      "body": "<<FILL role=rising words=90 beats='The high road of counters and shelf tops, one plank-width at a time, hands finding the rail grooves Salma calls out; halfway along, the back dispensary's doorway opens ahead, black as a closed book'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_shelf_1",
+          "label": "Into the dark dispensary.",
+          "target": "ph_dispensary"
+        },
+        {
+          "id": "c_ph_shelf_2",
+          "label": "A word with Salma first, through the stair rail.",
+          "target": "ph_boy"
+        }
+      ]
+    },
+    {
+      "id": "ph_boy",
+      "body": "<<FILL role=rising words=95 beats='Through the stair rail Salma explains what the chest is for, in her flattest voice, which is how she carries heavy things: among others, a boy called Dorin at the granary shelter, eight years old, whose doses live in that zinc box; she does not say please; the facts do it for her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_boy_1",
+          "label": "Into the dark dispensary with the facts for company.",
+          "target": "ph_dispensary"
+        }
+      ]
+    },
+    {
+      "id": "ph_dispensary",
+      "body": "<<FILL role=choice words=105 beats='The back dispensary, pitch dark and shoulder narrow, shelves labeled in Salma's museum hand; somewhere at the corner shelf the cold-chest waits above the water; the counter road ends here and the dark asks its question'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_dispensary_1",
+          "label": "Burn lamp oil and light the room properly.",
+          "target": "ph_lampin",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_ph_dispensary_2",
+          "label": "Have Salma call the shelf numbers blind from the stair.",
+          "target": "ph_call"
+        },
+        {
+          "id": "c_ph_dispensary_3",
+          "label": "Lay her stock-taking plank and cross by feel and balance.",
+          "target": "ph_plank"
+        }
+      ]
+    },
+    {
+      "id": "ph_lampin",
+      "body": "<<FILL role=rising words=90 beats='Lamplight opens the dispensary like a lid: rows of labeled dark, the corner shelf, and the zinc cold-chest sitting exactly where a careful woman said it would sit; the water below keeps its own black counsel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_lampin_1",
+          "label": "To the chest, hands sure in the light.",
+          "target": "ph_chest"
+        }
+      ]
+    },
+    {
+      "id": "ph_call",
+      "body": "<<FILL role=rising words=95 beats='Salma's voice steers the dark: third bay, past the scales, left hand at shoulder height; Joss's fingers learn the row by her memory of it, label by label, until they find zinc-cold metal exactly on her word'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_call_1",
+          "label": "Hands on the chest; now the moving of it.",
+          "target": "ph_chest"
+        }
+      ]
+    },
+    {
+      "id": "ph_plank",
+      "body": "<<FILL role=rising words=95 beats='The stock-taking plank bridges counter to corner shelf, tested with half a weight first, then walked slow and level, arms out, breath even; boots stay dry the whole way, which is the deal, and the chest is there at the end of the balance'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_plank_1",
+          "label": "Steady on the shelf end; now the chest.",
+          "target": "ph_chest"
+        }
+      ]
+    },
+    {
+      "id": "ph_chest",
+      "body": "<<FILL role=choice words=105 beats='The zinc cold-chest, heavier than its size and honest about it, handles at both ends, Salma's dosing list taped under the lid; getting it out is skiff arithmetic: it will ride amidships and it will ride alone, or, if the skiff already carries its load, only the small urgent-doses satchel goes tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_chest_1",
+          "label": "Slide it along the counter road and out the transom.",
+          "target": "ph_slide",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_ph_chest_2",
+          "label": "Rope it down from the stair window like a crane-man.",
+          "target": "ph_rope",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_ph_chest_3",
+          "label": "Take only the urgent-doses satchel Salma packs; the chest rides the barge later.",
+          "target": "ph_satchel"
+        }
+      ]
+    },
+    {
+      "id": "ph_slide",
+      "body": "<<FILL role=rising words=90 beats='Counter to transom to thwarts, a foot at a time, Salma counting the tilt from the stair; the skiff takes the chest with a grave little curtsy and sits lower and more serious in the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_slide_1",
+          "label": "Now the cold packs, before anything else.",
+          "target": "ph_pack"
+        }
+      ]
+    },
+    {
+      "id": "ph_rope",
+      "body": "<<FILL role=rising words=90 beats='Rope through the stair window bracket, two turns for friction the way Da rigs the ferry winch, and the chest walks down the air to the amidships board without touching wall or water; Salma allows one nod, which is a parade'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_rope_1",
+          "label": "Now the cold packs, quick.",
+          "target": "ph_pack"
+        }
+      ]
+    },
+    {
+      "id": "ph_satchel",
+      "body": "<<FILL role=rising words=90 beats='Salma packs the urgent satchel like a surgeon leaving a battle: tonight's doses and tomorrow morning's, wrapped cold, listed twice; the chest stays on its shelf above the water line with the barge's name on it; not everything rescued has to be carried at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_satchel_1",
+          "label": "Cold packs around the vials, then go.",
+          "target": "ph_pack"
+        }
+      ]
+    },
+    {
+      "id": "ph_pack",
+      "body": "<<FILL role=rising words=95 beats='Cold packs from the ice room nested around what the skiff is taking, write it neutral to chest or satchel; Salma's rule comes down the stair with the last pack: cold and level, or don't bother; the words tape themselves under Joss's ribs next to the dosing list'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_pack_1",
+          "label": "Lash it and double-check before pushing off.",
+          "target": "ph_check"
+        }
+      ]
+    },
+    {
+      "id": "ph_check",
+      "body": "<<FILL role=rising words=90 beats='The lashing checked twice, then once more for Salma watching from the window; level as a shop scale, padded from the gunwale knock, the stern lamp throwing its mark on the water; some cargo you carry with your whole spine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_check_1",
+          "label": "Out to the window for a last word with Salma.",
+          "target": "ph_ice"
+        }
+      ]
+    },
+    {
+      "id": "ph_ice",
+      "body": "<<FILL role=choice words=100 beats='Salma at her window with the storm lantern, staying: someone must mind the stock and the neighbors upstairs, and her shop has been her post for thirty years of dry nights and one wet one; she looks at the skiff, then at Joss, and issues her last instructions like medicine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_ice_1",
+          "label": "Urge her once to ride along anyway.",
+          "target": "ph_stay"
+        },
+        {
+          "id": "c_ph_ice_2",
+          "label": "Push off careful for the granary, cold and level.",
+          "target": "ph_done"
+        },
+        {
+          "id": "c_ph_ice_3",
+          "label": "Offer to stay instead and run her list of neighbors all night.",
+          "target": "e_ph_ledger"
+        }
+      ]
+    },
+    {
+      "id": "ph_stay",
+      "body": "<<FILL role=rising words=90 beats='She declines the way a lighthouse declines to come in out of the weather, and hands down a small wrapped packet, for Dorin, mind, not for you; the window light holds steady on the water as the skiff pulls away, a lit post on a drowned corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_stay_1",
+          "label": "Pole for the granary, cold and level.",
+          "target": "ph_done"
+        }
+      ]
+    },
+    {
+      "id": "ph_done",
+      "body": "<<FILL role=choice words=110 beats='Away from Chandler's Cross with the cold cargo stowed, write it neutral to chest or satchel; the cross-currents fall behind and the streets read differently now, the flood higher on every doorpost than memory keeps insisting; somewhere ahead a boy's morning depends on a steady stroke'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_done_1",
+          "label": "Straight to the granary dock and the shelter nurse.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ph_done_2",
+          "label": "Two streets on to Weaver's Stair first, since the skiff is this side.",
+          "target": "os_stair"
+        },
+        {
+          "id": "c_ph_done_3",
+          "label": "Make for the seawall muster in the greying light.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ph_done_4",
+          "label": "Pole straight in and stay to help the nurse rig the cold-store.",
+          "target": "e_ph_cold"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_ph_shy",
+      "body": "<<FILL role=failure words=95 beats='The spinning water at the cross was a wrong Joss refused to make worse, and saying so out loud at the map table costs more than poling in would have; Brice sends the brigade's heavy barge at first light and the chest crosses in strangers' hands; Dorin's doses stretch and hold, everyone is safe, and Joss carries the unglamorous lesson that some rescues are made of paperwork'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_shy",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Reported, Not Reached"
+      }
+    },
+    {
+      "id": "e_ph_ledger",
+      "body": "<<FILL role=ending words=95 beats='The night turns into Salma's ledger made flesh: small parcels to upstairs windows, a word through shutters, a count of who answers and who doesn't; unglamorous ferrying that stitches a drowned neighborhood together; at dawn her list is all ticks and the cold-chest rides the brigade barge in state; a different errand than the one assigned, finished properly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_ledger",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The List-Runner"
+      }
+    },
+    {
+      "id": "e_ph_cold",
+      "body": "<<FILL role=ending words=95 beats='The chest comes up the dock cold and level and the shelter nurse builds the cold-store around it, straw and zinc and river-chilled water, with Joss as second pair of hands; Dorin gets his morning dose on time and asks whose boat that is; the cold chain held the whole way, which is the kind of victory that fits in a small box'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_cold",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Cold Chain"
+      }
+    },
+    {
+      "id": "os_stair",
+      "body": "<<FILL role=choice words=105 beats='Weaver's Stair, the steepest lane in the quarter, now a staircase of slack black pools; at the top, on her flat rooftop under an enormous green umbrella, Grandmother Osei sits by a glowing brazier as calm as a woman at her own hearth, which she is; she has refused two boats already tonight, the tally board said'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_stair_1",
+          "label": "Pick the line up the stepped pools of the lane side.",
+          "target": "os_water"
+        },
+        {
+          "id": "c_os_stair_2",
+          "label": "Go around by the garden side and the wash-house eave.",
+          "target": "os_garden"
+        },
+        {
+          "id": "c_os_stair_3",
+          "label": "Call up to her from open water first.",
+          "target": "os_call"
+        }
+      ]
+    },
+    {
+      "id": "os_water",
+      "body": "<<FILL role=rising words=90 beats='The stepped pools take reading: each old stair riser is a small weir, each pool its own slack; the pole finds stone lips a hand under the water and the skiff climbs the drowned lane like a patient thought'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_water_1",
+          "label": "Come in under her eaves on the lane side.",
+          "target": "os_lane"
+        },
+        {
+          "id": "c_os_water_2",
+          "label": "Hail her while working closer.",
+          "target": "os_call"
+        }
+      ]
+    },
+    {
+      "id": "os_call",
+      "body": "<<FILL role=choice words=95 beats='She calls down before Joss can start: she has been flooded four times before tonight and buried one husband and two roofs, and she is not leaving her brazier for a puddle; then, kinder: has the granary got soup on, and is the ferry-keeper's child eating enough'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_call_1",
+          "label": "Work in close under the lane-side eaves while she talks.",
+          "target": "os_lane"
+        },
+        {
+          "id": "c_os_call_2",
+          "label": "Come at the garden side where the low eave sits.",
+          "target": "os_garden"
+        }
+      ]
+    },
+    {
+      "id": "os_lane",
+      "body": "<<FILL role=rising words=90 beats='Under the lane-side eaves: the iron ring bolt her husband set in the wall fifty years ago holds the skiff steady as a promise kept; above, the brazier ticks and her umbrella sheds the last drizzle like a green roof'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_lane_1",
+          "label": "Alongside the roof edge to talk terms.",
+          "target": "os_roof"
+        },
+        {
+          "id": "c_os_lane_2",
+          "label": "Ask her first which neighbors' windows have gone dark.",
+          "target": "os_neighbors"
+        }
+      ]
+    },
+    {
+      "id": "os_garden",
+      "body": "<<FILL role=rising words=90 beats='The garden side: the trellis half-drowned, the wash-house eave low over the water, her rooftop rising beyond it; a cat she feeds watches from the wash-house ridge, dry and judgmental'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_garden_1",
+          "label": "Along the wash-house eave to the roof edge.",
+          "target": "os_roof"
+        },
+        {
+          "id": "c_os_garden_2",
+          "label": "Ask after the neighbors while working closer.",
+          "target": "os_neighbors"
+        }
+      ]
+    },
+    {
+      "id": "os_neighbors",
+      "body": "<<FILL role=rising words=95 beats='She points her cane like a surveyor: which windows emptied to the shelter days ago, which held lights at dusk, which old man on Dyer's Walk will say he is fine and is not; a rooftop is a watchtower if the right woman sits on it; Joss files every word for Brice's map'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_neighbors_1",
+          "label": "Alongside the roof edge to settle her own question.",
+          "target": "os_roof"
+        }
+      ]
+    },
+    {
+      "id": "os_roof",
+      "body": "<<FILL role=choice words=110 beats='Alongside her parapet, the brazier warm even from the water; the choice is all in the levels: if the flood stands high enough the gunwale rides nearly flush with her roof edge and she could step across a handbreadth; otherwise it is the rope ladder to the ring bolt, or her own stubbornness, which has outlasted floods before'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_roof_1",
+          "label": "Bring the gunwale level with the eaves and hold it there.",
+          "target": "os_eaves",
+          "condition": {
+            ">=": [
+              {
+                "var": "water"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_os_roof_2",
+          "label": "Rig the rope ladder to the ring bolt, proper and tested.",
+          "target": "os_ladder"
+        },
+        {
+          "id": "c_os_roof_3",
+          "label": "Ship the pole and simply talk with her first.",
+          "target": "os_talk"
+        }
+      ]
+    },
+    {
+      "id": "os_eaves",
+      "body": "<<FILL role=choice words=100 beats='The flood, for once, is an accomplice: the skiff rides all but level with her roof edge, a single step across with two young hands to hold; she looks at the gap the way she has looked at four floods, measuring it against her dignity'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_eaves_1",
+          "label": "Take her aboard across the rail, one steady step.",
+          "target": "os_aboard",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_os_eaves_2",
+          "label": "Steady her while she hands down the hatbox and the photograph tin first.",
+          "target": "os_things"
+        }
+      ]
+    },
+    {
+      "id": "os_ladder",
+      "body": "<<FILL role=choice words=100 beats='The rope ladder made fast to the ring bolt and tested with Joss's full weight low over the skiff, the way the brigade teaches it; she watches the knots get checked twice and approves of the second time; coming down would be one rung at a time, sure as Sunday'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_ladder_1",
+          "label": "Steady the ladder and hand her down into the skiff.",
+          "target": "os_aboard",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_os_ladder_2",
+          "label": "The skiff is carrying all it can; make her warm and set the signal instead.",
+          "target": "os_signal"
+        }
+      ]
+    },
+    {
+      "id": "os_things",
+      "body": "<<FILL role=choice words=95 beats='Down come the hatbox, the tin of photographs, the good umbrella folded like a flag; a life's small heavy things finding the amidships board; she stands at the parapet with the brazier light behind her, next herself, if there is room for her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_things_1",
+          "label": "Hand her down after them, slow and sure.",
+          "target": "os_aboard",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_os_things_2",
+          "label": "No room left aboard tonight; wrap her warm and set the signal.",
+          "target": "os_signal"
+        }
+      ]
+    },
+    {
+      "id": "os_talk",
+      "body": "<<FILL role=choice words=95 beats='Talk, which with her is chess: she asks about the other streets to establish that others need the boat more; Joss mentions the rising marks on the doorposts to establish that rivers do not respect seniority; the brazier referees; somewhere in it she lowers a mug of tea on a string'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_talk_1",
+          "label": "Accept the tea and let her take the long way to yes.",
+          "target": "os_brazier"
+        },
+        {
+          "id": "c_os_talk_2",
+          "label": "Insist, gently: the river is not done rising; rig the ladder.",
+          "target": "os_ladder"
+        }
+      ]
+    },
+    {
+      "id": "os_brazier",
+      "body": "<<FILL role=choice words=95 beats='Tea on a string, hot as an argument won; she tells one flood story that is really a story about her husband and the ring bolt, and sizes Joss up over the mug's rim; when the story ends she looks at the ladder bolt herself, which is her way of agreeing to it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_brazier_1",
+          "label": "Rig the ladder now, while the agreeing lasts.",
+          "target": "os_ladder"
+        },
+        {
+          "id": "c_os_brazier_2",
+          "label": "Accept instead her list of neighbors to check on all night.",
+          "target": "e_os_list"
+        }
+      ]
+    },
+    {
+      "id": "os_signal",
+      "body": "<<FILL role=choice words=100 beats='The brigade signal, then, by the warden's book: she settles wrapped by her brazier, provisioned and unbothered, while Joss holds station alongside; the signal is lamp or bell, and the night decides how much of Joss is left to give it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_signal_1",
+          "label": "Burn the lamp bright in the three-and-one pattern Brice taught.",
+          "target": "os_brigade",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_os_signal_2",
+          "label": "Strike the old roof bell and let it carry.",
+          "target": "os_bell"
+        },
+        {
+          "id": "c_os_signal_3",
+          "label": "Your hands are past managing more tonight; wait with her for the brigade.",
+          "target": "e_os_hold"
+        }
+      ]
+    },
+    {
+      "id": "os_brigade",
+      "body": "<<FILL role=rising words=95 beats='Three-and-one, three-and-one, the lamp's pattern thrown wide; an answering lamp blinks two streets off and the brigade barge swings its bow toward Weaver's Stair; Joss holds station under her parapet until the big hull's lantern owns the lane'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_brigade_1",
+          "label": "Hand over to the brigade and take your leave of her.",
+          "target": "os_done"
+        }
+      ]
+    },
+    {
+      "id": "os_bell",
+      "body": "<<FILL role=rising words=95 beats='The old roof bell carries the way iron does over water, unhurried and certain; the answer is longer coming and the cold uses the time; she fills it with stories, and the stories are warmer than they have any right to be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_bell_1",
+          "label": "Keep station and keep her talking till the lights come.",
+          "target": "os_wait"
+        }
+      ]
+    },
+    {
+      "id": "os_wait",
+      "body": "<<FILL role=rising words=90 beats='The long cold middle of waiting, traded off in riddles she wins; then a runner's lamp, then the barge lantern behind it, and Weaver's Stair fills with capable shouting; she waves Joss off like family'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_wait_1",
+          "label": "Leave her in brigade hands and pole away.",
+          "target": "os_done"
+        }
+      ]
+    },
+    {
+      "id": "os_aboard",
+      "body": "<<FILL role=choice words=100 beats='She settles amidships like the skiff was built around her, cane across her knees, and immediately assumes command of navigation; her corrections are precise, ancient, and correct; the brazier stays behind, banked safe, glowing on the roof like a lighthouse of one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_aboard_1",
+          "label": "Rig her great green umbrella as a canopy first.",
+          "target": "os_umbrella"
+        },
+        {
+          "id": "c_os_aboard_2",
+          "label": "Pole for the granary under her direction.",
+          "target": "os_done"
+        }
+      ]
+    },
+    {
+      "id": "os_umbrella",
+      "body": "<<FILL role=rising words=85 beats='The green umbrella goes up over the amidships board and the skiff becomes a small state barge; she approves of the effect; passing windows will talk, she says, with satisfaction'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_umbrella_1",
+          "label": "Proceed, stately, for the granary.",
+          "target": "os_done"
+        }
+      ]
+    },
+    {
+      "id": "os_done",
+      "body": "<<FILL role=choice words=110 beats='Leaving Weaver's Stair settled behind you, write it neutral to how: aboard and navigating, or safe in brigade hands, or provisioned under signal, the lane's business is finished and the flood has climbed another remembering mark on the doorposts while it happened'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_done_1",
+          "label": "Back to the granary dock.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_os_done_2",
+          "label": "Swing past Chandler's Cross on the way, since the skiff is this side.",
+          "target": "ph_cross"
+        },
+        {
+          "id": "c_os_done_3",
+          "label": "Make for the seawall muster in the first grey.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_os_done_4",
+          "label": "Let her flood-lore fill the whole slow pole home.",
+          "target": "e_os_stories"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_os_list",
+      "body": "<<FILL role=ending words=95 beats='Her list turns out to be the real errand: window by window round the high lanes, a knock, a word, a count; two lights that should have answered and did, one that didn't and got the brigade sent to it in time; she stays her own garrison on her own roof, brazier banked, entirely satisfied; at dawn Brice copies the list into the map like scripture'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_os_list",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Osei's List"
+      }
+    },
+    {
+      "id": "e_os_hold",
+      "body": "<<FILL role=failure words=95 beats='Honesty about empty arms is a runner's last duty; Joss ties off under her parapet and admits to being spent, and she takes charge of the waiting as if it were her rooftop's own custom, blanket down on a string, one warm hand on Joss's hood; the brigade barge gathers them both in before the grey, and being brought in tired is not the same as failing, however it tastes'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_os_hold",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Long Cold Wait"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_os_stories",
+      "body": "<<FILL role=ending words=95 beats='The pole rises and falls and her flood-lore fills the boat: where the water always lies deepest, which cellars hold air, why the third flood was the cruel one; four floods deep, one rooftop wide, a whole quarter remembered; at the dock Joss recites it into Brice's map and watches the morning crews route around the past's mistakes; some cargo weighs nothing and is worth the most'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_os_stories",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Four Floods Deep"
+      }
+    },
+    {
+      "id": "lp_arch",
+      "body": "<<FILL role=choice words=100 beats='The low arch under Mill Bridge, the only water road into Mill Lane and shrinking: the flood has climbed the stone and left a ducking headroom that will not last the night; under the arch the dark doubles the lamp in the black water and Joss's breath comes back off the stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_arch_1",
+          "label": "Duck low and take the arch slow and level.",
+          "target": "lp_echo"
+        },
+        {
+          "id": "c_lp_arch_2",
+          "label": "Back-water at the mouth and listen through first.",
+          "target": "lp_listen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "lp_echo",
+      "body": "<<FILL role=rising words=90 beats='Under the arch: pole shortened to half-grip, head down, the stone sliding past a hand above the hood; Joss counts strokes against the echo the way Da counts the ferry chain, and the far mouth opens grey and welcome'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_echo_1",
+          "label": "Out into Mill Lane proper.",
+          "target": "lp_lane"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "lp_listen",
+      "body": "<<FILL role=choice words=90 beats='Voices carry through the arch over the water: two of them, young, pitched between brave and not, arguing about whose idea the shortcut across the gantry was; alive, then, and above the flood, and not going anywhere'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_listen_1",
+          "label": "Through the arch to them.",
+          "target": "lp_lane"
+        },
+        {
+          "id": "c_lp_listen_2",
+          "label": "They are safe enough perched; mark the spot and fetch the brigade to it.",
+          "target": "e_lp_fetch"
+        }
+      ]
+    },
+    {
+      "id": "lp_lane",
+      "body": "<<FILL role=choice words=105 beats='Mill Lane under one guttering gantry lamp: the lamplighters' service catwalk runs between lamp-heads the length of the lane, and mid-span two apprentices cling where the access stair used to be before the flood took it; their ladder is somewhere downstream being driftwood; the water below them is exactly what it looks like'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_lane_1",
+          "label": "Hail them and get names and steadiness going.",
+          "target": "lp_hail"
+        },
+        {
+          "id": "c_lp_lane_2",
+          "label": "Burn lamp oil and pole the dark line under the gantry to read its bones.",
+          "target": "lp_under",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_lp_lane_3",
+          "label": "Stand off in open water and read the whole span first.",
+          "target": "lp_survey"
+        }
+      ]
+    },
+    {
+      "id": "lp_hail",
+      "body": "<<FILL role=choice words=95 beats='Names first, Brice's rule: the older is Bram, mortified beyond his years, the younger is Tick, having, he reports, the best worst night of his life; they were topping lamps when the stair went; Bram's grip is white and Tick's is theatrical, and both are holding'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_hail_1",
+          "label": "Let Tick's chatter map the gantry while it steadies them both.",
+          "target": "lp_tick"
+        },
+        {
+          "id": "c_lp_hail_2",
+          "label": "Enough talk; weigh the ways down.",
+          "target": "lp_plan"
+        }
+      ]
+    },
+    {
+      "id": "lp_tick",
+      "body": "<<FILL role=rising words=95 beats='Tick, steadied by having an audience, turns out to know his catwalk: which plank sprung last winter, where the ring bolts sit, that the far stair stub stands on the mill's high footing; Bram corrects the details, which is Bram's way of holding on; the map builds itself in their voices'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_tick_1",
+          "label": "Weigh the ways down with the map in hand.",
+          "target": "lp_plan"
+        }
+      ]
+    },
+    {
+      "id": "lp_under",
+      "body": "<<FILL role=rising words=95 beats='Lamp up along the dark under-gantry line: the ring bolts sound true under a knuckle, the mid-span sags where the stay parted, and the far end lands on the mill's high stone footing, dry above the flood; the bones will hold a careful weight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_under_1",
+          "label": "Surface the facts and weigh the ways down.",
+          "target": "lp_plan"
+        }
+      ]
+    },
+    {
+      "id": "lp_survey",
+      "body": "<<FILL role=choice words=95 beats='From open water the whole span shows against the sky: the sag at mid-span, the sheer drop at the near end where the stair was, and at the far end the stair stub standing dry on the mill footing, a road out that does not touch the water at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_survey_1",
+          "label": "Weigh the ways down.",
+          "target": "lp_plan"
+        },
+        {
+          "id": "c_lp_survey_2",
+          "label": "Watch their guttering lamp a moment; minutes matter now.",
+          "target": "lp_gutter"
+        }
+      ]
+    },
+    {
+      "id": "lp_gutter",
+      "body": "<<FILL role=rising words=90 beats='Their gantry lamp gutters and steadies and gutters, and both boys' faces go with it; light is nerve, up there; whatever the way down, it wants deciding while the lamp still helps'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_gutter_1",
+          "label": "Decide now.",
+          "target": "lp_plan"
+        }
+      ]
+    },
+    {
+      "id": "lp_plan",
+      "body": "<<FILL role=choice words=110 beats='The ways down, weighed like a warden: rope from the ring bolt straight down into an empty skiff, both boys handed aboard; or the long crab along the catwalk to the far stair stub, Joss pacing them below, lamp high, calling the gaps; or, if the sag says brigade, holding the night together until the ladder-barge comes; the kid never leaves the boat, whichever it is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_plan_1",
+          "label": "Rope work: make the skiff their landing and bring both aboard.",
+          "target": "lp_knots",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_lp_plan_2",
+          "label": "Walk them the catwalk to the far stair stub, pacing alongside.",
+          "target": "lp_walk"
+        },
+        {
+          "id": "c_lp_plan_3",
+          "label": "Their lamp first: talk Tick through relighting it so all this happens in light.",
+          "target": "lp_lamp"
+        },
+        {
+          "id": "c_lp_plan_4",
+          "label": "The sag is getting worse as you watch; this is brigade work, signal and hold.",
+          "target": "e_lp_brigade"
+        }
+      ]
+    },
+    {
+      "id": "lp_knots",
+      "body": "<<FILL role=rising words=95 beats='The rope goes to the ring bolt in the bowline Brice drills into every runner, tested with Joss's whole weight while the skiff is made fast fore and aft below the span; a landing, built out of knots and patience, directly under the boys'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_knots_1",
+          "label": "Bram lowers Tick first, then follows; hand each one down to the boards.",
+          "target": "lp_rope",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lp_rope",
+      "body": "<<FILL role=choice words=100 beats='Tick comes down the rope like it is a fairground ride and Bram like it is an examination, and both land to hands that guide them onto the boards; the skiff sits low with three aboard and sure for it; above, the gantry keeps its sag to itself, relieved of its charges'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_rope_1",
+          "label": "Pole for home with both of them aboard.",
+          "target": "lp_done"
+        },
+        {
+          "id": "c_lp_rope_2",
+          "label": "Let them name the lane's lamps to you as you go.",
+          "target": "lp_lamps"
+        }
+      ]
+    },
+    {
+      "id": "lp_lamps",
+      "body": "<<FILL role=rising words=90 beats='Bram and Tick name the lamps like family, this one draws moths in June, that one leans since the dray hit it; a lane is not streets and water, it turns out, but a rosary of small lights someone tends; the skiff slides beneath their inventory'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_lamps_1",
+          "label": "Home with the lamplighters and their litany.",
+          "target": "lp_done"
+        }
+      ]
+    },
+    {
+      "id": "lp_walk",
+      "body": "<<FILL role=rising words=100 beats='The long crab along the catwalk, Bram ahead, Tick behind, rail over rail, and Joss below pacing them in the skiff, lamp held high, calling each sprung plank and gap before their boots find it; the flood slides underneath, ignored by everyone on principle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_walk_1",
+          "label": "See them onto the dry stair stub at the mill footing.",
+          "target": "lp_stub"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "lp_stub",
+      "body": "<<FILL role=rising words=95 beats='The stair stub takes them up onto the mill footing and then the bridgehead, above the flood the whole way; they trot the parapet route toward the granary lights, and Joss shadows them by water, lamp to lamp, until the shelter's glow takes over the escort'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_stub_1",
+          "label": "Turn for the arch and call it done.",
+          "target": "lp_done"
+        }
+      ]
+    },
+    {
+      "id": "lp_lamp",
+      "body": "<<FILL role=choice words=95 beats='Tick relights the gantry lamp with a ceremony Bram declares against regulations, and Mill Lane gets its star back; everything after happens in light, which is worth the minutes it cost; the ways down remain, and the night is not standing still'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_lamp_1",
+          "label": "Now the rope: skiff under the ring bolt, both boys aboard.",
+          "target": "lp_knots",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_lp_lamp_2",
+          "label": "Now the catwalk: walk them to the far stair stub in the new light.",
+          "target": "lp_walk"
+        }
+      ]
+    },
+    {
+      "id": "lp_done",
+      "body": "<<FILL role=choice words=110 beats='Mill Lane finished, write it neutral to how: the apprentices are off the gantry and the lane's lamp is burning behind you; under the bridge arch the headroom has shrunk again, the flood closing its doors one by one as the night spends itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_done_1",
+          "label": "Back through to the granary dock.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_lp_done_2",
+          "label": "Make for the seawall muster.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_lp_done_3",
+          "label": "Let Bram and Tick teach you the lamplighters' round on the way.",
+          "target": "e_lp_lampsong"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_lp_fetch",
+      "body": "<<FILL role=ending words=95 beats='Joss marks the arch mouth with the lamp code and fetches the brigade ladder-barge, which is exactly what the book says a runner alone should consider; by the time the barge noses under Mill Bridge, Bram has inched them both to the stair stub on his own nerve and the rescue is a rescue of two boys already ashore; nobody minds much, the book was right, and still Joss wonders all the way home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lp_fetch",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Fetcher"
+      }
+    },
+    {
+      "id": "e_lp_brigade",
+      "body": "<<FILL role=failure words=95 beats='The sag was the river's vote and Joss refuses to gamble other kids against it; signal set, the skiff holds station below the span for the cold slow time it takes the ladder-barge to come, keeping two nerves knitted with talk and lamp light; the brigade takes them off the proper way, with rails and grown shoulders; the only thing Joss carried home was the waiting, which turns out to be heavy enough'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lp_brigade",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Held for the Brigade"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_lp_lampsong",
+      "body": "<<FILL role=ending words=95 beats='The pole home becomes an apprenticeship: Bram teaches the round, Tick teaches the songs the round is remembered by, and three lamps that would have drowned dark get topped and lit from a skiff's thwart under supervision; at the granary the lamplighters' guild-mark gets chalked next to Joss's name on the board, which Tick swears makes it official and Bram swears means nothing, and both are right'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lp_lampsong",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Keepers of the Lamps"
+      }
+    },
+    {
+      "id": "fin_muster",
+      "body": "<<FILL role=choice words=110 beats='The seawall stair beside the granary in the first grey: the dawn muster, boats rafted two deep, runners with dock-tea steaming, and word passing that the sluice crew has reached the gates upstream at last; whatever the skiff carries is taken ashore by many hands the moment it ties in; write this arrival-neutral for any state of the night'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_muster_1",
+          "label": "Tie into the raft and report to Brice at the head of the stair.",
+          "target": "fin_signal"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "laden",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "fin_signal",
+      "body": "<<FILL role=choice words=100 beats='Brice sorts the muster with chalk and a voice that has poled all night itself: the crest is coming down the valley slow, and the quarter needs the seawall watch walked, the undercroft pumps relayed, and the tally of streets and souls brought square before the water's last word'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_signal_1",
+          "label": "Join the watch line walking the seawall parapet.",
+          "target": "fin_wall"
+        },
+        {
+          "id": "c_fin_signal_2",
+          "label": "Take a turn in the pump relay in the granary undercroft.",
+          "target": "fin_pump"
+        },
+        {
+          "id": "c_fin_signal_3",
+          "label": "Sit to the tally desk and help bring the count square.",
+          "target": "fin_count"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall",
+      "body": "<<FILL role=choice words=100 beats='The seawall walk in half-light: watchers spaced lamp to lamp along the parapet, calling the water's inch-marks inboard, the river running grey and fat below and the quarter's roofs breaking it into islands behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_1",
+          "label": "Take the empty lamp station mid-wall.",
+          "target": "fin_wall_a"
+        },
+        {
+          "id": "c_fin_wall_2",
+          "label": "Run the inch-mark messages between stations.",
+          "target": "fin_wall_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall_a",
+      "body": "<<FILL role=choice words=95 beats='The lamp station: hold the light steady, read the painted marks as the river breathes against them, sing the numbers inboard; the marks climb, hesitate, climb, in no hurry to declare themselves'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_a_1",
+          "label": "Pass your watch to the relief and rejoin the muster.",
+          "target": "fin_wall_j"
+        },
+        {
+          "id": "c_fin_wall_a_2",
+          "label": "Stand the station straight through to full light.",
+          "target": "e_wall_dawn"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall_b",
+      "body": "<<FILL role=choice words=95 beats='Message-running the parapet, inch-marks and dry jokes carried between watchers who have all been awake too long; the wall's whole length becomes one sentence the runners keep stitching together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_b_1",
+          "label": "Hand the route to a fresh runner and rejoin the muster.",
+          "target": "fin_wall_j"
+        },
+        {
+          "id": "c_fin_wall_b_2",
+          "label": "Keep the route through the slack turn of the tide.",
+          "target": "e_wall_lull"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall_j",
+      "body": "<<FILL role=rising words=90 beats='Back along the parapet with the watch relieved behind you, the calls steady lamp to lamp; the grey east has a seam of pale in it now, and the wall holds its line like a spoken agreement'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_j_1",
+          "label": "Report the wall steady to the muster head.",
+          "target": "fin_wall_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall_r",
+      "body": "<<FILL role=rising words=85 beats='The wall's report goes up the stair hand to hand: marks holding, watch relieved, line unbroken; Brice chalks it and the muster breathes one notch easier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_r_1",
+          "label": "Stand with the muster as the word comes down the valley.",
+          "target": "fin_crest"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump",
+      "body": "<<FILL role=choice words=100 beats='The granary undercroft, lamplit and loud: the long-handled pump worked in relay, a bucket-chain beside it, the water pushed back from the grain stores one stubborn stroke at a time; someone keeps the count out loud so the rhythm never drops'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_1",
+          "label": "Take the pump bar in the relay.",
+          "target": "fin_pump_a"
+        },
+        {
+          "id": "c_fin_pump_2",
+          "label": "Set the pace on the bucket-chain.",
+          "target": "fin_pump_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump_a",
+      "body": "<<FILL role=choice words=95 beats='The pump bar takes shoulders and gives back a count: down, hold, up, the water obeying in gulps; arms that poled all night discover new opinions; the relay swaps in fresh hands on the counted turn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_a_1",
+          "label": "Swap out on the turn and rejoin the muster.",
+          "target": "fin_pump_j"
+        },
+        {
+          "id": "c_fin_pump_a_2",
+          "label": "Refuse the swap once too often and spend what's left.",
+          "target": "e_pump_out"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump_b",
+      "body": "<<FILL role=choice words=95 beats='The bucket-chain runs on rhythm more than strength, and rhythm can be led: pass, turn, pass, a song's worth of timing that makes tired arms clever; the chain finds its swing and holds it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_b_1",
+          "label": "Hand the pace to the next singer and rejoin the muster.",
+          "target": "fin_pump_j"
+        },
+        {
+          "id": "c_fin_pump_b_2",
+          "label": "Keep the song going till the level visibly drops.",
+          "target": "e_pump_song"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump_j",
+      "body": "<<FILL role=rising words=90 beats='Up out of the undercroft with the relay drumming steady behind, the pumped water chuckling away down the outfall; the stores stand dry to the third course of brick and intend to stay that way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_j_1",
+          "label": "Report the pumps holding to the muster head.",
+          "target": "fin_pump_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump_r",
+      "body": "<<FILL role=rising words=85 beats='The pump report goes up the stair: level held, relay manned, outfall clear; Brice chalks it beside the wall's mark, and the board begins to look like a quarter that will still be a quarter at breakfast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_r_1",
+          "label": "Stand with the muster as the word comes down the valley.",
+          "target": "fin_crest"
+        }
+      ]
+    },
+    {
+      "id": "fin_count",
+      "body": "<<FILL role=choice words=100 beats='The tally desk at the head of the seawall stair: Brice's board on one side, the shelter ledger on the other, and between them the night's whole truth waiting to be brought square, street by street, name by name'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_1",
+          "label": "Call the roll of streets aloud while Brice chalks.",
+          "target": "fin_count_a"
+        },
+        {
+          "id": "c_fin_count_2",
+          "label": "Cross-check the shelter ledger against the board.",
+          "target": "fin_count_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_count_a",
+      "body": "<<FILL role=choice words=95 beats='Street by street the roll goes: answered, answered, barged, answered; each name on the board is somebody's whole night, Joss's own marks among the rest of the runners' where the errands were done; the roll does not care who did what, only that it answers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_a_1",
+          "label": "Finish the roll and carry the board to the muster head.",
+          "target": "fin_count_j"
+        },
+        {
+          "id": "c_fin_count_a_2",
+          "label": "Stay on the roll until every last street answers.",
+          "target": "e_count_names"
+        }
+      ]
+    },
+    {
+      "id": "fin_count_b",
+      "body": "<<FILL role=choice words=95 beats='Ledger against board, tick against chalk: the bookkeeping of a flood is soup lines and cot counts and one dog answering for a household; twice the columns disagree and twice a runner is sent and the answer comes back safe, which is the whole point of columns'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_b_1",
+          "label": "Rule the last line and carry the ledger up.",
+          "target": "fin_count_j"
+        },
+        {
+          "id": "c_fin_count_b_2",
+          "label": "Keep the quiet arithmetic going till both books agree everywhere.",
+          "target": "e_count_quiet"
+        }
+      ]
+    },
+    {
+      "id": "fin_count_j",
+      "body": "<<FILL role=rising words=90 beats='The count goes square: every street on the board answered for, by boat or barge or shelter cot; Brice reads it twice, which for her is celebration, and initials the corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_j_1",
+          "label": "Take the squared count to the muster head.",
+          "target": "fin_count_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_count_r",
+      "body": "<<FILL role=rising words=85 beats='The squared count posts at the head of the stair where the whole muster can see it: no street unanswered; it is the quietest of the morning's victories and the one everyone reads twice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_r_1",
+          "label": "Stand with the muster as the word comes down the valley.",
+          "target": "fin_crest"
+        }
+      ]
+    },
+    {
+      "id": "fin_crest",
+      "body": "<<FILL role=rising words=105 beats='The word comes down the valley the way weather does, felt before heard: the sluice crew has the gates, the crest is passing, the river's push going out of the streets almost too slowly to see, except that every watcher on the wall sees it at once; a sound goes along the muster that is not quite a cheer, being too tired, and better than one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crest_1",
+          "label": "Watch the marks start their first slow retreat.",
+          "target": "fin_dawn"
+        }
+      ]
+    },
+    {
+      "id": "fin_dawn",
+      "body": "<<FILL role=rising words=95 beats='Dawn proper: the drowned lanes turning to pewter, chimneys steaming as relit stoves take hold, a dog swimming home self-importantly; the flood stands in the streets still but it has stopped pretending it lives here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_dawn_1",
+          "label": "Turn from the wall toward Brice and the board.",
+          "target": "fin_sun"
+        }
+      ]
+    },
+    {
+      "id": "fin_sun",
+      "body": "<<FILL role=rising words=85 beats='First sun catches the seawall lamps still burning and makes them look, briefly, like they did the night's work themselves; the watchers snuff them one by one, unoffended'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sun_1",
+          "label": "Answer when Brice calls the runners to the board.",
+          "target": "fin_tally"
+        }
+      ]
+    },
+    {
+      "id": "fin_tally",
+      "body": "<<FILL role=choice words=110 beats='Brice reads the board to the gathered runners plainly, chalk marks that were errands, errands that were people; write the reading itself neutral to any single runner's night, the board carries all of them; then she turns to Joss with the look she saves for boats that came back level'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_tally_1",
+          "label": "Stand for the full night's reckoning, street after street of your own chalk.",
+          "target": "fin_full",
+          "condition": {
+            ">=": [
+              {
+                "var": "water"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_fin_tally_2",
+          "label": "Stand with the muster for whatever the night held.",
+          "target": "fin_good"
+        },
+        {
+          "id": "c_fin_tally_3",
+          "label": "Slip out early and pole home through the waking quarter.",
+          "target": "fin_home"
+        }
+      ]
+    },
+    {
+      "id": "fin_full",
+      "body": "<<FILL role=choice words=100 beats='The board tells it: Joss's chalk stands down street after street of the low quarter, the whole rising night worked from first bell to crest, and the muster knows what that pole-arm cost because their own arms are keeping score; Brice says nothing extra, which from her is a speech'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_full_1",
+          "label": "Take the lantern she holds out, the warden's own, to carry home.",
+          "target": "e_lantern"
+        },
+        {
+          "id": "c_fin_full_2",
+          "label": "Just nod, and go stand where the ferry-keeper's kid stands, by the boats.",
+          "target": "e_keeper"
+        }
+      ]
+    },
+    {
+      "id": "fin_good",
+      "body": "<<FILL role=choice words=100 beats='Brice's reckoning has room in it for every kind of night: the muster needed hands and the hands answered, and the board is square because of all of them together; she reads the whole quarter safe, which is the only line that matters, and looks over the runners like a woman counting boats home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_good_1",
+          "label": "Take the dock-tea and the place by the brazier that the runners keep for their own.",
+          "target": "e_steady"
+        },
+        {
+          "id": "c_fin_good_2",
+          "label": "Ask her, honestly, how to be readier the next time the river tries.",
+          "target": "e_first_flood"
+        }
+      ]
+    },
+    {
+      "id": "fin_home",
+      "body": "<<FILL role=choice words=100 beats='Poling home through the waking quarter, the water already remembering how to be streets: windows opening, a kettle somewhere, the flood's leavings drawing their first rueful jokes; the skiff moves through it all light as the ending of a long sentence'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_home_1",
+          "label": "Take the long way past the quarter's lanes once more.",
+          "target": "e_home_water"
+        },
+        {
+          "id": "c_fin_home_2",
+          "label": "Make straight for the ferry-house landing.",
+          "target": "e_ferry_light"
+        }
+      ]
+    },
+    {
+      "id": "e_wall_dawn",
+      "body": "<<FILL role=ending words=95 beats='The lamp station held straight through: the marks' slow climb, their long hesitation, and then, unmistakable under a paling sky, the first grudging retreat, called inboard in a voice that cracks on the number; the watchers stand down with the sun on the wall, and Joss has seen a river change its mind from the best seat in the quarter'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wall_dawn",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Dawn on the Seawall"
+      }
+    },
+    {
+      "id": "e_wall_lull",
+      "body": "<<FILL role=ending words=95 beats='The message route through the slack of the turn: the wall's long sentence passing through Joss's hands as the river goes quiet, gathers, and lets go; nothing dramatic marks the moment, which is the lesson, floods end the way they are fought, in increments carried by runners; the relief takes the route at full light and the parapet feels like a finished page'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wall_lull",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Slack-Water Turn"
+      }
+    },
+    {
+      "id": "e_pump_out",
+      "body": "<<FILL role=failure words=95 beats='The bar wins, as bars do when arms spend what they no longer have; Joss's grip goes soft mid-stroke and the relay swaps in without missing a count, because that is what relays are for; benched against the undercroft wall with a blanket and someone's dock-tea, Joss watches the level drop to other people's rhythm; the stores stay dry and pride recovers slower than shoulders'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pump_out",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pumped Out"
+      }
+    },
+    {
+      "id": "e_pump_song",
+      "body": "<<FILL role=ending words=95 beats='The pace holds until the water audibly gives ground, the chain's song getting the credit and gladly; when the level shows the third brick course dry, the undercroft cheers itself hoarse in whispers, grain being a light sleeper; Joss surfaces into morning having led something without once being in charge of it, which Brice says is the whole trick'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pump_song",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Relay Song"
+      }
+    },
+    {
+      "id": "e_count_names",
+      "body": "<<FILL role=ending words=95 beats='The roll runs to its end and every street answers, by boat, by barge, by shelter cot; the last name squares the last column and Brice initials the board like a treaty; of everything the night moved, the thing Joss carries out into the sun is a list where nothing is missing, which is what all the poling was for'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_count_names",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Every Name Answered"
+      }
+    },
+    {
+      "id": "e_count_quiet",
+      "body": "<<FILL role=ending words=95 beats='Both books agree at last, tick for chalk, the flood reduced to columns that close; it is unheroic work and it is the spine of every heroic thing the night did, and Joss finishes it properly, rules the line, and dates it; Brice files the ledger where the next flood will find it and its lesson both'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_count_quiet",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Quiet Arithmetic"
+      }
+    },
+    {
+      "id": "e_lantern",
+      "body": "<<FILL role=completion words=100 beats='The warden's own lantern rides the bow for the pole home, and window by window the waking quarter reads what it means and waves the boat past like news; Da is on the ferry-house steps with the moorings held and the whole story already guessed; the lantern hangs by the door after, ordinary brass by daylight, and the low quarter knows whose skiff to listen for the next time the river forgets its manners'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lantern",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Lantern of the Quarter"
+      }
+    },
+    {
+      "id": "e_keeper",
+      "body": "<<FILL role=success words=100 beats='No speeches: just the place by the boats where the ferry folk stand, made without comment as if it had always been there, which is how that place is given; the skiff rides the raft among the working hulls, bailed and level, its night written in pole scuffs; when the muster breaks, Brice's chalk finds the board one last time and writes a runner's name onto the standing roster, and Da will pretend not to be proud of the spelling'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_keeper",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Ferry-Keeper's Kid"
+      }
+    },
+    {
+      "id": "e_steady",
+      "body": "<<FILL role=success words=100 beats='The place by the brazier, the dock-tea, the nods of runners who know exactly what any share of such a night costs; the board is square because many hands answered and Joss's are among them, steady enough to be asked again, which in the granary's language is the whole of an honor; the pole home is slow and the morning generous'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_steady",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Steady Hands"
+      }
+    },
+    {
+      "id": "e_first_flood",
+      "body": "<<FILL role=completion words=100 beats='Brice answers the question with a warden's inventory: rope earlier, oil watched closer, streets learned deeper, and the sense to ask standing right at the head of the list already done; every keeper of anything had a first flood, she says, and the river will offer the exam again; Joss poles home composing next time's answers, which is how the quarter grows its wardens'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_first_flood",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "First Flood"
+      }
+    },
+    {
+      "id": "e_home_water",
+      "body": "<<FILL role=completion words=100 beats='The long way home, lane by lane, watching the quarter surface: thresholds emerging, a first broom already arguing with the mud, the flood's marks on the doorposts drying into history; the night settles into memory the way the water settles back toward the river, without asking permission or forgiveness; the ferry-house landing takes the bow like a handshake'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_home_water",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Home by Water"
+      }
+    },
+    {
+      "id": "e_ferry_light",
+      "body": "<<FILL role=ending words=95 beats='Halfway home a familiar lamp comes down the reach: Da, moorings held and patience spent, poling out to find one particular skiff; the two boats travel the last streets side by side without much talking, ferry fashion; at the landing he checks the hull first and the kid second, both level, and puts the kettle on, and that is the whole ceremony and all of it true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ferry_light",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Ferry Lamp"
+      }
+    }
+  ]
+}
