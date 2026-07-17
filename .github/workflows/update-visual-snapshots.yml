@@ -17,6 +17,9 @@
 # review the committed baseline diff in the PR before merging: an update accepts
 # whatever the app renders, so a human must confirm the new appearance is
 # correct, not a regression.
+#
+# Re-run trigger: touch this file (a comment bump is enough) and push to a
+# feature branch to regenerate after a UI change or a merge from main.
 name: Update Visual Snapshots
 
 on:
