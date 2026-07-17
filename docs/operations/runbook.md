@@ -189,11 +189,17 @@ migration-completion check is wired in.
 
 **`GET /health`** (undocumented alias, load-balancer compatibility): aliases `/health/live`.
 
-**Known gap**: `check_cache()` (Redis) and `check_external_service()` in `api/health.py` are
-placeholder functions that always report healthy without performing a real check; they are not
-wired into `/health/ready` at all (commented out). A `200` on `/health/ready` says nothing about
-Redis or the worker being alive. Use the queue-depth and worker-log checks in Section 5.1 for that
-instead.
+**`check_cache()` (Redis)** is wired into `/health/ready` and performs a real `PING` against
+`CYO_ADVENTURE_REDIS_URL` (the same Redis instance and timeout the rate limiter uses;
+`middleware/security.py`). It reports one of three states in the response's `checks.cache`: `"ok"`
+(ping succeeded), `"degraded"` (configured for Redis but the ping failed), or `"unconfigured"`
+(`CYO_ADVENTURE_RATE_LIMIT_BACKEND=memory`, so nothing in the request path depends on Redis).
+**Deliberately, cache status never flips `/health/ready`'s HTTP code**: the app fails open without
+Redis (the rate limiter falls back to an in-memory counter on any Redis error), so a `200` can
+still be paired with `checks.cache.status: false` when Redis is down; watch that field, or the
+queue-depth and worker-log checks in Section 5.1, rather than relying on the top-level status
+alone. `check_external_service()` remains an unwired placeholder: LLM/story-generation providers
+are optional and provider-specific, so there is no single external dependency to ping generically.
 
 ## 4. Logs and correlation IDs
 
@@ -221,10 +227,16 @@ cover failure's log lines trace back to the admin request that queued it. Story-
 runs do not currently thread a correlation ID from the enqueuing request; correlate those by
 `GenerationJob.id` instead (visible to admins via `GET /generation-jobs/{id}`).
 
-Sentry is referenced in `.env.example` (`SENTRY_DSN`) and named as a Phase 5 deliverable in
-`docs/planning/roadmap.md`, but is **not wired into the backend or frontend today**
-(`docs/architecture/deployment.md` marks it "planned"). There is no error-tracking dashboard to
-check yet; logs are the only observability surface.
+Sentry is wired on both sides as of 2026-07-17, as a documented no-op unless a DSN is configured.
+Backend: `core/observability.py::init_sentry()`, called from `app.py::create_app()`, is a no-op
+unless `SENTRY_DSN` is set; when set it tags `environment` and a best-effort `release` (package
+version), samples traces at `CYO_ADVENTURE_SENTRY_TRACES_SAMPLE_RATE` (default `0.1`), and always
+sets `send_default_pii=False` (hardcoded in code, never a setting; this is a kids' app). Frontend:
+`src/observability.ts::initSentry()`, called from `main.tsx`, is a no-op unless `VITE_SENTRY_DSN`
+is set; Session Replay and BrowserTracing performance sampling are hardcoded off (no session
+recording of a child's or guardian's session), and `beforeSend` strips request/response bodies and
+any user identifier beyond a bare anonymous id before an event leaves the browser. Until a DSN is
+configured for a given environment, logs remain the only observability surface there.
 
 ## 5. Common incidents
 
@@ -439,7 +451,7 @@ it, not a replacement for it.
 - `DEVICE_GRANT_SECRET` / `DEVICE_GRANT_TTL_SECONDS`: signs/verifies the 90-day revocable
   device-grant token (ADR-014). Required outside `local`, distinct from `CHILD_SESSION_SECRET`;
   never sent to the browser.
-- `SENTRY_DSN`: error tracking. Not yet wired into the app (Section 4); reserved.
+- `SENTRY_DSN`: backend error tracking (Section 4). Optional; a documented no-op when unset.
 - `FORWARDED_ALLOW_IPS`: trust boundary for `X-Forwarded-For`/`-Proto` behind the reverse proxy;
   never `*`. Backend process env / uvicorn CLI flag.
 
