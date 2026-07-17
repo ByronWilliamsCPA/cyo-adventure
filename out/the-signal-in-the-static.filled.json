@@ -124,7 +124,7 @@
     },
     {
       "id": "e_coord_notice",
-      "body": "Wren tells herself a scrap of card means nothing, that she's reading a mystery into someone's lost errand list because she wants one badly enough. And she lets the wind take it from her fingers. It flaps once against the pilings and vanishes into the dark water below the pier, gone before she can even feel sure she made the right call. Only later, lying awake with the loop still ticking faintly through her headphones, does she wonder whose careful hand wrote those words. And why, and what happens to whoever was supposed to find them. By then the pier is a mile behind her and getting farther every minute she stays curled under the blankets. The frequency is gone with the card. And no amount of wishing brings either one back. The loop keeps counting down for someone out there. But it isn't counting down for her anymore. And she never does find out who it was.",
+      "body": "Wren tells herself a scrap of card means nothing. She is reading a mystery into someone's lost errand list because she wants one badly enough, and she lets the wind take it from her fingers. It flaps once against the pilings and vanishes into the dark water below the pier, gone before she can even feel sure she made the right call. Only later, lying awake with the loop still ticking through her headphones, does she wonder whose careful hand wrote those words, and why, and what happens to whoever was meant to find them. By then the pier is a mile behind her. The frequency is gone with the card, and no amount of wishing brings either one back. The loop keeps counting down for someone out there, but it isn't counting down for her anymore, and she never learns who it was.",
       "is_ending": true,
       "ending": {
         "id": "e_coord_notice",
@@ -327,7 +327,7 @@
     },
     {
       "id": "e_re_photo",
-      "body": "A gust nearly takes Wren clean off her feet, close enough to the drop that her stomach lurches. And that decides it for her. She snaps three photos of the mast with shaking hands, pockets her phone. And pedals hard for home with her heart hammering against her ribs the entire way back. Back in her room, safe under the covers, the pictures show only a dark tower against a darker sky, nothing anyone would ever call proof of anything at all. The loop keeps playing in her headphones as she at last falls asleep, patient as ever, counting down for whoever it was always counting down for, storm or no storm. It plays on without her. She has a genuine mystery now, one she can describe in perfect, breathless detail to anyone who happens to ask. But never one she really got to solve.",
+      "body": "A gust nearly takes Wren clean off her feet, close enough to the drop that her stomach lurches, and that decides it for her. She snaps three photos of the mast with shaking hands and pedals hard for home, her heart hammering the whole way back. Back in her room, safe under the covers, the pictures show only a dark tower against a darker sky, nothing anyone would call proof of anything. The loop keeps playing in her headphones as she falls asleep at last, patient as ever, counting down for whoever it was always counting down for. It plays on without her. She has a genuine mystery now, one she can describe in perfect detail to anyone who asks, but she never gets the chance to solve it.",
       "is_ending": true,
       "ending": {
         "id": "e_relay_photo",
@@ -730,7 +730,7 @@
     },
     {
       "id": "m_num_cipher",
-      "body": "Using her grandfather's logbook, with its page numbers standing in patiently for letters, Wren maps each figure in the string to a single word, one at a time. Fragments start surfacing almost at once, faster than she expected: holding, and answer. And the single letter M, repeated often enough to feel clearly real instead of coincidental. But one whole cluster near the end refuses to resolve into anything but total gibberish, no matter how many times she shuffles the key around. She could keep forcing that stubborn cluster through the same logbook cipher, hoping she is simply missing something small and obvious. Or she could switch fully to a second book she distinctly remembers him underlining just as heavily, years ago.",
+      "body": "Wren uses her grandfather's old logbook for this. Its page numbers stand in for letters. And she maps each figure in the string to a word. Fragments start showing up fast: holding, and answer, and the single letter M. It repeats often enough to feel real, not just luck. But one whole cluster near the end will not turn into anything but nonsense. She could keep forcing that stubborn cluster through the same logbook key, hoping she has only missed something small. Or she could switch to a second book she remembers him marking just as heavily, years ago.",
       "is_ending": false,
       "choices": [
         {
@@ -788,7 +788,7 @@
     },
     {
       "id": "e_num_gibberish",
-      "body": "The cipher slips through Wren's fingers no matter which key she tries next. Every fresh attempt spits out fresh nonsense, until the numbers blur together into meaningless noise on the page. She keeps at it long past midnight, notebook after notebook filling with crossed-out guesses. The pattern stubbornly refuses to hold still for her. Later she closes the books for good. She is no closer to any real meaning than when she started hours ago, her eyes burning and her patience spent. The loop keeps counting somewhere in the dark. It is steady and indifferent to her failure. It counts toward a total Wren simply cannot read, not tonight. And maybe, she thinks miserably, not ever.",
+      "body": "The cipher slips through Wren's fingers no matter which key she tries next. Every fresh attempt spits out fresh nonsense, until the numbers blur together into meaningless noise on the page. She keeps at it long past midnight, notebook after notebook filling with crossed-out guesses. The pattern stubbornly refuses to hold still for her. Eventually she closes the books for good, no closer to any real meaning than when she started hours ago, her eyes burning and her patience spent. The loop keeps counting somewhere in the dark, steady and indifferent to her failure, toward a total Wren simply cannot read, not tonight, and maybe, she thinks miserably, not ever.",
       "is_ending": true,
       "ending": {
         "id": "e_num_gibberish",
@@ -955,7 +955,7 @@
     },
     {
       "id": "e_who_warn",
-      "body": "Wren hesitates a beat too long at the table, turning her mug slowly in her hands instead of answering right away, and Mrs. Okafor makes the decision for her without another word needed. Kindly, but firmly, she decides the past is simply too heavy a thing to hand a kid on a school night. And walks Wren to the door with a warm pat on the shoulder and a thermos of tea pressed gently into her hands for the cold ride home. The story of Kell Alder stays sealed up in an old woman's memory, unspoken for now, at least for tonight. Out on the headland, somewhere in the dark, the loop keeps calling patiently into the cold, waiting on somebody who isn't Wren, not this time.",
+      "body": "Wren hesitates a beat too long at the table, turning her mug slowly in her hands instead of answering right away, and Mrs. Okafor makes the decision for her without another word needed. Kindly but firmly, she decides the past is too heavy a thing to hand a kid on a school night, and she walks Wren to the door with a warm pat on the shoulder and a thermos of tea for the cold ride home. The story of Kell Alder stays sealed up in an old woman's memory, unspoken for now, at least for tonight. Out on the headland, somewhere in the dark, the loop keeps calling patiently into the cold, waiting on somebody who isn't Wren, not this time.",
       "is_ending": true,
       "ending": {
         "id": "e_who_warn",
@@ -1423,7 +1423,7 @@
     },
     {
       "id": "e_st_alder_send",
-      "body": "Something in Wren's certainty. Or maybe just her soaked and stubborn presence standing there in his doorway, at last reaches the old man after all these years. Alder wipes at his eyes with the back of one weathered hand, leans into the microphone. And speaks live for the first time in decades instead of trusting the old recording one more time. He tells the open channel, plainly and without flinching, that he is still here, still sorry, still waiting for her. Two towns west, a woman who never quite stopped listening lifts the handset at last. And thirty long years of silence at last break, all at once, in real time.",
+      "body": "Something in Wren's certainty, or maybe just her soaked and stubborn presence standing there in his doorway, finally reaches the old man after all these years. Alder wipes at his eyes with the back of one weathered hand and leans into the microphone. He speaks live for the first time in decades instead of trusting the old recording one more time. He tells the open channel, plainly and without flinching, that he is still here, still sorry, still waiting for her. Two towns west, a woman who never quite stopped listening lifts the handset at last, and thirty long years of silence finally break, all at once, in real time.",
       "is_ending": true,
       "ending": {
         "id": "e_st_alder_send",
@@ -1434,7 +1434,7 @@
     },
     {
       "id": "e_st_alder_refuse",
-      "body": "Alder only shakes his head, slow and final, fully unmoved by anything Wren says to try to convince him otherwise. Thirty years of unbroken silence have convinced him thoroughly that no answer is ever coming. And he will not risk hoping again tonight, not even for an earnest stranger who biked straight through a storm just to find him. Wren leaves her notebook full of everything she pieced together carefully on his desk anyway, in case he changes his mind before the power at last goes out for good. Then she bikes home alone through the pouring rain, the choice. And the loop, left fully now in his tired and unconvinced hands.",
+      "body": "Alder only shakes his head, slow and final, unmoved by anything Wren says to try to convince him otherwise. Thirty years of unbroken silence have convinced him that no answer is ever coming, and he will not risk hoping again tonight, not even for an earnest stranger who biked through a storm just to find him. Wren leaves her notebook full of everything she pieced together on his desk anyway, in case he changes his mind before the power finally goes out for good. Then she bikes home alone through the pouring rain, leaving the choice, and the loop, in his tired and unconvinced hands.",
       "is_ending": true,
       "ending": {
         "id": "e_st_alder_refuse",
@@ -1507,7 +1507,7 @@
     },
     {
       "id": "e_re_answer",
-      "body": "The carrier resolves slowly into an actual voice. It sounds hesitant, clearly disbelieving. And it asks who is broadcasting her name across the whole county like this. Wren explains everything in one breathless rush: her father, the relay, thirty years of waiting. Then she hands the whole channel over to the loop itself. Marin listens to her father's patient, waiting message, with a stranger's daughter as the only witness in the room. Three decades of silence are at last, gently broken by a girl who simply refused to stop listening tonight.",
+      "body": "The carrier resolves slowly into an actual voice. It sounds hesitant and clearly disbelieving, and it asks who is broadcasting her name across the whole county like this. Wren explains everything in one breathless rush: her father, the relay, thirty years of waiting. Then she hands the whole channel over to the loop itself. Marin listens to her father's patient, waiting message, with a stranger's daughter as the only witness in the room. Three decades of silence are finally and gently broken by a girl who simply refused to stop listening tonight.",
       "is_ending": true,
       "ending": {
         "id": "e_re_answer",
@@ -1574,7 +1574,7 @@
     },
     {
       "id": "e_re_found",
-      "body": "The lead turns out to be real, clearly real. The woman two ridges west is Marin herself, up late and idly scanning bands she abandoned decades ago out of old habit more than any real hope. Hearing her own name ride in suddenly on her father's old loop stops her cold, phone halfway to her ear before she even consciously decides to answer it. The club patches her straight through to the relay without delay. And Kell Alder's thirty-year wait at last ends, at last, in one single trembling hello.",
+      "body": "The lead turns out to be real. The woman two ridges west is Marin herself, up late and idly scanning bands she abandoned decades ago out of old habit more than any real hope. Hearing her own name ride in suddenly on her father's old loop stops her cold, phone halfway to her ear before she even decides to answer it. The club patches her straight through to the relay without delay, and Kell Alder's thirty-year wait ends at last, in one single trembling hello.",
       "is_ending": true,
       "ending": {
         "id": "e_re_found",
@@ -1585,7 +1585,7 @@
     },
     {
       "id": "e_re_log",
-      "body": "Wren cannot be certain any single lead tonight is really Marin, not with the clock this close to running out. So she logs every one carefully anyway. And hands the club a complete file: the frequency, the whole story, every promising callback she managed to gather. The net keeps the message circulating night after night from here on out. Though Wren herself never gets to see just how it all ends, Alder's loop is at last sitting safely in a hundred searching hands, instead of just one tired old man's.",
+      "body": "Wren cannot be certain any single lead tonight is really Marin, not with the clock this close to running out. So she logs every one carefully anyway and hands the club a complete file: the frequency, the whole story, every promising callback she managed to gather. The net keeps the message circulating night after night from here on out. Though Wren herself never gets to see how it all ends, Alder's loop is finally sitting safely in a hundred searching hands, instead of just one tired old man's.",
       "is_ending": true,
       "ending": {
         "id": "e_re_log",
