@@ -9,6 +9,7 @@ import {
   AdminRequestsPage,
   AdminShell,
   AdultGate,
+  AuthoringQueuePage,
   BooksPage,
   ConnectionsPage,
   ConsolePage,
@@ -24,6 +25,7 @@ import {
   NotFoundPage,
   ProfilePickerPage,
   ProfilesPage,
+  ProviderAllowlistPage,
   ReaderRoute,
   ReadingPage,
   RequestsPage,
@@ -196,6 +198,14 @@ export const routes = [
                   {
                     path: 'moderation-dashboard',
                     element: suspended(<ModerationDashboardPage />),
+                  },
+                  {
+                    path: 'authoring-queue',
+                    element: suspended(<AuthoringQueuePage />),
+                  },
+                  {
+                    path: 'provider-allowlist',
+                    element: suspended(<ProviderAllowlistPage />),
                   },
                   {
                     path: 'users',

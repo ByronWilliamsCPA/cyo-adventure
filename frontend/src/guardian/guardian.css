@@ -58,13 +58,21 @@
   letter-spacing: 0.01em;
 }
 
+/* --color-ink-secondary, not --color-ink-muted: this header sits on
+   --color-parchment-dark, where ink-muted only clears 3.72:1 against the
+   4.5:1 AA minimum (2026-07-16 accessibility audit, e2e/a11y.spec.ts);
+   ink-secondary is the already-compliant choice this file uses elsewhere on
+   the same background (see .intake-request__assign, 434 above). */
 .guardian-shell__role {
   font-family: var(--font-sans, system-ui, sans-serif);
   font-weight: var(--weight-semibold, 600);
   font-size: var(--text-sm, 0.9375rem);
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-secondary, #5a3e28);
 }
 
+/* Border stays --color-amber-deep (3:1-safe, non-text); the label uses
+   --color-amber-text, same reasoning as the design-system's
+   .cyo-btn--ghost fix (2026-07-16 accessibility audit, e2e/a11y.spec.ts). */
 .guardian-shell__sign-out {
   display: inline-flex;
   align-items: center;
@@ -72,7 +80,7 @@
   min-height: 44px;
   background: transparent;
   border: 2px solid var(--color-amber-deep, #c17b2a);
-  color: var(--color-amber-deep, #c17b2a);
+  color: var(--color-amber-text, #87561d);
   border-radius: var(--radius-full, 999px);
   padding: 0.4rem 1.1rem;
   font-weight: var(--weight-bold, 700);
@@ -155,12 +163,15 @@
   cursor: progress;
 }
 
+/* --color-ink-secondary, not --color-ink-muted: .guardian-login's background
+   is --color-parchment-dark, where ink-muted only clears 3.72:1 against the
+   4.5:1 AA minimum (2026-07-16 accessibility audit, e2e/a11y.spec.ts). */
 .guardian-login__divider {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin: 1.5rem 0 0.5rem;
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-secondary, #5a3e28);
   font-size: var(--text-sm, 0.9375rem);
 }
 
@@ -202,6 +213,11 @@
   color: var(--color-ink-secondary, #5a3e28);
 }
 
+/* --color-ink-secondary, not --color-ink-muted: .guardian-login's background
+   is --color-parchment-dark, where ink-muted only clears 3.72:1 against the
+   4.5:1 AA minimum (2026-07-16 accessibility audit, e2e/a11y.spec.ts). Also
+   matches this link's own :hover color below, so hover no longer changes the
+   text color, only presumably its underline/weight if that's added later. */
 .guardian-login__link {
   display: block;
   width: 100%;
@@ -209,14 +225,10 @@
   padding: 0.5rem;
   border: none;
   background: none;
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-secondary, #5a3e28);
   font-size: var(--text-sm, 0.9375rem);
   text-decoration: underline;
   cursor: pointer;
-}
-
-.guardian-login__link:hover {
-  color: var(--color-ink-secondary, #5a3e28);
 }
 
 .guardian-login__link:focus-visible {

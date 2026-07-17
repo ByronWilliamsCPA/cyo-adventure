@@ -178,6 +178,28 @@ DB_PORT=5442 docker compose up -d db
 `test:e2e:real` runs with `--workers=1`: the backend's per-IP rate limiter (100 rpm, burst 10)
 trips when two workers share the loopback IP, producing spurious 429s.
 
+## Staging smoke e2e (scheduled + manual)
+
+A third tier, `e2e-staging/`, signs in through the real login form against the already-deployed
+staging frontend, backed by the shared staging Supabase project (this repo has no frontend
+deploy workflow of its own; homelab-infra builds and ships that image on its own cadence, see
+`.github/workflows/trigger-image-build.yml`). It uses the two accounts `scripts/seed_staging.py`
+creates (a guardian and an admin) and, in `kid-library-smoke.spec.ts`, mints and revokes a real
+device grant to reach the seeded "Test Reader" profile's populated library. Unlike the prod
+tier, this one does run unattended in CI (`.github/workflows/e2e-staging.yml`, daily schedule +
+manual dispatch): the staging project holds only disposable, idempotent seed fixtures, never
+real family data.
+
+```bash
+# Local manual run: copy .env.e2e-staging.example to .env.e2e-staging and fill in
+# E2E_STAGING_BASE_URL / E2E_STAGING_GUARDIAN_PASSWORD / E2E_STAGING_ADMIN_PASSWORD
+# (the passwords must match whatever scripts/seed_staging.py was run with)
+cd frontend && npm run test:e2e:staging
+```
+
+See `docs/testing/README.md` for the shared-staging-project environment model and
+`docs/testing/coverage-matrix.md` for what this tier does and doesn't cover per journey.
+
 ## Production smoke e2e (manual, never CI)
 
 A third tier, `e2e-prod/`, signs in through the real login form against LIVE production
