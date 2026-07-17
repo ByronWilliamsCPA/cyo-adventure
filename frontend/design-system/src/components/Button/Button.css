@@ -82,9 +82,10 @@
    parchment, clearing the 3:1 WCAG 1.4.11 non-text minimum; the bright
    --color-amber sat at 2.62:1 and failed it). The LABEL needs the 4.5:1 AA
    normal-text minimum, which amber-deep misses, so text uses the dedicated
-   --color-amber-text token (4.52:1 on parchment, 4.55:1 on the
-   amber-subtle hover fill). This is the once-for-all-surfaces decision the
-   guardian surfaces previously approximated locally with amber-deep. */
+   --color-amber-text token (5.62:1 on parchment, 4.98:1 on
+   parchment-dark; a ghost button can sit on either shade, e.g.
+   library.css's .book-card). This is the once-for-all-surfaces decision
+   the guardian surfaces previously approximated locally with amber-deep. */
 .cyo-btn--ghost {
   background-color: transparent;
   color: var(--color-amber-text);

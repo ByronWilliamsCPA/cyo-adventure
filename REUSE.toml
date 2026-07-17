@@ -35,6 +35,7 @@ path = [
     "frontend/e2e/**",  # Playwright end-to-end specs (mocked tier)
     "frontend/e2e-real/**",  # Playwright end-to-end specs (real-backend tier)
     "frontend/e2e-prod/**",  # Playwright end-to-end specs (production smoke tier)
+    "frontend/e2e-staging/**",  # Playwright end-to-end specs (staging smoke tier)
     "frontend/*.ts",
     "frontend/*.js",
     "frontend/eslint.config.js",
@@ -185,6 +186,7 @@ SPDX-FileCopyrightText = "2025 Byron Williams"
 path = [
     "frontend/.env.example",  # Frontend environment template
     "frontend/.env.e2e-prod.example",  # Production smoke e2e credential template
+    "frontend/.env.e2e-staging.example",  # Staging smoke e2e credential template
     "frontend/.gitignore",  # Frontend git exclusions
     "frontend/.prettierrc",  # Frontend Prettier config
     "frontend/Dockerfile",  # Frontend container build

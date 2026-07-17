@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the job always passed while the PR comment could say FAILED. Trigger
   paths now also cover `tests/`, the checker script, and the `Dockerfile`.
 
+## [0.8.0] - 2026-07-17
+
 ## [0.7.0] - 2026-07-17
 
 ### Added
@@ -1779,7 +1781,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.1...v0.5.2
