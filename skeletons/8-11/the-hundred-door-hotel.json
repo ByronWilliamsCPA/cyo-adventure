@@ -787,7 +787,7 @@
     },
     {
       "id": "kt_tell",
-      "body": "<<FILL role=rising words=98 beats='Pearl; the name goes through the kitchen like a struck bell, every copper pot ringing faintly in answer; the cook grips the worktable, eyes wide, whispering it twice, and for a moment he is bright as noon; he unties his apron to go to her, and falters at the doors, faded too thin to cross the dark alone; cooks come when dinner is called, he says finally, call a proper dinner, small guest, and I will come to her through any dark in this house'>>",
+      "body": "<<FILL role=rising words=100 beats='Pearl; the name goes through the kitchen like a struck bell, every copper pot ringing faintly in answer; write this re-entry-safe, the name striking fresh on a first telling and ringing deeper on a return, never a one-time revelation; the cook grips the worktable, eyes wide, whispering it twice, and for a moment he is bright as noon; he unties his apron to go to her, and falters at the doors, faded too thin to cross the dark alone; cooks come when dinner is called, he says finally, call a proper dinner, small guest, and I will come to her through any dark in this house'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1279,7 +1279,7 @@
     },
     {
       "id": "wg_tell",
-      "body": "<<FILL role=rising words=100 beats='June says it plain and kind: the names are people, your people, a cook and a desk-keeper and two racing children, and the desk-keeper, Pearl, is downstairs at her post right now, missing you; the gardener goes very still; a wind moves through the shut glasshouse, every leaf turning as if the whole garden looked up at once; write her wonder re-entry-safe, the truth landing fresh or landing deeper, never a one-time confession; then the evening is finally coming, she whispers, and the buds along the bed tremble like held applause'>>",
+      "body": "<<FILL role=rising words=100 beats='June says it plain and kind, using only what she knows for certain: this garden has been keeping a family, a family of five, and one of them, a small silver-haired lady called Pearl, is downstairs at the front desk right now, keeping the lights on and missing them all; the gardener goes very still; a wind moves through the shut glasshouse, every leaf turning as if the whole garden looked up at once; write her wonder re-entry-safe, the truth landing fresh on a first telling and settling deeper on a return, never a one-time confession; then the evening is finally coming, she whispers, and the buds along the bed tremble like held applause'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1801,7 +1801,7 @@
     },
     {
       "id": "gf_play",
-      "body": "<<FILL role=choice words=96 beats='a practice round, then, guest versus house; June rides the trolley-chariot while Min pushes and Milo defends door 35 with a pillow shield, and the towel-ball sails and bounces and the corridor thunders with entirely safe mayhem; June learns the bank shot off the lucky dent, the underarm lob, the sacred rule that hitting the chandelier is a do-over; she has not laughed this hard all year'>>",
+      "body": "<<FILL role=choice words=96 beats='a practice round, then, guest versus house; June rides the trolley-chariot while one twin pushes and the other defends door 35 with a pillow shield, and the towel-ball sails and bounces and the corridor thunders with entirely safe mayhem; June learns the bank shot off the lucky dent, the underarm lob, the sacred rule that hitting the chandelier is a do-over; she has not laughed this hard all year'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1835,7 +1835,7 @@
     },
     {
       "id": "gf_deal",
-      "body": "<<FILL role=rising words=98 beats='the deal is struck bellhop-fashion, white-glove handshakes, both twins at once, crossed arms; when the call comes and the hall is bright, they will come down, walking in the lobby, RUNNING on the stairs, and play the final point of the Great Corridor Game before the whole assembled family, grandmother's bell to start it; and afterward, they announce, they will carry every bag in the building forever, which is bellhop for happily ever after'>>",
+      "body": "<<FILL role=rising words=100 beats='the deal is struck bellhop-fashion, white-glove handshakes, both twins at once, crossed arms; write the deal re-entry-safe, sworn fresh on a first visit or gladly and solemnly re-sworn on a return, never a one-time ceremony; when the call comes and the hall is bright, they will come down, walking in the lobby, RUNNING on the stairs, and play the final point of the Great Corridor Game before the whole assembled family, grandmother's bell to start it; and afterward, they announce, they will carry every bag in the building forever, which is bellhop for happily ever after'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2586,7 +2586,7 @@
     },
     {
       "id": "fp_table2",
-      "body": "<<FILL role=rising words=96 beats='June sets the five places with the best of everything the sideboard offers, candlesticks, folded napkins, polished silver; she does not know every name to write, so she writes one card in her best letters and stands it at the center, THE FAMILY, MERIDIAN 100; the five chairs seem to square their shoulders'>>",
+      "body": "<<FILL role=rising words=96 beats='June sets the five places with the best of everything the sideboard offers, candlesticks, folded napkins, polished silver; rather than guess which of the five belongs at which seat, she writes one card in her best letters for all of them together and stands it at the center, THE FAMILY, MERIDIAN 100; the five chairs seem to square their shoulders'>>",
       "is_ending": false,
       "choices": [
         {
