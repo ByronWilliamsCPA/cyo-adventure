@@ -409,6 +409,38 @@ export type ChildEngagementItem = {
 };
 
 /**
+ * ChildEnvelopeUsageView
+ *
+ * One child's ADR-015 G3 pre-authorization envelope usage this month.
+ *
+ * Deliberately usage-only, no balance-display styling here (the balance
+ * UI is a later, out-of-scope piece); this is the raw numbers a future
+ * guardian-facing view will render.
+ */
+export type ChildEnvelopeUsageView = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve: boolean;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope: number | null;
+    /**
+     * Used This Month
+     */
+    used_this_month: number;
+};
+
+/**
  * ChildSessionCreateBody
  *
  * A guardian's (or admin's) request to mint a child session for one profile.
@@ -823,6 +855,30 @@ export type DeviceGrantView = {
      * Authorized By
      */
     authorized_by: string;
+};
+
+/**
+ * FamilyBudgetView
+ *
+ * GET /families/me/budget: the caller's family monthly story budget (ADR-015 G7/G3).
+ */
+export type FamilyBudgetView = {
+    /**
+     * Quota
+     */
+    quota: number;
+    /**
+     * Spent This Month
+     */
+    spent_this_month: number;
+    /**
+     * Remaining
+     */
+    remaining: number;
+    /**
+     * Children
+     */
+    children: Array<ChildEnvelopeUsageView>;
 };
 
 /**
@@ -4480,6 +4536,37 @@ export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses = {
 };
 
 export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponse = ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses[keyof ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses];
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/families/me/budget';
+};
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetError = GetFamilyBudgetApiV1FamiliesMeBudgetGetErrors[keyof GetFamilyBudgetApiV1FamiliesMeBudgetGetErrors];
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyBudgetView;
+};
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetResponse = GetFamilyBudgetApiV1FamiliesMeBudgetGetResponses[keyof GetFamilyBudgetApiV1FamiliesMeBudgetGetResponses];
 
 export type ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData = {
     body: StoryRequestApproveBody;

@@ -751,6 +751,30 @@ class FamilyListView(BaseModel):
     families: list[FamilyView]
 
 
+class ChildEnvelopeUsageView(BaseModel):
+    """One child's ADR-015 G3 pre-authorization envelope usage this month.
+
+    Deliberately usage-only, no balance-display styling here (the balance
+    UI is a later, out-of-scope piece); this is the raw numbers a future
+    guardian-facing view will render.
+    """
+
+    profile_id: str
+    display_name: str
+    request_auto_approve: bool
+    monthly_request_envelope: int | None
+    used_this_month: int
+
+
+class FamilyBudgetView(BaseModel):
+    """GET /families/me/budget: the caller's family monthly story budget (ADR-015 G7/G3)."""
+
+    quota: int
+    spent_this_month: int
+    remaining: int
+    children: list[ChildEnvelopeUsageView]
+
+
 AuthoringMethod = Literal["skeleton_fill", "fresh_generation"]
 AuthoringMechanism = Literal["skill", "automated_provider"]
 # The generation backends an admin may name. Mirrors the

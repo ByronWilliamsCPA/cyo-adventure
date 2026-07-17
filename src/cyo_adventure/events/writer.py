@@ -17,7 +17,11 @@ if TYPE_CHECKING:
 _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     EventType.REQUEST_CREATED: frozenset({"initiator_role"}),
     EventType.REQUEST_APPROVED: frozenset(
-        {"series_created", "anchor_resolved", "series_id"}
+        # ADR-015 G3: "auto_approved" is the pre-authorization audit marker
+        # (True when this approval came from a guardian's standing envelope,
+        # not a fresh explicit click); a bool, not free text, so it fits the
+        # PII-free payload contract unchanged.
+        {"series_created", "anchor_resolved", "series_id", "auto_approved"}
     ),
     EventType.REQUEST_DECLINED: frozenset(),
     EventType.PLAN_ASSIGNED: frozenset({"job_status", "plan_kind"}),

@@ -112,9 +112,32 @@ class Family(Base):
     """A family: the ownership root for users, profiles, and stories."""
 
     __tablename__ = "family"
+    __table_args__ = (
+        CheckConstraint(
+            "monthly_story_quota IS NULL OR monthly_story_quota >= 0",
+            name="ck_family_monthly_story_quota_non_negative",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200))
+    # ADR-015 G7: the guardian cost gate's per-family monthly spend ceiling
+    # (spend = story requests that entered "approved" in the current UTC
+    # calendar month, see story_requests/service.py::family_monthly_spend).
+    # NULL means "use the platform default"
+    # (settings.default_monthly_story_quota) rather than freezing a stale
+    # per-row copy of that default at family-creation time, so raising the
+    # platform default automatically lifts every family that has not been
+    # given an explicit override.
+    # #CRITICAL: payment/financial: this is the ceiling that gates real LLM
+    # generation spend (ADR-003/ADR-015); a bug that treats NULL as
+    # "unlimited" instead of "platform default" would let a family bypass
+    # the cost gate entirely.
+    # #VERIFY: story_requests/service.py::_resolve_family_quota is the only
+    # reader; tests/unit/test_story_requests.py pins the None-falls-back
+    # case and tests/integration/test_story_requests_budget.py pins the
+    # override case end to end.
+    monthly_story_quota: Mapped[int | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
@@ -231,6 +254,12 @@ class ChildProfile(Base):
     """A per-child reading profile with age band and content caps."""
 
     __tablename__ = "child_profile"
+    __table_args__ = (
+        CheckConstraint(
+            "monthly_request_envelope IS NULL OR monthly_request_envelope >= 0",
+            name="ck_child_profile_monthly_request_envelope_non_negative",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
@@ -265,6 +294,28 @@ class ChildProfile(Base):
     # #VERIFY: tests/integration/test_profiles.py::test_pin_hash_never_serialized
     # asserts the raw response JSON never contains "pin_hash".
     pin_hash: Mapped[str | None] = mapped_column(Text, default=None)
+    # ADR-015 G3: guardian-set per-child pre-authorization ("let this child's
+    # requests auto-consent"). False by default: a guardian must explicitly
+    # opt a child in. request_auto_approve alone is not sufficient to
+    # auto-approve anything -- monthly_request_envelope must ALSO be set (see
+    # below); the two columns are independent so a guardian can flip this on
+    # ahead of setting an envelope without accidentally auto-approving under
+    # an implicit "unlimited" envelope.
+    request_auto_approve: Mapped[bool] = mapped_column(default=False)
+    # The number of this child's own requests that may auto-approve in the
+    # current UTC calendar month before new requests fall back to the
+    # pending queue (story_requests/service.py::can_auto_approve). NULL means
+    # "no envelope set", which by itself blocks auto-approval even when
+    # request_auto_approve is True: pre-authorization delegates the click,
+    # never the liability (ADR-015), so there is no implicit-unlimited state.
+    # #CRITICAL: payment/financial: this bounds how much of the family's
+    # budget one child can auto-spend without a guardian's per-request
+    # click; a bug that treats NULL as "no limit" would let a
+    # mis-configured profile drain the family's whole monthly quota.
+    # #VERIFY: story_requests/service.py::can_auto_approve treats
+    # monthly_request_envelope IS NULL as "cannot auto-approve", never as
+    # unlimited; tests/unit/test_story_requests.py pins this.
+    monthly_request_envelope: Mapped[int | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
@@ -568,6 +619,15 @@ class StoryRequest(Base):
             classifier score/source.
         reviewed_by: The guardian/admin who approved or declined, or ``None``.
         reviewed_at: When the decision was recorded, or ``None``.
+        approved_at: When the request entered ``approved`` specifically, or
+            ``None`` for a request that is still pending, was declined, or
+            was blocked. Distinct from ``reviewed_at`` (shared by both the
+            approve and decline transitions) so ADR-015's monthly spend
+            derivation (story_requests/service.py::family_monthly_spend) can
+            filter on approval alone without also relying on ``status`` to
+            disambiguate; stamped once, in ``_build_concept``, and never
+            updated afterward (a request's lifecycle is one-way: it never
+            re-enters ``pending`` after reaching ``approved``).
         concept_id: The concept created on approval, or ``None``.
         series_id: The series this request continues, or ``None`` for a
             standalone request (WS-B PR 3).
@@ -638,6 +698,12 @@ class StoryRequest(Base):
         Index("ix_story_request_family_status", "family_id", "status"),
         Index("ix_story_request_profile_status", "profile_id", "status"),
         Index("ix_story_request_status", "status"),
+        # ADR-015: the guardian cost gate and the budget endpoint both query
+        # "approved rows for this family/profile since <month start>"; these
+        # back that access pattern the same way the *_status indexes above
+        # back the status-scoped ones.
+        Index("ix_story_request_family_approved_at", "family_id", "approved_at"),
+        Index("ix_story_request_profile_approved_at", "profile_id", "approved_at"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
@@ -667,6 +733,7 @@ class StoryRequest(Base):
         ForeignKey(_FK_USER), default=None
     )
     reviewed_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    approved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     concept_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_CONCEPT), default=None
     )

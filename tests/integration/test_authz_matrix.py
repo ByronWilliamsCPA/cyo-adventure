@@ -484,6 +484,13 @@ _ROUTE_SPECS: list[RouteSpec] = [
         "/api/v1/families/me/reading-summary",
         frozenset({Role.GUARDIAN, Role.ADMIN}),
     ),
+    # -- story_requests.py: ADR-015 G7/G3 budget snapshot, same shape as
+    # reading-summary above (adults-only, always the caller's own family) --
+    RouteSpec(
+        "GET",
+        "/api/v1/families/me/budget",
+        frozenset({Role.GUARDIAN, Role.ADMIN}),
+    ),
     RouteSpec(
         "PUT",
         "/api/v1/reading-state/{profile_id}/{storybook_id}",
@@ -1116,6 +1123,7 @@ _DEVICE_REJECTED_ROUTE_KEYS: list[tuple[str, str]] = [
     ("GET", "/api/v1/admin/moderation/dashboard"),
     ("GET", "/api/v1/admin/provider-allowlist"),
     ("GET", "/api/v1/review-queue"),
+    ("GET", "/api/v1/families/me/budget"),
     ("POST", "/api/v1/storybooks/{storybook_id}/approve"),
     # guardian-only
     ("POST", "/api/v1/concepts"),

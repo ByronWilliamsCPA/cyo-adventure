@@ -539,6 +539,20 @@ class Settings(BaseSettings):
         default=None, validation_alias="R2_PUBLIC_BASE_URL"
     )
     covers_backup_dir: str | None = None
+
+    # --- ADR-015 G7: guardian cost gate ---
+    # Platform-wide default monthly story-request budget for a family whose
+    # Family.monthly_story_quota is unset (NULL): resolved at read time by
+    # story_requests/service.py::_resolve_family_quota, never copied onto the
+    # row at family creation, so raising this default lifts every
+    # not-yet-customized family automatically.
+    # #CRITICAL: payment/financial: this is the platform-wide fallback for
+    # the generation-spend gate; a value that is too high (or accidentally
+    # unbounded) weakens ADR-015's guardian cost gate for every family that
+    # has not set an explicit override.
+    # #VERIFY: tests/unit/test_story_requests.py pins the None-falls-back
+    # case against this default.
+    default_monthly_story_quota: int = Field(default=10, ge=0)
     # #ASSUME: external resources: the "-preview" alias was retired on the
     # Gemini API (shutdown 2026-06-25); the stable Nano Banana Pro id is used.
     # #VERIFY: override via COVER_MODEL if Google renames the stable channel.
