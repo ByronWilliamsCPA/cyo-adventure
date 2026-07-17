@@ -33,8 +33,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   repair, and the band-policy validator (PL-22) fails closed.
 - Generation quota is now debited on the legacy intake path, and the
   generation report is restricted to admins.
-- The FIPS checker no longer flags ordinary `seed()`/`idea()` method calls
-  outside crypto contexts.
+
+## [0.9.0] - 2026-07-17
+
+### Added
+
+- Strict FIPS compliance gate (ADR-013). The FIPS checker gains a
+  `--fail-level {error,warning,info}` flag and an acknowledged-findings
+  baseline in `pyproject.toml` (`[tool.fips_check.acknowledged]`): each
+  acknowledgment needs a reason, a citation into the crypto inventory, and
+  a reviewed date that expires after 90 days, matching the ADR-013
+  quarterly review. CI now runs at `--fail-level info`, so every finding
+  must be fixed or freshly acknowledged; errors can never be baselined.
+  New runtime assertions (`tests/unit/test_fips_runtime_assertions.py`)
+  mechanically back the acknowledged dispositions: dependency floors for
+  `cryptography` and `pyjwt`, OpenSSL 3.x links, a TLS 1.2+ default-context
+  floor, and the asymmetric-only JWT allowlist validator. Two new CI jobs
+  assert the runtime image's ML-KEM-capable OpenSSL 3.5 line: a Debian 13
+  container run of the assertion suite and a shell-free check inside the
+  pinned production base image digest.
+
+### Fixed
+
+- FIPS checker no longer flags domain `seed()`/`idea()` method calls as the
+  SEED/IDEA block ciphers; ambiguous cipher names now require cryptographic
+  context (a crypto-library import or a crypto namespace in the call chain).
+- The FIPS workflow's failure gate now actually fires: the checker's exit
+  code was previously swallowed by a `tee` pipeline without `pipefail`, so
+  the job always passed while the PR comment could say FAILED. Trigger
+  paths now also cover `tests/`, the checker script, and the `Dockerfile`.
 
 ## [0.8.0] - 2026-07-17
 
@@ -1783,7 +1810,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.5.2...v0.6.0
