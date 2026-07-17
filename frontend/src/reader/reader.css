@@ -26,6 +26,37 @@
   flex: 1;
 }
 
+/* UX-K2: A / A+ / A++ text-size picker in the reader top bar. */
+.reader-textsize {
+  display: inline-flex;
+  gap: var(--space-1, 0.25rem);
+  flex-shrink: 0;
+}
+
+.reader-textsize__button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--space-2, 0.5rem);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold, 600);
+  color: var(--color-ink);
+  background: var(--color-parchment);
+  border: 2px solid var(--color-parchment-deeper);
+  border-radius: var(--radius-full, 999px);
+  cursor: pointer;
+}
+
+.reader-textsize__button:hover,
+.reader-textsize__button:focus-visible {
+  border-color: var(--color-amber, #e07f2e);
+}
+
+.reader-textsize__button--active {
+  background: var(--color-amber, #e07f2e);
+  border-color: var(--color-amber, #e07f2e);
+  color: var(--color-parchment, #f8f3e8);
+}
+
 .reader-leave {
   display: inline-flex;
   align-items: center;

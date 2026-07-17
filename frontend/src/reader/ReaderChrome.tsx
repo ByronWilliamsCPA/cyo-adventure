@@ -23,6 +23,11 @@ export interface ReaderChromeProps {
    * at any point, not only from the ending screen.
    */
   back?: ReactNode
+  /**
+   * Optional trailing control, rendered at the end of the bar. The reader
+   * passes the A/A+/A++ text-size picker here (UX-K2).
+   */
+  fontControl?: ReactNode
 }
 
 /**
@@ -31,13 +36,20 @@ export interface ReaderChromeProps {
  * so no badge renders then; going offline shows a kid-readable "No internet"
  * so the change of state is the thing that gets named.
  */
-export function ReaderChrome({ percent, label, showLabel = false, back }: ReaderChromeProps) {
+export function ReaderChrome({
+  percent,
+  label,
+  showLabel = false,
+  back,
+  fontControl,
+}: ReaderChromeProps) {
   const online = useOnlineStatus()
   return (
     <header className="reader-chrome">
       {back}
       {online ? null : <StatusBadge status="offline" label="No internet" />}
       <ProgressBar value={percent} label={label} showLabel={showLabel} />
+      {fontControl}
     </header>
   )
 }
