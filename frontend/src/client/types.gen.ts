@@ -1437,6 +1437,10 @@ export type LibraryProgress = {
      * Updated At
      */
     updated_at: string;
+    /**
+     * Completed
+     */
+    completed?: boolean;
 };
 
 /**

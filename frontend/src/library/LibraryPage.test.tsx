@@ -81,7 +81,9 @@ describe('LibraryPage', () => {
     renderLibrary()
     const hero = await screen.findByRole('region', { name: /continue reading/i })
     expect(hero).toHaveTextContent('The Lantern')
-    expect(hero).toHaveTextContent('5 of 10 pages explored')
+    // UX-K5: no false linear denominator (was "5 of 10 pages explored"); a
+    // branching story never visits all nodes, so the "of N" implied a wrong goal.
+    expect(hero).toHaveTextContent('5 pages explored')
     const shelf = screen.getByRole('region', { name: /more to explore/i })
     expect(shelf).toHaveTextContent('Sky Pirates')
     expect(shelf).toHaveTextContent('Acorn Detectives')

@@ -11,6 +11,12 @@ export interface LibraryProgressView {
   current_node: string
   nodes_visited: number
   updated_at: string
+  /**
+   * True when the child reached an ending (shelf shows "Finished!", UX-K5).
+   * Optional so a library list cached offline before this field existed still
+   * types cleanly; a missing value reads as "not finished".
+   */
+  completed?: boolean
 }
 
 export interface LibraryItemView {

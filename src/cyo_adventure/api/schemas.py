@@ -127,6 +127,11 @@ class LibraryProgress(BaseModel):
     current_node: str
     nodes_visited: int
     updated_at: datetime
+    # True when the child's current node is an ending, i.e. they reached a
+    # finish this playthrough. Lets the shelf render "Finished!" instead of a
+    # misleading "N of M pages explored" that under-reports a branching book
+    # (UX-K5); a branch touches only a fraction of all nodes.
+    completed: bool = False
 
 
 class LibraryItem(BaseModel):

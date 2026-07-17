@@ -35,6 +35,42 @@ describe('BookCard', () => {
     expect(screen.queryByRole('button', { name: /ask for the next book/i })).not.toBeInTheDocument()
   })
 
+  it('shows "Finished!" for a completed book instead of a page count (UX-K5)', () => {
+    renderCard({
+      ...BASE_ITEM,
+      progress: {
+        current_node: 'nEnd',
+        nodes_visited: 3,
+        updated_at: '2026-07-01T10:00:00Z',
+        completed: true,
+      },
+    })
+    expect(screen.getByText('Finished!')).toBeInTheDocument()
+    expect(screen.queryByText(/pages explored/i)).not.toBeInTheDocument()
+  })
+
+  it('shows a page count (no false denominator) for an in-progress hero book', () => {
+    render(
+      <MemoryRouter>
+        <BookCard
+          item={{
+            ...BASE_ITEM,
+            progress: {
+              current_node: 'n2',
+              nodes_visited: 3,
+              updated_at: '2026-07-01T10:00:00Z',
+              completed: false,
+            },
+          }}
+          profileId="p1"
+          hero
+          onRate={() => {}}
+        />
+      </MemoryRouter>
+    )
+    expect(screen.getByText('3 pages explored')).toBeInTheDocument()
+  })
+
   it('does not render an ask-for-the-next-book button when onContinue is not provided, even for a series book', () => {
     renderCard({ ...BASE_ITEM, series_id: 'ser1', book_index: 1 })
     expect(screen.queryByRole('button', { name: /ask for the next book/i })).not.toBeInTheDocument()

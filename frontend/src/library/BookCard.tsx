@@ -58,14 +58,24 @@ export function BookCard({
         <h3 className="book-card__title">{item.title}</h3>
         {hero ? (
           <ProgressBar
-            value={pct}
+            // A finished book fills the bar and reads "Finished!" instead of a
+            // misleading "N of M pages explored" that under-reports a branching
+            // story (a branch touches only a fraction of all nodes) (UX-K5).
+            value={item.progress?.completed ? 100 : pct}
             label={
-              item.progress
-                ? `${item.progress.nodes_visited} of ${item.node_count} pages explored`
-                : 'Not started'
+              item.progress?.completed
+                ? 'Finished!'
+                : item.progress
+                  ? `${item.progress.nodes_visited} pages explored`
+                  : 'Not started'
             }
             showLabel
           />
+        ) : item.progress?.completed ? (
+          <div className="book-card__finished">
+            <ProgressBar value={100} />
+            <span className="book-card__finished-label">Finished!</span>
+          </div>
         ) : started ? (
           <ProgressBar value={pct} />
         ) : (
