@@ -147,7 +147,7 @@
     },
     {
       "id": "r_coord_harbor_shed",
-      "body": "The tide-gauge shed is padlocked, the chain rusted stiff around the hasp. But one window is cracked open just enough to see inside if she presses close to the glass. A dusty receiver sits on a shelf inside, its little indicator light blinking in perfect time with the loop, proof that whatever is broadcasting reaches this far down the coast without even trying very hard. It isn't abandoned, not really. Somebody built this to listen and left it listening long after everyone else stopped paying attention. Wren weighs her options in the wind coming off the water, teeth chattering slightly. She could force the warped door, which will take muscle and probably noise she'd rather not make this close to the harbor, or she could log the frequency carefully in her notebook, satisfied enough with what she's already seen, and walk home to sleep on it.",
+      "body": "The tide-gauge shed is padlocked, the chain rusted stiff around the hasp. But one window is cracked open just enough to see inside if she presses close to the glass. A dusty receiver sits on a shelf inside, its little indicator light blinking in perfect time with the loop. This is proof that whatever is broadcasting reaches this far down the coast without even trying hard. It isn't abandoned, not really. Somebody built this to listen and left it listening long after everyone else stopped paying attention. Wren weighs her options in the wind coming off the water, teeth chattering slightly. She could force the warped door, which will take muscle and probably noise she'd rather not make this close to the harbor. Or she could log the frequency carefully in her notebook, satisfied with what she's already seen, and walk home to sleep on it.",
       "is_ending": false,
       "choices": [
         {
@@ -164,7 +164,7 @@
     },
     {
       "id": "r_coord_shed_in",
-      "body": "The door gives with a groan of swollen wood, louder than Wren would like this close to the harbormaster's window. And she freezes for a second before deciding nobody heard. Inside, the receiver is wired straight to a hand-drawn card taped beside it: RELAY KX, in block letters gone soft with old damp and salt air. This little shed isn't the source of anything, she realizes almost at once. It's an echo, a listening post someone rigged up years ago to catch a signal broadcasting from somewhere else fully, out where the land at last runs out into the sea. Whoever built this cared enough to make truly sure the loop reached the harbor even after the relay itself went quiet to everyone but the handful of people who still knew just where to look for it.",
+      "body": "The door gives with a groan of swollen wood, louder than Wren would like this close to the harbormaster's window, and she freezes for a second before deciding nobody heard. Inside, the receiver is wired straight to a hand-drawn card taped beside it: RELAY KX, in block letters gone soft with old damp and salt air. This little shed isn't the source of anything, she realizes at once. It's only an echo, a listening post someone rigged up years ago to catch a signal broadcasting from somewhere else, out where the land finally runs out into the sea. Whoever built this cared enough to make sure the loop reached the harbor even after the relay itself went quiet. It stayed alive for the handful of people who still knew where to look for it.",
       "is_ending": false,
       "choices": [
         {
@@ -568,7 +568,7 @@
     },
     {
       "id": "r_no_cards",
-      "body": "The QSL cards spill across Wren's lap, dozens of them at once, sent by listeners scattered up and down the whole coast, all logging the same stubborn signal across decades of quiet evenings. Most are friendly, almost cheerful, the radio equivalent of a postcard from a stranger on vacation. But one card is heavier than the rest, thicker paper, older ink. And it names an exact frequency alongside a call sign: KX ALDER, underlined twice in her grandfather's own hand like it mattered more than the others. She could chase that single heavier card straight to whatever it's really pointing at. Or she could set the whole stack of ordinary postcards aside for now and try a different pile in the trunk instead.",
+      "body": "The QSL cards spill across Wren's lap, dozens of them at once. Listeners scattered up and down the whole coast sent them, all logging the same stubborn signal across decades of quiet evenings. Most are friendly, almost cheerful, the radio equivalent of a postcard from a stranger on vacation. But one card is heavier than the rest, thicker paper, older ink. It names an exact frequency alongside a call sign: KX ALDER, underlined twice in her grandfather's own hand like it mattered more than the others. She could chase that single heavier card straight to whatever it's really pointing at. Or she could set the whole stack of ordinary postcards aside for now and try a different pile in the trunk instead.",
       "is_ending": false,
       "choices": [
         {
@@ -608,7 +608,7 @@
     },
     {
       "id": "r_no_shed",
-      "body": "The radio shed smells like solder and dust, just the way it always has for as long as Wren can remember visiting it. Her grandfather's tuning notes are pinned up in careful ranks across one whole wall, a lifetime of frequencies and dates recorded in his small, precise hand. But the filing cabinet where he kept his actual correspondence, the letters and records that might really explain any of this, is padlocked tight. And the only key Wren has ever seen for it is lost somewhere in the house, if it even still exists after all these years. She could read carefully through the pinned notes first. Or she could try forcing that stubborn old lock right now and at last see what he was hiding behind it all along.",
+      "body": "The radio shed smells like solder and dust, just the way it always has for as long as Wren can remember visiting it. Her grandfather's tuning notes are pinned up in careful ranks across one whole wall, a lifetime of frequencies and dates recorded in his small, precise hand. But the filing cabinet where he kept his actual correspondence is padlocked tight. It holds the letters and records that might really explain any of this. The only key Wren has ever seen for it is lost somewhere in the house, if it even still exists after all these years. She could read carefully through the pinned notes first. Or she could try forcing that stubborn old lock right now and finally see what he was hiding behind it all along.",
       "is_ending": false,
       "choices": [
         {
@@ -799,7 +799,7 @@
     },
     {
       "id": "m_num_time",
-      "body": "Treating the whole string as timestamps instead of a cipher, Wren logs the gap between each broadcast cycle carefully. She holds a stopwatch in one hand, a notebook balanced awkwardly on her knee. The intervals are shrinking, she notices almost right away. Each cycle comes a little sooner than the one before it, a pattern far too steady to be some accident of failing equipment. She could keep timing the loop carefully, cycle after patient cycle, and use the shrinking pattern to project just when it hits zero. Or she could take what she already has right now and map it straight onto a calendar instead, trading precision for speed, a rougher answer sooner rather than a careful one later.",
+      "body": "Treating the whole string as timestamps instead of a cipher, Wren logs the gap between each broadcast cycle carefully. She holds a stopwatch in one hand, a notebook balanced awkwardly on her knee. The intervals are shrinking, she notices almost right away. Each cycle comes a little sooner than the one before it, a pattern far too steady to be an accident of failing equipment. She could keep timing the loop carefully, cycle after patient cycle. Then she could use the shrinking pattern to project just when it hits zero. Or she could take what she already has right now, map it straight onto a calendar instead, and trade precision for speed, a rougher answer sooner rather than a careful one later.",
       "is_ending": false,
       "choices": [
         {
@@ -816,7 +816,7 @@
     },
     {
       "id": "m_num_intervals",
-      "body": "The intervals are collapsing along a clean, unmistakable curve. When Wren plots them out carefully on graph paper, the line drives straight toward zero within the week, maybe even sooner than that. Whatever this loop really is, it is not eternal after all, whatever it felt like at three in the morning listening to it repeat itself endlessly. It is counting down, on purpose and precisely, toward some specific moment out there in the near future. Something is clearly meant to happen the exact instant it reaches the bottom of that curve she just drew.",
+      "body": "The intervals are collapsing along a clean, unmistakable curve. When Wren plots them out carefully on graph paper, the line drives straight toward zero within the week, maybe even sooner than that. Whatever this loop really is, it is not eternal after all. It is not what it felt like at three in the morning, listening to it repeat itself endlessly. It is counting down, on purpose and precisely, toward some specific moment out there in the near future. Something is clearly meant to happen the exact instant it reaches the bottom of that curve she just drew.",
       "is_ending": false,
       "choices": [
         {
@@ -1227,7 +1227,7 @@
     },
     {
       "id": "n_b3_choice",
-      "body": "One hour left on the clock. And three fully different ways to spend every minute of it. Wren could climb on her bike right now and race straight to the relay station itself, answering the signal in person at its actual source before the failing power cell at last gives out for good. She could stay right here instead and use her grandfather's old transmitter to rebroadcast Alder's message wide and far enough that Marin, wherever she really is tonight, might somehow happen to catch it. Or she could reach for the phone instead and rouse whoever in this whole town might be able to reach the headland faster and surer than one girl on a bicycle riding straight into a building gale. Whichever she at last picks, the clock does not slow down even a little to wait for her to feel ready.",
+      "body": "One hour is left on the clock. There are three different ways to spend every minute of it. Wren could climb on her bike right now and race straight to the relay station itself, answering the signal in person at its actual source before the failing power cell finally gives out for good. She could stay right here instead and use her grandfather's old transmitter to rebroadcast Alder's message wide and far enough that Marin, wherever she really is tonight, might somehow happen to catch it. Or she could reach for the phone instead. She could rouse whoever in this whole town might be able to reach the headland faster and surer than one girl on a bicycle riding straight into a building gale. Whichever she picks at last, the clock does not slow down even a little to wait for her to feel ready.",
       "is_ending": false,
       "choices": [
         {
@@ -1596,7 +1596,7 @@
     },
     {
       "id": "e_re_message",
-      "body": "Only the after-hours recorder ever really answers her call. And Wren leaves the whole story into that empty electronic void anyway, hoping desperately that somebody plays it back first thing at dawn tomorrow. Dawn, though, comes well after the countdown at last does. And by the time a club volunteer really listens to her recorded message the next morning, the relay loop has already fallen silent for good out on the headland. Her call arrives just one long, rain-soaked night too late to matter at all.",
+      "body": "Only the after-hours recorder ever answers her call, and Wren leaves the whole story into that empty electronic void anyway. She hopes desperately that somebody plays it back first thing at dawn tomorrow. Dawn, though, comes well after the countdown does. By the time a club volunteer really listens to her recorded message the next morning, the relay loop has already fallen silent for good out on the headland. Her call arrives just one long, rain-soaked night too late to matter at all.",
       "is_ending": true,
       "ending": {
         "id": "e_re_message",
