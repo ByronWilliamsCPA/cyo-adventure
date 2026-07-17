@@ -551,11 +551,6 @@ known-first-party = ["cyo_adventure"]
     "PLC0415", # Local imports to avoid circular dependencies
 ]
 
-# Financial utilities - Template documentation style
-"src/*/utils/financial.py" = [
-    "D200",    # Multi-line docstring for template documentation
-]
-
 # Logging utilities - Structlog processor interface
 "src/*/utils/logging.py" = [
     "ARG001",  # Unused args required by structlog processor interface

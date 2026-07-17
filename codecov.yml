@@ -172,11 +172,14 @@ component_management:
     - component_id: safety-critical
       name: Safety & Security Critical
       # Content moderation is the safety gate for a children's app; the
-      # security middleware + core plumbing carry every request.
+      # security middleware + core plumbing carry every request; api/deps.py is
+      # the auth boundary and publishing is the approve-and-publish gate.
       paths:
         - src/cyo_adventure/moderation/**
         - src/cyo_adventure/middleware/**
         - src/cyo_adventure/core/**
+        - src/cyo_adventure/api/deps.py
+        - src/cyo_adventure/publishing/**
       statuses:
         - type: project
           target: 90%
