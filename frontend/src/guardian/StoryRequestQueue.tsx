@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactElement } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
@@ -117,9 +117,13 @@ export function StoryRequestQueue({
     })
   }
 
+  const [reloadKey, setReloadKey] = useState(0)
+  const retry = useCallback(() => setReloadKey((k) => k + 1), [])
+
   useEffect(() => {
     let cancelled = false
     async function load() {
+      setState({ kind: 'loading' })
       try {
         const requests = await queueApi.listPending()
         if (!cancelled) {
@@ -151,7 +155,7 @@ export function StoryRequestQueue({
     return () => {
       cancelled = true
     }
-  }, [queueApi])
+  }, [queueApi, reloadKey])
 
   function removeRow(id: string) {
     setState((prev) =>
@@ -263,9 +267,12 @@ export function StoryRequestQueue({
     )
   } else if (state.kind === 'error') {
     content = (
-      <p role="alert" className="console__error cyo-text-error">
-        We could not load story requests. Please reload.
-      </p>
+      <div role="alert" className="console__error">
+        <p className="cyo-text-error">We could not load story requests.</p>
+        <Button variant="primary" onClick={retry}>
+          Try again
+        </Button>
+      </div>
     )
   } else if (state.requests.length === 0) {
     content = (

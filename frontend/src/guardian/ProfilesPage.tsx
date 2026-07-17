@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
@@ -25,9 +25,14 @@ export function ProfilesPage() {
   const [loadError, setLoadError] = useState(false)
   const [editing, setEditing] = useState<Editing>(null)
 
+  const [reloadKey, setReloadKey] = useState(0)
+  const retry = useCallback(() => setReloadKey((k) => k + 1), [])
+
   useEffect(() => {
     let cancelled = false
     async function load() {
+      setLoadError(false)
+      setProfiles(null)
       try {
         const rows = await profilesApi.list()
         if (!cancelled) setProfiles(rows)
@@ -40,7 +45,7 @@ export function ProfilesPage() {
     return () => {
       cancelled = true
     }
-  }, [profilesApi])
+  }, [profilesApi, reloadKey])
 
   async function create(body: ProfileFormCreateBody) {
     // POST /profiles has no pin field (extra=forbid); the dialog's
@@ -59,9 +64,12 @@ export function ProfilesPage() {
 
   if (loadError) {
     return (
-      <p role="alert" className="profiles__error">
-        We could not load your family&apos;s profiles. Please reload.
-      </p>
+      <div role="alert" className="profiles__error">
+        <p>We could not load your family&apos;s profiles.</p>
+        <Button variant="primary" onClick={retry}>
+          Try again
+        </Button>
+      </div>
     )
   }
 
