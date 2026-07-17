@@ -2868,6 +2868,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#toolmutmut-block-ships-mutmut-2x-config-keys-while-pinning-mutmut-3x-so-mutation-testing-crashes-at-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [tool.mutmut] block ships mutmut 2.x config keys while pinning mutmut 3.x, so mutation testing crashes at startup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fuzzing-scaffold-ships-a-no-op-harness-so-weekly-clusterfuzzlite-runs-pass-while-fuzzing-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fuzzing scaffold ships a no-op harness, so weekly ClusterFuzzLite runs pass while fuzzing nothing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fips-workflows-failure-gate-never-fires-tee-swallows-the-exit-code-and-trigger-paths-omit-the-tests-it-scans" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3413,6 +3435,28 @@
     <span class="md-ellipsis">
       
         FIPS checker has no awareness of the finalized post-quantum standards (FIPS 203/204/205)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toolmutmut-block-ships-mutmut-2x-config-keys-while-pinning-mutmut-3x-so-mutation-testing-crashes-at-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [tool.mutmut] block ships mutmut 2.x config keys while pinning mutmut 3.x, so mutation testing crashes at startup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fuzzing-scaffold-ships-a-no-op-harness-so-weekly-clusterfuzzlite-runs-pass-while-fuzzing-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fuzzing scaffold ships a no-op harness, so weekly ClusterFuzzLite runs pass while fuzzing nothing
       
     </span>
   </a>
@@ -4181,6 +4225,80 @@ and the <code>pyjwt</code> hint to cover asymmetric-only allowlists. See this re
 <code>_check_pqc_pre_standard_name</code>) for a working implementation.</p>
 <p><strong>Affected Files</strong>: template <code>scripts/check_fips_compatibility.py</code></p>
 <hr />
+<h3 id="toolmutmut-block-ships-mutmut-2x-config-keys-while-pinning-mutmut-3x-so-mutation-testing-crashes-at-startup"><code>[tool.mutmut]</code> block ships mutmut 2.x config keys while pinning mutmut 3.x, so mutation testing crashes at startup<a class="headerlink" href="#toolmutmut-block-ships-mutmut-2x-config-keys-while-pinning-mutmut-3x-so-mutation-testing-crashes-at-startup" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: High</li>
+<li><strong>Category</strong>: Configuration</li>
+<li><strong>Discovered</strong>: 2026-07-17</li>
+</ul>
+<p><strong>Issue</strong>: The template's <code>pyproject.toml</code> writes a <code>[tool.mutmut]</code> section in mutmut 2.x
+dialect (<code>paths_to_mutate</code> as a string, <code>tests_dir</code> as a string, <code>runner</code>, <code>backup</code>,
+<code>dict_synonyms</code>) while <code>[dependency-groups]</code>/dev extras pin <code>mutmut&gt;=3.3.1</code>. mutmut 3.x
+renamed <code>paths_to_mutate</code> to <code>source_paths</code> (a list), replaced <code>tests_dir</code> with
+<code>pytest_add_cli_args_test_selection</code> (a list), and removed <code>runner</code>/<code>backup</code>/<code>dict_synonyms</code>
+entirely. With the shipped config, <code>mutmut</code> crashes on import:
+<code>TypeError: can only concatenate list (not "str") to list</code>
+(<code>mutmut/configuration.py::_load_config</code>, concatenating the string <code>tests_dir</code> onto a list).
+Even if the string parsed, <code>paths_to_mutate = "src/"</code> would be iterated character-by-character
+into paths <code>s</code>, <code>r</code>, <code>c</code>, <code>/</code>. Every entry point is dead: <code>nox -s mutate</code>, a bare
+<code>uv run mutmut run</code>, and the weekly <code>mutation-testing.yml</code> workflow. The removed <code>runner</code> key
+also silently drops the template's intent of running pytest with <code>-o addopts=''</code>; under
+mutmut 3.x the copied <code>pyproject.toml</code> addopts (coverage, <code>--cov-fail-under=80</code>) apply to
+every mutant run unless <code>pytest_add_cli_args</code> re-suppresses them.</p>
+<p><strong>Context</strong>: Found while evaluating mutation-testing robustness for this project. Reproduced
+locally: <code>uv run mutmut version</code> crashes with the TypeError above (mutmut 3.6.0 resolved from
+the <code>&gt;=3.3.1</code> pin). Additionally, all three scheduled runs of <code>mutation-testing.yml</code> in this
+repo failed in about 20 seconds each, before ever reaching mutmut: the org reusable workflow
+<code>python-mutation.yml</code> runs <code>uv sync</code> with <code>--no-build</code>, which cannot install the project
+itself (<code>Distribution 'cyo-adventure==0.1.0 @ editable+.' can't be installed because it is
+marked as '--no-build' but has no binary distribution</code>). The net effect is that mutation
+testing has never produced a score for this project, and because the workflow is
+schedule-only, no PR surface ever shows the breakage.</p>
+<p><strong>Suggested Fix</strong>: (1) Rewrite the template's <code>[tool.mutmut]</code> block in mutmut 3.x dialect:
+<code>source_paths = ["src/&lt;package&gt;"]</code>, <code>pytest_add_cli_args_test_selection = ["tests/"]</code>, and
+<code>pytest_add_cli_args = ["-x", "-o", "addopts="]</code> to keep coverage out of mutant runs; drop
+<code>runner</code>, <code>backup</code>, <code>tests_dir</code>, and <code>dict_synonyms</code>. (2) Add <code>also_copy</code> entries for any
+non-<code>tests/</code> fixture directories the suite reads at runtime (this project reads
+<code>schema/conformance/</code> from <code>tests/unit/test_evaluator.py</code>), since mutmut 3.x runs tests from a
+<code>mutants/</code> copy of the tree. (3) In the org reusable workflow, either drop <code>--no-build</code> or add
+<code>--no-build-package</code> exceptions for the project itself so <code>uv sync</code> can install the editable
+root. (4) Consider failing the workflow loudly on config errors instead of skipping the run
+steps, and alerting on scheduled-workflow failures; a schedule-only job that has never
+succeeded is invisible.</p>
+<p><strong>Affected Files</strong>: template <code>pyproject.toml</code> (<code>[tool.mutmut]</code>), template <code>noxfile.py</code>
+(<code>mutate</code> session docstring), org reusable workflow
+<code>ByronWilliamsCPA/.github/.github/workflows/python-mutation.yml</code></p>
+<hr />
+<h3 id="fuzzing-scaffold-ships-a-no-op-harness-so-weekly-clusterfuzzlite-runs-pass-while-fuzzing-nothing">Fuzzing scaffold ships a no-op harness, so weekly ClusterFuzzLite runs pass while fuzzing nothing<a class="headerlink" href="#fuzzing-scaffold-ships-a-no-op-harness-so-weekly-clusterfuzzlite-runs-pass-while-fuzzing-nothing" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: High</li>
+<li><strong>Category</strong>: CI/CD</li>
+<li><strong>Discovered</strong>: 2026-07-17</li>
+</ul>
+<p><strong>Issue</strong>: The template's <code>fuzz/fuzz_input_validation.py</code> is an unfilled scaffold: its
+<code>test_one_input</code> consumes bytes via <code>FuzzedDataProvider.ConsumeUnicodeNoSurrogates(1024)</code>
+inside <code>contextlib.suppress(ValueError, TypeError)</code> and never imports or calls any project
+code (the <code># TODO: Import the module functions you want to fuzz</code> markers are still in place).
+Because <code>cifuzzy.yml</code> gates only on the existence of <code>fuzz/*.py</code>, the harness builds, runs for
+the full 600-second budget, and reports success every week. The green "Continuous Fuzzing"
+signal is indistinguishable from a real fuzzing program despite exercising zero lines of
+application code. The template's <code>fuzz/README.md</code> compounds this by claiming fuzzing runs "on
+every push to main/develop and on PRs", while the workflow is schedule/dispatch-only.</p>
+<p><strong>Context</strong>: Found while evaluating fuzzing robustness for this project. The last four
+scheduled ClusterFuzzLite runs are green at about 13 minutes each; reading the harness shows
+none of that time touches <code>cyo_adventure</code>. Meanwhile the project has textbook fuzz targets the
+scaffold was meant for: the storybook condition evaluator, <code>Storybook.model_validate</code> over the
+invalid-fixture corpus, and the import/schema-validation path.</p>
+<p><strong>Suggested Fix</strong>: (1) In the template, either mark the scaffold harness so CI treats it as
+absent (e.g. name it <code>fuzz_example.py.tmpl</code> or have the workflow's target-detection step grep
+for the TODO marker and skip with a loud summary line "scaffold harness only, not fuzzing
+project code"), or fail the workflow when the only harness present is the unmodified scaffold.
+(2) Update <code>fuzz/README.md</code> trigger claims to match the actual workflow schedule. (3) Add a
+post-generation checklist item telling projects to point the harness at their first real
+parser/validator entry point.</p>
+<p><strong>Affected Files</strong>: template <code>fuzz/fuzz_input_validation.py</code>, <code>fuzz/README.md</code>,
+<code>.github/workflows/cifuzzy.yml</code></p>
+<hr />
 <h3 id="fips-workflows-failure-gate-never-fires-tee-swallows-the-exit-code-and-trigger-paths-omit-the-tests-it-scans">FIPS workflow's failure gate never fires: <code>tee</code> swallows the exit code, and trigger paths omit the tests it scans<a class="headerlink" href="#fips-workflows-failure-gate-never-fires-tee-swallows-the-exit-code-and-trigger-paths-omit-the-tests-it-scans" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Priority</strong>: High</li>
@@ -4267,7 +4385,7 @@ rather than a paragraph. See <code>load_acknowledgments</code>, <code>apply_ackn
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 17:52:43 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 18:27:05 UTC">July 17, 2026</span>
   </span>
 
     
