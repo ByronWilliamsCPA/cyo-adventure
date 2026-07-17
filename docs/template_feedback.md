@@ -783,7 +783,11 @@ name-list match.
 target resolves to a known crypto module or import (e.g. `Crypto.Cipher.SEED`,
 `cryptography.hazmat`), or at minimum require the attribute chain to include a crypto-library
 root before matching bare cipher names. Also align the workflow's PR-comment verdict with the
-job conclusion so the two cannot disagree.
+job conclusion so the two cannot disagree. Implemented in this repo on 2026-07-17: see
+`AMBIGUOUS_CIPHER_NAMES`, `CRYPTO_NAMESPACE_SEGMENTS`, `_module_imports_crypto`, and
+`_call_has_crypto_context` in `scripts/check_fips_compatibility.py`, with regression tests in
+`tests/unit/test_check_fips_compatibility.py`; the comment/conclusion alignment is the
+exit-code fix in the entry below.
 
 **Affected Files**: template `scripts/check_fips_compatibility.py`,
 `.github/workflows/fips-compatibility.yml`
@@ -849,3 +853,78 @@ and the `pyjwt` hint to cover asymmetric-only allowlists. See this repo's
 `_check_pqc_pre_standard_name`) for a working implementation.
 
 **Affected Files**: template `scripts/check_fips_compatibility.py`
+
+---
+
+### FIPS workflow's failure gate never fires: `tee` swallows the exit code, and trigger paths omit the tests it scans
+
+- **Priority**: High
+- **Category**: CI/CD
+- **Discovered**: 2026-07-17
+
+**Issue**: Two compounding defects in `.github/workflows/fips-compatibility.yml` make the FIPS
+gate inform-only in every mode, including `--strict` dispatch. First, the run step captures
+`EXIT_CODE=$?` after piping the checker through `tee`
+(`uv run python scripts/check_fips_compatibility.py ... | tee fips-report.txt`). The step uses
+the workflow default shell (`bash -e {0}`), which does not enable `pipefail`, so `$?` reports
+`tee`'s exit status, which is always 0. The `Check result` step that is supposed to fail the
+job on findings (`if: steps.fips-check.outputs.exit_code != '0'`) can therefore never trigger,
+and the job concludes success regardless of errors. This is the root cause of the symptom
+already recorded above in "FIPS checker flags any method named `seed()`": the job shows green
+while the PR comment says FAILED. Second, the check runs with `--include-tests`, but the
+workflow's `push`/`pull_request` paths filters list only `src/**/*.py`, `pyproject.toml`, and
+`requirements*.txt`. A PR that introduces a FIPS finding in `tests/**` never triggers the
+workflow at all; the finding first appears on the weekly cron, where the exit-code bug hides
+it again.
+
+**Context**: Discovered while assessing whether this repo could pass an org-wide strict FIPS
+posture. Running `scripts/check_fips_compatibility.py --include-tests` locally exits 1 (five
+findings, all the known `seed()` false positive), while the corresponding workflow runs
+conclude success.
+
+**Suggested Fix**: In the run step, either `set -o pipefail` before the pipeline or capture
+`${PIPESTATUS[0]}` (or declare `shell: bash` on the step, which enables `pipefail` by
+default). Add `tests/**/*.py` to both paths filters so the triggers cover everything the
+checker scans. With enforcement restored, the `seed()` matcher fix already reported above
+becomes a prerequisite, since restoring the gate without it would fail builds on the false
+positive. Implemented in this repo on 2026-07-17 (`set -o pipefail` around the pipeline plus
+expanded paths filters, including `scripts/check_fips_compatibility.py` itself, which was
+also missing from the triggers); see `.github/workflows/fips-compatibility.yml`.
+
+**Affected Files**: template `.github/workflows/fips-compatibility.yml`
+
+---
+
+### FIPS checker has no disposition mechanism for its info-level findings
+
+- **Priority**: Medium
+- **Category**: Tooling
+- **Discovered**: 2026-07-17
+
+**Issue**: `scripts/check_fips_compatibility.py` emits info-severity "Package may need FIPS
+verification" findings (cryptography, httpx, boto3, pyjwt, etc.) that no flag can make
+blocking and no mechanism can mark verified. `--strict` only promotes warnings, so a project
+that wants a zero-tolerance FIPS gate has no way to say "these four were verified, fail on
+anything new". The findings degrade into permanent noise: they appear on every run, cannot be
+resolved, and train contributors to ignore the report.
+
+**Context**: Found while turning this project's FIPS workflow fully strict. The four standing
+info findings all had written dispositions in `docs/security/crypto-inventory.md`, but nothing
+connected them to the checker, and any newly added crypto-adjacent dependency would surface
+only as one more ignorable info line.
+
+**Suggested Fix**: Adopt this repo's implementation upstream: (1) a `--fail-level
+{error,warning,info}` flag (stricter of `--strict`/`--fail-level` wins); (2) an
+acknowledged-findings baseline in `[tool.fips_check.acknowledged.<package>]` with mandatory
+`reason`, `reference`, and `reviewed` (date) keys, where acknowledgments apply only to
+info-level findings, expire after 90 days (warning until re-reviewed), and malformed, unused,
+future-dated, or error-targeting entries each warn; (3) runtime assertions
+(`tests/unit/test_fips_runtime_assertions.py`) backing the mechanically testable dispositions
+(dependency floors, OpenSSL major version, TLS context floor) so "verified" means a green test
+rather than a paragraph. See `load_acknowledgments`, `apply_acknowledgments`, and
+`compute_exit_code` in this repo's `scripts/check_fips_compatibility.py`, plus the
+`--fail-level info` invocation and acknowledged-count PR comment in
+`.github/workflows/fips-compatibility.yml`.
+
+**Affected Files**: template `scripts/check_fips_compatibility.py`,
+`.github/workflows/fips-compatibility.yml`
