@@ -1253,6 +1253,10 @@ class GenerationJob(Base):
             f"status IN ({_GENERATION_JOB_STATUS_VALUES})",
             name="ck_generation_job_status",
         ),
+        # Mirrors the ADR-007 purge migration's index backing the daily
+        # "terminal jobs older than 30 days" sweep; the schema-parity test
+        # requires migration-built and ORM-built schemas to agree.
+        Index("ix_generation_job_status_updated_at", "status", "updated_at"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
