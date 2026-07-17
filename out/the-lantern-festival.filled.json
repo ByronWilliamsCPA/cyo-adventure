@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Tansy is a young hedgehog. Her spines are soft and brown. She lives in a cozy stump home. Tonight is the big Lantern Festival. Tansy stands in her clearing and counts on her paws. She needs glowberries for light. She needs reeds to make frames. She needs to find her friends and invite them. She needs honey cakes for the feast. Her heart feels warm and excited. The sun is still high. What should she do first?",
+      "body": "Tansy is a young hedgehog. Her spines are soft and brown. She lives in a cozy stump home. Tonight is the big Lantern Festival. Tansy stands in her clearing and counts on her paws. She needs glowberries for light. She needs reeds to make frames. She needs to find her friends and invite them. She needs honey cakes for the feast. She needs the old paper lanterns from the shed. She needs the cricket band to play music. Her heart feels warm and excited. What should she do now?",
       "is_ending": false,
       "choices": [
         {
@@ -306,7 +306,7 @@
     },
     {
       "id": "n_hang",
-      "body": "Friends lift the lanterns into oak branches with care. They sway like fireflies in the evening breeze. The light flickers soft and warm and pretty. The sky turns purple and then dark. Soon night will come to the meadow. All the stars will come out. Should Tansy light them now? Or wait for the first star?",
+      "body": "Friends lift the lanterns into oak branches with care. They sway like fireflies in the evening breeze. The lanterns hang ready and waiting to shine. The sky turns purple and then dark. Soon night will come to the meadow. All the stars will come out. Should Tansy light them now? Or wait for the first star?",
       "is_ending": false,
       "choices": [
         {
@@ -439,7 +439,7 @@
     },
     {
       "id": "n_bless",
-      "body": "Granny Hedgehog comes with her cane. She walks slow and steady and sure. Her spines shine silver in the light. They sparkle and shimmer above her. The friends sit quiet and still. She smiles kind and big at them. She sits down with a sigh. She tells the old tale of the very first lantern.",
+      "body": "Granny Hedgehog comes with her cane. She walks slow and steady and sure. Her spines shine silver in the light. They sparkle and shimmer above her. The friends sit quiet and still. She smiles kind and big at them. She sits down with a sigh. She tells the old tale of the very first lantern, just as she does every year.",
       "is_ending": false,
       "choices": [
         {
