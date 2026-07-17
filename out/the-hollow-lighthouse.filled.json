@@ -1287,7 +1287,7 @@
     },
     {
       "id": "n_tunnel",
-      "body": "However Mira had made her way down, every descent brought her at last to the same low brick tunnel beneath the lighthouse. It ran out under the rock toward the sea somewhere ahead. The passage smelled of salt and old stone. Her footsteps echoed softly against the curved brick ceiling. Here it split three ways. One branch led toward a sealed door, marked on the keeper's sketch as his own private room. Another opened onto a store stacked high with unmarked crates, shadowy and silent. The third ran toward a barred sea gate. She could already hear the tide sighing in and out somewhere beyond the bars. Mira stood at the branching point and chose her direction.",
+      "body": "However Mira had made her way down, every descent brought her at last to the same low brick tunnel beneath the lighthouse. It ran out under the rock toward the sea somewhere ahead. The passage smelled of salt and old stone, and it was almost pitch dark. An old storm lantern hung on a bracket just inside the tunnel mouth, its wick still good. A small tin of matches sat on a shelf beside it. Mira struck one and lit the wick, glad of the warm little glow it threw across the brick. Her footsteps echoed softly ahead. Here the tunnel split three ways. One branch led toward a sealed door, marked on the keeper's sketch as his own private room. Another opened onto a store stacked high with unmarked crates, shadowy and silent. The third ran toward a barred sea gate. She could already hear the tide sighing in and out somewhere beyond the bars. Mira stood at the branching point, lantern in hand, and chose her direction.",
       "is_ending": false,
       "choices": [
         {
@@ -1430,7 +1430,7 @@
     },
     {
       "id": "tn_store_join",
-      "body": "Whichever discovery Mira carried with her now, the low door opened onto a narrow passage. It led straight toward the keeper's sealed room somewhere ahead. A cold draft breathed up from somewhere in the tunnel, and it caught the lantern's small flame, worrying it down to a weak, uncertain flicker. That threatened to leave her stumbling in the dark. She could press on quickly before the light failed entirely. Or she could stop right here to trim the wick. She could coax the flame back to something steadier first. The tunnel pressed close and silent around her.",
+      "body": "Whichever discovery Mira carried with her now, the low door opened onto a narrow passage. It led straight toward the keeper's sealed room somewhere ahead. A cold draft breathed up from somewhere in the tunnel, and it caught the flame of the lantern she had lit at the tunnel mouth, worrying it down to a weak, uncertain flicker. That threatened to leave her stumbling in the dark. She could press on quickly before the light failed entirely. Or she could stop right here to trim the wick. She could coax the flame back to something steadier first. The tunnel pressed close and silent around her.",
       "is_ending": false,
       "choices": [
         {
