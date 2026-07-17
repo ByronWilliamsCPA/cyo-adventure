@@ -13,6 +13,7 @@ import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { makeChildSessionApi } from './childSessionApi'
 import { Mascot } from './Mascot'
+import { setReadAloudPreference } from './readAloudPreference'
 
 // `unauthenticated` is the stable, expected no-grown-up-signed-in gate, not a
 // flaky fetch. `forbidden` is defensive: GET /v1/profiles does not authorize
@@ -109,8 +110,14 @@ export function ProfilePickerPage() {
   // the guardian bearer as required by the backend's guardian-or-admin gate.
   // #VERIFY: ProfilePickerPage.test.tsx "mints and stores a child session
   // before navigating" and "still navigates when the mint call fails".
+  //
+  // Takes the full ProfileView (not just its id): this is the one place the
+  // kid surface holds the profile's `tts_enabled` flag (K7 / Phase 4b
+  // read-aloud), so it caches it here for ReaderRoute to read back later
+  // (readAloudPreference.ts) rather than adding a second /v1/profiles fetch
+  // on every reader page load.
   const pickProfile = useCallback(
-    async (profileId: string) => {
+    async (profile: ProfileView) => {
       if (pickInFlightRef.current) return
       pickInFlightRef.current = true
       // #CRITICAL: security: clear any prior child session BEFORE minting.
@@ -122,8 +129,13 @@ export function ProfilePickerPage() {
       // #VERIFY: ProfilePickerPage.test.tsx "clears a prior session before
       // minting so a failed mint does not carry the old token".
       clearChildSession()
+      // Cached regardless of whether the mint below succeeds: it only gates
+      // a UI control (never an authorization decision), and the reader still
+      // renders on a mint failure via the guardian-token fallback described
+      // above, so the read-aloud toggle should still be able to appear then.
+      setReadAloudPreference(profile.id, profile.tts_enabled)
       try {
-        const session = await childSessionApi.mint(profileId)
+        const session = await childSessionApi.mint(profile.id)
         setChildSession({
           token: session.token,
           expiresAt: session.expires_at,
@@ -133,7 +145,7 @@ export function ProfilePickerPage() {
         // Redacted shape only, never the raw axios error; see logApiError.
         logApiError('child session mint failed', err)
       }
-      void navigate(`/library/${profileId}`)
+      void navigate(`/library/${profile.id}`)
     },
     [childSessionApi, navigate]
   )
@@ -165,6 +177,10 @@ export function ProfilePickerPage() {
         expiresAt: session.expires_at,
         profileId: session.profile_id,
       })
+      // Unlike the pin-less path, this only runs on a confirmed-correct PIN:
+      // a wrong-PIN attempt must not seed the toggle for a profile the child
+      // has not actually proven they may read as.
+      setReadAloudPreference(target.id, target.tts_enabled)
       setPinPrompt(null)
       void navigate(`/library/${target.id}`)
     } catch (err) {
@@ -400,7 +416,7 @@ export function ProfilePickerPage() {
                   setPin('')
                   setPinPrompt({ profile, status: 'idle' })
                 } else {
-                  void pickProfile(profile.id)
+                  void pickProfile(profile)
                 }
               }}
             >

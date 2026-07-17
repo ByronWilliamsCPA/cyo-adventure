@@ -7,6 +7,17 @@ default so an approved request produces the same brief shape as the guardian
 intake flow (mirrors frontend guardian/intakeApi.ts::buildBrief). The
 protagonist name is a generic fictional default and is NEVER a real child's
 display name.
+
+G2 per-child content controls (``ChildProfile.banned_themes`` and
+``allowed_content_flags``, surfaced by ``api/profiles.py``) are folded in
+here too: ``banned_themes`` becomes the brief's ``content_nogo`` verbatim,
+and any set content-flag cap is clamped to the requesting age band's own
+ceiling (a guardian can only tighten what the band already enforces, never
+loosen it) and carried as a plain-language line in ``special_constraints``,
+since ``ConceptBrief`` has no structured per-flag cap field of its own. The
+deterministic validation gate (``validator/policy.py``) still enforces only
+the band ceiling unconditionally; this is guidance to the generator, not a
+second enforcement point.
 """
 
 from __future__ import annotations
@@ -19,11 +30,21 @@ from cyo_adventure.generation.concept import (
     Protagonist,
     StructurePattern,
 )
-from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
+from cyo_adventure.storybook.models import (
+    AgeBand,
+    ContentFlagLevel,
+    Length,
+    NarrativeStyle,
+    level_rank,
+)
 from cyo_adventure.validator.band_profile import profile_for
 
 if TYPE_CHECKING:
     from cyo_adventure.db.models import ChildProfile, StoryRequest
+
+# The three content-sensitivity flags a profile's allowed_content_flags dict
+# may cap; mirrors storybook.models.ContentFlags' field set.
+_CONTENT_FLAG_NAMES = ("violence", "scariness", "peril")
 
 # reading_level_cap defaults to 99.0 server-side (an unset ceiling, not a target);
 # at or above this sentinel the band-default FK target applies.
@@ -63,6 +84,71 @@ _FALLBACK_NODES = 8
 _FALLBACK_ENDINGS = 2
 
 
+def _content_controls(
+    profile: ChildProfile | None, age_band: AgeBand
+) -> tuple[list[str], list[str]]:
+    """Derive ``(content_nogo, special_constraints)`` from a child's G2 controls.
+
+    Args:
+        profile: The requesting child's profile, or None for a profile-less
+            request (no G2 controls to apply).
+        age_band: The story's target age band; supplies the ceiling each
+            content-flag cap is clamped against.
+
+    Returns:
+        A ``(content_nogo, special_constraints)`` pair: ``content_nogo`` is
+        the profile's ``banned_themes`` verbatim (already normalized at the
+        profiles API boundary); ``special_constraints`` is one
+        plain-language line per content-flag cap the guardian has set,
+        clamped to the band's own ceiling.
+
+    # #ASSUME: data-integrity: an in-memory ChildProfile built without
+    # explicit allowed_content_flags/banned_themes (the common pre-flush
+    # unit-test shape) has both as None, not the ORM column's post-flush
+    # default (`{}` / None respectively); both are treated the same way
+    # here ("no controls set"), so the distinction is invisible to callers.
+    # #VERIFY: test_story_requests.py::test_brief_from_request_profile_with_no_g2_controls_is_unaffected.
+    """
+    if profile is None:
+        return [], []
+    content_nogo = list(profile.banned_themes or [])
+    # #ASSUME: data-integrity: allowed_content_flags is declared non-Optional
+    # (Mapped[dict[str, object]]) because its ORM column default applies at
+    # flush/INSERT time, not at Python object construction (same gap as
+    # request.narrative_style below); an in-memory profile built without an
+    # explicit value is None at runtime despite the static type, hence the cast.
+    caps = cast("dict[str, object] | None", profile.allowed_content_flags) or {}
+    band = profile_for(age_band.value)
+    if band is None:
+        return content_nogo, []
+    constraints: list[str] = []
+    for flag_name in _CONTENT_FLAG_NAMES:
+        raw_cap = caps.get(flag_name)
+        if raw_cap is None:
+            continue
+        try:
+            child_level = ContentFlagLevel(raw_cap)
+        except ValueError:
+            # #EDGE: data-integrity: a stored cap outside the closed
+            # ContentFlagLevel vocabulary (should be unreachable; the
+            # profiles API validates every write) is skipped rather than
+            # raising, so a bad row degrades to "no cap on this flag"
+            # instead of failing the whole generation request.
+            continue
+        ceiling = band.content_ceiling[flag_name]
+        # #CRITICAL: security: a guardian's cap can only tighten the band
+        # ceiling, never loosen it; clamp to whichever is stricter. The
+        # deterministic gate (validator/policy.py PL-16) enforces the band
+        # ceiling regardless of this brief, so this clamp only prevents the
+        # generator from being told a looser-than-band target.
+        # #VERIFY: test_story_requests.py::test_content_flag_cap_looser_than_band_is_clamped.
+        effective = (
+            child_level if level_rank(child_level) <= level_rank(ceiling) else ceiling
+        )
+        constraints.append(f"Keep {flag_name} at or below '{effective.value}'.")
+    return content_nogo, constraints
+
+
 def brief_from_request(
     request: StoryRequest,
     profile: ChildProfile | None,
@@ -81,7 +167,8 @@ def brief_from_request(
 
     Returns:
         ConceptBrief: A fully populated brief with a generic fictional
-            protagonist and band-derived structural budgets.
+            protagonist, band-derived structural budgets, and the child's
+            G2 content controls (``content_nogo`` / ``special_constraints``).
     """
     # #CRITICAL: data integrity: request.age_band is the single source of truth
     # after the WS-B flip; the migration backfilled every historical row.
@@ -95,6 +182,7 @@ def brief_from_request(
         if profile is not None and profile.reading_level_cap < _READING_CAP_SENTINEL
         else _BAND_FK_TARGET[age_band]
     )
+    content_nogo, content_flag_constraints = _content_controls(profile, age_band)
     return ConceptBrief(
         premise=request.request_text,
         protagonist=Protagonist(
@@ -109,6 +197,8 @@ def brief_from_request(
         target_node_count=node_count,
         ending_count=ending_count,
         structure_pattern=StructurePattern.BRANCH_AND_BOTTLENECK,
+        content_nogo=content_nogo,
+        special_constraints=content_flag_constraints,
         length=Length(request.length) if request.length is not None else None,
         # #ASSUME: data integrity: the ORM column default ("prose") only
         # applies at flush/INSERT time, not at Python object construction, so

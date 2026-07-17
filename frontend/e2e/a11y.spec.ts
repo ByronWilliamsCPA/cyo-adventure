@@ -50,6 +50,25 @@ const ONE_STORY = {
 }
 
 async function assertNoViolations(page: Page) {
+  // Let any entrance animation settle before scanning. The Dialog component
+  // fades and scales in (opacity 0 -> 1); axe computes color contrast from the
+  // composited style, so an element scanned mid-fade reports a blended,
+  // non-resting color (e.g. a primary button's ink reading as ~#796c60 at
+  // 1.9:1) that trips a transient contrast finding even though the resting
+  // state is compliant. Wait for finite in-flight animations to finish, capped
+  // so an indefinite animation (a spinner) can never hang the scan.
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        const finite = document
+          .getAnimations()
+          .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+        void Promise.race([
+          Promise.all(finite.map((a) => a.finished.catch(() => undefined))),
+          new Promise((r) => setTimeout(r, 1000)),
+        ]).then(() => resolve())
+      })
+  )
   // Scoped to WCAG 2.1 A/AA, matching this file's stated intent. axe's full
   // default ruleset also includes "best-practice" rules (e.g. requiring a
   // <main> landmark or exactly one <h1>) that are worth fixing but are not
@@ -77,7 +96,10 @@ test('kid profile picker has no detectable accessibility violations', async ({ p
   await assertNoViolations(page)
 })
 
-test('kid library (populated) has no detectable accessibility violations', async ({ page, context }) => {
+test('kid library (populated) has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'child-fox')
   })
@@ -89,7 +111,10 @@ test('kid library (populated) has no detectable accessibility violations', async
   await assertNoViolations(page)
 })
 
-test('kid library (empty) has no detectable accessibility violations', async ({ page, context }) => {
+test('kid library (empty) has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'child-fox')
   })
@@ -142,7 +167,10 @@ test('the guardian login page has no detectable accessibility violations', async
   await assertNoViolations(page)
 })
 
-test('the guardian intake page has no detectable accessibility violations', async ({ page, context }) => {
+test('the guardian intake page has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
   await seedGuardianSession(context)
   await mockMe(page)
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: TWO_PROFILES }))
@@ -155,7 +183,10 @@ test('the guardian intake page has no detectable accessibility violations', asyn
   await assertNoViolations(page)
 })
 
-test('the guardian requests page has no detectable accessibility violations', async ({ page, context }) => {
+test('the guardian requests page has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
   await seedGuardianSession(context)
   await mockMe(page)
   await page.route('**/api/v1/story-requests?status=pending', (route) =>
@@ -170,7 +201,10 @@ test('the guardian requests page has no detectable accessibility violations', as
   await assertNoViolations(page)
 })
 
-test('the guardian books page has no detectable accessibility violations', async ({ page, context }) => {
+test('the guardian books page has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
   await seedGuardianSession(context)
   await mockMe(page)
   await page.route('**/api/v1/guardian/books', (route) => route.fulfill({ json: { books: [] } }))
@@ -182,7 +216,10 @@ test('the guardian books page has no detectable accessibility violations', async
   await assertNoViolations(page)
 })
 
-test('the guardian profiles page has no detectable accessibility violations', async ({ page, context }) => {
+test('the guardian profiles page has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
   await seedGuardianSession(context)
   await mockMe(page)
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: TWO_PROFILES }))
@@ -191,7 +228,10 @@ test('the guardian profiles page has no detectable accessibility violations', as
   await assertNoViolations(page)
 })
 
-test('the admin requests page has no detectable accessibility violations', async ({ page, context }) => {
+test('the admin requests page has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
   await seedGuardianSession(context)
   await mockMe(page, { role: 'admin' })
   await page.route('**/api/v1/admin/story-requests?status=pending', (route) =>
@@ -208,7 +248,12 @@ test('the admin requests page has no detectable accessibility violations', async
 
 const EMPTY_THRESHOLDS = {
   default_min_verdict: 'flag',
-  rows: [] as { age_band: string; category: string; min_verdict: string; min_score: number | null }[],
+  rows: [] as {
+    age_band: string
+    category: string
+    min_verdict: string
+    min_score: number | null
+  }[],
   known_categories: ['violence', 'language'],
 }
 

@@ -107,6 +107,14 @@ test('approve removes the approved row, then decline empties the list', async ({
   await page.route('**/api/v1/story-requests?status=pending', (route) =>
     route.fulfill({ json: { requests } })
   )
+  // G13 (interim) balance banner + ADR-015 G7 remaining-budget context next
+  // to Approve; every spec in this file needs this mocked now that
+  // RequestsPage and StoryRequestQueue both fetch it.
+  await page.route('**/api/v1/families/me/budget', (route) =>
+    route.fulfill({
+      json: { quota: 5, spent_this_month: 1, remaining: 4, children: [] },
+    })
+  )
 
   let approveCalls = 0
   let approveBody: unknown = null
@@ -128,11 +136,18 @@ test('approve removes the approved row, then decline empties the list', async ({
   await expect(page.getByText('A story about a friendly dragon')).toBeVisible()
   await expect(page.getByText('A pirate adventure')).toBeVisible()
 
+  // G13 balance banner above the queue.
+  await expect(page.getByTestId('budget-banner')).toHaveText('4 of 5 stories left this month')
+
   // The shell's nav badge counts the same pending list.
   await expect(page.getByRole('link', { name: 'Story requests, 2 waiting' })).toBeVisible()
 
   const dragonRow = page.getByTestId('request-req-1')
   await dragonRow.getByLabel('Story length').selectOption('medium')
+  // ADR-015 G7/G3 remaining-budget context next to Approve.
+  await expect(
+    dragonRow.getByText('This will use 1 of your 4 remaining stories this month.')
+  ).toBeVisible()
   await dragonRow.getByRole('button', { name: 'Approve' }).click()
 
   await expect.poll(() => approveCalls).toBe(1)
@@ -197,4 +212,40 @@ test('approving a proposed-series request includes the prefilled series title', 
     narrative_style: 'prose',
     series_title: 'Dragon Tales',
   })
+})
+
+test('a budget-exhausted approve shows the friendly message, not the generic one', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/me', (route) => route.fulfill({ json: ME }))
+
+  const requests = [DRAGON_REQUEST]
+  await page.route('**/api/v1/story-requests?status=pending', (route) =>
+    route.fulfill({ json: { requests } })
+  )
+  await page.route('**/api/v1/families/me/budget', (route) =>
+    route.fulfill({
+      json: { quota: 5, spent_this_month: 5, remaining: 0, children: [] },
+    })
+  )
+  await page.route('**/api/v1/story-requests/req-1/approve', (route) =>
+    route.fulfill({
+      status: 409,
+      json: { error: 'StateTransitionError', message: 'monthly story budget reached' },
+    })
+  )
+
+  await page.goto('/guardian/requests')
+
+  await expect(page.getByTestId('budget-banner')).toHaveText('0 of 5 stories left this month')
+
+  const dragonRow = page.getByTestId('request-req-1')
+  await dragonRow.getByLabel('Story length').selectOption('medium')
+  await dragonRow.getByRole('button', { name: 'Approve' }).click()
+
+  const alert = dragonRow.getByRole('alert')
+  await expect(alert).toContainText("You've used this month's story budget")
+  await expect(alert).toContainText('next month')
+  // The row is not removed: a failed approve keeps it visible for retry.
+  await expect(page.getByText('A story about a friendly dragon')).toBeVisible()
 })

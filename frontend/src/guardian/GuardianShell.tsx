@@ -4,6 +4,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { useApi } from '../hooks/useApi'
 import { ADMIN_CONSOLE_PATH } from '../routes'
+import { NotificationBell } from './NotificationBell'
 import { makeStoryRequestQueueApi, STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 import './guardian.css'
 
@@ -96,13 +97,20 @@ export function GuardianShell() {
           {roleHint ? <span className="guardian-shell__role">{roleHint}</span> : null}
         </span>
         {principal ? (
-          <button
-            type="button"
-            className="guardian-shell__sign-out"
-            onClick={() => void startSignOut()}
-          >
-            Sign out
-          </button>
+          <div className="guardian-shell__header-actions">
+            {/* G10: near the pending-count badge below, not merged with it.
+                The nav badge tracks pending story requests; this tracks the
+                separate guardian notification feed (safety alerts, requests
+                awaiting consent, stories ready to read). */}
+            <NotificationBell />
+            <button
+              type="button"
+              className="guardian-shell__sign-out"
+              onClick={() => void startSignOut()}
+            >
+              Sign out
+            </button>
+          </div>
         ) : null}
       </header>
       <nav className="guardian-shell__nav" aria-label="Guardian">
@@ -110,6 +118,11 @@ export function GuardianShell() {
           Console
         </NavLink>
         <NavLink to="/guardian/intake">Request a story</NavLink>
+        {/* G9: family-scoped like Console/Request a story/Story requests
+            above (the reading-summary endpoint accepts guardian OR admin,
+            api/reading_history.py::get_family_reading_summary), unlike
+            Books/Profiles which are guardian-only family-management pages. */}
+        <NavLink to="/guardian/reading">Reading</NavLink>
         {principal?.role === 'guardian' ? (
           <NavLink to="/guardian/books">Books</NavLink>
         ) : null}
@@ -132,6 +145,12 @@ export function GuardianShell() {
         </NavLink>
         {principal?.role === 'guardian' ? (
           <NavLink to="/guardian/profiles">Profiles</NavLink>
+        ) : null}
+        {/* ADR-016 register G17: consent is a guardian-only act (an
+            admin-only adult may not stand in for a family's guardian), same
+            guardian-only gating as Books/Profiles above. */}
+        {principal?.role === 'guardian' ? (
+          <NavLink to="/guardian/connections">Connections</NavLink>
         ) : null}
         {principal?.isAdmin ? <NavLink to={ADMIN_CONSOLE_PATH}>Admin console</NavLink> : null}
       </nav>

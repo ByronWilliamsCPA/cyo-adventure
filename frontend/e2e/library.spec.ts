@@ -124,6 +124,48 @@ test('empty library shows the no-books state', async ({ page }) => {
   await expect(page.getByText(/ask a grown-up/i)).toBeVisible()
 })
 
+test('shelf shows a cover image when set and the letter-tile fallback when absent (K8)', async ({
+  page,
+}) => {
+  // Coverage for K8 (Covers on the shelf): a book with cover_url renders the
+  // AI cover art image; a book without one falls back to the deterministic
+  // letter tile (coverPalette.ts) instead of a broken-image icon or blank tile.
+  const stories = {
+    stories: [
+      { ...STORIES.stories[0], cover_url: 'https://cdn.example/covers/lantern.webp' },
+      { ...STORIES.stories[1], cover_url: null },
+    ],
+  }
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: stories }))
+  // The <img> issues a real (mocked) request for its src; without this route
+  // the request fails and BookCard's onError falls back to the letter tile,
+  // which would defeat the point of this test. A 1x1 transparent PNG is
+  // enough for the browser to decode and render the <img> successfully.
+  const onePixelPng = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+    'base64'
+  )
+  await page.route('https://cdn.example/covers/lantern.webp', (route) =>
+    route.fulfill({ status: 200, contentType: 'image/png', body: onePixelPng })
+  )
+  await page.goto('/library/p1')
+
+  // The Lantern (in-progress) renders in the Continue Reading hero, with a
+  // real <img> for its cover.
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  const heroCover = hero.locator('img.book-card__cover')
+  await expect(heroCover).toHaveAttribute('src', 'https://cdn.example/covers/lantern.webp')
+  await expect(hero.locator('.book-card__tile--painted')).toHaveCount(0)
+
+  // Acorn Detectives (no cover_url) renders on the shelf with the painted
+  // letter-tile fallback: no <img>, the title's first letter instead.
+  const shelf = page.getByRole('region', { name: 'More to Explore' })
+  const shelfCard = shelf.locator('.book-card', { hasText: 'Acorn Detectives' })
+  await expect(shelfCard.locator('img.book-card__cover')).toHaveCount(0)
+  await expect(shelfCard.locator('.book-card__tile--painted')).toBeVisible()
+  await expect(shelfCard.locator('.book-card__letter')).toHaveText('A')
+})
+
 test('shelf grid does not overflow the viewport on a phone screen', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   const stories = {
@@ -161,4 +203,142 @@ test('shelf grid does not overflow the viewport on a phone screen', async ({ pag
     expect(box).not.toBeNull()
     expect(box!.x + box!.width).toBeLessThanOrEqual(390)
   }
+})
+
+test('shows the endings tracker on a started book once reading-history resolves (K6)', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/reading-history/*', (route) =>
+    route.fulfill({
+      json: {
+        profile_id: 'p1',
+        books: [
+          {
+            storybook_id: 's1',
+            title: 'The Lantern',
+            endings_found: 2,
+            ending_ids: ['e1', 'e2'],
+            total_endings: 5,
+            in_progress: true,
+            last_activity_at: '2026-07-01T10:00:00Z',
+          },
+        ],
+      },
+    })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(hero.getByText('2 of 5 endings found')).toBeVisible()
+  // Acorn Detectives (not started, no completion yet) has no history row and
+  // shows no badge: absence, not an error, for the not-yet-tracked case.
+  const shelf = page.getByRole('region', { name: 'More to Explore' })
+  const acorn = shelf.locator('.book-card', { hasText: 'Acorn Detectives' })
+  await expect(acorn.getByText(/endings found/i)).toHaveCount(0)
+})
+
+test('shows no endings tracker (never an error) when the reading-history fetch fails', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/reading-history/*', (route) =>
+    route.fulfill({ status: 500, json: { detail: 'boom' } })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(page.getByText(/endings found/i)).toHaveCount(0)
+})
+
+// K17 (ADR-016 rings 1-2): the recommendations feed only ever decorates a
+// book already on this shelf with a warm chip; it never adds a book or
+// offers any interaction beyond the card's own open-book link.
+test('shows a family-ring chip on the matching book once the recommendations feed resolves (K17)', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/recommendations/*', (route) =>
+    route.fulfill({
+      json: {
+        items: [
+          {
+            storybook_id: 's1',
+            title: 'The Lantern',
+            cover_url: null,
+            recommender_name: 'Maya',
+            rating: 5,
+            ring: 'family',
+          },
+        ],
+      },
+    })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(hero.getByText('Maya loved this')).toBeVisible()
+  // Acorn Detectives has no matching feed entry: no chip, absence not error.
+  const shelf = page.getByRole('region', { name: 'More to Explore' })
+  const acorn = shelf.locator('.book-card', { hasText: 'Acorn Detectives' })
+  await expect(acorn.getByText(/loved this/i)).toHaveCount(0)
+})
+
+test('shows a connection-ring chip with the Cousin prefix and collapses extra recommenders (K17)', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/recommendations/*', (route) =>
+    route.fulfill({
+      json: {
+        items: [
+          {
+            storybook_id: 's3',
+            title: 'Acorn Detectives',
+            cover_url: null,
+            recommender_name: 'Leo',
+            rating: 4,
+            ring: 'connection',
+          },
+          {
+            storybook_id: 's3',
+            title: 'Acorn Detectives',
+            cover_url: null,
+            recommender_name: 'Priya',
+            rating: 5,
+            ring: 'family',
+          },
+        ],
+      },
+    })
+  )
+  await page.goto('/library/p1')
+  const shelf = page.getByRole('region', { name: 'More to Explore' })
+  await expect(shelf.getByText('Cousin Leo loved this and 1 more')).toBeVisible()
+  // Tapping the chip does nothing beyond the card's own open-book link: no
+  // reply/send affordance exists anywhere on this surface (ADR-016).
+  await expect(page.getByRole('button', { name: /loved this/i })).toHaveCount(0)
+  await expect(page.getByRole('textbox')).toHaveCount(0)
+})
+
+test('shows no chip (never an error) when the recommendations feed fails', async ({ page }) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/recommendations/*', (route) =>
+    route.fulfill({ status: 500, json: { detail: 'boom' } })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(page.getByText(/loved this/i)).toHaveCount(0)
+})
+
+test('shows no chip when the recommendations feed is empty', async ({ page }) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.route('**/api/v1/recommendations/*', (route) =>
+    route.fulfill({ json: { items: [] } })
+  )
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+  await expect(page.getByText(/loved this/i)).toHaveCount(0)
 })

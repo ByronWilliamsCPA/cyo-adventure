@@ -5,6 +5,7 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
+import { makeBudgetApi, type ChildEnvelopeUsage } from './budgetApi'
 import {
   ProfileFormDialog,
   type ProfileFormCreateBody,
@@ -21,9 +22,20 @@ type Editing = { mode: 'create' } | { mode: 'edit'; profile: ProfileView } | nul
 export function ProfilesPage() {
   const api = useApi()
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
+  const budgetApi = useMemo(() => makeBudgetApi(api), [api])
   const [profiles, setProfiles] = useState<ProfileView[] | null>(null)
   const [loadError, setLoadError] = useState(false)
   const [editing, setEditing] = useState<Editing>(null)
+  // ADR-015 G3: each child's current auto-approve setting, keyed by
+  // profile id, sourced from GET /v1/families/me/budget (ProfileView itself
+  // does not carry these fields; see ProfileFormDialog's envelopeInfo prop
+  // doc). Powers both the "Auto-approve on" card badge and the edit
+  // dialog's seeded toggle/limit. A failed fetch leaves this empty rather
+  // than blocking the page: it is a secondary signal, not the profile list
+  // itself.
+  const [envelopeByProfile, setEnvelopeByProfile] = useState<
+    Record<string, ChildEnvelopeUsage>
+  >({})
 
   useEffect(() => {
     let cancelled = false
@@ -35,12 +47,23 @@ export function ProfilesPage() {
         console.error('profile list failed', err)
         if (!cancelled) setLoadError(true)
       }
+      try {
+        const budget = await budgetApi.get()
+        if (!cancelled) {
+          const byProfile: Record<string, ChildEnvelopeUsage> = {}
+          for (const child of budget.children) byProfile[child.profile_id] = child
+          setEnvelopeByProfile(byProfile)
+        }
+      } catch (err) {
+        // Non-fatal: badges/seeded envelope info just stay absent.
+        console.error('budget fetch for profiles page failed', err)
+      }
     }
     void load()
     return () => {
       cancelled = true
     }
-  }, [profilesApi])
+  }, [profilesApi, budgetApi])
 
   async function create(body: ProfileFormCreateBody) {
     // POST /profiles has no pin field (extra=forbid); the dialog's
@@ -99,6 +122,9 @@ export function ProfilesPage() {
                     ? 'No reading limit'
                     : `Reading level ${profile.reading_level_cap}`}
                 </span>
+                {envelopeByProfile[profile.id]?.request_auto_approve ? (
+                  <span className="profiles__badge">Auto-approve on</span>
+                ) : null}
               </div>
               <Button
                 variant="ghost"
@@ -122,6 +148,7 @@ export function ProfilesPage() {
         <ProfileFormDialog
           title={`Edit ${editing.profile.display_name}`}
           initial={editing.profile}
+          envelopeInfo={envelopeByProfile[editing.profile.id]}
           onSubmit={(body) => update(editing.profile.id, body)}
           onClose={() => setEditing(null)}
         />

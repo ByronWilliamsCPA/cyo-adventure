@@ -22,6 +22,7 @@
     "test:e2e:prod": "playwright test --config=playwright.e2e-prod.config.ts"
   },
   "dependencies": {
+    "@sentry/react": "^10.66.0",
     "@supabase/supabase-js": "^2.110.0",
     "@xstate/react": "^6.1.0",
     "axios": "^1.18.0",

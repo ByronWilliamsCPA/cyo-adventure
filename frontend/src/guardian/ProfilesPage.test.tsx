@@ -20,6 +20,8 @@ const readerA = {
   reading_level_cap: 99,
   avatar: 'fox',
   tts_enabled: false,
+  content_flag_caps: {},
+  banned_themes: [],
   created_at: '2026-07-02T00:00:00Z',
 }
 
@@ -31,8 +33,22 @@ function renderPage() {
   )
 }
 
+const EMPTY_BUDGET = { quota: 5, spent_this_month: 0, remaining: 5, children: [] }
+
+// Routes GET calls by URL (profiles list vs. the ADR-015 G3 budget fetch),
+// like IntakePage.test.tsx's getMock: the two calls now return different
+// shapes, so a single shared mockResolvedValue would feed the wrong body to
+// whichever call ran second.
+function mockProfilesAndBudget(profiles: unknown[], budget: unknown = EMPTY_BUDGET) {
+  mockGet.mockReset().mockImplementation((url: string) => {
+    if (url === '/v1/profiles') return Promise.resolve({ data: { profiles } })
+    if (url === '/v1/families/me/budget') return Promise.resolve({ data: budget })
+    throw new Error(`unexpected GET ${url}`)
+  })
+}
+
 beforeEach(() => {
-  mockGet.mockReset().mockResolvedValue({ data: { profiles: [readerA] } })
+  mockProfilesAndBudget([readerA])
   mockPost.mockReset()
   mockPatch.mockReset()
 })
@@ -130,7 +146,7 @@ describe('ProfilesPage', () => {
   // The read-aloud toggle is hidden until the reader ships read-aloud
   // support: no checkbox in the dialog, no card badge, and an edit passes the
   // stored tts_enabled value through unchanged.
-  it('hides read-aloud UI and passes tts_enabled through unchanged on edit', async () => {
+  it('preselects the read-aloud checkbox and passes tts_enabled through unchanged on edit', async () => {
     const user = userEvent.setup()
     mockGet.mockResolvedValue({ data: { profiles: [{ ...readerA, tts_enabled: true }] } })
     mockPatch.mockResolvedValue({
@@ -138,9 +154,8 @@ describe('ProfilesPage', () => {
     })
     renderPage()
     expect(await screen.findByText('Reader A')).toBeInTheDocument()
-    expect(screen.queryByText(/Read-aloud on/)).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /Edit Reader A/i }))
-    expect(screen.queryByRole('checkbox', { name: /Read-aloud/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /Read-aloud/i })).toBeChecked()
     await user.click(screen.getByRole('button', { name: /Save/i }))
     expect(mockPatch).toHaveBeenCalledWith(
       '/v1/profiles/p1',
@@ -157,5 +172,58 @@ describe('ProfilesPage', () => {
     expect(screen.getByRole('button', { name: /Save/i })).toBeDisabled()
     await user.type(cap, '7')
     expect(screen.getByRole('button', { name: /Save/i })).toBeEnabled()
+  })
+
+  // ADR-015 G3: the budget fetch's per-child usage rows are the only place
+  // request_auto_approve round-trips (ProfileView does not carry it), so the
+  // badge and the edit dialog's seeded toggle both depend on this join.
+  it('shows an Auto-approve badge for a child whose budget row has it on', async () => {
+    mockProfilesAndBudget([readerA], {
+      quota: 5,
+      spent_this_month: 1,
+      remaining: 4,
+      children: [
+        {
+          profile_id: 'p1',
+          display_name: 'Reader A',
+          request_auto_approve: true,
+          monthly_request_envelope: 3,
+          used_this_month: 1,
+        },
+      ],
+    })
+    renderPage()
+    expect(await screen.findByText('Auto-approve on')).toBeInTheDocument()
+  })
+
+  it('shows no Auto-approve badge when the budget row has it off', async () => {
+    renderPage()
+    await screen.findByText('Reader A')
+    expect(screen.queryByText('Auto-approve on')).not.toBeInTheDocument()
+  })
+
+  it('seeds the edit dialog toggle and limit from the budget row', async () => {
+    const user = userEvent.setup()
+    mockProfilesAndBudget([readerA], {
+      quota: 5,
+      spent_this_month: 1,
+      remaining: 4,
+      children: [
+        {
+          profile_id: 'p1',
+          display_name: 'Reader A',
+          request_auto_approve: true,
+          monthly_request_envelope: 3,
+          used_this_month: 1,
+        },
+      ],
+    })
+    renderPage()
+    await screen.findByText('Auto-approve on')
+    await user.click(screen.getByRole('button', { name: /Edit Reader A/i }))
+    expect(
+      screen.getByRole('checkbox', { name: /Auto-approve this child's requests/i })
+    ).toBeChecked()
+    expect(screen.getByLabelText(/Monthly auto-approve limit/i)).toHaveValue(3)
   })
 })

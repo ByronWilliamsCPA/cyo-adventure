@@ -1,4 +1,4 @@
-"""Age-policy gate layer (rules PL-15..PL-21).
+"""Age-policy gate layer (rules PL-15..PL-21, plus the PL-22 fail-closed guard).
 
 Runs after Layer 1 passes and the Storybook parses, on the typed model plus the
 choice graph. Most findings are ERROR-severity and blocking; the PL-19 story-mean
@@ -8,6 +8,8 @@ and story-scale judgments into deterministic invariants.
 Rule sources: docs/planning/validator-rules.md (PL-15..PL-18);
 docs/planning/adr/adr-011-story-scale-framework.md (PL-19
 words-per-node, PL-20 fastest-finish arc floor, and PL-21 off-matrix rejection).
+PL-22 (band profile not configured, fail closed) is a runtime invariant added
+2026-07-16 and is not yet reflected in validator-rules.md.
 """
 
 from __future__ import annotations
@@ -50,6 +52,11 @@ _SATISFYING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
 def validate_policy(story: Storybook) -> ValidationReport:
     """Run PL-15..PL-18 over a parsed story.
 
+    When the story's band has no configured :class:`BandProfile`, the gate
+    fails CLOSED: it returns a single blocking PL-22 finding instead of
+    silently skipping the remaining age-safety checks (owner ruling
+    2026-07-16).
+
     Args:
         story: The validated Storybook (Layer 1 has already passed).
 
@@ -59,12 +66,34 @@ def validate_policy(story: Storybook) -> ValidationReport:
     report = ValidationReport()
     profile = profile_for(story.metadata.age_band.value)
     if profile is None:
-        # #CRITICAL: security: a band with no configured profile makes this gate
-        # fail OPEN, every age-safety check (PL-15/16/17) is skipped for that
-        # band, so a forbidden ending or over-ceiling content would pass review.
-        # #VERIFY: test_profiles_match_age_band_enum_exactly asserts the AgeBand enum and
-        # band_profile._PROFILES keys stay in lockstep, so this branch is
-        # unreachable for any valid (enum-constrained) age_band.
+        # #CRITICAL: security: a band with no configured profile must fail
+        # CLOSED. Owner ruling 2026-07-16: this branch used to return an
+        # empty report, which silently skipped every age-safety check
+        # (PL-15/16/17) for the band, so a forbidden ending or over-ceiling
+        # content could pass review unvalidated. It now emits a blocking
+        # PL-22 finding through the same report mechanism as every other
+        # policy rule, so an unconfigured band can never reach a human
+        # reviewer without a visible, blocking finding.
+        # #VERIFY: see test_policy.py, function
+        # test_validate_policy_fails_closed_when_profile_is_none, which proves
+        # this branch blocks at runtime. See also test_band_profile.py,
+        # function test_profiles_match_age_band_enum_exactly, kept as defense
+        # in depth: it asserts the AgeBand enum and band_profile._PROFILES
+        # keys stay in lockstep, so this branch stays unreachable through any
+        # valid, enum-constrained age_band; the PL-22 finding is the runtime
+        # backstop if that lockstep ever drifts.
+        report.add(
+            ValidationFinding(
+                rule_id="PL-22",
+                severity=Severity.ERROR,
+                story_id=story.id,
+                message=(
+                    f"PL-22 policy: band profile not configured for band "
+                    f"'{story.metadata.age_band.value}' in story '{story.id}'; "
+                    f"refusing to validate age safety"
+                ),
+            )
+        )
         return report
     _check_forbidden_kinds(story, profile, report)
     _check_content_ceiling(story, profile, report)

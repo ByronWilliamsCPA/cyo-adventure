@@ -221,26 +221,135 @@ class TestCheckDatabase:
 
 
 class TestCheckCache:
-    """Tests for the check_cache() placeholder helper."""
+    """Tests for the check_cache() Redis-backed helper.
+
+    settings.rate_limit_backend gates the real ping: "redis" performs one
+    (mocked here, never a live connection), "memory" short-circuits to
+    state="unconfigured" without touching the network at all.
+    """
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_check_cache_returns_true_status(self) -> None:
-        """check_cache placeholder always returns status=True."""
+    async def test_check_cache_redis_ok_returns_true_status(self) -> None:
+        """check_cache returns status=True, state='ok' when ping succeeds."""
         from cyo_adventure.api.health import check_cache
 
-        result = await check_cache()
+        mock_client = AsyncMock()
+        mock_client.ping = AsyncMock(return_value=True)
+        mock_client.aclose = AsyncMock()
+
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "redis",
+            ),
+            patch(
+                "cyo_adventure.api.health.Redis.from_url",
+                return_value=mock_client,
+            ),
+        ):
+            result = await check_cache()
 
         assert result.status is True
         assert result.name == "cache"
+        assert result.state == "ok"
+        assert result.error is None
+        mock_client.ping.assert_awaited_once()
+        mock_client.aclose.assert_awaited_once()
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_check_cache_includes_latency(self) -> None:
-        """check_cache includes a non-negative latency_ms."""
+    async def test_check_cache_redis_ok_includes_latency(self) -> None:
+        """check_cache includes a non-negative latency_ms on the happy path."""
         from cyo_adventure.api.health import check_cache
 
-        result = await check_cache()
+        mock_client = AsyncMock()
+        mock_client.ping = AsyncMock(return_value=True)
+        mock_client.aclose = AsyncMock()
+
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "redis",
+            ),
+            patch(
+                "cyo_adventure.api.health.Redis.from_url",
+                return_value=mock_client,
+            ),
+        ):
+            result = await check_cache()
+
+        assert result.latency_ms is not None
+        assert result.latency_ms >= 0
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_cache_redis_down_returns_false_status(self) -> None:
+        """check_cache returns status=False, state='degraded' when ping fails."""
+        from cyo_adventure.api.health import check_cache
+
+        mock_client = AsyncMock()
+        mock_client.ping = AsyncMock(side_effect=OSError("connection refused"))
+        mock_client.aclose = AsyncMock()
+
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "redis",
+            ),
+            patch(
+                "cyo_adventure.api.health.Redis.from_url",
+                return_value=mock_client,
+            ),
+        ):
+            result = await check_cache()
+
+        assert result.status is False
+        assert result.name == "cache"
+        assert result.state == "degraded"
+        # Must NOT leak the raw exception text (OWASP A09)
+        assert result.error == "dependency unavailable"
+        assert "connection refused" not in (result.error or "")
+        mock_client.aclose.assert_awaited_once()
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_cache_unconfigured_when_memory_backend(self) -> None:
+        """check_cache reports state='unconfigured' when rate_limit_backend='memory'.
+
+        No Redis client is constructed in this branch: patching Redis.from_url
+        to raise proves the memory-backend short-circuit never reaches it.
+        """
+        from cyo_adventure.api.health import check_cache
+
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "memory",
+            ),
+            patch(
+                "cyo_adventure.api.health.Redis.from_url",
+                side_effect=AssertionError("Redis.from_url should not be called"),
+            ),
+        ):
+            result = await check_cache()
+
+        assert result.status is True
+        assert result.name == "cache"
+        assert result.state == "unconfigured"
+        assert result.error is None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_cache_unconfigured_includes_latency(self) -> None:
+        """check_cache includes a non-negative latency_ms in the unconfigured branch."""
+        from cyo_adventure.api.health import check_cache
+
+        with patch(
+            "cyo_adventure.api.health.settings.rate_limit_backend",
+            "memory",
+        ):
+            result = await check_cache()
 
         assert result.latency_ms is not None
         assert result.latency_ms >= 0
@@ -283,7 +392,15 @@ class TestCheckExternalService:
 
 
 class TestReadiness:
-    """Tests for the /health/ready endpoint via TestClient."""
+    """Tests for the /health/ready endpoint via TestClient.
+
+    settings.rate_limit_backend is patched to "memory" in every test here
+    (unrelated to what's under test) so check_cache short-circuits to
+    state="unconfigured" without a real Redis connection attempt, per this
+    package's "no real network calls in unit tests" rule
+    (tests/CLAUDE.md). TestReadinessCacheDoesNotGate below is what actually
+    exercises the cache-down-does-not-gate-readiness behavior.
+    """
 
     @pytest.mark.unit
     def test_readiness_returns_200_when_database_healthy(self) -> None:
@@ -296,9 +413,15 @@ class TestReadiness:
             yield mock_session
 
         app = _make_app()
-        with patch(
-            "cyo_adventure.core.database.get_session",
-            side_effect=_fake_get_session,
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_fake_get_session,
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "memory",
+            ),
         ):
             client = TestClient(app, raise_server_exceptions=True)
             response = client.get("/health/ready")
@@ -316,9 +439,15 @@ class TestReadiness:
             yield  # pragma: no cover
 
         app = _make_app()
-        with patch(
-            "cyo_adventure.core.database.get_session",
-            side_effect=_failing_get_session,
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_failing_get_session,
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "memory",
+            ),
         ):
             client = TestClient(app, raise_server_exceptions=False)
             response = client.get("/health/ready")
@@ -335,15 +464,103 @@ class TestReadiness:
             yield  # pragma: no cover
 
         app = _make_app()
-        with patch(
-            "cyo_adventure.core.database.get_session",
-            side_effect=_failing_get_session,
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_failing_get_session,
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "memory",
+            ),
         ):
             client = TestClient(app, raise_server_exceptions=False)
             body = client.get("/health/ready").text
 
         assert "db-conn-error: connection timeout" not in body
         assert "dependency unavailable" in body
+
+
+# ---------------------------------------------------------------------------
+# Readiness endpoint: cache does not gate readiness (#ASSUME in readiness())
+# ---------------------------------------------------------------------------
+
+
+class TestReadinessCacheDoesNotGate:
+    """A down or unconfigured cache is reported but never flips /health/ready.
+
+    Only ``database`` is in ``_CRITICAL_READINESS_CHECKS``; see readiness()'s
+    #ASSUME docstring note for why cache is deliberately excluded.
+    """
+
+    @pytest.mark.unit
+    def test_readiness_returns_200_when_cache_down_and_database_healthy(
+        self,
+    ) -> None:
+        """A down Redis is reported in checks but still returns HTTP 200."""
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_session.execute = AsyncMock()
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+            yield mock_session
+
+        mock_redis_client = AsyncMock()
+        mock_redis_client.ping = AsyncMock(side_effect=OSError("connection refused"))
+        mock_redis_client.aclose = AsyncMock()
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_fake_get_session,
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "redis",
+            ),
+            patch(
+                "cyo_adventure.api.health.Redis.from_url",
+                return_value=mock_redis_client,
+            ),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/health/ready")
+
+        body = response.json()
+        assert response.status_code == 200
+        assert body["status"] == "ok"
+        assert body["checks"]["cache"]["status"] is False
+        assert body["checks"]["cache"]["state"] == "degraded"
+
+    @pytest.mark.unit
+    def test_readiness_returns_200_when_cache_unconfigured(self) -> None:
+        """An unconfigured (memory-backend) cache is reported but returns HTTP 200."""
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_session.execute = AsyncMock()
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+            yield mock_session
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_fake_get_session,
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "memory",
+            ),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/health/ready")
+
+        body = response.json()
+        assert response.status_code == 200
+        assert body["checks"]["cache"]["status"] is True
+        assert body["checks"]["cache"]["state"] == "unconfigured"
 
 
 # ---------------------------------------------------------------------------
@@ -401,50 +618,12 @@ class TestReadinessCheckModel:
 # ---------------------------------------------------------------------------
 # check_cache except branch
 # ---------------------------------------------------------------------------
-
-
-class TestCheckCacheExceptBranch:
-    """Tests for the check_cache() except branch (lines 146-149)."""
-
-    @pytest.mark.unit
-    @pytest.mark.asyncio
-    async def test_check_cache_except_branch_returns_false_status(self) -> None:
-        """check_cache returns status=False when time.time raises inside the try block.
-
-        The placeholder try block calls time.time() a second time to compute
-        latency. Patching time.time to raise on the second call exercises the
-        except branch without altering the public contract of check_cache.
-
-        A function-based side_effect is used (not a list) so that incidental
-        calls from structlog's timestamper do not exhaust a fixed list and
-        cause StopIteration inside the coroutine frame.
-        """
-        from cyo_adventure.api.health import check_cache
-
-        raiser = _time_raiser_on_nth_call(2, OSError("simulated cache failure"))
-        with patch("cyo_adventure.api.health.time.time", side_effect=raiser):
-            result = await check_cache()
-
-        assert result.status is False
-        assert result.name == "cache"
-        assert result.error == "dependency unavailable"
-        assert result.latency_ms is not None
-
-    @pytest.mark.unit
-    @pytest.mark.asyncio
-    async def test_check_cache_except_branch_does_not_leak_exception_text(
-        self,
-    ) -> None:
-        """check_cache except branch must return the generic error string (OWASP A09)."""
-        from cyo_adventure.api.health import check_cache
-
-        internal_message = "redis-host:6379 ECONNREFUSED"
-        raiser = _time_raiser_on_nth_call(2, OSError(internal_message))
-        with patch("cyo_adventure.api.health.time.time", side_effect=raiser):
-            result = await check_cache()
-
-        assert internal_message not in (result.error or "")
-        assert result.error == "dependency unavailable"
+#
+# NOTE: check_cache no longer has a placeholder try/except around bare
+# time.time() calls; TestCheckCache above (redis_down, unconfigured cases)
+# now covers the except branch and the OWASP A09 non-leak requirement
+# directly against the real Redis-backed implementation, with the client
+# mocked rather than relying on time.time() as an indirect failure trigger.
 
 
 # ---------------------------------------------------------------------------

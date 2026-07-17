@@ -35,6 +35,12 @@ versus a per-parent approval, while keeping the human-in-the-loop guarantee abso
 the sections below say "parent" or "guardian" as the approver, read "global admin (safety
 operator)"; the structural guarantee they describe is otherwise as written.
 
+**Ratification note (2026-07-16)**: the owner reconfirmed this split during the capability
+register review: the admin is the safety gate on AI output (register item A6), and the
+guardian's control point is upstream, as the cost gate on generation spend
+([ADR-015](./adr-015-story-request-initiation-and-gating.md), register G7). The vision doc's
+"a parent approves it" phrasing was updated to match this amendment in the same pass.
+
 ## TL;DR
 
 A story can enter a child's library only after a human approves it, encoded as a state

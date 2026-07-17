@@ -10,6 +10,7 @@ import pytest
 
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.api.story_requests import _to_view
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     StateTransitionError,
@@ -18,6 +19,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
+    Family,
     GenerationJob,
     Series,
     StoryRequest,
@@ -178,6 +180,82 @@ def test_brief_from_request_anchor_context_defaults_to_none() -> None:
     assert brief.anchor_context is None
 
 
+def test_brief_from_request_banned_themes_become_content_nogo() -> None:
+    """G2: a profile's banned_themes flow into the brief's content_nogo verbatim."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    profile = _profile("8-11")
+    profile.banned_themes = ["spiders", "magic"]
+    brief = brief_from_request(request, profile)
+    assert brief.content_nogo == ["spiders", "magic"]
+
+
+def test_brief_from_request_content_flag_cap_stricter_than_band_is_carried() -> None:
+    """G2: a cap stricter than the 8-11 band's ceiling (violence=mild) is kept as-is."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    profile = _profile("8-11")
+    profile.allowed_content_flags = {"violence": "none"}
+    brief = brief_from_request(request, profile)
+    assert brief.special_constraints == ["Keep violence at or below 'none'."]
+
+
+def test_brief_from_request_content_flag_cap_looser_than_band_is_clamped() -> None:
+    """G2: a guardian cannot loosen a cap past the band ceiling (PL-16 still applies).
+
+    band 8-11's scariness ceiling is 'moderate'; requesting 'intense' clamps
+    down to the ceiling rather than passing 'intense' to the generator.
+    """
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    profile = _profile("8-11")
+    profile.allowed_content_flags = {"scariness": "intense"}
+    brief = brief_from_request(request, profile)
+    assert brief.special_constraints == ["Keep scariness at or below 'moderate'."]
+
+
+def test_brief_from_request_profile_with_no_g2_controls_is_unaffected() -> None:
+    """G2: a profile with no banned themes or flag caps set yields empty lists."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    brief = brief_from_request(request, _profile("8-11"))
+    assert brief.content_nogo == []
+    assert brief.special_constraints == []
+
+
+def test_brief_from_request_without_profile_has_no_content_controls() -> None:
+    """G2: a profile-less request has no per-child controls to apply."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        request_text="a space story",
+        status="pending",
+        age_band="8-11",
+    )
+    brief = brief_from_request(request, None)
+    assert brief.content_nogo == []
+    assert brief.special_constraints == []
+
+
 @pytest.mark.asyncio
 async def test_screen_blocks_on_pii_match() -> None:
     """A request naming a real child is blocked before any classifier call."""
@@ -295,6 +373,9 @@ class _FakeScalars:
         return self._values
 
 
+_UNSET = object()
+
+
 class _FakeSession:
     """Minimal async session double for ``service.approve_story_request``.
 
@@ -302,25 +383,51 @@ class _FakeSession:
     module's service-level tests stay DB-free (no testcontainers). ``flush``
     assigns a UUID to any added object still missing one, mimicking the ORM's
     Python-side ``default=uuid.uuid4`` column default that a real flush applies.
+
+    ADR-015: ``approve_story_request`` now calls ``enforce_family_quota``
+    unconditionally (before the profile lookup this double originally existed
+    for), which issues its own ``session.get(Family, ...)`` and
+    ``session.scalar(<count query>)``. ``family_result`` defaults to a fresh,
+    unconfigured ``Family`` (quota falls back to
+    ``settings.default_monthly_story_quota``) and ``approved_count`` defaults
+    to 0, so every pre-existing call site that does not care about budget
+    behavior keeps passing the quota check unchanged; a budget-focused test
+    overrides one or both to exercise the gate itself.
     """
 
     def __init__(
-        self, *, get_result: object | None = None, child_names: list[str] | None = None
+        self,
+        *,
+        get_result: object | None = None,
+        child_names: list[str] | None = None,
+        family_result: object | None = _UNSET,
+        approved_count: int = 0,
     ) -> None:
         self._get_result = get_result
         self._child_names = child_names or []
+        self._family_result = (
+            Family(name="Fake Family") if family_result is _UNSET else family_result
+        )
+        self._approved_count = approved_count
         self.added: list[object] = []
         self.get_calls: list[tuple[type[object], object]] = []
 
     async def get(self, model: type[object], key: object) -> object | None:
-        """Record the call and return the seeded profile row (or None)."""
+        """Record the call and return the seeded row for ``model`` (or None)."""
         self.get_calls.append((model, key))
+        if model is Family:
+            return self._family_result
         return self._get_result
 
     async def scalars(self, statement: object) -> _FakeScalars:
         """Return the seeded family child display names."""
         _ = statement
         return _FakeScalars(self._child_names)
+
+    async def scalar(self, statement: object) -> int:
+        """Return the seeded monthly-approved-count (ADR-015 budget queries)."""
+        _ = statement
+        return self._approved_count
 
     def add(self, obj: object) -> None:
         """Record an added ORM instance."""
@@ -339,6 +446,24 @@ def _guardian(family_id: uuid.UUID) -> Principal:
         subject="guardian-sub",
         user_id=uuid.uuid4(),
         role="guardian",  # pyright: ignore[reportArgumentType]
+        family_id=family_id,
+        profile_ids=frozenset(),
+    )
+
+
+def _admin(family_id: uuid.UUID) -> Principal:
+    """Build an admin Principal "belonging to" the given family.
+
+    An admin base-role Principal's ``acting_role`` always resolves to
+    ``Role.ADMIN`` regardless of the target family it acts on (see
+    ``Principal.acting_role``'s docstring), so ``family_id`` here is only the
+    principal's own nominal family, not a constraint on which family it may
+    act against.
+    """
+    return Principal(
+        subject="admin-sub",
+        user_id=uuid.uuid4(),
+        role="admin",  # pyright: ignore[reportArgumentType]
         family_id=family_id,
         profile_ids=frozenset(),
     )
@@ -451,8 +576,10 @@ async def test_approve_story_request_missing_profile_is_not_found() -> None:
 async def test_approve_story_request_without_profile_skips_profile_lookup() -> None:
     """A profile-less request (guardian/admin initiated) approves cleanly.
 
-    ``request.profile_id`` is None, so the profile-existence branch must never
-    call ``session.get``; only the family-scoped child-names query runs.
+    ``request.profile_id`` is None, so the ChildProfile-existence branch must
+    never call ``session.get(ChildProfile, ...)``; only the family-quota
+    lookup (``session.get(Family, ...)``, ADR-015) and the family-scoped
+    child-names query run.
     """
     family_id = uuid.uuid4()
     principal = _guardian(family_id)
@@ -480,7 +607,7 @@ async def test_approve_story_request_without_profile_skips_profile_lookup() -> N
     assert request.length == "medium"
     assert request.narrative_style == "prose"
     assert concept_id == str(request.concept_id)
-    assert session.get_calls == []
+    assert session.get_calls == [(Family, family_id)]
 
 
 @pytest.mark.asyncio
@@ -730,3 +857,201 @@ def test_to_view_skips_flag_entry_missing_required_string_fields() -> None:
 
     assert len(view.moderation_flags) == 1
     assert view.moderation_flags[0].message == "borderline"
+
+
+# ---------------------------------------------------------------------------
+# ADR-015 budget-consent delta: G7 guardian cost gate, G3 pre-authorization.
+#
+# Only the gate logic itself (resolve_family_quota, _bypasses_family_quota,
+# enforce_family_quota's block/pass/admin-bypass outcomes, and
+# can_auto_approve's fast no-DB-touch short-circuits) is unit-testable
+# against the hand-rolled _FakeSession, which cannot distinguish a
+# family-scoped count from a profile-scoped count (both route through the
+# same seeded `approved_count`). Scenarios that need two distinguishable
+# counts (envelope-vs-quota, the month boundary, the HTTP-level auto-approve
+# and budget-endpoint flows) live in
+# tests/integration/test_story_requests_budget.py against a real database.
+# ---------------------------------------------------------------------------
+
+
+class TestResolveFamilyQuota:
+    """resolve_family_quota: override vs platform-default fallback."""
+
+    def test_none_falls_back_to_platform_default(self) -> None:
+        family = Family(name="Fam")
+        assert family.monthly_story_quota is None
+        assert (
+            service.resolve_family_quota(family) == settings.default_monthly_story_quota
+        )
+
+    def test_explicit_override_wins(self) -> None:
+        family = Family(name="Fam", monthly_story_quota=42)
+        assert service.resolve_family_quota(family) == 42
+
+    def test_explicit_zero_is_not_treated_as_unset(self) -> None:
+        """0 is a valid (very strict) quota, not the sentinel for "use the
+        default"; only None means unset."""
+        family = Family(name="Fam", monthly_story_quota=0)
+        assert service.resolve_family_quota(family) == 0
+
+
+class TestBypassesFamilyQuota:
+    """_bypasses_family_quota: mirrors Principal.acting_role's admin cases."""
+
+    def test_guardian_never_bypasses_own_family(self) -> None:
+        family_id = uuid.uuid4()
+        assert service._bypasses_family_quota(_guardian(family_id), family_id) is False
+
+    def test_admin_always_bypasses(self) -> None:
+        """A pure admin-role Principal bypasses regardless of family match
+        (ADR-015: "admin caller" bypasses, not only a cross-family admin)."""
+        family_id = uuid.uuid4()
+        assert service._bypasses_family_quota(_admin(family_id), family_id) is True
+        assert service._bypasses_family_quota(_admin(family_id), uuid.uuid4()) is True
+
+    def test_dual_role_guardian_admin_bypasses_only_cross_family(self) -> None:
+        own_family = uuid.uuid4()
+        other_family = uuid.uuid4()
+        dual = Principal(
+            subject="dual",
+            user_id=uuid.uuid4(),
+            role="guardian",  # pyright: ignore[reportArgumentType]
+            family_id=own_family,
+            profile_ids=frozenset(),
+            is_admin=True,
+        )
+        assert service._bypasses_family_quota(dual, own_family) is False
+        assert service._bypasses_family_quota(dual, other_family) is True
+
+
+@pytest.mark.asyncio
+class TestEnforceFamilyQuota:
+    """enforce_family_quota: the guardian-cost-gate enforcement point."""
+
+    async def test_blocks_when_spend_meets_quota(self) -> None:
+        family_id = uuid.uuid4()
+        family = Family(id=family_id, name="Fam", monthly_story_quota=2)
+        session = _FakeSession(family_result=family, approved_count=2)
+        with pytest.raises(StateTransitionError, match="monthly story budget reached"):
+            await service.enforce_family_quota(session, _guardian(family_id), family_id)
+
+    async def test_passes_when_under_quota(self) -> None:
+        family_id = uuid.uuid4()
+        family = Family(id=family_id, name="Fam", monthly_story_quota=2)
+        session = _FakeSession(family_result=family, approved_count=1)
+        await service.enforce_family_quota(session, _guardian(family_id), family_id)
+
+    async def test_admin_bypasses_even_when_over_quota(self) -> None:
+        family_id = uuid.uuid4()
+        family = Family(id=family_id, name="Fam", monthly_story_quota=0)
+        session = _FakeSession(family_result=family, approved_count=99)
+        # Must not raise, and must never even look up the family row (the
+        # bypass check runs first).
+        await service.enforce_family_quota(session, _admin(family_id), family_id)
+        assert session.get_calls == []
+
+    async def test_missing_family_is_not_found(self) -> None:
+        family_id = uuid.uuid4()
+        session = _FakeSession(family_result=None)
+        with pytest.raises(ResourceNotFoundError):
+            await service.enforce_family_quota(session, _guardian(family_id), family_id)
+
+
+@pytest.mark.asyncio
+class TestApproveStoryRequestQuotaGate:
+    """approve_story_request's own call to enforce_family_quota."""
+
+    async def test_over_quota_blocks_before_any_concept_is_added(self) -> None:
+        family_id = uuid.uuid4()
+        family = Family(id=family_id, name="Fam", monthly_story_quota=0)
+        principal = _guardian(family_id)
+        request = StoryRequest(
+            family_id=family_id,
+            request_text="a fox",
+            status="pending",
+            age_band="8-11",
+        )
+        session = _FakeSession(
+            get_result=None, child_names=[], family_result=family, approved_count=1
+        )
+
+        with pytest.raises(StateTransitionError, match="monthly story budget reached"):
+            await service.approve_story_request(
+                session,
+                principal,
+                request,
+                confirmation=ApprovalConfirmation(
+                    age_band=AgeBand.BAND_8_11,
+                    length=Length.MEDIUM,
+                    narrative_style=NarrativeStyle.PROSE,
+                ),
+            )
+
+        assert request.status == "pending"
+        assert request.concept_id is None
+        assert not any(isinstance(o, Concept) for o in session.added)
+
+    async def test_admin_approval_bypasses_even_at_zero_quota(self) -> None:
+        family_id = uuid.uuid4()
+        family = Family(id=family_id, name="Fam", monthly_story_quota=0)
+        principal = _admin(family_id)
+        request = StoryRequest(
+            family_id=family_id,
+            request_text="a platform-funded story",
+            status="pending",
+            age_band="8-11",
+        )
+        session = _FakeSession(
+            get_result=None, child_names=[], family_result=family, approved_count=99
+        )
+
+        concept_id = await service.approve_story_request(
+            session,
+            principal,
+            request,
+            confirmation=ApprovalConfirmation(
+                age_band=AgeBand.BAND_8_11,
+                length=Length.MEDIUM,
+                narrative_style=NarrativeStyle.PROSE,
+            ),
+        )
+        assert concept_id == str(request.concept_id)
+        assert request.status == "approved"
+        assert request.approved_at is not None
+
+
+@pytest.mark.asyncio
+class TestCanAutoApprove:
+    """can_auto_approve's fast, no-DB-touch short-circuits (G3)."""
+
+    async def test_false_when_auto_approve_disabled(self) -> None:
+        profile = ChildProfile(
+            family_id=uuid.uuid4(),
+            display_name="Kid",
+            age_band="8-11",
+            request_auto_approve=False,
+            monthly_request_envelope=5,
+        )
+        family = Family(name="Fam")
+        # A bare object() proves the short-circuit never touches the
+        # session: any await on it would raise AttributeError.
+        session = object()
+        assert (
+            await service.can_auto_approve(session, profile, family)  # type: ignore[arg-type]
+            is False
+        )
+
+    async def test_false_when_envelope_unset(self) -> None:
+        profile = ChildProfile(
+            family_id=uuid.uuid4(),
+            display_name="Kid",
+            age_band="8-11",
+            request_auto_approve=True,
+            monthly_request_envelope=None,
+        )
+        family = Family(name="Fam")
+        session = object()
+        assert (
+            await service.can_auto_approve(session, profile, family)  # type: ignore[arg-type]
+            is False
+        )

@@ -578,3 +578,260 @@ async def test_pin_hash_never_serialized(client: AsyncClient, seed: Seed) -> Non
     assert as_child.status_code == 200, as_child.text
     assert "pin_hash" not in as_child.text
     assert "pbkdf2" not in as_child.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_with_content_flag_caps_and_banned_themes(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """G2: a guardian sets per-child flag caps and banned themes on create."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Nova",
+            "age_band": "8-11",
+            "content_flag_caps": {"violence": "none", "scariness": "mild"},
+            "banned_themes": ["Spiders", "  Magic  "],
+        },
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    assert body["content_flag_caps"] == {
+        "violence": "none",
+        "scariness": "mild",
+        "peril": None,
+    }
+    # whitespace-trimmed and lowercased at the API boundary.
+    assert body["banned_themes"] == ["spiders", "magic"]
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_defaults_g2_fields_to_empty(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A create body with no G2 fields yields no caps and no banned themes."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "8-11"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    assert body["content_flag_caps"] == {
+        "violence": None,
+        "scariness": None,
+        "peril": None,
+    }
+    assert body["banned_themes"] == []
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_rejects_unknown_content_flag_level(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A content_flag_caps value outside the closed vocabulary is a 422."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Nova",
+            "age_band": "8-11",
+            "content_flag_caps": {"violence": "extreme"},
+        },
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_rejects_banned_theme_with_control_characters(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A banned theme carrying disallowed characters is a 422, not silently kept."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Nova",
+            "age_band": "8-11",
+            "banned_themes": ["spiders\x07;drop table"],
+        },
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_rejects_more_than_twenty_banned_themes(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """More than 20 banned themes is a 422 (mirrors ConceptBrief.content_nogo's cap)."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Nova",
+            "age_band": "8-11",
+            "banned_themes": [f"theme{i}" for i in range(21)],
+        },
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_content_flag_caps_replaces_wholesale(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """PATCH content_flag_caps replaces the stored caps, it does not merge."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Nova",
+            "age_band": "8-11",
+            "content_flag_caps": {"violence": "none", "scariness": "mild"},
+        },
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}",
+        json={"content_flag_caps": {"peril": "mild"}},
+        headers=guardian,
+    )
+    assert resp.status_code == 200, resp.text
+    # violence/scariness are gone, not carried over: a wholesale replace.
+    assert resp.json()["content_flag_caps"] == {
+        "violence": None,
+        "scariness": None,
+        "peril": "mild",
+    }
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_content_flag_caps_clears_via_explicit_null(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """PATCH with an explicit null clears every content-flag cap."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Nova",
+            "age_band": "8-11",
+            "content_flag_caps": {"violence": "none"},
+        },
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}", json={"content_flag_caps": None}, headers=guardian
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["content_flag_caps"] == {
+        "violence": None,
+        "scariness": None,
+        "peril": None,
+    }
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_banned_themes_clears_via_explicit_null(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """PATCH with an explicit null clears the banned-themes list."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Nova",
+            "age_band": "8-11",
+            "banned_themes": ["spiders"],
+        },
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}", json={"banned_themes": None}, headers=guardian
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["banned_themes"] == []
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_omitting_g2_fields_keeps_them_unchanged(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A PATCH that omits the G2 fields entirely leaves them untouched."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Nova",
+            "age_band": "8-11",
+            "content_flag_caps": {"violence": "none"},
+            "banned_themes": ["spiders"],
+        },
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}", json={"display_name": "Nova II"}, headers=guardian
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["content_flag_caps"]["violence"] == "none"
+    assert body["banned_themes"] == ["spiders"]
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_and_update_envelope_fields(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """G3 envelope fields round-trip on create, apply on PATCH, null clears."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Vega",
+            "age_band": "8-11",
+            "request_auto_approve": True,
+            "monthly_request_envelope": 3,
+        },
+        headers=guardian,
+    )
+    assert created.status_code == 201, created.text
+    body = created.json()
+    assert body["request_auto_approve"] is True
+    assert body["monthly_request_envelope"] == 3
+    pid = body["id"]
+
+    toggled = await client.patch(
+        f"/api/v1/profiles/{pid}",
+        json={"request_auto_approve": False},
+        headers=guardian,
+    )
+    assert toggled.status_code == 200, toggled.text
+    assert toggled.json()["request_auto_approve"] is False
+    assert toggled.json()["monthly_request_envelope"] == 3
+
+    cleared = await client.patch(
+        f"/api/v1/profiles/{pid}",
+        json={"monthly_request_envelope": None},
+        headers=guardian,
+    )
+    assert cleared.status_code == 200, cleared.text
+    assert cleared.json()["monthly_request_envelope"] is None

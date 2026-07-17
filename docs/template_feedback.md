@@ -856,6 +856,30 @@ and the `pyjwt` hint to cover asymmetric-only allowlists. See this repo's
 
 ---
 
+## FIPS checker false-positives on ambiguous cipher names (`seed`, `idea`)
+
+**Issue**: `scripts/check_fips_compatibility.py` flags any attribute call whose
+name matches a `NON_FIPS_CIPHERS` entry. Two entries are common English
+identifiers: `seed` and `idea`. Any project calling `random.seed()`,
+`faker.seed()`, or its own `module.seed()` helper gets a hard error-severity
+"Non-FIPS cipher detected: seed" finding with no crypto anywhere in sight. In
+this repo, five such errors fired on `tests/unit/test_seed_staging.py` (a
+staging seed-data test) and failed the FIPS CI gate on a PR.
+
+**Context**: Discovered when the `fips-compatibility.yml` workflow (which runs
+with `--include-tests`) failed on a feature PR that never touched crypto.
+
+**Suggested Fix**: For ambiguous names, require crypto context before flagging:
+either the uppercase algorithm spelling (`SEED(...)`, `IDEA(...)`) or a receiver
+chain containing a crypto namespace (`Crypto`, `cryptography`, `Cipher`,
+`ciphers`, `algorithms`). This repo implements it as `AMBIGUOUS_CIPHER_NAMES` +
+`CRYPTO_NAMESPACE_HINTS` + `_has_crypto_receiver` in
+`scripts/check_fips_compatibility.py`, with regression tests in
+`tests/unit/test_check_fips_compatibility.py`.
+
+**Priority**: High (a false error blocks CI for any project that seeds a PRNG)
+
+**Affected Files**: template `scripts/check_fips_compatibility.py`
 ### `[tool.mutmut]` block ships mutmut 2.x config keys while pinning mutmut 3.x, so mutation testing crashes at startup
 
 - **Priority**: High

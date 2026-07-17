@@ -1,0 +1,185 @@
+# Scheduled production E2E workflow (test-traceability-matrix.md, "Actions to
+# reach the bar" #3).
+#
+# Runs the e2e-prod Playwright tier (frontend/e2e-prod/) daily against LIVE
+# production (https://cyo.williamshome.family by default) using a dedicated
+# test account, then alerts on failure via a pinned GitHub issue. Scheduled
+# 30 minutes after e2e-staging.yml's `0 13 * * *` so the two scheduled tiers
+# never start at the same minute.
+#
+# #CRITICAL: security: frontend/e2e-prod/support/prod-env.ts hard-fails with
+# `if (process.env.CI) throw new Error(...)` specifically to stop this tier
+# from ever running unattended in CI, because every run authenticates a real
+# family account against live production. This workflow is a deliberate,
+# owner-directed override of that guard, not an oversight: see
+# docs/planning/test-traceability-matrix.md, "The bar (owner directive,
+# 2026-07-16)" and action #3. It works around the guard by clearing CI to an
+# empty string for the test-run step below; setting it to the string "false"
+# would NOT work, because any non-empty string (including "false") is
+# truthy in JavaScript, and the guard only checks `if (process.env.CI)`.
+# #VERIFY: if frontend/e2e-prod/support/prod-env.ts's guard or its
+# manual-only framing ever changes, re-check this override still matches
+# intent. If the repo owner instead decides e2e-prod should stay
+# CI-proof, delete this workflow rather than fighting the guard.
+#
+# -----------------------------------------------------------------------
+# Required GitHub Environment: `production`
+# -----------------------------------------------------------------------
+# The repo owner must create a `production` Environment (repo Settings ->
+# Environments) and add the secrets below before the first scheduled run;
+# until then every run fails fast at the credential check in
+# frontend/e2e-prod/support/prod-env.ts. Env var names below match that
+# file exactly.
+#
+#   E2E_PROD_TEST_EMAIL     (required) Login email for the dedicated e2e-prod
+#                            test account. Read in
+#                            frontend/e2e-prod/support/prod-env.ts
+#                            (requireProdCredentials).
+#   E2E_PROD_TEST_PASSWORD  (required) That account's password; also used to
+#                            answer the AdultGate re-auth challenge in
+#                            frontend/e2e-prod/support/auth.ts
+#                            (unlockParentalGateIfPresent).
+#   E2E_PROD_BASE_URL       (optional) Overrides the default target
+#                            (https://cyo.williamshome.family); only set this
+#                            if production ever moves host. See
+#                            frontend/e2e-prod/support/prod-env.ts
+#                            (PROD_BASE_URL).
+#
+# Never reuse a real family's credentials for these two required secrets;
+# use the dedicated test account described in frontend/README.md, "Production
+# smoke e2e (manual, never CI)".
+# -----------------------------------------------------------------------
+name: E2E (production)
+
+on:
+  schedule:
+    # Daily. Offset from e2e-staging.yml's 0 13 * * * by 30 minutes.
+    - cron: "30 13 * * *"
+  workflow_dispatch: {}
+
+# Least-privilege at workflow level; the job below declares the extra
+# issues: write it needs for the failure-alerting step.
+permissions:
+  contents: read
+
+concurrency:
+  # Every run authenticates a real account against live production, and
+  # kid-device-grant.spec.ts mints and revokes a real device grant; two
+  # overlapping runs (a schedule firing mid manual-dispatch, or two manual
+  # dispatches) could race on the same account or grant. Never cancel an
+  # in-flight run in favor of a newer one, mirroring e2e-staging.yml's guard.
+  group: e2e-prod
+  cancel-in-progress: false
+
+jobs:
+  e2e-prod:
+    name: Playwright (e2e-prod tier)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+      issues: write
+    defaults:
+      run:
+        working-directory: ./frontend
+    env:
+      E2E_PROD_BASE_URL: ${{ secrets.E2E_PROD_BASE_URL }}
+      E2E_PROD_TEST_EMAIL: ${{ secrets.E2E_PROD_TEST_EMAIL }}
+      E2E_PROD_TEST_PASSWORD: ${{ secrets.E2E_PROD_TEST_PASSWORD }}
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E (Playwright, prod tier)
+        # See the header comment: prod-env.ts refuses to run at all while
+        # process.env.CI is truthy, by design. Clear it to an empty string
+        # (not "false", a truthy string in JavaScript) for this step only.
+        env:
+          CI: ""
+        run: npm run test:e2e:prod
+
+      - name: Upload Playwright trace on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-prod-traces
+          path: frontend/test-results/
+          retention-days: 7
+
+      - name: Alert on failure (pinned issue)
+        # Reusable alerting pattern for scheduled E2E tiers (test-
+        # traceability-matrix.md, "Actions to reach the bar" #2): find an
+        # OPEN issue labeled e2e-alert whose title starts with this
+        # workflow's marker and comment on it, or open one if none exists
+        # yet, so repo watchers get GitHub's native email/push notification
+        # instead of a red run nobody checks the Actions tab for.
+        #
+        # e2e-staging.yml should adopt this exact step once PR #268 merges;
+        # today it only has the passive trace-artifact-on-failure signal
+        # (marker "[e2e-staging]" instead of "[e2e-prod]", everything else
+        # the same).
+        if: ${{ failure() }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '[e2e-prod]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'e2e-alert',
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Scheduled production E2E failed again on ${today}. Run: ${runUrl}`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} scheduled production E2E failing`,
+                labels: ['e2e-alert'],
+                body: [
+                  'The scheduled `E2E (production)` workflow (`.github/workflows/e2e-prod.yml`) failed.',
+                  '',
+                  'This tier signs in through the real login form against live production',
+                  '(frontend/e2e-prod/) and runs daily; a failure here means either a real',
+                  'regression, a production outage, or the dedicated test account or its',
+                  'credentials need attention.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'This issue stays open and accumulates one comment per failing run until',
+                  'someone resolves the underlying problem and closes it; the next failure',
+                  'after that opens a fresh issue.',
+                ].join('\n'),
+              })
+            }

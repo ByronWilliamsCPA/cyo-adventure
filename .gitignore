@@ -318,3 +318,6 @@ docs/qa/naive-ux-reports/*.md
 
 # Staging environment secrets (template: .env.staging.example)
 .env.staging
+
+# Agent-session worktrees (auto-created by subagent isolation)
+.claude/worktrees/

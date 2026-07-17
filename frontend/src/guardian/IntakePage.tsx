@@ -8,6 +8,8 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { AssignChildrenDialog } from './AssignChildrenDialog'
+import { BudgetBanner } from './BudgetBanner'
+import { BUDGET_EXCEEDED_MESSAGE, isBudgetExceededError } from './budgetApi'
 import {
   TONES,
   buildBrief,
@@ -18,6 +20,7 @@ import {
   type StatusPill,
   type ToneValue,
 } from './intakeApi'
+import { STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 
 // Poll interval while any request is still generating; matches the ApiStatus
 // polling shape (setInterval + clearInterval cleanup), tuned to ~8s here.
@@ -155,6 +158,11 @@ export function IntakePage() {
   }, [jobs, refreshJobs])
 
   const selected = profiles.find((p) => p.id === selectedId) ?? null
+  // #ASSUME: data-integrity: banned_themes is always present on a ProfileView
+  // fetched from the current API, but a stale/mocked profile object may omit
+  // it; the fallback keeps this read-only display (and the buildBrief call
+  // above) from throwing on such a shape.
+  const selectedBannedThemes = selected?.banned_themes ?? []
   const canSubmit = selected !== null && premise.trim().length > 0 && !saving
 
   // Names what still blocks Request Story while it is disabled for missing
@@ -192,15 +200,32 @@ export function IntakePage() {
         tone,
         ageBand: selected.age_band,
         readingLevelCap: selected.reading_level_cap,
+        // G2: fold the selected child's guardian-set theme exclusions into
+        // the brief instead of the previously hardcoded empty list.
+        bannedThemes: selectedBannedThemes,
       })
       const { concept_id } = await intakeApi.createConcept(brief)
       await intakeApi.generate(concept_id)
       submitted = true
     } catch (err) {
       console.error('story request failed', err)
+      // ADR-015 G7: a family-budget-exhausted 409 gets its own friendly
+      // copy (with a hint to wait for next month) instead of the generic
+      // transient/server fallback. #ASSUME: external-resources: neither
+      // /v1/concepts nor /v1/concepts/{id}/generate enforces the family
+      // quota at this writing (only the story-requests approve/authored-
+      // create endpoints do; see budgetApi.ts's isBudgetExceededError doc),
+      // so this branch is defensive/forward-compatible rather than
+      // reachable today -- it costs nothing and stays correct if/when the
+      // guardian-authored intake path gains the same gate.
+      // #VERIFY: IntakePage.test.tsx "budget-exhausted submit" test.
       setError(
-        classifyApiError(err, { transient: SUBMIT_ERROR_TRANSIENT, server: SUBMIT_ERROR_TRANSIENT })
-          .message
+        isBudgetExceededError(err)
+          ? BUDGET_EXCEEDED_MESSAGE
+          : classifyApiError(err, {
+              transient: SUBMIT_ERROR_TRANSIENT,
+              server: SUBMIT_ERROR_TRANSIENT,
+            }).message
       )
     } finally {
       setSaving(false)
@@ -211,6 +236,11 @@ export function IntakePage() {
     if (submitted) {
       setPremise('')
       setSubmitSuccess(true)
+      // Refreshes BudgetBanner (this page and RequestsPage's, if mounted)
+      // via the shared window event; also a no-op nudge to the guardian
+      // shell's pending-count badge, which StoryRequestQueue's approve/
+      // decline already use this same event for.
+      window.dispatchEvent(new Event(STORY_REQUESTS_CHANGED_EVENT))
       await refreshJobs().catch((err) => {
         console.error('post-submit refresh failed', err)
         setLoadError(
@@ -291,6 +321,15 @@ export function IntakePage() {
           )}
         </fieldset>
 
+        {/* G2: read-only proof that the per-child content controls (set on
+            the Profiles page) actually apply to this request; content_nogo
+            is derived from these themes in buildBrief above. */}
+        {selectedBannedThemes.length > 0 ? (
+          <p className="intake-form__hint cyo-text-muted" data-testid="intake-excluded-themes">
+            Excluded for this child: {selectedBannedThemes.join(', ')}
+          </p>
+        ) : null}
+
         <label className="intake-form__field cyo-field">
           What&apos;s it about?
           <textarea
@@ -324,6 +363,9 @@ export function IntakePage() {
         {submitHint !== null ? (
           <p className="intake-form__hint cyo-text-muted">{submitHint}</p>
         ) : null}
+        {/* G13 (interim) balance: "N of M stories left this month", near
+            the submit button per the deliverable. */}
+        <BudgetBanner />
         <Button type="submit" disabled={!canSubmit}>
           {saving ? 'Requesting…' : 'Request Story'}
         </Button>

@@ -8,7 +8,14 @@
 
 import { type AxiosInstance, isAxiosError } from 'axios'
 
-import type { ConflictView, SeriesNextView } from '../client/types.gen'
+import type {
+  ConflictView,
+  KidFlagCreateBody,
+  KidFlagCreatedView,
+  ReadingHistoryItem,
+  ReadingHistoryView,
+  SeriesNextView,
+} from '../client/types.gen'
 import { OfflineError, type PutResponse, type SaveBody, type SyncApi } from '../offline/sync'
 import type { ReadingState, Storybook } from '../player/types'
 
@@ -189,5 +196,79 @@ export function makeFetchSeriesNext(
   return async (profileId, storybookId) => {
     const res = await api.get<SeriesNextView>(`/v1/series-next/${profileId}/${storybookId}`)
     return res.data.next ?? null
+  }
+}
+
+/**
+ * Fetch a profile's reading-history listing (the endings tracker, K6): one row
+ * per storybook the profile has any completion for. The ending screen matches
+ * on `storybook_id` to find the current book's row; the caller treats a
+ * rejection as best-effort ("no tracker shown"), same convention as
+ * makeFetchSeriesNext.
+ */
+export function makeFetchReadingHistory(
+  api: AxiosInstance
+): (profileId: string) => Promise<ReadingHistoryItem[]> {
+  return async (profileId: string): Promise<ReadingHistoryItem[]> => {
+    const res = await api.get<ReadingHistoryView>(`/v1/reading-history/${profileId}`)
+    // #ASSUME: data-integrity: a well-formed response always has `books` as
+    // an array; defend against a malformed body anyway so a bad payload
+    // degrades to "no tracker" (EndingsProgress renders nothing for an
+    // empty array) rather than throwing.
+    return Array.isArray(res.data.books) ? res.data.books : []
+  }
+}
+
+/** The three structured reasons a child can flag a passage for (K15). No
+ * free-text field exists on the wire: KidFlagCreateBody's `reason` is the
+ * entire signal (see its backend docstring). */
+export type FlagReason = KidFlagCreateBody['reason']
+
+export interface SubmitFlagParams {
+  profileId: string
+  storybookId: string
+  version: number
+  reason: FlagReason
+  /** The node the child was reading when they tapped "Tell a grown-up";
+   * omitted when unavailable rather than guessed. */
+  nodeId?: string | null
+}
+
+/** Thrown when POST /v1/flags 409s: the profile has hit its open-flag cap
+ * (StateTransitionError server-side). Distinct from a generic failure so the
+ * caller can show the gentle "you've told us a lot already" copy instead of a
+ * retry prompt that would just 409 again. */
+export class FlagCapReachedError extends Error {
+  constructor(message = 'flag cap reached') {
+    super(message)
+    this.name = 'FlagCapReachedError'
+  }
+}
+
+/**
+ * Submit a child's structured flag (K15). Never carries free text; `reason`
+ * is one of exactly three kid-simple choices (see FlagReason). A 409 maps to
+ * FlagCapReachedError; every other failure propagates for the caller's
+ * generic-retry copy.
+ */
+export function makeSubmitFlag(
+  api: AxiosInstance
+): (params: SubmitFlagParams) => Promise<KidFlagCreatedView> {
+  return async (params: SubmitFlagParams): Promise<KidFlagCreatedView> => {
+    try {
+      const res = await api.post<KidFlagCreatedView>('/v1/flags', {
+        profile_id: params.profileId,
+        storybook_id: params.storybookId,
+        version: params.version,
+        reason: params.reason,
+        node_id: params.nodeId ?? null,
+      })
+      return res.data
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 409) {
+        throw new FlagCapReachedError()
+      }
+      throw error
+    }
   }
 }

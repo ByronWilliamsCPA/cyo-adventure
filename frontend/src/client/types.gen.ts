@@ -357,6 +357,80 @@ export type AssignmentListView = {
 };
 
 /**
+ * AuditEventView
+ *
+ * One append-only pipeline_event row, projected for the admin console.
+ */
+export type AuditEventView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Occurred At
+     */
+    occurred_at: string;
+    /**
+     * Actor Id
+     */
+    actor_id: string | null;
+    /**
+     * Actor Role
+     */
+    actor_role: string;
+    /**
+     * Entity Type
+     */
+    entity_type: string;
+    /**
+     * Entity Id
+     */
+    entity_id: string;
+    /**
+     * Event Type
+     */
+    event_type: string;
+    /**
+     * From State
+     */
+    from_state: string | null;
+    /**
+     * To State
+     */
+    to_state: string | null;
+    /**
+     * Payload
+     */
+    payload: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * AuditListView
+ *
+ * A page of the audit log, newest first.
+ */
+export type AuditListView = {
+    /**
+     * Events
+     */
+    events: Array<AuditEventView>;
+    /**
+     * Limit
+     */
+    limit: number;
+    /**
+     * Offset
+     */
+    offset: number;
+    /**
+     * Has More
+     */
+    has_more: boolean;
+};
+
+/**
  * AuthoringPlanRequest
  *
  * Admin's choice of authoring method, mechanism, and prep model.
@@ -456,6 +530,34 @@ export type AuthoringPlanResponse = {
 };
 
 /**
+ * BookVerdictView
+ *
+ * One published storybook's re-screen outcome, on the wire.
+ */
+export type BookVerdictView = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Outcome
+     */
+    outcome: string;
+    /**
+     * Reasons
+     */
+    reasons: Array<string>;
+    /**
+     * Error
+     */
+    error: string | null;
+};
+
+/**
  * CategoryInsightView
  *
  * Override evidence for one (age_band, category) pair (WS-F).
@@ -493,6 +595,74 @@ export type CategoryInsightView = {
      * Last Seen
      */
     last_seen: string;
+};
+
+/**
+ * ChildEngagementItem
+ *
+ * One child's engagement signals for a guardian's family reading summary.
+ *
+ * Deliberately signals-only (G9's privacy model: signals, not surveillance):
+ * no story title, node, or choice content is carried here, only counts and
+ * ids already visible to the guardian elsewhere (the library listing).
+ */
+export type ChildEngagementItem = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
+    /**
+     * Books Started
+     */
+    books_started: number;
+    /**
+     * Books Finished
+     */
+    books_finished: number;
+    /**
+     * Total Endings Found
+     */
+    total_endings_found: number;
+    /**
+     * Last Activity At
+     */
+    last_activity_at: string | null;
+};
+
+/**
+ * ChildEnvelopeUsageView
+ *
+ * One child's ADR-015 G3 pre-authorization envelope usage this month.
+ *
+ * Deliberately usage-only, no balance-display styling here (the balance
+ * UI is a later, out-of-scope piece); this is the raw numbers a future
+ * guardian-facing view will render.
+ */
+export type ChildEnvelopeUsageView = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve: boolean;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope: number | null;
+    /**
+     * Used This Month
+     */
+    used_this_month: number;
 };
 
 /**
@@ -753,6 +923,34 @@ export type ConflictView = {
 };
 
 /**
+ * ContentFlagCaps
+ *
+ * Per-child ceiling overrides for the three content-sensitivity flags.
+ *
+ * Each field is ``None`` when the guardian has not set an override for
+ * that flag. A value here can only ever tighten what the child's age band
+ * already permits: the band's own ceiling
+ * (``validator/band_profile.py::BandProfile.content_ceiling``) is enforced
+ * unconditionally by the validation gate regardless of this model, so a
+ * guardian cannot use it to loosen the age-safety default, only to
+ * restrict further (see ``story_requests/brief.py``'s clamp-to-band-ceiling
+ * derivation). Stored on ``ChildProfile.allowed_content_flags`` as a dict
+ * containing only the keys that are set.
+ */
+export type ContentFlagCaps = {
+    violence?: ContentFlagLevel | null;
+    scariness?: ContentFlagLevel | null;
+    peril?: ContentFlagLevel | null;
+};
+
+/**
+ * ContentFlagLevel
+ *
+ * The intensity level of a content sensitivity flag.
+ */
+export type ContentFlagLevel = 'none' | 'mild' | 'moderate' | 'intense';
+
+/**
  * ContentSummaryView
  *
  * The guardian-facing content review summary for a published story.
@@ -885,6 +1083,30 @@ export type DeviceGrantView = {
 };
 
 /**
+ * FamilyBudgetView
+ *
+ * GET /families/me/budget: the caller's family monthly story budget (ADR-015 G7/G3).
+ */
+export type FamilyBudgetView = {
+    /**
+     * Quota
+     */
+    quota: number;
+    /**
+     * Spent This Month
+     */
+    spent_this_month: number;
+    /**
+     * Remaining
+     */
+    remaining: number;
+    /**
+     * Children
+     */
+    children: Array<ChildEnvelopeUsageView>;
+};
+
+/**
  * FamilyConnectionCreateBody
  *
  * An admin's request to opt one family in to another's recommendations.
@@ -910,6 +1132,60 @@ export type FamilyConnectionListView = {
      * Connections
      */
     connections: Array<FamilyConnectionView>;
+};
+
+/**
+ * FamilyConnectionMineItem
+ *
+ * One connection touching the caller's family, from their own side.
+ *
+ * ``direction`` is relative to the caller: ``"viewer"`` means the caller's
+ * family is ``FamilyConnection.family_id`` (it would see the counterpart's
+ * recommendations); ``"sharer"`` means the caller's family is
+ * ``connected_family_id`` (the counterpart would see theirs). ``active`` is
+ * ``True`` only when both sides have consented (ADR-016 dual-guardian rule).
+ */
+export type FamilyConnectionMineItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Direction
+     */
+    direction: 'viewer' | 'sharer';
+    /**
+     * Counterpart Family Id
+     */
+    counterpart_family_id: string;
+    /**
+     * Counterpart Family Name
+     */
+    counterpart_family_name: string;
+    /**
+     * My Consent
+     */
+    my_consent: boolean;
+    /**
+     * Active
+     */
+    active: boolean;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * FamilyConnectionMineListView
+ *
+ * Every connection touching the caller's family, from their own side.
+ */
+export type FamilyConnectionMineListView = {
+    /**
+     * Connections
+     */
+    connections: Array<FamilyConnectionMineItem>;
 };
 
 /**
@@ -966,6 +1242,18 @@ export type FamilyListView = {
      * Families
      */
     families: Array<FamilyView>;
+};
+
+/**
+ * FamilyReadingSummaryView
+ *
+ * Per-child engagement summary for the caller's own family (G9).
+ */
+export type FamilyReadingSummaryView = {
+    /**
+     * Children
+     */
+    children: Array<ChildEngagementItem>;
 };
 
 /**
@@ -1161,7 +1449,14 @@ export type GenerationJobListView = {
 /**
  * GenerationJobResponse
  *
- * Full status payload for a generation job.
+ * Status payload for a single generation job.
+ *
+ * ``report`` is the raw multi-stage LLM output (ADR-007: admin/system
+ * only). Per the 2026-07-16 ruling, ``GET /generation-jobs/{id}``
+ * (api/generation.py::get_generation_job) populates it only when the
+ * calling principal holds the admin capability (``Principal.is_admin``,
+ * which covers a dual-role guardian+admin); a plain guardian always gets
+ * ``None`` here, same as the list view.
  */
 export type GenerationJobResponse = {
     /**
@@ -1330,6 +1625,130 @@ export type HealthStatus = {
 };
 
 /**
+ * KidFlagCreateBody
+ *
+ * A child's structured flag on a storybook passage (K15).
+ *
+ * Deliberately carries no free-text field (``extra="forbid"`` rejects any
+ * caller attempt to smuggle one in under an unexpected key); ``reason`` is
+ * the entire signal.
+ */
+export type KidFlagCreateBody = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Reason
+     */
+    reason: 'did_not_like' | 'scared_me' | 'confusing';
+    /**
+     * Node Id
+     */
+    node_id?: string | null;
+};
+
+/**
+ * KidFlagCreatedView
+ *
+ * The response to a successful flag submission.
+ */
+export type KidFlagCreatedView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Reason
+     */
+    reason: 'did_not_like' | 'scared_me' | 'confusing';
+};
+
+/**
+ * KidFlagListView
+ *
+ * The admin open-flags queue, newest first.
+ */
+export type KidFlagListView = {
+    /**
+     * Flags
+     */
+    flags: Array<KidFlagView>;
+};
+
+/**
+ * KidFlagResolveBody
+ *
+ * An admin's resolution decision for one open flag.
+ */
+export type KidFlagResolveBody = {
+    /**
+     * Resolution
+     */
+    resolution: 'dismissed' | 'archived_book' | 'noted';
+};
+
+/**
+ * KidFlagView
+ *
+ * A stored kid flag, as returned on the admin queue.
+ */
+export type KidFlagView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Reason
+     */
+    reason: 'did_not_like' | 'scared_me' | 'confusing';
+    /**
+     * Node Id
+     */
+    node_id: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Resolved By
+     */
+    resolved_by: string | null;
+    /**
+     * Resolved At
+     */
+    resolved_at: string | null;
+    /**
+     * Resolution
+     */
+    resolution: 'dismissed' | 'archived_book' | 'noted' | null;
+};
+
+/**
  * Length
  *
  * The story-scale (length) tier: a total-word budget, world size.
@@ -1495,6 +1914,30 @@ export type ModerationDashboardView = {
 export type NarrativeStyle = 'prose' | 'gamebook';
 
 /**
+ * NodeEditBody
+ *
+ * A prose-only edit to one node: replacement body text and/or choice labels.
+ *
+ * Structure (ids, targets, conditions, effects, graph shape) is never
+ * editable through this body; ``api/node_edit.py::edit_node`` applies
+ * ``body`` to the node's prose and each ``choice_labels`` entry to the
+ * matching existing choice id's ``label`` only, rejecting any id absent
+ * from the node.
+ */
+export type NodeEditBody = {
+    /**
+     * Body
+     */
+    body?: string | null;
+    /**
+     * Choice Labels
+     */
+    choice_labels?: {
+        [key: string]: string;
+    } | null;
+};
+
+/**
  * NoiseFloorUpdateBody
  *
  * PUT body for the global admin noise floor.
@@ -1516,6 +1959,67 @@ export type NoiseFloorView = {
      * Value
      */
     value: number;
+};
+
+/**
+ * NotificationListView
+ *
+ * The guardian's family-scoped notification feed, newest first.
+ */
+export type NotificationListView = {
+    /**
+     * Notifications
+     */
+    notifications: Array<NotificationView>;
+};
+
+/**
+ * NotificationView
+ *
+ * One guardian-facing notification derived from a pipeline_event row.
+ *
+ * A read-only projection: there is no notification table. ``id`` is the
+ * underlying pipeline_event id, which doubles as a stable sort/dedup key
+ * for the client-side unread tracking this first slice relies on (see
+ * api/notifications.py).
+ */
+export type NotificationView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Occurred At
+     */
+    occurred_at: string;
+    /**
+     * Kind
+     */
+    kind: string;
+    /**
+     * Severity
+     */
+    severity: 'alert' | 'info';
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Body
+     */
+    body: string;
+    /**
+     * Storybook Id
+     */
+    storybook_id?: string | null;
+    /**
+     * Request Id
+     */
+    request_id?: string | null;
+    /**
+     * Profile Id
+     */
+    profile_id?: string | null;
 };
 
 /**
@@ -1602,6 +2106,19 @@ export type ProfileCreateBody = {
      * Tts Enabled
      */
     tts_enabled?: boolean;
+    content_flag_caps?: ContentFlagCaps | null;
+    /**
+     * Banned Themes
+     */
+    banned_themes?: Array<string> | null;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve?: boolean;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope?: number | null;
 };
 
 /**
@@ -1621,10 +2138,13 @@ export type ProfileListView = {
  *
  * A guardian's partial update to a child profile.
  *
- * ``avatar`` and ``pin`` distinguish "omitted" from "explicit null" via
- * ``model_fields_set``: an explicit ``"avatar": null`` clears the avatar,
- * and an explicit ``"pin": null`` removes the profile's picker PIN (a
- * 4-8 digit string sets or replaces it). The other four fields have no
+ * ``avatar``, ``pin``, ``content_flag_caps``, and ``banned_themes``
+ * distinguish "omitted" from "explicit null" via ``model_fields_set``: an
+ * explicit ``"avatar": null`` clears the avatar, an explicit ``"pin":
+ * null`` removes the profile's picker PIN (a 4-8 digit string sets or
+ * replaces it), and an explicit null on either G2 field clears it back to
+ * "no override" / "no exclusions" (a non-null value replaces the stored
+ * value wholesale, it does not merge). The other four fields have no
  * legitimate "clear" semantics, so an explicit ``null`` on them is a
  * deliberate no-op (the router only applies non-null values); see
  * ``update_profile`` and
@@ -1652,6 +2172,19 @@ export type ProfileUpdateBody = {
      * Pin
      */
     pin?: string | null;
+    content_flag_caps?: ContentFlagCaps | null;
+    /**
+     * Banned Themes
+     */
+    banned_themes?: Array<string> | null;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve?: boolean | null;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope?: number | null;
 };
 
 /**
@@ -1662,6 +2195,11 @@ export type ProfileUpdateBody = {
  * ``has_pin`` is the ONLY PIN-related field any view exposes; the stored
  * ``pin_hash`` is write-only credential material and must never be
  * serialized (see the ``#CRITICAL`` note on ``ChildProfile.pin_hash``).
+ * ``content_flag_caps`` and ``banned_themes`` are the G2 per-child content
+ * controls (see ``ContentFlagCaps`` and ``ChildProfile.banned_themes``);
+ * both always serialize (an empty-caps object / empty list, never absent),
+ * so a profile created before G2 shipped reads back with no overrides
+ * rather than a missing field.
  */
 export type ProfileView = {
     /**
@@ -1689,6 +2227,19 @@ export type ProfileView = {
      * Has Pin
      */
     has_pin: boolean;
+    content_flag_caps: ContentFlagCaps;
+    /**
+     * Banned Themes
+     */
+    banned_themes: Array<string>;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve: boolean;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope: number | null;
     /**
      * Created At
      */
@@ -1815,6 +2366,12 @@ export type ReadinessCheck = {
      * Error message if failed
      */
     error?: string | null;
+    /**
+     * State
+     *
+     * Fine-grained state: ok, degraded, or unconfigured
+     */
+    state?: 'ok' | 'degraded' | 'unconfigured' | null;
 };
 
 /**
@@ -1859,6 +2416,63 @@ export type ReadinessStatus = {
     checks?: {
         [key: string]: ReadinessCheck;
     };
+};
+
+/**
+ * ReadingHistoryItem
+ *
+ * One storybook's reading-history summary for a profile (register K6/G9).
+ *
+ * ``total_endings`` is read from the pinned (currently published) version's
+ * ``metadata.ending_count``; a book with no current published version, or a
+ * version whose metadata is missing/malformed, reports 0 rather than raising
+ * (the listing degrades one row, never the whole response).
+ */
+export type ReadingHistoryItem = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Endings Found
+     */
+    endings_found: number;
+    /**
+     * Ending Ids
+     */
+    ending_ids: Array<string>;
+    /**
+     * Total Endings
+     */
+    total_endings: number;
+    /**
+     * In Progress
+     */
+    in_progress: boolean;
+    /**
+     * Last Activity At
+     */
+    last_activity_at: string;
+};
+
+/**
+ * ReadingHistoryView
+ *
+ * A profile's reading-history listing (the kid endings tracker, K6).
+ */
+export type ReadingHistoryView = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Books
+     */
+    books: Array<ReadingHistoryItem>;
 };
 
 /**
@@ -1967,6 +2581,96 @@ export type ReadingStateView = {
      * Last Synced At
      */
     last_synced_at: string | null;
+};
+
+/**
+ * RecommendationItem
+ *
+ * One recommended book: a rating from another profile, never a message.
+ */
+export type RecommendationItem = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Cover Url
+     */
+    cover_url: string | null;
+    /**
+     * Recommender Name
+     */
+    recommender_name: string;
+    /**
+     * Rating
+     */
+    rating: number;
+    /**
+     * Ring
+     */
+    ring: 'family' | 'connection';
+};
+
+/**
+ * RecommendationsView
+ *
+ * A profile's recommendation feed (ring 1 family + ring 2 connections).
+ */
+export type RecommendationsView = {
+    /**
+     * Items
+     */
+    items: Array<RecommendationItem>;
+};
+
+/**
+ * RescreenRequest
+ *
+ * POST body: an optional scope for the sweep.
+ *
+ * Attributes:
+ * storybook_ids: When given, restrict the sweep to these ids (ids that
+ * are not currently published are silently skipped, matching an
+ * ordinary filtered list). ``None`` (the default) screens every
+ * published storybook.
+ */
+export type RescreenRequest = {
+    /**
+     * Storybook Ids
+     */
+    storybook_ids?: Array<string> | null;
+};
+
+/**
+ * RescreenSummaryView
+ *
+ * The sweep's aggregate result, on the wire.
+ */
+export type RescreenSummaryView = {
+    /**
+     * Checked
+     */
+    checked: number;
+    /**
+     * Passed
+     */
+    passed: number;
+    /**
+     * Flagged
+     */
+    flagged: number;
+    /**
+     * Errored
+     */
+    errored: number;
+    /**
+     * Results
+     */
+    results: Array<BookVerdictView>;
 };
 
 /**
@@ -3059,6 +3763,73 @@ export type RecordCompletionApiV1CompletionsPostResponses = {
 
 export type RecordCompletionApiV1CompletionsPostResponse = RecordCompletionApiV1CompletionsPostResponses[keyof RecordCompletionApiV1CompletionsPostResponses];
 
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/reading-history/{profile_id}';
+};
+
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetError = GetReadingHistoryApiV1ReadingHistoryProfileIdGetErrors[keyof GetReadingHistoryApiV1ReadingHistoryProfileIdGetErrors];
+
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReadingHistoryView;
+};
+
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetResponse = GetReadingHistoryApiV1ReadingHistoryProfileIdGetResponses[keyof GetReadingHistoryApiV1ReadingHistoryProfileIdGetResponses];
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/families/me/reading-summary';
+};
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetError = GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetErrors[keyof GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetErrors];
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyReadingSummaryView;
+};
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetResponse = GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetResponses[keyof GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetResponses];
+
 export type CreateConceptApiV1ConceptsPostData = {
     body: ConceptCreateRequest;
     headers?: {
@@ -3854,6 +4625,50 @@ export type GetReviewQueueApiV1ReviewQueueGetResponses = {
 
 export type GetReviewQueueApiV1ReviewQueueGetResponse = GetReviewQueueApiV1ReviewQueueGetResponses[keyof GetReviewQueueApiV1ReviewQueueGetResponses];
 
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchData = {
+    body: NodeEditBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+        /**
+         * Version
+         */
+        version: number;
+        /**
+         * Node Id
+         */
+        node_id: string;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}';
+};
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchError = EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchErrors[keyof EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchErrors];
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReviewSurfaceView;
+};
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponse = EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponses[keyof EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponses];
+
 export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetData = {
     body?: never;
     headers?: {
@@ -4171,6 +4986,101 @@ export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses = {
 
 export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponse = ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses[keyof ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses];
 
+export type ListAuditEventsApiV1AdminAuditGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: {
+        /**
+         * Kind
+         */
+        kind?: string | null;
+        /**
+         * Actor Id
+         */
+        actor_id?: string | null;
+        /**
+         * Storybook Id
+         */
+        storybook_id?: string | null;
+        /**
+         * Profile Id
+         */
+        profile_id?: string | null;
+        /**
+         * Since
+         */
+        since?: string | null;
+        /**
+         * Until
+         */
+        until?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Offset
+         */
+        offset?: number;
+    };
+    url: '/api/v1/admin/audit';
+};
+
+export type ListAuditEventsApiV1AdminAuditGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListAuditEventsApiV1AdminAuditGetError = ListAuditEventsApiV1AdminAuditGetErrors[keyof ListAuditEventsApiV1AdminAuditGetErrors];
+
+export type ListAuditEventsApiV1AdminAuditGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: AuditListView;
+};
+
+export type ListAuditEventsApiV1AdminAuditGetResponse = ListAuditEventsApiV1AdminAuditGetResponses[keyof ListAuditEventsApiV1AdminAuditGetResponses];
+
+export type TriggerRescreenApiV1AdminRescreenPostData = {
+    body: RescreenRequest;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/rescreen';
+};
+
+export type TriggerRescreenApiV1AdminRescreenPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TriggerRescreenApiV1AdminRescreenPostError = TriggerRescreenApiV1AdminRescreenPostErrors[keyof TriggerRescreenApiV1AdminRescreenPostErrors];
+
+export type TriggerRescreenApiV1AdminRescreenPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: RescreenSummaryView;
+};
+
+export type TriggerRescreenApiV1AdminRescreenPostResponse = TriggerRescreenApiV1AdminRescreenPostResponses[keyof TriggerRescreenApiV1AdminRescreenPostResponses];
+
 export type ListAllowlistApiV1AdminProviderAllowlistGetData = {
     body?: never;
     headers?: {
@@ -4478,6 +5388,37 @@ export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses = {
 
 export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponse = ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses[keyof ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses];
 
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/families/me/budget';
+};
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetError = GetFamilyBudgetApiV1FamiliesMeBudgetGetErrors[keyof GetFamilyBudgetApiV1FamiliesMeBudgetGetErrors];
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyBudgetView;
+};
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetResponse = GetFamilyBudgetApiV1FamiliesMeBudgetGetResponses[keyof GetFamilyBudgetApiV1FamiliesMeBudgetGetResponses];
+
 export type ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData = {
     body: StoryRequestApproveBody;
     headers?: {
@@ -4757,6 +5698,144 @@ export type OnboardApiV1OnboardingPostResponses = {
 };
 
 export type OnboardApiV1OnboardingPostResponse = OnboardApiV1OnboardingPostResponses[keyof OnboardApiV1OnboardingPostResponses];
+
+export type CreateFlagApiV1FlagsPostData = {
+    body: KidFlagCreateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/flags';
+};
+
+export type CreateFlagApiV1FlagsPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateFlagApiV1FlagsPostError = CreateFlagApiV1FlagsPostErrors[keyof CreateFlagApiV1FlagsPostErrors];
+
+export type CreateFlagApiV1FlagsPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: KidFlagCreatedView;
+};
+
+export type CreateFlagApiV1FlagsPostResponse = CreateFlagApiV1FlagsPostResponses[keyof CreateFlagApiV1FlagsPostResponses];
+
+export type ListOpenFlagsApiV1AdminFlagsGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/flags';
+};
+
+export type ListOpenFlagsApiV1AdminFlagsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListOpenFlagsApiV1AdminFlagsGetError = ListOpenFlagsApiV1AdminFlagsGetErrors[keyof ListOpenFlagsApiV1AdminFlagsGetErrors];
+
+export type ListOpenFlagsApiV1AdminFlagsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: KidFlagListView;
+};
+
+export type ListOpenFlagsApiV1AdminFlagsGetResponse = ListOpenFlagsApiV1AdminFlagsGetResponses[keyof ListOpenFlagsApiV1AdminFlagsGetResponses];
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostData = {
+    body: KidFlagResolveBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Flag Id
+         */
+        flag_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/flags/{flag_id}/resolve';
+};
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostError = ResolveFlagApiV1AdminFlagsFlagIdResolvePostErrors[keyof ResolveFlagApiV1AdminFlagsFlagIdResolvePostErrors];
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: KidFlagView;
+};
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostResponse = ResolveFlagApiV1AdminFlagsFlagIdResolvePostResponses[keyof ResolveFlagApiV1AdminFlagsFlagIdResolvePostResponses];
+
+export type ListNotificationsApiV1NotificationsGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: {
+        /**
+         * Since
+         */
+        since?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/notifications';
+};
+
+export type ListNotificationsApiV1NotificationsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListNotificationsApiV1NotificationsGetError = ListNotificationsApiV1NotificationsGetErrors[keyof ListNotificationsApiV1NotificationsGetErrors];
+
+export type ListNotificationsApiV1NotificationsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: NotificationListView;
+};
+
+export type ListNotificationsApiV1NotificationsGetResponse = ListNotificationsApiV1NotificationsGetResponses[keyof ListNotificationsApiV1NotificationsGetResponses];
 
 export type ListUsersApiV1AdminUsersGetData = {
     body?: never;
@@ -5069,3 +6148,142 @@ export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteR
 };
 
 export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponse = DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses[keyof DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses];
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/family-connections/mine';
+};
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetError = ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetErrors[keyof ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetErrors];
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionMineListView;
+};
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponse = ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponses[keyof ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponses];
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Connection Id
+         */
+        connection_id: string;
+    };
+    query?: never;
+    url: '/api/v1/family-connections/{connection_id}/consent';
+};
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteError = RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteErrors[keyof RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteErrors];
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionMineItem;
+};
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponse = RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponses[keyof RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponses];
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Connection Id
+         */
+        connection_id: string;
+    };
+    query?: never;
+    url: '/api/v1/family-connections/{connection_id}/consent';
+};
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostError = ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostErrors[keyof ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostErrors];
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionMineItem;
+};
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponse = ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponses[keyof ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponses];
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/recommendations/{profile_id}';
+};
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetError = GetRecommendationsApiV1RecommendationsProfileIdGetErrors[keyof GetRecommendationsApiV1RecommendationsProfileIdGetErrors];
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: RecommendationsView;
+};
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetResponse = GetRecommendationsApiV1RecommendationsProfileIdGetResponses[keyof GetRecommendationsApiV1RecommendationsProfileIdGetResponses];
