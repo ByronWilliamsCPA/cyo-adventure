@@ -241,6 +241,18 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Install git
+        # Must run BEFORE checkout: without git in the container,
+        # actions/checkout falls back to a REST API tarball download, which
+        # honors .gitattributes export-ignore and therefore ships a tree
+        # with no *.md, tests/, or docs/ (this repo export-ignores all
+        # three), breaking both the project build (README.md is project
+        # metadata) and the test run itself.
+        # hadolint-style version pinning is intentionally omitted: this is
+        # a throwaway CI container, and Debian point releases retire exact
+        # apt versions quickly.
+        run: apt-get update && apt-get install -y --no-install-recommends git ca-certificates
+
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
