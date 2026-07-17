@@ -124,6 +124,48 @@ test('empty library shows the no-books state', async ({ page }) => {
   await expect(page.getByText(/ask a grown-up/i)).toBeVisible()
 })
 
+test('shelf shows a cover image when set and the letter-tile fallback when absent (K8)', async ({
+  page,
+}) => {
+  // Coverage for K8 (Covers on the shelf): a book with cover_url renders the
+  // AI cover art image; a book without one falls back to the deterministic
+  // letter tile (coverPalette.ts) instead of a broken-image icon or blank tile.
+  const stories = {
+    stories: [
+      { ...STORIES.stories[0], cover_url: 'https://cdn.example/covers/lantern.webp' },
+      { ...STORIES.stories[1], cover_url: null },
+    ],
+  }
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: stories }))
+  // The <img> issues a real (mocked) request for its src; without this route
+  // the request fails and BookCard's onError falls back to the letter tile,
+  // which would defeat the point of this test. A 1x1 transparent PNG is
+  // enough for the browser to decode and render the <img> successfully.
+  const onePixelPng = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+    'base64'
+  )
+  await page.route('https://cdn.example/covers/lantern.webp', (route) =>
+    route.fulfill({ status: 200, contentType: 'image/png', body: onePixelPng })
+  )
+  await page.goto('/library/p1')
+
+  // The Lantern (in-progress) renders in the Continue Reading hero, with a
+  // real <img> for its cover.
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  const heroCover = hero.locator('img.book-card__cover')
+  await expect(heroCover).toHaveAttribute('src', 'https://cdn.example/covers/lantern.webp')
+  await expect(hero.locator('.book-card__tile--painted')).toHaveCount(0)
+
+  // Acorn Detectives (no cover_url) renders on the shelf with the painted
+  // letter-tile fallback: no <img>, the title's first letter instead.
+  const shelf = page.getByRole('region', { name: 'More to Explore' })
+  const shelfCard = shelf.locator('.book-card', { hasText: 'Acorn Detectives' })
+  await expect(shelfCard.locator('img.book-card__cover')).toHaveCount(0)
+  await expect(shelfCard.locator('.book-card__tile--painted')).toBeVisible()
+  await expect(shelfCard.locator('.book-card__letter')).toHaveText('A')
+})
+
 test('shelf grid does not overflow the viewport on a phone screen', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   const stories = {

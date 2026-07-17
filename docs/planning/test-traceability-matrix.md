@@ -54,10 +54,10 @@ integration suites rather than browser E2E.
 | K2 | Choices, hidden when locked | ✅ | ✅ | ❌ | ❌ |
 | K3 | Consequential state, series carry | ✅ | ✅ | ❌ | ❌ |
 | K4 | Resume anywhere | ✅ | ❌ | ❌ | ❌ |
-| K5 | Replay + Go Back undo | ❌ (back button just ratified; no E2E asserts it) | ❌ | ❌ | ❌ |
+| K5 | Replay + Go Back undo | ✅ (e2e/reader-go-back.spec.ts; unit: engine.test.ts) | ❌ | ❌ | ❌ |
 | K6 | Endings tracker | 🟡 (completion recorded; tracker UI n/b) | ❌ | ❌ | ❌ |
 | K7 | Read-aloud | n/b | n/b | n/b | n/b |
-| K8 | Covers on the shelf | ❌ (no spec asserts cover render/fallback) | ❌ | ❌ | ❌ |
+| K8 | Covers on the shelf | ✅ (e2e/library.spec.ts + BookCard.test.tsx; A16 button pin: admin-review-cover.spec.ts) | ❌ | ❌ | ❌ |
 | K9 | Library shelf | ✅ | ✅ | ✅ (populated-library smoke) | 🟡 (library opens) |
 | K10/S1 | Offline reading | ✅ | ❌ | ❌ | ❌ |
 | K11 | Kid story request | ✅ | ❌ | ❌ | ❌ |
