@@ -220,6 +220,14 @@
   background: var(--color-amber-subtle, #fdf3e6);
 }
 
+/* UX-K6: "Forgot your PIN? Ask a grown-up" escape after repeated failures. */
+.picker-pin__help {
+  font-family: var(--font-sans, 'Segoe UI', sans-serif);
+  color: var(--color-ink, #2c1a0e);
+  text-align: center;
+  margin: 0;
+}
+
 /* P6-07: PIN prompt for a PIN-protected profile. */
 .picker-pin {
   display: flex;
