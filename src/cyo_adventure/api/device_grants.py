@@ -261,9 +261,17 @@ async def revoke_device_grant(grant_id: uuid.UUID, ctx: Context) -> None:
     if grant is None or grant.family_id != ctx.principal.family_id:
         msg = "device grant not found"
         raise ResourceNotFoundError(msg)
-    grant.revoked_at = datetime.now(UTC)
-    logger.info(
-        "device_grant.revoked",
-        family_id=str(ctx.principal.family_id),
-        grant_id=str(grant_id),
-    )
+    # #CRITICAL: data-integrity: only stamp revoked_at on the FIRST revoke. A
+    # duplicate or double-submitted DELETE must be an idempotent no-op that
+    # preserves the original revocation instant, which is the stable record
+    # this column exists to hold; without the guard a re-revoke silently moves
+    # the timestamp forward and loses when the grant was actually revoked. The
+    # response stays 204 either way, so revoke remains idempotent.
+    # #VERIFY: test_device_grants.py double-revoke preserves the first timestamp.
+    if grant.revoked_at is None:
+        grant.revoked_at = datetime.now(UTC)
+        logger.info(
+            "device_grant.revoked",
+            family_id=str(ctx.principal.family_id),
+            grant_id=str(grant_id),
+        )

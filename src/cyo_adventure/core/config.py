@@ -11,7 +11,7 @@ validation.
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, NamedTuple
 from urllib.parse import urlsplit
 
 from pydantic import (
@@ -24,6 +24,7 @@ from pydantic import (
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
+from cyo_adventure.core.token_audience import TokenAudience
 
 # Localhost-only development default (no credentials; relies on local peer/trust
 # auth). Kept as a module constant so the fail-fast validator below can detect
@@ -36,6 +37,91 @@ _DEV_DATABASE_URL = "postgresql+asyncpg://localhost/cyo_adventure"
 # mismatch; PgBouncer transaction mode has no fixed port and cannot be
 # detected this way, so this only covers the documented Supavisor case.
 _SUPAVISOR_TRANSACTION_POOLER_PORT = 6543
+
+# HS256 keys shorter than the 32-byte hash output are the ones PyJWT flags, so
+# 32 bytes is the floor for any backend-signed token secret.
+_MIN_TOKEN_SECRET_BYTES = 32
+
+# Known scaffolding placeholders rejected regardless of length so a copied .env
+# template can never sign real tokens. Compared casefolded against the stripped
+# secret value; a secret is NEVER interpolated into an error message.
+_TOKEN_SECRET_PLACEHOLDERS = frozenset(
+    {
+        "replace_me",
+        "changeme",
+        "change_me",
+        "your_secret_here",
+        "your-secret-here",
+        "secret",
+        "xxx",
+    }
+)
+
+
+class _TokenSecretSpec(NamedTuple):
+    """The message-only descriptors identifying one backend token secret.
+
+    Bundles the three strings that differ between the child-session and
+    device-grant validators so ``_require_strong_token_secret`` stays a small,
+    single-secret helper (the checking logic itself never varies).
+    """
+
+    env_var: str  # operator-facing env var name, e.g. "CHILD_SESSION_SECRET"
+    purpose: str  # what the secret signs, e.g. "child session tokens"
+    ref: str  # traceability reference, e.g. "G1 / P6-04"
+
+
+def _require_strong_token_secret(
+    secret: SecretStr | None, spec: _TokenSecretSpec, environment: str
+) -> None:
+    """Fail fast on a missing or weak backend token-signing secret.
+
+    Shared by the child-session and device-grant secret validators so the
+    placeholder set, byte floor, and message shape can never drift apart
+    (issue #254). Presence alone is not enough: an empty ``SecretStr("")``
+    passes ``is None`` but makes ``jwt.encode`` raise ``InvalidKeyError`` (a
+    500 on every mint), and a short or placeholder secret signs real, forgeable
+    tokens with a weak HMAC key. PyJWT's ``InsecureKeyLengthWarning`` only
+    errors under pytest ``filterwarnings``, not at runtime, so this check is the
+    only thing stopping a shipped ``REPLACE_ME`` placeholder from reaching
+    production.
+
+    #CRITICAL: security: rejecting weak/placeholder keys here is the token
+    forgery boundary; a short HMAC key lets an attacker mint valid tokens.
+    #VERIFY: no branch echoes the secret value into the error; test_config
+    rejects empty, whitespace, sub-32-byte, and placeholder secrets for each.
+
+    Args:
+        secret: The configured secret (may be ``None``).
+        spec: The message-only descriptors for this secret (env var, purpose,
+            traceability ref). None of the secret value is ever placed here.
+        environment: The resolved deployment stage (for the message only).
+
+    Raises:
+        ConfigurationError: when ``secret`` is unset, empty, shorter than 32
+            bytes, or a known placeholder.
+    """
+    if secret is None:
+        msg = (
+            f"{spec.env_var} must be set in non-local environments; refusing to "
+            f"start in '{environment}' with no way to sign or verify "
+            f"{spec.purpose} ({spec.ref})."
+        )
+        raise ConfigurationError(msg)
+
+    value = secret.get_secret_value()
+    stripped = value.strip()
+    if (
+        not stripped
+        or len(value.encode("utf-8")) < _MIN_TOKEN_SECRET_BYTES
+        or stripped.casefold() in _TOKEN_SECRET_PLACEHOLDERS
+    ):
+        msg = (
+            f"{spec.env_var} is set but too weak: it must be a non-placeholder "
+            f"value of at least {_MIN_TOKEN_SECRET_BYTES} bytes to safely sign "
+            f"{spec.purpose}; refusing to start in '{environment}' ({spec.ref})."
+        )
+        raise ConfigurationError(msg)
 
 
 class Settings(BaseSettings):
@@ -658,41 +744,15 @@ class Settings(BaseSettings):
         if self.environment == "local":
             return self
 
-        if self.child_session_secret is None:
-            msg = (
-                "CHILD_SESSION_SECRET must be set in non-local environments; "
-                f"refusing to start in '{self.environment}' with no way to sign "
-                "or verify child session tokens (G1 / P6-04)."
-            )
-            raise ConfigurationError(msg)
-
-        secret = self.child_session_secret.get_secret_value()
-        min_secret_bytes = 32
-        # Reject known scaffolding placeholders regardless of length so a
-        # copied .env template can never sign real tokens. Compared casefolded
-        # against the stripped value; never interpolate `secret` into an error.
-        placeholders = {
-            "replace_me",
-            "changeme",
-            "change_me",
-            "your_secret_here",
-            "your-secret-here",
-            "secret",
-            "xxx",
-        }
-        stripped = secret.strip()
-        if (
-            not stripped
-            or len(secret.encode("utf-8")) < min_secret_bytes
-            or stripped.casefold() in placeholders
-        ):
-            msg = (
-                "CHILD_SESSION_SECRET is set but too weak: it must be a "
-                f"non-placeholder value of at least {min_secret_bytes} bytes to "
-                f"safely sign child session tokens; refusing to start in "
-                f"'{self.environment}' (G1 / P6-04)."
-            )
-            raise ConfigurationError(msg)
+        _require_strong_token_secret(
+            self.child_session_secret,
+            _TokenSecretSpec(
+                env_var="CHILD_SESSION_SECRET",
+                purpose="child session tokens",
+                ref="G1 / P6-04",
+            ),
+            self.environment,
+        )
         return self
 
     @model_validator(mode="after")
@@ -725,39 +785,77 @@ class Settings(BaseSettings):
         if self.environment == "local":
             return self
 
-        if self.device_grant_secret is None:
+        _require_strong_token_secret(
+            self.device_grant_secret,
+            _TokenSecretSpec(
+                env_var="DEVICE_GRANT_SECRET",
+                purpose="device grant tokens",
+                ref="ADR-014",
+            ),
+            self.environment,
+        )
+        return self
+
+    @model_validator(mode="after")
+    def _require_distinct_token_families(self) -> Settings:
+        """Assert the three token families stay separable (issue #251).
+
+        The guardian OIDC, child-session, and device-grant branches are kept
+        non-interchangeable by two invariants that were previously only
+        conventions:
+
+        1. The three ``aud`` values are pairwise distinct, so a token minted for
+           one branch can never satisfy another branch's audience check. The
+           child/device values come from the central ``TokenAudience`` registry
+           (distinct by construction); the guardian value is the configurable
+           ``oidc_audience``, so the real risk is an operator setting
+           ``OIDC_AUDIENCE`` to one of the backend values and collapsing the
+           separation.
+        2. The child-session and device-grant secrets differ. Both branches pin
+           HS256; a shared secret would let a token minted for one verify in the
+           other once audiences ever aligned, so distinct keys are the
+           load-bearing separation and a copy-paste of one secret into both is a
+           real misconfiguration.
+
+        Runs in every environment (not just non-local): an audience collision or
+        duplicated secret is a bug regardless of stage, and both checks are pure
+        comparisons with no secret value ever placed in the message.
+
+        #CRITICAL: security: this is the token-family separation invariant;
+        collapsing audiences or sharing the HS256 secret defeats the
+        cross-branch confusion defense.
+        #VERIFY: test_config asserts a colliding OIDC_AUDIENCE and an identical
+        child/device secret are both rejected.
+
+        Raises:
+            ConfigurationError: when ``oidc_audience`` collides with a backend
+                token audience, or the child-session and device-grant secrets
+                are identical.
+        """
+        backend_audiences = {
+            TokenAudience.CHILD_SESSION.value,
+            TokenAudience.DEVICE_GRANT.value,
+        }
+        if self.oidc_audience in backend_audiences:
             msg = (
-                "DEVICE_GRANT_SECRET must be set in non-local environments; "
-                f"refusing to start in '{self.environment}' with no way to sign "
-                "or verify device grant tokens (ADR-014)."
+                "OIDC_AUDIENCE must be distinct from the backend token "
+                "audiences (cyo-child-session, cyo-device-grant); a collision "
+                "would let a guardian token satisfy a child/device audience "
+                "check (issue #251)."
             )
             raise ConfigurationError(msg)
 
-        secret = self.device_grant_secret.get_secret_value()
-        min_secret_bytes = 32
-        # Reject known scaffolding placeholders regardless of length so a
-        # copied .env template can never sign real tokens. Compared casefolded
-        # against the stripped value; never interpolate `secret` into an error.
-        placeholders = {
-            "replace_me",
-            "changeme",
-            "change_me",
-            "your_secret_here",
-            "your-secret-here",
-            "secret",
-            "xxx",
-        }
-        stripped = secret.strip()
+        child = self.child_session_secret
+        device = self.device_grant_secret
         if (
-            not stripped
-            or len(secret.encode("utf-8")) < min_secret_bytes
-            or stripped.casefold() in placeholders
+            child is not None
+            and device is not None
+            and child.get_secret_value() == device.get_secret_value()
         ):
             msg = (
-                "DEVICE_GRANT_SECRET is set but too weak: it must be a "
-                f"non-placeholder value of at least {min_secret_bytes} bytes to "
-                f"safely sign device grant tokens; refusing to start in "
-                f"'{self.environment}' (ADR-014)."
+                "CHILD_SESSION_SECRET and DEVICE_GRANT_SECRET must be distinct: "
+                "both branches sign HS256, so a shared key removes the "
+                "cross-family signature separation (issue #251)."
             )
             raise ConfigurationError(msg)
         return self

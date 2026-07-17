@@ -717,6 +717,13 @@ def authorize_profile(principal: Principal, profile_id: uuid.UUID) -> None:
         raise AuthorizationError(msg, resource=str(profile_id))
 
 
+# The single cross-family authorization message. Exported so callers that must
+# make a nonexistent resource indistinguishable from a foreign-family one (e.g.
+# the device-grant child-session mint, issue #249) can raise the IDENTICAL body
+# without duplicating the literal and risking drift.
+CROSS_FAMILY_MESSAGE = "resource belongs to another family"
+
+
 def authorize_family(principal: Principal, owner_family_id: uuid.UUID) -> None:
     """Raise if a resource belongs to a different family.
 
@@ -728,8 +735,7 @@ def authorize_family(principal: Principal, owner_family_id: uuid.UUID) -> None:
         AuthorizationError: If the resource is owned by another family.
     """
     if principal.family_id != owner_family_id:
-        msg = "resource belongs to another family"
-        raise AuthorizationError(msg)
+        raise AuthorizationError(CROSS_FAMILY_MESSAGE)
 
 
 CurrentPrincipal = Annotated[Principal, Depends(require_principal)]

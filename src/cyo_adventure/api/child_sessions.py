@@ -17,6 +17,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api.deps import (
+    CROSS_FAMILY_MESSAGE,
     Context,
     Role,
     authorize_family,
@@ -69,10 +70,13 @@ async def create_child_session(
 
     Raises:
         AuthorizationError: If a child token reaches this endpoint, a
-            guardian or device grant names a profile outside its own family,
+            guardian or device grant names a profile outside its own family
+            (for a device grant, a nonexistent profile also maps here with the
+            identical body, so it cannot probe cross-family existence, #249),
             or the profile has a picker PIN and the body's ``pin`` is missing
             or wrong (all -> 403; the PIN case carries code ``PIN_MISMATCH``).
-        ResourceNotFoundError: If the profile does not exist (-> 404).
+        ResourceNotFoundError: If the profile does not exist on the admin path,
+            or a resolved own-family profile is deactivated (-> 404).
         ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
     """
     # #CRITICAL: security: only a guardian (own family), an admin, or a
@@ -103,33 +107,46 @@ async def create_child_session(
         authorize_profile(ctx.principal, profile_uuid)
 
     profile = await ctx.session.get(ChildProfile, profile_uuid)
-    if profile is None:
+
+    if ctx.principal.role is Role.DEVICE:
+        # #CRITICAL: security: collapse the DEVICE 404/403 existence oracle
+        # (#249). A device carries no profile_ids, so the guardian's
+        # authorize-before-read path above does not apply; if existence were
+        # checked first, a valid family-A device grant could distinguish
+        # "another family's profile" (403 from authorize_family) from "no such
+        # profile" (404), a cross-family existence probe. Authorizing the
+        # family BEFORE the existence and deactivation checks, and mapping a
+        # missing row onto the IDENTICAL cross-family AuthorizationError
+        # (same 403 status AND CROSS_FAMILY_MESSAGE body, since the error
+        # message is surfaced to the client), makes the two cases
+        # indistinguishable. Only a live profile in the device's OWN family
+        # proceeds to the deactivation check below, which is safe to reveal to
+        # the owning family. A cross-family deactivated profile is now a 403
+        # here too (family checked first), not a 404, closing the same leak.
+        # #VERIFY: test_child_sessions.py device nonexistent and cross-family
+        # both return 403 with the same body.
+        if profile is None:
+            raise AuthorizationError(CROSS_FAMILY_MESSAGE)
+        authorize_family(ctx.principal, profile.family_id)
+    elif profile is None:
+        # Guardian ids were already resolved by authorize_profile above (a
+        # foreign/nonexistent id is a 403 there); this covers the admin-global
+        # path, for which a genuinely missing profile is a true 404.
         msg = "profile not found"
         raise ResourceNotFoundError(msg)
+
     # #CRITICAL: security: an admin-deactivated profile (WS-J) must not mint a
     # new reading session; the same "not found" message as a truly missing
     # profile is used, matching this module's own stated principle (no
     # differently-shaped existence leak) rather than introducing a
-    # distinguishable "deactivated" error.
+    # distinguishable "deactivated" error. For a device this is only reached
+    # once the profile is confirmed to be in its own family (above), so it
+    # reveals nothing across families.
     # #VERIFY: tests/integration/test_admin_profiles_api.py::
     # test_deactivated_profile_cannot_mint_child_session.
     if profile.deactivated_at is not None:
         msg = "profile not found"
         raise ResourceNotFoundError(msg)
-
-    if ctx.principal.role is Role.DEVICE:
-        # #CRITICAL: security: a device grant may mint only within its OWN
-        # family; reuses the existing family-scoping helper (authorize_family)
-        # rather than a hand-rolled comparison, so this stays on the same
-        # audited AuthorizationError path as every other family-ownership
-        # check in this module. A cross-family target is a 403, matching the
-        # shape of the guardian's authorize_profile 403 above (both are pure
-        # authorization failures, never a differently-shaped existence leak);
-        # the fetch-then-authorize order here mirrors the admin branch, which
-        # also authorizes only after the row is loaded.
-        # #VERIFY: test_child_sessions.py::test_device_grant_cannot_mint_other_family
-        # asserts 403 for a cross-family device token.
-        authorize_family(ctx.principal, profile.family_id)
 
     # #ASSUME: security: a 4-8 digit PIN checked behind an ALREADY
     # authenticated guardian/admin bearer is a convenience lock (keeps a

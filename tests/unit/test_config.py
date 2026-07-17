@@ -756,6 +756,105 @@ class TestValidatorRequireChildSessionSecretOutsideLocal:
         assert settings.child_session_secret is None
 
 
+class TestValidatorRequireDeviceGrantSecretOutsideLocal:
+    """Device-grant secret rejection shares the child-session helper (#254).
+
+    Since ``_require_strong_token_secret`` backs both validators, these pin that
+    the device-grant path keeps rejecting empty/short/placeholder secrets and
+    never echoes the value, so the shared extraction did not weaken it.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("environment", ["dev", "staging", "production"])
+    def test_non_local_without_device_secret_raises(self, environment: str) -> None:
+        """Missing device_grant_secret outside local raises ConfigurationError."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            _non_local_settings(environment=environment, device_grant_secret=None)
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "secret",
+        [
+            "",
+            "   ",
+            "short-key",
+            "0123456789abcdef0123456789abcde",  # 31 bytes: one short of the floor
+            "REPLACE_ME",
+            "changeme",
+            "SECRET",
+        ],
+    )
+    def test_non_local_with_weak_device_secret_raises(self, secret: str) -> None:
+        """Empty, short, or placeholder device secrets are rejected outside local."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            _non_local_settings(device_grant_secret=secret)
+
+    @pytest.mark.unit
+    def test_device_error_message_never_echoes_the_secret(self) -> None:
+        """The failure message must not leak the (weak) device secret value."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        canary = "device-leak-canary"  # 18 bytes: fails the length check
+        with pytest.raises(ConfigurationError) as exc_info:
+            _non_local_settings(device_grant_secret=canary)
+
+        message = str(exc_info.value)
+        assert canary not in message
+        assert "DEVICE_GRANT_SECRET" in message
+
+
+class TestValidatorRequireDistinctTokenFamilies:
+    """Tests for the _require_distinct_token_families validator (issue #251).
+
+    The guardian/child/device branches stay separable only if their audiences
+    are pairwise distinct and the two backend HS256 secrets differ; these pin
+    that the previously-conventional invariant now fails closed at startup.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "colliding_audience", ["cyo-child-session", "cyo-device-grant"]
+    )
+    def test_oidc_audience_colliding_with_backend_audience_raises(
+        self, colliding_audience: str
+    ) -> None:
+        """An OIDC_AUDIENCE equal to a backend token audience is rejected."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            _non_local_settings(oidc_audience=colliding_audience)
+
+    @pytest.mark.unit
+    def test_identical_child_and_device_secret_raises(self) -> None:
+        """Reusing one secret for both backend token families is rejected."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        shared = "shared-backend-secret-0123456789abcdef01"  # >= 32 bytes
+        with pytest.raises(ConfigurationError) as exc_info:
+            _non_local_settings(child_session_secret=shared, device_grant_secret=shared)
+        # The secret value must never surface in the message.
+        assert shared not in str(exc_info.value)
+
+    @pytest.mark.unit
+    def test_distinct_audiences_and_secrets_are_valid(self) -> None:
+        """The shipped distinct defaults pass the invariant."""
+        settings = _non_local_settings()
+        assert settings.oidc_audience == "authenticated"  # type: ignore[attr-defined]
+
+    @pytest.mark.unit
+    def test_local_shares_no_secret_by_default_is_valid(self) -> None:
+        """Local with both secrets unset does not trip the distinctness check."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(environment="local")
+        assert settings.child_session_secret is None
+        assert settings.device_grant_secret is None
+
+
 class TestChildSessionTtlSetting:
     """Tests for child_session_ttl_seconds env binding and its ge=1 bound.
 

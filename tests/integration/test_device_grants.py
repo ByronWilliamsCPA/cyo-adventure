@@ -255,6 +255,39 @@ async def test_revoke_persists_revoked_at(
 
 
 @pytest.mark.asyncio
+async def test_double_revoke_preserves_first_revoked_at(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A second DELETE is an idempotent no-op that keeps the first revoked_at.
+
+    The row exists to be a stable revocation record; a double-submitted DELETE
+    must not silently push revoked_at forward and lose when the grant was
+    actually revoked (issue #253).
+    """
+    grant_id = await _mint_grant(client, seed.guardian_token)
+
+    first = await client.delete(
+        f"/api/v1/device-grants/{grant_id}", headers=auth(seed.guardian_token)
+    )
+    assert first.status_code == 204, first.text
+    async with sessions() as session:
+        first_revoked_at = (await session.scalars(select(DeviceGrant))).one().revoked_at
+    assert first_revoked_at is not None
+
+    second = await client.delete(
+        f"/api/v1/device-grants/{grant_id}", headers=auth(seed.guardian_token)
+    )
+    assert second.status_code == 204, second.text
+    async with sessions() as session:
+        second_revoked_at = (
+            (await session.scalars(select(DeviceGrant))).one().revoked_at
+        )
+    assert second_revoked_at == first_revoked_at
+
+
+@pytest.mark.asyncio
 async def test_revoke_other_family_grant_is_404(
     client: AsyncClient, seed: Seed, stranger: Stranger
 ) -> None:

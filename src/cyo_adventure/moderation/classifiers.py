@@ -11,6 +11,7 @@ bypasses the floor (a provider-flagged category is always recorded).
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING, cast
 
 import httpx
@@ -116,7 +117,31 @@ def _narrow_float_map(raw: object) -> dict[str, float]:
 def _openai_finding(
     node_id: str, category: str, flagged: bool, score: float
 ) -> Finding | None:
-    """Build a single OpenAI Finding, or return None when there is nothing to report."""
+    """Build a single OpenAI Finding, or return None when there is nothing to report.
+
+    #EDGE: data integrity: httpx's ``.json()`` uses ``json.loads`` with
+    ``allow_nan=True``, so a non-finite score (``NaN``/``Infinity``) survives the
+    ``isinstance(_, (int, float))`` guard upstream. Passed straight through it
+    would make ``Finding.__post_init__`` raise ``ValueError`` (its range check
+    is false for ``NaN``), matching the Perspective crash tracked in #144. Treat
+    a non-finite score as an absent score: drop it from the graded-floor
+    comparison and report ``score=None`` rather than crashing, while still
+    honoring OpenAI's independent boolean ``flagged`` signal so a flagged
+    bright-line category is never lost to a garbage score.
+    #VERIFY: test_classifiers covers flagged and unflagged non-finite scores.
+    """
+    if math.isfinite(score):
+        reportable_score: float | None = score
+        over_floor = score >= _ADVISORY_SCORE_FLOOR
+    else:
+        _logger.warning(
+            "openai_score_non_finite",
+            node_id=node_id,
+            category=category,
+            flagged=flagged,
+        )
+        reportable_score = None
+        over_floor = False
     if flagged and category in _OPENAI_BRIGHTLINE:
         return Finding(
             stage=0,
@@ -124,17 +149,17 @@ def _openai_finding(
             category=category,
             node_id=node_id,
             verdict=Verdict.BLOCK,
-            score=score,
+            score=reportable_score,
             message=f"OpenAI bright-line category '{category}' flagged",
         )
-    if flagged or score >= _ADVISORY_SCORE_FLOOR:
+    if flagged or over_floor:
         return Finding(
             stage=0,
             source=Source.OPENAI,
             category=category,
             node_id=node_id,
             verdict=Verdict.ADVISORY,
-            score=score,
+            score=reportable_score,
             message=f"OpenAI graded signal for '{category}'",
         )
     return None
@@ -306,6 +331,22 @@ def _perspective_attribute_finding(
         return None
 
     score = float(raw_value)
+    # #EDGE: data integrity: a non-finite score (NaN/Infinity) passes the
+    # isinstance guard above (float("nan") is a float) but every comparison
+    # against it is False, so without this guard the sub-floor early-return
+    # would not fire and Finding.__post_init__ would raise ValueError,
+    # aborting the entire Stage-0 batch (#144). Perspective's only signal is
+    # the score, so a non-finite one is unusable: log and drop this single
+    # attribute, matching the module's other malformed-payload handling.
+    # #VERIFY: test_classifiers covers a non-finite Perspective summary score.
+    if not math.isfinite(score):
+        _logger.warning(
+            "perspective_attribute_malformed",
+            node_id=node_id,
+            attribute=attribute,
+            reason="summaryScore.value non-finite",
+        )
+        return None
     is_brightline = attribute == "SEXUALLY_EXPLICIT" and score >= 0.8
     if not is_brightline and score < _ADVISORY_SCORE_FLOOR:
         return None
