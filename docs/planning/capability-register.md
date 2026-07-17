@@ -23,6 +23,22 @@ source: "Fresh-look capability review session, 2026-07-16"
 > confirmed; v1.6: A12 note extended to name the admin child-PIN set/reset authority
 > explicitly, with an ADR-014 cross-reference, per the 2026-07-16 review condition)
 
+> **Delivery update (2026-07-17, M4b-d execution on branch
+> claude/app-capabilities-review-wm6gt3)**: the following capabilities moved to DELIVERED
+> (code, tests, and E2E where noted; commits 5fd1de7 through 6f729d5): K5 (Go Back pinned),
+> K6 (tracker UI), K7 (read-aloud), K12 (complete incl. generation status), K15 (flag end
+> to end: kid button, admin queue, guardian alert), K17 (shelf chips), G2 (controls UI and
+> brief wiring), G3 (envelope backend, write path, and form UI), G5 (structure summaries),
+> G6 (prose editor with gate and moderation re-run; admin surface, guardian UI awaits a
+> guardian review surface), G7 (complete: consent debits quota on ALL spend paths incl.
+> the legacy intake gate), G9 (Reading page), G10/S9 (notification feed and bell), G13
+> (interim balance), G17/A15 (dual-guardian consent flow with the ENFORCED ring-2 guard,
+> superseding the holds-by-omission note below), and the S8 flow now includes the budget
+> stage. PR #267 (A12/A13, connection substrate) merged to main; PR #268 (A8 UI) in
+> flight. Remaining for M4-full: G15 device/storage view (needs a design decision), G8
+> offline revocation (Phase 5), and the owner-side items (secrets, redeploy, live
+> checklist).
+
 > **Delivery-state review (2026-07-16, open PRs and working docs)**: the Docs column below
 > measures *foundational-doc* coverage, but a review of
 > [story-lifecycle-redesign.md](./story-lifecycle-redesign.md) (owner-ratified 2026-07-06,

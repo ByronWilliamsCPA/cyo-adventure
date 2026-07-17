@@ -94,6 +94,14 @@ integration suites rather than browser E2E.
 Rows n/b are the register's own delivery gaps; they enter this matrix the day the
 capability ships (maintenance rule below).
 
+> **2026-07-17 addendum (M4b-d wave)**: formerly-n/b capabilities shipped with mocked-tier
+> coverage in the same commits: K6 (library/reader specs), K7 (kid-read-aloud.spec), K15
+> (reader-flag.spec), K17 (library.spec chips), G2/G3 (guardian-profiles + component
+> suites), G5 (component suites), G6 (unit + component; no e2e yet), G9/G10
+> (guardian-reading.spec, guardian-notifications.spec), G13 (story-requests.spec), G17
+> (unit + component; no e2e yet). Real/staging/prod tiers for these follow the Phase 5
+> ladder actions; rows to be normalized into the table on the next matrix revision.
+
 ## Golden journeys (the full-ladder set)
 
 Rather than pushing all ~40 shipped capabilities to all four tiers, the ladder bar
