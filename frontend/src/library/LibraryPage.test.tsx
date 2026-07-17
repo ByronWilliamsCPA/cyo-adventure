@@ -1,8 +1,13 @@
+import 'fake-indexeddb/auto'
+
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { IDBFactory } from 'fake-indexeddb'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LibraryPage } from './LibraryPage'
 import { percentComplete } from './bookCardUtils'
+import { _resetDbHandle, cacheLibraryList, cacheStorybook } from '../offline/db'
+import type { Storybook } from '../player/types'
 
 const mockGet = vi.fn()
 const mockPost = vi.fn()
@@ -66,6 +71,8 @@ const SERIES_BOOK = {
 beforeEach(() => {
   mockGet.mockReset()
   mockPost.mockReset()
+  globalThis.indexedDB = new IDBFactory()
+  _resetDbHandle()
 })
 
 describe('LibraryPage', () => {
@@ -103,6 +110,31 @@ describe('LibraryPage', () => {
     const retry = await screen.findByRole('button', { name: /try again/i })
     fireEvent.click(retry)
     expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+  })
+
+  it('falls back to the cached shelf when the fetch fails and a cache exists (UX-K1)', async () => {
+    const blob: Storybook = {
+      schema_version: '1.0',
+      id: 's1',
+      version: 2,
+      title: 'The Lantern',
+      metadata: {},
+      variables: [],
+      start_node: 'n1',
+      nodes: [{ id: 'n1', body: 'x', is_ending: true, ending: null, choices: [] }],
+    }
+    await cacheLibraryList('p1', [IN_PROGRESS, NOT_STARTED])
+    await cacheStorybook(blob) // only s1 is downloaded
+    mockGet.mockRejectedValue(new Error('offline'))
+
+    renderLibrary()
+
+    // The offline banner and the cached shelf render instead of a dead-end.
+    expect(await screen.findByText(/no internet\. these books are ready to read/i)).toBeInTheDocument()
+    expect(screen.getByText('The Lantern')).toBeInTheDocument()
+    // The not-downloaded book is shown but marked as needing internet.
+    expect(screen.getByText(/needs internet to open/i)).toBeInTheDocument()
+    expect(screen.queryByText(/lost the bookshelf/i)).not.toBeInTheDocument()
   })
 
   it('shows the ask-a-grown-up gate on a 401, with no retry', async () => {

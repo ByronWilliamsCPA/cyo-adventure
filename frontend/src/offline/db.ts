@@ -17,6 +17,7 @@
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb'
 
 import type { DeviceGrant } from '../auth/deviceGrant'
+import type { LibraryItemView } from '../library/libraryApi'
 import type { ReadingState, Storybook } from '../player/types'
 
 export interface QueuedWrite {
@@ -34,10 +35,14 @@ interface ReaderDB extends DBSchema {
   reading_states: { key: string; value: ReadingState }
   offline_queue: { key: string; value: QueuedWrite }
   device_grant: { key: string; value: DeviceGrant }
+  // The last-good library list per profile, so an offline kid still sees a
+  // bookshelf (UX-K1) rather than a dead-end "Try again" that can never
+  // succeed. Keyed by profileId.
+  library_lists: { key: string; value: LibraryItemView[] }
 }
 
 const DB_NAME = 'cyo-reader'
-const DB_VERSION = 2
+const DB_VERSION = 3
 /** Singleton key: one device grant per device. */
 const DEVICE_GRANT_KEY = 'current'
 
@@ -70,9 +75,29 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
       if (oldVersion < 2) {
         db.createObjectStore('device_grant')
       }
+      if (oldVersion < 3) {
+        db.createObjectStore('library_lists')
+      }
     },
   })
   return _db
+}
+
+/** Cache the last-good library list for a profile (UX-K1 offline shelf). */
+export async function cacheLibraryList(
+  profileId: string,
+  items: LibraryItemView[]
+): Promise<void> {
+  const db = await getDb()
+  await db.put('library_lists', items, profileId)
+}
+
+/** Read the cached library list for a profile, or undefined if none. */
+export async function getCachedLibraryList(
+  profileId: string
+): Promise<LibraryItemView[] | undefined> {
+  const db = await getDb()
+  return db.get('library_lists', profileId)
 }
 
 /** Cache a downloaded story blob for offline play. */

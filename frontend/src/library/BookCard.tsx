@@ -14,9 +14,22 @@ export interface BookCardProps {
   hero?: boolean
   onRate: (storybookId: string, value: number) => void
   onContinue?: (item: LibraryItemView) => void
+  /**
+   * False when the app is offline and this book is not in the local cache, so
+   * tapping it could only fail (UX-K1). The card renders as a non-interactive
+   * "not downloaded" tile instead of a dead link.
+   */
+  downloaded?: boolean
 }
 
-export function BookCard({ item, profileId, hero = false, onRate, onContinue }: BookCardProps) {
+export function BookCard({
+  item,
+  profileId,
+  hero = false,
+  onRate,
+  onContinue,
+  downloaded = true,
+}: BookCardProps) {
   const readTo = `/read/${profileId}/${item.id}/${item.version}`
   const pct = percentComplete(item)
   const started = item.progress !== null
@@ -24,9 +37,8 @@ export function BookCard({ item, profileId, hero = false, onRate, onContinue }: 
   // rendering a broken-image icon.
   const [coverError, setCoverError] = useState(false)
   const showImage = Boolean(item.cover_url) && !coverError
-  return (
-    <div className={hero ? 'book-card book-card--hero' : 'book-card'}>
-      <Link className="book-card__link" to={readTo}>
+  const inner = (
+    <>
         <div
           className={showImage ? 'book-card__tile' : 'book-card__tile book-card__tile--painted'}
           style={showImage ? undefined : { background: coverGradient(item.title) }}
@@ -62,7 +74,20 @@ export function BookCard({ item, profileId, hero = false, onRate, onContinue }: 
             <span className="book-card__not-started-label">Not started</span>
           </div>
         )}
-      </Link>
+    </>
+  )
+  return (
+    <div className={hero ? 'book-card book-card--hero' : 'book-card'}>
+      {downloaded ? (
+        <Link className="book-card__link" to={readTo}>
+          {inner}
+        </Link>
+      ) : (
+        <div className="book-card__link book-card__link--offline" aria-disabled="true">
+          {inner}
+          <span className="book-card__offline-note">Needs internet to open</span>
+        </div>
+      )}
       <StarRating
         value={item.rating}
         onRate={(value) => onRate(item.id, value)}

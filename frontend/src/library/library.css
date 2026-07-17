@@ -20,6 +20,32 @@
   margin: 0;
 }
 
+/* UX-K1: offline shelf banner. */
+.library__offline-banner {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold, 600);
+  color: var(--color-warning-ink, #7a4a00);
+  background: var(--color-warning-surface, #fff4e0);
+  border: 2px solid var(--color-warning, #b26a00);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  margin: 0;
+}
+
+/* A book with no downloaded blob while offline: shown, but not tappable. */
+.book-card__link--offline {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.book-card__offline-note {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary, #5c4a38);
+  text-align: center;
+}
+
 .library__shelf-heading {
   font-family: var(--font-sans);
   font-size: var(--text-lg);
