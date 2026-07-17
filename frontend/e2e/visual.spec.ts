@@ -66,6 +66,14 @@ test('the admin console matches its visual baseline', async ({ page, context }) 
   await seedGuardianSession(context)
   await mockMe(page, { role: 'admin' })
   await mockEmptyConsole(page)
+  // AdminConsolePage stamps its "Updated HH:MM" label with the real
+  // wall-clock `new Date()` at fetch time, not a mocked/fixed value. A
+  // baseline screenshot therefore bakes in whatever minute it was
+  // regenerated in; freezing the clock before navigation keeps this
+  // deterministic regardless of how long the rest of the suite runs
+  // before reaching this test (a real, pre-existing gap this file's
+  // docblock note about pixel-identical reruns did not account for).
+  await page.clock.install({ time: new Date('2026-01-01T12:00:00Z') })
   await page.goto('/admin')
   await expect(page.getByRole('heading', { name: 'Review queue' })).toBeVisible()
   await expect(page).toHaveScreenshot('admin-console-page.png', { animations: 'disabled' })
