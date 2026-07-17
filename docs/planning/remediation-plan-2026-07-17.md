@@ -53,27 +53,23 @@ Legend: [x] done · [~] partial (rest blocked/deferred, see notes) · [ ] not st
 | P16 | UX polish batch 2 (adult surfaces + tokens) | UX-C1, UX-C2, UX-A1, UX-A3, UX-G4 (A14) | M | none | [x] |
 | P17 | Progress semantics (finished state) | UX-K5 | M | P12 | [x] |
 | P18 | Backend middleware hygiene | SEC-B3, SEC-B4, SEC-B6 | S | none | [x] |
-| P19 | Admin master library (browse/re-review all stories) | new (see below) | M | none | [ ] proposed |
+| P19 | Admin master library (browse/re-review all stories) | new (see below) | M | none | [x] |
 
-### P19 (proposed): admin master library
+### P19: admin master library (delivered)
 
-Surfaced while answering "does the admin have a master library page?" **No.** The
-review queue (`GET /review-queue`, `AdminConsolePage` at `/admin`) lists only
-`status == "in_review"` storybooks plus in-flight generation jobs. Once a story
-is approved/published (or archived/sent back), it leaves the queue and there is
-no admin surface to browse or re-open it. The underlying detail path is
-status-agnostic (`_load_admin_story` loads any status; `ReviewDetailPage` at
-`/admin/review/:storybookId` already renders a published story if navigated to
-directly), so the only missing piece is a listing + entry point:
+Surfaced while answering "does the admin have a master library page?" **No** (at
+the time): the review queue (`GET /review-queue`, `AdminConsolePage` at `/admin`)
+listed only `status == "in_review"` storybooks, so once a story was
+approved/published or archived it left the queue with no way to browse back to
+it. The detail path was already status-agnostic (`_load_admin_story` loads any
+status; `ReviewDetailPage` renders a published story if navigated to directly),
+so only a listing + entry point was missing. Delivered:
 
-- Backend: an admin-only `GET /admin/storybooks` listing all storybooks with
-  status/version/family filters (published, archived, needs_revision, in_review),
-  reusing the bulk-load pattern in `get_review_queue`.
-- Frontend: an `/admin/library` page (nav link in `AdminShell`) that lists them
-  with filters and links each to the existing `ReviewDetailPage`.
-
-Deferred here because it is a new feature beyond the review's remediation scope;
-recommended as a fast follow given the detail surface already supports it.
+- Backend: admin-only `GET /v1/admin/storybooks` listing every storybook in any
+  status (optional status filter), newest activity first, bulk-loaded like
+  `get_review_queue`. New `StorybookSummary` / `StorybookLibraryView` schemas.
+- Frontend: an `/admin/library` page with status-filter chips (nav link in
+  `AdminShell`), each row linking to the existing `ReviewDetailPage`.
 
 **Delivered in the 2026-07-17 implementation pass:** P1, P2, P3, P4, P11, P12
 (depth cap), P14, P15, P18 fully; P9 and P12 partially. Every shipped change
