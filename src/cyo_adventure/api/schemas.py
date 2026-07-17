@@ -1569,3 +1569,57 @@ class FamilyConnectionCreateBody(BaseModel):
 
     family_id: str
     connected_family_id: str
+
+
+# ---------------------------------------------------------------------------
+# Error envelope (the wire contract of app.py's exception handlers)
+# ---------------------------------------------------------------------------
+
+
+class ErrorResponse(BaseModel):
+    """The standard error envelope rendered for core-exception failures.
+
+    Mirrors ``ProjectBaseError.to_dict()`` after ``_client_safe_error``
+    sanitization (``app.py``): the exception class name, its public message,
+    an optional machine-readable ``code``, and optional structured ``details``
+    with the sensitive ``value``/``context`` keys already pruned. Referenced
+    by the OpenAPI ``responses`` declarations below so 401/403/404/409 bodies
+    are part of the documented contract, not folklore; it is never
+    instantiated on the serving path (the handlers render dicts directly).
+    """
+
+    error: str
+    message: str
+    code: str | None = None
+    details: dict[str, object] | None = None
+
+
+# One generic description per documented error status. Route docstrings (the
+# "Raises:" sections surfaced in /docs and the generated SDK) carry the
+# endpoint-specific conditions; these stay deliberately generic so the helper
+# below can be reused by every router.
+_ERROR_DESCRIPTIONS: dict[int, str] = {
+    400: "Domain rule violation (for example, an exhausted quota).",
+    401: "Missing, malformed, expired, or unknown bearer token.",
+    403: "Authenticated, but not permitted to act on this resource.",
+    404: "The referenced resource does not exist.",
+    409: "The action conflicts with the resource's current state.",
+}
+
+
+def error_responses(*status_codes: int) -> dict[int | str, dict[str, object]]:
+    """Build an OpenAPI ``responses`` mapping for the standard error envelope.
+
+    Args:
+        status_codes: The HTTP error statuses the route (or router) can
+            produce via the core exception handlers; each must be one of the
+            keys of ``_ERROR_DESCRIPTIONS``.
+
+    Returns:
+        dict[int | str, dict[str, object]]: A mapping suitable for FastAPI's
+        ``responses=`` parameter, one ``ErrorResponse`` entry per status.
+    """
+    return {
+        code: {"model": ErrorResponse, "description": _ERROR_DESCRIPTIONS[code]}
+        for code in status_codes
+    }

@@ -29,7 +29,12 @@ from cyo_adventure.api.deps import (
     authorize_family,
     authorize_profile,
 )
-from cyo_adventure.api.schemas import LibraryItem, LibraryProgress, LibraryView
+from cyo_adventure.api.schemas import (
+    LibraryItem,
+    LibraryProgress,
+    LibraryView,
+    error_responses,
+)
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.db.models import (
     Rating,
@@ -46,7 +51,9 @@ if TYPE_CHECKING:
 
 _logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/v1", tags=["library"])
+router = APIRouter(
+    prefix="/api/v1", tags=["library"], responses=error_responses(401, 403)
+)
 
 _PUBLISHED = "published"
 
@@ -363,7 +370,10 @@ async def list_library(
     return LibraryView(stories=items)
 
 
-@router.get("/storybooks/{storybook_id}/versions/{version}")
+@router.get(
+    "/storybooks/{storybook_id}/versions/{version}",
+    responses=error_responses(404),
+)
 async def get_storybook_version(
     storybook_id: str,
     version: int,

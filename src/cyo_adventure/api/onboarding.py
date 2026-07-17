@@ -30,7 +30,12 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api.deps import DbSession, OnboardingIdentity, OnboardingIdentityDep
-from cyo_adventure.api.schemas import OnboardingBody, OnboardingConsent, OnboardingView
+from cyo_adventure.api.schemas import (
+    OnboardingBody,
+    OnboardingConsent,
+    OnboardingView,
+    error_responses,
+)
 from cyo_adventure.db.integrity import is_authn_subject_conflict
 from cyo_adventure.db.models import Family, User
 from cyo_adventure.utils.logging import get_logger
@@ -40,7 +45,9 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/v1", tags=["onboarding"])
+router = APIRouter(
+    prefix="/api/v1", tags=["onboarding"], responses=error_responses(401, 403)
+)
 
 # Placeholder family name at provisioning. It persists until a rename surface
 # exists (none does today: the families API has no rename endpoint). NOT NULL

@@ -27,6 +27,7 @@ from cyo_adventure.api.schemas import (
     ProfileListView,
     ProfileUpdateBody,
     ProfileView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -36,7 +37,9 @@ from cyo_adventure.core.pin import hash_pin
 from cyo_adventure.db.models import ChildProfile
 from cyo_adventure.storybook.models import AgeBand
 
-router = APIRouter(prefix="/api/v1", tags=["profiles"])
+router = APIRouter(
+    prefix="/api/v1", tags=["profiles"], responses=error_responses(401, 403)
+)
 
 
 def _view(row: ChildProfile) -> ProfileView:
@@ -172,7 +175,7 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
     return _view(row)
 
 
-@router.patch("/profiles/{profile_id}")
+@router.patch("/profiles/{profile_id}", responses=error_responses(404))
 async def update_profile(
     profile_id: str, body: ProfileUpdateBody, ctx: Context
 ) -> ProfileView:

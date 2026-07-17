@@ -36,6 +36,7 @@ from cyo_adventure.api.schemas import (
     ContentSummaryView,
     GuardianBookItem,
     GuardianBooksView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -58,7 +59,9 @@ if TYPE_CHECKING:
     import uuid
     from collections.abc import Iterable
 
-router = APIRouter(prefix="/api/v1", tags=["assignments"])
+router = APIRouter(
+    prefix="/api/v1", tags=["assignments"], responses=error_responses(401, 403)
+)
 
 _PUBLISHED = "published"
 _logger = get_logger(__name__)
@@ -197,7 +200,9 @@ async def _authorize_content_summary(
     return version_row, version
 
 
-@router.get("/storybooks/{storybook_id}/content-summary")
+@router.get(
+    "/storybooks/{storybook_id}/content-summary", responses=error_responses(404)
+)
 async def get_content_summary(storybook_id: str, ctx: Context) -> ContentSummaryView:
     """Return the redacted content review summary for a published story.
 
@@ -232,7 +237,9 @@ async def get_content_summary(storybook_id: str, ctx: Context) -> ContentSummary
     )
 
 
-@router.post("/storybooks/{storybook_id}/assignments")
+@router.post(
+    "/storybooks/{storybook_id}/assignments", responses=error_responses(400, 404)
+)
 async def assign_storybook(
     storybook_id: str, body: AssignmentCreateBody, ctx: Context
 ) -> AssignmentListView:
@@ -303,7 +310,7 @@ async def assign_storybook(
     return _assignment_list(storybook_id, existing)
 
 
-@router.get("/storybooks/{storybook_id}/assignments")
+@router.get("/storybooks/{storybook_id}/assignments", responses=error_responses(404))
 async def list_assignments(storybook_id: str, ctx: Context) -> AssignmentListView:
     """List the child profiles a story is currently assigned to.
 

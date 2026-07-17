@@ -21,6 +21,7 @@ from cyo_adventure.api.schemas import (
     FamilyListView,
     FamilyUpdateBody,
     FamilyView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
 from cyo_adventure.db.models import ChildProfile, Family, User
@@ -29,7 +30,9 @@ from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_even
 if TYPE_CHECKING:
     import uuid
 
-router = APIRouter(prefix="/api/v1", tags=["families"])
+router = APIRouter(
+    prefix="/api/v1", tags=["families"], responses=error_responses(401, 403)
+)
 
 # Defensive ceiling mirroring generation.py's _JOB_LIST_LIMIT convention: the
 # admin form renders every row into one <select>, so an unbounded roster would
@@ -181,7 +184,7 @@ async def create_family(body: FamilyCreateBody, ctx: Context) -> FamilyView:
     return _view(family, guardian_count=0, kid_count=0)
 
 
-@router.patch("/admin/families/{family_id}")
+@router.patch("/admin/families/{family_id}", responses=error_responses(404))
 async def update_family(
     family_id: str, body: FamilyUpdateBody, ctx: Context
 ) -> FamilyView:

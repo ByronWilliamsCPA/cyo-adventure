@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from cyo_adventure.api.deps import CurrentPrincipal, DbSession
+from cyo_adventure.api.schemas import error_responses
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -17,7 +18,9 @@ from cyo_adventure.covers.worker import enqueue_cover
 from cyo_adventure.db.models import StorybookVersion
 from cyo_adventure.middleware.correlation import get_correlation_id
 
-router = APIRouter(prefix="/api/v1", tags=["covers"])
+router = APIRouter(
+    prefix="/api/v1", tags=["covers"], responses=error_responses(401, 403, 404)
+)
 
 
 class CoverStatusView(BaseModel):
@@ -33,7 +36,10 @@ def _require_admin(principal: CurrentPrincipal) -> None:
         raise AuthorizationError(msg, required_permission="admin")
 
 
-@router.post("/storybooks/{storybook_id}/versions/{version}/cover")
+@router.post(
+    "/storybooks/{storybook_id}/versions/{version}/cover",
+    responses=error_responses(400),
+)
 async def request_cover(
     storybook_id: str,
     version: int,

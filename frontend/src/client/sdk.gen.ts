@@ -66,6 +66,7 @@ export const startupHealthStartupGet = <ThrowOnError extends boolean = false>(op
  */
 export const listLibraryApiV1LibraryGet = <ThrowOnError extends boolean = false>(options: Options<ListLibraryApiV1LibraryGetData, ThrowOnError>): RequestResult<ListLibraryApiV1LibraryGetResponses, ListLibraryApiV1LibraryGetErrors, ThrowOnError> => (options.client ?? client).get<ListLibraryApiV1LibraryGetResponses, ListLibraryApiV1LibraryGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/library',
     ...options
 });
@@ -89,6 +90,7 @@ export const listLibraryApiV1LibraryGet = <ThrowOnError extends boolean = false>
  */
 export const getStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGet = <ThrowOnError extends boolean = false>(options: Options<GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetData, ThrowOnError>): RequestResult<GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetResponses, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetErrors, ThrowOnError> => (options.client ?? client).get<GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetResponses, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/versions/{version}',
     ...options
 });
@@ -111,6 +113,7 @@ export const getStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGet = <
  */
 export const getReadingStateApiV1ReadingStateProfileIdStorybookIdGet = <ThrowOnError extends boolean = false>(options: Options<GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetData, ThrowOnError>): RequestResult<GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetErrors, ThrowOnError> => (options.client ?? client).get<GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/reading-state/{profile_id}/{storybook_id}',
     ...options
 });
@@ -138,6 +141,7 @@ export const getReadingStateApiV1ReadingStateProfileIdStorybookIdGet = <ThrowOnE
  */
 export const putReadingStateApiV1ReadingStateProfileIdStorybookIdPut = <ThrowOnError extends boolean = false>(options: Options<PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutData, ThrowOnError>): RequestResult<PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponses, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutErrors, ThrowOnError> => (options.client ?? client).put<PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponses, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/reading-state/{profile_id}/{storybook_id}',
     ...options,
     headers: {
@@ -173,6 +177,7 @@ export const putReadingStateApiV1ReadingStateProfileIdStorybookIdPut = <ThrowOnE
  */
 export const getSeriesNextApiV1SeriesNextProfileIdStorybookIdGet = <ThrowOnError extends boolean = false>(options: Options<GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetData, ThrowOnError>): RequestResult<GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetResponses, GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetErrors, ThrowOnError> => (options.client ?? client).get<GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetResponses, GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/series-next/{profile_id}/{storybook_id}',
     ...options
 });
@@ -195,6 +200,7 @@ export const getSeriesNextApiV1SeriesNextProfileIdStorybookIdGet = <ThrowOnError
  */
 export const recordCompletionApiV1CompletionsPost = <ThrowOnError extends boolean = false>(options: Options<RecordCompletionApiV1CompletionsPostData, ThrowOnError>): RequestResult<RecordCompletionApiV1CompletionsPostResponses, RecordCompletionApiV1CompletionsPostErrors, ThrowOnError> => (options.client ?? client).post<RecordCompletionApiV1CompletionsPostResponses, RecordCompletionApiV1CompletionsPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/completions',
     ...options,
     headers: {
@@ -225,6 +231,7 @@ export const recordCompletionApiV1CompletionsPost = <ThrowOnError extends boolea
  */
 export const createConceptApiV1ConceptsPost = <ThrowOnError extends boolean = false>(options: Options<CreateConceptApiV1ConceptsPostData, ThrowOnError>): RequestResult<CreateConceptApiV1ConceptsPostResponses, CreateConceptApiV1ConceptsPostErrors, ThrowOnError> => (options.client ?? client).post<CreateConceptApiV1ConceptsPostResponses, CreateConceptApiV1ConceptsPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/concepts',
     ...options,
     headers: {
@@ -260,6 +267,7 @@ export const createConceptApiV1ConceptsPost = <ThrowOnError extends boolean = fa
  */
 export const enqueueConceptGenerationApiV1ConceptsConceptIdGeneratePost = <ThrowOnError extends boolean = false>(options: Options<EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostData, ThrowOnError>): RequestResult<EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostResponses, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostErrors, ThrowOnError> => (options.client ?? client).post<EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostResponses, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/concepts/{concept_id}/generate',
     ...options
 });
@@ -285,6 +293,7 @@ export const enqueueConceptGenerationApiV1ConceptsConceptIdGeneratePost = <Throw
  */
 export const listGenerationJobsApiV1GenerationJobsGet = <ThrowOnError extends boolean = false>(options?: Options<ListGenerationJobsApiV1GenerationJobsGetData, ThrowOnError>): RequestResult<ListGenerationJobsApiV1GenerationJobsGetResponses, ListGenerationJobsApiV1GenerationJobsGetErrors, ThrowOnError> => (options?.client ?? client).get<ListGenerationJobsApiV1GenerationJobsGetResponses, ListGenerationJobsApiV1GenerationJobsGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/generation-jobs',
     ...options
 });
@@ -309,6 +318,7 @@ export const listGenerationJobsApiV1GenerationJobsGet = <ThrowOnError extends bo
  */
 export const getGenerationJobApiV1GenerationJobsJobIdGet = <ThrowOnError extends boolean = false>(options: Options<GetGenerationJobApiV1GenerationJobsJobIdGetData, ThrowOnError>): RequestResult<GetGenerationJobApiV1GenerationJobsJobIdGetResponses, GetGenerationJobApiV1GenerationJobsJobIdGetErrors, ThrowOnError> => (options.client ?? client).get<GetGenerationJobApiV1GenerationJobsJobIdGetResponses, GetGenerationJobApiV1GenerationJobsJobIdGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/generation-jobs/{job_id}',
     ...options
 });
@@ -333,6 +343,7 @@ export const getGenerationJobApiV1GenerationJobsJobIdGet = <ThrowOnError extends
  */
 export const validateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePost = <ThrowOnError extends boolean = false>(options: Options<ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostData, ThrowOnError>): RequestResult<ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostResponses, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostErrors, ThrowOnError> => (options.client ?? client).post<ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostResponses, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/versions/{version}/validate',
     ...options
 });
@@ -353,6 +364,7 @@ export const validateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionVa
  */
 export const listProfilesApiV1ProfilesGet = <ThrowOnError extends boolean = false>(options?: Options<ListProfilesApiV1ProfilesGetData, ThrowOnError>): RequestResult<ListProfilesApiV1ProfilesGetResponses, ListProfilesApiV1ProfilesGetErrors, ThrowOnError> => (options?.client ?? client).get<ListProfilesApiV1ProfilesGetResponses, ListProfilesApiV1ProfilesGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/profiles',
     ...options
 });
@@ -374,6 +386,7 @@ export const listProfilesApiV1ProfilesGet = <ThrowOnError extends boolean = fals
  */
 export const createProfileApiV1ProfilesPost = <ThrowOnError extends boolean = false>(options: Options<CreateProfileApiV1ProfilesPostData, ThrowOnError>): RequestResult<CreateProfileApiV1ProfilesPostResponses, CreateProfileApiV1ProfilesPostErrors, ThrowOnError> => (options.client ?? client).post<CreateProfileApiV1ProfilesPostResponses, CreateProfileApiV1ProfilesPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/profiles',
     ...options,
     headers: {
@@ -407,6 +420,7 @@ export const createProfileApiV1ProfilesPost = <ThrowOnError extends boolean = fa
  */
 export const updateProfileApiV1ProfilesProfileIdPatch = <ThrowOnError extends boolean = false>(options: Options<UpdateProfileApiV1ProfilesProfileIdPatchData, ThrowOnError>): RequestResult<UpdateProfileApiV1ProfilesProfileIdPatchResponses, UpdateProfileApiV1ProfilesProfileIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateProfileApiV1ProfilesProfileIdPatchResponses, UpdateProfileApiV1ProfilesProfileIdPatchErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/profiles/{profile_id}',
     ...options,
     headers: {
@@ -431,6 +445,7 @@ export const updateProfileApiV1ProfilesProfileIdPatch = <ThrowOnError extends bo
  */
 export const listFamiliesApiV1AdminFamiliesGet = <ThrowOnError extends boolean = false>(options?: Options<ListFamiliesApiV1AdminFamiliesGetData, ThrowOnError>): RequestResult<ListFamiliesApiV1AdminFamiliesGetResponses, ListFamiliesApiV1AdminFamiliesGetErrors, ThrowOnError> => (options?.client ?? client).get<ListFamiliesApiV1AdminFamiliesGetResponses, ListFamiliesApiV1AdminFamiliesGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/families',
     ...options
 });
@@ -452,6 +467,7 @@ export const listFamiliesApiV1AdminFamiliesGet = <ThrowOnError extends boolean =
  */
 export const createFamilyApiV1AdminFamiliesPost = <ThrowOnError extends boolean = false>(options: Options<CreateFamilyApiV1AdminFamiliesPostData, ThrowOnError>): RequestResult<CreateFamilyApiV1AdminFamiliesPostResponses, CreateFamilyApiV1AdminFamiliesPostErrors, ThrowOnError> => (options.client ?? client).post<CreateFamilyApiV1AdminFamiliesPostResponses, CreateFamilyApiV1AdminFamiliesPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/families',
     ...options,
     headers: {
@@ -486,6 +502,7 @@ export const createFamilyApiV1AdminFamiliesPost = <ThrowOnError extends boolean 
  */
 export const updateFamilyApiV1AdminFamiliesFamilyIdPatch = <ThrowOnError extends boolean = false>(options: Options<UpdateFamilyApiV1AdminFamiliesFamilyIdPatchData, ThrowOnError>): RequestResult<UpdateFamilyApiV1AdminFamiliesFamilyIdPatchResponses, UpdateFamilyApiV1AdminFamiliesFamilyIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateFamilyApiV1AdminFamiliesFamilyIdPatchResponses, UpdateFamilyApiV1AdminFamiliesFamilyIdPatchErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/families/{family_id}',
     ...options,
     headers: {
@@ -513,6 +530,7 @@ export const updateFamilyApiV1AdminFamiliesFamilyIdPatch = <ThrowOnError extends
  */
 export const recordRatingApiV1RatingsPost = <ThrowOnError extends boolean = false>(options: Options<RecordRatingApiV1RatingsPostData, ThrowOnError>): RequestResult<RecordRatingApiV1RatingsPostResponses, RecordRatingApiV1RatingsPostErrors, ThrowOnError> => (options.client ?? client).post<RecordRatingApiV1RatingsPostResponses, RecordRatingApiV1RatingsPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ratings',
     ...options,
     headers: {
@@ -539,6 +557,7 @@ export const recordRatingApiV1RatingsPost = <ThrowOnError extends boolean = fals
  */
 export const listRatingsApiV1RatingsProfileIdGet = <ThrowOnError extends boolean = false>(options: Options<ListRatingsApiV1RatingsProfileIdGetData, ThrowOnError>): RequestResult<ListRatingsApiV1RatingsProfileIdGetResponses, ListRatingsApiV1RatingsProfileIdGetErrors, ThrowOnError> => (options.client ?? client).get<ListRatingsApiV1RatingsProfileIdGetResponses, ListRatingsApiV1RatingsProfileIdGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ratings/{profile_id}',
     ...options
 });
@@ -569,6 +588,7 @@ export const listRatingsApiV1RatingsProfileIdGet = <ThrowOnError extends boolean
  */
 export const getContentSummaryApiV1StorybooksStorybookIdContentSummaryGet = <ThrowOnError extends boolean = false>(options: Options<GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetData, ThrowOnError>): RequestResult<GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetResponses, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetErrors, ThrowOnError> => (options.client ?? client).get<GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetResponses, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/content-summary',
     ...options
 });
@@ -592,6 +612,7 @@ export const getContentSummaryApiV1StorybooksStorybookIdContentSummaryGet = <Thr
  */
 export const listAssignmentsApiV1StorybooksStorybookIdAssignmentsGet = <ThrowOnError extends boolean = false>(options: Options<ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetData, ThrowOnError>): RequestResult<ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetResponses, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetErrors, ThrowOnError> => (options.client ?? client).get<ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetResponses, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/assignments',
     ...options
 });
@@ -618,6 +639,7 @@ export const listAssignmentsApiV1StorybooksStorybookIdAssignmentsGet = <ThrowOnE
  */
 export const assignStorybookApiV1StorybooksStorybookIdAssignmentsPost = <ThrowOnError extends boolean = false>(options: Options<AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostData, ThrowOnError>): RequestResult<AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponses, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostErrors, ThrowOnError> => (options.client ?? client).post<AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponses, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/assignments',
     ...options,
     headers: {
@@ -652,6 +674,7 @@ export const assignStorybookApiV1StorybooksStorybookIdAssignmentsPost = <ThrowOn
  */
 export const listGuardianBooksApiV1GuardianBooksGet = <ThrowOnError extends boolean = false>(options?: Options<ListGuardianBooksApiV1GuardianBooksGetData, ThrowOnError>): RequestResult<ListGuardianBooksApiV1GuardianBooksGetResponses, ListGuardianBooksApiV1GuardianBooksGetErrors, ThrowOnError> => (options?.client ?? client).get<ListGuardianBooksApiV1GuardianBooksGetResponses, ListGuardianBooksApiV1GuardianBooksGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/guardian/books',
     ...options
 });
@@ -663,6 +686,7 @@ export const listGuardianBooksApiV1GuardianBooksGet = <ThrowOnError extends bool
  */
 export const submitStorybookApiV1StorybooksStorybookIdSubmitPost = <ThrowOnError extends boolean = false>(options: Options<SubmitStorybookApiV1StorybooksStorybookIdSubmitPostData, ThrowOnError>): RequestResult<SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponses, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostErrors, ThrowOnError> => (options.client ?? client).post<SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponses, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/submit',
     ...options
 });
@@ -674,6 +698,7 @@ export const submitStorybookApiV1StorybooksStorybookIdSubmitPost = <ThrowOnError
  */
 export const approveStorybookApiV1StorybooksStorybookIdApprovePost = <ThrowOnError extends boolean = false>(options: Options<ApproveStorybookApiV1StorybooksStorybookIdApprovePostData, ThrowOnError>): RequestResult<ApproveStorybookApiV1StorybooksStorybookIdApprovePostResponses, ApproveStorybookApiV1StorybooksStorybookIdApprovePostErrors, ThrowOnError> => (options.client ?? client).post<ApproveStorybookApiV1StorybooksStorybookIdApprovePostResponses, ApproveStorybookApiV1StorybooksStorybookIdApprovePostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/approve',
     ...options,
     headers: {
@@ -689,6 +714,7 @@ export const approveStorybookApiV1StorybooksStorybookIdApprovePost = <ThrowOnErr
  */
 export const sendBackStorybookApiV1StorybooksStorybookIdSendBackPost = <ThrowOnError extends boolean = false>(options: Options<SendBackStorybookApiV1StorybooksStorybookIdSendBackPostData, ThrowOnError>): RequestResult<SendBackStorybookApiV1StorybooksStorybookIdSendBackPostResponses, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostErrors, ThrowOnError> => (options.client ?? client).post<SendBackStorybookApiV1StorybooksStorybookIdSendBackPostResponses, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/send-back',
     ...options,
     headers: {
@@ -704,6 +730,7 @@ export const sendBackStorybookApiV1StorybooksStorybookIdSendBackPost = <ThrowOnE
  */
 export const archiveStorybookApiV1StorybooksStorybookIdArchivePost = <ThrowOnError extends boolean = false>(options: Options<ArchiveStorybookApiV1StorybooksStorybookIdArchivePostData, ThrowOnError>): RequestResult<ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostErrors, ThrowOnError> => (options.client ?? client).post<ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/archive',
     ...options
 });
@@ -730,6 +757,7 @@ export const archiveStorybookApiV1StorybooksStorybookIdArchivePost = <ThrowOnErr
  */
 export const getReviewSurfaceApiV1StorybooksStorybookIdReviewGet = <ThrowOnError extends boolean = false>(options: Options<GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetData, ThrowOnError>): RequestResult<GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetResponses, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetErrors, ThrowOnError> => (options.client ?? client).get<GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetResponses, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/review',
     ...options
 });
@@ -752,6 +780,7 @@ export const getReviewSurfaceApiV1StorybooksStorybookIdReviewGet = <ThrowOnError
  */
 export const getReviewQueueApiV1ReviewQueueGet = <ThrowOnError extends boolean = false>(options?: Options<GetReviewQueueApiV1ReviewQueueGetData, ThrowOnError>): RequestResult<GetReviewQueueApiV1ReviewQueueGetResponses, GetReviewQueueApiV1ReviewQueueGetErrors, ThrowOnError> => (options?.client ?? client).get<GetReviewQueueApiV1ReviewQueueGetResponses, GetReviewQueueApiV1ReviewQueueGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/review-queue',
     ...options
 });
@@ -763,6 +792,7 @@ export const getReviewQueueApiV1ReviewQueueGet = <ThrowOnError extends boolean =
  */
 export const coverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGet = <ThrowOnError extends boolean = false>(options: Options<CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetData, ThrowOnError>): RequestResult<CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetResponses, CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetErrors, ThrowOnError> => (options.client ?? client).get<CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetResponses, CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/versions/{version}/cover',
     ...options
 });
@@ -774,6 +804,7 @@ export const coverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGet = <Thr
  */
 export const requestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPost = <ThrowOnError extends boolean = false>(options: Options<RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostData, ThrowOnError>): RequestResult<RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses, RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors, ThrowOnError> => (options.client ?? client).post<RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses, RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/storybooks/{storybook_id}/versions/{version}/cover',
     ...options
 });
@@ -795,6 +826,7 @@ export const requestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPost = <T
  */
 export const listThresholdsApiV1AdminModerationThresholdsGet = <ThrowOnError extends boolean = false>(options?: Options<ListThresholdsApiV1AdminModerationThresholdsGetData, ThrowOnError>): RequestResult<ListThresholdsApiV1AdminModerationThresholdsGetResponses, ListThresholdsApiV1AdminModerationThresholdsGetErrors, ThrowOnError> => (options?.client ?? client).get<ListThresholdsApiV1AdminModerationThresholdsGetResponses, ListThresholdsApiV1AdminModerationThresholdsGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/moderation-thresholds',
     ...options
 });
@@ -822,6 +854,7 @@ export const listThresholdsApiV1AdminModerationThresholdsGet = <ThrowOnError ext
  */
 export const deleteThresholdApiV1AdminModerationThresholdsAgeBandDelete = <ThrowOnError extends boolean = false>(options: Options<DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteData, ThrowOnError>): RequestResult<DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors, ThrowOnError> => (options.client ?? client).delete<DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/moderation-thresholds/{age_band}',
     ...options
 });
@@ -851,6 +884,7 @@ export const deleteThresholdApiV1AdminModerationThresholdsAgeBandDelete = <Throw
  */
 export const upsertThresholdApiV1AdminModerationThresholdsAgeBandPut = <ThrowOnError extends boolean = false>(options: Options<UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutData, ThrowOnError>): RequestResult<UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors, ThrowOnError> => (options.client ?? client).put<UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/moderation-thresholds/{age_band}',
     ...options,
     headers: {
@@ -876,6 +910,7 @@ export const upsertThresholdApiV1AdminModerationThresholdsAgeBandPut = <ThrowOnE
  */
 export const getNoiseFloorApiV1AdminModerationNoiseFloorGet = <ThrowOnError extends boolean = false>(options?: Options<GetNoiseFloorApiV1AdminModerationNoiseFloorGetData, ThrowOnError>): RequestResult<GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses, GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors, ThrowOnError> => (options?.client ?? client).get<GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses, GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/moderation/noise-floor',
     ...options
 });
@@ -898,6 +933,7 @@ export const getNoiseFloorApiV1AdminModerationNoiseFloorGet = <ThrowOnError exte
  */
 export const updateNoiseFloorApiV1AdminModerationNoiseFloorPut = <ThrowOnError extends boolean = false>(options: Options<UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutData, ThrowOnError>): RequestResult<UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors, ThrowOnError> => (options.client ?? client).put<UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/moderation/noise-floor',
     ...options,
     headers: {
@@ -913,6 +949,7 @@ export const updateNoiseFloorApiV1AdminModerationNoiseFloorPut = <ThrowOnError e
  */
 export const moderationDashboardApiV1AdminModerationDashboardGet = <ThrowOnError extends boolean = false>(options?: Options<ModerationDashboardApiV1AdminModerationDashboardGetData, ThrowOnError>): RequestResult<ModerationDashboardApiV1AdminModerationDashboardGetResponses, ModerationDashboardApiV1AdminModerationDashboardGetErrors, ThrowOnError> => (options?.client ?? client).get<ModerationDashboardApiV1AdminModerationDashboardGetResponses, ModerationDashboardApiV1AdminModerationDashboardGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/moderation/dashboard',
     ...options
 });
@@ -928,6 +965,7 @@ export const moderationDashboardApiV1AdminModerationDashboardGet = <ThrowOnError
  */
 export const moderationSuggestionsApiV1AdminModerationSuggestionsGet = <ThrowOnError extends boolean = false>(options?: Options<ModerationSuggestionsApiV1AdminModerationSuggestionsGetData, ThrowOnError>): RequestResult<ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses, ModerationSuggestionsApiV1AdminModerationSuggestionsGetErrors, ThrowOnError> => (options?.client ?? client).get<ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses, ModerationSuggestionsApiV1AdminModerationSuggestionsGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/moderation/suggestions',
     ...options
 });
@@ -948,6 +986,7 @@ export const moderationSuggestionsApiV1AdminModerationSuggestionsGet = <ThrowOnE
  */
 export const listAllowlistApiV1AdminProviderAllowlistGet = <ThrowOnError extends boolean = false>(options?: Options<ListAllowlistApiV1AdminProviderAllowlistGetData, ThrowOnError>): RequestResult<ListAllowlistApiV1AdminProviderAllowlistGetResponses, ListAllowlistApiV1AdminProviderAllowlistGetErrors, ThrowOnError> => (options?.client ?? client).get<ListAllowlistApiV1AdminProviderAllowlistGetResponses, ListAllowlistApiV1AdminProviderAllowlistGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/provider-allowlist',
     ...options
 });
@@ -970,6 +1009,7 @@ export const listAllowlistApiV1AdminProviderAllowlistGet = <ThrowOnError extends
  */
 export const addAllowlistEntryApiV1AdminProviderAllowlistPost = <ThrowOnError extends boolean = false>(options: Options<AddAllowlistEntryApiV1AdminProviderAllowlistPostData, ThrowOnError>): RequestResult<AddAllowlistEntryApiV1AdminProviderAllowlistPostResponses, AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors, ThrowOnError> => (options.client ?? client).post<AddAllowlistEntryApiV1AdminProviderAllowlistPostResponses, AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/provider-allowlist',
     ...options,
     headers: {
@@ -996,6 +1036,7 @@ export const addAllowlistEntryApiV1AdminProviderAllowlistPost = <ThrowOnError ex
  */
 export const deleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDelete = <ThrowOnError extends boolean = false>(options: Options<DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteData, ThrowOnError>): RequestResult<DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteResponses, DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteErrors, ThrowOnError> => (options.client ?? client).delete<DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteResponses, DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/provider-allowlist/{entry_id}',
     ...options
 });
@@ -1019,6 +1060,7 @@ export const deleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDelete = <Thr
  */
 export const updateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPut = <ThrowOnError extends boolean = false>(options: Options<UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutData, ThrowOnError>): RequestResult<UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponses, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors, ThrowOnError> => (options.client ?? client).put<UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponses, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/provider-allowlist/{entry_id}',
     ...options,
     headers: {
@@ -1040,6 +1082,7 @@ export const updateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPut = <ThrowO
  */
 export const whoamiApiV1MeGet = <ThrowOnError extends boolean = false>(options?: Options<WhoamiApiV1MeGetData, ThrowOnError>): RequestResult<WhoamiApiV1MeGetResponses, WhoamiApiV1MeGetErrors, ThrowOnError> => (options?.client ?? client).get<WhoamiApiV1MeGetResponses, WhoamiApiV1MeGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/me',
     ...options
 });
@@ -1070,6 +1113,7 @@ export const whoamiApiV1MeGet = <ThrowOnError extends boolean = false>(options?:
  */
 export const listStoryRequestsApiV1StoryRequestsGet = <ThrowOnError extends boolean = false>(options?: Options<ListStoryRequestsApiV1StoryRequestsGetData, ThrowOnError>): RequestResult<ListStoryRequestsApiV1StoryRequestsGetResponses, ListStoryRequestsApiV1StoryRequestsGetErrors, ThrowOnError> => (options?.client ?? client).get<ListStoryRequestsApiV1StoryRequestsGetResponses, ListStoryRequestsApiV1StoryRequestsGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/story-requests',
     ...options
 });
@@ -1105,6 +1149,7 @@ export const listStoryRequestsApiV1StoryRequestsGet = <ThrowOnError extends bool
  */
 export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends boolean = false>(options: Options<CreateStoryRequestApiV1StoryRequestsPostData, ThrowOnError>): RequestResult<CreateStoryRequestApiV1StoryRequestsPostResponses, CreateStoryRequestApiV1StoryRequestsPostErrors, ThrowOnError> => (options.client ?? client).post<CreateStoryRequestApiV1StoryRequestsPostResponses, CreateStoryRequestApiV1StoryRequestsPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/story-requests',
     ...options,
     headers: {
@@ -1152,6 +1197,7 @@ export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends bo
  */
 export const createAuthoredStoryRequestApiV1StoryRequestsAuthoredPost = <ThrowOnError extends boolean = false>(options: Options<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData, ThrowOnError>): RequestResult<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, ThrowOnError> => (options.client ?? client).post<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/story-requests/authored',
     ...options,
     headers: {
@@ -1184,6 +1230,7 @@ export const createAuthoredStoryRequestApiV1StoryRequestsAuthoredPost = <ThrowOn
  */
 export const listStoryRequestsAdminApiV1AdminStoryRequestsGet = <ThrowOnError extends boolean = false>(options?: Options<ListStoryRequestsAdminApiV1AdminStoryRequestsGetData, ThrowOnError>): RequestResult<ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses, ListStoryRequestsAdminApiV1AdminStoryRequestsGetErrors, ThrowOnError> => (options?.client ?? client).get<ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses, ListStoryRequestsAdminApiV1AdminStoryRequestsGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/story-requests',
     ...options
 });
@@ -1230,6 +1277,7 @@ export const listStoryRequestsAdminApiV1AdminStoryRequestsGet = <ThrowOnError ex
  */
 export const approveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePost = <ThrowOnError extends boolean = false>(options: Options<ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData, ThrowOnError>): RequestResult<ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ThrowOnError> => (options.client ?? client).post<ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/story-requests/{request_id}/approve',
     ...options,
     headers: {
@@ -1270,6 +1318,7 @@ export const approveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePost =
  */
 export const createAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPost = <ThrowOnError extends boolean = false>(options: Options<CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostData, ThrowOnError>): RequestResult<CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostResponses, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostErrors, ThrowOnError> => (options.client ?? client).post<CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostResponses, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/story-requests/{request_id}/authoring-plan',
     ...options,
     headers: {
@@ -1297,6 +1346,7 @@ export const createAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPost = <
  */
 export const declineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePost = <ThrowOnError extends boolean = false>(options: Options<DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostData, ThrowOnError>): RequestResult<DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostResponses, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostErrors, ThrowOnError> => (options.client ?? client).post<DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostResponses, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/story-requests/{request_id}/decline',
     ...options
 });
@@ -1329,6 +1379,7 @@ export const declineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePost =
  */
 export const createChildSessionApiV1ChildSessionsPost = <ThrowOnError extends boolean = false>(options: Options<CreateChildSessionApiV1ChildSessionsPostData, ThrowOnError>): RequestResult<CreateChildSessionApiV1ChildSessionsPostResponses, CreateChildSessionApiV1ChildSessionsPostErrors, ThrowOnError> => (options.client ?? client).post<CreateChildSessionApiV1ChildSessionsPostResponses, CreateChildSessionApiV1ChildSessionsPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/child-sessions',
     ...options,
     headers: {
@@ -1360,6 +1411,7 @@ export const createChildSessionApiV1ChildSessionsPost = <ThrowOnError extends bo
  */
 export const listDeviceGrantsApiV1DeviceGrantsGet = <ThrowOnError extends boolean = false>(options?: Options<ListDeviceGrantsApiV1DeviceGrantsGetData, ThrowOnError>): RequestResult<ListDeviceGrantsApiV1DeviceGrantsGetResponses, ListDeviceGrantsApiV1DeviceGrantsGetErrors, ThrowOnError> => (options?.client ?? client).get<ListDeviceGrantsApiV1DeviceGrantsGetResponses, ListDeviceGrantsApiV1DeviceGrantsGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/device-grants',
     ...options
 });
@@ -1394,6 +1446,7 @@ export const listDeviceGrantsApiV1DeviceGrantsGet = <ThrowOnError extends boolea
  */
 export const createDeviceGrantApiV1DeviceGrantsPost = <ThrowOnError extends boolean = false>(options?: Options<CreateDeviceGrantApiV1DeviceGrantsPostData, ThrowOnError>): RequestResult<CreateDeviceGrantApiV1DeviceGrantsPostResponses, CreateDeviceGrantApiV1DeviceGrantsPostErrors, ThrowOnError> => (options?.client ?? client).post<CreateDeviceGrantApiV1DeviceGrantsPostResponses, CreateDeviceGrantApiV1DeviceGrantsPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/device-grants',
     ...options,
     headers: {
@@ -1425,7 +1478,11 @@ export const createDeviceGrantApiV1DeviceGrantsPost = <ThrowOnError extends bool
  * the id does not exist at all or belongs to another family, so
  * this is not a cross-family existence oracle.
  */
-export const revokeDeviceGrantApiV1DeviceGrantsGrantIdDelete = <ThrowOnError extends boolean = false>(options: Options<RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteData, ThrowOnError>): RequestResult<RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses, RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors, ThrowOnError> => (options.client ?? client).delete<RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses, RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors, ThrowOnError>({ url: '/api/v1/device-grants/{grant_id}', ...options });
+export const revokeDeviceGrantApiV1DeviceGrantsGrantIdDelete = <ThrowOnError extends boolean = false>(options: Options<RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteData, ThrowOnError>): RequestResult<RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses, RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors, ThrowOnError> => (options.client ?? client).delete<RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses, RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/device-grants/{grant_id}',
+    ...options
+});
 
 /**
  * Onboard
@@ -1449,6 +1506,7 @@ export const revokeDeviceGrantApiV1DeviceGrantsGrantIdDelete = <ThrowOnError ext
  */
 export const onboardApiV1OnboardingPost = <ThrowOnError extends boolean = false>(options?: Options<OnboardApiV1OnboardingPostData, ThrowOnError>): RequestResult<OnboardApiV1OnboardingPostResponses, OnboardApiV1OnboardingPostErrors, ThrowOnError> => (options?.client ?? client).post<OnboardApiV1OnboardingPostResponses, OnboardApiV1OnboardingPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/onboarding',
     ...options,
     headers: {
@@ -1478,6 +1536,7 @@ export const onboardApiV1OnboardingPost = <ThrowOnError extends boolean = false>
  */
 export const listUsersApiV1AdminUsersGet = <ThrowOnError extends boolean = false>(options?: Options<ListUsersApiV1AdminUsersGetData, ThrowOnError>): RequestResult<ListUsersApiV1AdminUsersGetResponses, ListUsersApiV1AdminUsersGetErrors, ThrowOnError> => (options?.client ?? client).get<ListUsersApiV1AdminUsersGetResponses, ListUsersApiV1AdminUsersGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/users',
     ...options
 });
@@ -1505,6 +1564,7 @@ export const listUsersApiV1AdminUsersGet = <ThrowOnError extends boolean = false
  */
 export const createUserApiV1AdminUsersPost = <ThrowOnError extends boolean = false>(options: Options<CreateUserApiV1AdminUsersPostData, ThrowOnError>): RequestResult<CreateUserApiV1AdminUsersPostResponses, CreateUserApiV1AdminUsersPostErrors, ThrowOnError> => (options.client ?? client).post<CreateUserApiV1AdminUsersPostResponses, CreateUserApiV1AdminUsersPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/users',
     ...options,
     headers: {
@@ -1542,6 +1602,7 @@ export const createUserApiV1AdminUsersPost = <ThrowOnError extends boolean = fal
  */
 export const updateUserApiV1AdminUsersUserIdPatch = <ThrowOnError extends boolean = false>(options: Options<UpdateUserApiV1AdminUsersUserIdPatchData, ThrowOnError>): RequestResult<UpdateUserApiV1AdminUsersUserIdPatchResponses, UpdateUserApiV1AdminUsersUserIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateUserApiV1AdminUsersUserIdPatchResponses, UpdateUserApiV1AdminUsersUserIdPatchErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/users/{user_id}',
     ...options,
     headers: {
@@ -1570,6 +1631,7 @@ export const updateUserApiV1AdminUsersUserIdPatch = <ThrowOnError extends boolea
  */
 export const listAdminProfilesApiV1AdminProfilesGet = <ThrowOnError extends boolean = false>(options?: Options<ListAdminProfilesApiV1AdminProfilesGetData, ThrowOnError>): RequestResult<ListAdminProfilesApiV1AdminProfilesGetResponses, ListAdminProfilesApiV1AdminProfilesGetErrors, ThrowOnError> => (options?.client ?? client).get<ListAdminProfilesApiV1AdminProfilesGetResponses, ListAdminProfilesApiV1AdminProfilesGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/profiles',
     ...options
 });
@@ -1592,6 +1654,7 @@ export const listAdminProfilesApiV1AdminProfilesGet = <ThrowOnError extends bool
  */
 export const createAdminProfileApiV1AdminProfilesPost = <ThrowOnError extends boolean = false>(options: Options<CreateAdminProfileApiV1AdminProfilesPostData, ThrowOnError>): RequestResult<CreateAdminProfileApiV1AdminProfilesPostResponses, CreateAdminProfileApiV1AdminProfilesPostErrors, ThrowOnError> => (options.client ?? client).post<CreateAdminProfileApiV1AdminProfilesPostResponses, CreateAdminProfileApiV1AdminProfilesPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/profiles',
     ...options,
     headers: {
@@ -1621,6 +1684,7 @@ export const createAdminProfileApiV1AdminProfilesPost = <ThrowOnError extends bo
  */
 export const updateAdminProfileApiV1AdminProfilesProfileIdPatch = <ThrowOnError extends boolean = false>(options: Options<UpdateAdminProfileApiV1AdminProfilesProfileIdPatchData, ThrowOnError>): RequestResult<UpdateAdminProfileApiV1AdminProfilesProfileIdPatchResponses, UpdateAdminProfileApiV1AdminProfilesProfileIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateAdminProfileApiV1AdminProfilesProfileIdPatchResponses, UpdateAdminProfileApiV1AdminProfilesProfileIdPatchErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/profiles/{profile_id}',
     ...options,
     headers: {
@@ -1646,6 +1710,7 @@ export const updateAdminProfileApiV1AdminProfilesProfileIdPatch = <ThrowOnError 
  */
 export const listFamilyConnectionsApiV1AdminFamilyConnectionsGet = <ThrowOnError extends boolean = false>(options?: Options<ListFamilyConnectionsApiV1AdminFamilyConnectionsGetData, ThrowOnError>): RequestResult<ListFamilyConnectionsApiV1AdminFamilyConnectionsGetResponses, ListFamilyConnectionsApiV1AdminFamilyConnectionsGetErrors, ThrowOnError> => (options?.client ?? client).get<ListFamilyConnectionsApiV1AdminFamilyConnectionsGetResponses, ListFamilyConnectionsApiV1AdminFamilyConnectionsGetErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/family-connections',
     ...options
 });
@@ -1671,6 +1736,7 @@ export const listFamilyConnectionsApiV1AdminFamilyConnectionsGet = <ThrowOnError
  */
 export const createFamilyConnectionApiV1AdminFamilyConnectionsPost = <ThrowOnError extends boolean = false>(options: Options<CreateFamilyConnectionApiV1AdminFamilyConnectionsPostData, ThrowOnError>): RequestResult<CreateFamilyConnectionApiV1AdminFamilyConnectionsPostResponses, CreateFamilyConnectionApiV1AdminFamilyConnectionsPostErrors, ThrowOnError> => (options.client ?? client).post<CreateFamilyConnectionApiV1AdminFamilyConnectionsPostResponses, CreateFamilyConnectionApiV1AdminFamilyConnectionsPostErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/admin/family-connections',
     ...options,
     headers: {
@@ -1696,4 +1762,8 @@ export const createFamilyConnectionApiV1AdminFamilyConnectionsPost = <ThrowOnErr
  * AuthorizationError: If the caller is not an admin (403).
  * ResourceNotFoundError: If no connection with this id exists (404).
  */
-export const deleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDelete = <ThrowOnError extends boolean = false>(options: Options<DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteData, ThrowOnError>): RequestResult<DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses, DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteErrors, ThrowOnError> => (options.client ?? client).delete<DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses, DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteErrors, ThrowOnError>({ url: '/api/v1/admin/family-connections/{connection_id}', ...options });
+export const deleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDelete = <ThrowOnError extends boolean = false>(options: Options<DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteData, ThrowOnError>): RequestResult<DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses, DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteErrors, ThrowOnError> => (options.client ?? client).delete<DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses, DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/family-connections/{connection_id}',
+    ...options
+});
