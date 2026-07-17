@@ -1,0 +1,299 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_clover_butterfly",
+  "version": 1,
+  "title": "Clover and the Butterfly",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "nature",
+      "curiosity",
+      "friendship",
+      "gentleness"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 7,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Clover is a little kitten. She sat in a sunny garden. A blue butterfly flew past! It went by some flowers. It went by a pond. It went to tall grass. Clover saw it. She wanted to go after it! Which way should she go?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_daisies",
+          "label": "Follow it to the daisy patch.",
+          "target": "n_daisies"
+        },
+        {
+          "id": "c_pond",
+          "label": "Follow it to the little pond.",
+          "target": "n_pond"
+        },
+        {
+          "id": "c_grass",
+          "label": "Follow it to the tall grass.",
+          "target": "n_grass"
+        }
+      ]
+    },
+    {
+      "id": "n_daisies",
+      "body": "The butterfly danced over white flowers. It went to more white flowers. A bee was there! The bee went buzz, buzz. It went from flower to flower. Then the butterfly went away. It went to a bird bath. What did Clover do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_bee",
+          "label": "Stop and watch the bumblebee.",
+          "target": "n_bee_end"
+        },
+        {
+          "id": "c_to_birdbath",
+          "label": "Keep following the butterfly.",
+          "target": "n_birdbath"
+        }
+      ]
+    },
+    {
+      "id": "n_bee_end",
+      "body": "Clover stayed. She watched the bee. Buzz, buzz, buzz! The bee went on each flower. It was fun to watch. Then Clover looked up. The blue butterfly was gone. But Clover was happy. She went back home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bee_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Busy Bumblebee"
+      }
+    },
+    {
+      "id": "n_birdbath",
+      "body": "A little bird was at the bird bath. The bird was wet. It made splashes. The blue butterfly sat on the edge. Then it flew away. It went to red berries. Clover went after it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_strawberries",
+          "label": "Follow the butterfly to the strawberries.",
+          "target": "n_strawberries"
+        }
+      ]
+    },
+    {
+      "id": "n_strawberries",
+      "body": "Red berries sat under green leaves. They were sweet. The butterfly went over them. Then it went to a new spot. It went to a patch of clover. Clover came near.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_meadow",
+          "label": "Tiptoe after the butterfly.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "The butterfly went very slow. It went right to Clover's nose! It stopped there. Clover could see it! A small ring of flowers was close by. Clover sat still. She did not move.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_still",
+          "label": "Hold still and wait.",
+          "target": "n_nose_end"
+        },
+        {
+          "id": "c_flower_ring",
+          "label": "Peek at the little flower ring.",
+          "target": "n_crown_end"
+        }
+      ]
+    },
+    {
+      "id": "n_nose_end",
+      "body": "The butterfly sat on Clover's nose! Its wings went up and down. Up and down. Clover said a big laugh! Haha! She stayed still. She was so happy. The best day ever!",
+      "is_ending": true,
+      "ending": {
+        "id": "e_nose",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "On Clover’s Nose"
+      }
+    },
+    {
+      "id": "n_crown_end",
+      "body": "Clover found a small ring of flowers. It was like a crown! It fit her head. The butterfly went around it. One time, two times, three times. Clover put on the crown. She was so proud!",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crown",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Daisy Crown"
+      }
+    },
+    {
+      "id": "n_pond",
+      "body": "There was a pond. A green frog was on a lily pad. It had big eyes. The butterfly went over the water. It went to some reeds. What did Clover do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_play_frog",
+          "label": "Play peekaboo with the frog.",
+          "target": "n_frog_end"
+        },
+        {
+          "id": "c_to_reeds",
+          "label": "Follow the butterfly to the reeds.",
+          "target": "n_reeds"
+        }
+      ]
+    },
+    {
+      "id": "n_frog_end",
+      "body": "Clover and the frog played. They played peek-a-boo! Splash! Hop! The frog went this way. Clover went that way. They had fun. But the butterfly flew away. Clover went home. She was tired. She was happy too.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_frog_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Peekaboo Frog"
+      }
+    },
+    {
+      "id": "n_reeds",
+      "body": "The butterfly went through green reeds. The reeds went swish, swish. A fly went by. It was fast like a tiny plane! Zoom! The butterfly went on. There was a log with moss.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_hedgehog",
+          "label": "Follow past the mossy log.",
+          "target": "n_hedgehog"
+        }
+      ]
+    },
+    {
+      "id": "n_hedgehog",
+      "body": "Under the log was a little ball. It was a hedgehog! It was asleep. Clover went very quiet. She did not wake it up. She went on after the butterfly. The shade was cool there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_friend",
+          "label": "Tiptoe into the shady corner.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "n_friend",
+      "body": "A little bunny was in the shade. Its name was Pip. Pip was eating clover leaves. Nom, nom, nom! The butterfly sat on a leaf up high. Pip saw Clover. Pip said hello.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_berries",
+          "label": "Share the sweet berries with Pip.",
+          "target": "n_share_end"
+        }
+      ]
+    },
+    {
+      "id": "n_share_end",
+      "body": "Clover and Pip found red berries. They ate them together. Munch, munch, munch! The butterfly sat and watched. Two new friends. Sticky paws. A nice day outside.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_share",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Berries to Share"
+      }
+    },
+    {
+      "id": "n_grass",
+      "body": "Tall grass was all around. The butterfly went up and down. Like a kite! The grass was soft. Clover could run fast. Or she could go slow and quiet. What did she do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dash",
+          "label": "Dash after it fast!",
+          "target": "n_lost_end"
+        },
+        {
+          "id": "c_tiptoe",
+          "label": "Tiptoe slow and quiet.",
+          "target": "n_sunflower"
+        }
+      ]
+    },
+    {
+      "id": "n_lost_end",
+      "body": "Clover ran very fast! Her paws went tap, tap, tap. The butterfly went up high. Up over a fence! Clover could not go there. So she went back home. She was happy and tired.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lost_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Fast!"
+      }
+    },
+    {
+      "id": "n_sunflower",
+      "body": "Tall yellow flowers were all around. They moved in the wind. The butterfly went through them. It went to a gate. The gate was made of wood. Clover went after it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_gate",
+          "label": "Follow toward the garden gate.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "The butterfly went through the gate. Clover went through too! Flowers were there. Pink ones. Purple ones. So many! So pretty!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_arch",
+          "label": "Follow into the flower corner.",
+          "target": "n_arch"
+        }
+      ]
+    },
+    {
+      "id": "n_arch",
+      "body": "A green arch was over them. It had sweet flowers. The butterfly went under it. Around and around. Then it sat still. It waited for Clover!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sit_arch",
+          "label": "Sit quietly beneath the arch.",
+          "target": "n_perch_end"
+        }
+      ]
+    },
+    {
+      "id": "n_perch_end",
+      "body": "Clover sat under the arch. The butterfly sat on her ear! Like a bow! They sat there. It was cool. It was nice. They were so glad. The best day of all!",
+      "is_ending": true,
+      "ending": {
+        "id": "e_perch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Under the Flower Arch"
+      }
+    }
+  ]
+}
