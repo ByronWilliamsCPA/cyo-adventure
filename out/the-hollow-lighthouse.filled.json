@@ -2088,7 +2088,7 @@
     },
     {
       "id": "e_win_signal",
-      "body": "Mira worked slowly through the whole signal rig, writing down every mirror, every shutter, every careful angle. Bit by bit, she understood how it all fit together, from top to bottom. The ghost light, she could now say for certain, had never been a ghost at all, only a clever contraption built by two patient hands. Her notes turned a whole year of quiet fear into a plain, solved mystery, something the whole town could stop being frightened of at last. Mira closed her notebook, glad of the work well done.",
+      "body": "Mira worked slowly through the whole signal rig. She wrote down every mirror, every shutter, every angle. Bit by bit, she saw how it all fit together, from top to bottom. The ghost light, she could now say for sure, had never been a ghost at all. It was only a clever toy, built by two patient hands. Her notes turned a whole year of quiet fear into a plain, solved mystery. It was something the town could stop being scared of at last. Mira closed her notebook, glad of the work well done.",
       "is_ending": true,
       "ending": {
         "id": "e_signal",
@@ -2121,7 +2121,7 @@
     },
     {
       "id": "e_neutral_town",
-      "body": "The fog was simply too thick for Mira to press on any further tonight. The hour was far too late, too. She turned and headed back toward town instead. Her head was full to bursting with everything she had seen and half understood. The mystery of the Hollow Lighthouse remained unsolved for now. But it no longer felt like anything to fear, only a story waiting to be finished. Mira quickened her steps toward home, already impatient for daylight and the chance to tell it all.",
+      "body": "The fog was simply too thick for Mira to press on any further tonight. The hour was far too late as well. She turned and headed back toward town instead. Her head was full to bursting with everything she had seen and half understood. The mystery of the Hollow Lighthouse remained unsolved for now. But it no longer felt like anything to fear, only a story waiting to be finished. Mira quickened her steps toward home, already impatient for daylight and the chance to tell it all.",
       "is_ending": true,
       "ending": {
         "id": "e_town",
