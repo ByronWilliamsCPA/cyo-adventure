@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- Synced the architecture diagram set and companion docs with the current code
+  (through v0.11.0, PRs #270 and #277). The ER diagram and data model now cover
+  all 22 tables (adds `family_connection` + `kid_flag` and the ADR-015/016
+  cost-gate and consent columns); the API/C4/system-overview/README references
+  reflect 28 routers; the validator gains PL-22; moderation repair now re-runs
+  the full validation gate and the admin re-screen sweep is shown; the event log
+  is 20 event types; cover art storage (Cloudflare R2, ADR-017) is added; and the
+  sitemap/journeys pick up the new admin and family surfaces (master library,
+  audit, user management, reading-visibility, connection consent,
+  recommendations, kid flags, passage editor). Regenerated every affected SVG.
+
 ## [0.12.0] - 2026-07-17
 
 ### Added
