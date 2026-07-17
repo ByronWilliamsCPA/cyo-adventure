@@ -3,7 +3,9 @@ import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router-d
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MockInstance } from 'vitest'
 
-import { NotFoundPage, RouteError, RouteFallback } from './routeElements'
+import { Suspense } from 'react'
+
+import { AuditPage, NotFoundPage, RouteError, RouteFallback } from './routeElements'
 import { routes } from './router'
 
 describe('NotFoundPage', () => {
@@ -106,5 +108,24 @@ describe('router catch-all (router.tsx)', () => {
     const catchAll = routes.find((route) => 'path' in route && route.path === '*')
     expect(catchAll).toBeDefined()
     expect(catchAll && 'errorElement' in catchAll && catchAll.errorElement).toBeTruthy()
+  })
+})
+
+describe('lazy admin page loaders', () => {
+  it('resolves the AuditPage loader to the named export', async () => {
+    // The loader thunk and its named-export mapper are the only code this
+    // file adds per page; mounting the lazy component through Suspense
+    // executes both without needing the real page's data layer.
+    vi.mock('./admin/AuditPage', () => ({
+      AuditPage: () => <div>audit page loaded</div>,
+    }))
+    render(
+      <MemoryRouter>
+        <Suspense fallback={<RouteFallback />}>
+          <AuditPage />
+        </Suspense>
+      </MemoryRouter>
+    )
+    expect(await screen.findByText('audit page loaded')).toBeInTheDocument()
   })
 })
