@@ -4,10 +4,9 @@
 # This workflow uses Google's ClusterFuzzLite to continuously fuzz test
 # the codebase for vulnerabilities, crashes, and edge cases.
 #
-# Fuzzing Targets:
-#   - Input validation functions
-#   - Data parsers and sanitizers
-#   - File format handlers
+# Fuzzing Targets (see fuzz/README.md):
+#   - fuzz_condition_evaluator: the storybook condition DSL gate + evaluator
+#   - fuzz_storybook_validation: Storybook.model_validate on raw LLM output
 #
 # Duration: 600 seconds per run
 # Sanitizer: AddressSanitizer for memory safety
@@ -25,6 +24,7 @@ on:
 permissions:
   contents: read
   security-events: write  # For SARIF upload
+  issues: write  # failure-notification step files a tracking issue
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -106,3 +106,45 @@ jobs:
           echo "- **Duration**: 600 seconds" >> $GITHUB_STEP_SUMMARY
           echo "- **Build Status**: ${{  steps.build.outcome  }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Run Status**: ${{  steps.run.outcome  }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: File tracking issue on scheduled failure
+        # Schedule-only workflows fail invisibly: no PR turns red and nobody
+        # is notified. Keep exactly one open tracking issue up to date.
+        # (Mirrors the same step in mutation-testing.yml.)
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const title = 'Weekly fuzzing run is failing';
+            const body = [
+              `The scheduled Continuous Fuzzing workflow failed (sanitizer: ${{ toJSON(matrix.sanitizer) }}).`,
+              '',
+              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              'A failing fuzz run either found a crash (see the SARIF upload in',
+              'the Security tab and the fuzzing-crashes artifact) or the harness',
+              'build broke. Close this issue once a weekly run succeeds again.',
+            ].join('\n');
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+            });
+            const existing = issues.find((issue) => issue.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['ci-failure'],
+              });
+            }

@@ -704,6 +704,7 @@ markers = [
     "regression: Regression tests for previously fixed bugs",
     "llm_eval: Tier 3 behavioral LLM evaluation (scheduled, not run in CI PRs)",
     "ai_security: adversarial AI security tests",
+    "mutation_deselect: excluded under mutation testing (mutmut's trampoline cannot forward athrow into async generators)",
 ]
 
 # Coverage Configuration
@@ -763,13 +764,60 @@ arg-type-hints-in-signature = true
 skip-checking-raises = false
 require-return-section-when-returning-nothing = false
 
-# Mutation Testing Configuration (mutmut)
+# Mutation Testing Configuration (mutmut 3.x dialect; see noxfile.py `mutate`)
+#
+# - `only_mutate` scopes mutation to the deterministic core (storybook,
+#   validator, player, publishing, moderation, events, story_requests,
+#   exceptions), where a missed mutant means a validation or safety gate
+#   regression could ship. The API/generation/covers layers are copied but
+#   not mutated: their behavior is dominated by FastAPI wiring and external
+#   providers, and mutating them multiplies runtime without adding gate
+#   signal. Widen this list deliberately, not by default.
+# - `pytest_add_cli_args` resets addopts so the coverage flags (and their
+#   --cov-fail-under=80 gate) do not run once per mutant, and deselects
+#   `mutation_deselect`-marked tests: mutmut's trampoline wraps async
+#   generator functions in an `async for`/`yield` delegator, which cannot
+#   forward athrow() into the inner generator, so tests that drive an async
+#   generator's error path via athrow() fail under instrumentation while
+#   passing in a normal run.
+# - `also_copy` ships the non-package files the unit suite reads at runtime
+#   into mutmut's mutants/ working tree (conformance corpus, skeleton
+#   catalog, band configs, scripts/ imports, planning-docs fixtures).
 [tool.mutmut]
-paths_to_mutate = "src/"
-backup = false
-runner = "uv run pytest -x --assert=plain -o addopts=''"
-tests_dir = "tests/"
-dict_synonyms = "Struct, NamedStruct"
+source_paths = ["src/cyo_adventure"]
+only_mutate = [
+    "src/cyo_adventure/storybook/*",
+    "src/cyo_adventure/validator/*",
+    "src/cyo_adventure/player/*",
+    "src/cyo_adventure/publishing/*",
+    "src/cyo_adventure/moderation/*",
+    "src/cyo_adventure/events/*",
+    "src/cyo_adventure/story_requests/*",
+    "src/cyo_adventure/core/exceptions.py",
+]
+pytest_add_cli_args_test_selection = ["tests/unit"]
+pytest_add_cli_args = [
+    "-x",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-m",
+    "not mutation_deselect",
+]
+also_copy = [
+    "schema/",
+    "skeletons/",
+    "configs/",
+    "scripts/",
+    "docs/",
+    "data/",
+    "frontend/src/",
+    "supabase/",
+    "out/",
+    "CHANGELOG.md",
+]
 
 # Bandit Security Configuration
 # Run: uv run bandit -c pyproject.toml -r src/

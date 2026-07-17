@@ -880,6 +880,90 @@ chain containing a crypto namespace (`Crypto`, `cryptography`, `Cipher`,
 **Priority**: High (a false error blocks CI for any project that seeds a PRNG)
 
 **Affected Files**: template `scripts/check_fips_compatibility.py`
+### `[tool.mutmut]` block ships mutmut 2.x config keys while pinning mutmut 3.x, so mutation testing crashes at startup
+
+- **Priority**: High
+- **Category**: Configuration
+- **Discovered**: 2026-07-17
+
+**Issue**: The template's `pyproject.toml` writes a `[tool.mutmut]` section in mutmut 2.x
+dialect (`paths_to_mutate` as a string, `tests_dir` as a string, `runner`, `backup`,
+`dict_synonyms`) while `[dependency-groups]`/dev extras pin `mutmut>=3.3.1`. mutmut 3.x
+renamed `paths_to_mutate` to `source_paths` (a list), replaced `tests_dir` with
+`pytest_add_cli_args_test_selection` (a list), and removed `runner`/`backup`/`dict_synonyms`
+entirely. With the shipped config, `mutmut` crashes on import:
+`TypeError: can only concatenate list (not "str") to list`
+(`mutmut/configuration.py::_load_config`, concatenating the string `tests_dir` onto a list).
+Even if the string parsed, `paths_to_mutate = "src/"` would be iterated character-by-character
+into paths `s`, `r`, `c`, `/`. Every entry point is dead: `nox -s mutate`, a bare
+`uv run mutmut run`, and the weekly `mutation-testing.yml` workflow. The removed `runner` key
+also silently drops the template's intent of running pytest with `-o addopts=''`; under
+mutmut 3.x the copied `pyproject.toml` addopts (coverage, `--cov-fail-under=80`) apply to
+every mutant run unless `pytest_add_cli_args` re-suppresses them.
+
+**Context**: Found while evaluating mutation-testing robustness for this project. Reproduced
+locally: `uv run mutmut version` crashes with the TypeError above (mutmut 3.6.0 resolved from
+the `>=3.3.1` pin). Additionally, all three scheduled runs of `mutation-testing.yml` in this
+repo failed in about 20 seconds each, before ever reaching mutmut: the org reusable workflow
+`python-mutation.yml` runs `uv sync` with `--no-build`, which cannot install the project
+itself (`Distribution 'cyo-adventure==0.1.0 @ editable+.' can't be installed because it is
+marked as '--no-build' but has no binary distribution`). The net effect is that mutation
+testing has never produced a score for this project, and because the workflow is
+schedule-only, no PR surface ever shows the breakage.
+
+**Suggested Fix**: (1) Rewrite the template's `[tool.mutmut]` block in mutmut 3.x dialect:
+`source_paths = ["src/<package>"]`, `pytest_add_cli_args_test_selection = ["tests/"]`, and
+`pytest_add_cli_args = ["-x", "-o", "addopts="]` to keep coverage out of mutant runs; drop
+`runner`, `backup`, `tests_dir`, and `dict_synonyms`. (2) Add `also_copy` entries for any
+non-`tests/` fixture directories the suite reads at runtime (this project reads
+`schema/conformance/` from `tests/unit/test_evaluator.py`), since mutmut 3.x runs tests from a
+`mutants/` copy of the tree. (3) In the org reusable workflow, either drop `--no-build` or add
+`--no-build-package` exceptions for the project itself so `uv sync` can install the editable
+root. (4) Consider failing the workflow loudly on config errors instead of skipping the run
+steps, and alerting on scheduled-workflow failures; a schedule-only job that has never
+succeeded is invisible.
+
+**Affected Files**: template `pyproject.toml` (`[tool.mutmut]`), template `noxfile.py`
+(`mutate` session docstring), org reusable workflow
+`ByronWilliamsCPA/.github/.github/workflows/python-mutation.yml`
+
+---
+
+### Fuzzing scaffold ships a no-op harness, so weekly ClusterFuzzLite runs pass while fuzzing nothing
+
+- **Priority**: High
+- **Category**: CI/CD
+- **Discovered**: 2026-07-17
+
+**Issue**: The template's `fuzz/fuzz_input_validation.py` is an unfilled scaffold: its
+`test_one_input` consumes bytes via `FuzzedDataProvider.ConsumeUnicodeNoSurrogates(1024)`
+inside `contextlib.suppress(ValueError, TypeError)` and never imports or calls any project
+code (the `# TODO: Import the module functions you want to fuzz` markers are still in place).
+Because `cifuzzy.yml` gates only on the existence of `fuzz/*.py`, the harness builds, runs for
+the full 600-second budget, and reports success every week. The green "Continuous Fuzzing"
+signal is indistinguishable from a real fuzzing program despite exercising zero lines of
+application code. The template's `fuzz/README.md` compounds this by claiming fuzzing runs "on
+every push to main/develop and on PRs", while the workflow is schedule/dispatch-only.
+
+**Context**: Found while evaluating fuzzing robustness for this project. The last four
+scheduled ClusterFuzzLite runs are green at about 13 minutes each; reading the harness shows
+none of that time touches `cyo_adventure`. Meanwhile the project has textbook fuzz targets the
+scaffold was meant for: the storybook condition evaluator, `Storybook.model_validate` over the
+invalid-fixture corpus, and the import/schema-validation path.
+
+**Suggested Fix**: (1) In the template, either mark the scaffold harness so CI treats it as
+absent (e.g. name it `fuzz_example.py.tmpl` or have the workflow's target-detection step grep
+for the TODO marker and skip with a loud summary line "scaffold harness only, not fuzzing
+project code"), or fail the workflow when the only harness present is the unmodified scaffold.
+(2) Update `fuzz/README.md` trigger claims to match the actual workflow schedule. (3) Add a
+post-generation checklist item telling projects to point the harness at their first real
+parser/validator entry point.
+
+**Affected Files**: template `fuzz/fuzz_input_validation.py`, `fuzz/README.md`,
+`.github/workflows/cifuzzy.yml`
+
+---
+
 ### FIPS workflow's failure gate never fires: `tee` swallows the exit code, and trigger paths omit the tests it scans
 
 - **Priority**: High

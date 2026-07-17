@@ -324,3 +324,117 @@ def test_name_as_substring_still_not_matched_after_lookaround_fix() -> None:
     ctx = make_ctx(names=frozenset({"Mia"}))
     # 'amiable' contains 'mia' (case-insensitive) but preceded by 'a' (word char).
     assert_prompt_pii_safe("The character was amiable and brave.", forbidden=ctx)
+
+
+# ---------------------------------------------------------------------------
+# Anti-evasion: NFKC normalization and invisible-character folding.
+#
+# These pin the fold added to close confirmed bypasses of the sole PII egress
+# guard: a real-child name split by a zero-width character, or spelled in an
+# NFKC-equivalent compatibility form, must still be caught before egress.
+# Special characters are built with chr()/\u escapes so this source stays valid
+# UTF-8 with no raw control bytes.
+# ---------------------------------------------------------------------------
+
+_ZWSP = "\u200b"  # ZERO WIDTH SPACE
+_ZWNJ = "\u200c"  # ZERO WIDTH NON-JOINER
+_ZWJ = "\u200d"  # ZERO WIDTH JOINER
+_BOM = "\ufeff"  # ZERO WIDTH NO-BREAK SPACE / BOM
+_SOFT_HYPHEN = "\u00ad"  # SOFT HYPHEN (category Cf)
+
+
+@pytest.mark.parametrize(
+    "invisible",
+    [_ZWSP, _ZWNJ, _ZWJ, _BOM, _SOFT_HYPHEN, "\x00", "\x07"],
+    ids=["zwsp", "zwnj", "zwj", "bom", "soft_hyphen", "nul", "bell"],
+)
+def test_name_split_by_invisible_char_is_still_matched(invisible: str) -> None:
+    """A name broken by a zero-width or control char is caught, not bypassed."""
+    ctx = make_ctx(names=frozenset({"Emma"}))
+    prompt = f"A story about Em{invisible}ma at the park."
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
+        assert_prompt_pii_safe(prompt, forbidden=ctx)
+
+
+def test_name_wrapped_in_invisible_chars_is_still_matched() -> None:
+    """Leading and trailing zero-width chars around a name do not hide it."""
+    ctx = make_ctx(names=frozenset({"Emma"}))
+    prompt = f"about {_BOM}{_ZWSP}Emma{_ZWJ} today"
+    with pytest.raises(ValidationError):
+        assert_prompt_pii_safe(prompt, forbidden=ctx)
+
+
+def test_name_in_fullwidth_form_is_matched_via_nfkc() -> None:
+    """A full-width (NFKC-compatibility) spelling of a name is caught."""
+    ctx = make_ctx(names=frozenset({"Emma"}))
+    # Full-width Latin letters U+FF25 U+FF4D U+FF4D U+FF41 -> NFKC 'Emma'.
+    # Full-width Latin U+FF25 U+FF4D U+FF4D U+FF41.
+    fullwidth = "\uff25\uff4d\uff4d\uff41"
+    with pytest.raises(ValidationError):
+        assert_prompt_pii_safe(f"A story about {fullwidth}.", forbidden=ctx)
+
+
+def test_name_with_ligature_is_matched_via_nfkc() -> None:
+    """A name containing an 'fi' ligature is caught after NFKC folding."""
+    ctx = make_ctx(names=frozenset({"Fiona"}))
+    # U+FB01 LATIN SMALL LIGATURE FI -> NFKC 'fi'.
+    with pytest.raises(ValidationError):
+        assert_prompt_pii_safe("A tale of \ufb01ona the brave.", forbidden=ctx)
+
+
+def test_birthdate_in_fullwidth_digits_is_matched_via_nfkc() -> None:
+    """A birthdate written in full-width digits is caught after NFKC folding."""
+    ctx = make_ctx(birthdates=frozenset({"2018-04-07"}))
+    # Full-width digits U+FF10.. -> NFKC ASCII digits.
+    # Full-width digits U+FF10..U+FF19 around ASCII hyphens.
+    fullwidth_date = "\uff12\uff10\uff11\uff18-\uff10\uff14-\uff10\uff17"
+    with pytest.raises(ValidationError):
+        assert_prompt_pii_safe(f"born on {fullwidth_date}", forbidden=ctx)
+
+
+def test_forbidden_name_carrying_invisible_char_still_screens() -> None:
+    """Folding is symmetric: an invisible char in the stored name is handled.
+
+    A ``child_profile`` value that itself carries a zero-width character must
+    still screen the plain-text prompt, rather than folding to something that
+    never matches.
+    """
+    ctx = make_ctx(names=frozenset({f"Em{_ZWSP}ma"}))
+    with pytest.raises(ValidationError):
+        assert_prompt_pii_safe("A story about Emma.", forbidden=ctx)
+
+
+def test_name_that_is_only_invisible_chars_is_a_noop() -> None:
+    """A stored name that folds to empty does not match everything.
+
+    Without the post-fold emptiness check, a name of only zero-width chars
+    would compile to an empty pattern that matches at every position and block
+    every prompt.
+    """
+    ctx = make_ctx(names=frozenset({f"{_ZWSP}{_ZWJ}"}))
+    # Must not raise: the folded name is empty and is skipped.
+    assert_prompt_pii_safe("An ordinary story with no PII.", forbidden=ctx)
+
+
+def test_name_with_cyrillic_homoglyph_is_not_matched() -> None:
+    """Known residual: confusable homoglyphs are NOT folded (documented #EDGE).
+
+    NFKC does not treat Cyrillic 'E' (U+0415) as equivalent to Latin 'E', and
+    full UTS-39 confusable folding risks false positives on legitimate
+    multilingual names, so it is deliberately out of scope. This test pins the
+    current behavior so a future change to fold homoglyphs is a conscious one;
+    if that fold is added, invert this assertion to expect a raise.
+    """
+    ctx = make_ctx(names=frozenset({"Emma"}))
+    homoglyph = "\u0415mma"  # Cyrillic capital IE (U+0415) + 'mma'
+    # Currently NOT caught; this documents the residual, it is not an endorsement.
+    assert_prompt_pii_safe(f"A story about {homoglyph}.", forbidden=ctx)
+
+
+def test_nfkc_fold_does_not_over_match_plain_unrelated_text() -> None:
+    """Folding must not turn unrelated prose into a spurious PII hit."""
+    ctx = make_ctx(names=frozenset({"Emma"}))
+    # 'dilemma' contains 'emma' but preceded by a word char -> anchors reject.
+    assert_prompt_pii_safe("The hero faced a dilemma at dawn.", forbidden=ctx)

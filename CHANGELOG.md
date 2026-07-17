@@ -52,9 +52,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   assert the runtime image's ML-KEM-capable OpenSSL 3.5 line: a Debian 13
   container run of the assertion suite and a shell-free check inside the
   pinned production base image digest.
+- Mutation scoring shared by CI and `nox -s mutate` (`scripts/mutation_score.py`).
+- Weekly mutation and fuzzing workflows file a `ci-failure` tracking issue on a
+  failed scheduled run so schedule-only breakage cannot stay silent.
+- Hypothesis `ci`/`dev` settings profiles and generative player-engine property
+  tests; adversarial-corpus tests under the `ai_security` marker; negative-path
+  tests for the cover-art subsystem; generation-boundary malformed-output tests;
+  true-concurrency reading-state tests; and JWT time-boundary tests.
 
 ### Fixed
 
+- **Security (PII egress):** the prompt PII guard now NFKC-normalizes and strips
+  zero-width / format and control characters before matching, closing confirmed
+  bypasses (zero-width insertion, compatibility-form spelling, control chars)
+  that let a real-child name reach an external LLM provider. Confusable
+  homoglyphs remain a documented residual.
+- **Mutation testing** now runs: rewrote `[tool.mutmut]` in the mutmut 3.x
+  dialect (the stale 2.x keys crashed mutmut 3.6 at startup) and replaced the
+  broken org reusable workflow call with a self-contained, scored weekly job.
+- **Continuous fuzzing** now exercises real code: replaced the no-op template
+  harness with condition-evaluator and Storybook-validation Atheris targets and
+  seed corpora.
+- Docker-less test runs no longer exit non-zero: a failed testcontainer Docker
+  probe leaked a socket that `filterwarnings=["error"]` escalated at teardown.
 - FIPS checker no longer flags domain `seed()`/`idea()` method calls as the
   SEED/IDEA block ciphers; ambiguous cipher names now require cryptographic
   context (a crypto-library import or a crypto namespace in the call chain).

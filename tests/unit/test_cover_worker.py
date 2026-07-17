@@ -92,3 +92,58 @@ async def test_run_opens_own_session_and_delegates_to_generate_cover() -> None:
     generate_cover_mock.assert_awaited_once_with(
         "story-1", 3, session=session_sentinel, settings=real_settings
     )
+
+
+@pytest.mark.unit
+def test_run_cover_job_sync_run_failure_propagates_to_rq() -> None:
+    """An exception escaping _run reaches RQ so the job is marked failed."""
+    # run_cover_job_sync adds no error handling of its own: the terminal
+    # cover_status transitions live in generate_cover, and anything that still
+    # escapes (e.g. a DB engine that cannot connect) must surface to RQ.
+    run_mock = AsyncMock(spec=_run, side_effect=RuntimeError("engine down"))
+    with (
+        patch.object(worker_module, "_run", run_mock),
+        pytest.raises(RuntimeError, match="engine down"),
+    ):
+        run_cover_job_sync("story-1", 3, None)
+    run_mock.assert_awaited_once_with("story-1", 3)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_run_session_open_failure_propagates_error() -> None:
+    """A failure opening the worker's own DB session propagates out of _run."""
+    with (
+        patch(
+            "cyo_adventure.core.database.get_session",
+            MagicMock(
+                spec=real_get_session, side_effect=ConnectionError("db unreachable")
+            ),
+        ),
+        pytest.raises(ConnectionError, match="db unreachable"),
+    ):
+        await _run("story-1", 3)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_run_generate_cover_failure_closes_session_and_propagates() -> None:
+    """If generate_cover raises despite its contract, the session still closes."""
+    session_ctx = MagicMock(spec=AsyncSession)
+    session_ctx.__aenter__ = AsyncMock(return_value=object())
+    session_ctx.__aexit__ = AsyncMock(return_value=False)
+    generate_cover_mock = AsyncMock(
+        spec=service_module.generate_cover, side_effect=RuntimeError("unexpected")
+    )
+    with (
+        patch(
+            "cyo_adventure.core.database.get_session",
+            MagicMock(spec=real_get_session, return_value=session_ctx),
+        ),
+        patch("cyo_adventure.covers.service.generate_cover", generate_cover_mock),
+        pytest.raises(RuntimeError, match="unexpected"),
+    ):
+        await _run("story-1", 3)
+    # The async-with exit path must run even on failure (returns False, so the
+    # exception is re-raised rather than swallowed).
+    session_ctx.__aexit__.assert_awaited_once()

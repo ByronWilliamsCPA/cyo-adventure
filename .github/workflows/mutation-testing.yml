@@ -1,7 +1,17 @@
 # Mutation Testing for CYO Adventure
-# Validates test effectiveness by introducing code mutations.
+# Validates test effectiveness by introducing code mutations (mutmut 3.x).
 #
-# This is a thin caller to the org-level reusable workflow.
+# Self-contained job: the org reusable workflow (python-mutation.yml) installs
+# dependencies with `uv sync --no-build`, which cannot install this project's
+# editable root and killed every scheduled run at the install step. Scope and
+# pytest flags live in [tool.mutmut] in pyproject.toml; scoring is shared with
+# `nox -s mutate` via scripts/mutation_score.py.
+#
+# Cadence: weekly + manual only, never per PR (mutation testing is too heavy
+# for the PR loop). Scheduled runs REPORT the score without gating on it;
+# manual dispatch gates at the requested threshold. Because nothing surfaces a
+# schedule-only failure on any PR, a failed scheduled run files/updates a
+# tracking issue instead of staying silently red.
 #
 # Documentation: https://mutmut.readthedocs.io/
 name: Mutation Testing
@@ -18,27 +28,112 @@ on:
         required: false
         default: '80'
         type: string
-# Cancel in-progress runs for same PR/branch
+
 concurrency:
-  group: mutation-${{ github.event.pull_request.number || github.ref }}
+  group: mutation-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   mutation:
     name: Mutation Testing
-    # Skip on forks (no PR comment permissions)
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-mutation.yml@c4ba2d18e4de831cbdbffcafd8e033473c0a0059  # main
-    with:
-      python-version: '3.12'
-      source-directory: 'src'
-      test-directory: 'tests'
-      mutation-threshold: ${{ github.event.inputs.mutation_threshold && fromJSON(github.event.inputs.mutation_threshold) || 80 }}
-      fail-under-threshold: ${{ github.event_name != 'schedule' }}
-      post-pr-comment: true
-      timeout-minutes: 60
-    secrets: inherit
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      issues: write  # failure-notification step files a tracking issue
+
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.12'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+
+      - name: Install dependencies
+        run: uv sync --all-extras --locked
+
+      - name: Run mutation testing
+        # mutmut exits nonzero when the clean-tests or stats phase fails
+        # (a real breakage worth failing on); surviving mutants do not fail
+        # this step, the score gate below decides that.
+        run: uv run mutmut run
+
+      - name: Score mutation results
+        id: score
+        env:
+          # Scheduled runs report without gating (a sub-threshold score
+          # every Sunday is signal, not an outage); manual runs gate at the
+          # requested threshold.
+          THRESHOLD: ${{ github.event.inputs.mutation_threshold || '80' }}
+          GATE: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          set -o pipefail
+          if [ "$GATE" = "true" ]; then
+            uv run python scripts/mutation_score.py --fail-under "$THRESHOLD" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            uv run python scripts/mutation_score.py | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload mutation metadata
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: mutation-reports
+          path: |
+            mutants/**/*.meta
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: File tracking issue on scheduled failure
+        # Schedule-only workflows fail invisibly: no PR turns red and nobody
+        # is notified. Keep exactly one open tracking issue up to date.
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const title = 'Weekly mutation-testing run is failing';
+            const body = [
+              `The scheduled Mutation Testing workflow failed.`,
+              '',
+              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              'This issue is filed automatically because schedule-only workflows',
+              'never surface failures on a pull request. Close it once a weekly',
+              'run succeeds again.',
+            ].join('\n');
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+            });
+            const existing = issues.find((issue) => issue.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['ci-failure'],
+              });
+            }
