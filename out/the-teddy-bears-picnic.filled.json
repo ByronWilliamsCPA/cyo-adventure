@@ -1,0 +1,478 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_teddy_bears_picnic",
+  "version": 1,
+  "title": "The Teddy Bears' Picnic",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "sharing",
+      "kindness",
+      "celebration"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 11,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Clover the little bear cub spreads a soft checked blanket in the sunny meadow. The picnic basket is empty. No friends are here yet. She claps her paws happily. What should she fetch first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the bees for honey.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_berry",
+          "label": "Go pick red berries at the bramble.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_ball",
+          "label": "Go find the big red ball.",
+          "target": "n_ball1"
+        },
+        {
+          "id": "c_start_kite",
+          "label": "Go fetch the bright paper kite.",
+          "target": "n_kite1"
+        },
+        {
+          "id": "c_start_owl",
+          "label": "Go wake sleepy Owl in the oak.",
+          "target": "n_owl1"
+        },
+        {
+          "id": "c_start_music",
+          "label": "Go find the little music box.",
+          "target": "n_music1"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "Clover pads to the round beehive. The bees hum kindly in the warm sun. She stops and thinks. Should she ask nicely and wait? Or poke the hive?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_ask",
+          "label": "Ask the bees nicely and wait.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_poke",
+          "label": "Poke the hive to hurry.",
+          "target": "e_honey_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "The bees fill a little pot with warm golden honey. Clover hugs it close to her chest. The picnic is growing! She looks at all the honey. Should she go back? Or start now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_back",
+          "label": "Carry the honey back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_honey_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_honey_oops",
+      "body": "Clover pokes the round hive. Bees buzz out in a puff! They chase her round and round the meadow. She runs and laughs and laughs. Nobody gets stung. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_honey_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Buzzy Bees"
+      }
+    },
+    {
+      "id": "n_berry1",
+      "body": "Clover skips to the bramble bush. Red berries shine in the sun so bright. Some sit low and easy. Some sit high and wobbly. Pick the easy ones? Or reach up?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the easy low berries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Stretch for the wobbly high ones.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "Clover picks and picks lots of berries. Red berries fill the basket up. Her little paws turn pink! The picnic grows and grows! Should she go back? Or start now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_back",
+          "label": "Carry the berries back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_berry_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "Clover reaches for the high berries up. The branch springs back and back. The basket tips into soft grass. Plop! Berries roll everywhere. She laughs. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Tumbling Berries"
+      }
+    },
+    {
+      "id": "n_ball1",
+      "body": "Clover remembers the big red ball is somewhere in the tall grass. She hunts for it happily. She sees little bounce marks. Should she follow the marks? Or dive in?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_track",
+          "label": "Follow the little bounce marks.",
+          "target": "n_ball2"
+        },
+        {
+          "id": "c_ball_dive",
+          "label": "Dive into the tall grass.",
+          "target": "e_ball_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_ball2",
+      "body": "There is the big shiny red ball! Just right for games and play. The fun is growing! She can roll it back to the blanket. Or start the picnic now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_back",
+          "label": "Roll the ball back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_ball_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_ball_oops",
+      "body": "Clover dives deep in tall grass. A little grasshopper sits on her nose! Not the ball. She sneezes a giggly sneeze so funny. She laughs. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Ticklish Hopper"
+      }
+    },
+    {
+      "id": "n_kite1",
+      "body": "Clover wants the bright paper kite. It lies by the old wooden fence. She can carry it gently and safe. Or let it flap open in the wind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_carry",
+          "label": "Carry the kite gently under her arm.",
+          "target": "n_kite2"
+        },
+        {
+          "id": "c_kite_flap",
+          "label": "Let the kite flap open in the wind.",
+          "target": "e_kite_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_kite2",
+      "body": "Clover holds the folded kite under her arm carefully. It is safe and ready to fly high! The picnic grows! Should she go back? Or start the picnic now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_back",
+          "label": "Bring the kite back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_kite_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_kite_oops",
+      "body": "Clover lets the kite flap open wide. A strong gust tugs it hard. It tumbles and tangles up tight. The string wraps round and round the fence post. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Windy Muddle"
+      }
+    },
+    {
+      "id": "n_owl1",
+      "body": "Sleepy Owl dozes on a branch of the old oak tree. His round eyes are shut tight tight. Clover wants him at the picnic. Hoot softly? Or shake the branch?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_hoot",
+          "label": "Hoot softly to wake Owl gently.",
+          "target": "n_owl2"
+        },
+        {
+          "id": "c_owl_shake",
+          "label": "Shake the whole branch.",
+          "target": "e_owl_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_owl2",
+      "body": "Owl blinks his big round eyes open wide. He yawns a long sleepy yawn. Yes yes yes! He will come! The friends are growing! Start the picnic now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_back",
+          "label": "Walk Owl back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_owl_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_owl_oops",
+      "body": "Clover shakes the branch hard and hard. Leaves fall down down down. A big pile of leaves! She giggles and giggles. Owl snores. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_owl_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Pile of Leaves"
+      }
+    },
+    {
+      "id": "n_music1",
+      "body": "Clover looks for the little music box. It sits on a mossy stump. She can lift the lid carefully and peek. Or wind the handle fast fast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_lift",
+          "label": "Lift the lid carefully.",
+          "target": "n_music2"
+        },
+        {
+          "id": "c_music_wind",
+          "label": "Give the handle a big fast wind.",
+          "target": "e_music_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_music2",
+      "body": "The music box tinkles a soft sweet tune. Clover hums along so happy. The picnic is growing! Should she go back? Or start the picnic now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_back",
+          "label": "Carry the music box back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_music_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_music_oops",
+      "body": "Clover winds the handle too too fast and hard. The music plays crazy wild! Her paws dance all wrong. She giggles. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Jumbled Tune"
+      }
+    },
+    {
+      "id": "n_gather",
+      "body": "Clover rings the little picnic bell loud. Ding ding ding! Bears waddle come over fast. From bushes and trees. They come to the blanket now!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gather_welcome",
+          "label": "Welcome the teddy bears in.",
+          "target": "n_welcome"
+        }
+      ]
+    },
+    {
+      "id": "n_welcome",
+      "body": "Bears sit in a ring on the blanket soft. They wiggle and wiggle with glee. Everything Clover fetched sits in the middle. All ready to use now!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_welcome_arrange",
+          "label": "Lay out all the picnic treats.",
+          "target": "n_arrange"
+        }
+      ]
+    },
+    {
+      "id": "n_arrange",
+      "body": "Clover spreads out the honey pot and berries. All the treats sit in the warm sun. The friends lick their lips. They wiggle their paws happy. What now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrange_share",
+          "label": "Share the honey and berries.",
+          "target": "n_share"
+        },
+        {
+          "id": "c_arrange_game",
+          "label": "Start a picnic game.",
+          "target": "n_game"
+        }
+      ]
+    },
+    {
+      "id": "n_share",
+      "body": "Honey goes round and round the ring. Berries go round and round. Everyone munches munch munch. The sun is warm. The day is very happy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_song",
+          "label": "Sing the teddy bears' picnic song.",
+          "target": "e_song"
+        },
+        {
+          "id": "c_share_music",
+          "label": "Wind up the music box and sway.",
+          "target": "e_music_finale"
+        },
+        {
+          "id": "c_share_nap",
+          "label": "Curl up for a cozy nap in the sun.",
+          "target": "e_nap"
+        }
+      ]
+    },
+    {
+      "id": "n_game",
+      "body": "The bears are ready to play today! In the breezy meadow out there. Clover claps her paws with lots of joy. The picnic is fun! What game?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_game_ball",
+          "label": "Roll the big red ball around the ring.",
+          "target": "e_ball_game"
+        },
+        {
+          "id": "c_game_kite",
+          "label": "Fly the bright kite in the breeze.",
+          "target": "e_kite_game"
+        }
+      ]
+    },
+    {
+      "id": "e_song",
+      "body": "Everyone joins paws and sings so loud. The teddy bears' picnic song. They sway and sway sway. Under the warm sun. Clover's heart so full.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Picnic Song"
+      }
+    },
+    {
+      "id": "e_music_finale",
+      "body": "The little music box plays and plays. Tinkle tinkle tinkle sounds. Bears sway and hum along. Clover smiles big and wide. The picnic cozy.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_finale",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Sweet Little Tune"
+      }
+    },
+    {
+      "id": "e_nap",
+      "body": "Full of honey and berries so sweet. All the bears curl up up up. On the blanket warm and soft. In the sun sun sun. A happy nap.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_nap",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Cozy Sunny Nap"
+      }
+    },
+    {
+      "id": "e_ball_game",
+      "body": "The red ball rolls round round round. Bears giggle and giggle laugh. Roll it again please! The picnic is fun and fun. Hooray hooray!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Rolling Red Ball"
+      }
+    },
+    {
+      "id": "e_kite_game",
+      "body": "The bright kite goes up up up high. The wind carries it so far. Bears cheer cheer cheer. Clover flies it with pride. Warm sun.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The High Bright Kite"
+      }
+    }
+  ]
+}
