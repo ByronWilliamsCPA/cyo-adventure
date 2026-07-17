@@ -129,6 +129,14 @@
          <lastmod>2026-07-17</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/authoring-guide/</loc>
+         <lastmod>2026-07-17</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/runbook/</loc>
+         <lastmod>2026-07-17</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/</loc>
          <lastmod>2026-07-17</lastmod>
     </url>
@@ -142,6 +150,10 @@
     </url>
     <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/authorization-matrix/</loc>
+         <lastmod>2026-07-17</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/capability-register/</loc>
          <lastmod>2026-07-17</lastmod>
     </url>
     <url>
@@ -229,6 +241,14 @@
          <lastmod>2026-07-17</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/test-traceability-matrix/</loc>
+         <lastmod>2026-07-17</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/traceability-review-2026-07-16/</loc>
+         <lastmod>2026-07-17</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/validator-rules/</loc>
          <lastmod>2026-07-17</lastmod>
     </url>
@@ -294,6 +314,22 @@
     </url>
     <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-014-device-authorized-kid-access/</loc>
+         <lastmod>2026-07-17</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-015-story-request-initiation-and-gating/</loc>
+         <lastmod>2026-07-17</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-016-recommendation-sharing-social-boundary/</loc>
+         <lastmod>2026-07-17</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-017-ai-cover-art/</loc>
+         <lastmod>2026-07-17</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-018-childrens-privacy-compliance/</loc>
          <lastmod>2026-07-17</lastmod>
     </url>
     <url>
