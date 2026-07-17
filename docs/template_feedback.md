@@ -892,3 +892,39 @@ expanded paths filters, including `scripts/check_fips_compatibility.py` itself, 
 also missing from the triggers); see `.github/workflows/fips-compatibility.yml`.
 
 **Affected Files**: template `.github/workflows/fips-compatibility.yml`
+
+---
+
+### FIPS checker has no disposition mechanism for its info-level findings
+
+- **Priority**: Medium
+- **Category**: Tooling
+- **Discovered**: 2026-07-17
+
+**Issue**: `scripts/check_fips_compatibility.py` emits info-severity "Package may need FIPS
+verification" findings (cryptography, httpx, boto3, pyjwt, etc.) that no flag can make
+blocking and no mechanism can mark verified. `--strict` only promotes warnings, so a project
+that wants a zero-tolerance FIPS gate has no way to say "these four were verified, fail on
+anything new". The findings degrade into permanent noise: they appear on every run, cannot be
+resolved, and train contributors to ignore the report.
+
+**Context**: Found while turning this project's FIPS workflow fully strict. The four standing
+info findings all had written dispositions in `docs/security/crypto-inventory.md`, but nothing
+connected them to the checker, and any newly added crypto-adjacent dependency would surface
+only as one more ignorable info line.
+
+**Suggested Fix**: Adopt this repo's implementation upstream: (1) a `--fail-level
+{error,warning,info}` flag (stricter of `--strict`/`--fail-level` wins); (2) an
+acknowledged-findings baseline in `[tool.fips_check.acknowledged.<package>]` with mandatory
+`reason`, `reference`, and `reviewed` (date) keys, where acknowledgments apply only to
+info-level findings, expire after 90 days (warning until re-reviewed), and malformed, unused,
+future-dated, or error-targeting entries each warn; (3) runtime assertions
+(`tests/unit/test_fips_runtime_assertions.py`) backing the mechanically testable dispositions
+(dependency floors, OpenSSL major version, TLS context floor) so "verified" means a green test
+rather than a paragraph. See `load_acknowledgments`, `apply_acknowledgments`, and
+`compute_exit_code` in this repo's `scripts/check_fips_compatibility.py`, plus the
+`--fail-level info` invocation and acknowledged-count PR comment in
+`.github/workflows/fips-compatibility.yml`.
+
+**Affected Files**: template `scripts/check_fips_compatibility.py`,
+`.github/workflows/fips-compatibility.yml`

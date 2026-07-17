@@ -1,30 +1,38 @@
-"""Unit tests for the FIPS checker's post-quantum awareness (ADR-013).
+"""Unit tests for the FIPS checker's PQC awareness and baseline (ADR-013).
 
 The checker's PQC logic is an approved-names allowlist checked before a
 pre-standard-names denylist; its correctness rests on those sets never
-overlapping with (or suppressing) the classical NON_FIPS findings. These
-tests pin that invariant so it cannot regress silently, since scripts/ is
+overlapping with (or suppressing) the classical NON_FIPS findings. The
+acknowledged-findings baseline must only ever narrow info-level findings,
+with every malformed or expired entry surfacing as a warning. These tests
+pin those invariants so they cannot regress silently, since scripts/ is
 outside the coverage gate's source tree.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import datetime
+from pathlib import Path
 
 import pytest
 
-if TYPE_CHECKING:
-    from pathlib import Path
-
 from scripts.check_fips_compatibility import (
+    ACK_MAX_AGE_DAYS,
     AMBIGUOUS_CIPHER_NAMES,
     FIPS_PQC_APPROVED,
     NON_FIPS_CIPHERS,
     NON_FIPS_HASHES,
     PQC_PRE_STANDARD_NAMES,
+    Acknowledgment,
     FipsIssue,
+    apply_acknowledgments,
     check_python_file,
+    compute_exit_code,
+    load_acknowledgments,
 )
+
+# Fixed reference date so staleness math never depends on the wall clock.
+TODAY = datetime.date(2026, 7, 17)
 
 
 def _issues_for(tmp_path: Path, source: str) -> list[FipsIssue]:
@@ -210,3 +218,221 @@ def test_unambiguous_cipher_call_flagged_without_any_context(tmp_path: Path) -> 
         tmp_path, "def use(x, data):\n    x.rc4(data)\n    x.blowfish(data)\n"
     )
     assert [issue.severity for issue in issues] == ["error", "error"]
+
+
+def _write_pyproject(tmp_path: Path, body: str) -> Path:
+    """Write an acknowledgment-bearing pyproject.toml into a temp dir.
+
+    Args:
+        tmp_path: pytest-provided temp directory.
+        body: TOML content to write.
+
+    Returns:
+        The path to the written file.
+    """
+    target = tmp_path / "pyproject.toml"
+    target.write_text(body, encoding="utf-8")
+    return target
+
+
+def _info_finding(package: str) -> FipsIssue:
+    """Build an info-severity package finding like check_pyproject_toml's.
+
+    Args:
+        package: The package name the finding is keyed on.
+
+    Returns:
+        A finding eligible for acknowledgment.
+    """
+    return FipsIssue(
+        file_path=Path("pyproject.toml"),
+        line_number=1,
+        severity="info",
+        category="package",
+        message=f"Package may need FIPS verification: {package}",
+        package=package,
+    )
+
+
+@pytest.mark.unit
+def test_load_acknowledgments_accepts_bare_and_quoted_dates(tmp_path: Path) -> None:
+    """Valid entries load with TOML bare dates and quoted ISO strings alike."""
+    path = _write_pyproject(
+        tmp_path,
+        "[tool.fips_check.acknowledged.httpx]\n"
+        'reason = "TLS via stdlib defaults"\n'
+        'reference = "docs/security/crypto-inventory.md"\n'
+        "reviewed = 2026-07-17\n"
+        "[tool.fips_check.acknowledged.boto3]\n"
+        'reason = "SigV4 only"\n'
+        'reference = "docs/security/crypto-inventory.md"\n'
+        'reviewed = "2026-07-17"\n',
+    )
+    acks, issues = load_acknowledgments(path)
+    assert issues == []
+    assert set(acks) == {"httpx", "boto3"}
+    assert acks["httpx"].reviewed == TODAY
+    assert acks["boto3"].reviewed == TODAY
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "entry",
+    [
+        'reason = "x"\nreference = "y"\n',  # missing reviewed
+        'reason = "x"\nreviewed = 2026-07-17\n',  # missing reference
+        'reason = "x"\nreference = "y"\nreviewed = "not-a-date"\n',
+    ],
+)
+def test_load_acknowledgments_malformed_entry_warns(tmp_path: Path, entry: str) -> None:
+    """A malformed entry is skipped and surfaces as a warning, never silence."""
+    path = _write_pyproject(tmp_path, f"[tool.fips_check.acknowledged.httpx]\n{entry}")
+    acks, issues = load_acknowledgments(path)
+    assert acks == {}
+    assert [issue.severity for issue in issues] == ["warning"]
+    assert "httpx" in issues[0].message
+
+
+@pytest.mark.unit
+def test_load_acknowledgments_missing_file_or_table_is_empty(
+    tmp_path: Path,
+) -> None:
+    """No pyproject or no table means no acknowledgments and no issues."""
+    assert load_acknowledgments(tmp_path / "absent.toml") == ({}, [])
+    path = _write_pyproject(tmp_path, '[tool.other]\nkey = "value"\n')
+    assert load_acknowledgments(path) == ({}, [])
+
+
+def _httpx_ack_toml(reviewed: datetime.date) -> str:
+    """Render a well-formed httpx acknowledgment table with the given date.
+
+    Args:
+        reviewed: The reviewed date to embed.
+
+    Returns:
+        TOML text for one acknowledgment entry.
+    """
+    return f"""[tool.fips_check.acknowledged.httpx]
+reason = "TLS via stdlib defaults"
+reference = "docs/security/crypto-inventory.md"
+reviewed = {reviewed.isoformat()}
+"""
+
+
+@pytest.mark.unit
+def test_fresh_acknowledgment_suppresses_info_finding(tmp_path: Path) -> None:
+    """A fresh, well-formed acknowledgment marks its finding acknowledged."""
+    path = _write_pyproject(tmp_path, _httpx_ack_toml(TODAY))
+    acks, _ = load_acknowledgments(path)
+    finding = _info_finding("httpx")
+    extra = apply_acknowledgments([finding], acks, TODAY)
+    assert extra == []
+    assert finding.acknowledged is True
+
+
+@pytest.mark.unit
+def test_stale_acknowledgment_warns_and_finding_stays_active(
+    tmp_path: Path,
+) -> None:
+    """Past the 90-day quarterly window, the finding reactivates with a warning."""
+    stale_date = TODAY - datetime.timedelta(days=ACK_MAX_AGE_DAYS + 1)
+    path = _write_pyproject(tmp_path, _httpx_ack_toml(stale_date))
+    acks, _ = load_acknowledgments(path)
+    finding = _info_finding("httpx")
+    extra = apply_acknowledgments([finding], acks, TODAY)
+    assert finding.acknowledged is False
+    assert [issue.severity for issue in extra] == ["warning"]
+    assert "stale" in extra[0].message
+
+
+@pytest.mark.unit
+def test_acknowledgment_on_boundary_day_still_fresh() -> None:
+    """Exactly ACK_MAX_AGE_DAYS old is still valid; staleness starts after."""
+    boundary = TODAY - datetime.timedelta(days=ACK_MAX_AGE_DAYS)
+    acks = {
+        "httpx": Acknowledgment(
+            package="httpx", reason="r", reference="ref", reviewed=boundary
+        )
+    }
+    finding = _info_finding("httpx")
+    assert apply_acknowledgments([finding], acks, TODAY) == []
+    assert finding.acknowledged is True
+
+
+@pytest.mark.unit
+def test_future_dated_acknowledgment_warns_and_does_not_apply() -> None:
+    """A reviewed date in the future never acknowledges anything."""
+    acks = {
+        "httpx": Acknowledgment(
+            package="httpx",
+            reason="r",
+            reference="ref",
+            reviewed=TODAY + datetime.timedelta(days=1),
+        )
+    }
+    finding = _info_finding("httpx")
+    extra = apply_acknowledgments([finding], acks, TODAY)
+    assert finding.acknowledged is False
+    assert [issue.severity for issue in extra] == ["warning"]
+    assert "future" in extra[0].message
+
+
+@pytest.mark.unit
+def test_error_finding_cannot_be_acknowledged() -> None:
+    """Errors are never baselined; an ack targeting one warns instead."""
+    acks = {
+        "bcrypt": Acknowledgment(
+            package="bcrypt", reason="r", reference="ref", reviewed=TODAY
+        )
+    }
+    finding = FipsIssue(
+        file_path=Path("pyproject.toml"),
+        line_number=1,
+        severity="error",
+        category="package",
+        message="FIPS-incompatible package: bcrypt",
+        package="bcrypt",
+    )
+    extra = apply_acknowledgments([finding], acks, TODAY)
+    assert finding.acknowledged is False
+    assert [issue.severity for issue in extra] == ["warning"]
+    assert "cannot apply" in extra[0].message
+
+
+@pytest.mark.unit
+def test_unused_acknowledgment_warns() -> None:
+    """An acknowledgment matching no finding is dead config and warns."""
+    acks = {
+        "requests": Acknowledgment(
+            package="requests", reason="r", reference="ref", reviewed=TODAY
+        )
+    }
+    extra = apply_acknowledgments([], acks, TODAY)
+    assert [issue.severity for issue in extra] == ["warning"]
+    assert "matches no finding" in extra[0].message
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("errors", "warnings", "infos", "fail_level", "strict", "expected"),
+    [
+        (1, 0, 0, "error", False, 1),  # errors always fail
+        (0, 1, 0, "error", False, 0),  # warnings pass at default level
+        (0, 1, 0, "error", True, 1),  # --strict raises the level to warning
+        (0, 1, 0, "warning", False, 1),
+        (0, 0, 1, "warning", False, 0),  # info passes below fail-level info
+        (0, 0, 1, "info", False, 1),  # unacknowledged info fails at info
+        (0, 1, 0, "info", False, 1),  # info level also fails on warnings
+        (0, 0, 0, "info", True, 0),  # clean run passes at any level
+    ],
+)
+def test_compute_exit_code_matrix(
+    errors: int,
+    warnings: int,
+    infos: int,
+    fail_level: str,
+    strict: bool,
+    expected: int,
+) -> None:
+    """Exit-code policy: errors always fatal, stricter of the two flags wins."""
+    assert compute_exit_code(errors, warnings, infos, fail_level, strict) == expected

@@ -124,7 +124,19 @@ MD5/SHA-1 anywhere (enforced by `scripts/check_fips_compatibility.py`).
 
 - `scripts/check_fips_compatibility.py`: flags non-FIPS hashes/ciphers; treats FIPS 203/204/205
   names and `X25519MLKEM768` as approved; warns on pre-standardization names (Kyber, Dilithium,
-  SPHINCS+) with migration hints.
+  SPHINCS+) with migration hints. Ambiguous cipher names (`seed`, `idea`) require cryptographic
+  context (a crypto-library import or a crypto namespace in the call chain) before flagging.
+- **Acknowledged-findings baseline** (2026-07-17): CI runs the checker at `--fail-level info`,
+  so every finding must be fixed or carry a fresh acknowledgment under
+  `[tool.fips_check.acknowledged]` in `pyproject.toml` (mandatory reason, reference into this
+  inventory, and reviewed date; entries expire after 90 days, matching the ADR-013 quarterly
+  review). Current entries: `cryptography`, `pyjwt`, `httpx`, `boto3`, each citing its section
+  here. Errors can never be acknowledged.
+- **Runtime assertions**: `tests/unit/test_fips_runtime_assertions.py` mechanically enforces
+  the testable half of those dispositions (cryptography >= 45 and OpenSSL 3.x link, pyjwt
+  >= 2.13, stdlib OpenSSL 3.x with a TLS 1.2+ context floor, asymmetric-only JWT allowlist
+  defaults plus an active startup validator). They run in the regular CI suite and in the
+  `fips-runtime-test` workflow job; do not renew a reviewed date while its assertion is red.
 - `core/config.py` startup validators fail the boot on forgeable JWT allowlist values.
 - Bandit, OSV-Scanner, pip-audit, detect-secrets: general dependency and secret hygiene.
 

@@ -92,11 +92,14 @@ jobs:
           # shell for run steps is `bash -e {0}` (no pipefail), so without it
           # $? reports tee's exit status (always 0) and the failure gate in
           # the "Check result" step below can never fire.
+          # --fail-level info: every finding must be resolved or carry a
+          # fresh acknowledgment in [tool.fips_check.acknowledged]
           set +e
           set -o pipefail
           uv run python scripts/check_fips_compatibility.py \
             --fix-hints \
             --include-tests \
+            --fail-level info \
             $STRICT_FLAG \
             2>&1 | tee fips-report.txt
           EXIT_CODE=$?
@@ -107,6 +110,7 @@ jobs:
           uv run python scripts/check_fips_compatibility.py \
             --json \
             --include-tests \
+            --fail-level info \
             > fips-report.json 2>/dev/null || true
 
           echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
@@ -116,9 +120,11 @@ jobs:
             ERRORS=$(jq -r '.summary.errors' fips-report.json)
             WARNINGS=$(jq -r '.summary.warnings' fips-report.json)
             INFO=$(jq -r '.summary.info' fips-report.json)
+            ACKNOWLEDGED=$(jq -r '.summary.acknowledged' fips-report.json)
             echo "errors=$ERRORS" >> $GITHUB_OUTPUT
             echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
             echo "info=$INFO" >> $GITHUB_OUTPUT
+            echo "acknowledged=$ACKNOWLEDGED" >> $GITHUB_OUTPUT
           fi
 
       - name: Upload FIPS report
@@ -138,10 +144,14 @@ jobs:
             const errors = parseInt('${{ steps.fips-check.outputs.errors }}') || 0;
             const warnings = parseInt('${{ steps.fips-check.outputs.warnings }}') || 0;
             const info = parseInt('${{ steps.fips-check.outputs.info }}') || 0;
+            const acknowledged = parseInt('${{ steps.fips-check.outputs.acknowledged }}') || 0;
+            const exitCode = parseInt('${{ steps.fips-check.outputs.exit_code }}') || 0;
 
+            // Status mirrors the job conclusion (driven by exit_code) so the
+            // comment and the check can never disagree.
             let status = '✅ PASSED';
             let emoji = '✅';
-            if (errors > 0) {
+            if (exitCode !== 0) {
               status = '❌ FAILED';
               emoji = '❌';
             } else if (warnings > 0) {
@@ -155,12 +165,13 @@ jobs:
             |--------|-------|
             | Errors | ${errors} |
             | Warnings | ${warnings} |
-            | Info | ${info} |
+            | Info (unacknowledged) | ${info} |
+            | Acknowledged | ${acknowledged} |
 
             **Status:** ${status}
 
-            ${errors > 0 ? '⚠️ This PR introduces FIPS-incompatible code or dependencies. Please review the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.' : ''}
-            ${warnings > 0 && errors === 0 ? 'ℹ️ Some packages may need verification for FIPS compliance. See the workflow artifacts for details.' : ''}
+            ${exitCode !== 0 ? 'This PR has FIPS findings at or above the failure level (--fail-level info). Fix them or, for info-level verification nudges with a documented disposition, acknowledge them under [tool.fips_check.acknowledged] in pyproject.toml. See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.' : ''}
+            ${acknowledged > 0 ? `ℹ️ ${acknowledged} finding(s) covered by the acknowledged baseline (dispositions in docs/security/crypto-inventory.md, assertions in tests/unit/test_fips_runtime_assertions.py).` : ''}
 
             <details>
             <summary>What is FIPS?</summary>
@@ -240,6 +251,14 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --all-extras
+
+      - name: Run FIPS runtime assertions
+        # The mechanical half of the [tool.fips_check.acknowledged] baseline:
+        # dependency floors (cryptography, pyjwt), OpenSSL 3.x links, the
+        # TLS 1.2+ context floor, and the JWT allowlist startup validator.
+        # These also run in the regular CI test suite; this job repeats them
+        # so the weekly scheduled run exercises them even if ci.yml changes.
+        run: uv run pytest tests/unit/test_fips_runtime_assertions.py -v --no-cov
 
       - name: Test crypto imports in simulated FIPS mode
         run: |

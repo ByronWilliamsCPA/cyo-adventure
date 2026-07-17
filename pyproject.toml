@@ -1021,3 +1021,31 @@ skip = [
     "docs/template_feedback.md",
 
 ]
+
+# FIPS checker acknowledged-findings baseline (ADR-013).
+# Each entry dispositions one info-level "may need FIPS verification" finding
+# from scripts/check_fips_compatibility.py. reason and reference are
+# mandatory; reviewed dates expire after 90 days (the ADR-013 quarterly
+# review), after which the checker warns until the disposition is
+# re-verified. Where a claim is mechanically testable, the backing assertion
+# lives in tests/unit/test_fips_runtime_assertions.py and is named in the
+# reason; renewing a reviewed date requires those assertions to be green.
+[tool.fips_check.acknowledged.cryptography]
+reason = "ML-DSA/SLH-DSA floor (>=45) and linked OpenSSL 3.x are asserted by tests/unit/test_fips_runtime_assertions.py; FIPS provider activation is a host property, not testable in CI"
+reference = "docs/security/crypto-inventory.md (section 6, dependency floors)"
+reviewed = 2026-07-17
+
+[tool.fips_check.acknowledged.pyjwt]
+reason = "Allowlist is config-driven and asymmetric-only by default; the startup validator refusing none/HS* and the >=2.13 floor are asserted by tests/unit/test_fips_runtime_assertions.py"
+reference = "docs/security/crypto-inventory.md (section 1, bearer-token verification)"
+reviewed = 2026-07-17
+
+[tool.fips_check.acknowledged.httpx]
+reason = "Egress TLS inherits the container's OpenSSL 3.5 defaults; the stdlib TLS 1.2+ floor and OpenSSL 3.x link are asserted by tests/unit/test_fips_runtime_assertions.py"
+reference = "docs/security/crypto-inventory.md (section 2, TLS legs)"
+reviewed = 2026-07-17
+
+[tool.fips_check.acknowledged.boto3]
+reason = "Used only for Cloudflare R2 uploads with SigV4 (HMAC-SHA256, symmetric, quantum-safe); AWS FIPS endpoints do not apply to R2"
+reference = "docs/security/crypto-inventory.md (item 8, backend to R2)"
+reviewed = 2026-07-17
