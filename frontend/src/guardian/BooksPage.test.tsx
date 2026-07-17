@@ -162,6 +162,26 @@ describe('BooksPage', () => {
     ).toBeInTheDocument()
   })
 
+  it('retries the load in place when Try again is clicked (UX-C1)', async () => {
+    let attempt = 0
+    mockGet.mockImplementation((url: string) => {
+      if (url === '/v1/guardian/books') {
+        attempt += 1
+        if (attempt === 1) {
+          return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 500 } }))
+        }
+        return Promise.resolve({ data: BOOKS })
+      }
+      return Promise.resolve({ data: PROFILES })
+    })
+    renderPage()
+    const retry = await screen.findByRole('button', { name: /try again/i })
+    await userEvent.click(retry)
+    // The second load succeeds and the books heading renders instead of the error.
+    expect(await screen.findByRole('heading', { name: 'Books' })).toBeInTheDocument()
+    expect(screen.queryByText(/We could not load/)).not.toBeInTheDocument()
+  })
+
   it('surfaces unresolved assigned ids instead of collapsing to "No one yet"', async () => {
     // s1 is assigned to p1 (known) plus p9 (e.g. a since-deleted profile not in
     // the profiles list); s2 is assigned only to the unknown p9. A book that IS

@@ -24,6 +24,7 @@
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb'
 
 import type { DeviceGrant } from '../auth/deviceGrant'
+import type { LibraryItemView } from '../library/libraryApi'
 import type { ReadingState, Storybook } from '../player/types'
 
 export interface QueuedWrite {
@@ -47,6 +48,10 @@ interface ReaderDB extends DBSchema {
   reading_states: { key: string; value: ReadingState }
   offline_queue: { key: string; value: QueuedWrite }
   device_grant: { key: string; value: DeviceGrant }
+  // The last-good library list per profile, so an offline kid still sees a
+  // bookshelf (UX-K1) rather than a dead-end "Try again" that can never
+  // succeed. Keyed by profileId.
+  library_lists: { key: string; value: LibraryItemView[] }
   profile_shelf: { key: string; value: ProfileShelfSnapshot }
 }
 
@@ -71,10 +76,10 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
     // #ASSUME: data-integrity: idb's upgrade callback receives the OLD
     // version (0 for a brand-new database), and each `if` runs the schema
     // change for every version the open needed to pass through, so a
-    // brand-new database (oldVersion 0) creates all five stores in one pass,
-    // an existing v1 database (oldVersion 1) gains `device_grant` and
-    // `profile_shelf`, and an existing v2 database (oldVersion 2) gains only
-    // `profile_shelf`.
+    // brand-new database (oldVersion 0) creates all stores in one pass, an
+    // existing v1 database (oldVersion 1) gains `device_grant`, `library_lists`,
+    // and `profile_shelf`, and an existing v2 database (oldVersion 2) gains
+    // `library_lists` and `profile_shelf`.
     // #VERIFY: db.test.ts "creates the device_grant store on a fresh
     // database", the v1-to-v3 and v2-to-v3 migration tests, and offline/db.test.ts's
     // existing stores stay reachable across every migration path.
@@ -88,11 +93,49 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
         db.createObjectStore('device_grant')
       }
       if (oldVersion < 3) {
+        db.createObjectStore('library_lists')
         db.createObjectStore('profile_shelf')
       }
     },
+    // #CRITICAL: timing (ARCH-M5): without these callbacks a DB_VERSION bump
+    // could hang every new tab. `blocking` fires on THIS (older) connection when
+    // a newer-version open is waiting; close it and drop the cached handle so
+    // the upgrade proceeds and our next op reopens at the new version, instead
+    // of the new tab waiting forever on a connection an old tab never released.
+    // #VERIFY: db.test.ts "closes and reopens when a newer version is blocking".
+    blocking() {
+      void _db?.then((db) => db.close()).catch(() => undefined)
+      _db = null
+    },
+    // This tab wants to upgrade but an older connection elsewhere has not closed
+    // yet; surfaced so an "app won't load" incident is diagnosable.
+    blocked() {
+      console.warn('cyo-reader: IndexedDB upgrade blocked by an older tab')
+    },
+    // The connection closed unexpectedly (e.g. the browser evicted it); drop the
+    // cached handle so the next op reopens cleanly.
+    terminated() {
+      _db = null
+    },
   })
   return _db
+}
+
+/** Cache the last-good library list for a profile (UX-K1 offline shelf). */
+export async function cacheLibraryList(
+  profileId: string,
+  items: LibraryItemView[]
+): Promise<void> {
+  const db = await getDb()
+  await db.put('library_lists', items, profileId)
+}
+
+/** Read the cached library list for a profile, or undefined if none. */
+export async function getCachedLibraryList(
+  profileId: string
+): Promise<LibraryItemView[] | undefined> {
+  const db = await getDb()
+  return db.get('library_lists', profileId)
 }
 
 /** Cache a downloaded story blob for offline play. */
@@ -127,6 +170,17 @@ export async function getReadingState(
 ): Promise<ReadingState | undefined> {
   const db = await getDb()
   return db.get('reading_states', stateKey(profileId, storybookId))
+}
+
+/**
+ * Clear every cached reading state.
+ *
+ * Called on guardian sign-out / device handover so a returned device does not
+ * retain any child's reading progress at rest (SEC-F5).
+ */
+export async function clearReadingStates(): Promise<void> {
+  const db = await getDb()
+  await db.clear('reading_states')
 }
 
 /** Queue a reading-state write made while offline. */

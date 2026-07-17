@@ -140,6 +140,11 @@ class LibraryProgress(BaseModel):
     current_node: str
     nodes_visited: int
     updated_at: datetime
+    # True when the child's current node is an ending, i.e. they reached a
+    # finish this playthrough. Lets the shelf render "Finished!" instead of a
+    # misleading "N of M pages explored" that under-reports a branching book
+    # (UX-K5); a branch touches only a fraction of all nodes.
+    completed: bool = False
 
 
 class LibraryItem(BaseModel):
@@ -339,6 +344,14 @@ class GenerationJobListView(BaseModel):
     """The generation jobs visible to the calling guardian's family."""
 
     jobs: list[GenerationJobListItem]
+
+
+class AdminJobActionResponse(BaseModel):
+    """Result of an admin operator action on a generation job."""
+
+    id: str
+    status: JobStatusLiteral
+    error: str | None = None
 
 
 class ValidateResponse(BaseModel):
@@ -1338,12 +1351,44 @@ class ReviewQueueItem(BaseModel):
     screened: bool
     flagged_count: int = Field(ge=0)
     summary: ReviewSummary | None
+    # Triage metadata for the console (UX-A3): the story's target age band and
+    # when this version was created (a "waiting since" proxy). Both optional so a
+    # blob missing metadata still projects a valid queue item.
+    age_band: str | None = None
+    waiting_since: datetime | None = None
 
 
 class ReviewQueueView(BaseModel):
     """The admin review queue: storybooks awaiting a publish decision."""
 
     items: list[ReviewQueueItem]
+
+
+class StorybookSummary(BaseModel):
+    """One storybook in the admin master library, any lifecycle status (P19).
+
+    Unlike the review queue (which lists only ``in_review`` stories), the master
+    library lets an admin browse and re-open every story: published, archived,
+    needs_revision, draft, or in_review. ``version`` is the latest version;
+    ``updated_at`` is that version's creation time, an activity proxy for
+    sorting most-recent-first.
+    """
+
+    storybook_id: str
+    title: str
+    status: str
+    version: int
+    age_band: str | None = None
+    family_id: str
+    current_published_version: int | None = None
+    created_at: datetime
+    updated_at: datetime | None = None
+
+
+class StorybookLibraryView(BaseModel):
+    """The admin master library: every storybook, newest activity first."""
+
+    items: list[StorybookSummary]
 
 
 # ---------------------------------------------------------------------------

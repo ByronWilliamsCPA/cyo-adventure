@@ -13,6 +13,8 @@ export type StoryRequestStatus = 'pending' | 'approved' | 'declined' | 'blocked'
 export interface KidStoryRequest {
   id: string
   status: StoryRequestStatus
+  /** The child's own idea text, so pending rows are distinguishable (UX-K3). */
+  request_text: string
   /** The guardian-confirmed series name (K12), when this request named one.
    * Null for a one-off idea or an anchor-driven "ask for the next book"
    * continuation. Used only as a best-effort hint for matching an approved
@@ -73,6 +75,7 @@ export function makeKidStoryRequestApi(api: AxiosInstance): KidStoryRequestApi {
       return {
         id: res.data.id,
         status: res.data.status,
+        request_text: res.data.request_text,
         proposedSeriesTitle: res.data.proposed_series_title ?? null,
       }
     },
@@ -80,10 +83,13 @@ export function makeKidStoryRequestApi(api: AxiosInstance): KidStoryRequestApi {
       const res = await api.get<{ requests: WireStoryRequest[] }>(
         `/v1/story-requests?profile_id=${encodeURIComponent(profileId)}`
       )
-      // Explicitly map to kid-safe subset to prevent guardian-facing fields from leaking
+      // Explicitly map to kid-safe subset to prevent guardian-facing fields
+      // from leaking. request_text is the child's OWN idea (not guardian-facing)
+      // and is surfaced so pending rows are distinguishable (UX-K3).
       return res.data.requests.map((r) => ({
         id: r.id,
         status: r.status,
+        request_text: r.request_text,
         proposedSeriesTitle: r.proposed_series_title ?? null,
       }))
     },

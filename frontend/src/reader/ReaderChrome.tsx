@@ -24,6 +24,11 @@ export interface ReaderChromeProps {
    */
   back?: ReactNode
   /**
+   * Optional trailing control, rendered at the end of the bar. The reader
+   * passes the A/A+/A++ text-size picker here (UX-K2).
+   */
+  fontControl?: ReactNode
+  /**
    * Read-aloud speaker toggle (K7 / Phase 4b). Present only when the caller
    * has already decided the toggle should be offered: the profile's
    * `tts_enabled` flag is on AND the browser's speechSynthesis is actually
@@ -62,6 +67,7 @@ export function ReaderChrome({
   label,
   showLabel = false,
   back,
+  fontControl,
   readAloud,
   flag,
 }: ReaderChromeProps) {
@@ -86,6 +92,7 @@ export function ReaderChrome({
       ) : null}
       {online ? null : <StatusBadge status="offline" label="No internet" />}
       <ProgressBar value={percent} label={label} showLabel={showLabel} />
+      {fontControl}
     </header>
   )
 }

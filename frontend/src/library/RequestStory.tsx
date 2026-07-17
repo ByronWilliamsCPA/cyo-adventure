@@ -284,10 +284,21 @@ export function RequestStory({
           <h2 className="request-story__list-heading">My requests</h2>
           <ul className="request-story__list">
             {requests.map((req) => {
+              // UX-K3: the child's own idea, quoted, so pending rows are
+              // distinguishable regardless of the request's lifecycle state.
+              const idea = req.request_text ?? ''
+              const ideaSpan = idea ? (
+                <span className="request-story__item-idea">
+                  {'“'}
+                  {idea.length > 80 ? `${idea.slice(0, 80)}…` : idea}
+                  {'”'}
+                </span>
+              ) : null
               if (req.status !== 'approved') {
                 return (
                   <li key={req.id} data-status={req.status} className="request-story__item">
-                    {STATUS_COPY[req.status]}
+                    {ideaSpan}
+                    <span className="request-story__item-status">{STATUS_COPY[req.status]}</span>
                   </li>
                 )
               }
@@ -298,6 +309,7 @@ export function RequestStory({
                   data-status={published ? 'published' : 'generating'}
                   className="request-story__item"
                 >
+                  {ideaSpan}
                   {published ? (
                     "It's on your shelf!"
                   ) : (

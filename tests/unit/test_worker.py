@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock
 
 import pytest
@@ -997,3 +997,80 @@ def test_run_generation_job_sync_parses_uuid_and_delegates_to_async_worker(
     worker_module.run_generation_job_sync(str(job_id))
 
     mock_async_worker.assert_awaited_once_with(job_id)
+
+
+@pytest.mark.asyncio
+async def test_load_and_start_job_claims_queued_row() -> None:
+    """A 'queued' row is claimed: transitioned to 'running' and returned."""
+    import uuid as uuid_mod
+
+    from cyo_adventure.db.models import GenerationJob
+
+    job_id = uuid_mod.uuid4()
+    job = SimpleNamespace(id=job_id, status="queued", concept_id=uuid_mod.uuid4())
+
+    class _ClaimSession:
+        def __init__(self) -> None:
+            self.added: list[object] = []
+
+        async def get(self, model: type, ident: object) -> object | None:
+            return job if model is GenerationJob and ident == job_id else None
+
+        def add(self, obj: object) -> None:
+            self.added.append(obj)
+
+        async def flush(self) -> None:
+            pass
+
+    result = await worker_module._load_and_start_job(
+        cast("Any", _ClaimSession()), job_id
+    )
+    assert result is job
+    assert job.status == "running"
+
+
+@pytest.mark.asyncio
+async def test_load_and_start_job_skips_already_running_row() -> None:
+    """A row already past 'queued' is not re-claimed (compare-and-set).
+
+    A duplicate RQ delivery or a reclaim re-enqueue must not let a second run
+    execute a job another delivery already owns; the loader returns None so the
+    caller skips without touching the row.
+    """
+    import uuid as uuid_mod
+
+    from cyo_adventure.db.models import GenerationJob
+
+    job_id = uuid_mod.uuid4()
+    job = SimpleNamespace(id=job_id, status="running", concept_id=uuid_mod.uuid4())
+
+    class _RunningSession:
+        async def get(self, model: type, ident: object) -> object | None:
+            return job if model is GenerationJob and ident == job_id else None
+
+    result = await worker_module._load_and_start_job(
+        cast("Any", _RunningSession()), job_id
+    )
+    assert result is None
+    assert job.status == "running"
+
+
+@pytest.mark.asyncio
+async def test_load_and_start_job_skips_terminal_row() -> None:
+    """A row already in a terminal status ('passed') is likewise not re-claimed."""
+    import uuid as uuid_mod
+
+    from cyo_adventure.db.models import GenerationJob
+
+    job_id = uuid_mod.uuid4()
+    job = SimpleNamespace(id=job_id, status="passed", concept_id=uuid_mod.uuid4())
+
+    class _TerminalSession:
+        async def get(self, model: type, ident: object) -> object | None:
+            return job if model is GenerationJob and ident == job_id else None
+
+    result = await worker_module._load_and_start_job(
+        cast("Any", _TerminalSession()), job_id
+    )
+    assert result is None
+    assert job.status == "passed"

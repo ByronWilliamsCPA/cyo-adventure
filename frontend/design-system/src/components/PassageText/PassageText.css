@@ -3,7 +3,9 @@
 .cyo-passage,
 .cyo-passage--multi p {
   font-family: var(--font-serif);
-  font-size: var(--text-base);
+  /* --reader-font-scale (default 1) is set by the reader's A/A+/A++ control
+     (UX-K2); prose scales without affecting the surrounding chrome. */
+  font-size: calc(var(--text-base) * var(--reader-font-scale, 1));
   line-height: var(--leading-relaxed);
   color: var(--color-ink);
   margin: 0;
@@ -27,6 +29,6 @@
 @media (min-width: 640px) {
   .cyo-passage,
   .cyo-passage--multi p {
-    font-size: var(--text-lg);
+    font-size: calc(var(--text-lg) * var(--reader-font-scale, 1));
   }
 }

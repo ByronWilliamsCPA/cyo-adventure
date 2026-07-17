@@ -42,6 +42,13 @@ _JsonObject = dict[str, object]
 string literal at every ``cast`` call site; python:S1192)."""
 
 MAX_ABS_STORY_INT: int = 1_000_000_000
+
+# Maximum nesting depth for a condition tree. Only `!`, `and`, and `or` nest;
+# real story conditions sit at depth 2-3. The cap turns a pathologically deep
+# condition (arriving via the import CLI or a compromised generation stage) into
+# a clean ValidationError at the gate instead of a RecursionError that 500s on
+# every read/replay of the story. Well under CPython's default recursion limit.
+MAX_CONDITION_DEPTH: int = 50
 """The magnitude cap for every int literal in a story (conditions, variable
 declarations, effect values).
 
@@ -164,12 +171,13 @@ def _validate_comparison(operator: str, operand: object) -> None:
         _validate_operand(operator, item)
 
 
-def _validate_nary(operator: str, operand: object) -> None:
+def _validate_nary(operator: str, operand: object, depth: int) -> None:
     """Validate the operand of an n-ary boolean operator (``and`` / ``or``).
 
     Args:
         operator (str): The boolean operator (for error messages).
         operand (object): Expected to be a list of at least two conditions.
+        depth (int): Current nesting depth (for the recursion-depth cap).
 
     Raises:
         ValueError: If the operand is not a list of two or more conditions.
@@ -183,18 +191,27 @@ def _validate_nary(operator: str, operand: object) -> None:
         msg = f"boolean '{operator}' requires a list of at least two conditions"
         raise ValueError(msg)
     for item in operands:
-        _validate_node(item)
+        _validate_node(item, depth + 1)
 
 
-def _validate_node(node: object) -> None:
+def _validate_node(node: object, depth: int = 0) -> None:
     """Recursively validate a single condition node against the whitelist.
 
     Args:
         node (object): The candidate condition object.
+        depth (int): Current nesting depth; guarded against ``MAX_CONDITION_DEPTH``.
 
     Raises:
-        ValueError: If the node is malformed or uses a non-whitelisted operator.
+        ValueError: If the node is malformed, uses a non-whitelisted operator, or
+            nests deeper than ``MAX_CONDITION_DEPTH``.
     """
+    # #CRITICAL: data-integrity: bound recursion so a pathologically deep
+    # condition is rejected cleanly at the gate rather than raising
+    # RecursionError (an unhandled 500) on every later read/replay.
+    # #VERIFY: test_validate_condition_rejects_overdeep_nesting.
+    if depth > MAX_CONDITION_DEPTH:
+        msg = f"condition nesting exceeds max depth {MAX_CONDITION_DEPTH}"
+        raise ValueError(msg)
     if not isinstance(node, dict):
         msg = f"condition must be a JSON object, got {type(node).__name__}"
         raise ValueError(msg)  # noqa: TRY004 - Pydantic validators must raise ValueError
@@ -212,9 +229,9 @@ def _validate_node(node: object) -> None:
     if operator == "var":
         _validate_var(operand)
     elif operator == "!":
-        _validate_node(operand)
+        _validate_node(operand, depth + 1)
     elif operator in BOOLEAN_NARY_OPERATORS:
-        _validate_nary(operator, operand)
+        _validate_nary(operator, operand, depth)
     else:
         _validate_comparison(operator, operand)
 
@@ -228,7 +245,7 @@ def validate_condition(value: dict[str, JsonValue]) -> dict[str, JsonValue]:
     Returns:
         dict[str, JsonValue]: The same object, if valid.
     """
-    _validate_node(value)
+    _validate_node(value, 0)
     return value
 
 

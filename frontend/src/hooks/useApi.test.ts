@@ -192,10 +192,11 @@ describe('useApi 401 interceptor', () => {
     expect(location.assign).not.toHaveBeenCalled()
   })
 
-  it('clears the token but does not navigate on a kid-path 401', async () => {
-    // No child session here, so a kid-route request falls back to the guardian
-    // bearer; a 401 then means the guardian token is dead. It is cleared, but
-    // there is no navigation off a kid path.
+  it('preserves the guardian token and does not navigate on a kid-path 401', async () => {
+    // SEC-F2: a kid-route request no longer falls back to the guardian bearer,
+    // so it carries no credential. A 401 there must NOT clear the unrelated
+    // guardian token (it was never attached) and must NOT navigate off the kid
+    // path; the kid surface's own ask-a-grown-up gate owns recovery.
     const location = setPathname('/library/some-story')
     const { result } = renderHook(() => useApi())
     const config = issueThroughInterceptor(result.current)
@@ -203,7 +204,7 @@ describe('useApi 401 interceptor', () => {
 
     await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
 
-    expect(localStorage.getItem('auth_token')).toBeNull()
+    expect(localStorage.getItem('auth_token')).toBe('test-token')
     expect(location.replace).not.toHaveBeenCalled()
   })
 
@@ -614,7 +615,11 @@ describe('useApi request interceptor child-token selection (G1 / P6-04)', () => 
     expect(config.headers.Authorization).toBe('Bearer child-token')
   })
 
-  it('falls back to the guardian token on a kid-token route when no child session exists', () => {
+  it('kid-token route never falls back to the guardian bearer when no child session exists', () => {
+    // SEC-F2: a guardian signed in on a shared device must not have their token
+    // attached to a kid /library request; that would serve the full family
+    // scope and bypass the profile PIN. No credential is attached; the request
+    // 401s and the kid surface's ask-a-grown-up gate recovers.
     setPathname('/library/p1')
     localStorage.setItem('auth_token', 'guardian-token')
     const { result } = renderHook(() => useApi())
@@ -622,10 +627,10 @@ describe('useApi request interceptor child-token selection (G1 / P6-04)', () => 
 
     const config = fulfilled(makeRequestConfig())
 
-    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+    expect(config.headers.Authorization).toBeUndefined()
   })
 
-  it('falls back to the guardian token, and clears storage, when the child session is expired', () => {
+  it('kid-token route never falls back to the guardian bearer, and clears storage, when the child session is expired', () => {
     setPathname('/library/p1')
     setChildSession({ token: 'child-token', expiresAt: '2000-01-01T00:00:00Z', profileId: 'p1' })
     localStorage.setItem('auth_token', 'guardian-token')
@@ -634,15 +639,15 @@ describe('useApi request interceptor child-token selection (G1 / P6-04)', () => 
 
     const config = fulfilled(makeRequestConfig())
 
-    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+    expect(config.headers.Authorization).toBeUndefined()
     expect(getChildSession()).toBeNull()
   })
 
-  it('does not attach a child token whose profile does not match the routed profile', () => {
-    // A still-valid session for p1 must NOT authorize a request for p2's
-    // library reached via a fresh deep link; that would 403 as p1 on p2's
-    // resources (a confusing wrong-gate). The interceptor falls back to the
-    // guardian token on the mismatch instead.
+  it('kid-token route never falls back to the guardian bearer on a profile mismatch', () => {
+    // SEC-F1: a still-valid session for p1 must NOT authorize a request for p2's
+    // library reached via a fresh deep link, and must NOT fall back to the
+    // guardian bearer either (which would serve p2 under family scope). No
+    // credential is attached.
     setPathname('/library/p2')
     setChildSession({ token: 'child-token', expiresAt: '2099-01-01T00:00:00Z', profileId: 'p1' })
     localStorage.setItem('auth_token', 'guardian-token')
@@ -651,7 +656,7 @@ describe('useApi request interceptor child-token selection (G1 / P6-04)', () => 
 
     const config = fulfilled(makeRequestConfig())
 
-    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+    expect(config.headers.Authorization).toBeUndefined()
     // The mismatched session is left in place (not cleared): a later request
     // for p1's own library will still use it.
     expect(getChildSession()).not.toBeNull()

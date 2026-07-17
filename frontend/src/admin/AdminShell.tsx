@@ -52,6 +52,7 @@ export function AdminShell() {
         <NavLink to="/admin" end>
           Review queue
         </NavLink>
+        <NavLink to="/admin/library">Story library</NavLink>
         <NavLink to="/admin/requests">Story requests</NavLink>
         <NavLink to="/admin/authoring-queue">Authoring queue</NavLink>
         <NavLink to="/admin/moderation-dashboard">Moderation dashboard</NavLink>

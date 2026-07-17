@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
 import { FlagBadge } from '../guardian/FlagBadge'
+import { formatRelativeTime } from '../guardian/intakeApi'
+import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import {
@@ -91,11 +93,42 @@ function SeverityBadges({ item }: { item: ReviewQueueItem }): ReactElement {
   )
 }
 
-function QueueRow({ item }: { item: ReviewQueueItem }) {
+/** At-a-glance triage metadata: age band and how long the story has waited (UX-A3). */
+function QueueRowMeta({ item, nowMs }: { item: ReviewQueueItem; nowMs: number }) {
+  const waited =
+    typeof item.waiting_since === 'string'
+      ? formatRelativeTime(item.waiting_since, nowMs)
+      : null
+  if (!item.age_band && !waited) return null
+  return (
+    <span className="console-row__meta cyo-text-muted">
+      {item.age_band ? <span>{ageBandLabel(item.age_band)}</span> : null}
+      {item.age_band && waited ? <span aria-hidden="true"> · </span> : null}
+      {waited ? <span>Waiting {waited}</span> : null}
+    </span>
+  )
+}
+
+function QueueRow({
+  item,
+  queue,
+  nowMs,
+}: {
+  item: ReviewQueueItem
+  queue: string[]
+  nowMs: number
+}) {
   return (
     <li className="console-row cyo-card cyo-card--interactive">
-      <Link className="console-row__link" to={`/admin/review/${item.storybook_id}`}>
+      {/* Pass the ordered ids of this bucket so the detail page can show queue
+          position and auto-advance to the next item after a decision (UX-A1). */}
+      <Link
+        className="console-row__link"
+        to={`/admin/review/${item.storybook_id}`}
+        state={{ reviewQueue: queue }}
+      >
         <span className="console-row__title">{item.title}</span>
+        <QueueRowMeta item={item} nowMs={nowMs} />
         <SeverityBadges item={item} />
       </Link>
     </li>
@@ -281,7 +314,12 @@ export function AdminConsolePage() {
                     <h2 className="console-group__heading">Flagged (review carefully)</h2>
                     <ul className="console-list">
                       {flagged.map((item) => (
-                        <QueueRow key={item.storybook_id} item={item} />
+                        <QueueRow
+                          key={item.storybook_id}
+                          item={item}
+                          queue={flagged.map((i) => i.storybook_id)}
+                          nowMs={state.updatedAt.getTime()}
+                        />
                       ))}
                     </ul>
                   </div>
@@ -291,7 +329,12 @@ export function AdminConsolePage() {
                     <h2 className="console-group__heading">Ready to review</h2>
                     <ul className="console-list">
                       {ready.map((item) => (
-                        <QueueRow key={item.storybook_id} item={item} />
+                        <QueueRow
+                          key={item.storybook_id}
+                          item={item}
+                          queue={ready.map((i) => i.storybook_id)}
+                          nowMs={state.updatedAt.getTime()}
+                        />
                       ))}
                     </ul>
                   </div>

@@ -5,6 +5,26 @@ export type ClientOptions = {
 };
 
 /**
+ * AdminJobActionResponse
+ *
+ * Result of an admin operator action on a generation job.
+ */
+export type AdminJobActionResponse = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Status
+     */
+    status: 'queued' | 'running' | 'passed' | 'needs_review' | 'failed' | 'awaiting_manual_fill';
+    /**
+     * Error
+     */
+    error?: string | null;
+};
+
+/**
  * AdminProfileCreateBody
  *
  * An admin's request to create a child profile in any family.
@@ -1836,6 +1856,10 @@ export type LibraryProgress = {
      * Updated At
      */
     updated_at: string;
+    /**
+     * Completed
+     */
+    completed?: boolean;
 };
 
 /**
@@ -2708,6 +2732,14 @@ export type ReviewQueueItem = {
      */
     flagged_count: number;
     summary: ReviewSummary | null;
+    /**
+     * Age Band
+     */
+    age_band?: string | null;
+    /**
+     * Waiting Since
+     */
+    waiting_since?: string | null;
 };
 
 /**
@@ -3126,6 +3158,68 @@ export type StoryRequestView = {
      * Anchor Storybook Id
      */
     anchor_storybook_id?: string | null;
+};
+
+/**
+ * StorybookLibraryView
+ *
+ * The admin master library: every storybook, newest activity first.
+ */
+export type StorybookLibraryView = {
+    /**
+     * Items
+     */
+    items: Array<StorybookSummary>;
+};
+
+/**
+ * StorybookSummary
+ *
+ * One storybook in the admin master library, any lifecycle status (P19).
+ *
+ * Unlike the review queue (which lists only ``in_review`` stories), the master
+ * library lets an admin browse and re-open every story: published, archived,
+ * needs_revision, draft, or in_review. ``version`` is the latest version;
+ * ``updated_at`` is that version's creation time, an activity proxy for
+ * sorting most-recent-first.
+ */
+export type StorybookSummary = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Age Band
+     */
+    age_band?: string | null;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Current Published Version
+     */
+    current_published_version?: number | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at?: string | null;
 };
 
 /**
@@ -3964,6 +4058,42 @@ export type GetGenerationJobApiV1GenerationJobsJobIdGetResponses = {
 
 export type GetGenerationJobApiV1GenerationJobsJobIdGetResponse = GetGenerationJobApiV1GenerationJobsJobIdGetResponses[keyof GetGenerationJobApiV1GenerationJobsJobIdGetResponses];
 
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Job Id
+         */
+        job_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/generation-jobs/{job_id}/force-fail';
+};
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostError = ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostErrors[keyof ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostErrors];
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: AdminJobActionResponse;
+};
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponse = ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponses[keyof ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponses];
+
 export type ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostData = {
     body?: never;
     headers?: {
@@ -4624,6 +4754,42 @@ export type GetReviewQueueApiV1ReviewQueueGetResponses = {
 };
 
 export type GetReviewQueueApiV1ReviewQueueGetResponse = GetReviewQueueApiV1ReviewQueueGetResponses[keyof GetReviewQueueApiV1ReviewQueueGetResponses];
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: {
+        /**
+         * Status
+         */
+        status?: string | null;
+    };
+    url: '/api/v1/admin/storybooks';
+};
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetError = ListAdminStorybooksApiV1AdminStorybooksGetErrors[keyof ListAdminStorybooksApiV1AdminStorybooksGetErrors];
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: StorybookLibraryView;
+};
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetResponse = ListAdminStorybooksApiV1AdminStorybooksGetResponses[keyof ListAdminStorybooksApiV1AdminStorybooksGetResponses];
 
 export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchData = {
     body: NodeEditBody;

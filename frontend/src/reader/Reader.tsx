@@ -7,7 +7,7 @@
  * design-system components (PassageText, ChoiceButton) and a persistent top bar.
  */
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, type CSSProperties } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
@@ -27,6 +27,8 @@ import { ContinueSeries } from './ContinueSeries'
 import { EndingsProgress } from './EndingsProgress'
 import { FlagButton } from './FlagButton'
 import { ReaderChrome } from './ReaderChrome'
+import { TextSizeControl } from './TextSizeControl'
+import { useReaderFontScale } from './useReaderFontScale'
 import { readerProgressLabel, readerProgressPercent } from './readerProgress'
 import { useReadAloud } from './useReadAloud'
 import './reader.css'
@@ -86,6 +88,7 @@ export function Reader({
   submitFlag,
 }: ReaderProps) {
   const navigate = useNavigate()
+  const fontScale = useReaderFontScale(profileId)
   const [snapshot, send] = useMachine(readerMachine, {
     input: { story, reading: initialReading },
   })
@@ -255,6 +258,7 @@ export function Reader({
       percent={ended ? 100 : readerProgressPercent(story, reading)}
       label={ended ? 'You finished this story!' : readerProgressLabel(story, reading)}
       back={leaveButton}
+      fontControl={<TextSizeControl fontScale={fontScale} />}
       readAloud={
         !choiceError && readAloud.available
           ? { speaking: readAloud.speaking, onToggle: handleToggleSpeak }
@@ -274,9 +278,13 @@ export function Reader({
     />
   )
 
+  // The chosen text size is applied as a CSS custom property on each reader
+  // shell so PassageText prose scales in every phase (reading, ending, error).
+  const shellStyle = { '--reader-font-scale': String(fontScale.scale) } as CSSProperties
+
   if (choiceError) {
     return (
-      <div className="reader-shell">
+      <div className="reader-shell" style={shellStyle}>
         {chrome}
         <section className="reader-error" role="alert">
           <Mascot size={96} className="reader-error__mascot" />
@@ -317,7 +325,7 @@ export function Reader({
     // data celebrates: finishing a story is a win by default.
     const celebrate = ending?.valence !== 'negative'
     return (
-      <div className="reader-shell">
+      <div className="reader-shell" style={shellStyle}>
         {chrome}
         <section data-testid="ending-screen" className="reader-ending">
           <div
@@ -393,7 +401,7 @@ export function Reader({
   }
 
   return (
-    <div className="reader-shell">
+    <div className="reader-shell" style={shellStyle}>
       {chrome}
       <section data-testid="reader" className="reader">
         <div

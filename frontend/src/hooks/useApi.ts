@@ -250,6 +250,20 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
             childTokenRequests.add(config)
             return config
           }
+          // #CRITICAL: security (SEC-F1/SEC-F2): a kid-token route
+          // (/library/*, /read/*) must NEVER fall back to the guardian bearer.
+          // A guardian signed in on a shared device would otherwise let a
+          // sibling deep-link to another profile's library or reader and be
+          // served the whole family scope, silently bypassing the profile PIN
+          // and the child/guardian boundary. With no child session matching the
+          // routed profile we attach NO credential: the request 401s and the
+          // kid surface's own ask-a-grown-up gate (classifyApiError's
+          // `unauthenticated` state) owns recovery, sending the child back to
+          // the picker to (re-)mint a scoped session. The guardian token is
+          // never a valid principal on these routes.
+          // #VERIFY: useApi.test.ts "kid-token route never falls back to the
+          // guardian bearer" cases.
+          return config
         }
         // #ASSUME: security: on the profile picker (`/kids`), a valid device
         // grant authorizes exactly the two calls the picker needs (list

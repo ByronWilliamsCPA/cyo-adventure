@@ -339,6 +339,9 @@ async def _run_all_stages(
             openai_key=settings.openai_api_key,
             perspective_key=settings.perspective_api_key,
             client=client,
+            # Deployed tiers flag an unconfigured classifier as degraded so the
+            # reviewer sees the net was off; local/dev skip silently.
+            require_classifiers=settings.environment != "local",
         ):
             report.add(finding)
 

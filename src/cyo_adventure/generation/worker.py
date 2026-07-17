@@ -619,20 +619,20 @@ async def _persist_and_moderate(
 
 async def _load_and_start_job(
     session: AsyncSession, job_id: uuid.UUID
-) -> GenerationJob:
-    """Load the job row, raise if missing, and mark it running.
+) -> GenerationJob | None:
+    """Load the job row, raise if missing, and claim it for this worker.
 
     Extracted from :func:`run_generation_job`'s job-load section so that
-    function's body stays under the file's line budget; behavior is
-    unchanged, the same query, the same missing-row exception, the same
-    "running" transition, and the same startup log line.
+    function's body stays under the file's line budget.
 
     Args:
         session: Active async session.
         job_id: UUID of the GenerationJob to load.
 
     Returns:
-        The loaded GenerationJob row, flushed with ``status="running"``.
+        The loaded GenerationJob row, flushed with ``status="running"``, or
+        ``None`` when the row is no longer ``"queued"`` (another worker already
+        claimed or finished it), signaling the caller to skip execution.
 
     Raises:
         ResourceNotFoundError: If no GenerationJob row exists for ``job_id``.
@@ -643,6 +643,28 @@ async def _load_and_start_job(
         raise ResourceNotFoundError(
             msg, resource_type="GenerationJob", resource_id=str(job_id)
         )
+
+    # #CRITICAL: concurrency: compare-and-set claim on the queued->running
+    # transition. A reclaim sweep re-enqueue or a duplicate RQ delivery can
+    # invoke the worker for a row another delivery already claimed ("running")
+    # or already finished (a terminal status); claiming it unconditionally let
+    # two runs execute the same job (duplicate LLM spend, a persist_storybook
+    # primary-key race). The worker opens a fresh session per job, so this read
+    # reflects the last durably committed status; only proceed when it is still
+    # "queued". Concurrent (not merely sequential) redelivery is additionally
+    # prevented upstream: every enqueue path now shares one RQ identity with
+    # unique=True (see api/generation.py::_enqueue_safely and
+    # generation/queue.py::enqueue_generation), so RQ never admits two jobs for
+    # one row in the first place.
+    # #VERIFY: test_load_and_start_job_skips_already_running_row and
+    # test_reclaim_after_completed_run_does_not_re_execute.
+    if job_row.status != "queued":
+        logger.warning(
+            "generation_job.claim_lost",
+            job_id=str(job_id),
+            status=job_row.status,
+        )
+        return None
 
     job_row.status = "running"
     await session.flush()
@@ -884,6 +906,13 @@ async def run_generation_job(
         effective_provider: GenerationProvider | None = provider
         try:
             job_row = await _load_and_start_job(session, job_id)
+            if job_row is None:
+                # #CRITICAL: concurrency: another delivery already owns this
+                # row. Mark completed so the finally guard does not force-fail a
+                # job this run does not own, then exit without executing.
+                # #VERIFY: test_reclaim_after_completed_run_does_not_re_execute.
+                completed = True
+                return
             # #CRITICAL: security: provider/model on a job's authoring_metadata
             # were already validated against the enabled allowlist at the
             # authoring-plan endpoint (story_requests/authoring_plan.py) before

@@ -111,3 +111,31 @@ def test_non_dsl_operand_resolves_false() -> None:
     """Operands outside the DSL (float, null) resolve to False without raising."""
     assert evaluate({"==": [{"var": "x"}, 1.5]}, {"x": 1}) is False
     assert evaluate({"==": [None, {"var": "x"}]}, {"x": 1}) is False
+
+
+@pytest.mark.unit
+def test_validate_condition_rejects_overdeep_nesting() -> None:
+    """A pathologically deep condition is a clean ValidationError, not RecursionError.
+
+    Without the depth cap this raised RecursionError (an unhandled 500 on every
+    read/replay of the story); with it the gate rejects the story cleanly.
+    """
+    from cyo_adventure.storybook.condition import MAX_CONDITION_DEPTH
+
+    node: dict[str, Any] = {"var": "x"}
+    for _ in range(MAX_CONDITION_DEPTH + 5):
+        node = {"!": node}
+
+    with pytest.raises(ValueError, match="max depth"):
+        validate_condition(node)
+
+
+@pytest.mark.unit
+def test_validate_condition_allows_reasonable_nesting() -> None:
+    """A moderately nested condition (well within the cap) still validates."""
+    node: dict[str, Any] = {"var": "x"}
+    for _ in range(10):
+        node = {"!": node}
+
+    # Must not raise.
+    assert validate_condition(node) is node
