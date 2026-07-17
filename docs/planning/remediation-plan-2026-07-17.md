@@ -50,9 +50,30 @@ Legend: [x] done · [~] partial (rest blocked/deferred, see notes) · [ ] not st
 | P13 | Offline sync robustness (locks, conflicts store, IDB) | ARCH-M4, ARCH-M5 (A12) | M | P5 | [~] cross-tab replay lock + IDB blocking callbacks done; durable conflicts store (data-loss-on-tab-close) deferred (touches the delicate resolution flow) |
 | P14 | Dev-loop and CI-gate hygiene | ARCH-M10, ARCH-M11, jsx-a11y (A13) | S | none | [~] nox extras + 3.10 drop + codecov + stale ignore done; jsx-a11y deferred (plugin peer range excludes eslint 10) |
 | P15 | UX polish batch 1 (kid surface) | UX-K3, UX-K4, UX-K6, UX-K7 (A14) | S | none | [x] |
-| P16 | UX polish batch 2 (adult surfaces + tokens) | UX-C1, UX-C2, UX-A1, UX-A3, UX-G4 (A14) | M | none | [~] UX-C1 (inline retry) + UX-C2 (AA token) done; UX-A1/UX-A3/UX-G4 (admin-console polish) not started |
+| P16 | UX polish batch 2 (adult surfaces + tokens) | UX-C1, UX-C2, UX-A1, UX-A3, UX-G4 (A14) | M | none | [x] |
 | P17 | Progress semantics (finished state) | UX-K5 | M | P12 | [x] |
 | P18 | Backend middleware hygiene | SEC-B3, SEC-B4, SEC-B6 | S | none | [x] |
+| P19 | Admin master library (browse/re-review all stories) | new (see below) | M | none | [ ] proposed |
+
+### P19 (proposed): admin master library
+
+Surfaced while answering "does the admin have a master library page?" **No.** The
+review queue (`GET /review-queue`, `AdminConsolePage` at `/admin`) lists only
+`status == "in_review"` storybooks plus in-flight generation jobs. Once a story
+is approved/published (or archived/sent back), it leaves the queue and there is
+no admin surface to browse or re-open it. The underlying detail path is
+status-agnostic (`_load_admin_story` loads any status; `ReviewDetailPage` at
+`/admin/review/:storybookId` already renders a published story if navigated to
+directly), so the only missing piece is a listing + entry point:
+
+- Backend: an admin-only `GET /admin/storybooks` listing all storybooks with
+  status/version/family filters (published, archived, needs_revision, in_review),
+  reusing the bulk-load pattern in `get_review_queue`.
+- Frontend: an `/admin/library` page (nav link in `AdminShell`) that lists them
+  with filters and links each to the existing `ReviewDetailPage`.
+
+Deferred here because it is a new feature beyond the review's remediation scope;
+recommended as a fast follow given the detail surface already supports it.
 
 **Delivered in the 2026-07-17 implementation pass:** P1, P2, P3, P4, P11, P12
 (depth cap), P14, P15, P18 fully; P9 and P12 partially. Every shipped change
