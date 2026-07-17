@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "Nina and Theo are best friends. One sunny afternoon they were exploring Grandpa's backyard when they found something under the big oak tree. It was a dusty jar, and inside was a rolled-up map! Someone had drawn it by hand. A dotted line twisted across the yard to a red X at the very end. The dotted line brushed the big oak, looped past the little shed, and dipped down toward the stream. Which landmark should they follow first? Nina grinned. Theo grinned too. They were ready for an adventure.",
+      "body": "Nina and Theo are best friends. One sunny afternoon they were playing in Grandpa's backyard. Under the big oak tree, they found something special. It was a dusty old jar. Inside was a rolled-up map! Someone had drawn it by hand. A dotted line twisted across the yard to a red X. The line brushed the big oak. It looped past the little shed. Then it dipped down toward the stream. Which landmark should they follow first? Nina grinned. Theo grinned too.",
       "is_ending": false,
       "choices": [
         {
@@ -137,7 +137,7 @@
     },
     {
       "id": "o_hollow_3",
-      "body": "They took the soft mossy path. It felt springy and cool under their sneakers. Ferns brushed against their knees and tickled as they walked. The croaking grew louder and happier with every step. Theo stopped and whispered. Listen, he said. It sounds like hundreds of tiny voices, all talking at once. The friends smiled and followed the path a little farther in.",
+      "body": "They took the soft mossy path. It felt springy and cool under their feet. Ferns brushed their knees and tickled them. The croaking grew louder and happier. Theo stopped and whispered. Listen, he said. It sounds like hundreds of tiny voices! They are all talking at once. The friends smiled and walked a little farther in.",
       "is_ending": false,
       "choices": [
         {
@@ -149,7 +149,7 @@
     },
     {
       "id": "o_hollow_4",
-      "body": "The path dipped down into a shady green hollow. It was cool and quiet there. The ground felt soft, and smooth flat stones were dotted all around. Each little stone looked a bit like a tiny doorway, as if someone very small might live behind it. Nina and Theo stepped with care so they would not trip. Then they followed the dotted line down into the green shade.",
+      "body": "The path dipped down into a shady green hollow. It was cool and quiet there. The ground felt soft under their feet. Smooth flat stones were dotted all around. Each little stone looked like a tiny doorway. Maybe someone very small lived behind it! Nina and Theo stepped with care. They did not want to trip. Then they followed the dotted line deeper into the shade.",
       "is_ending": false,
       "choices": [
         {
@@ -161,7 +161,7 @@
     },
     {
       "id": "o_hollow_5",
-      "body": "In the green hollow they found a ring of round pebbles, set out like a tiny wall. Behind the little wall sat toads. Fat, spotted toads, plump as biscuits. They rested on leaf-thrones and lily-pad chairs, as if they were kings and queens. Not one of them hopped away. The toads only blinked slowly and looked at their two visitors.",
+      "body": "In the green hollow they found a ring of round pebbles. It was set out like a tiny wall. Behind the little wall sat toads. They were fat, spotted toads, plump as biscuits. They rested on leaf-thrones and lily-pad chairs. They looked like kings and queens! Not one of them hopped away. The toads just blinked and looked at their visitors.",
       "is_ending": false,
       "choices": [
         {
@@ -185,7 +185,7 @@
     },
     {
       "id": "e_toad_king",
-      "body": "Nina and Theo had found a whole toad kingdom, hidden in the shady green hollow. A little king with a clover crown ruled it all from his leafy throne. The friends promised to keep the kingdom secret and safe. Before they left, they set down a soft green leaf as a gift for the king. Then they tiptoed away. All the way home their cheeks ached from smiling, and neither one could stop.",
+      "body": "Nina and Theo had found a whole toad kingdom! It was hidden in the shady green hollow. A little king with a clover crown sat on his leafy throne. The friends promised to keep it secret and safe. Before they left, they set down a soft green leaf. It was a gift for the king. Then they tiptoed away. All the way home, they could not stop smiling.",
       "is_ending": true,
       "ending": {
         "id": "end_toad_king",
@@ -196,7 +196,7 @@
     },
     {
       "id": "o_swing_1",
-      "body": "They followed the loop of the trail to the old tire swing. It hung from a low oak branch and turned slowly in the gentle breeze. Someone had tied bright ribbons all along the rope. The ribbons were yellow and blue and red, and they fluttered and danced in the wind. In the afternoon sun they seemed to shine like little flags.",
+      "body": "They followed the loop of the trail to the old tire swing. It hung from a low oak branch. It turned slowly in the gentle breeze. Someone had tied bright ribbons all along the rope. The ribbons were yellow and blue and red. They fluttered and danced in the wind. In the sun, they looked like little flags.",
       "is_ending": false,
       "choices": [
         {
@@ -237,7 +237,7 @@
     },
     {
       "id": "e_set_swing",
-      "body": "The prickly left branch was a tangle of twigs that went nowhere at all. At the very end hung an old bird box, and it was completely empty. No treasure. No red X. Nina and Theo giggled at the silly dead end. They climbed carefully down and hopped off the swing. Then they walked back to the porch for cold lemonade and a little rest. The X must be hiding somewhere else, they decided.",
+      "body": "The prickly left branch was a tangle of twigs. It led nowhere at all. At the very end hung an old bird box. It was completely empty. No treasure. No red X. Nina and Theo giggled at the silly dead end. They climbed down and hopped off the swing. Then they walked back to the porch. Cold lemonade and a little rest were waiting. The X must be hiding somewhere else.",
       "is_ending": true,
       "ending": {
         "id": "end_set_swing",
@@ -272,7 +272,7 @@
     },
     {
       "id": "o_swing_5",
-      "body": "Long ago, someone had hung a wind chime on every branch of this hidden corner. Sunlight bounced off all the shiny bits and scattered tiny rainbows across the leaves. The little rainbows danced whenever the breeze blew. Nina and Theo stood very still and did not say a word. They just listened to the soft, tinkling song. It was the loveliest sound they had ever heard.",
+      "body": "Long ago, someone hung a wind chime on every branch here. The sun caught all the shiny bits. It threw tiny rainbows across the leaves. The little rainbows danced when the breeze blew. Nina and Theo stood very still. They did not say a word. They just listened to the soft, ringing song. It was so pretty.",
       "is_ending": false,
       "choices": [
         {
@@ -319,7 +319,7 @@
     },
     {
       "id": "r_fork",
-      "body": "Behind the shed, the trail on the map split into two. One line slipped in through the shed's open door, into the cool shadows inside. The other line ran off toward the big rock pile. Tall grey rocks were stacked high against the back fence, warm in the sun. Which way should they explore first? Nina and Theo looked from the dark doorway to the rocks and back again, and then they chose.",
+      "body": "Behind the shed, the trail on the map split in two. One line slipped in through the shed's open door. It led into the cool shadows inside. The other line ran off toward the big rock pile. Tall grey rocks were stacked against the back fence. They were warm in the sun. Which way should they explore first? Nina and Theo looked from the dark doorway to the rocks. Then they chose.",
       "is_ending": false,
       "choices": [
         {
@@ -336,7 +336,7 @@
     },
     {
       "id": "r_shed_1",
-      "body": "They pushed the shed door open slowly and carefully. Dusty golden light spilled inside. It fell across old flowerpots and coiled-up hoses. The shed smelled of soil and dry wood, a good and earthy garden smell. Nina traced the dotted line with her finger. It led all the way to the far dark corner, behind an old wheelbarrow. That was where they needed to go.",
+      "body": "They pushed the shed door open. It swung back slowly. Dusty golden light spilled inside. It fell on old pots and coiled hoses. The shed smelled of soil and dry wood. It was a warm garden smell. Nina traced the dotted line with her finger. It led to the far dark corner. That was behind an old wheelbarrow.",
       "is_ending": false,
       "choices": [
         {
@@ -348,7 +348,7 @@
     },
     {
       "id": "r_shed_2",
-      "body": "Nina tiptoed past the rakes and watering cans. Theo held the map steady so they would not lose the trail. In the far corner stood a tall stack of wooden crates, piled up like a set of steps. A faint light glowed down from a gap near the roof. Whatever was up there looked warm and cozy, tucked high above the shed floor. Nina and Theo peered at the crates.",
+      "body": "Nina tiptoed past the rakes and watering cans. Theo held the map steady. He did not want to lose the trail. In the far corner stood a tall stack of crates. They were piled up like steps. A faint light glowed from a gap near the roof. Whatever was up there looked warm and cozy. Nina and Theo peered at the crates.",
       "is_ending": false,
       "choices": [
         {
@@ -377,7 +377,7 @@
     },
     {
       "id": "e_set_shed",
-      "body": "The low gap under the workbench was just a cobwebby dead end. It was full of old plant pots, and a sleepy woodlouse curled up in one corner. There was no treasure here at all. Nina and Theo backed out, sneezing and laughing at the dust. They brushed the map clean and trotted back to the porch. A jug of cold lemonade was waiting for them there. After a rest, they would try another trail.",
+      "body": "The low gap under the workbench was just a dead end. It was full of cobwebs and old plant pots. A sleepy woodlouse curled up in one corner. There was no treasure here at all. Nina and Theo backed out, sneezing and laughing at the dust. They brushed the map clean. Then they trotted back to the porch. A jug of cold lemonade was waiting there. After a rest, they would try another trail.",
       "is_ending": true,
       "ending": {
         "id": "end_set_shed",
@@ -412,7 +412,7 @@
     },
     {
       "id": "r_shed_5",
-      "body": "Inside the hideaway were two comfy seats, soft enough to sink right into. A little shelf held a row of adventure books. Beside it sat a jar full of shiny paper stars that glimmered in the lantern light. A blanket lay folded neatly in the corner, as if it had been waiting for visitors. And there, right in the middle of it all, was the map's red X.",
+      "body": "Inside the hideaway were two comfy seats. They were soft enough to sink right into. A little shelf held a row of adventure books. Beside it sat a jar of shiny paper stars. They glimmered in the lantern light. A blanket lay folded neatly in the corner. It looked like it was waiting for visitors. And there, right in the middle, was the map's red X.",
       "is_ending": false,
       "choices": [
         {
@@ -424,7 +424,7 @@
     },
     {
       "id": "r_shed_6",
-      "body": "The painted sign over the doorway read Explorers Welcome. The letters were bright and friendly, painted in cheerful colors. Suddenly Nina and Theo understood. This was a secret fort! Kids had built it long, long ago and left it all ready. It had been waiting here for whoever found the map next. And that was them! They could hardly believe their luck. The two friends stepped inside like honored guests.",
+      "body": "The painted sign over the doorway read Explorers Welcome. The letters were bright and friendly. Suddenly Nina and Theo understood. This was a secret fort! Kids had built it long, long ago. They left it all ready. It had waited here for whoever found the map. And that was them! The two friends stepped inside like special guests.",
       "is_ending": false,
       "choices": [
         {
@@ -436,7 +436,7 @@
     },
     {
       "id": "e_fort",
-      "body": "Nina and Theo had found a snug secret fort, hidden right at the top of the garden shed. It was all ready for new explorers, and now the new explorers were them. On the shelf they found a little logbook, and they wrote their own names inside. They promised to come back often and take good care of the place. From now on, this cozy fort would be their very own headquarters.",
+      "body": "Nina and Theo had found a snug secret fort! It was hidden at the top of the garden shed. It was all ready for new explorers. And now the new explorers were them. On the shelf they found a little logbook. They wrote their own names inside. They promised to come back and take good care of it. From now on, this fort would be their own.",
       "is_ending": true,
       "ending": {
         "id": "end_fort",
@@ -488,7 +488,7 @@
     },
     {
       "id": "e_set_rock",
-      "body": "The gap between the mossy boulders was not a treasure spot at all. It was a snug little home for a busy line of ants. They marched along in a neat row, carrying crumbs to and fro. There was no red X here and no treasure either. Nina and Theo said a polite hello to the ants. Then they rolled up the map and wandered back to the porch, where a cool glass of lemonade was waiting.",
+      "body": "The gap between the mossy boulders was not a treasure spot. It was a snug little home for ants! A busy line of them marched along. They carried crumbs to and fro. There was no red X here. There was no treasure either. Nina and Theo said a polite hello to the ants. Then they rolled up the map. They wandered back to the porch. A cool glass of lemonade was waiting there.",
       "is_ending": true,
       "ending": {
         "id": "end_set_rock",
@@ -535,7 +535,7 @@
     },
     {
       "id": "r_rock_6",
-      "body": "Nina and Theo looked closely at the marbles. There were cats-eyes and swirlies, with pretty patterns swirled inside. One big shooter was as clear as a raindrop. Some kid must have saved dozens of them, years and years ago. Down at the bottom lay a tiny note. It said only three words: share and enjoy. The friends read the little note twice, then smiled at each other.",
+      "body": "Nina and Theo looked closely at the marbles. There were cats-eyes and swirlies. Each one had pretty patterns inside. One big shooter was as clear as a raindrop. Some kid had saved them long ago. Down at the bottom lay a tiny note. It said just three words: share and enjoy. The friends read the note twice. Then they smiled at each other.",
       "is_ending": false,
       "choices": [
         {
@@ -547,7 +547,7 @@
     },
     {
       "id": "e_marbles",
-      "body": "Nina and Theo had dug up a hidden box of glass marbles. Some kid from long ago had buried it here as treasure. The friends each picked one favorite marble to keep. Then they tucked the rest of them back into the box. They added a little note of their own, for the next lucky finder to read. All the way home, a marble clinked softly in each of their pockets.",
+      "body": "Nina and Theo had dug up a hidden box of glass marbles! Some kid from long ago had buried it here. The friends each picked one favorite to keep. Then they tucked the rest back in the box. They added a little note of their own. It was for the next lucky finder. All the way home, a marble clinked in each pocket.",
       "is_ending": true,
       "ending": {
         "id": "end_marbles",
@@ -558,7 +558,7 @@
     },
     {
       "id": "s_intro",
-      "body": "The last part of the dotted line ran down the sloping lawn. It led all the way to the little stream at the bottom of the garden, where the yard met the park. The water chattered over the smooth stones, splashing and bubbling as it went. Theo held the map up high above his head. He did not want a single drop to get it wet on the way down.",
+      "body": "The last part of the dotted line ran down the sloping lawn. It led to the little stream at the bottom of the garden. There the yard met the park. The water chattered over the smooth stones. It splashed and bubbled as it went. Theo held the map up high. He did not want a single drop to get it wet.",
       "is_ending": false,
       "choices": [
         {
@@ -570,7 +570,7 @@
     },
     {
       "id": "s_fork",
-      "body": "Down by the water, the map's line split one last time. One branch curved into the tall blackberry bushes along the bank. They were heavy with ripe purple berries, dark and sweet. The other branch hopped out across a row of flat stepping stones, all the way to the far side of the stream. Which way did the treasure lie? Nina and Theo looked at both trails and picked one to follow.",
+      "body": "Down by the water, the map's line split one last time. One branch curved into the tall blackberry bushes. They grew along the bank, heavy with ripe purple berries. The other branch hopped across flat stepping stones. They led to the far side of the stream. Which way did the treasure lie? Nina and Theo looked at both trails. Then they picked one to follow.",
       "is_ending": false,
       "choices": [
         {
@@ -587,7 +587,7 @@
     },
     {
       "id": "s_bramble_1",
-      "body": "They followed the line into the shade of the tall blackberry bushes. The bushes were heavy with ripe purple berries, sweet and dark. Their leaves met overhead and made a cool green tunnel. From somewhere deeper inside came a soft little sound. Meow, it went. It was a friendly, gentle meow, not a scary one at all. It sounded as if someone was waiting for them.",
+      "body": "They followed the line into the shade of the blackberry bushes. The bushes were heavy with ripe purple berries. Their leaves met overhead and made a cool green tunnel. From somewhere deeper inside came a soft little sound. Meow, it went. It was a friendly, gentle meow. It was not scary at all. It sounded like someone was waiting for them.",
       "is_ending": false,
       "choices": [
         {
@@ -599,7 +599,7 @@
     },
     {
       "id": "s_bramble_2",
-      "body": "Nina held a thorny branch carefully aside, so it would not catch their sleeves. The meow came again, closer this time. Theo checked the map to be sure of the way. The dotted line wound right into the middle of the bramble patch. Come on, he whispered. The two friends stepped in gently, taking soft and quiet steps so they would not scare the little animal.",
+      "body": "Nina held a thorny branch aside. That way it would not catch their sleeves. The meow came again, closer this time. Theo checked the map to be sure. The dotted line wound into the middle of the bushes. Come on, he whispered. The two friends stepped in gently. They took soft, quiet steps. They did not want to scare the little animal.",
       "is_ending": false,
       "choices": [
         {
@@ -611,7 +611,7 @@
     },
     {
       "id": "s_bramble_app",
-      "body": "Inside the bushes, the trail on the map had faded almost away. Two little tunnels led on through the leaves. One tunnel went low, toward a dark and thorny thicket. The other tunnel led toward a patch of warm sunlight up ahead. The meowing sounded happiest over by the sunny patch. Which tunnel should they crawl through? Nina and Theo listened for the cat, then chose their way.",
+      "body": "Inside the bushes, the trail on the map had faded away. Two little tunnels led on through the leaves. One tunnel went low. It led toward a dark, thorny thicket. The other tunnel led toward a patch of warm sunlight. The meow sounded happiest by the sunny patch. Which tunnel should they crawl through? Nina and Theo listened for the cat. Then they chose their way.",
       "is_ending": false,
       "choices": [
         {
@@ -639,7 +639,7 @@
     },
     {
       "id": "s_bramble_3",
-      "body": "The sunny tunnel opened into a cozy little clearing, right in the heart of the brambles. The ground was covered with soft, dry leaves that smelled sweet and warm. The meowing changed into a low, rumbly purr. Then two green eyes blinked at them from a warm nest of grass. Something was curled up there in the sun, watching the two friends come closer.",
+      "body": "The sunny tunnel opened into a cozy little clearing. It sat right in the heart of the brambles. The ground was soft with dry leaves. They smelled sweet and warm. The meow turned into a low, rumbly purr. Then two green eyes blinked at them. Something was curled up in a warm nest of grass. It watched the two friends come closer.",
       "is_ending": false,
       "choices": [
         {
@@ -687,7 +687,7 @@
     },
     {
       "id": "e_cat",
-      "body": "Nina and Theo had found a friendly lost cat named Pepper. He lived happily all on his own, in his secret bramble clearing. The friends shared their afternoon snack with their new pal. They promised to visit him every single day. And they would help find out where he belonged, too. When it was time to go, Pepper walked them halfway home, his tail held high and proud.",
+      "body": "Nina and Theo had found a friendly lost cat named Pepper! He lived happily all on his own. His home was the secret bramble clearing. The friends shared their afternoon snack with him. They promised to visit every single day. They would help find where he belonged, too. Then it was time to go. Pepper walked them halfway home. His tail was held high and proud.",
       "is_ending": true,
       "ending": {
         "id": "end_cat",
@@ -698,7 +698,7 @@
     },
     {
       "id": "s_bank_1",
-      "body": "The stepping stones crossed the chattering stream in a neat, flat row. Their tops were dry and easy to hop across. Nina and Theo crossed one careful stone at a time, so they would not slip into the water. Soon they reached the mossy far bank. On the map, the dotted line pointed straight to the roots of a big willow tree, leaning out over the stream.",
+      "body": "The stepping stones crossed the stream in a neat, flat row. Their tops were dry and easy to hop. Nina and Theo went one stone at a time. That way they would not slip into the water. Soon they reached the mossy far bank. On the map, the dotted line pointed to a big willow tree. It leaned right out over the stream.",
       "is_ending": false,
       "choices": [
         {
@@ -710,7 +710,7 @@
     },
     {
       "id": "s_bank_2",
-      "body": "On the far bank, the willow dipped its long green branches into the water like fingers. The ground beneath its roots was soft and cool. Theo studied the map closely. The red X sat tucked right in among the tangled roots. And look, something small was glinting there, deep in the willow's shade. It shone faintly, as if it wanted to be found.",
+      "body": "On the far bank grew the leaning willow tree. It dipped its long green branches into the water. They looked like fingers. The ground beneath its roots was soft and cool. Theo studied the map closely. The red X sat among the tangled roots. And look, something small was glinting there! It shone faintly, deep in the willow's shade.",
       "is_ending": false,
       "choices": [
         {
@@ -722,7 +722,7 @@
     },
     {
       "id": "s_bank_app",
-      "body": "Two little hollows showed among the willow roots. One was a wet, muddy dip, right down at the water's edge. The other was a dry, sheltered nook, tucked a little higher up the bank. The faint glinting seemed to come from the dry nook. Where was the X really pointing? Nina and Theo looked from the muddy dip to the dry nook, and then they made up their minds.",
+      "body": "Two little hollows showed among the willow roots. One was a wet, muddy dip. It sat right at the water's edge. The other was a dry, sheltered nook. It was tucked a little higher up. The faint glinting came from the dry nook. Where was the X really pointing? Nina and Theo looked from the muddy dip to the dry nook. Then they made up their minds.",
       "is_ending": false,
       "choices": [
         {
@@ -739,7 +739,7 @@
     },
     {
       "id": "e_set_bank",
-      "body": "The muddy dip at the water's edge held just one shiny wet pebble. Beside it sat a water beetle, looking very surprised to see them! There was no treasure here after all. Nina and Theo grinned at their muddy sneakers and waved goodbye to the little beetle. Then they hopped back across the stepping stones. A cool glass of lemonade was waiting up on the porch, and they had surely earned it.",
+      "body": "The muddy dip held just one shiny wet pebble. Beside it sat a little water beetle. It looked very surprised to see them! There was no treasure here after all. Nina and Theo grinned at their muddy shoes. They waved goodbye to the beetle. Then they hopped back across the stones. A cool glass of lemonade was waiting on the porch. They had surely earned it.",
       "is_ending": true,
       "ending": {
         "id": "end_set_bank",
@@ -750,7 +750,7 @@
     },
     {
       "id": "s_bank_3",
-      "body": "The dry nook was just the right size to kneel in. The glinting was coming from something half-buried in the cool soil. Very gently, Nina brushed the earth away with her fingers. Theo held the willow branches back so they would not get in her way. Little by little, a corner of shiny metal began to show through the dirt. Almost there, Nina whispered.",
+      "body": "The dry nook was just the right size to kneel in. The glinting came from something in the cool soil. It was half-buried there. Very gently, Nina brushed the earth away. Theo held the willow branches back. That way they stayed out of her path. Little by little, a corner of shiny metal showed. Almost there, Nina whispered.",
       "is_ending": false,
       "choices": [
         {
@@ -762,7 +762,7 @@
     },
     {
       "id": "s_bank_4",
-      "body": "It was a small brass tin, green around the edges and still shut tight. It lay exactly where the map's X had promised. Nina and Theo worked at the stiff lid together, using slow and careful fingers. They wiggled it this way and that. At last the lid gave way and opened with a soft little puff. Whoosh, went the old air inside, as if the tin had been holding its breath.",
+      "body": "It was a small brass tin! It was green around the edges and shut tight. It lay right where the map's X had promised. Nina and Theo worked at the stiff lid. They used slow, careful fingers. They wiggled it this way and that. At last the lid gave way. It opened with a soft little puff. Whoosh, went the old air inside.",
       "is_ending": false,
       "choices": [
         {
@@ -774,7 +774,7 @@
     },
     {
       "id": "s_bank_5",
-      "body": "Inside the tin, on a bed of soft faded velvet, lay a heap of shiny buttons. There were buttons of every kind you could think of. Brass buttons and glass buttons, and pearly ones shaped like little flowers. They gleamed and sparkled like real jewels. Bits of green light fell through the willow leaves and made them shine even brighter. Nina and Theo could only stare.",
+      "body": "Inside the tin lay a bed of soft faded velvet. On it sat a heap of shiny buttons. There were buttons of every kind! Brass buttons and glass buttons too. Some pearly ones were shaped like little flowers. They gleamed and sparkled like real jewels. Green light fell through the willow leaves. It made the buttons shine even more. Nina and Theo could only stare.",
       "is_ending": false,
       "choices": [
         {
@@ -786,7 +786,7 @@
     },
     {
       "id": "s_bank_6",
-      "body": "Someone had kept these buttons safe here for many years. Each one was different, and each one was lovely in its own way. They really were a true backyard treasure. Tucked in the corner was a folded slip of paper. The friends opened it and read the words inside: for the finder, with love. Nina and Theo felt like they had opened a chest of pirate gold.",
+      "body": "Someone had kept these buttons safe for many years. Each one was different. Each one was lovely in its own way. They really were a true backyard treasure. In the corner was a folded slip of paper. The friends read the words inside. For the finder, with love, it said. They felt like they had opened a chest of pirate gold.",
       "is_ending": false,
       "choices": [
         {
@@ -798,7 +798,7 @@
     },
     {
       "id": "e_buttons",
-      "body": "Nina and Theo had unearthed a hidden tin of shiny buttons. This was the real treasure, waiting at the very end of the map! Each of them picked one gleaming button to keep, to help them remember this day. Then they buried the tin again, safe and sound. They tucked a new note inside for the next explorer to find. Then they crossed the stepping stones home, feeling as rich as kings.",
+      "body": "Nina and Theo had unearthed a hidden tin of shiny buttons! This was the real treasure. It waited at the very end of the map. They each picked one gleaming button to keep. It would help them remember this day. Then they buried the tin again, safe and sound. They tucked a new note inside for the next explorer. Then they crossed the stepping stones home. They felt as rich as kings.",
       "is_ending": true,
       "ending": {
         "id": "end_buttons",
