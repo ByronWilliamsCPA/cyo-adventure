@@ -1418,7 +1418,7 @@
     },
     {
       "id": "tn_store_box",
-      "body": "<<FILL role=rising words=90 beats='the ledger box matches the torn page from the journal exactly, sealing the case; a low door leads deeper toward the keeper's room'>>",
+      "body": "<<FILL role=rising words=90 beats='the ledger box confirms what she has already pieced together, sealing the case; a low door leads deeper toward the keeper's room'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1430,7 +1430,7 @@
     },
     {
       "id": "tn_store_join",
-      "body": "<<FILL role=choice words=92 beats='the low door opens on the passage to the keeper's sealed room, but her borrowed lantern gutters low and threatens to leave her dark'>>",
+      "body": "<<FILL role=choice words=92 beats='the low door opens on the passage to the keeper's sealed room, but the light she carries gutters low and threatens to leave her dark'>>",
       "is_ending": false,
       "choices": [
         {
