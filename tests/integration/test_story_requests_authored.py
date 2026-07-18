@@ -8,7 +8,12 @@ from typing import TYPE_CHECKING
 import pytest
 
 from cyo_adventure.api.families import _FAMILY_LIST_LIMIT
-from cyo_adventure.db.models import Concept, Family, StoryRequest
+from cyo_adventure.db.models import (
+    CATALOG_FAMILY_ID,
+    Concept,
+    Family,
+    StoryRequest,
+)
 from tests.integration.conftest import Seed, Stranger, auth
 
 if TYPE_CHECKING:
@@ -92,9 +97,54 @@ async def test_child_cannot_author(client: AsyncClient, seed: Seed) -> None:
     assert res.status_code == 403
 
 
-async def test_admin_requires_family_id(client: AsyncClient, seed: Seed) -> None:
+async def test_admin_omitted_family_targets_catalog_family(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An admin-only adult omitting family_id seeds the catalog (#173).
+
+    The request is owned by the system catalog family and stamped admin, rather
+    than the pre-#173 422 "family_id is required for admin-initiated requests".
+    """
     res = await client.post(AUTHORED, json=BODY, headers=auth(seed.admin_token))
-    assert res.status_code == 422
+    assert res.status_code == 201, res.text
+    async with sessions() as session:
+        row = await session.get(StoryRequest, uuid.UUID(res.json()["id"]))
+        assert row is not None
+        assert row.family_id == CATALOG_FAMILY_ID
+        assert row.initiator_role == "admin"
+        assert row.profile_id is None
+        # The concept inherits the catalog family, so generation and the
+        # eventual storybook are catalog-owned end to end.
+        concept = await session.get(Concept, row.concept_id)
+        assert concept is not None
+        assert concept.family_id == CATALOG_FAMILY_ID
+
+
+async def test_admin_may_name_catalog_family_explicitly(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An admin may also target the catalog family by naming its id."""
+    body = {**BODY, "family_id": str(CATALOG_FAMILY_ID)}
+    res = await client.post(AUTHORED, json=body, headers=auth(seed.admin_token))
+    assert res.status_code == 201, res.text
+    async with sessions() as session:
+        row = await session.get(StoryRequest, uuid.UUID(res.json()["id"]))
+        assert row is not None
+        assert row.family_id == CATALOG_FAMILY_ID
+
+
+async def test_guardian_cannot_target_catalog_family(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A non-admin guardian naming the catalog family is 403 (admin-only).
+
+    The catalog family is nobody's own family, so it falls to the "naming a
+    foreign family requires the admin capability" 403, keeping catalog-origin
+    requests admin-only without a nullable family_id or a magic-UUID CHECK.
+    """
+    body = {**BODY, "family_id": str(CATALOG_FAMILY_ID)}
+    res = await client.post(AUTHORED, json=body, headers=auth(seed.guardian_token))
+    assert res.status_code == 403, res.text
 
 
 async def test_admin_authored_create_targets_named_family(
