@@ -298,3 +298,89 @@ async def test_run_resumes_manual_fill_job_when_job_id_given() -> None:
     )
     mock_import.assert_not_awaited()
     fake_session.commit.assert_not_awaited()
+
+
+@pytest.mark.unit
+def test_arg_parser_accepts_series_id() -> None:
+    parser = build_arg_parser()
+    args = parser.parse_args(
+        ["out/demo.filled.json", "--family", "abc", "--series-id", "def"]
+    )
+    assert args.series_id == "def"
+
+
+@pytest.mark.unit
+def test_arg_parser_series_id_defaults_to_none() -> None:
+    parser = build_arg_parser()
+    args = parser.parse_args(["out/demo.filled.json", "--family", "abc"])
+    assert args.series_id is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_run_links_series_when_series_id_given() -> None:
+    """--series-id makes _run assign the book index and embed the series block,
+    in the import transaction, after import_filled_story and before commit (F1)."""
+    session = AsyncMock()
+    series_id = uuid.uuid4()
+    with (
+        patch(
+            "cyo_adventure.generation.import_cli.get_session",
+            return_value=_FakeSessionCtx(session),
+        ),
+        patch(
+            "cyo_adventure.generation.import_cli.import_filled_story",
+            new=AsyncMock(return_value="sk_book2"),
+        ),
+        patch(
+            "cyo_adventure.generation.import_cli.assign_book_index",
+            new=AsyncMock(return_value=2),
+        ) as assign,
+        patch(
+            "cyo_adventure.generation.import_cli.embed_series_block",
+            new=AsyncMock(),
+        ) as embed,
+    ):
+        story_id, status = await _run(
+            {"id": "sk_book2"}, uuid.uuid4(), None, None, series_id
+        )
+
+    assert (story_id, status) == ("sk_book2", None)
+    assign.assert_awaited_once()
+    assert assign.await_args is not None
+    assert assign.await_args.kwargs["story_id"] == "sk_book2"
+    assert assign.await_args.kwargs["series_id"] == series_id
+    embed.assert_awaited_once()
+    assert embed.await_args is not None
+    assert embed.await_args.kwargs["version"] == 1
+    session.commit.assert_awaited_once()
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_run_no_series_linkage_without_series_id() -> None:
+    """A standalone import without --series-id links no series (unchanged path)."""
+    session = AsyncMock()
+    with (
+        patch(
+            "cyo_adventure.generation.import_cli.get_session",
+            return_value=_FakeSessionCtx(session),
+        ),
+        patch(
+            "cyo_adventure.generation.import_cli.import_filled_story",
+            new=AsyncMock(return_value="sk1"),
+        ),
+        patch(
+            "cyo_adventure.generation.import_cli.assign_book_index",
+            new=AsyncMock(),
+        ) as assign,
+        patch(
+            "cyo_adventure.generation.import_cli.embed_series_block",
+            new=AsyncMock(),
+        ) as embed,
+    ):
+        await _run({"id": "sk1"}, uuid.uuid4(), None, None, None)
+
+    assign.assert_not_awaited()
+    embed.assert_not_awaited()
+    session.commit.assert_awaited_once()
