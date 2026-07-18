@@ -19,6 +19,7 @@ from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
 from cyo_adventure.db.models import GenerationJob
+from cyo_adventure.diversity.query import DifferentiationLevel, similarity_context
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.allowlist import is_enabled_allowlist_pair
 from cyo_adventure.generation.authoring_metadata import (
@@ -32,6 +33,7 @@ from cyo_adventure.generation.skeleton_match import (
     select_skeleton_for_cell,
     skeleton_matches_cell,
 )
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -42,6 +44,8 @@ if TYPE_CHECKING:
         AuthoringPlanRequest,
     )
     from cyo_adventure.db.models import Concept, StoryRequest
+
+logger = get_logger(__name__)
 
 # The only Claude Code session models valid for mechanism="skill" (the
 # cyo-author skill runs inside a Claude Code session, never inside an
@@ -286,13 +290,23 @@ async def _resolve_skeleton_fill(
       real band of the override is persisted, and out-of-cell / non-eligible
       picks add a non-blocking warning.
     - Auto-pick (no override): the empty-cell guard applies HERE, then a
-      recency-weighted pick is drawn from the in-cell candidates.
+      recency- and similarity-weighted pick is drawn from the in-cell
+      candidates (WS-4): a candidate the family already used for a
+      similar-theme request is de-weighted more heavily than a plain recent
+      use, via diversity.query.similarity_context feeding
+      select_skeleton_for_cell's ``similar_usage``. A cell that is
+      theme-saturated (every candidate already used for a similar theme, or
+      more than one used twice) adds a non-blocking warning and an
+      informational log line, escalating differentiation to the leaf level
+      per docs/planning/story-flexibility-plan.md's WS-4 section rather than
+      silently repeating a tree.
 
     Args:
         session: The request session (caller owns the transaction).
         plan: The admin's authoring-plan choice.
         concept: The request's linked concept (source of length/style/band).
-        request: The approved story request (source of family_id for recency).
+        request: The approved story request (source of family_id for
+            recency and theme-similarity history).
         band: The concept's already-resolved age band.
 
     Returns:
@@ -372,9 +386,49 @@ async def _resolve_skeleton_fill(
         )
         raise ValidationError(msg, field="band", value=band)
     recent_usage = await recent_skeleton_usage(session, request.family_id)
-    selection = select_skeleton_for_cell(
-        skeleton_alternatives, recent_usage, random.SystemRandom()
+    # #ASSUME: external-resources: a second live database query (WS-4), the
+    # family's theme-similarity history against this cell, via
+    # diversity.query.similarity_context -> diversity.history.load_family_history.
+    # request.family_id=None (an admin/catalog request) short-circuits inside
+    # load_family_history to an empty history with no query issued, so
+    # cell_theme_saturation stays 0 and similar_count_per_slug stays all-zero:
+    # identical to the pre-WS-4 behavior, no new warning, no behavior change.
+    # #VERIFY: test_skeleton_fill_family_id_none_auto_pick_is_unchanged pins
+    # this backward-compat path in tests/unit/test_authoring_plan.py.
+    sim_ctx = await similarity_context(
+        session,
+        family_id=request.family_id,
+        brief=concept.brief if isinstance(concept.brief, dict) else {},
+        cell_slugs=skeleton_alternatives,
     )
+    selection = select_skeleton_for_cell(
+        skeleton_alternatives,
+        recent_usage,
+        random.SystemRandom(),
+        similar_usage=sim_ctx.similar_count_per_slug,
+    )
+    if sim_ctx.recommendation is DifferentiationLevel.LEAF:
+        warnings.append(
+            "every skeleton in this cell has already been used for a "
+            "similar-theme story for this family; relying on leaf-level "
+            "differentiation."
+        )
+    elif sim_ctx.recommendation is DifferentiationLevel.CATALOG:
+        warnings.append(
+            "this cell is saturated for this theme (multiple similar-theme "
+            "stories per skeleton); consider authoring a new skeleton for "
+            "the cell."
+        )
+    if sim_ctx.recommendation is not DifferentiationLevel.TREE:
+        # A signal for the WS-8 catalog flywheel (docs/planning/story-flexibility-plan.md
+        # section "WS-8: Catalog flywheel"): how often a cell escalates past
+        # tree-level differentiation is exactly the "this cell needs a new
+        # skeleton" pressure that workstream consumes later.
+        logger.info(
+            "selection.cell_theme_saturated",
+            band=band,
+            level=sim_ctx.recommendation.value,
+        )
     return selection.slug, band, skeleton_alternatives, warnings
 
 

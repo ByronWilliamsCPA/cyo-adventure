@@ -155,8 +155,8 @@ in WS-0 must detect and fail it.
 > [ws0-phase2-harness-design.md](ws0-phase2-harness-design.md) for the exact
 > spec. Phase 3 (judge-model calibration) is implemented behind
 > `--with-judge` but not yet run (needs a live, non-mock provider); WS-1's
-> per-band threshold calibration and WS-4's consumption of the request-time
-> query remain open.
+> per-band threshold calibration remains open. WS-4's consumption of the
+> request-time query is delivered (see the WS-4 section below).
 
 - **Goal:** measure perceived similarity per cell and per family so every claim
   below is testable and regressions are caught.
@@ -204,6 +204,29 @@ in WS-0 must detect and fail it.
 - **Serves:** [K11](capability-register.md), [K13](capability-register.md).
 
 ### WS-4: Similarity-driven, escalating selection (consumes WS-0)
+
+> **Status (2026-07-18): request-time consumption delivered.**
+> `generation/skeleton_match.py::select_skeleton_for_cell` takes an optional
+> `similar_usage` map and blends it with recency via
+> `weight = 1 / (1 + recent + 3*similar)`: a similar-theme reuse of a tree is
+> de-weighted like 3 plain recent uses. The `3` penalty is a starting
+> heuristic, not calibrated data; it is tunable once WS-0 metrics accumulate
+> (mirrors the `_HARD_BANDS`-style heuristics elsewhere in
+> `story_requests/authoring_plan.py`). The `_weight` novelty floor is
+> preserved: no candidate is ever fully excluded.
+> `story_requests/authoring_plan.py::_resolve_skeleton_fill`'s auto-pick path
+> (never the admin override path) calls
+> `diversity.query.similarity_context` and threads
+> `similar_count_per_slug` into the pick. When the cell escalates to
+> `DifferentiationLevel.LEAF` or `CATALOG`, the plan result carries a
+> non-blocking warning and an `selection.cell_theme_saturated` info log
+> (band + level), for the WS-8 catalog flywheel to consume later. `CATALOG`
+> only warns and logs here; it does **not** grow the catalog itself, that
+> auto-growth is WS-8's job, not WS-4's. A `family_id=None` (admin/catalog)
+> request is unaffected: `similarity_context` returns an empty history, every
+> similar count is 0, and no warning appears, exactly the pre-WS-4 behavior.
+> Still open: the leaf/element differentiation push itself (WS-1/WS-2/WS-5)
+> and any per-band tuning of the `3` penalty.
 
 - **Depends on WS-0.** Selection is driven by the perceived-similarity metric, so
   WS-0 comes first; WS-4 is the first thing that consumes it.
