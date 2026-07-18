@@ -5,7 +5,9 @@ description: "Exploratory study of whether Open Game Content mechanics from the 
   tabletop RPG (skill checks, a light character sheet, resources, conditions, progression)
   could be mapped onto the existing deterministic Tier-2 Storybook state machine to give the
   13-16 and 16+ gamebook cells more mechanical depth, plus the licensing analysis that gates
-  any such use."
+  any such use, and a 2026-07-18 comparison recommending CC-BY-4.0 sources (D&D SRD 5.1/5.2,
+  Kobold Press Black Flag Reference Document) over Pathfinder's OGL/ORC if reference text is
+  ever shipped."
 tags:
   - planning
   - exploration
@@ -35,6 +37,13 @@ source: "Exploration 2026-07-18 against storybook/models.py, storybook/condition
 > schema, validator, player, or catalog. The licensing section is analysis, not
 > legal advice; a legal review is a hard gate before any adoption of licensed
 > text (section 8).
+>
+> **Source-system update (2026-07-18):** the section 3-6 mechanical mapping is
+> system-agnostic. Section 7.4 now compares D&D SRD 5.1/5.2 and Kobold Press's
+> Black Flag Reference Document (both CC-BY-4.0) against Pathfinder's OGL 1.0a /
+> ORC, and recommends a CC-BY-4.0 source over ORC or OGL if reference text is
+> ever shipped (Option B). CC-BY-4.0 removes almost every compliance obligation
+> in section 7.2. The inspiration-only recommendation (Option A) is unchanged.
 
 Serves, if pursued: [K3](capability-register.md) (state and consequence),
 [K18](capability-register.md) (ratings/engagement as the success signal). It is
@@ -498,7 +507,73 @@ a crisper mechanics/expression split, and a notice obligation that is easier
 to satisfy in an app (one notices screen) than OGL's designate-the-OGC
 requirement is against generated JSON.
 
-### 7.4 What we would actually take, under any option
+### 7.4 CC-BY-4.0 alternatives (the licensing simplification): D&D SRD 5.1/5.2 and the Black Flag Reference Document
+
+The OGL/ORC analysis above is the picture *if Pathfinder is the source corpus*.
+It is not the only 5e-lineage option, and two alternatives collapse most of
+section 7.2's compliance burden because they are available under **Creative
+Commons Attribution 4.0 (CC-BY-4.0)**: a general-purpose, irrevocable,
+attribution-only license with **no sharealike and no game-specific machinery**.
+
+- **D&D System Reference Document 5.1 and 5.2.** Wizards of the Coast placed
+  SRD 5.1 under CC-BY-4.0 in January 2023 and released SRD 5.2 (the 2024-rules
+  SRD) under CC-BY-4.0 on 22 April 2025. A CC grant, once made, cannot be
+  revoked; WotC has stated all future SRDs will be CC-BY-4.0 only. This is the
+  same publisher whose 2023 OGL-deauthorization attempt created the cloud
+  section 7.2 warns about, but that cloud is an OGL-1.0a problem: the CC-BY
+  grant is a separate, one-way, irrevocable instrument and is not exposed to it.
+- **Black Flag Reference Document (BFRD), Kobold Press.** The reference document
+  behind *Tales of the Valiant*, **dual-licensed under BOTH the ORC License and
+  CC-BY-4.0**. It is built on the CC-released 5e SRD and adds original mechanics
+  (talents, lineages, and the *Luck* and *Doom* metacurrencies) plus GM
+  material. Taking it under its CC-BY path gives the SRD's attribution-only
+  simplicity while adding mechanics that fit the deterministic model unusually
+  well (below).
+
+Comparison for THIS product (a commercial, LLM-generated, children's reading
+app), lightest to heaviest on licensing weight:
+
+| Source corpus | License to use | Sharealike | Revocation cloud | Per-copy license text | Mark OGC in generated JSON | Attribution surface |
+| --- | --- | --- | --- | --- | --- | --- |
+| **D&D SRD 5.1 / 5.2** | CC-BY-4.0 | none | none (irrevocable grant) | not required | not required | one attribution string on a notices screen |
+| **BFRD (CC-BY path)** | CC-BY-4.0 | none | none | not required | not required | one attribution string (+ the WotC SRD credit it inherits) |
+| **BFRD (ORC path)** | ORC | mechanics sharealike | none | ORC Notice required | not required | ORC Notice block |
+| **Pathfinder 2e Remaster** | ORC | mechanics sharealike | none | ORC Notice required | not required | ORC Notice block |
+| **Pathfinder 1e** | OGL 1.0a | via the license | **yes (unadjudicated)** | **required each distribution** | **required, awkward vs per-story JSON** | Section 15 chain |
+
+The decisive column is CC-BY-4.0 versus everything else. Under CC-BY-4.0 the
+section 7.2 problems do not arise at all: no obligation to ship license text
+with every copy, no Section 15 chain to maintain and extend, no requirement to
+mark which spans of generated story JSON are open content, and no sharealike
+forcing our derived mechanics open. The whole obligation reduces to a single
+attribution string on a notices screen. For an app that ships thousands of
+generated stories, that difference is the entire decision.
+
+**A mechanical-fit bonus, not only a licensing one.** Two of the alternatives
+are *better conceptual sources* for the dice-free design in sections 4-5,
+independent of licensing:
+
+- **5e's math is flatter than Pathfinder's.** PF2e adds character level to
+  proficiency, so its checks scale with two large moving numbers; the section
+  4.1 "your build is the roll" translation must discard that scaling to fit the
+  no-arithmetic DSL and the 0-3 stat range. 5e's "ability modifier +
+  proficiency vs DC" is already close to one small quantity against a threshold,
+  so SRD 5.1/5.2 maps onto the resolver-band model with less distortion.
+- **BFRD's Luck and Doom are already resource clocks.** *Luck* is a spendable
+  metacurrency (the section 5 `resolve` salvage mechanic almost verbatim) and
+  *Doom* is a rising countdown (a monotone drained pool with a fail route).
+  Both are dice-free by nature: pools you spend and fill, not rolls. If any
+  source system were designed for a deterministic gamebook, it is the one that
+  already states its tension as spendable pools.
+
+None of this changes the section 3-6 mapping, which is deliberately generic
+(threshold checks, a small sheet, one pool, a spend-to-salvage token are
+gamebook primitives older than any of these systems). It changes only *which
+corpus we would cite and attribute if we ever ship actual text* (Option B), and
+it makes the licensing cost of doing so far lower than the OGL/ORC analysis
+above implied.
+
+### 7.5 What we would actually take, under any option
 
 Only generic, re-themed mechanics: threshold checks, degrees of success, a
 small ability/skill sheet, resource pools, conditions-as-flags, backgrounds,
@@ -511,29 +586,49 @@ Pathfinder" prompt is both a quality and a licensing hazard; the mechanics
 layer lives in our skeleton JSON, and prompts stay Paizo-free. This belongs in
 the WS-2 theme-contract constraints if the proposal proceeds.
 
-### 7.5 Recommendation (licensing)
+### 7.6 Recommendation (licensing)
 
-- **Option A (recommended): inspiration-only, no license adoption.** Build
-  the section 5 layer as original expression of unprotectable generic
-  mechanics; adopt neither OGL nor ORC; carry no notice obligations; never
-  reference Pathfinder in product, marketing, or prompts. This document's
-  proposal needs nothing more, since it copies no text. Residual risk is the
-  fact-specific mechanic/expression line, which is exactly what the legal
-  review below is for.
-- **Option B (only if we later want actual SRD text, e.g. condition
-  definitions or a monster's mechanical block as authoring reference that
-  ships):** use **ORC-licensed PF2e Remaster material only**, comply with the
-  ORC Notice and sharealike-on-mechanics, and do not touch OGL 1.0a material
-  at all.
-- **In all cases: legal review is a hard gate.** Before any code, catalog, or
-  prompt work that leans on this document, counsel should review (1) the
+- **Option A (still recommended for the section 5 proposal as written):
+  inspiration-only, no license adoption.** Build the layer as original
+  expression of unprotectable generic mechanics; adopt no license; carry no
+  notice obligations; reference no source system in product, marketing, or
+  prompts. The proposal copies no text, so it needs nothing more. Residual risk
+  is the fact-specific mechanic/expression line, which is exactly what the legal
+  review below is for. Which system inspired the grammar does not matter if we
+  take none of its text.
+- **Option B (only if we later ship actual reference text, e.g. condition
+  definitions or a stat block as authoring reference): prefer CC-BY-4.0
+  material, specifically D&D SRD 5.1/5.2 or the BFRD under its CC-BY path.**
+  This supersedes the earlier "ORC-licensed PF2e Remaster only" fallback:
+  CC-BY-4.0 is strictly lighter than ORC for this product (no sharealike on our
+  derived mechanics, no ORC Notice, one attribution string) and dramatically
+  lighter than OGL 1.0a. Do **not** adopt OGL 1.0a material at all (the
+  deauthorization cloud plus the per-distribution license-text and
+  OGC-designation obligations are a poor fit for generated JSON in a kids' app).
+  Between the two CC-BY sources, prefer the **SRD** for the flattest mechanics
+  and the largest, most-attributed ecosystem; consider the **BFRD** only when we
+  specifically want Luck/Doom-style pools, and take it under **CC-BY, not ORC**,
+  to avoid the sharealike.
+- **Trademark hygiene, unchanged and applying to every option:** never use
+  "Dungeons & Dragons", "D&D", "Pathfinder", "Tales of the Valiant", the
+  BFRD/ORC/system logos, or any "compatible with" claim in product, store
+  listings, or generation prompts. CC-BY licenses the *text*, never the marks;
+  attribution is a plain-text credit, not a logo or a compatibility badge.
+- **The prompt-hygiene rule from section 7.5 is more important here, not less:**
+  even CC-BY text must never enter a generation prompt as "write this like
+  <system>", both to keep distinctive expression out of generated output and to
+  keep the attribution boundary clean. Mechanics live in skeleton JSON; prompts
+  stay system-name-free.
+- **In all cases: legal review remains a hard gate.** Before any code, catalog,
+  or prompt work leaning on this document, counsel should confirm (1) the
   inspiration-only position and the mechanic/expression boundary for the
-  specific sheet/check design, (2) ORC obligations if Option B is ever
-  contemplated, (3) trademark hygiene, and (4) the interaction with a
-  children's product (COPPA posture and store policies do not change the IP
-  analysis, but counsel should confirm no store-policy wrinkle for
-  RPG-mechanic content in a kids' category). No confidence expressed here
-  substitutes for that review.
+  specific sheet/check design (Option A), (2) the exact CC-BY-4.0 attribution
+  string and where it must appear for an app that distributes generated
+  derivatives (Option B), (3) trademark hygiene, and (4) any children's-category
+  store-policy wrinkle for RPG-mechanic content (COPPA posture and store
+  policies do not change the IP analysis, but counsel should confirm no
+  wrinkle). CC-BY materially shrinks the compliance surface; it does not remove
+  the need for the review.
 
 ## 8. Phased decision path
 
@@ -579,13 +674,19 @@ Deliberately gated so the owner can stop after any phase with value banked.
 The surprising finding of this exploration is how little needs to be
 imported: the Storybook Tier-2 model already contains a complete,
 deterministic, gate-verified RPG substrate, and the best teen skeletons
-already use fragments of it. Pathfinder's real contribution is not rules text
-(we should take none, Option A) but a **coherent grammar** worth borrowing at
-the level of ideas: degrees of success, builds that matter, spendable
-resolve, one honest resource clock. That grammar fits inside the existing
-schema, evaluator, player, walk cap, and band policy without touching any of
-them, and the L2 gate turns out to be the fairness proof the dice-free design
-needs. The costs are concentrated in authoring discipline and a permanent
+already use fragments of it. The real contribution of any of these systems is
+not rules text (we should take none, Option A) but a **coherent grammar** worth
+borrowing at the level of ideas: degrees of success, builds that matter,
+spendable resolve, one honest resource clock. That grammar fits inside the
+existing schema, evaluator, player, walk cap, and band policy without touching
+any of them, and the L2 gate turns out to be the fairness proof the dice-free
+design needs. A late finding (section 7.4) reframes the sourcing: this grammar
+is equally available from D&D SRD 5.1/5.2 and Kobold Press's Black Flag
+Reference Document, both under CC-BY-4.0, which are materially simpler licenses
+than Pathfinder's OGL 1.0a or ORC. If text is ever shipped (Option B), a CC-BY
+source is preferred; and 5e's flatter math and the BFRD's spendable Luck/Doom
+pools fit the deterministic model more naturally than Pathfinder's level-scaled
+checks, so the alternatives win on both licensing and mechanical fit. The costs are concentrated in authoring discipline and a permanent
 small-sheet constraint, and the value is concentrated in exactly two cells
 (13-16 gamebook, 16+ gamebook). Recommended: pursue Phase 0 and the one-cell
 Phase 1 pilot; do not extend below 13-16, into prose, or toward simulation.
@@ -593,5 +694,5 @@ Phase 1 pilot; do not extend below 13-16, into prose, or toward simulation.
 ---
 
 *Exploratory / future improvement, not a committed build. Licensing analysis
-herein is not legal advice; obtain legal review per section 7.5 before any
+herein is not legal advice; obtain legal review per section 7.6 before any
 adoption.*
