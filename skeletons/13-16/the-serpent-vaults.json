@@ -213,7 +213,7 @@
     },
     {
       "id": "c01_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Cistern Mouth with the hoard still below and your life still yours; the Cistern Mouth beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c01_cap",
@@ -435,7 +435,7 @@
     },
     {
       "id": "c02_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Silt Stair with the hoard still below and your life still yours; the Silt Stair beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c02_cap",
@@ -657,7 +657,7 @@
     },
     {
       "id": "c03_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Weir Gate with the hoard still below and your life still yours; the Weir Gate beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c03_cap",
@@ -879,7 +879,7 @@
     },
     {
       "id": "c04_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the First Seal with the hoard still below and your life still yours; the First Seal beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c04_cap",
@@ -1113,7 +1113,7 @@
     },
     {
       "id": "c05_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the First Air Bell with the hoard still below and your life still yours; the First Air Bell beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c05_cap",
@@ -1473,7 +1473,7 @@
     },
     {
       "id": "c07_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Drowned Gallery with the hoard still below and your life still yours; the Drowned Gallery beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c07_cap",
@@ -1695,7 +1695,7 @@
     },
     {
       "id": "c08_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Cold Sump with the hoard still below and your life still yours; the Cold Sump beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c08_cap",
@@ -1917,7 +1917,7 @@
     },
     {
       "id": "c09_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Second Seal with the hoard still below and your life still yours; the Second Seal beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c09_cap",
@@ -2151,7 +2151,7 @@
     },
     {
       "id": "c10_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Second Air Bell with the hoard still below and your life still yours; the Second Air Bell beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c10_cap",
@@ -2511,7 +2511,7 @@
     },
     {
       "id": "c12_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Sluice Fork with the hoard still below and your life still yours; the Sluice Fork beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c12_cap",
@@ -2740,7 +2740,7 @@
     },
     {
       "id": "c13_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Sunken Nave with the hoard still below and your life still yours; the Sunken Nave beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c13_cap",
@@ -2962,7 +2962,7 @@
     },
     {
       "id": "c14_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Pillared Dark with the hoard still below and your life still yours; the Pillared Dark beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c14_cap",
@@ -3184,7 +3184,7 @@
     },
     {
       "id": "c15_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Third Air Bell with the hoard still below and your life still yours; the Third Air Bell beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c15_cap",
@@ -3544,7 +3544,7 @@
     },
     {
       "id": "c17_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Gallery of Coffers with the hoard still below and your life still yours; the Gallery of Coffers beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c17_cap",
@@ -3766,7 +3766,7 @@
     },
     {
       "id": "c18_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Third Seal with the hoard still below and your life still yours; the Third Seal beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c18_cap",
@@ -4000,7 +4000,7 @@
     },
     {
       "id": "c19_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Black Cistern with the hoard still below and your life still yours; the Black Cistern beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c19_cap",
@@ -4222,7 +4222,7 @@
     },
     {
       "id": "c20_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Eel Run with the hoard still below and your life still yours; the Eel Run beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c20_cap",
@@ -4444,7 +4444,7 @@
     },
     {
       "id": "c21_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Fourth Air Bell with the hoard still below and your life still yours; the Fourth Air Bell beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c21_cap",
@@ -4799,7 +4799,7 @@
         "id": "c23_prop_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Propped and Fallen"
+        "title": "The Slab Came Down"
       },
       "choices": []
     },
@@ -4841,7 +4841,7 @@
     },
     {
       "id": "c23_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Last Air Bell with the hoard still below and your life still yours; the Last Air Bell beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c23_cap",
@@ -5075,7 +5075,7 @@
     },
     {
       "id": "c24_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Vault of the Serpent with the hoard still below and your life still yours; the Vault of the Serpent beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c24_cap",
@@ -5219,7 +5219,7 @@
         "id": "c25_prop_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Propped and Fallen"
+        "title": "The Arch Came Down"
       },
       "choices": []
     },
@@ -5297,7 +5297,7 @@
     },
     {
       "id": "c25_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Groaning Arch with the hoard still below and your life still yours; the Groaning Arch beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c25_cap",
@@ -5519,7 +5519,7 @@
     },
     {
       "id": "c26_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Drowned Stair with the hoard still below and your life still yours; the Drowned Stair beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c26_cap",
@@ -5741,7 +5741,7 @@
     },
     {
       "id": "c27_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Rising Water with the hoard still below and your life still yours; the Rising Water beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c27_cap",
@@ -5963,7 +5963,7 @@
     },
     {
       "id": "c28_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Weed Curtain with the hoard still below and your life still yours; the Weed Curtain beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c28_cap",
@@ -6185,7 +6185,7 @@
     },
     {
       "id": "c29_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Choke with the hoard still below and your life still yours; the Choke beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c29_cap",
@@ -6407,7 +6407,7 @@
     },
     {
       "id": "c30_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Sluice Return with the hoard still below and your life still yours; the Sluice Return beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c30_cap",
@@ -6629,7 +6629,7 @@
     },
     {
       "id": "c31_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Last Gallery with the hoard still below and your life still yours; the Last Gallery beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c31_cap",
@@ -6851,7 +6851,7 @@
     },
     {
       "id": "c32_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Broken Lift with the hoard still below and your life still yours; the Broken Lift beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c32_cap",
@@ -7073,7 +7073,7 @@
     },
     {
       "id": "c33_cap",
-      "body": "<<FILL role=setback words=58 beats='you turn for the surface with the hoard still below and your life still yours; the vault beat you but did not keep you'>>",
+      "body": "<<FILL role=setback words=58 beats='you turn back from the Ascent Shaft with the hoard still below and your life still yours; the Ascent Shaft beat you but did not keep you, and the vault is there to face again another day'>>",
       "is_ending": true,
       "ending": {
         "id": "c33_cap",
