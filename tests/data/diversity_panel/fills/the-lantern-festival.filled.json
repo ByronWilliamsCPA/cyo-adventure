@@ -1,0 +1,563 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lantern_festival",
+  "version": 1,
+  "title": "The Lantern Festival",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "community",
+      "celebration",
+      "perseverance"
+    ],
+    "estimated_minutes": 6,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Tansy is a young hedgehog. Her spines are soft and brown. She lives in a cozy stump home. Tonight is the big Lantern Festival. Tansy stands in her clearing and counts on her paws. She needs glowberries for light. She needs reeds to make frames. She needs to find her friends and invite them. She needs honey cakes for the feast. She needs the old paper lanterns from the shed. She needs the cricket band to play music. Her heart feels warm and excited. What should she do now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_berries",
+          "label": "Go pick glowberries by the bramble patch.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_willow",
+          "label": "Go invite your friends at the willow.",
+          "target": "n_willow1"
+        },
+        {
+          "id": "c_start_reeds",
+          "label": "Go cut reeds for lantern frames.",
+          "target": "n_reed1"
+        },
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the bees for honey cakes.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Go fetch the old paper lanterns.",
+          "target": "n_shed1"
+        },
+        {
+          "id": "c_start_crickets",
+          "label": "Go ask the cricket band to play.",
+          "target": "n_cricket1"
+        }
+      ]
+    },
+    {
+      "id": "n_berry1",
+      "body": "At the bramble patch, low berries glow soft. The ripe ones rest easy to pick. They are plump and round. Up on a branch sits a fatter cluster. Those berries shine much brighter than the low ones. Tansy looks at the safe low berries. Then she looks up high at the bright ones. The high ones are harder to reach. She must pick one or the other. Which will she choose?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the ripe low glowberries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Climb for the high cluster.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "Tansy fills her basket with glowing berries. The warm light shines up under her chin. She smiles at all her work. The festival is starting to grow now. All her gathering is coming together. She can carry these berries to the meadow. Or she can go back to the clearing for more. What feels right to her?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_meadow",
+          "label": "Carry the glowberries to the meadow.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_berry_back",
+          "label": "Go back to the clearing for more.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_willow1",
+      "body": "Under the old willow tree, her friends rest in soft piles. The warm sun feels good on them as they nap. Tansy wants to ask them to the big festival tonight. She could knock soft on the willow door. That would wake them slow and easy. Or she could clang the loud dinner bell. The bell would wake them very fast. What should she do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_knock",
+          "label": "Knock gently on the willow door.",
+          "target": "n_willow2"
+        },
+        {
+          "id": "c_willow_bell",
+          "label": "Clang the loud dinner bell.",
+          "target": "e_willow_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_willow2",
+      "body": "Her friends yawn and stretch and say yes at once. They jump up and grab their little lanterns right away. The group is growing and everyone feels happy together. Tansy feels the joy all around her as they laugh. She can lead them to the meadow now. Or she can go back to her clearing. What choice feels best to her?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_meadow",
+          "label": "Lead your friends to the meadow.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_willow_back",
+          "label": "Pop back to the clearing first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed1",
+      "body": "At the reedy pond Tansy looks for stalks. She needs them to make lantern frames. Tall dry reeds stand on the bank. They rustle and sway in the breeze. Fresh green reeds lean out over the water. The water below is cool and calm. Which reeds will work best for her frames? Tansy thinks hard about it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_dry",
+          "label": "Cut the tall dry reeds.",
+          "target": "n_reed2"
+        },
+        {
+          "id": "c_reed_wet",
+          "label": "Cut the fresh green reeds.",
+          "target": "e_reed_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_reed2",
+      "body": "The dry reeds snap free in a neat and tidy bundle. They are gold and strong and ready to bend. They bend just right in her tiny paws. They are perfect for making pretty frames. She can weave them right here by the pond. Or she can carry the bundle back home. What should she do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_weave",
+          "label": "Weave the frames here by the pond.",
+          "target": "n_reed3"
+        },
+        {
+          "id": "c_reed_back",
+          "label": "Carry the bundle back to the clearing.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed3",
+      "body": "Tansy bends the reeds into round little frames. She hums a happy song as she works. Her paws move fast and sure. Soon she has stacked up many frames. They balance in her arms. She is proud of all her work. Now she carries them to the meadow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_meadow",
+          "label": "Carry the lantern frames to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "At the round hive Tansy asks for honey cakes. The bees buzz kindly and nod their heads. They are happy to help her. Tansy can wait for them to pack a basket. Or she can go back and come back later. Which should she do right now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_wait",
+          "label": "Wait politely for the honey cakes.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_back",
+          "label": "Head back to the clearing for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "The bees fill a basket with warm honey cakes. They smell like sweet clover and warm sun. The smell makes Tansy smile big. She thanks the bees with a bow. They buzz and wave goodbye. She carries the heavy basket to the meadow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_meadow",
+          "label": "Carry the honey cakes to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_shed1",
+      "body": "In the little garden shed sit old lanterns from last year's festival. They rest dusty on a high shelf and need some care. The paint is still pretty on each one. Tansy can dust each one off now with a soft cloth. Or she can go back and get them later. What feels right to her?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_dust",
+          "label": "Dust off the old paper lanterns.",
+          "target": "n_shed2"
+        },
+        {
+          "id": "c_shed_back",
+          "label": "Go back to the clearing for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_shed2",
+      "body": "Tansy dusts the paper lanterns with care. The painted moons and leaves shine bright. Gold and red and blue colors come back. Good as new. She is happy with her work. Her armful of things keeps getting bigger. She carries the lanterns to the meadow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_meadow",
+          "label": "Carry the paper lanterns to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket1",
+      "body": "By the tall grass the cricket band waits. Tiny fiddles rest under their tiny arms. Tansy asks if they will play at the fest. The crickets chirp loudly and nod yes. Their music will make the night perfect. Should she lead them now? Or go back first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_lead",
+          "label": "Ask the crickets to follow you now.",
+          "target": "n_cricket2"
+        },
+        {
+          "id": "c_cricket_back",
+          "label": "Go back to the clearing first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket2",
+      "body": "The cricket band walks behind Tansy in a line. They hold their tiny fiddles tight. Music will make the night complete. Tansy leads the chirping band along. They hop and jump as they go. They sing happy songs. They march all the way to the meadow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_meadow",
+          "label": "Lead the cricket band to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "The meadow opens wide at dusk with colors everywhere. The sky turns purple and pink as the sun goes down. The big oak stands tall and strong there. The still pond mirrors the colors so well. Tansy's things pile up and grow bigger. Friends keep coming through the trees. Everyone smiles and helps her gather more. Should she set up now? Or make one more trip?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meadow_setup",
+          "label": "Start setting up the festival.",
+          "target": "n_setup"
+        },
+        {
+          "id": "c_meadow_back",
+          "label": "Make one last trip to the clearing.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_setup",
+      "body": "In the meadow the reed frames get wrapped. Bright paper covers them up. Glowberries tuck inside to shine and shimmer. Friends bustle all around working fast. Busy paws work here and there. Lanterns are taking shape. Should she hang them in the oak? Or spread the picnic?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup_hang",
+          "label": "Hang the lanterns in the great oak.",
+          "target": "n_hang"
+        },
+        {
+          "id": "c_setup_picnic",
+          "label": "Spread out the picnic feast.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_hang",
+      "body": "Friends lift the lanterns into oak branches with care. They sway like fireflies in the evening breeze. The lanterns hang ready and waiting to shine. The sky turns purple and then dark. Soon night will come to the meadow. All the stars will come out. Should Tansy light them now? Or wait for the first star?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hang_light",
+          "label": "Light the lanterns right now.",
+          "target": "n_light"
+        },
+        {
+          "id": "c_hang_star",
+          "label": "Wait for the first star.",
+          "target": "n_star"
+        }
+      ]
+    },
+    {
+      "id": "n_light",
+      "body": "One by one the lanterns glow and come alive. First one, then two, then three, then more and more. The meadow glows gold and warm all around. The light is soft and pretty to see. Everyone gasps with joy and wonder too. They clap their paws together and smile. The glow makes them all smile wide. Should Tansy float some on the pond? Or keep them high in the oak?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_light_pond",
+          "label": "Float lanterns on the pond.",
+          "target": "e_finale_pond"
+        },
+        {
+          "id": "c_light_oak",
+          "label": "Keep the lanterns in the oak.",
+          "target": "e_finale_oak"
+        }
+      ]
+    },
+    {
+      "id": "n_star",
+      "body": "Everyone grows quiet and still. They watch the sky turn dark. The clouds fade away above them. The sky goes from purple to black. Then the first tiny star blinks awake. It shines bright over the meadow. A loud cheer goes up. Friends hug and laugh together. That is the sign. Tansy lights the very first lantern.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star_glow",
+          "label": "Light the first lantern and begin.",
+          "target": "n_glow"
+        }
+      ]
+    },
+    {
+      "id": "n_glow",
+      "body": "Lantern after lantern flickers on. The meadow becomes a sea of gold. Every lantern glows warm and bright. The pond mirrors each light below. It doubles everything with color. The crickets lift their fiddles high. They start to play and bow. The music drifts out soft. Should Tansy sing a song? Or gather friends for a wish?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glow_song",
+          "label": "Start a lantern song.",
+          "target": "n_song"
+        },
+        {
+          "id": "c_glow_wish",
+          "label": "Make a wish together.",
+          "target": "n_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_song",
+      "body": "The crickets play a bouncy happy tune. It bounces and hops and moves. Tansy leads the old lantern song. Friends join in line by line. Their voices blend and rise together. The whole meadow sings the words. The music is so pretty and nice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_song_end",
+          "label": "Sing the festival into the night.",
+          "target": "e_finale_song"
+        }
+      ]
+    },
+    {
+      "id": "n_wish",
+      "body": "Friends gather in a ring around the lantern. They circle the brightest one. They hold paws tight together. They close their eyes soft. Tansy counts slow to three. Everyone makes one warm wish. A wish for the whole woodland.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wish_end",
+          "label": "Make the wish all together.",
+          "target": "e_finale_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "Tansy spreads a cloth on the grass. It is red with white dots on it. Honey cakes and berry treats rest there. They smell so very good. Lanterns glow soft and warm up above. Friends sit down in a circle. They wait and smile at each other. Should she start sharing now? Or wait for Granny Hedgehog?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_feast",
+          "label": "Start sharing the honey cakes.",
+          "target": "n_feast"
+        },
+        {
+          "id": "c_picnic_bless",
+          "label": "Wait for Granny Hedgehog.",
+          "target": "n_bless"
+        }
+      ]
+    },
+    {
+      "id": "n_feast",
+      "body": "The honey cakes go round the circle. Everyone munches slow and happy. The treats are sweet and so good. Friends laugh and smile together. The feast is merry and full. All happens under swaying lanterns. Should she let it roll on? Or start some silly riddles?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_feast_end",
+          "label": "Let the happy feast roll on.",
+          "target": "e_finale_feast"
+        },
+        {
+          "id": "c_feast_riddle",
+          "label": "Start a round of riddles.",
+          "target": "n_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_riddle",
+      "body": "Friends tell silly riddles and laugh. Each one is sillier than before. What flies but has no wings at all? Honey cake makes the riddles yum. Everyone giggles hard together. The lanterns seem to giggle too. Tansy saves the very best riddle for last.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_riddle_end",
+          "label": "Tell the very best riddle.",
+          "target": "e_finale_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_bless",
+      "body": "Granny Hedgehog comes with her cane. She walks slow and steady and sure. Her spines shine silver in the light. They sparkle and shimmer above her. The friends sit quiet and still. She smiles kind and big at them. She sits down with a sigh. She tells the old tale of the very first lantern, just as she does every year.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bless_end",
+          "label": "Listen to Granny's lantern story.",
+          "target": "e_finale_story"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "Tansy reaches for the high berries on the wobbly branch. The branch springs back so very fast and hard. Her basket bounces high into the air. It flies into the soft ferns below. Boing, boing, boing it goes with funny sounds. She does not get hurt at all. She laughs out loud at it. The berries roll around in the ferns. She dusts off and heads back home. Time to try again.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Bouncing Berries"
+      }
+    },
+    {
+      "id": "e_willow_oops",
+      "body": "The dinner bell clangs out very loud. The sound rings across the tree. All her friends tumble out at once. They fall in a giggly heap together. Blankets fly everywhere around them. Everyone giggles and grumbles too. It takes a long time to sort them out. Everyone ends up laughing hard. Tansy laughs with them. Next time she will knock soft.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_willow_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Too Loud a Bell"
+      }
+    },
+    {
+      "id": "e_reed_oops",
+      "body": "The fresh green reeds are too soft. They are wet from the water below. Every frame Tansy bends just flops down. It falls over like a cooked noodle. Everything drips all on her paws. She laughs at the soggy mess. It is pretty funny to see. She heads back to her clearing. Time to start her work again.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_reed_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Soggy Reeds"
+      }
+    },
+    {
+      "id": "e_finale_pond",
+      "body": "Tansy and her friends set lanterns on the pond. The water is still and calm below. The lanterns float like little gold moons. The pond mirrors each light well. The glow shines down and up again. The whole meadow goes ooh together. They clap and cheer with joy. The festival is pretty and done. Tansy glows as bright as her lanterns.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_pond",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Lanterns on the Water"
+      }
+    },
+    {
+      "id": "e_finale_oak",
+      "body": "The oak blazes with many lanterns. They hang like a tree of warm stars. The light is soft and gold all around. Everyone dances slow under the branches. They spin and twirl around slow. Tansy looks up at what they made. Her heart is so full and bright. She feels so happy inside.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_oak",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Tree Full of Stars"
+      }
+    },
+    {
+      "id": "e_finale_song",
+      "body": "The whole meadow sings the old song. The voices blend and rise together. Cricket fiddles play high and true. The music rolls out over the pond. It goes floating into the night sky. Tansy sings the loudest of all. She is proud of the fest.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Lantern Song"
+      }
+    },
+    {
+      "id": "e_finale_wish",
+      "body": "Friends open their eyes to the glow. The meadow shines bright all around. They made one warm wish together. A wish for a happy year ahead. Tansy squeezes all their paws. She smiles big and wide. This is the best fest ever.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_wish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One Warm Wish"
+      }
+    },
+    {
+      "id": "e_finale_feast",
+      "body": "The honey cakes and treats go round. Everyone nibbles and munches with joy. They laugh with full mouths together. The feast goes on late into the night. The swaying lanterns shine down. The whole woodland comes together now. Warm and happy and full.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_feast",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Glowing Feast"
+      }
+    },
+    {
+      "id": "e_finale_riddle",
+      "body": "Tansy tells the best riddle of all. The whole circle roars with laugh. Some friends spray crumbs everywhere. The lanterns seem to twinkle along. The giggles echo across the meadow. It is the merriest night the woodland knows.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_riddle",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Best Riddle of All"
+      }
+    },
+    {
+      "id": "e_finale_story",
+      "body": "Granny finishes the old tale at last. Every lantern glows its brightest then. The friends clap soft and slow. Tansy leans against Granny close. Granny's arm wraps around her tight. Her gathering has kept the fest alive. One more year of light shines.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Granny's Lantern Story"
+      }
+    }
+  ]
+}

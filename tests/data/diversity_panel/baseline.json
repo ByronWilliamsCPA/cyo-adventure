@@ -1,0 +1,214 @@
+{
+  "atg_pairs": {
+    "cave-dino~cave-sea": {
+      "big_over_uni_ratio": 1.157346,
+      "mean_bigram_distance": 0.909558,
+      "median_distance": 0.792581,
+      "p10_distance": 0.695875,
+      "p25_distance": 0.760237,
+      "templated_node_count": 0,
+      "verdict": "pass"
+    },
+    "cave-dino~cave-space": {
+      "big_over_uni_ratio": 1.12059,
+      "mean_bigram_distance": 0.919638,
+      "median_distance": 0.824265,
+      "p10_distance": 0.761516,
+      "p25_distance": 0.791552,
+      "templated_node_count": 0,
+      "verdict": "pass"
+    },
+    "cave-sea~cave-space": {
+      "big_over_uni_ratio": 1.115731,
+      "mean_bigram_distance": 0.934433,
+      "median_distance": 0.848101,
+      "p10_distance": 0.770462,
+      "p25_distance": 0.814599,
+      "templated_node_count": 0,
+      "verdict": "pass"
+    },
+    "cave-space~cave-space-identical": {
+      "big_over_uni_ratio": 0.0,
+      "mean_bigram_distance": 0.0,
+      "median_distance": 0.0,
+      "p10_distance": 0.0,
+      "p25_distance": 0.0,
+      "templated_node_count": 64,
+      "verdict": "fail"
+    },
+    "cave-space~cave-space-swap": {
+      "big_over_uni_ratio": 1.221507,
+      "mean_bigram_distance": 0.071722,
+      "median_distance": 0.068966,
+      "p10_distance": 0.0,
+      "p25_distance": 0.036869,
+      "templated_node_count": 64,
+      "verdict": "fail"
+    }
+  },
+  "brief_pairs": [
+    {
+      "key": "a dragon who lost his fire~dragon story please",
+      "similar": true,
+      "similarity": 0.5
+    },
+    {
+      "key": "a brave dragon guards her eggs~the wyvern of the north mountain",
+      "similar": true,
+      "similarity": 1.0
+    },
+    {
+      "key": "a space station rescue mission~astronauts stranded in orbit",
+      "similar": true,
+      "similarity": 1.0
+    },
+    {
+      "key": "a dinosaur dig in the desert~fossils hidden in the canyon",
+      "similar": true,
+      "similarity": 0.5
+    },
+    {
+      "key": "a wizard's first spell goes wrong~the witch of the forest school",
+      "similar": true,
+      "similarity": 0.5
+    },
+    {
+      "key": "a space station rescue mission~an undersea mermaid kingdom",
+      "similar": false,
+      "similarity": 0.0
+    },
+    {
+      "key": "a robot learns to bake bread~pirates hunt for buried treasure",
+      "similar": false,
+      "similarity": 0.0
+    },
+    {
+      "key": "a knight guards the old castle~a pirate ship full of treasure",
+      "similar": false,
+      "similarity": 0.0
+    }
+  ],
+  "fills": {
+    "cave-dino": {
+      "band": "8-11",
+      "content_token_count": 2895,
+      "distinct_1": 0.34715,
+      "distinct_2": 0.879195,
+      "fingerprint": "4bd738af1b6db7e07e6ef721798d2110c4fb096c10f804b01c08d3b7d82b000a",
+      "self_bleu_lite": 0.39452
+    },
+    "cave-sea": {
+      "band": "8-11",
+      "content_token_count": 2988,
+      "distinct_1": 0.335341,
+      "distinct_2": 0.883379,
+      "fingerprint": "4bd738af1b6db7e07e6ef721798d2110c4fb096c10f804b01c08d3b7d82b000a",
+      "self_bleu_lite": 0.381134
+    },
+    "cave-space": {
+      "band": "8-11",
+      "content_token_count": 3678,
+      "distinct_1": 0.327352,
+      "distinct_2": 0.887659,
+      "fingerprint": "4bd738af1b6db7e07e6ef721798d2110c4fb096c10f804b01c08d3b7d82b000a",
+      "self_bleu_lite": 0.380999
+    },
+    "clockwork": {
+      "band": "8-11",
+      "content_token_count": 9330,
+      "distinct_1": 0.18746,
+      "distinct_2": 0.819184,
+      "fingerprint": "e135b58dff0189b95614210cafe886efdd983aacd27ac012eee3984104e70482",
+      "self_bleu_lite": 0.495402
+    },
+    "clover": {
+      "band": "3-5",
+      "content_token_count": 358,
+      "distinct_1": 0.399441,
+      "distinct_2": 0.825444,
+      "fingerprint": "7959b3ffa830afb556cd14872f157a79cc7891a3ebcda81f348834ec2574f3cf",
+      "self_bleu_lite": 0.405449
+    },
+    "lantern": {
+      "band": "5-8",
+      "content_token_count": 1095,
+      "distinct_1": 0.399087,
+      "distinct_2": 0.923513,
+      "fingerprint": "3bcd8410a48c92314bdde5277627699c79353de2e61ea83e49c624b7af4ca0cf",
+      "self_bleu_lite": 0.314243
+    },
+    "skyship": {
+      "band": "8-11",
+      "content_token_count": 4780,
+      "distinct_1": 0.286611,
+      "distinct_2": 0.889055,
+      "fingerprint": "e725c59c2e286710eead2226897f934180eea41cd0322c40a918dde9345cf456",
+      "self_bleu_lite": 0.389575
+    }
+  },
+  "ps_pairs": {
+    "cave-dino~cave-sea": {
+      "leaf_similarity": 0.207419,
+      "perceived_similarity": 0.517995,
+      "same_tree": true,
+      "structural_similarity": 1.0,
+      "theme_similarity": 0.571429
+    },
+    "cave-dino~cave-space": {
+      "leaf_similarity": 0.175735,
+      "perceived_similarity": 0.521201,
+      "same_tree": true,
+      "structural_similarity": 1.0,
+      "theme_similarity": 0.666667
+    },
+    "cave-sea~cave-space": {
+      "leaf_similarity": 0.151899,
+      "perceived_similarity": 0.490235,
+      "same_tree": true,
+      "structural_similarity": 1.0,
+      "theme_similarity": 0.571429
+    },
+    "cave-sea~clockwork": {
+      "leaf_similarity": 0.85029,
+      "perceived_similarity": 0.662668,
+      "same_tree": false,
+      "structural_similarity": 0.625077,
+      "theme_similarity": 0.25
+    },
+    "cave-sea~skyship": {
+      "leaf_similarity": 0.760119,
+      "perceived_similarity": 0.613837,
+      "same_tree": false,
+      "structural_similarity": 0.612591,
+      "theme_similarity": 0.25
+    },
+    "cave-space~cave-space-identical": {
+      "leaf_similarity": 1.0,
+      "perceived_similarity": 1.0,
+      "same_tree": true,
+      "structural_similarity": 1.0,
+      "theme_similarity": 1.0
+    },
+    "cave-space~cave-space-swap": {
+      "leaf_similarity": 0.931034,
+      "perceived_similarity": 0.965517,
+      "same_tree": true,
+      "structural_similarity": 1.0,
+      "theme_similarity": 1.0
+    },
+    "clockwork~skyship": {
+      "leaf_similarity": 0.866923,
+      "perceived_similarity": 0.761065,
+      "same_tree": false,
+      "structural_similarity": 0.869788,
+      "theme_similarity": 0.333333
+    }
+  },
+  "rar_sequence": 0.4,
+  "schema_version": 1,
+  "struct_pairs": {
+    "cave-sea~clockwork": 0.374923,
+    "cave-sea~skyship": 0.387409,
+    "clockwork~skyship": 0.130212
+  }
+}

@@ -1,0 +1,863 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cave_of_echoes",
+  "version": 1,
+  "title": "The Cave of Echoes",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "exploration",
+      "courage",
+      "wonder",
+      "nature"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 16,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Theo climbs the last switchback to the canyon rim just as the sun clears the mesa, his kestrel Comet riding easy on his shoulder. Below them the slot canyons of the Redwall fossil beds cut deep into striped red rock, cool while the dry-season morning lasts. His uncle, who runs the survey camp at the trailhead, has marked the wash on his map and warned them both to be back before the afternoon flash-flood pulse comes down it. Three dark openings wait side by side in the canyon wall, each breathing out cool air and its own sound. One hums like wind through a fluted crack, one drips steady as a clock, and the third only rattles, dry and faint, almost like a whisper. Comet cocks her head at each in turn. Theo checks the pale morning sky, then picks a way to follow before the heat, and the flood, can catch them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_left",
+          "label": "Follow the humming echo to the left.",
+          "target": "la_tunnel"
+        },
+        {
+          "id": "c_right",
+          "label": "Follow the dripping echo to the right.",
+          "target": "ra_drip"
+        },
+        {
+          "id": "c_down",
+          "label": "Follow the whispering echo straight down.",
+          "target": "da_dark"
+        }
+      ]
+    },
+    {
+      "id": "la_tunnel",
+      "body": "The left way narrows fast into a fluted crack that hums like one long, held note. Comet lifts off Theo's shoulder and glides ahead, wings catching the thin draft. The rock walls press close on both sides, ridged and cool under Theo's palm. Ahead, past a bend, a soft glow shows, and a faint stirring drifts back toward him, something between a rustle and a murmur. Theo ducks his cap brim and edges forward, eager to see what waits around the bend in the fluted stone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_fork",
+          "label": "Press on toward the glow.",
+          "target": "la_fork"
+        }
+      ]
+    },
+    {
+      "id": "la_fork",
+      "body": "The humming crack splits into two, and Theo stops right where they part, sweeping his headlamp both ways. One wall catches the light in a thin, glittering vein of pale quartz. The other way, the hum deepens into something warmer, almost like a voice murmuring from the rock itself. Comet lands on a ledge and tilts her head between the two paths, unable to decide. Theo has to choose now, before the day gets any hotter and the wash starts to run.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glitter",
+          "label": "Go toward the glittering wall.",
+          "target": "la_glitter"
+        },
+        {
+          "id": "c_hum",
+          "label": "Go toward the warm murmur.",
+          "target": "la_hum"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter",
+      "body": "Theo turns toward the glittering wall, and it does not disappoint. A vein of pale quartz threads through the red stone, throwing back small sparks wherever his light catches it. He traces it with his fingers as he walks alongside a banded wall of agate, streaked like a ribbon pressed into the rock. Ahead, the floor slopes gently down toward a narrow gap breathing cold air. Comet noses at the gap first, feathers ruffling, urging Theo to follow the slope down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_slope",
+          "label": "Follow the sloping floor down.",
+          "target": "la_glitter2"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter2",
+      "body": "The sloping floor opens into a small, round antechamber, quiet and still. Across it, a crack in the far wall glows with a soft crystal light, like a lamp left burning underground. The air smells of clean, wet stone, and somewhere near, water ticks in a slow, steady beat. Comet flits ahead toward the glow, then circles back, feathers catching the strange light. Theo follows close behind, sure that whatever waits beyond that crack is worth the last few steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_crack",
+          "label": "Approach the glowing crack.",
+          "target": "la_grotto_app"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto_app",
+      "body": "The gap is narrow, but Theo could just turn sideways and squeeze through it. Thin runoff is already beginning to pool around his boots, seeping down from some crack higher in the canyon. Comet shifts from foot to foot on his shoulder, caught between the glow ahead and the damp at their feet. Theo presses one hand to the cool stone and weighs it fast: squeeze through toward whatever is shining beyond, or turn back now while the trail to the canyon trailhead is still dry and clear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_squeeze",
+          "label": "Squeeze through the glowing crack.",
+          "target": "la_squeeze"
+        },
+        {
+          "id": "c_retreat",
+          "label": "Turn back before the water rises.",
+          "target": "la_retreat_pool"
+        }
+      ]
+    },
+    {
+      "id": "la_retreat_pool",
+      "body": "Theo decides the glow can wait for a drier day. He and Comet turn and follow their own boot prints back the way they came, muddy runoff trickling and rising behind them across the canyon floor. By the time they reach the canyon trailhead, the water is only ankle deep, and the open sky feels wide and safe overhead. Theo is damp and a little disappointed, but whole, and he promises Comet they will come back some other dry-season morning, before the heat, to try the narrow slot again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {A1_GATE}"
+      }
+    },
+    {
+      "id": "la_squeeze",
+      "body": "They slip through the narrow slot one at a time, Theo turning his shoulders sideways and Comet ducking low through the gap. On the other side, Comet shakes the dust from her feathers, and the glow ahead brightens into a steady crystal shine, spilling across rough stone. Theo catches his breath, dust in his hair, grinning at what the tight squeeze has bought them. Whatever lies past this glow, it is already worth the scrape on his elbow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_room",
+          "label": "Step into the shimmering room.",
+          "target": "la_grotto"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto",
+      "body": "A geode chamber opens around them, lined floor to ceiling with crystal points that throw Theo's light into a hundred small stars. It is full of wonder, and for a moment neither of them moves. Within easy reach sits a loose banded agate, lying free on the chamber floor as if it had been waiting there for ages. Farther in, a hum drifts from a fluted archway, pulling toward something deeper and greater still. Comet chirps once, the sound rolling back to them twice over.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take",
+          "label": "Gently take the loose crystal.",
+          "target": "la_crystal_take"
+        },
+        {
+          "id": "c_deeper",
+          "label": "Follow the humming archway deeper.",
+          "target": "la_crystal_deeper"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_take",
+      "body": "Theo kneels and carefully lifts the loose banded agate, turning it once in the light before tucking it into his pack. It is his to keep, fair and found, and its faint crystal glow lights a low passage that curves gently back the way they came. Comet hops along beside him, pleased, as the little stone lights their steps like a lantern all its own. Theo grins, already picturing how it will look on the shelf back home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_up",
+          "label": "Follow the crystal's light back up.",
+          "target": "la_crystal_out"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_out",
+      "body": "The agate's soft glow lights their way up and out to the canyon trailhead, and Theo steps into the open morning carrying a banded agate of his own, real and solid in his pocket. Comet lands on his shoulder, proud, feathers bright in the sun. His uncle will want to see it, and hear the whole story of the narrow slot and the glittering room beyond it, a small, safe treasure won fair and square before the heat of the day.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crystal",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A1_PRIZE1}"
+      }
+    },
+    {
+      "id": "la_crystal_deeper",
+      "body": "The hum from the fluted archway grows stronger as Theo leaves the agate behind and presses on. The passage widens, its walls smoothing into fluted stone shaped like a row of pipes, as if built on purpose to carry sound. Comet flies just ahead, calling once to test the space, and the call comes back layered and strange. Theo grins and follows the chord of it deeper into the fossil beds, curious what could make rock sing like that.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chord",
+          "label": "Follow the chord toward the sound.",
+          "target": "la_song_app"
+        }
+      ]
+    },
+    {
+      "id": "la_song_app",
+      "body": "Ahead, the fluted walls curve into a wide, ringing hall, older and smoother than anything they have passed yet. Every drip and footstep answers back, layered again and again until the whole chamber seems to hum with it. Comet gives a single wondering chirp, and the hall throws it back a dozen times, softer each time, like an echo learning to whisper. Theo stands very still at the threshold, hardly breathing, not wanting to break whatever this place is.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_sing",
+          "label": "Step into the ringing chamber.",
+          "target": "la_song"
+        }
+      ]
+    },
+    {
+      "id": "la_song",
+      "body": "Theo cups his hands and lets out one clear note, and the whole whispering echo-hall answers in shimmering, layered harmony, rock and air singing together. Comet answers too, wings spread, adding her own bright call to the chorus. They have found a secret almost no one else has ever heard, tucked deep in the Redwall fossil beds, and Theo carries the wonder of it all the way home, already sure no one back at camp will quite believe him.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{A1_PRIZE2}"
+      }
+    },
+    {
+      "id": "la_hum",
+      "body": "The warm murmur leads down a rounded passage, smoother underfoot than the crack behind them. The sound is not wind at all, Theo realizes, but a slow, steady thrum rising from somewhere far below, patient as a heartbeat. Comet pads a few steps ahead on the ledge, confident, feathers sleek in the cool air. Theo follows the thrum downward, curious what could make so deep and even a sound this far under the canyon floor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_ring",
+          "label": "Follow the ringing downward.",
+          "target": "la_hum2"
+        }
+      ]
+    },
+    {
+      "id": "la_hum2",
+      "body": "The passage steepens, and the thrum settles into a slow, deep pulse that Theo can feel through the soles of his boots. Pale light leaks upward from a chamber below, where pale, bone-colored shapes catch the glow like something waiting to be found. Comet tilts her head at the sound, ears of feather pricked toward it. Theo grips the rock and leans over the edge, chasing the chiming light down toward whatever is making that patient, ancient pulse.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chime",
+          "label": "Climb down toward the chiming light.",
+          "target": "la_bell_app"
+        }
+      ]
+    },
+    {
+      "id": "la_bell_app",
+      "body": "An old rope ladder hangs down into the chamber below, fixed to the rock long ago by some earlier survey team and left for whoever came next. Theo's stomach reminds him the flash-flood pulse will not wait forever, and the morning is already warming fast. Comet flutters restlessly on the ladder's top rung. Theo weighs it fast: climb on down toward whatever is thrumming below, or scramble back up now while the way to the trailhead is still easy and dry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bell",
+          "label": "Climb down the old rope ladder.",
+          "target": "la_bell"
+        },
+        {
+          "id": "c_humback",
+          "label": "Scramble back up to be safe.",
+          "target": "la_hum_back"
+        }
+      ]
+    },
+    {
+      "id": "la_hum_back",
+      "body": "Theo decides the deep thrum can wait for a cooler morning. He and Comet climb back up the rounded passage and out through the fluted crack to the canyon trailhead, boots scuffed and lungs working hard from the climb. The sun feels warm and completely safe on his face. Whatever waits at the bottom of that rope ladder will still be there next time, Theo tells Comet, and they both know they will be back.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_hum",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {A2_GATE}"
+      }
+    },
+    {
+      "id": "la_bell",
+      "body": "The old rope ladder holds steady, rung by rung, and at the bottom waits a colossal fossil dome, curved and pale, hollowed smooth by ages of dripping water. Slow drips strike its surface and ring out low and clear, over and over, like something built on purpose to be struck. No wonder earlier surveyors nicknamed it the great stone bell before they ever climbed down to see it whole. Comet lands on Theo's shoulder, very still, listening to the strange, patient tone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell2",
+          "label": "Walk up to the great bell.",
+          "target": "la_bell2"
+        }
+      ]
+    },
+    {
+      "id": "la_bell2",
+      "body": "Rows of scratched letters are cut into the stone beside the great stone bell, worn but still readable if Theo tilts his lamp just right, naming some long-vanished creature whose bones once shaped this dome. Nearby, on a dry ledge above the drip line, sit useful leftovers from whoever mapped this place before him. Comet hops over to investigate, tugging at a strap with her beak. Theo crouches to read the faint letters more closely, careful not to touch the ancient bone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell3",
+          "label": "Read the name and look behind the bell.",
+          "target": "la_bell3"
+        }
+      ]
+    },
+    {
+      "id": "la_bell3",
+      "body": "Theo copies down what the scratched letters tell him, the name of a species lost for ages, carefully into his own notebook. On the ledge he finds a lantern and a coil of spare rope, left dry and ready by whoever came before, enough light and grip to climb back out the way he came. Comet inspects the lantern with obvious approval. Theo packs both away, grateful for the help of hands he will never meet, and turns toward the climb home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell4",
+          "label": "Take the lantern and rope and head out.",
+          "target": "la_bell4"
+        }
+      ]
+    },
+    {
+      "id": "la_bell4",
+      "body": "With the scratched name kept safe in his notebook and the old lantern and rope put to good use, Theo and Comet climb back up the rounded passage to daylight, dusty and tired and grinning. Everyone back at the survey camp will want to hear about the name of a species lost for ages, hidden under the great stone bell deep in the fossil beds. Theo can already hear his uncle asking him to tell it twice.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A2_PRIZE}"
+      }
+    },
+    {
+      "id": "ra_drip",
+      "body": "The second way, a cool, damp channel worn smooth by old water, follows the drip of the seep spring deeper into the rock. Theo's headlamp shows a thin trickle running on ahead into the dark, and the air turns noticeably colder around them. Comet shivers her feathers and presses closer against his neck. Theo keeps one hand trailing the wet wall as he follows the trickle, curious how far under the canyon floor a little spring can carve its way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_fork",
+          "label": "Follow the trickle deeper.",
+          "target": "ra_fork"
+        }
+      ]
+    },
+    {
+      "id": "ra_fork",
+      "body": "The trickle leads to a split in the channel. One way, a growing hush of open water grows louder as Theo listens, promising something wide ahead. The other drifts a mineral, almost briny smell from a low side-passage, sharp and strange this far from any sea. Comet tests the air on both sides, feathers ruffled with the damp. Theo has to pick a direction now, before the morning gets any warmer and the wash starts running behind them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lake",
+          "label": "Head toward the lapping water.",
+          "target": "ra_lake_way"
+        },
+        {
+          "id": "c_pool",
+          "label": "Follow the briny smell.",
+          "target": "ra_pool_way"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_way",
+      "body": "Following the growing hush of water, the floor turns to smooth, mud-slicked stone underfoot, and the ceiling lifts away into a darkness Theo's headlamp cannot fully reach. Each step needs care on the slick rock. Comet stays low, testing each ledge before trusting her weight to it. Theo can hear water somewhere ahead, patient and still, very different from the trickle they left behind, and he presses on toward whatever holds it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_pebbles",
+          "label": "Cross the wet pebbles.",
+          "target": "ra_lake2"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake2",
+      "body": "The passage opens onto a rocky shelf above a still plunge-pool, dark and glassy in the lamp light. The soft sound Theo hears is only Comet testing the cold water's edge with one careful foot, then pulling back, unimpressed. The shelf runs on ahead, narrow but solid enough for careful footing. Theo edges forward along it, one hand on the wall, eager to see how far this hidden pool stretches back into the fossil beds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shelf",
+          "label": "Edge along the rocky shelf.",
+          "target": "ra_lake_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_app",
+      "body": "The shelf narrows into a stretch of mud-slicked stone, slippery underfoot and none too wide. Below it waits the still plunge-pool itself, calm and inviting in the low light. Comet flutters uneasily on Theo's shoulder as his boot slides half an inch on the wet rock. Theo can climb carefully down toward the pool's edge, or back off the slippery shelf now, before anyone loses their footing on the mud.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_descend",
+          "label": "Climb down to the lake shore.",
+          "target": "ra_descend"
+        },
+        {
+          "id": "c_lakeback",
+          "label": "Back off the slippery shelf.",
+          "target": "ra_lake_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_back",
+      "body": "The mud-slick shelf is too risky to trust today. Theo backs away carefully, coaxing Comet along beside him, and the two of them retrace their steps to the canyon trailhead, boots caked with mud but both perfectly safe. He looks back once at the dark gap that hides the pool. The plunge-pool will still be there next dry season, he tells himself, waiting for braver footing and a better day.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_lake",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {B1_GATE}"
+      }
+    },
+    {
+      "id": "ra_descend",
+      "body": "Theo picks his way carefully down the last stretch of stone to the pool's stony shore, testing each hold before he trusts it. Comet glides down ahead of him and lands lightly on a dry rock at the water's edge. Here, right at the border between stone and still water, something waits for whoever is bold enough to come this far. Theo brushes the mud from his hands and looks out across the quiet, dark pool.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shore",
+          "label": "Walk along the gravel shore.",
+          "target": "ra_lakeshore"
+        }
+      ]
+    },
+    {
+      "id": "ra_lakeshore",
+      "body": "Two chances present themselves along the gravel shore. Nearby rests an old wooden rowboat, tied up long ago by surveyors who once mapped this stretch of the fossil beds. Further along, a shallow of clear water glimmers where fossil shells catch a strange mineral glow, calling with its own quiet promise. Comet hops between the two, unable to settle. Theo weighs the choice, both tempting, and neither one wrong to want.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_boat",
+          "label": "Examine the old rowboat.",
+          "target": "ra_boat"
+        },
+        {
+          "id": "c_wade",
+          "label": "Wade into the glowing shallows.",
+          "target": "ra_wade"
+        }
+      ]
+    },
+    {
+      "id": "ra_boat",
+      "body": "The old rowboat turns out to be sound enough. Theo bails out a little rainwater and checks the oarlocks, working carefully until it sits steady and ready on the still water. Comet perches on the bow, feathers fluffed with interest, watching him work. Once the last check is done, the little boat waits patient at the water's edge, ready to carry them both onward across the plunge-pool toward whatever daylight shows on the far side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_row",
+          "label": "Climb in and push off.",
+          "target": "ra_row"
+        }
+      ]
+    },
+    {
+      "id": "ra_row",
+      "body": "Theo climbs in with Comet on the bow and rows steadily across the plunge-pool to a far shore where daylight leaks down through a crack overhead. They climb out onto dry stone, having managed a crossing of the hidden plunge-pool that few, if any, have ever tried. Comet stretches her wings in the new light. Theo looks back at the water, proud and a little amazed at what the old rowboat let them do.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rowboat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B1_PRIZE1}"
+      }
+    },
+    {
+      "id": "ra_wade",
+      "body": "Theo steps into the glowing shallows, and the water lights up faintly as he disturbs it, a trail of glowing fossil shells catching a strange mineral shine underfoot. The trail leads toward a low, bright opening in the far wall, cool water lapping gently at his ankles. Comet flits just ahead, wings skimming the glowing surface. Theo follows the shining path, careful not to disturb the shells more than he must.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_islet",
+          "label": "Follow the glowing shells.",
+          "target": "ra_islet"
+        }
+      ]
+    },
+    {
+      "id": "ra_islet",
+      "body": "The glowing trail leads to a hidden hanging garden, a pocket of green tucked under open sky where ferns cling to damp stone. Theo takes a small keepsake, a single smooth pebble from the water's edge, and makes his way back toward daylight, Comet riding easy on his shoulder. He is sworn, quietly and to himself, to keep this small green secret mostly to himself, and maybe to Comet.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_islet",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{B1_PRIZE2}"
+      }
+    },
+    {
+      "id": "ra_pool_way",
+      "body": "The side-passage toward the mineral smell is tight, and Theo crouches under dripping ledges, his pack scraping stone on both sides. Comet squeezes ahead of him, wings folded close, toward a thread of pale light through hanging roots. The air here is cooler and stranger, thick with that faint, briny mineral scent. Theo follows on hands and knees for a stretch before the passage begins, slowly, to open up again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_crouch",
+          "label": "Crouch through toward the pale light.",
+          "target": "ra_pool2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool2",
+      "body": "The way opens a little, and a clear little channel runs along the floor, leading toward a rounded chamber somewhere ahead. Theo can stand almost straight now, and the mineral smell grows stronger, sharper, more like something alive is nearby. Comet trots along the channel's edge, dipping her beak once to taste the water. Theo follows the clear thread of water, curious what waits at the chamber it seems to be leading toward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_channel",
+          "label": "Follow the clear channel.",
+          "target": "ra_pool_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_app",
+      "body": "The channel ends at a curtain of hanging roots, thick and tangled but not impossible to part. Beyond it the light looks bright and inviting, but muddy runoff is already trickling into the passage behind them, rising slowly across the canyon floor. Theo has to choose quickly now: push through the root curtain toward whatever waits beyond, or hurry back before the channel fills and the way out gets harder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter",
+          "label": "Push through the weed curtain.",
+          "target": "ra_pool_enter"
+        },
+        {
+          "id": "c_poolback",
+          "label": "Hurry back before the channel fills.",
+          "target": "ra_pool_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_back",
+      "body": "Theo will not risk the root curtain closing off behind them as the water rises. He and Comet turn and hurry back the way they came, muddy runoff trickling around their boots, reaching the canyon trailhead just as it starts to truly rise. Hearts thumping, they stand in the open morning sun, entirely safe, if a little breathless. The bright chamber beyond the roots will keep, Theo decides, for a drier day.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {B2_GATE}"
+      }
+    },
+    {
+      "id": "ra_pool_enter",
+      "body": "Through the curtain of hanging roots, the passage opens into a bright spring grotto, its water so clear it looks almost like air. Small darting shapes flicker at the edges of the light, alive and busy in their hidden little world. Comet leans close to the clear pool, feathers reflected in it, careful not to touch the surface. Theo kneels beside the spring-fed pool, hardly able to believe how clear and calm it is this far under the canyon.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_kneel",
+          "label": "Kneel by the clear tide-pool.",
+          "target": "ra_pool_chamber"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_chamber",
+      "body": "The bright spring grotto turns out to be a whole tiny world of its own. In one corner, a fossil sea star, rust-orange in the pale stone, catches Theo's light and seems almost to glow. On the far side, a trail of ancient fossil crab tracks presses into the softer rock, leading toward a deeper, darker basin beyond. Comet hops between the two, curious about both. Theo has to decide which wonder to follow first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star",
+          "label": "Look closely at the orange starfish.",
+          "target": "ra_starfish"
+        },
+        {
+          "id": "c_deep",
+          "label": "Follow the crab-track to the dark basin.",
+          "target": "ra_pool_deep"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish",
+      "body": "The fossil sea star is a rare find, and Theo studies it closely without ever touching it, tracing its shape with his eyes instead of his hands. He sketches it carefully in his notebook, leaving it embedded exactly where it has rested for untold ages in the pale stone. Comet watches from his shoulder, very still, as if she understands this one is meant to stay right where it is.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_sketch",
+          "label": "Finish the sketch and slip out.",
+          "target": "ra_starfish2"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish2",
+      "body": "Theo backs carefully out of the spring grotto with a full sketch of the fossil sea star safe in his notebook, proof enough for anyone who doubts him. The experts back at camp will want to see every careful line of it before they believe such a thing lies hidden in these fossil beds. Theo and Comet climb out into the morning light, grinning, dust on his knees and wonder still on his face.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_starfish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B2_PRIZE1}"
+      }
+    },
+    {
+      "id": "ra_pool_deep",
+      "body": "The trail of ancient crab tracks leads to a darker basin where the spring water runs deep and still. A perfect spiral ammonite gleams at the bottom, half-buried in pale silt, catching the last thin light from Theo's lamp. Comet peers over the edge, feathers brushing the water. Theo rolls up his sleeve, steadying himself against the cool stone rim before he reaches down toward it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_reach",
+          "label": "Reach into the green basin.",
+          "target": "ra_pool_deep2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_deep2",
+      "body": "Theo lifts out the ammonite, its spiral shell perfect and heavy in his palm, the finest thing he has found all morning. He carries it up out of the spring grotto and into the daylight like a trophy, careful of every ridge along its curled edge. Comet circles once overhead, celebrating, before landing back on his shoulder. Theo cannot wait to set it down on the table at camp and watch everyone's eyes go wide.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B2_PRIZE2}"
+      }
+    },
+    {
+      "id": "da_dark",
+      "body": "The third way, the shadowed undercut, is the darkest of the three, and the dry, whispery rattle that drew them turns out to be only loose scree shifting somewhere ahead. Theo keeps one hand on the cool wall and Comet close on his shoulder as they move carefully downward. The air smells of dust and old stone. Theo lets his eyes adjust before going any further into the dark, unhurried undercut.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_fork",
+          "label": "Feel along the wall downward.",
+          "target": "da_fork"
+        }
+      ]
+    },
+    {
+      "id": "da_fork",
+      "body": "The shadowed undercut forks ahead. From one branch comes a small fluttering and squeaking, faint but unmistakable. From the other comes the creak of old wood and, once, the glint of something metal catching a stray bit of light. Comet's head swivels between the two sounds, feathers half raised. Theo has to choose a branch now, before the deeper dark and the coming heat make the choice harder for both of them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bat",
+          "label": "Go toward the squeaking and flutter.",
+          "target": "da_bat_way"
+        },
+        {
+          "id": "c_cache",
+          "label": "Go toward the creaking wood.",
+          "target": "da_cache_way"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_way",
+      "body": "The fluttering and squeaking grows busier as Theo follows it deeper. The ceiling lifts away overhead, and his headlamp catches a colony of roosting bats clustered along the stone above, dozens of small shapes hanging still and quiet. Comet presses close against his neck, uncertain of the strange, shifting ceiling. Theo moves slowly and keeps his light low, careful not to startle the sleeping colony above them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_creep",
+          "label": "Creep on under the hanging shapes.",
+          "target": "da_bat2"
+        }
+      ]
+    },
+    {
+      "id": "da_bat2",
+      "body": "It is the whole colony of roosting bats, resting together in a great vaulted chamber far bigger than the passage that led here. The air feels warm and earthy, thick with the smell of stone and dust. Ahead, a circle of daylight far above shows through a gap in the ceiling, promising a way onward and up. Comet stays very still on Theo's shoulder, watching the sleeping shapes overhead with careful, patient eyes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_grey",
+          "label": "Move quietly toward the grey light.",
+          "target": "da_bat_app"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_app",
+      "body": "That circle of daylight may be a way up and out of the canyon altogether, but reaching it means crossing quietly beneath the roost without waking a single bat. Theo weighs his steps against the climbing heat outside and the promise of that bright gap above. He can tiptoe across under the sleeping colony toward the way up, or back away now and leave the bats undisturbed, letting the chamber keep its secret a while longer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_batenter",
+          "label": "Tiptoe across under the bats.",
+          "target": "da_bat_enter"
+        },
+        {
+          "id": "c_batback",
+          "label": "Back away and leave the bats be.",
+          "target": "da_bat_back"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_back",
+      "body": "Theo decides the sleeping colony deserves to rest undisturbed. He and Comet ease back out of the vaulted chamber and retrace the shadowed undercut to the canyon trailhead, dusty, a little awed, and entirely safe. He glances back once at the dark opening behind them. Some mornings, Theo decides, the better find is simply leaving quietly, and coming back another day with steadier nerves.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_bat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {C1_GATE}"
+      }
+    },
+    {
+      "id": "da_bat_enter",
+      "body": "They cross the chamber floor slowly, careful step after careful step, and nothing above them stirs. Beyond the roost lies a rockfall stair of tumbled stone, rough but clearly climbable, rising toward the circle of light far overhead. Comet relaxes visibly once they are clear of the sleeping colony, feathers settling flat again. Theo lets out a long breath and starts up the fallen-rock stair without looking back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_stair",
+          "label": "Start up the fallen-rock stair.",
+          "target": "da_roost"
+        }
+      ]
+    },
+    {
+      "id": "da_roost",
+      "body": "The rockfall stair is steep but solid underfoot, each block wedged tightly against the next. Partway up, Theo's light catches an old carved arrow scratched into the rock, pointing the way onward, proof that someone climbed this secret route long before him. Comet lands beside the carving, tilting her head at it. Theo traces the old marks with one finger before climbing on past them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_climb",
+          "label": "Climb on past the old carving.",
+          "target": "da_roost2"
+        }
+      ]
+    },
+    {
+      "id": "da_roost2",
+      "body": "The stair narrows into a tight, mossy funnel, damp and green where light and fresh air pour down from somewhere close above. Theo boosts Comet ahead of him first, watching her wings catch the brighter air, then hauls himself up the last stretch by his fingertips and knees. The mossy walls smell of rain that never quite reaches the canyon floor below. Theo pushes upward, chasing the growing light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_push",
+          "label": "Push up through the mossy funnel.",
+          "target": "da_skylight"
+        }
+      ]
+    },
+    {
+      "id": "da_skylight",
+      "body": "They climb out at last through a hidden notch onto the rim of the mesa, high above the slot canyons of the Redwall fossil beds, blinking hard in the sudden, full daylight. Comet launches straight up into the open sky, thrilled to be free of the tight stone funnel. Theo laughs, dusty and grinning, having found a secret way in and out of the fossil beds that not even his uncle knows about yet, and a story worth telling twice over.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bats",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{C1_PRIZE}"
+      }
+    },
+    {
+      "id": "da_cache_way",
+      "body": "The creak of old wood grows nearer as Theo follows the second branch of the shadowed undercut. His headlamp finds a leaning plank door wedged into a side-cave, weathered grey and clearly very old, half swallowed by the surrounding rock. Comet lands on the door frame, curious, pecking once at the old wood. Theo studies the door a long moment before reaching for its edge.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_door",
+          "label": "Approach the leaning plank door.",
+          "target": "da_cache2"
+        }
+      ]
+    },
+    {
+      "id": "da_cache2",
+      "body": "The leaning plank door gives way with a low groan, swinging free after who knows how many years shut tight. Behind it, a hand-built stone niche has been made by careful hands, a hiding place with shapes stacked in careful rows in the shadows beyond. Comet flutters just inside, wings brushing old dust into the light. Theo peers past her into the walled-off hollow, eyes adjusting slowly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_peer",
+          "label": "Peer into the walled-off hollow.",
+          "target": "da_cache_app"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_app",
+      "body": "It is a prospector's forgotten supply cache, untouched for longer than Theo can guess. But muddy runoff already glistens thin across the floor behind them, a warning that the flash-flood pulse is not far off now. Theo can step into the old supply niche for a quick look before the water climbs any higher, or leave the cache for a drier day and beat the rising water back to the trailhead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cacheenter",
+          "label": "Step in for a quick look.",
+          "target": "da_cache_enter"
+        },
+        {
+          "id": "c_cacheback",
+          "label": "Leave the cache and beat the tide.",
+          "target": "da_cache_back"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_back",
+      "body": "The rising water decides it for him. Theo marks the spot carefully in his notebook and hurries out with Comet flying just ahead, both of them staying well ahead of the rising runoff, reaching the canyon trailhead safe and only a little muddy. The old cache will keep, tucked in its hollow, waiting for a better, drier day when Theo can come back and look through it properly.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cache",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {C2_GATE}"
+      }
+    },
+    {
+      "id": "da_cache_enter",
+      "body": "Inside the hollow, the prospector's forgotten supply cache is mostly ruin: old crates gone soft and splintered with age, their contents long lost to damp. But two smaller boxes still sit dry on a stone shelf above the rest, their lids stiff but whole, spared somehow by the years. Comet noses at the nearer one. Theo brushes away the dust and reaches for the stiff lids.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_boxes",
+          "label": "Open the two dry boxes.",
+          "target": "da_cache_room"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_room",
+      "body": "The first box holds an old brass compass, its glass cracked but its needle still resting inside. The second box is heavy and rattles like a tin full of old coins when Theo shifts it, promising something just as interesting. Muddy water is already creeping toward his boots across the floor. He can only carry one out cleanly before the flood pulse arrives, and he has to choose fast between the compass and the rattling tin.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_compass",
+          "label": "Take the old brass compass.",
+          "target": "da_compass"
+        },
+        {
+          "id": "c_coins",
+          "label": "Take the heavy rattling box.",
+          "target": "da_coins"
+        }
+      ]
+    },
+    {
+      "id": "da_compass",
+      "body": "Theo wipes the dust from the old brass compass and watches the needle swing true despite its cracked glass, pointing the quickest way back toward the canyon trailhead and the fading morning light. Comet leads the way, flying just ahead through the passage. Theo follows the steady needle, grateful for a guide that has outlasted whoever left it behind so long ago in this quiet hollow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_out",
+          "label": "Follow the compass out.",
+          "target": "da_compass2"
+        }
+      ]
+    },
+    {
+      "id": "da_compass2",
+      "body": "The still-true brass compass leads them straight out to the canyon trailhead just as the flash-flood pulse finally arrives behind them, muddy water chasing their heels. Theo steps into the open carrying the still-true brass compass, safe and a little out of breath, and a story everyone back at camp will beg to hear twice. Comet lands on his shoulder, feathers ruffled but proud.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_compass",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C2_PRIZE1}"
+      }
+    },
+    {
+      "id": "da_coins",
+      "body": "The heavy box holds a tin heavy with old survey tokens, dozens of them shifting and clinking as Theo lifts it. He cannot stop to count them now, but he can carry the whole box out if he moves quickly enough. Comet chirps urgently from the doorway, feathers puffed with impatience. Theo braces the box against his chest and heads for the passage without another moment's delay.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_carry",
+          "label": "Carry the box out quickly.",
+          "target": "da_coins2"
+        }
+      ]
+    },
+    {
+      "id": "da_coins2",
+      "body": "Theo hauls the heavy box up to daylight just ahead of the rising flash-flood pulse, arms aching but grinning all the way to the canyon trailhead. The experts back at camp will study the tin of antique survey tokens for weeks, and Theo's name will go right alongside the find on every label. Comet perches proudly on the box lid as they both catch their breath in the sun.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coins",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C2_PRIZE2}"
+      }
+    }
+  ]
+}
