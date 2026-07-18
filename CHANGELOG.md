@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Catalog-first inventory ownership: a reserved admin-only "Library" family
+  (`core/catalog.py::LIBRARY_FAMILY_ID`, seeded idempotently by a Supabase
+  migration) now owns the admin-authored base story inventory, and
+  `import_cli --library` imports a filled story under it so a base-inventory
+  story needs no real family's UUID. Ownership grants no child access on its
+  own: the import still runs the validation gate and moderation pipeline and
+  lands the story `in_review`, and an admin approves, publishes, and sets
+  `visibility='catalog'` through the normal flow before any guardian can
+  browse or assign it.
+
 ## [0.13.0] - 2026-07-18
 
 ## [0.12.1] - 2026-07-18
