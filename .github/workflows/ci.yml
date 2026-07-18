@@ -362,11 +362,15 @@ jobs:
         with:
           enable-cache: true
 
-      # Base package only (no `dev`/`api` extras needed): the harness is pure
-      # Python over committed fixtures, but must be able to `import
-      # cyo_adventure`, so an editable install is required.
-      - name: Install backend
-        run: uv pip install --system -e .
+      # The harness logic is pure Python over committed fixtures, but importing
+      # `cyo_adventure.diversity` pulls in `diversity/history.py` (the WS-4
+      # request-time query), which imports SQLAlchemy, so the `api` extra is
+      # required to `import cyo_adventure` at all. `uv sync --extra api` builds
+      # the .venv the subsequent `uv run` uses, mirroring the `contract` job
+      # above (an earlier `uv pip install --system -e .` failed because `uv run`
+      # then created its own base-only .venv without SQLAlchemy).
+      - name: Install backend (api extra)
+        run: uv sync --extra api
 
       - name: Diversity eval (offline panel, regression rules R1-R6)
         run: uv run python scripts/run_diversity_eval.py --check
