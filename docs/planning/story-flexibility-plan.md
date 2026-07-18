@@ -64,7 +64,7 @@ those branches.
   point B") must be **genuinely different** between stories. This is where
   perceived uniqueness is made.
 
-Two consequences for strategy:
+Three consequences for strategy:
 
 1. **Leaf diversity is the primary lever.** Most of the perceived-uniqueness
    load, per pair of stories, is carried by genuinely re-authored leaf content,
@@ -76,6 +76,12 @@ Two consequences for strategy:
    trees start to show. Structural variety (new trees, mutated trees) is what
    keeps uniqueness up at scale; it complements leaf diversity rather than
    replacing it.
+3. **Reuse is unavoidable, so differentiation escalates with similarity
+   pressure.** We cannot give every request its own tree. The operating model is:
+   as similar content accumulates for a reader, escalate, a **different tree**
+   first (the second dragon), then **harder leaf/element variation** on a reused
+   tree (the tenth dragon), then **grow the catalog**. This is why selection
+   (WS-4) must consume the similarity metric (WS-0), not just recency.
 
 This rebalances the adversarial review, which pushed structural variety as the
 ceiling: correct at scale, but leaf diversity is the first and largest lever.
@@ -158,11 +164,19 @@ in WS-0 must detect and fail it.
   self-BLEU / distinct-n, cross-checked with RL-13 so variety never buys
   reading-level drift. *Aggregate:* effective catalog size (exp entropy of served
   (tree, leaf-set) pairs).
+- **Request-time query (the interface WS-4 consumes).** Beyond post-hoc metrics,
+  WS-0 must expose a selection-time signal: given an incoming `(theme, cell,
+  reader/family history)`, return which of the reader's existing stories are most
+  similar and how *saturated* the cell is for that theme. This is what lets WS-4
+  decide "different tree" vs "harder leaf differentiation." It reuses the same
+  distance functions as the metrics, over the reader's `storybook_version`
+  history.
 - **Harness.** A `nox` session runs a fixed (skeleton x theme-brief) panel,
   including the same skeleton x multiple briefs, through `fill_skeleton` +
   `run_story_gate`, emits the suite, and a CI guard fails on drops. Per-family
   metrics from `storybook_version` history.
-- **Serves:** every workstream (their success metrics live here).
+- **Serves:** every workstream (their success metrics live here); directly gates
+  WS-4.
 
 ### WS-1: Leaf-diversity verification + theme parity (re-scoped)
 
@@ -177,14 +191,35 @@ in WS-0 must detect and fail it.
   theme-incorporation > 90%.
 - **Serves:** [K11](capability-register.md), [K13](capability-register.md).
 
-### WS-4: Diversity-aware selection (promoted, nearly free)
+### WS-4: Similarity-driven, escalating selection (consumes WS-0)
 
-- **Goal:** stop reusing the same tree; a family's library spans trees and tones.
-- **Approach:** extend `skeleton_match.py` recency from `slug` to
-  `(slug, topology, theme-tags, tone)` with a per-family novelty budget. Infra
-  exists (`recent_skeleton_usage`, `_weight`, injected RNG).
-- **Serves:** [K3](capability-register.md), engagement. **Metric:**
-  repeat-tree rate per family, down.
+- **Depends on WS-0.** Selection is driven by the perceived-similarity metric, so
+  WS-0 comes first; WS-4 is the first thing that consumes it.
+- **Premise: reuse is unavoidable.** We cannot author a unique tree per request;
+  with K skeletons per cell and unbounded requests, trees repeat by construction.
+  The job is to *manage* reuse so no reader feels the repeat, not to eliminate it.
+- **Mechanism, escalate differentiation with similarity pressure.** On a new
+  request, measure how much similar content the reader (and family) already has in
+  that cell, applying the WS-0 metric to the request's theme against prior
+  stories:
+  - **Low pressure (a second dragon story):** differentiate at the *tree* level,
+    prioritize a **different skeleton** in the cell. A fresh tree alone makes it a
+    new adventure.
+  - **High pressure (the tenth dragon story, the cell's skeletons exhausted for
+    this theme):** the trees are used up, so escalate to *leaf/element*
+    differentiation, push harder on tone, cast and relationships, setting
+    sub-elements, pacing, and ending mix (WS-1/WS-2 leaf variety, WS-5 state and
+    ending variation) to keep it fresh on a necessarily-reused tree.
+  - **Saturated even there:** grow the tree catalog (WS-5 mutation, WS-8 flywheel).
+- **Approach:** extend `skeleton_match.py` from slug-recency to a similarity-aware
+  pick, de-weight a skeleton by its structural + thematic proximity to what the
+  reader already has (not raw recency alone), and raise a
+  "needs-leaf-differentiation" signal to the fill when the cell is saturated for
+  this theme. Keep the `_weight` novelty floor.
+- **Scope:** primarily per reader/family (the UX concern is a reader's own
+  repeats); the same metric can also inform library-level diversity.
+- **Serves:** [K3](capability-register.md), engagement. **Metric:** perceived
+  similarity between a reader's consecutive same-theme stories, down.
 
 ### WS-2: Parameterize the catalog for safe, auditable leaves (absorbs "packs")
 
@@ -245,7 +280,7 @@ in WS-0 must detect and fail it.
 ```
 WS-0 (metrics; defines "feels like a new adventure")
    |
-   +--> WS-4 (diversity-aware selection)      cheapest win; stops reusing trees today
+   +--> WS-4 (similarity-driven, escalating selection)   consumes WS-0; first action
    +--> WS-1 (leaf-diversity verification + theme parity)   proves leaves differ
           |
           +--> WS-2 (auditable parameterized leaves; reconcile labels)
@@ -253,9 +288,12 @@ WS-0 (metrics; defines "feels like a new adventure")
    +--> WS-5 (structure/state variation)  --feeds--> WS-8 (catalog flywheel) <-- WS-6
 ```
 
-Leaf-first: WS-0 defines uniqueness, WS-4 stops tree reuse, WS-1/WS-2 make the
-leaves genuinely and auditably different. WS-5/6/8 add structural variety as the
-library scales.
+The operating model is a differentiation ladder driven by similarity pressure:
+WS-0 defines "feels like a new adventure"; WS-4 reads it per request and picks a
+**different tree** while trees remain, then calls for **harder leaf/element
+variation** (WS-1/WS-2/WS-5) once a cell is saturated for a theme; WS-5/WS-8 raise
+the structural ceiling when even that saturates. WS-0 is therefore a hard
+prerequisite for WS-4, not parallel to it.
 
 ## 7. Safety invariants (hold across all workstreams)
 
