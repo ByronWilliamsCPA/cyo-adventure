@@ -91,6 +91,10 @@ package "Generation Pipeline" #FFF3E0 {
 
   component "Moderation Pipeline\nmoderation/pipeline.py\npost-gate review + repair" as moderation_pipe #C5E1A5
 
+  component "Persistence\ngeneration/persistence.py\npersist_storybook()\n(Storybook + StorybookVersion)" as persist #FFF8E1
+
+  component "Pipeline Events\nevents/writer.py\nrecord_event()\n[see component-events.puml]" as events #FFF8E1
+
   component "RQ Queue\ngeneration/queue.py\nenqueue_generation()" as queue #E0E0E0
 
   component "RQ Worker\ngeneration/worker.py\nasync, per job; selects\nfresh_generation vs skeleton_fill" as worker_comp #FFF8E1
@@ -108,14 +112,13 @@ database "PostgreSQL\nGenerationJob row\nstatus: queued->running->\npassed|needs
 
 ' --- Flow ---
 concept --> orchestrator : "brief"
-worker_comp --> skeleton_match : "resolve skeleton\n(method=skeleton_fill jobs)"
-skeleton_match --> orchestrator : "matched skeleton path"
-orchestrator --> series_link : "assign book_index\n(anchored/continuation requests)"
+worker_comp --> skeleton_match : "resolve_skeleton_path + load\n(skeleton_fill jobs; cell-aware\nSELECTION ran earlier at plan time,\nstory_requests/authoring_plan.py)"
+skeleton_match --> orchestrator : "loaded skeleton -> fill_skeleton()"
 orchestrator --> prompts : "build stage prompt\n(fresh_generation only)"
 prompts --> pii : "StagePrompt"
 worker_comp --> build_provider : "resolve provider\n(provider_override/model_override\nor settings default)"
 build_provider --> allowlist : "validate (provider, model)\nbefore constructing a live adapter"
-build_provider --> pii : "wrap resolved provider"
+build_provider --> pii : "resolved provider,\nwrapped by the orchestrator\nin PiiGuardedProvider"
 pii --> fallback : "default cascade\n(provider=openrouter, fallback enabled)"
 fallback --> openrouter : "leg 1 (primary)"
 fallback ..> openrouter_fb : "leg 2\n(failover, ADR-003 amended)"
@@ -130,7 +133,6 @@ modal_prov --> modal_api : "POST (httpx, retries)"
 fallback --> orchestrator : "raw text"
 orchestrator --> gate : "parsed JSON doc\nrun_gate(doc)"
 gate --> orchestrator : "GateResult\n(blocked, safety_flagged)"
-gate --> moderation_pipe : "clean/flagged doc\n(post-gate review)"
 
 note right of orchestrator
   fresh_generation (generate_story()):
@@ -168,6 +170,11 @@ end note
 
 queue --> worker_comp : "job_id"
 worker_comp --> orchestrator : "generate_story(brief, provider, pii)\nor fill_skeleton(...)"
+worker_comp --> events : "GENERATION_STARTED (running)\nGENERATION_FINISHED (terminal)"
+worker_comp --> persist : "persist_storybook()\n(persist-eligible outcome)"
+persist --> pg : "INSERT Storybook +\nStorybookVersion"
+worker_comp --> moderation_pipe : "run_moderation_pipeline()\n(post-persist review, ADR-005)"
+worker_comp --> series_link : "link_series_position +\nembed_series_block\n(WS-G, around moderation)"
 worker_comp --> pg : "update GenerationJob\nstatus, report, storybook_id"
 
 @enduml
