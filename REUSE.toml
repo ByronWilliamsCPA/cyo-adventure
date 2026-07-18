@@ -223,8 +223,19 @@ SPDX-FileCopyrightText = "2026 Byron Williams"
 path = [
     "skeletons/**/*.json",  # Pre-authored story skeleton files
     "out/**/*.json",        # Generated story output files from the yield harness
+    "out/reports/*.md",         # Authoring-run summary reports
+    "out/reports/**/*.md",      # Story design and compliance review reports
 ]
 SPDX-License-Identifier = "CC-BY-4.0"
+SPDX-FileCopyrightText = "2026 Byron Williams"
+
+# Authoring output directory placeholders - CC0-1.0
+[[annotations]]
+path = [
+    "out/reports/.gitkeep",
+    "out/reports/skeletons/.gitkeep",
+]
+SPDX-License-Identifier = "CC0-1.0"
 SPDX-FileCopyrightText = "2026 Byron Williams"
 
 # Benchmark results and generated metadata files - CC0-1.0
