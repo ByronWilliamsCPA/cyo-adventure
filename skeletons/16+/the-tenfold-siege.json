@@ -10624,27 +10624,27 @@
       "choices": [
         {
           "id": "c_fin_best",
-          "label": "The magazine is full: the fortress holds whole and provisioned.",
+          "label": "The magazine still holds: the fortress meets relief whole and provisioned.",
           "target": "win_best",
           "condition": {
-            "==": [
+            ">=": [
               {
                 "var": "supplies"
               },
-              3
+              2
             ]
           }
         },
         {
           "id": "c_fin_whole",
-          "label": "The stores are gone: the fortress holds whole on will alone.",
+          "label": "The stores are spent: the fortress holds whole on will alone.",
           "target": "win_whole",
           "condition": {
             "<=": [
               {
                 "var": "supplies"
               },
-              2
+              1
             ]
           }
         },
