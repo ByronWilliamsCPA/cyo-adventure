@@ -8,7 +8,7 @@
 # build-essential. The DHI hardened image lacks a shell and cannot run RUN
 # blocks, so we use python:3.12-slim-bookworm here and copy only the built
 # artifacts into the hardened runtime stage below.
-FROM python:3.12-slim-bookworm AS builder
+FROM python:3.14-slim-bookworm AS builder
 
 # Set working directory
 WORKDIR /app
