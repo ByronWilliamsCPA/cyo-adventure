@@ -2806,10 +2806,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#rate-limit-pacing" class="md-nav__link">
+  <a href="#request-pacing-mandatory" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rate-limit pacing
+        Request pacing (mandatory)
       
     </span>
   </a>
@@ -2892,7 +2892,12 @@ FastAPI backend end to end over HTTP: real routing, middleware, authorization, a
 schema. CI runs it with <a href="https://github.com/postmanlabs/newman">newman</a> in the <code>api-tests</code> job of
 <code>.github/workflows/ci.yml</code> and uploads the JUnit results to Codecov Test Analytics under the <code>api</code> flag.</p>
 <h2 id="what-is-tested">What is tested<a class="headerlink" href="#what-is-tested" title="Permanent link">&para;</a></h2>
-<p>The collection contains 16 folders (one per resource), 75 requests, and 223 assertions. Every request
+<p>The collection contains 23 folders (one per resource), 136 requests, and 404 assertions, covering 67 of
+the 83 operations the app registers as of this writing. The 16 operations added after this suite's last
+extension still need folders: 14 from the M4b-d family-tier wave (PR #270: <code>flags</code>, <code>notifications</code>,
+<code>reading-history</code>, <code>recommendations</code>, <code>node-edit</code>, <code>rescreen</code>, <code>audit</code>, guardian family-connection
+consent, and the family budget/reading-summary reads) plus the admin master library listing and the
+admin generation-job force-fail action (PR #277). New routers must get a folder here. Every request
 asserts an exact status code and validates the response body against a JSON Schema resolved from the
 app's OpenAPI components; happy-path requests add semantic assertions (state transitions, echoed fields,
 list contents guaranteed by seed data).</p>
@@ -2914,11 +2919,23 @@ list contents guaranteed by seed data).</p>
 </tr>
 <tr>
 <td>me, profiles, families</td>
-<td>Identity, profile create/read/update, admin family listing, role gates</td>
+<td>Identity, profile create/read/update, admin family listing + create/rename, role gates</td>
+</tr>
+<tr>
+<td>child-sessions</td>
+<td>Mint for the seeded profile, prove the token acts as that child via /me, role/cross-family/missing-profile gates</td>
+</tr>
+<tr>
+<td>device-grants</td>
+<td>Mint, list (token never re-exposed), the device token's exact capability matrix (profiles list + child-session mint only), revoke, and online revocation enforcement (401 after revoke)</td>
+</tr>
+<tr>
+<td>onboarding</td>
+<td>First-login provisioning (201), idempotent retry (200), child-session and device tokens refused</td>
 </tr>
 <tr>
 <td>library, reading, ratings</td>
-<td>Published-book discovery, reading-state save/replay, rating creation (the endpoint is an upsert; the update path is not yet re-exercised)</td>
+<td>Published-book discovery, reading-state save/replay, series-next continuation (Ember Trail pair, null cases, gates), rating creation (the endpoint is an upsert; the update path is not yet re-exercised)</td>
 </tr>
 <tr>
 <td>assignments</td>
@@ -2926,7 +2943,7 @@ list contents guaranteed by seed data).</p>
 </tr>
 <tr>
 <td>story-requests</td>
-<td>Full lifecycle: create, decline, approve, authored create, admin authoring-plan (201 + 409 idempotency)</td>
+<td>Full lifecycle: create, decline, approve, authored create, admin authoring-plan (201 + 409 idempotency), admin cross-family queue</td>
 </tr>
 <tr>
 <td>approval</td>
@@ -2941,6 +2958,22 @@ list contents guaranteed by seed data).</p>
 <td>Admin CRUD plus role gates</td>
 </tr>
 <tr>
+<td>moderation-dashboard</td>
+<td>Override-evidence aggregation and threshold suggestions (runs after the thresholds folder so its writes appear in recent_changes)</td>
+</tr>
+<tr>
+<td>admin-users</td>
+<td>Adult-account listing (never <code>authn_subject</code>), invite into the newman family, duplicate-invite 409, pending-transition 422, self-manage 403</td>
+</tr>
+<tr>
+<td>admin-profiles</td>
+<td>Cross-family listing, create, PIN + deactivate lifecycle (deactivated profile then 404s a child-session mint), malformed-PIN 422 never echoing the input</td>
+</tr>
+<tr>
+<td>family-connections</td>
+<td>Directional connect, duplicate 409, self-connection 422, unknown-family 404, delete</td>
+</tr>
+<tr>
 <td>covers</td>
 <td>Auth negatives and DB-only status reads only (see externals policy below)</td>
 </tr>
@@ -2951,7 +2984,9 @@ list contents guaranteed by seed data).</p>
 </tbody>
 </table>
 <p>All resource IDs are discovered dynamically from prior responses (<code>pm.collectionVariables.set</code>), never
-hardcoded, so the suite is stable across reseeded databases.</p>
+hardcoded, so the suite is stable across reseeded databases. Requests the suite creates on the way
+(a sibling profile, the "Newman Ops Family", an invited user, an admin-created profile) are additive and
+never touch the seeded rows the earlier folders assert on.</p>
 <h3 id="externals-policy">Externals policy<a class="headerlink" href="#externals-policy" title="Permanent link">&para;</a></h3>
 <p>CI runs with no Supabase, Gemini, R2, or LLM credentials and no Redis. Endpoints whose happy path calls an
 external service are covered by auth negatives and side-effect-free reads only: <code>POST
@@ -2988,14 +3023,30 @@ subjects the collection uses as collection variables:</p>
 </tr>
 </tbody>
 </table>
-<h3 id="rate-limit-pacing">Rate-limit pacing<a class="headerlink" href="#rate-limit-pacing" title="Permanent link">&para;</a></h3>
-<p>The app enforces a 60 requests/minute sliding window (plus a 10 req/s burst cap) via
-<code>RateLimitMiddleware</code>. Pacing is supplied by the runner, not the collection: every newman invocation
-must pass <code>--delay-request 1100</code> (CI does; the local command below does) so any 60-second window stays
-under the limit. A full run takes roughly 90 seconds by design. If you run the collection in the Postman
-desktop Runner instead of newman, set its own Delay setting to 1100 ms; the CLI flag does not apply
-there. If the suite grows enough to hurt CI latency, raise the app's limit for CI instead of shrinking
-the delay.</p>
+<p>Two further bearers are not seeded but minted over the API during the run and stored as collection
+variables: <code>child_session_token</code> (a real backend-signed child session JWT, minted in the child-sessions
+folder) and <code>device_grant_token</code> (a backend-signed device grant, minted and later revoked in the
+device-grants folder). Both exercise the non-guardian verification branches of <code>api/deps.py</code> end to end,
+which requires the dev signing secrets described under "Required environment" below.</p>
+<h3 id="request-pacing-mandatory">Request pacing (mandatory)<a class="headerlink" href="#request-pacing-mandatory" title="Permanent link">&para;</a></h3>
+<p>Every newman invocation must pass <code>--delay-request 1100</code> (CI does; the local command below does), for
+two reasons:</p>
+<ol>
+<li><strong>Commit visibility.</strong> The app's unit-of-work commits when the request's yield-dependency tears
+   down, which happens after the response is sent. A zero-delay runner can therefore receive a 201 and
+   fire the next request before the created row is committed, producing intermittent 403/404s on
+   just-created resources. The delay serializes each request against the previous one's commit. This
+   is a mitigation, not the fix: any sufficiently fast client can hit the same race, and the durable
+   fix is committing the unit-of-work before the response is sent
+   (<code>api/deps.py::get_db_session</code>), tracked as follow-up work.</li>
+<li><strong>Rate limiting.</strong> Wherever <code>RateLimitMiddleware</code> is enabled (any non-<code>local</code> environment; the
+   compose/CI stack runs <code>ENVIRONMENT=local</code>, where it is off), the delay keeps any 60-second window
+   under the 60 requests/minute ceiling.</li>
+</ol>
+<p>A full run takes roughly 3 minutes by design. If you run the collection in the Postman desktop Runner
+instead of newman, set its own Delay setting to 1100 ms; the CLI flag does not apply there. If the suite
+grows enough to hurt CI latency, do not shrink the delay; batch-friendly alternatives (splitting the
+collection across parallel stacks) are the way out.</p>
 <h2 id="running-locally">Running locally<a class="headerlink" href="#running-locally" title="Permanent link">&para;</a></h2>
 <p>Prerequisites: Docker with the compose plugin, <code>uv</code>, Node.js, <code>npm install -g newman</code>, and the
 <a href="https://supabase.com/docs/guides/local-development/cli/getting-started">Supabase CLI</a> (pinned to 2.109.1
@@ -3022,12 +3073,16 @@ in CI via <code>supabase/setup-cli</code>). From the repo root:</p>
 example a running dev stack), run the suite under an isolated project with remapped ports and point
 <code>base_url</code>/<code>DATABASE_URL</code> at them (<code>docker compose -p cyo-adventure-apitest ...</code>).</p>
 <h2 id="required-environment">Required environment<a class="headerlink" href="#required-environment" title="Permanent link">&para;</a></h2>
-<p>No secrets are required to run the suite. The compose defaults are sufficient: <code>ENVIRONMENT=local</code> (dev
-auth), <code>DATABASE_URL</code> pointing at the compose <code>db</code> service, and no Supabase/Gemini/R2/LLM/Redis
-configuration. The only non-default env used in CI is <code>DATABASE_URL</code> for the runner-side migrate and
-seed steps, which targets the published Postgres port. Separately from running the tests, CI's upload
-step uses the repo-level <code>CODECOV_TOKEN</code> secret for optional, non-blocking Test Analytics reporting
-(<code>fail_ci_if_error: false</code>); a missing token degrades reporting only, never test execution.</p>
+<p>No real secrets are required to run the suite. The compose defaults are sufficient: <code>ENVIRONMENT=local</code>
+(dev auth), <code>DATABASE_URL</code> pointing at the compose <code>db</code> service, benign dev defaults for
+<code>CHILD_SESSION_SECRET</code> and <code>DEVICE_GRANT_SECRET</code> (shipped in <code>docker-compose.yml</code>; without them the
+child-session and device-grant mint endpoints answer 400 <code>ConfigurationError</code>, so the child-sessions,
+device-grants, and onboarding folders cannot pass), and no Supabase/Gemini/R2/LLM/Redis configuration.
+If you run the backend outside compose (bare <code>uvicorn</code>), export those two variables yourself. The only
+non-default env used in CI is <code>DATABASE_URL</code> for the runner-side migrate and seed steps, which targets
+the published Postgres port. Separately from running the tests, CI's upload step uses the repo-level
+<code>CODECOV_TOKEN</code> secret for optional, non-blocking Test Analytics reporting (<code>fail_ci_if_error: false</code>);
+a missing token degrades reporting only, never test execution.</p>
 <h2 id="ci-integration">CI integration<a class="headerlink" href="#ci-integration" title="Permanent link">&para;</a></h2>
 <p><code>.github/workflows/ci.yml</code> gates the <code>api-tests</code> job on this collection existing
 (<code>detect-api-collection</code>), then: builds and starts <code>app</code> + <code>db</code> from the repo compose file, waits on
@@ -3065,7 +3120,7 @@ pushing.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 16:40:41 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 18, 2026 02:01:48 UTC">July 18, 2026</span>
   </span>
 
     
