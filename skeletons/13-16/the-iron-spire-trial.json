@@ -1,0 +1,4011 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_iron_spire_trial",
+  "version": 1,
+  "title": "The Iron Spire Trial",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "the formal ascent trial",
+      "disciplined nerve",
+      "lethal missteps",
+      "conduct carried up the wall"
+    ],
+    "estimated_minutes": 30,
+    "ending_count": 79,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "gauntlet",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "standing",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "The trial-master's judgment of the climber's conduct. Monotone +1 at each of the two conduct checkpoints (the Muster Yard and the Oath Landing) when the honourable choice is taken; the expedient survivable choice grants nothing. Reachable set at the summit is {0,1,2}. Gates the summit's naming: standing==2 opens the honour check, ==1 the true ascent, <=0 the unnamed summit."
+    },
+    {
+      "name": "grip",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Physical reserve in the arms for the hard pitches. Monotone decreasing: -1 each time the climber takes a gamble-slip on a climbing checkpoint (the Curtain Wall, the Chimney, the Spiral Stair), where the clean line costs nothing. Reachable set at the Sheer Pitch is {0,1,2,3}. Gates survival of the sheer overhang: grip>=2 tops out, grip<=1 falls."
+    },
+    {
+      "name": "token",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the climber holds the warden's crown-seal. Set true only by the correct report at the Warden's Post; every survivable alternative (slip past, gamble) leaves it false. Both values reachable at the High Gate, where it partitions the passage (seal opens it clean, no-seal forces the service hatch). Required true, with standing==2, for the highest summit name."
+    }
+  ],
+  "start_node": "setup0",
+  "nodes": [
+    {
+      "id": "setup0",
+      "body": "<<FILL role=setup words=86 beats='second person; you stand at the foot of the Iron Spire on the morning of the ascent trial; a fortified tower that climbs into cloud, each stage warded and watched; the trial is one true path up, taken alone; state the stakes plainly and grave: many are called to climb and few come down named'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup0",
+          "label": "Take the first stair.",
+          "target": "setup1"
+        }
+      ]
+    },
+    {
+      "id": "setup1",
+      "body": "<<FILL role=setup words=80 beats='the warden of the trial states the one law before you begin: the Spire is climbed by conduct and by nerve, and it keeps those who fail either; there is no going back down a stage once passed, only the next ward and the next, all the way to the crown or not at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup1",
+          "label": "Line up for the muster.",
+          "target": "muster_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_ap0",
+      "body": "<<FILL role=rising words=74 beats='the muster yard lies inside the barbican, a walled square open to a dry moat on its inner edge where the drop falls to old iron stakes; the trial-master reads the names and marks each climber's bearing before the first stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_ap0",
+          "label": "Go on.",
+          "target": "muster_gate"
+        }
+      ]
+    },
+    {
+      "id": "muster_pass",
+      "body": "<<FILL role=rising words=60 beats='you answer clean and the trial-master marks you well; you climb with your name intact and your bearing counted in your favour'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_pass",
+          "label": "Go on.",
+          "target": "curtain_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_degrade",
+      "body": "<<FILL role=rising words=62 beats='you shove forward out of turn; the wardens let you pass but the trial-master notes it in cold silence; you climb unmarked, your bearing already spent'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_degrade",
+          "label": "Go on.",
+          "target": "curtain_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the barrier stood between the yard and the moat drop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f0_c0",
+          "label": "Go on.",
+          "target": "muster_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='one breath in which the whole trial narrows to the falling; grave, no gore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f0_c1",
+          "label": "Go on.",
+          "target": "muster_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_f0_end",
+      "body": "<<FILL role=failure words=63 beats='the vault carries you over the lip and onto the old stakes below; the yard keeps you before the climb even begins'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Over the Moat Lip"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: a blade answers a raised hand in the muster yard'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f1_c0",
+          "label": "Go on.",
+          "target": "muster_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='there is a moment it could be taken back, and then it cannot; quiet, spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f1_c1",
+          "label": "Go on.",
+          "target": "muster_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_f1_end",
+      "body": "<<FILL role=failure words=63 beats='the yard guard cuts you down where you stand; insolence at the muster is the shortest trial of all'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Struck at the Muster"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death here; the count does not wait and the edge is no place to stand idle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f2_c0",
+          "label": "Go on.",
+          "target": "muster_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the moment to step in comes and goes while you hesitate on the lip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f2_c1",
+          "label": "Go on.",
+          "target": "muster_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_f2_end",
+      "body": "<<FILL role=failure words=63 beats='the crowd surges at the closing call and carries you back over the unrailed edge; the yard takes the one who would not stand its form'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Backed Off the Edge"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the master's word is the yard's law'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_fd_c0",
+          "label": "Go on.",
+          "target": "muster_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the answer comes fast and final; no cruelty drawn out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_fd_c1",
+          "label": "Go on.",
+          "target": "muster_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_fd_end",
+      "body": "<<FILL role=failure words=63 beats='arguing the count is refusing the trial; the wardens take you off the wall and the drop below hears it end'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Argued Off the Wall"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_slip",
+      "body": "<<FILL role=rising words=64 beats='you ghost into the tail of the file and climb uncounted; no mark for you and none against, only the stair ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_slip",
+          "label": "Go on.",
+          "target": "curtain_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_cap",
+      "body": "<<FILL role=failure words=64 beats='you let the wardens close and lower your hands; the trial ends before the first stair, but you keep your life for it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Held at the Muster"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the muster yard; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_seen_slip",
+          "label": "Fall in quiet at the back and go uncounted.",
+          "target": "muster_slip"
+        },
+        {
+          "id": "c_muster_seen_fight",
+          "label": "Argue your place aloud with the trial-master.",
+          "target": "muster_fd_c0"
+        },
+        {
+          "id": "c_muster_seen_cap",
+          "label": "Stand down and let the wardens hold you.",
+          "target": "muster_cap"
+        }
+      ]
+    },
+    {
+      "id": "muster_gate",
+      "body": "<<FILL role=rising words=90 beats='you are in the muster yard; the law here is bearing: stand the form, answer when your name is read, and keep off the moat lip; those who jostle for place, mouth off to a warden, or crowd the edge are struck from the trial or off the wall; hold the form and be counted, any other way is a fall or a blade'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_ok",
+          "label": "Stand the form and answer plain when named.",
+          "target": "muster_pass",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "standing",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_muster_exp",
+          "label": "Push to the head of the line to climb first.",
+          "target": "muster_degrade"
+        },
+        {
+          "id": "c_muster_f0",
+          "label": "Vault the inner barrier to skip the count.",
+          "target": "muster_f0_c0"
+        },
+        {
+          "id": "c_muster_f1",
+          "label": "Strike back at the warden who shoves you.",
+          "target": "muster_f1_c0"
+        },
+        {
+          "id": "c_muster_f2",
+          "label": "Hang back at the edge until the count ends.",
+          "target": "muster_f2_c0"
+        },
+        {
+          "id": "c_muster_gamble",
+          "label": "Chance it and slip the count unseen.",
+          "target": "muster_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "curtain_ap0",
+      "body": "<<FILL role=rising words=74 beats='the first true pitch is the curtain wall, a sheer face of fitted stone with one graded climbing line worked into it by old hands; the rest is smooth and overhung and drops clean to the yard'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_ap0",
+          "label": "Go on.",
+          "target": "curtain_gate"
+        }
+      ]
+    },
+    {
+      "id": "curtain_pass",
+      "body": "<<FILL role=rising words=60 beats='the graded line brings you over the parapet with your reserve unspent; the wall is under you and the crown a stage nearer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_pass",
+          "label": "Go on.",
+          "target": "warden_ap0"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the blank stone offers nothing to a hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f0_c0",
+          "label": "Go on.",
+          "target": "curtain_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='one held breath in which the whole trial narrows to the grip that is not there; grave and brief'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f0_c1",
+          "label": "Go on.",
+          "target": "curtain_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f0_end",
+      "body": "<<FILL role=failure words=63 beats='the smooth face gives no hold and you peel off it; the curtain wall keeps the one who scorned the graded line'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Blank Face"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: an overhang hangs a climber over open air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f1_c0",
+          "label": "Go on.",
+          "target": "curtain_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the arms know the truth a heartbeat before the hands let go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f1_c1",
+          "label": "Go on.",
+          "target": "curtain_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f1_end",
+      "body": "<<FILL role=failure words=63 beats='under the overhang your weight comes off the wall entirely; there is only the drop to the yard'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Overhang"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: a lunge past a good hold is a bet against the stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f2_c0",
+          "label": "Go on.",
+          "target": "curtain_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the crack was a shadow, not a hold, and the hand closes on nothing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f2_c1",
+          "label": "Go on.",
+          "target": "curtain_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f2_end",
+      "body": "<<FILL role=failure words=63 beats='the high crack is a seam too shallow to hold weight; you come off it into the long fall'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Lunge Too Far"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f3_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death on a wall; the cold finds still fingers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f3_c0",
+          "label": "Go on.",
+          "target": "curtain_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f3_c1",
+      "body": "<<FILL role=rising words=55 beats='the strength leaks out of held arms while you cling and do not move'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f3_c1",
+          "label": "Go on.",
+          "target": "curtain_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f3_end",
+      "body": "<<FILL role=failure words=63 beats='hanging still on the face spends the very reserve the pitch demands; your grip opens of its own accord and the wall lets you go'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Spent on the Face"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f4_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: a corner is not a chimney and will not hold a brace'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f4_c0",
+          "label": "Go on.",
+          "target": "curtain_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f4_c1",
+      "body": "<<FILL role=rising words=55 beats='the legs slip the polished angle and there is nothing else to trust'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f4_c1",
+          "label": "Go on.",
+          "target": "curtain_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f4_end",
+      "body": "<<FILL role=failure words=63 beats='the fitted corner is too shallow to bridge; your brace skates off it and the wall takes you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Corner"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the overhang is the wall's cruelest ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_fd_c0",
+          "label": "Go on.",
+          "target": "curtain_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the hands know before the mind does; grave, without dwelling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_fd_c1",
+          "label": "Go on.",
+          "target": "curtain_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_fd_end",
+      "body": "<<FILL role=failure words=63 beats='free of the graded line over the overhang there is no recovery; the curtain wall keeps the one who dared it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Free of the Line"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_slip",
+      "body": "<<FILL role=rising words=64 beats='the flue crumbles under you and you climb it on failing strength, over the top with your arms half-gone but the parapet made'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_slip",
+          "label": "Go on.",
+          "target": "warden_ap0"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "grip",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "curtain_cap",
+      "body": "<<FILL role=failure words=64 beats='you cling and call and a warden ropes you off the face; the trial is over for you, but you come down alive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Roped Off the Wall"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the curtain wall; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_seen_slip",
+          "label": "Scrabble the loose flue and haul over hard.",
+          "target": "curtain_slip"
+        },
+        {
+          "id": "c_curtain_seen_fight",
+          "label": "Free-climb the overhang line for speed.",
+          "target": "curtain_fd_c0"
+        },
+        {
+          "id": "c_curtain_seen_cap",
+          "label": "Freeze on the holds and call to be roped down.",
+          "target": "curtain_cap"
+        }
+      ]
+    },
+    {
+      "id": "curtain_gate",
+      "body": "<<FILL role=rising words=90 beats='you are on the curtain wall; take the graded line, hand to hand on the cut holds, and it will bear you; anywhere off the line the stone is smooth or overhung and gives nothing back but the fall; find the graded holds, keep to them, never trust the blank face'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_ok",
+          "label": "Climb the graded line, hold to cut hold.",
+          "target": "curtain_pass"
+        },
+        {
+          "id": "c_curtain_f0",
+          "label": "Take the smooth face direct to save the climb.",
+          "target": "curtain_f0_c0"
+        },
+        {
+          "id": "c_curtain_f1",
+          "label": "Swing out under the overhang to pass fast.",
+          "target": "curtain_f1_c0"
+        },
+        {
+          "id": "c_curtain_f2",
+          "label": "Lunge for a high crack above the graded holds.",
+          "target": "curtain_f2_c0"
+        },
+        {
+          "id": "c_curtain_f3",
+          "label": "Rest spread on the face to gather your nerve.",
+          "target": "curtain_f3_c0"
+        },
+        {
+          "id": "c_curtain_f4",
+          "label": "Chimney the smooth corner with braced legs.",
+          "target": "curtain_f4_c0"
+        },
+        {
+          "id": "c_curtain_gamble",
+          "label": "Chance the crumbling flue to the side.",
+          "target": "curtain_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "warden_ap0",
+      "body": "<<FILL role=rising words=74 beats='above the curtain wall is the warden's post, a landing barred by an iron wicket; the gate-warden holds the crown-seal that opens the high gate near the summit, and gives it only to a climber who reports in proper form'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_ap0",
+          "label": "Go on.",
+          "target": "warden_gate"
+        }
+      ]
+    },
+    {
+      "id": "warden_pass",
+      "body": "<<FILL role=rising words=60 beats='the warden hears the true report, presses the crown-seal into your hand, and swings the wicket; you climb with the high gate already half won'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_pass",
+          "label": "Go on.",
+          "target": "portcullis_ap0"
+        }
+      ]
+    },
+    {
+      "id": "warden_degrade",
+      "body": "<<FILL role=rising words=62 beats='you go by the post while the warden's back is turned; no seal for you, but the wicket is behind you and the stair goes on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_degrade",
+          "label": "Go on.",
+          "target": "portcullis_ap0"
+        }
+      ]
+    },
+    {
+      "id": "warden_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the warden knows every name on the trial roll'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f0_c0",
+          "label": "Go on.",
+          "target": "warden_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='the lie is caught in the space of a breath; grave and quiet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f0_c1",
+          "label": "Go on.",
+          "target": "warden_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_f0_end",
+      "body": "<<FILL role=failure words=63 beats='a false report at the warden's post is a climber who should not be on the wall; the guard settles it there'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Caught in the Lie"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the seal is the warden's to give, never to take'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f1_c0",
+          "label": "Go on.",
+          "target": "warden_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the reach is answered before the fingers close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f1_c1",
+          "label": "Go on.",
+          "target": "warden_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_f1_end",
+      "body": "<<FILL role=failure words=63 beats='grabbing at the crown-seal draws the warden's blade; the post keeps the one who would steal the trial'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Grasped at the Seal"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the wicket is iron and the post is not empty'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f2_c0",
+          "label": "Go on.",
+          "target": "warden_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the din brings the whole landing down on you in a moment'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f2_c1",
+          "label": "Go on.",
+          "target": "warden_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_f2_end",
+      "body": "<<FILL role=failure words=63 beats='forcing the warden's wicket brings the post's guard in force; you do not pass the landing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Forced at the Post"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: nothing is claimed as a right on the Spire'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_fd_c0",
+          "label": "Go on.",
+          "target": "warden_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the post has no patience for a raised voice; quick, spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_fd_c1",
+          "label": "Go on.",
+          "target": "warden_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_fd_end",
+      "body": "<<FILL role=failure words=63 beats='demanding what must be earned marks you unfit for the wall; the warden's guard puts you off it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Denied at the Post"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_slip",
+      "body": "<<FILL role=rising words=64 beats='you edge the crumbling outer ledge around the wicket, no seal and no leave, and gain the stair beyond by a hand's width of stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_slip",
+          "label": "Go on.",
+          "target": "portcullis_ap0"
+        }
+      ]
+    },
+    {
+      "id": "warden_cap",
+      "body": "<<FILL role=failure words=64 beats='you kneel and the warden bars the wicket against you for good; the trial ends at the post, and you keep your breath'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Barred at the Post"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the warden's post; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_seen_slip",
+          "label": "Traverse the outer ledge past the post.",
+          "target": "warden_slip"
+        },
+        {
+          "id": "c_warden_seen_fight",
+          "label": "Demand the seal as your right, loudly.",
+          "target": "warden_fd_c0"
+        },
+        {
+          "id": "c_warden_seen_cap",
+          "label": "Kneel at the wicket and yield to the warden.",
+          "target": "warden_cap"
+        }
+      ]
+    },
+    {
+      "id": "warden_gate",
+      "body": "<<FILL role=rising words=90 beats='you are at the warden's post; report yourself in the trial's proper form and the warden hands you the crown-seal that opens the high gate above; report wrong, or reach past the warden, or force the wicket, and the post answers the way the Spire answers everything; give the true report and take the seal, or climb on without it and meet the high gate bare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_ok",
+          "label": "Report in proper form and receive the crown-seal.",
+          "target": "warden_pass",
+          "effects": [
+            {
+              "op": "set",
+              "var": "token",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_warden_exp",
+          "label": "Slip past the wicket without reporting.",
+          "target": "warden_degrade"
+        },
+        {
+          "id": "c_warden_f0",
+          "label": "Give a false name to shortcut the report.",
+          "target": "warden_f0_c0"
+        },
+        {
+          "id": "c_warden_f1",
+          "label": "Snatch the seal from the warden's hand.",
+          "target": "warden_f1_c0"
+        },
+        {
+          "id": "c_warden_f2",
+          "label": "Batter the iron wicket open and climb through.",
+          "target": "warden_f2_c0"
+        },
+        {
+          "id": "c_warden_gamble",
+          "label": "Chance the ledge around the barred wicket.",
+          "target": "warden_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "portcullis_ap0",
+      "body": "<<FILL role=rising words=74 beats='the stair passes under a raised portcullis on a worn ratchet; the iron teeth hang overhead and the mechanism drops the grid on a slow, countable beat before it winds back up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_ap0",
+          "label": "Go on.",
+          "target": "portcullis_gate"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_pass",
+      "body": "<<FILL role=rising words=60 beats='you are through and clear as the grid comes down behind you; the teeth bite empty channel and the stair climbs on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_pass",
+          "label": "Go on.",
+          "target": "chimney_ap0"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the count was already past the safe beat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f0_c0",
+          "label": "Go on.",
+          "target": "portcullis_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='one breath in which the whole trial narrows to the falling iron; grave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f0_c1",
+          "label": "Go on.",
+          "target": "portcullis_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f0_end",
+      "body": "<<FILL role=failure words=63 beats='the portcullis comes down as you pass beneath; the teeth find the channel and the climber in it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Teeth"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the channel is the one place never to stand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f1_c0",
+          "label": "Go on.",
+          "target": "portcullis_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the grid is moving before the mind finishes the sum'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f1_c1",
+          "label": "Go on.",
+          "target": "portcullis_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f1_end",
+      "body": "<<FILL role=failure words=63 beats='halted in the channel, you are exactly where the teeth come to rest; the portcullis keeps the one who paused beneath it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Halted in the Channel"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the old mechanism will not be cheated'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f2_c0",
+          "label": "Go on.",
+          "target": "portcullis_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the wedge fails in the instant it is trusted'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f2_c1",
+          "label": "Go on.",
+          "target": "portcullis_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f2_end",
+      "body": "<<FILL role=failure words=63 beats='the ratchet shears your wedge and the grid drops full weight; jamming the portcullis jams only the climber'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Against the Ratchet"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f3_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death; the beat does not slow, and the wall behind you fills'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f3_c0",
+          "label": "Go on.",
+          "target": "portcullis_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f3_c1",
+      "body": "<<FILL role=rising words=55 beats='the climbers pressing up the stair leave you no room as the grid falls'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f3_c1",
+          "label": "Go on.",
+          "target": "portcullis_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f3_end",
+      "body": "<<FILL role=failure words=63 beats='waiting out the ratchet only pins you at the channel mouth when the count runs out; the teeth do not care that you meant to be careful'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Waiting at the Grid"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f4_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the rising grid carries a climber into the arch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f4_c0",
+          "label": "Go on.",
+          "target": "portcullis_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f4_c1",
+      "body": "<<FILL role=rising words=55 beats='the gap above closes faster than the hands can let go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f4_c1",
+          "label": "Go on.",
+          "target": "portcullis_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f4_end",
+      "body": "<<FILL role=failure words=63 beats='riding the portcullis up crushes you against the stone arch it seats into; the mechanism keeps the one who rode it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Arch"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: no one beats the grid on the down-beat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_fd_c0",
+          "label": "Go on.",
+          "target": "portcullis_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the iron is faster than the legs; grave, without cruelty'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_fd_c1",
+          "label": "Go on.",
+          "target": "portcullis_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_fd_end",
+      "body": "<<FILL role=failure words=63 beats='racing the falling portcullis is a race already lost; the teeth come down on the sprinting climber'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Beaten by the Grid"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_slip",
+      "body": "<<FILL role=rising words=64 beats='you dive the closing gap and feel a tooth rake your heel; it draws blood and no more, and you are through onto the stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_slip",
+          "label": "Go on.",
+          "target": "chimney_ap0"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_cap",
+      "body": "<<FILL role=failure words=64 beats='you step off the beat and a warden bars you back down the stair; the trial ends at the portcullis, and you are whole'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Barred at the Grid"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the portcullis; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_seen_slip",
+          "label": "Throw yourself through on the closing beat.",
+          "target": "portcullis_slip"
+        },
+        {
+          "id": "c_portcullis_seen_fight",
+          "label": "Sprint it and beat the falling grid.",
+          "target": "portcullis_fd_c0"
+        },
+        {
+          "id": "c_portcullis_seen_cap",
+          "label": "Step back and let the warden bar you out.",
+          "target": "portcullis_cap"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_gate",
+      "body": "<<FILL role=rising words=90 beats='you are at the portcullis; it falls and rises on a fixed count, and the only safe passage is to go through cleanly while the grid is up and clear of the channel; caught halfway, or under it as it falls, and the iron teeth come down where you stand; read the beat, cross clean, never be beneath it on the drop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_ok",
+          "label": "Cross clean on the up-beat, all the way through.",
+          "target": "portcullis_pass"
+        },
+        {
+          "id": "c_portcullis_f0",
+          "label": "Dash under as the grid begins to fall.",
+          "target": "portcullis_f0_c0"
+        },
+        {
+          "id": "c_portcullis_f1",
+          "label": "Stop halfway to judge the ratchet's timing.",
+          "target": "portcullis_f1_c0"
+        },
+        {
+          "id": "c_portcullis_f2",
+          "label": "Wedge the ratchet to hold the grid up.",
+          "target": "portcullis_f2_c0"
+        },
+        {
+          "id": "c_portcullis_f3",
+          "label": "Wait for a later, slower beat to cross.",
+          "target": "portcullis_f3_c0"
+        },
+        {
+          "id": "c_portcullis_f4",
+          "label": "Climb the grid itself as it rises.",
+          "target": "portcullis_f4_c0"
+        },
+        {
+          "id": "c_portcullis_gamble",
+          "label": "Chance the last of the up-beat and go now.",
+          "target": "portcullis_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "chimney_ap0",
+      "body": "<<FILL role=rising words=74 beats='the route enters a vertical chimney, a cleft between two inner faces climbed by bridging back against one wall and feet against the other; it runs up into the dark with the drop opening beneath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_ap0",
+          "label": "Go on.",
+          "target": "chimney_gate"
+        }
+      ]
+    },
+    {
+      "id": "chimney_pass",
+      "body": "<<FILL role=rising words=60 beats='you bridge out of the top of the cleft onto the ledge above, breathing hard but whole; the chimney is below you now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_pass",
+          "label": "Go on.",
+          "target": "arrowslits_ap0"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: a chimney holds nothing for a face-climber'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f0_c0",
+          "label": "Go on.",
+          "target": "chimney_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='the balance goes in an instant and there is only the cleft below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f0_c1",
+          "label": "Go on.",
+          "target": "chimney_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f0_end",
+      "body": "<<FILL role=failure words=63 beats='abandoning the bridge for the face, you have nothing pressing back; the chimney drops you down its own throat'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Cleft"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the block was only resting in the cleft'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f1_c0",
+          "label": "Go on.",
+          "target": "chimney_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the stone shifts and the hold becomes a falling thing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f1_c1",
+          "label": "Go on.",
+          "target": "chimney_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f1_end",
+      "body": "<<FILL role=failure words=63 beats='the jammed block tears free under your pull; the chimney keeps the climber who trusted loose stone'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "On a Loose Block"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the cleft is wider than a single span'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f2_c0",
+          "label": "Go on.",
+          "target": "chimney_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the legs reach their limit and past it in the same moment'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f2_c1",
+          "label": "Go on.",
+          "target": "chimney_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f2_end",
+      "body": "<<FILL role=failure words=63 beats='stemming the whole width at once splits your bridge to nothing; you slip the gap and the dark takes you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Split in the Gap"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f3_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death in the cleft; a wedged rest is a slow surrender of the bridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f3_c0",
+          "label": "Go on.",
+          "target": "chimney_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f3_c1",
+      "body": "<<FILL role=rising words=55 beats='the cold and the strain unstitch the hold while you hang unmoving'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f3_c1",
+          "label": "Go on.",
+          "target": "chimney_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f3_end",
+      "body": "<<FILL role=failure words=63 beats='wedged still in the chimney, your braced strength drains until the bridge gives; the cleft does not hurry, and it does not need to'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Wedged and Spent"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f4_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: speed in a chimney is a bridge half-set'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f4_c0",
+          "label": "Go on.",
+          "target": "chimney_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f4_c1",
+      "body": "<<FILL role=rising words=55 beats='a rushed press finds no purchase and the balance is gone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f4_c1",
+          "label": "Go on.",
+          "target": "chimney_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f4_end",
+      "body": "<<FILL role=failure words=63 beats='hurrying the dark, one boot skates a damp face and the bridge collapses; the chimney takes the climber who would not go slow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Rushed in the Dark"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: a jump in a chimney leaves the wall entirely'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_fd_c0",
+          "label": "Go on.",
+          "target": "chimney_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='for one beat you touch neither face; grave and spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_fd_c1",
+          "label": "Go on.",
+          "target": "chimney_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_fd_end",
+      "body": "<<FILL role=failure words=63 beats='a bridge-jump that misses touches nothing at all; the chimney keeps the one who left both walls at once'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Between Both Walls"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_slip",
+      "body": "<<FILL role=rising words=64 beats='the slot flares wide and you fight it with everything left, clawing over the lip onto the ledge with your reserve all but gone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_slip",
+          "label": "Go on.",
+          "target": "arrowslits_ap0"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "grip",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "chimney_cap",
+      "body": "<<FILL role=failure words=64 beats='you jam yourself fast and call up into the dark; a rope comes down and takes you off the trial, alive if not climbing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Roped from the Cleft"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the chimney; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_seen_slip",
+          "label": "Thrash the flared slot and beach on the ledge.",
+          "target": "chimney_slip"
+        },
+        {
+          "id": "c_chimney_seen_fight",
+          "label": "Bridge-jump the last of the cleft to the top.",
+          "target": "chimney_fd_c0"
+        },
+        {
+          "id": "c_chimney_seen_cap",
+          "label": "Wedge fast and shout for a rope from above.",
+          "target": "chimney_cap"
+        }
+      ]
+    },
+    {
+      "id": "chimney_gate",
+      "body": "<<FILL role=rising words=90 beats='you are in the chimney; bridge it steady, back to one face and boots to the other, and shuffle up in balance; lose the bridge, or trust a loose block, or hurry the moves, and the cleft drops you the way it has dropped others; keep the bridge, test each press, never rush the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_ok",
+          "label": "Bridge the chimney steady, testing each press.",
+          "target": "chimney_pass"
+        },
+        {
+          "id": "c_chimney_f0",
+          "label": "Face-climb one wall to move up quicker.",
+          "target": "chimney_f0_c0"
+        },
+        {
+          "id": "c_chimney_f1",
+          "label": "Trust a jammed block for a high pull.",
+          "target": "chimney_f1_c0"
+        },
+        {
+          "id": "c_chimney_f2",
+          "label": "Stem wide across the full gap at once.",
+          "target": "chimney_f2_c0"
+        },
+        {
+          "id": "c_chimney_f3",
+          "label": "Rest wedged in the cleft to catch your breath.",
+          "target": "chimney_f3_c0"
+        },
+        {
+          "id": "c_chimney_f4",
+          "label": "Chimney it fast to be out of the dark sooner.",
+          "target": "chimney_f4_c0"
+        },
+        {
+          "id": "c_chimney_gamble",
+          "label": "Chance the flared exit slot direct.",
+          "target": "chimney_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "arrowslits_ap0",
+      "body": "<<FILL role=rising words=74 beats='the ledge leads onto a narrow gallery cut across the face, watched from a row of arrow-slits set in the wall above; wardens with crossbows hold the slits, and only one shadowed strip along the base runs clear of their arc'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_ap0",
+          "label": "Go on.",
+          "target": "arrowslits_gate"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_pass",
+      "body": "<<FILL role=rising words=60 beats='you cross the gallery pressed to the base and reach the far door untouched; the slits stay silent behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_pass",
+          "label": "Go on.",
+          "target": "murderholes_ap0"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the open span is exactly the wardens' arc'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f0_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='one breath in which the whole trial narrows to the bowstrings; grave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f0_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f0_end",
+      "body": "<<FILL role=failure words=63 beats='in the open span you are the clear shot the slits are cut for; the gallery keeps the climber who left the shadow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "In the Open Span"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: speed in the light is still in the light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f1_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the bolts find the runner before the door does'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f1_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f1_end",
+      "body": "<<FILL role=failure words=63 beats='a head-down rush across the lit stone outruns nothing; the arrow-slits take the one who traded cover for haste'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Lit Stone"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: you cannot bait a wall of loaded slits'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f2_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the answer is a volley, not a wasted shot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f2_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f2_end",
+      "body": "<<FILL role=failure words=63 beats='drawing the wardens' eye draws their aim; the gallery answers a taunt the only way it can'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Marked on the Gallery"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f3_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death here; the slits are never unmanned and the watch does not stand down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f3_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f3_c1",
+      "body": "<<FILL role=rising words=55 beats='the climbers behind you crowd the niche and spill you into the light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f3_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f3_end",
+      "body": "<<FILL role=failure words=63 beats='the arrow-slits keep a standing watch that outlasts any wait; huddling in the niche only pins you until the press behind shows you to them'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Found in the Niche"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f4_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: above the slits is the wardens' own wall-walk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f4_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f4_c1",
+      "body": "<<FILL role=rising words=55 beats='the top of the climb is the worst place to arrive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f4_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f4_end",
+      "body": "<<FILL role=failure words=63 beats='hauling over the slit line brings you up onto the manned wall-walk itself; the gallery's keepers are waiting where you top out'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Onto the Wall-Walk"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the open gallery belongs to the slits'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_fd_c0",
+          "label": "Go on.",
+          "target": "arrowslits_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the runner is the easiest mark of all; grave, without dwelling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_fd_c1",
+          "label": "Go on.",
+          "target": "arrowslits_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_fd_end",
+      "body": "<<FILL role=failure words=63 beats='flat out in the open is a straight line for a level bow; the arrow-slits keep the one who ran their arc'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Run Down on the Gallery"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_slip",
+      "body": "<<FILL role=rising words=64 beats='you time the gap between volleys and go low and fast, a bolt splintering the stone at your shoulder as you make the far door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_slip",
+          "label": "Go on.",
+          "target": "murderholes_ap0"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_cap",
+      "body": "<<FILL role=failure words=64 beats='you stop and raise your hands in the shadow strip; the wardens hold their bolts and take you off the wall, breathing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Halted at the Slits"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the arrow-slit gallery; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_seen_slip",
+          "label": "Dash low between the loosing beats.",
+          "target": "arrowslits_slip"
+        },
+        {
+          "id": "c_arrowslits_seen_fight",
+          "label": "Break into the open and run flat out.",
+          "target": "arrowslits_fd_c0"
+        },
+        {
+          "id": "c_arrowslits_seen_cap",
+          "label": "Show your hands and stand still to be taken.",
+          "target": "arrowslits_cap"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_gate",
+      "body": "<<FILL role=rising words=90 beats='you are on the arrow-slit gallery; the wardens loose on anything that shows in the open span, but a shadowed strip along the wall's base sits under their downward arc where a bolt cannot reach; keep low in the shadow strip and move steady; step into the open, or draw their eye, and the slits answer at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_ok",
+          "label": "Keep to the shadow strip, low and steady.",
+          "target": "arrowslits_pass"
+        },
+        {
+          "id": "c_arrowslits_f0",
+          "label": "Cross the open span quickly in the light.",
+          "target": "arrowslits_f0_c0"
+        },
+        {
+          "id": "c_arrowslits_f1",
+          "label": "Rush the gallery all at once, head down.",
+          "target": "arrowslits_f1_c0"
+        },
+        {
+          "id": "c_arrowslits_f2",
+          "label": "Taunt the wardens to waste their bolts.",
+          "target": "arrowslits_f2_c0"
+        },
+        {
+          "id": "c_arrowslits_f3",
+          "label": "Wait in a niche for the wardens to stand down.",
+          "target": "arrowslits_f3_c0"
+        },
+        {
+          "id": "c_arrowslits_f4",
+          "label": "Climb above the slits to pass over them.",
+          "target": "arrowslits_f4_c0"
+        },
+        {
+          "id": "c_arrowslits_gamble",
+          "label": "Chance a fast low dash between two volleys.",
+          "target": "arrowslits_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "murderholes_ap0",
+      "body": "<<FILL role=rising words=74 beats='the far door opens into a low vaulted passage pierced overhead by murder-holes, dark openings through which the wardens above drop scalding sand and loose stone; the floor is set with worn safe-marks between the holes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_ap0",
+          "label": "Go on.",
+          "target": "murderholes_gate"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_pass",
+      "body": "<<FILL role=rising words=60 beats='you follow the safe-marks the length of the passage and out the far end; the holes drop their loads on empty stone behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_pass",
+          "label": "Go on.",
+          "target": "oath_ap0"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the middle line runs hole to hole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f0_c0",
+          "label": "Go on.",
+          "target": "murderholes_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='one breath in which the whole trial narrows to the dark openings above; grave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f0_c1",
+          "label": "Go on.",
+          "target": "murderholes_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f0_end",
+      "body": "<<FILL role=failure words=63 beats='the straight middle is the very line the murder-holes command; the passage keeps the climber who ignored the marks'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Beneath the Holes"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: under a hole is the one place death falls'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f1_c0",
+          "label": "Go on.",
+          "target": "murderholes_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the light above the opening changes an instant before the load comes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f1_c1",
+          "label": "Go on.",
+          "target": "murderholes_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f1_end",
+      "body": "<<FILL role=failure words=63 beats='sheltering beneath a murder-hole puts you under the wardens' drop; the passage answers from above'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Opening"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the wall line crosses three holes unseen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f2_c0",
+          "label": "Go on.",
+          "target": "murderholes_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the marks were the sight you gave up; the dark keeps its holes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f2_c1",
+          "label": "Go on.",
+          "target": "murderholes_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f2_end",
+      "body": "<<FILL role=failure words=63 beats='groping the wall blind carries you under holes you never see; the load finds you between one step and the next'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Blind Under the Vault"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f3_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death; a mark is safe only while you move'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f3_c0",
+          "label": "Go on.",
+          "target": "murderholes_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f3_c1",
+      "body": "<<FILL role=rising words=55 beats='the wardens above have all the sand and stone and time they need'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f3_c1",
+          "label": "Go on.",
+          "target": "murderholes_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f3_end",
+      "body": "<<FILL role=failure words=63 beats='the murder-holes are worked in relays that never pause; halting even on a true mark only lets the next relay range you in'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Stalled on the Mark"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f4_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the holes need no aiming, only a body below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f4_c0",
+          "label": "Go on.",
+          "target": "murderholes_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f4_c1",
+      "body": "<<FILL role=rising words=55 beats='the load is already falling as the legs commit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f4_c1",
+          "label": "Go on.",
+          "target": "murderholes_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f4_end",
+      "body": "<<FILL role=failure words=63 beats='a charge scatters you off the safe-marks into the holes' reach; the passage keeps the one who traded the line for speed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Marks"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: nothing outruns a drop from straight above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_fd_c0",
+          "label": "Go on.",
+          "target": "murderholes_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the load falls faster than the legs carry; grave, spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_fd_c1",
+          "label": "Go on.",
+          "target": "murderholes_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_fd_end",
+      "body": "<<FILL role=failure words=63 beats='the middle sprint runs the whole gauntlet of holes at once; the murder-holes keep the one who dared their length'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Middle"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_slip",
+      "body": "<<FILL role=rising words=64 beats='you read the shifting light at the openings and weave the marks at speed, scalding sand hissing down a pace behind your heels'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_slip",
+          "label": "Go on.",
+          "target": "oath_ap0"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_cap",
+      "body": "<<FILL role=failure words=64 beats='you stand on a safe-mark and call your surrender upward; the wardens hold their load and bring you out, alive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Yielded in the Vault"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the murder-holes; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_seen_slip",
+          "label": "Weave the marks fast on a read of the light.",
+          "target": "murderholes_slip"
+        },
+        {
+          "id": "c_murderholes_seen_fight",
+          "label": "Sprint the middle and outrun the drops.",
+          "target": "murderholes_fd_c0"
+        },
+        {
+          "id": "c_murderholes_seen_cap",
+          "label": "Halt on a mark and call up your surrender.",
+          "target": "murderholes_cap"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_gate",
+      "body": "<<FILL role=rising words=90 beats='you are under the murder-holes; the safe-marks in the floor trace the one line the holes above cannot reach; step mark to mark and the drops fall wide of you; stray off the marks, or dawdle under a hole, or crowd forward blind, and the wardens loose their load where you stand; follow the marks, never linger beneath a hole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_ok",
+          "label": "Step mark to mark, clear of every hole.",
+          "target": "murderholes_pass"
+        },
+        {
+          "id": "c_murderholes_f0",
+          "label": "Run the passage straight down the middle.",
+          "target": "murderholes_f0_c0"
+        },
+        {
+          "id": "c_murderholes_f1",
+          "label": "Shelter directly under a hole to think.",
+          "target": "murderholes_f1_c0"
+        },
+        {
+          "id": "c_murderholes_f2",
+          "label": "Feel forward blind along the wall.",
+          "target": "murderholes_f2_c0"
+        },
+        {
+          "id": "c_murderholes_f3",
+          "label": "Pause on a safe-mark to wait out a drop.",
+          "target": "murderholes_f3_c0"
+        },
+        {
+          "id": "c_murderholes_f4",
+          "label": "Charge through fast before they can aim.",
+          "target": "murderholes_f4_c0"
+        },
+        {
+          "id": "c_murderholes_gamble",
+          "label": "Chance a fast weave between two holes.",
+          "target": "murderholes_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "oath_ap0",
+      "body": "<<FILL role=rising words=74 beats='the passage ends at the oath landing, a wide step before the upper Spire where a climber is asked to swear the trial's oath, or to keep it, when the wardens set a wounded rival across the path as the test'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_ap0",
+          "label": "Go on.",
+          "target": "oath_gate"
+        }
+      ]
+    },
+    {
+      "id": "oath_pass",
+      "body": "<<FILL role=rising words=60 beats='you get the wounded climber to safe stone and only then take the stair; the wardens mark the oath kept, and you climb named for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_pass",
+          "label": "Go on.",
+          "target": "spiral_ap0"
+        }
+      ]
+    },
+    {
+      "id": "oath_degrade",
+      "body": "<<FILL role=rising words=62 beats='you go around the fallen rival and climb on; no warden stops you, but the oath goes unkept and you carry that up the wall unmarked'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_degrade",
+          "label": "Go on.",
+          "target": "spiral_ap0"
+        }
+      ]
+    },
+    {
+      "id": "oath_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the wardens watch the oath landing closest of all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f0_c0",
+          "label": "Go on.",
+          "target": "oath_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='the act is judged in the space of a breath; grave and quiet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f0_c1",
+          "label": "Go on.",
+          "target": "oath_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_f0_end",
+      "body": "<<FILL role=failure words=63 beats='standing on a fallen climber to gain the stair is the one thing the trial will not carry; the landing's wardens end it there'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "On a Fallen Climber"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the landing edge drops the full height of the Spire'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f1_c0",
+          "label": "Go on.",
+          "target": "oath_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='there is a moment it could be unchosen, and then it is done'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f1_c1",
+          "label": "Go on.",
+          "target": "oath_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_f1_end",
+      "body": "<<FILL role=failure words=63 beats='a shove for advantage answers for two lives at once; the wardens put you off the landing after the one you sent'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Landing"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death; the landing is no place to loiter and the upper wardens are counting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f2_c0",
+          "label": "Go on.",
+          "target": "oath_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the moment to act passes while you stand back and let it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f2_c1",
+          "label": "Go on.",
+          "target": "oath_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_f2_end",
+      "body": "<<FILL role=failure words=63 beats='the oath landing is a test that a wait only fails slowly; the upper wardens strike the idle climber from the trial at the count's end'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Struck for Waiting"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the oath is not argued on the Spire'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_fd_c0",
+          "label": "Go on.",
+          "target": "oath_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the wardens have no ear for it; quick and final'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_fd_c1",
+          "label": "Go on.",
+          "target": "oath_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_fd_end",
+      "body": "<<FILL role=failure words=63 beats='disputing the oath at its own landing marks you unfit to climb on; the wardens take you off the wall'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Argued Off the Landing"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_slip",
+      "body": "<<FILL role=rising words=64 beats='you take the crumbling ledge around the landing's edge and rejoin the stair beyond, the test neither passed nor failed, only avoided'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_slip",
+          "label": "Go on.",
+          "target": "spiral_ap0"
+        }
+      ]
+    },
+    {
+      "id": "oath_cap",
+      "body": "<<FILL role=failure words=64 beats='you sit with the wounded climber and let the trial go; the wardens bring you both down, the climb given up but your name your own'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Stood Down at the Oath"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the oath landing; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_seen_slip",
+          "label": "Skirt the ledge around the landing unseen.",
+          "target": "oath_slip"
+        },
+        {
+          "id": "c_oath_seen_fight",
+          "label": "Argue the oath does not bind you here.",
+          "target": "oath_fd_c0"
+        },
+        {
+          "id": "c_oath_seen_cap",
+          "label": "Sit down beside the hurt climber and give up the climb.",
+          "target": "oath_cap"
+        }
+      ]
+    },
+    {
+      "id": "oath_gate",
+      "body": "<<FILL role=rising words=90 beats='you are at the oath landing; the test here is the oath itself, kept not spoken: a climber of the trial lies hurt across the way, and the honourable hold is to see them safe before you climb on; step over them, or use them, or shove past for advantage, and you climb dishonoured though you climb on; keep the oath and bear them clear, or take the quick road and wear the cost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_ok",
+          "label": "Bear the hurt climber clear before you go on.",
+          "target": "oath_pass",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "standing",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_oath_exp",
+          "label": "Step over the hurt climber and press on alone.",
+          "target": "oath_degrade"
+        },
+        {
+          "id": "c_oath_f0",
+          "label": "Use the wounded climber as a foothold up.",
+          "target": "oath_f0_c0"
+        },
+        {
+          "id": "c_oath_f1",
+          "label": "Shove a waiting rival off the landing edge.",
+          "target": "oath_f1_c0"
+        },
+        {
+          "id": "c_oath_f2",
+          "label": "Wait for another climber to clear the way first.",
+          "target": "oath_f2_c0"
+        },
+        {
+          "id": "c_oath_gamble",
+          "label": "Chance the narrow ledge around the whole test.",
+          "target": "oath_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "spiral_ap0",
+      "body": "<<FILL role=rising words=74 beats='the upper Spire is climbed by a spiral stair open on its inner side to the hollow core, the treads worn round and slick and unrailed above a drop that falls the whole height of the tower'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_ap0",
+          "label": "Go on.",
+          "target": "spiral_gate"
+        }
+      ]
+    },
+    {
+      "id": "spiral_pass",
+      "body": "<<FILL role=rising words=60 beats='you wind up the outer edge to the head of the stair, the hollow core behind you now; the crown of the Spire is close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_pass",
+          "label": "Go on.",
+          "target": "sheer_ap0"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the inner treads are worn to nothing over the core'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f0_c0",
+          "label": "Go on.",
+          "target": "spiral_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='one breath in which the whole trial narrows to the open hollow; grave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f0_c1",
+          "label": "Go on.",
+          "target": "spiral_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f0_end",
+      "body": "<<FILL role=failure words=63 beats='the worn inner lip gives underfoot above the core; the spiral stair sheds the climber who cut its short side'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Hollow"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: a run on round wet treads keeps no footing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f1_c0",
+          "label": "Go on.",
+          "target": "spiral_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the boot goes and there is only the core to meet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f1_c1",
+          "label": "Go on.",
+          "target": "spiral_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f1_end",
+      "body": "<<FILL role=failure words=63 beats='the slick treads take a runner's feet from under them; the stair drops the one who hurried its turns'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Wet Treads"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: to lean over the core is to give it your weight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f2_c0",
+          "label": "Go on.",
+          "target": "spiral_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the balance tips past return in a single beat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f2_c1",
+          "label": "Go on.",
+          "target": "spiral_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f2_end",
+      "body": "<<FILL role=failure words=63 beats='leaning into the hollow to look up sends your weight the one way it must not go; the core takes you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Over the Core"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f3_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death on the stair; the slick stone is no seat above a drop with no rail'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f3_c0",
+          "label": "Go on.",
+          "target": "spiral_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f3_c1",
+      "body": "<<FILL role=rising words=55 beats='the strength you meant to save leaks out of stalled legs on the cold turn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f3_c1",
+          "label": "Go on.",
+          "target": "spiral_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f3_end",
+      "body": "<<FILL role=failure words=63 beats='resting on the unrailed spiral only stiffens you over the core, and a stiff climber on slick stone is a fall waiting to be taken'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Stalled on the Turn"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f4_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: a vault on the spiral lands blind on worn stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f4_c0",
+          "label": "Go on.",
+          "target": "spiral_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f4_c1",
+      "body": "<<FILL role=rising words=55 beats='the leading foot finds the slick inner lip and nothing beyond'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f4_c1",
+          "label": "Go on.",
+          "target": "spiral_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f4_end",
+      "body": "<<FILL role=failure words=63 beats='vaulting the treads lands you on the worn inner edge you meant to avoid; the stair sheds you into the core'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Vaulted to the Core"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: even the outer edge will not hold a run'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_fd_c0",
+          "label": "Go on.",
+          "target": "spiral_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the wide treads are still slick and still unrailed; grave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_fd_c1",
+          "label": "Go on.",
+          "target": "spiral_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_fd_end",
+      "body": "<<FILL role=failure words=63 beats='a flat run even on the good edge finds one wet tread too many; the spiral stair keeps the one who ran its height'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Run Off the Stair"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_slip",
+      "body": "<<FILL role=rising words=64 beats='you scramble the worn inner turns on legs that have almost nothing left, catching the wall twice over the hollow before the stair-head takes you in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_slip",
+          "label": "Go on.",
+          "target": "sheer_ap0"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "grip",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "spiral_cap",
+      "body": "<<FILL role=failure words=64 beats='you freeze to the wall and a warden comes down to bring you off; the trial ends on the stair, and you come down its length alive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Brought Down the Stair"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the spiral stair; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_seen_slip",
+          "label": "Scramble the inner turns on failing legs.",
+          "target": "spiral_slip"
+        },
+        {
+          "id": "c_spiral_seen_fight",
+          "label": "Run the outer edge flat out to the top.",
+          "target": "spiral_fd_c0"
+        },
+        {
+          "id": "c_spiral_seen_cap",
+          "label": "Freeze against the wall and wait to be brought down.",
+          "target": "spiral_cap"
+        }
+      ]
+    },
+    {
+      "id": "spiral_gate",
+      "body": "<<FILL role=rising words=90 beats='you are on the spiral stair; take it on the outer edge where the treads are widest and the wall is at your shoulder, one steady hand to the stone; drift to the worn inner edge, or hurry the slick turns, or lean out over the core, and the stair sheds you into the hollow; hold the outer edge, keep a hand to the wall, never trust the inner lip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_ok",
+          "label": "Climb the outer edge, a hand to the wall.",
+          "target": "spiral_pass"
+        },
+        {
+          "id": "c_spiral_f0",
+          "label": "Cut the inner edge to climb the short way.",
+          "target": "spiral_f0_c0"
+        },
+        {
+          "id": "c_spiral_f1",
+          "label": "Take the slick turns at a run.",
+          "target": "spiral_f1_c0"
+        },
+        {
+          "id": "c_spiral_f2",
+          "label": "Lean out over the core to see the way up.",
+          "target": "spiral_f2_c0"
+        },
+        {
+          "id": "c_spiral_f3",
+          "label": "Sit on a tread to rest your burning legs.",
+          "target": "spiral_f3_c0"
+        },
+        {
+          "id": "c_spiral_f4",
+          "label": "Vault two treads at a time to gain height.",
+          "target": "spiral_f4_c0"
+        },
+        {
+          "id": "c_spiral_gamble",
+          "label": "Chance a fast scramble up the inner turns.",
+          "target": "spiral_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "sheer_ap0",
+      "body": "<<FILL role=rising words=74 beats='above the stair-head the route rears into the sheer pitch, a single overhanging wall of holdless rock crossed only by a hard sequence of reaches that demand everything the arms have kept in reserve for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_ap0",
+          "label": "Go on.",
+          "target": "sheer_gate"
+        }
+      ]
+    },
+    {
+      "id": "sheer_pass",
+      "body": "<<FILL role=rising words=60 beats='you top the overhang with the very last of your reserve and pull onto the high ledge; the sheer pitch is under you and the crown all but reached'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_pass",
+          "label": "Go on.",
+          "target": "highgate_ap0"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gf_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the reserve you needed here was left on the pitches below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_gf_c0",
+          "label": "Go on.",
+          "target": "sheer_gf_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gf_c1",
+      "body": "<<FILL role=rising words=55 beats='the arms give at the crux and there is nothing held back to save it; grave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_gf_c1",
+          "label": "Go on.",
+          "target": "sheer_gf_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gf_end",
+      "body": "<<FILL role=failure words=63 beats='spent from the lower climbs, your arms fail on the crux reach of the sheer pitch; the overhang keeps the climber who came to it empty'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_gf_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Spent on the Sheer"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_resolve",
+      "body": "<<FILL role=choice words=72 beats='arm over arm along the sole clean line, everything you kept back now spent into the overhang; whether the last reach comes off depends on what your arms still hold after all the wall below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_hold",
+          "label": "Your reserve holds; you top out.",
+          "target": "sheer_pass",
+          "condition": {
+            ">=": [
+              {
+                "var": "grip"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_sheer_spent",
+          "label": "Your arms are spent; the reach fails.",
+          "target": "sheer_gf_c0",
+          "condition": {
+            "<=": [
+              {
+                "var": "grip"
+              },
+              1
+            ]
+          }
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "sheer_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: off the line the overhang has nothing at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f0_c0",
+          "label": "Go on.",
+          "target": "sheer_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='the hand closes on air and the wall is already gone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f0_c1",
+          "label": "Go on.",
+          "target": "sheer_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f0_end",
+      "body": "<<FILL role=failure words=63 beats='a fling off the sequence finds only blank overhang; the sheer pitch keeps the one who left the clean line'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Clean Line"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death on an overhang; hanging spends the arms faster than climbing them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f1_c0",
+          "label": "Go on.",
+          "target": "sheer_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the reserve drains from loaded arms in the time it takes to breathe twice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f1_c1",
+          "label": "Go on.",
+          "target": "sheer_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f1_end",
+      "body": "<<FILL role=failure words=63 beats='there is no resting on a sheer wall; hanging to gather yourself only empties the arms that were already nearly spent, and the overhang takes what is left'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Hung Out on the Wall"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the flake was never part of the wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f2_c0",
+          "label": "Go on.",
+          "target": "sheer_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the stone parts from the face in the hand that trusts it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f2_c1",
+          "label": "Go on.",
+          "target": "sheer_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f2_end",
+      "body": "<<FILL role=failure words=63 beats='the loose flake pulls off the overhang as you weight it; the sheer pitch keeps the climber who swung on rotten rock'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "On a Loose Flake"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_f3_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the overhang is not passed by force'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f3_c0",
+          "label": "Go on.",
+          "target": "sheer_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f3_c1",
+      "body": "<<FILL role=rising words=55 beats='power runs out where the wall leans furthest and there is no more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f3_c1",
+          "label": "Go on.",
+          "target": "sheer_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f3_end",
+      "body": "<<FILL role=failure words=63 beats='forcing the overhang straight up burns through the arms in a rush and leaves you hanging with nothing; the pitch keeps you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Forced at the Overhang"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: a throw for the top leaves the wall behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_fd_c0",
+          "label": "Go on.",
+          "target": "sheer_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='for one beat there is no hold and no hope of one; grave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_fd_c1",
+          "label": "Go on.",
+          "target": "sheer_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_fd_end",
+      "body": "<<FILL role=failure words=63 beats='an all-or-nothing throw off the overhang catches nothing; the sheer pitch keeps the one who staked it all on a lunge'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Thrown Off the Top"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_slip",
+      "body": "<<FILL role=rising words=64 beats='you take the greasy corner-crack off to the side and fight it on nerve where the arms have failed, jamming and gasping over the lip onto the high ledge with nothing at all left'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_slip",
+          "label": "Go on.",
+          "target": "highgate_ap0"
+        }
+      ]
+    },
+    {
+      "id": "sheer_cap",
+      "body": "<<FILL role=failure words=64 beats='you down-climb to the ledge and call the sheer pitch beyond you; a warden brings you off, the crown unreached but your life kept'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Turned Back at the Sheer"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the sheer pitch; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_seen_slip",
+          "label": "Fight up the greasy corner on nerve alone.",
+          "target": "sheer_slip"
+        },
+        {
+          "id": "c_sheer_seen_fight",
+          "label": "Throw for the top and commit everything.",
+          "target": "sheer_fd_c0"
+        },
+        {
+          "id": "c_sheer_seen_cap",
+          "label": "Down-climb and call the pitch beyond you.",
+          "target": "sheer_cap"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gate",
+      "body": "<<FILL role=rising words=90 beats='you are at the sheer pitch; there is one clean line of reaches across the overhang, and it takes real reserve in the arms to make, reserve that a climber who scrabbled and gambled the lower pitches has already spent; climb the clean line if you have the strength left for it; force it any other way and the overhang keeps you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_ok",
+          "label": "Climb the clean line of reaches, arm over arm.",
+          "target": "sheer_resolve"
+        },
+        {
+          "id": "c_sheer_f0",
+          "label": "Fling for a far hold off the clean line.",
+          "target": "sheer_f0_c0"
+        },
+        {
+          "id": "c_sheer_f1",
+          "label": "Rest hanging on your arms mid-pitch.",
+          "target": "sheer_f1_c0"
+        },
+        {
+          "id": "c_sheer_f2",
+          "label": "Swing on a loose flake to shortcut the crux.",
+          "target": "sheer_f2_c0"
+        },
+        {
+          "id": "c_sheer_f3",
+          "label": "Batter your way straight up the overhang.",
+          "target": "sheer_f3_c0"
+        },
+        {
+          "id": "c_sheer_gamble",
+          "label": "Chance the greasy corner-crack instead.",
+          "target": "sheer_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "highgate_ap0",
+      "body": "<<FILL role=rising words=74 beats='the high ledge ends at the high gate, an iron door set flush in the wall that seals the last approach to the crown; it opens to the warden's crown-seal pressed to its lock, and to nothing else short of the wall itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_ap0",
+          "label": "Go on.",
+          "target": "highgate_gate"
+        }
+      ]
+    },
+    {
+      "id": "highgate_pass_sealed",
+      "body": "<<FILL role=rising words=60 beats='the crown-seal fits the lock and the high gate swings; you pass it clean and named, the last climb open above you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_pass_sealed",
+          "label": "Go on.",
+          "target": "beacon_ap0"
+        }
+      ]
+    },
+    {
+      "id": "highgate_pass_forced",
+      "body": "<<FILL role=rising words=62 beats='with no seal to show, you force the low service hatch and drag yourself through into the last approach, unsealed and marked by the forcing, but through'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_pass_forced",
+          "label": "Go on.",
+          "target": "beacon_ap0"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the wall beside the high gate is holdless and sheer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f0_c0",
+          "label": "Go on.",
+          "target": "highgate_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='one breath in which the whole trial narrows to the open air; grave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f0_c1",
+          "label": "Go on.",
+          "target": "highgate_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f0_end",
+      "body": "<<FILL role=failure words=63 beats='the wall around the high gate offers nothing to a hand; it drops the climber who scorned both seal and hatch'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Around the High Gate"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the high gate is iron set in the living rock'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f1_c0",
+          "label": "Go on.",
+          "target": "highgate_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the effort spends the last of you against a door that will not move'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f1_c1",
+          "label": "Go on.",
+          "target": "highgate_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f1_end",
+      "body": "<<FILL role=failure words=63 beats='battering the sealed gate wins nothing but the wardens' notice; the last landing's guard answers the din'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Broken on the Gate"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death at the high gate; no one climbs up behind to open it, and the ledge is exposed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f2_c0",
+          "label": "Go on.",
+          "target": "highgate_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the cold and the wind off the crown work at a climber who only stands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f2_c1",
+          "label": "Go on.",
+          "target": "highgate_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f2_end",
+      "body": "<<FILL role=failure words=63 beats='the high gate opens for no one who waits; the exposed ledge takes the one who stood in the wind expecting rescue that the trial never sends'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Left at the Gate"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the crown-lock is not pried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_fd_c0",
+          "label": "Go on.",
+          "target": "highgate_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the spike shears and the bolt holds; grave, without dwelling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_fd_c1",
+          "label": "Go on.",
+          "target": "highgate_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_fd_end",
+      "body": "<<FILL role=failure words=63 beats='forcing the crown-lock only breaks the tool and rouses the wardens above; the high landing's guard comes down on the gate'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Sprung at the Lock"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_slip",
+      "body": "<<FILL role=rising words=64 beats='you take the crumbling flue above the gate's lintel and drop down the far side into the last approach, over the gate rather than through it, filthy and scraped but past'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_slip",
+          "label": "Go on.",
+          "target": "beacon_ap0"
+        }
+      ]
+    },
+    {
+      "id": "highgate_cap",
+      "body": "<<FILL role=failure words=64 beats='you set your back to the cold iron and wait, and the wardens come and take you off the ledge; the crown goes unreached, your life kept'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Taken at the High Gate"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the high gate; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_seen_slip",
+          "label": "Climb the flue above the lintel and drop through.",
+          "target": "highgate_slip"
+        },
+        {
+          "id": "c_highgate_seen_fight",
+          "label": "Pry the lock with a spike to force the bolt.",
+          "target": "highgate_fd_c0"
+        },
+        {
+          "id": "c_highgate_seen_cap",
+          "label": "Set your back to the gate and wait to be taken.",
+          "target": "highgate_cap"
+        }
+      ]
+    },
+    {
+      "id": "highgate_gate",
+      "body": "<<FILL role=rising words=90 beats='you are at the high gate; if you carry the crown-seal from the warden's post, press it to the lock and the gate opens clean to the last climb; if you do not, the only way on is the old service hatch beside it, low and blind and forced by hand, a passage that leaves you the way it takes those who come unsealed; open the gate the way your climb allows, and do not try the wall around it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_sealed",
+          "label": "Press the crown-seal to the lock and pass clean.",
+          "target": "highgate_pass_sealed",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_highgate_forced",
+          "label": "Work the old service hatch by hand and squeeze through.",
+          "target": "highgate_pass_forced",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_highgate_f0",
+          "label": "Climb the bare wall around the sealed gate.",
+          "target": "highgate_f0_c0"
+        },
+        {
+          "id": "c_highgate_f1",
+          "label": "Batter the iron gate off its seatings.",
+          "target": "highgate_f1_c0"
+        },
+        {
+          "id": "c_highgate_f2",
+          "label": "Wait at the gate for someone to open it.",
+          "target": "highgate_f2_c0"
+        },
+        {
+          "id": "c_highgate_gamble",
+          "label": "Chance the crumbling flue above the lintel.",
+          "target": "highgate_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "beacon_ap0",
+      "body": "<<FILL role=rising words=74 beats='the last approach opens onto the beacon landing just under the crown, swept by the wind and lit by the trial's own beacon-fire in an iron cage; a narrow causeway of open stone runs across it to the final stair, with the drop on either hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_ap0",
+          "label": "Go on.",
+          "target": "beacon_gate"
+        }
+      ]
+    },
+    {
+      "id": "beacon_pass",
+      "body": "<<FILL role=rising words=60 beats='you cross the causeway low against the wind and reach the foot of the crown-stair; the beacon streams its fire behind you and the summit is one flight up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_pass",
+          "label": "Go on.",
+          "target": "summit_ap0"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f0_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: wide of the causeway is wide over the drop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f0_c0",
+          "label": "Go on.",
+          "target": "beacon_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f0_c1",
+      "body": "<<FILL role=rising words=55 beats='one breath in which the whole trial narrows to the open air on either hand; grave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f0_c1",
+          "label": "Go on.",
+          "target": "beacon_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f0_end",
+      "body": "<<FILL role=failure words=63 beats='a step wide of the causeway puts a boot over the edge in the dark; the beacon landing gives the strayed climber to the wind'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Wide of the Causeway"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f1_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: a standing climber is all sail to the gale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f1_c0",
+          "label": "Go on.",
+          "target": "beacon_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f1_c1",
+      "body": "<<FILL role=rising words=55 beats='the gust takes the upright body the way wind takes a flag'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f1_c1",
+          "label": "Go on.",
+          "target": "beacon_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f1_end",
+      "body": "<<FILL role=failure words=63 beats='standing into the wind on the open stone offers it your whole weight; the gust plucks you off the landing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Taken by the Gust"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f2_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the beacon-cage is iron and burning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f2_c0",
+          "label": "Go on.",
+          "target": "beacon_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f2_c1",
+      "body": "<<FILL role=rising words=55 beats='the heat is a wall as hard as any stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f2_c1",
+          "label": "Go on.",
+          "target": "beacon_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f2_end",
+      "body": "<<FILL role=failure words=63 beats='pressing to the beacon-cage for shelter drives you against burning iron and back off the narrow stone; the landing keeps you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Against the Fire-Cage"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f3_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: delay is death on the landing; the crown wind does not drop and the exposure only tells'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f3_c0",
+          "label": "Go on.",
+          "target": "beacon_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f3_c1",
+      "body": "<<FILL role=rising words=55 beats='the cold and the gale wear a waiting climber down where they crouch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f3_c1",
+          "label": "Go on.",
+          "target": "beacon_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f3_end",
+      "body": "<<FILL role=failure words=63 beats='the wind off the crown blows without let, and a climber who waits it out only stiffens on the exposed stone until a gust finds them anyway'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Worn Off the Landing"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f4_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: the edge is the wind's own working'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f4_c0",
+          "label": "Go on.",
+          "target": "beacon_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f4_c1",
+      "body": "<<FILL role=rising words=55 beats='the crumbling lip goes under a hand set too far out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f4_c1",
+          "label": "Go on.",
+          "target": "beacon_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f4_end",
+      "body": "<<FILL role=failure words=63 beats='hugging the extreme edge to duck the gale puts your weight on crumbling stone; the causeway's rim gives and the landing takes you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Landing's Rim"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_fd_c0",
+      "body": "<<FILL role=rising words=57 beats='the mistake lands: upright on the causeway is upright in the wind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_fd_c0",
+          "label": "Go on.",
+          "target": "beacon_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_fd_c1",
+      "body": "<<FILL role=rising words=55 beats='the gale needs no more than a standing body; grave, spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_fd_c1",
+          "label": "Go on.",
+          "target": "beacon_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_fd_end",
+      "body": "<<FILL role=failure words=63 beats='running the causeway tall gives the crown wind the whole of you; the beacon landing keeps the one who ran it standing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Run Off the Causeway"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_slip",
+      "body": "<<FILL role=rising words=64 beats='you read a lull and dash the causeway low and fast, a gust catching you at the last stride and slamming you into the stair-foot, bruised and holding on but across'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_slip",
+          "label": "Go on.",
+          "target": "summit_ap0"
+        }
+      ]
+    },
+    {
+      "id": "beacon_cap",
+      "body": "<<FILL role=failure words=64 beats='you drop flat to the stone and signal, and the wardens come out along the causeway to bring you in; the crown goes unclimbed, you live'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Fetched Off the Landing"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_seen",
+      "body": "<<FILL role=choice words=72 beats='you are seen but still moving off the beacon landing; one breath to choose; only the hard quiet way keeps the trial alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_seen_slip",
+          "label": "Dash the causeway low on a falling gust.",
+          "target": "beacon_slip"
+        },
+        {
+          "id": "c_beacon_seen_fight",
+          "label": "Run the causeway upright to beat the next gust.",
+          "target": "beacon_fd_c0"
+        },
+        {
+          "id": "c_beacon_seen_cap",
+          "label": "Drop flat and signal the wardens to fetch you.",
+          "target": "beacon_cap"
+        }
+      ]
+    },
+    {
+      "id": "beacon_gate",
+      "body": "<<FILL role=rising words=90 beats='you are on the beacon landing; the causeway to the crown-stair is the one sure footing, run straight and low against the wind with the beacon at your back; step wide toward either drop, or stand tall into the gale, or crowd the fire-cage, and the landing gives you to the wind; hold the causeway, stay low, never fight the gust standing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_ok",
+          "label": "Cross the causeway low, straight, and steady.",
+          "target": "beacon_pass"
+        },
+        {
+          "id": "c_beacon_f0",
+          "label": "Step wide to skirt the streaming fire.",
+          "target": "beacon_f0_c0"
+        },
+        {
+          "id": "c_beacon_f1",
+          "label": "Stand tall to steady yourself against the gust.",
+          "target": "beacon_f1_c0"
+        },
+        {
+          "id": "c_beacon_f2",
+          "label": "Shelter against the hot fire-cage from the wind.",
+          "target": "beacon_f2_c0"
+        },
+        {
+          "id": "c_beacon_f3",
+          "label": "Wait for the wind to drop before crossing.",
+          "target": "beacon_f3_c0"
+        },
+        {
+          "id": "c_beacon_f4",
+          "label": "Crawl the very edge to stay out of the wind.",
+          "target": "beacon_f4_c0"
+        },
+        {
+          "id": "c_beacon_gamble",
+          "label": "Chance a low dash on a lull in the gale.",
+          "target": "beacon_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "summit_ap0",
+      "body": "<<FILL role=rising words=72 beats='the crown-stair brings you out onto the summit of the Iron Spire, wind and cloud and the whole trial fallen away below; the trial-master waits at the crown-stone to name the climb you made, and a climb is named by how it was made, not only that it was'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_summit_ap0",
+          "label": "Stand before the crown-stone.",
+          "target": "summit_gate"
+        }
+      ]
+    },
+    {
+      "id": "summit_gate",
+      "body": "<<FILL role=climax words=86 beats='the trial-master reads your bearing over the whole ascent before speaking the name of your climb; write it strictly by the conduct carried up the wall, and let the true standing decide which single word is spoken, the climb of one who kept every form, the climb of one who kept some, or the climb of one who kept the wall but not its faith'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_summit_honor",
+          "label": "You kept every form: stand for the crown.",
+          "target": "summit_honor_check",
+          "condition": {
+            "==": [
+              {
+                "var": "standing"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_summit_credit",
+          "label": "You kept some faith, not all: stand and be named.",
+          "target": "win_creditable",
+          "condition": {
+            "==": [
+              {
+                "var": "standing"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_summit_shamed",
+          "label": "You kept the wall but not its faith: stand unnamed.",
+          "target": "win_shamed",
+          "condition": {
+            "<=": [
+              {
+                "var": "standing"
+              },
+              0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "summit_honor_check",
+      "body": "<<FILL role=climax words=80 beats='one thing remains between you and the trial's highest name, whether you carried the crown-seal earned at the warden's post all the way to the top or came the last stretch unsealed; write it by the true token state and let it decide the single door, the fully honoured climb or the strong climb one mark short of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honor_sealed",
+          "label": "You carried the crown-seal to the summit: take the highest name.",
+          "target": "win_honor",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_honor_unsealed",
+          "label": "You reached the crown unsealed: take the strong name, one short.",
+          "target": "win_creditable",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "win_honor",
+      "body": "<<FILL role=resolution words=88 beats='resolution; standing full and the crown-seal in your hand, you are named to the crown of the Iron Spire with every form of the trial kept; the trial-master speaks the highest name the Spire gives, and it is yours wholly and without asterisk; told plainly, gravely, no triumph overdone, the rarest ending the wall allows'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_honor",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Named to the Crown"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_creditable",
+      "body": "<<FILL role=resolution words=84 beats='resolution; you stand at the crown having made the whole lethal climb and kept real faith on the way, though one mark eluded you, the seal ungained or a form unkept; the trial-master names you a true climber of the Spire, a strong ascent honestly made and one step short of its highest word; grave, earned, quietly satisfying'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_creditable",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A True Ascent"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_shamed",
+      "body": "<<FILL role=resolution words=82 beats='resolution; you reached the crown of the Iron Spire and the wall let you live, but you climbed it cutting every corner it offered, and the trial-master reads that and stays silent; you have the summit and not the name, the climb survived but not honoured; no cruelty in the telling, only the cold weight of a crown reached and unspoken'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_shamed",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Unnamed Summit"
+      },
+      "choices": []
+    }
+  ]
+}
