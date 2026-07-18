@@ -929,10 +929,24 @@ class Settings(BaseSettings):
                 token audience, or the child-session and device-grant secrets
                 are identical.
         """
-        backend_audiences = {
+        backend_audiences = (
             TokenAudience.CHILD_SESSION.value,
             TokenAudience.DEVICE_GRANT.value,
-        }
+        )
+        # The two backend audiences must themselves be distinct, not just
+        # distinct from oidc_audience: if the TokenAudience members were ever
+        # edited to share a literal they would collapse to one, and checking
+        # only `oidc_audience in backend_audiences` would still pass while the
+        # child/device separation was silently gone. Assert it directly so the
+        # "three pairwise-distinct audiences" invariant this validator documents
+        # actually holds end to end (issue #251).
+        if len(set(backend_audiences)) != len(backend_audiences):
+            msg = (
+                "The backend token audiences (child-session, device-grant) must "
+                "be pairwise distinct; a shared value collapses the child/device "
+                "audience separation (issue #251)."
+            )
+            raise ConfigurationError(msg)
         if self.oidc_audience in backend_audiences:
             msg = (
                 "OIDC_AUDIENCE must be distinct from the backend token "

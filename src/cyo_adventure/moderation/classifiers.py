@@ -187,19 +187,17 @@ def _narrow_float_map(raw: object) -> dict[str, float]:
 def _openai_finding(
     node_id: str, category: str, flagged: bool, score: float
 ) -> Finding | None:
-    """Build a single OpenAI Finding, or return None when there is nothing to report.
-
-    #EDGE: data integrity: httpx's ``.json()`` uses ``json.loads`` with
-    ``allow_nan=True``, so a non-finite score (``NaN``/``Infinity``) survives the
-    ``isinstance(_, (int, float))`` guard upstream. Passed straight through it
-    would make ``Finding.__post_init__`` raise ``ValueError`` (its range check
-    is false for ``NaN``), matching the Perspective crash tracked in #144. Treat
-    a non-finite score as an absent score: drop it from the graded-floor
-    comparison and report ``score=None`` rather than crashing, while still
-    honoring OpenAI's independent boolean ``flagged`` signal so a flagged
-    bright-line category is never lost to a garbage score.
-    #VERIFY: test_classifiers covers flagged and unflagged non-finite scores.
-    """
+    """Build a single OpenAI Finding, or return None when there is nothing to report."""
+    # #EDGE: data integrity: httpx's .json() uses json.loads with
+    # allow_nan=True, so a non-finite score (NaN/Infinity) survives the
+    # isinstance(_, (int, float)) guard upstream. Passed straight through it
+    # would make Finding.__post_init__ raise ValueError (its range check is
+    # false for NaN), matching the Perspective crash tracked in #144. Treat a
+    # non-finite score as an absent score: drop it from the graded-floor
+    # comparison and report score=None rather than crashing, while still
+    # honoring OpenAI's independent boolean flagged signal so a flagged
+    # bright-line category is never lost to a garbage score.
+    # #VERIFY: test_classifiers covers flagged and unflagged non-finite scores.
     if math.isfinite(score):
         reportable_score: float | None = score
         over_floor = score >= _ADVISORY_SCORE_FLOOR

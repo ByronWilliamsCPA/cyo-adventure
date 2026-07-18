@@ -10,7 +10,12 @@ Covers:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
+
+if TYPE_CHECKING:
+    from cyo_adventure.core.config import Settings
 
 # The dev-default DSN that the validator guards against leaking.
 _DEV_DB_URL = "postgresql+asyncpg://localhost/cyo_adventure"
@@ -664,7 +669,7 @@ class TestExplicitEnvironmentWhenDeployed:
         assert settings.oidc_issuer is None
 
 
-def _non_local_settings(**overrides: object) -> object:
+def _non_local_settings(**overrides: object) -> Settings:
     """Build a non-local Settings with valid OIDC + db, overriding as needed.
 
     Centralizes the OIDC-config-plus-prod-db boilerplate every child-session
@@ -750,7 +755,7 @@ class TestValidatorRequireChildSessionSecretOutsideLocal:
     ) -> None:
         """A >=32-byte non-placeholder secret is accepted outside local."""
         settings = _non_local_settings(environment=environment)
-        assert settings.child_session_secret is not None  # type: ignore[attr-defined]
+        assert settings.child_session_secret is not None
 
     @pytest.mark.unit
     def test_local_environment_without_child_secret_is_valid(self) -> None:
@@ -863,7 +868,26 @@ class TestValidatorRequireDistinctTokenFamilies:
     def test_distinct_audiences_and_secrets_are_valid(self) -> None:
         """The shipped distinct defaults pass the invariant."""
         settings = _non_local_settings()
-        assert settings.oidc_audience == "authenticated"  # type: ignore[attr-defined]
+        assert settings.oidc_audience == "authenticated"
+
+    @pytest.mark.unit
+    def test_shipped_token_audiences_are_pairwise_distinct(self) -> None:
+        """The three shipped audience values are pairwise distinct (issue #251).
+
+        Pins the invariant the validator documents at the value level, so a
+        future edit that made two ``TokenAudience`` members share a literal (or
+        pointed OIDC_AUDIENCE at a backend value) is caught here as well as at
+        startup.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.token_audience import TokenAudience
+
+        audiences = {
+            Settings(environment="local").oidc_audience,
+            TokenAudience.CHILD_SESSION.value,
+            TokenAudience.DEVICE_GRANT.value,
+        }
+        assert len(audiences) == 3
 
     @pytest.mark.unit
     def test_local_shares_no_secret_by_default_is_valid(self) -> None:
