@@ -66,3 +66,25 @@ strings). The pre-schema single free-string `type` maps onto the two axes:
 old `good` -> `kind: success` / `valence: positive`; old `neutral` ->
 `kind: discovery` (or `setback`) / `valence: neutral`; old `failure` ->
 `kind: setback` or `capture` / `valence: negative`.
+
+## Series continuations: carried variables (Tier-2)
+
+When a book is book 2+ of a `carries_state=true` series, any variable acquired in
+an earlier book **initializes true in this book**, carried in from the sibling's
+final state. This inverts acquisition branches: a branch that in book 1 gated on
+"you do not have it yet" (`has_lantern == false`) is now unsatisfiable in book 2,
+because `has_lantern` starts true. An unsatisfiable conditional branch is a hard
+`L2-11` dead-branch error at the gate.
+
+Do not copy book 1's acquisition branches into a continuation. Redesign them:
+
+- Flip the condition into an always-satisfiable **carried-state gate** that reads
+  the variable as already held (`has_lantern == true`), e.g. "you still have the
+  lantern from before, so ...".
+- Drop the now-redundant `set` effects that acquired the variable (it is already
+  set on entry).
+
+Only the acquisition branch of a carried variable needs this treatment; branches
+that consume or check an already-held variable are unaffected. A quick check: any
+condition of the form `<carried_var> == false` in a continuation book is almost
+certainly a dead branch and must be redesigned, not copied.
