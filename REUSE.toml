@@ -18,6 +18,7 @@ path = [
     "fuzz/**",
     "benchmarks/**/*.py",
     "scripts/**/*.py",
+    "out/pilot/**/*.py",  # Parameterized-skeleton pilot tooling
     "modal/**/*.py",
     ".claude/**/*.py",  # Claude skill helper scripts
     "*.py",
@@ -225,6 +226,7 @@ path = [
     "out/**/*.json",        # Generated story output files from the yield harness
     "out/reports/*.md",         # Authoring-run summary reports
     "out/reports/**/*.md",      # Story design and compliance review reports
+    "out/pilot/**/*.md",        # Parameterized-skeleton pilot notes and bindings
 ]
 SPDX-License-Identifier = "CC-BY-4.0"
 SPDX-FileCopyrightText = "2026 Byron Williams"
