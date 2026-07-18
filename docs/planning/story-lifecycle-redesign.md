@@ -114,9 +114,23 @@ them in a later session.
 `StoryRequest` gains: `initiator_role` (child/guardian/admin), `age_band`,
 `length` (short/medium/long), `narrative_style` (prose/gamebook, per ADR-011),
 `series_id` (nullable FK), and `anchor_storybook_id` (nullable FK, set when
-continuing a series). `family_id` and `profile_id` become nullable to support
-admin-initiated catalog requests and guardian-initiated requests not tied to
-one child.
+continuing a series). `profile_id` becomes nullable to support requests not
+tied to one child.
+
+> **Amendment (2026-07-18, owner-ratified): catalog ownership via a system
+> family, not a nullable `family_id` (#173).** This doc originally proposed
+> making `family_id` nullable too, for admin catalog-targeted requests. On
+> implementation that was rejected in favor of a single well-known **system
+> catalog family** (`db.models.CATALOG_FAMILY_ID`, seeded by
+> `supabase/migrations/*_seed_catalog_family.sql`): an admin-initiated
+> catalog request is *owned* by that sentinel family, so `family_id` stays a
+> hard `NOT NULL` invariant across `story_request`, `concept`, and `storybook`
+> and no family-scoped authz check has to reason about a null owner. Only an
+> admin can target the catalog family (it is nobody's own family, so naming it
+> requires the admin capability), and the resulting book becomes globally
+> visible only when an admin publishes it with `visibility='catalog'` (ADR-005
+> unchanged). Read "may have no family attached (catalog-targeted)" below as
+> "is owned by the system catalog family".
 
 - `narrative_style` follows ADR-011's rule: meaningful only for bands 13-16
   and 16+; all lower bands are implicitly prose. The API rejects

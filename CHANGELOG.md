@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Device-grant revocation is now idempotent: a repeated `DELETE` no longer
+  overwrites the original `revoked_at`, preserving the first revocation
+  instant (#253).
+- The child-session mint no longer leaks a cross-family existence oracle to a
+  device grant: a nonexistent profile and another family's profile now return
+  an identical 403 body, and the family check precedes the deactivation check
+  (#249).
+- Stage-0 moderation classifiers handle a non-finite (`NaN`/`Infinity`) score
+  symmetrically: both OpenAI and Perspective now treat it as an absent score
+  and degrade gracefully instead of silently dropping it (OpenAI) or raising a
+  `ValueError` that aborted the whole safety batch (Perspective) (#144).
+- The guardian/child/device token families are now a checked invariant: a
+  startup validator asserts the three audiences are pairwise distinct and the
+  two backend HS256 secrets differ, and a shared strong-secret validator keeps
+  the child-session and device-grant checks from drifting (#251, #254).
 - The served OpenAPI schema now documents the real API contract: bearer auth
   as a proper security scheme on every authenticated operation (the Authorize
   control now works in `/docs`, and generated clients see the requirement),
@@ -21,6 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Device grants now persist an `expires_at` (stamped at mint from the token
+  TTL), and the active-device list excludes unrevoked-but-expired ghosts so
+  "present in the list" means "actually usable" (#252).
+- Catalog-origin (admin-initiated) story requests: an admin authoring a
+  request with no family targets a well-known system catalog family, so
+  catalog content flows through generation and publish without making
+  `family_id` nullable across the request/concept/storybook tables (#173).
 - Postman/newman API coverage for 20 previously untested operations (67 of
   the 83 now registered; the 16 added by the M4b-d family-tier wave and the
   2026-07-17 remediation still need folders, see docs/api/README.md): child sessions, device grants

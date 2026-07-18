@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
@@ -29,6 +30,8 @@ from cyo_adventure.api.deps import get_db_session
 from cyo_adventure.app import app
 from cyo_adventure.core.database import Base
 from cyo_adventure.db.models import (
+    CATALOG_FAMILY_ID,
+    CATALOG_FAMILY_NAME,
     ChildProfile,
     Family,
     Storybook,
@@ -136,6 +139,15 @@ async def engine(_pg_url: str) -> AsyncIterator[AsyncEngine]:
         async with eng.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
             await conn.run_sync(Base.metadata.create_all)
+            # Seed the well-known system catalog family (#173). Production gets
+            # this row from supabase/migrations; create_all builds tables only,
+            # with no baseline data, so catalog-origin request tests would
+            # otherwise fail their family_id FK insert.
+            await conn.execute(
+                insert(Family.__table__).values(
+                    id=CATALOG_FAMILY_ID, name=CATALOG_FAMILY_NAME
+                )
+            )
         yield eng
     finally:
         await eng.dispose()

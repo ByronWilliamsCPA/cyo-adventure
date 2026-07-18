@@ -616,3 +616,103 @@ async def test_perspective_attribute_value_non_numeric_is_skipped() -> None:
         client=_client(handler),
     )
     assert findings == []
+
+
+# ---------------------------------------------------------------------------
+# Non-finite (NaN / Infinity) score handling (issue #144)
+#
+# httpx's `.json()` uses json.loads with allow_nan=True, so a provider can
+# return the non-standard NaN/Infinity tokens for a category score. Such a
+# value survives the isinstance(_, (int, float)) guard (float("nan") is a
+# float) but would make Finding.__post_init__ raise ValueError. Both
+# classifiers must degrade gracefully instead of aborting the Stage-0 batch.
+#
+# These use raw `content=` bodies (not the `json=` kwarg): httpx serializes
+# `json=` with allow_nan=False and would reject the value before it ever
+# reached the code under test, so the raw body reproduces exactly what a real
+# provider sends over the wire.
+# ---------------------------------------------------------------------------
+
+_JSON_HEADERS = {"content-type": "application/json"}
+
+
+@pytest.mark.unit
+async def test_openai_non_finite_unflagged_score_yields_no_finding() -> None:
+    """An unflagged category with a NaN score is dropped without raising."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            headers=_JSON_HEADERS,
+            content=(
+                b'{"results":[{"flagged":false,'
+                b'"categories":{"violence":false},'
+                b'"category_scores":{"violence":NaN}}]}'
+            ),
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "a quiet afternoon")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_openai_non_finite_flagged_brightline_still_blocks() -> None:
+    """A flagged bright-line category still BLOCKs even when its score is Infinity.
+
+    The boolean flag is an independent signal; a garbage score must not drop a
+    provider-flagged bright-line block. The reported score falls back to None.
+    """
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            headers=_JSON_HEADERS,
+            content=(
+                b'{"results":[{"flagged":true,'
+                b'"categories":{"sexual/minors":true},'
+                b'"category_scores":{"sexual/minors":Infinity}}]}'
+            ),
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    blocks = [f for f in findings if f.verdict is Verdict.BLOCK]
+    assert len(blocks) == 1
+    assert blocks[0].category == "sexual/minors"
+    assert blocks[0].score is None
+
+
+@pytest.mark.unit
+async def test_perspective_non_finite_score_degrades_gracefully() -> None:
+    """A NaN Perspective summary score is skipped, not raised; siblings survive."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            headers=_JSON_HEADERS,
+            content=(
+                b'{"attributeScores":{'
+                b'"TOXICITY":{"summaryScore":{"value":0.2,"type":"PROBABILITY"}},'
+                b'"SEXUALLY_EXPLICIT":{"summaryScore":'
+                b'{"value":NaN,"type":"PROBABILITY"}}}}'
+            ),
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        perspective_key="pkey",
+        client=_client(handler),
+    )
+    categories = {f.category for f in findings}
+    assert "toxicity" in categories
+    assert "sexually_explicit" not in categories

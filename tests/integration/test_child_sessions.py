@@ -717,6 +717,36 @@ async def test_device_grant_cannot_mint_stranger_family_profile(
 
 
 @pytest.mark.asyncio
+async def test_device_grant_nonexistent_profile_matches_cross_family_403(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A device grant cannot distinguish a nonexistent profile from a foreign one.
+
+    Fetch-then-authorize would return 404 for a random UUID but 403 for another
+    family's profile, a cross-family existence oracle (#249). Both must now
+    return the IDENTICAL 403 response (status and body).
+    """
+    device_token = await mint_device_token(client, seed.guardian_token)
+
+    nonexistent = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": "00000000-0000-0000-0000-000000000000"},
+        headers=auth(device_token),
+    )
+    cross_family = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.other_child_profile_id)},
+        headers=auth(device_token),
+    )
+
+    assert nonexistent.status_code == 403, nonexistent.text
+    assert cross_family.status_code == 403, cross_family.text
+    # Indistinguishable body: the message is surfaced to the client, so a
+    # differing message would re-open the oracle even at an equal status.
+    assert nonexistent.json() == cross_family.json()
+
+
+@pytest.mark.asyncio
 async def test_device_grant_mint_requires_pin_when_set(
     client: AsyncClient, seed: Seed
 ) -> None:

@@ -34,14 +34,17 @@ import jwt
 
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import AuthenticationError, ConfigurationError
+from cyo_adventure.core.token_audience import TokenAudience
 
 # Fixed, app-specific token markers. The audience is deliberately DISTINCT from
 # the guardian OIDC audience (settings.oidc_audience, "authenticated") so the
 # two token families are non-interchangeable: a child token routed into the
 # guardian JWKS path fails on audience, and a guardian token routed here fails
-# on audience too, on top of each branch's own algorithm pin.
+# on audience too, on top of each branch's own algorithm pin. The value is
+# sourced from the central TokenAudience registry (issue #251), whose members
+# core/config.py asserts are pairwise distinct at startup.
 CHILD_SESSION_ISSUER = "cyo-adventure"
-CHILD_SESSION_AUDIENCE = "cyo-child-session"
+CHILD_SESSION_AUDIENCE = TokenAudience.CHILD_SESSION
 
 _CHILD_ROLE = "child"
 _ALGORITHM = "HS256"

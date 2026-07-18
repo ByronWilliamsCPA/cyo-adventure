@@ -53,7 +53,13 @@ from cyo_adventure.core.exceptions import (
     StateTransitionError,
     ValidationError,
 )
-from cyo_adventure.db.models import ChildProfile, Concept, Family, StoryRequest
+from cyo_adventure.db.models import (
+    CATALOG_FAMILY_ID,
+    ChildProfile,
+    Concept,
+    Family,
+    StoryRequest,
+)
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.generation.queue import enqueue_generation
 from cyo_adventure.moderation.report import Verdict
@@ -424,41 +430,48 @@ async def create_story_request(
 async def _resolve_authored_family(
     ctx: Context, body: StoryRequestAuthoredCreateBody
 ) -> uuid.UUID:
-    """Resolve the target family for an authored request (WS-B PR 2).
+    """Resolve the target family for an authored request (WS-B PR 2, #173).
 
-    ``family_id`` is optional for every adult: omitted, it means the
-    caller's own family (which requires the guardian base role, since an
-    admin-only adult has no guardianship); supplied, it may name the
-    caller's own family (harmless self-reference for a guardian) or, with
-    the admin capability, any existing family. This replaces the earlier
-    either/or contract (guardian must omit, admin must supply), which had
-    no answer for an adult holding both roles.
+    ``family_id`` is optional for every adult: omitted, it resolves to the
+    caller's own family for an adult with the guardian base role; omitted by an
+    admin-only adult (no guardianship of their own), it means a catalog-origin
+    request and resolves to the system catalog family
+    (``CATALOG_FAMILY_ID``, #173). Supplied, ``family_id`` may name the caller's
+    own family (harmless self-reference for a guardian) or, with the admin
+    capability, any existing family (including the catalog family). Only an
+    admin can ever target the catalog family, since it is nobody's own family
+    and naming a non-own family requires the admin capability.
 
     Args:
         ctx: The request context (principal and session).
         body: The authored-create body.
 
     Returns:
-        uuid.UUID: The resolved target family.
+        uuid.UUID: The resolved target family (a real family, or the system
+        catalog family for an admin-only catalog-origin request).
 
     Raises:
         AuthorizationError: If a caller without the admin capability names
             a family other than their own (-> 403).
         ResourceNotFoundError: If an admin-named family does not exist.
-        ValidationError: If an admin-only caller omits ``family_id``, or the
-            supplied id is malformed.
+        ValidationError: If ``family_id`` is supplied but malformed.
     """
     # #CRITICAL: security: a guardian without the admin capability can never
     # author into another family: naming a foreign family_id is 403 outright
     # (existence is not probed first, so this is not a family-id oracle), and
-    # an omitted family_id always resolves to the caller's own family.
-    # #VERIFY: test_guardian_foreign_family_is_403,
-    # test_guardian_may_name_own_family, test_admin_requires_family_id,
-    # test_dual_role_omitted_family_targets_own.
+    # an omitted family_id resolves to the caller's own family. An admin-only
+    # adult who omits family_id is seeding the catalog (#173): the request is
+    # owned by the system catalog family, which only an admin can reach, so the
+    # "catalog-origin implies admin-initiated" invariant holds without a
+    # nullable family_id or a magic-UUID CHECK. The catalog family row is
+    # guaranteed to exist by the seed migration (and the integration conftest),
+    # so this UUID is always a valid family_id FK.
+    # #VERIFY: test_admin_omitted_family_targets_catalog_family,
+    # test_guardian_cannot_target_catalog_family, test_guardian_foreign_family_is_403,
+    # test_guardian_may_name_own_family, test_dual_role_omitted_family_targets_own.
     if body.family_id is None:
         if not ctx.principal.is_guardian:
-            msg = "family_id is required for admin-initiated requests"
-            raise ValidationError(msg, field="family_id", value=None)
+            return CATALOG_FAMILY_ID
         return ctx.principal.family_id
     family_uuid = parse_uuid(body.family_id, "family_id")
     if family_uuid == ctx.principal.family_id and ctx.principal.is_guardian:
@@ -551,11 +564,12 @@ async def create_authored_story_request(
         ResourceNotFoundError: If the named family, profile, or anchor
             storybook is missing, or the anchor is outside the target family
             (-> 404).
-        ValidationError: If a guardian supplies ``family_id``, an admin omits
-            it, a UUID is malformed, the anchor storybook is not published or
-            not series-linked, the body's age band does not match the
-            anchor's series, or the built brief trips the PII backstop in
-            ``_build_concept`` (-> 422).
+        ValidationError: If a supplied ``family_id`` is malformed, the anchor
+            storybook is not published or not series-linked, the body's age
+            band does not match the anchor's series, or the built brief trips
+            the PII backstop in ``_build_concept`` (-> 422). An admin-only
+            adult omitting ``family_id`` is a catalog-origin request, not an
+            error (#173).
     """
     # #CRITICAL: security: children cannot author pre-approved requests; the
     # authored path bypasses guardian review by design, so the role gate is the

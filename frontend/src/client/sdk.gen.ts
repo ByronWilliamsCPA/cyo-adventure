@@ -1422,11 +1422,12 @@ export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends bo
  * ResourceNotFoundError: If the named family, profile, or anchor
  * storybook is missing, or the anchor is outside the target family
  * (-> 404).
- * ValidationError: If a guardian supplies ``family_id``, an admin omits
- * it, a UUID is malformed, the anchor storybook is not published or
- * not series-linked, the body's age band does not match the
- * anchor's series, or the built brief trips the PII backstop in
- * ``_build_concept`` (-> 422).
+ * ValidationError: If a supplied ``family_id`` is malformed, the anchor
+ * storybook is not published or not series-linked, the body's age
+ * band does not match the anchor's series, or the built brief trips
+ * the PII backstop in ``_build_concept`` (-> 422). An admin-only
+ * adult omitting ``family_id`` is a catalog-origin request, not an
+ * error (#173).
  */
 export const createAuthoredStoryRequestApiV1StoryRequestsAuthoredPost = <ThrowOnError extends boolean = false>(options: Options<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData, ThrowOnError>): RequestResult<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, ThrowOnError> => (options.client ?? client).post<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, ThrowOnError>({
     responseType: 'json',
@@ -1639,10 +1640,13 @@ export const declineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePost =
  *
  * Raises:
  * AuthorizationError: If a child token reaches this endpoint, a
- * guardian or device grant names a profile outside its own family,
+ * guardian or device grant names a profile outside its own family
+ * (for a device grant, a nonexistent profile also maps here with the
+ * identical body, so it cannot probe cross-family existence, #249),
  * or the profile has a picker PIN and the body's ``pin`` is missing
  * or wrong (all -> 403; the PIN case carries code ``PIN_MISMATCH``).
- * ResourceNotFoundError: If the profile does not exist (-> 404).
+ * ResourceNotFoundError: If the profile does not exist on the admin path,
+ * or a resolved own-family profile is deactivated (-> 404).
  * ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
  */
 export const createChildSessionApiV1ChildSessionsPost = <ThrowOnError extends boolean = false>(options: Options<CreateChildSessionApiV1ChildSessionsPostData, ThrowOnError>): RequestResult<CreateChildSessionApiV1ChildSessionsPostResponses, CreateChildSessionApiV1ChildSessionsPostErrors, ThrowOnError> => (options.client ?? client).post<CreateChildSessionApiV1ChildSessionsPostResponses, CreateChildSessionApiV1ChildSessionsPostErrors, ThrowOnError>({

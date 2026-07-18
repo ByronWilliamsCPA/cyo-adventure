@@ -17,7 +17,7 @@ import uuid
 from datetime import UTC, datetime
 
 from fastapi import APIRouter
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from cyo_adventure.api.deps import Context, parse_uuid
 from cyo_adventure.api.schemas import (
@@ -106,11 +106,18 @@ async def create_device_grant(
         authorized_by=ctx.principal.user_id,
         jti=jti,
     )
+    # #CRITICAL: data integrity: persist the SAME expiry the token was signed
+    # with (mint_device_grant_token returns it) so the row's expires_at and the
+    # JWT's exp cannot drift; the active-device list relies on this column to
+    # exclude expired-but-unrevoked ghosts (#252).
+    # #VERIFY: test_device_grants.py::test_mint_persists_matching_jti asserts the
+    # persisted expires_at is non-null and in the future.
     grant = DeviceGrant(
         family_id=family_id,
         authorized_by=ctx.principal.user_id,
         label=body.label,
         jti=jti,
+        expires_at=expires_at,
     )
     ctx.session.add(grant)
     await ctx.session.flush()
@@ -203,10 +210,14 @@ async def list_device_grants(ctx: Context) -> list[DeviceGrantListItem]:
     # an admin gets NO cross-family override here, so one family's device list
     # can never leak into another's.
     # #VERIFY: test_device_grants.py family-scoping + test_child_cannot_list.
-    # #ASSUME: data-integrity: revoked_at IS NULL is the active-grant predicate,
-    # so the list reflects only grants the online revocation check
-    # (deps.py::_device_principal) would still honor; a revoked row drops out.
-    # #VERIFY: test_device_grants.py "revoked grant is absent from the list".
+    # #ASSUME: data-integrity: a grant is active iff revoked_at IS NULL AND it
+    # has not yet expired, so the list reflects only grants the online path
+    # would still honor: a revoked row drops out (deps.py::_device_principal
+    # rejects it), and an expired-but-unrevoked ghost drops out too (its JWT no
+    # longer verifies, so it can mint nothing), keeping "present == usable"
+    # (#252). now() is the DB clock, matching created_at's server_default.
+    # #VERIFY: test_device_grants.py "revoked grant is absent" + "expired
+    # unrevoked grant is absent from the list".
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
         msg = _ADULT_ROLE_REQUIRED
         raise AuthorizationError(msg)
@@ -215,6 +226,7 @@ async def list_device_grants(ctx: Context) -> list[DeviceGrantListItem]:
         .where(
             DeviceGrant.family_id == ctx.principal.family_id,
             DeviceGrant.revoked_at.is_(None),
+            DeviceGrant.expires_at > func.now(),
         )
         .order_by(DeviceGrant.created_at.desc())
     )
@@ -266,9 +278,17 @@ async def revoke_device_grant(grant_id: uuid.UUID, ctx: Context) -> None:
     if grant is None or grant.family_id != ctx.principal.family_id:
         msg = "device grant not found"
         raise ResourceNotFoundError(msg)
-    grant.revoked_at = datetime.now(UTC)
-    logger.info(
-        "device_grant.revoked",
-        family_id=str(ctx.principal.family_id),
-        grant_id=str(grant_id),
-    )
+    # #CRITICAL: data-integrity: only stamp revoked_at on the FIRST revoke. A
+    # duplicate or double-submitted DELETE must be an idempotent no-op that
+    # preserves the original revocation instant, which is the stable record
+    # this column exists to hold; without the guard a re-revoke silently moves
+    # the timestamp forward and loses when the grant was actually revoked. The
+    # response stays 204 either way, so revoke remains idempotent.
+    # #VERIFY: test_device_grants.py double-revoke preserves the first timestamp.
+    if grant.revoked_at is None:
+        grant.revoked_at = datetime.now(UTC)
+        logger.info(
+            "device_grant.revoked",
+            family_id=str(ctx.principal.family_id),
+            grant_id=str(grant_id),
+        )

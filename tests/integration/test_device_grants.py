@@ -10,6 +10,7 @@ principal). Mirrors ``test_child_sessions.py``.
 from __future__ import annotations
 
 import uuid
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
@@ -176,6 +177,9 @@ async def test_mint_persists_matching_jti(
     assert len(rows) == 1
     assert str(rows[0].id) == grant_id
     assert rows[0].revoked_at is None
+    # expires_at is stamped at mint from the token TTL, in the future (#252).
+    assert rows[0].expires_at is not None
+    assert rows[0].expires_at > datetime.now(UTC)
 
 
 # ---------------------------------------------------------------------------
@@ -235,6 +239,35 @@ async def test_list_excludes_revoked_grant(client: AsyncClient, seed: Seed) -> N
 
 
 @pytest.mark.asyncio
+async def test_list_excludes_expired_unrevoked_grant(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """An unrevoked-but-expired grant is a ghost and must not appear (#252).
+
+    The grant's JWT no longer verifies (so it can mint nothing online), yet its
+    revoked_at is NULL; only the persisted expires_at lets the list exclude it,
+    keeping "present in the list" == "actually usable".
+    """
+    grant_id = await _mint_grant(client, seed.guardian_token)
+
+    # Force the grant past its expiry without revoking it.
+    async with sessions() as session:
+        grant = await session.get(DeviceGrant, uuid.UUID(grant_id))
+        assert grant is not None
+        assert grant.expires_at is not None  # stamped at mint
+        grant.expires_at = datetime.now(UTC) - timedelta(days=1)
+        await session.commit()
+
+    list_resp = await client.get(
+        "/api/v1/device-grants", headers=auth(seed.guardian_token)
+    )
+    assert list_resp.status_code == 200, list_resp.text
+    assert list_resp.json() == []
+
+
+@pytest.mark.asyncio
 async def test_revoke_persists_revoked_at(
     client: AsyncClient,
     seed: Seed,
@@ -252,6 +285,39 @@ async def test_revoke_persists_revoked_at(
         rows = (await session.scalars(select(DeviceGrant))).all()
     assert len(rows) == 1
     assert rows[0].revoked_at is not None
+
+
+@pytest.mark.asyncio
+async def test_double_revoke_preserves_first_revoked_at(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A second DELETE is an idempotent no-op that keeps the first revoked_at.
+
+    The row exists to be a stable revocation record; a double-submitted DELETE
+    must not silently push revoked_at forward and lose when the grant was
+    actually revoked (issue #253).
+    """
+    grant_id = await _mint_grant(client, seed.guardian_token)
+
+    first = await client.delete(
+        f"/api/v1/device-grants/{grant_id}", headers=auth(seed.guardian_token)
+    )
+    assert first.status_code == 204, first.text
+    async with sessions() as session:
+        first_revoked_at = (await session.scalars(select(DeviceGrant))).one().revoked_at
+    assert first_revoked_at is not None
+
+    second = await client.delete(
+        f"/api/v1/device-grants/{grant_id}", headers=auth(seed.guardian_token)
+    )
+    assert second.status_code == 204, second.text
+    async with sessions() as session:
+        second_revoked_at = (
+            (await session.scalars(select(DeviceGrant))).one().revoked_at
+        )
+    assert second_revoked_at == first_revoked_at
 
 
 @pytest.mark.asyncio

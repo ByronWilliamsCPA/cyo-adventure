@@ -48,6 +48,24 @@ _FK_STORYBOOK = "storybook.id"
 _FK_CONCEPT = "concept.id"
 _FK_SERIES = "series.id"
 
+# The single, well-known "system catalog" family that owns admin-initiated
+# catalog-origin content (#173). Instead of making family_id nullable across
+# StoryRequest/Concept/Storybook (and reworking every family-scoped authz check
+# for a null owner), a catalog-origin request is owned by this fixed sentinel
+# family; family_id stays a hard NOT NULL invariant everywhere, and the book
+# reaches the shelf the normal way, becoming globally visible only when an admin
+# publishes it with visibility='catalog' (ADR-005 human approval unchanged).
+# The row is seeded by supabase/migrations (production) and the integration
+# conftest (create_all tests); this UUID MUST match that seed. It is a stable,
+# permanent sentinel and must never be reused for a real family.
+# #CRITICAL: data integrity: this id is a load-bearing constant; the seed row
+# must exist before any catalog-origin request is created, or its family_id FK
+# insert fails. The "0ca7a109" prefix is a mnemonic for "catalog".
+# #VERIFY: test_story_requests_authored catalog-origin tests + the seed
+# migration's ON CONFLICT DO NOTHING insert.
+CATALOG_FAMILY_ID = uuid.UUID("0ca7a109-0000-4000-8000-000000000000")
+CATALOG_FAMILY_NAME = "Catalog (system)"
+
 # The five storybook lifecycle states, named once for the CHECK constraint.
 _STORYBOOK_STATUS_VALUES = (
     "'draft', 'in_review', 'needs_revision', 'published', 'archived'"
@@ -1336,6 +1354,12 @@ class DeviceGrant(Base):
         revoked_at: Wall-clock revocation time, or ``None`` while active.
             Nullable rather than a boolean flag so the guardian-facing device
             list can show *when* a device was revoked.
+        expires_at: Wall-clock expiry (UTC, TIMESTAMPTZ), stamped at mint from
+            the same TTL the JWT is signed with. The token itself carries the
+            expiry too, but persisting it here lets the active-device list
+            exclude an unrevoked-but-expired grant (a ghost that can no longer
+            mint a child session yet would otherwise still show as active), so
+            "present in the list" means "actually usable" (#252).
     """
 
     __tablename__ = "device_grant"
@@ -1347,6 +1371,11 @@ class DeviceGrant(Base):
     jti: Mapped[uuid.UUID] = mapped_column(Uuid, unique=True)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     revoked_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # NOT NULL with no DB default: every real row supplies it (mint stamps it,
+    # the backfill migration set it for pre-existing rows), and omitting a
+    # default keeps this trivially in schema-parity with the migration. The
+    # app always provides the value, so no default is needed as a safety net.
+    expires_at: Mapped[datetime] = mapped_column(_TS)
 
 
 # The two closed vocabularies for KidFlag, named once for their CHECK

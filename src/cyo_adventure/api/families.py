@@ -24,7 +24,12 @@ from cyo_adventure.api.schemas import (
     error_responses,
 )
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
-from cyo_adventure.db.models import ChildProfile, Family, User
+from cyo_adventure.db.models import (
+    CATALOG_FAMILY_ID,
+    ChildProfile,
+    Family,
+    User,
+)
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 
 if TYPE_CHECKING:
@@ -134,9 +139,17 @@ async def list_families(ctx: Context) -> FamilyListView:
     # silently omits the tail; revisit with pagination or search before the
     # deployment outgrows a single dropdown.
     # #VERIFY: test_admin_families_list_is_name_ordered_and_capped.
+    # #CRITICAL: data-integrity: the system catalog family (#173) is an
+    # infrastructure row that owns admin catalog-origin content, not a real
+    # household; it has no guardians or kids and must never appear in the admin
+    # family console (or its member-count/rename/deactivate flows), so it is
+    # filtered out of this listing at the query.
+    # #VERIFY: newman FamiliesGetAdminFamiliesAsAdmin + the families integration
+    # tests assert the catalog family is absent from the list.
     rows = (
         await ctx.session.scalars(
             select(Family)
+            .where(Family.id != CATALOG_FAMILY_ID)
             .order_by(Family.name.asc(), Family.id.asc())
             .limit(_FAMILY_LIST_LIMIT)
         )
