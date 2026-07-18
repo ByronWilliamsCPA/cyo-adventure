@@ -52,6 +52,16 @@
       "provenance": "copied 2026-07-18 from out/the-sky-ship-stowaway.filled.json (initial inventory run)"
     },
     {
+      "id": "skyship-submarine",
+      "path": "tests/data/diversity_panel/fills/the-sky-ship-stowaway.deep-sea-submarine.filled.json",
+      "band": "8-11",
+      "skeleton_slug": "the-sky-ship-stowaway",
+      "brief": {
+        "premise": "a research submarine crew discovers a stowaway kid in the deep sea"
+      },
+      "provenance": "authored 2026-07-18 as a second, genuinely re-authored same-tree fill of the-sky-ship-stowaway, to retire the panel's single-skeleton-pair monoculture (docs/planning/ws0-phase2-harness-design.md section 7 risk 1); gates clean (check_fill_integrity.py, run_story_gate.py) and clears the anti-template guard PASS floor against 'skyship' (median 0.69, p25 0.612)"
+    },
+    {
       "id": "clover",
       "path": "tests/data/diversity_panel/fills/the-clover-and-the-butterfly.filled.json",
       "band": "3-5",
@@ -109,7 +119,8 @@
     {"a": "cave-sea", "b": "cave-dino", "expected_verdict": "pass"},
     {"a": "cave-space", "b": "cave-dino", "expected_verdict": "pass"},
     {"a": "cave-space", "b": "cave-space-swap", "expected_verdict": "fail"},
-    {"a": "cave-space", "b": "cave-space-identical", "expected_verdict": "fail"}
+    {"a": "cave-space", "b": "cave-space-identical", "expected_verdict": "fail"},
+    {"a": "skyship", "b": "skyship-submarine", "expected_verdict": "pass"}
   ],
   "cross_tree_pairs": [
     ["cave-sea", "clockwork"],

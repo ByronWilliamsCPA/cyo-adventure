@@ -44,6 +44,15 @@
       "p25_distance": 0.035558,
       "templated_node_count": 64,
       "verdict": "fail"
+    },
+    "skyship~skyship-submarine": {
+      "big_over_uni_ratio": 1.228574,
+      "mean_bigram_distance": 0.8453,
+      "median_distance": 0.689655,
+      "p10_distance": 0.5625,
+      "p25_distance": 0.612245,
+      "templated_node_count": 0,
+      "verdict": "pass"
     }
   },
   "brief_pairs": [
@@ -144,6 +153,14 @@
       "distinct_2": 0.889055,
       "fingerprint": "3eae193be143acf3b07323fa620119b60972bbb238528b40dcae77c5aac58ee5",
       "self_bleu_lite": 0.389575
+    },
+    "skyship-submarine": {
+      "band": "8-11",
+      "content_token_count": 4007,
+      "distinct_1": 0.366858,
+      "distinct_2": 0.932752,
+      "fingerprint": "3eae193be143acf3b07323fa620119b60972bbb238528b40dcae77c5aac58ee5",
+      "self_bleu_lite": 0.29534
     }
   },
   "ps_pairs": {
@@ -202,6 +219,13 @@
       "same_tree": false,
       "structural_similarity": 0.869788,
       "theme_similarity": 0.333333
+    },
+    "skyship~skyship-submarine": {
+      "leaf_similarity": 0.310345,
+      "perceived_similarity": 0.615172,
+      "same_tree": true,
+      "structural_similarity": 1.0,
+      "theme_similarity": 0.8
     }
   },
   "rar_sequence": 0.4,

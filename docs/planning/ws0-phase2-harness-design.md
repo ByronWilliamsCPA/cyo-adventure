@@ -813,18 +813,24 @@ thin argparse shell like `run_story_gate.py`.
 
 ## 7. Top risks, stated plainly
 
-1. **Panel monoculture (highest).** Every gating ATG pair sits on one skeleton
-   (`the-cave-of-echoes`), one topology (`time_cave`), one band (8-11). Thresholds and
-   the R2 margin could be accidentally tuned to that tree's prose rhythm. Mitigation:
-   growth priority 1 in section 1.5 (a second same-tree cell on a
-   `branch_and_bottleneck` tree) is the first post-merge panel PR; the append-only rule
-   prevents retuning to fit; the swap-table FAIL pair is synthetic and thus
-   tree-independent by construction. The monoculture-retirement path no longer requires
-   theme-neutral choice labels: the WS-0 labels-are-leaves decision
+1. **Panel monoculture (highest, RETIRED 2026-07-18).** Every gating ATG pair sat on one
+   skeleton (`the-cave-of-echoes`), one topology (`time_cave`), one band (8-11).
+   Thresholds and the R2 margin could have been accidentally tuned to that tree's prose
+   rhythm. Retired by landing the second same-tree cell growth priority 1 called for: a
+   `branch_and_bottleneck` 8-11 skeleton, `the-sky-ship-stowaway`, now carries a genuine
+   second gating ATG pair, `skyship~skyship-submarine` (`panel.json` `atg_pairs`), an
+   airship fill (`skyship`) against an independently re-authored deep-sea submarine fill
+   (`skyship-submarine`) of the identical tree. The pair computes a real PASS
+   (`median_distance=0.690`, `p25_distance=0.612`, both clearing the 0.60/0.45 floor with
+   margin), so the gate now has two skeletons, two topologies (`time_cave` and
+   `branch_and_bottleneck`), backing its PASS-side signal instead of one. The append-only
+   rule still prevents retuning to fit either tree, and the swap-table FAIL pair remains
+   synthetic and tree-independent by construction. The monoculture-retirement path did not
+   need theme-neutral choice labels: the WS-0 labels-are-leaves decision
    (`docs/planning/ws0-label-fingerprint-evaluation.md`) strips choice labels from
-   `structure_fingerprint`, so any same-tree candidate skeleton, including one whose
-   labels bake in theme-specific proper nouns (e.g. the harrowstone-class skeletons),
-   is same-tree-eligible once reskinned.
+   `structure_fingerprint`, so a same-tree candidate skeleton whose labels bake in
+   theme-specific proper nouns (e.g. the harrowstone-class skeletons) is same-tree-eligible
+   once reskinned, exactly as `the-sky-ship-stowaway`'s labels were for the submarine fill.
 2. **Baseline-update social engineering.** The gate is only as strong as review
    discipline on `baseline.json` and `panel.json` diffs; `--update-baseline` makes a
    regression one flag away from "blessed". Mitigation: the manifest/baseline authority

@@ -1,0 +1,1568 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_sky_ship_stowaway",
+  "title": "The Sky-Ship Stowaway",
+  "version": 1,
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "adventure",
+      "wonder",
+      "friendship",
+      "courage"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 20,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Kai had begged to see the ocean floor since before he could properly talk, and now here he was, actually going down into it. The little submarine Selkie thumped and hissed as the team sealed the last hatch, and Kai pressed himself into a coil of spare cable, tucked out of sight behind a bank of dials. Nobody had noticed him climb aboard. Boots thudded past just an arm's length away. Four openings led off the entry bay: one buzzing with heavy machinery, one stacked deep in shadow with stores, one rising toward a lit dome overhead, and one ringing with laughter and the clink of plates. He needed to pick fast, before a sharp-eyed diver spun around and caught him.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_eng",
+          "label": "Head down toward the roaring engine bay.",
+          "target": "a_eng1"
+        },
+        {
+          "id": "c_start_hold",
+          "label": "Creep into the dark stores bay.",
+          "target": "b_hold1"
+        },
+        {
+          "id": "c_start_nest",
+          "label": "Climb up toward the lit dome.",
+          "target": "c_nest1"
+        },
+        {
+          "id": "c_start_salon",
+          "label": "Slip into the bright dining lounge.",
+          "target": "d_salon1"
+        }
+      ]
+    },
+    {
+      "id": "a_eng1",
+      "body": "Machinery clattered on every side of the engine bay, coolant lines pumping in a steady rhythm, the air thick with the smell of hot grease. A stocky engineer had her back turned, hauling on a great lock lever with both arms. Above her head ran a thin metal companionway, bolted just under the ceiling pipes, leading off toward a dim corner where everything glowed faint amber. Kai tested the guardrail before trusting it. It held firm. Now he only had to decide: creep along that high companionway out of sight, or risk a quick sprint across the open floor while her back was still turned.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_deep",
+          "label": "Creep along the high companionway.",
+          "target": "a_eng_deep"
+        },
+        {
+          "id": "c_eng_risk",
+          "label": "Sprint straight across the open floor.",
+          "target": "a_eng_risk"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_deep",
+      "body": "Beyond the pumping rods, the bay widened into a tangle of hot pipework, each one humming faintly under his palm. On one side hung a bank of dials and needles, ticking away the sub's every breath. On the other, a short ladder dropped toward the dim ballast tanks, where he caught the faint sound of something shuffling about, unseen. He weighed it a moment: watch the flickering dials a while longer, or climb straight down to find whatever was making that noise.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_a",
+          "label": "Watch the flickering dials.",
+          "target": "a_eng_a"
+        },
+        {
+          "id": "c_eng_b",
+          "label": "Climb down to the shuffling sound.",
+          "target": "a_eng_b"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_a",
+      "body": "Needles jittered and swung across the dial face, marking off pressure, ballast, and depth, one after another. Kai leaned in, slowly piecing together how the whole machine kept itself breathing, turning raw power into forward motion. It struck him as nothing short of magic. Past the dials sat a low door, cracked open, a thread of warm air sighing through the gap. It looked like it led toward wherever the sub's many corridors finally met. He ducked his head and pushed through.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_a_go",
+          "label": "Push through the low door.",
+          "target": "a_eng_a2"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_a2",
+      "body": "On the far side, a narrow service walk ran warm and quiet, oil lamps rocking gently from their brackets. Bit by bit, the clatter of the engines dropped away behind him until it was barely more than a hum. Then, faintly, something new: a thin, curious noise, somewhere ahead, not frightened at all, more like it was hoping to be noticed. Kai couldn't help himself. He followed it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_a2_go",
+          "label": "Follow the curious noise onward.",
+          "target": "a_eng_conv"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_b",
+      "body": "Down among the ballast tanks it was dim and close, shadows rocking with every roll of the hull. Whatever had been shuffling about turned out to be nothing worse than a loose door, swinging gently on its hinge with the engine's beat. Through the gap he spotted a milder passage beyond, and heard that same small click-and-chirp of a sound drifting through it. It didn't sound like danger. If anything, it sounded lonely.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_b_go",
+          "label": "Slip through the swinging door.",
+          "target": "a_eng_b2"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_b2",
+      "body": "Past the swinging door ran a service tunnel, warmed by the engines along one wall, lit here and there by a soft glow. Step by step, the roar behind him thinned into nothing much at all. The little clicking noise came again, nearer this time, drifting from somewhere near the sub's very middle, where it seemed every warm passage eventually joined. He pressed on, certain now he was close.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_b2_go",
+          "label": "Head toward where the tunnels join.",
+          "target": "a_eng_conv"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_conv",
+      "body": "The warm tunnels finally spilled Kai into a tight little pocket stacked with spools of spare cable and folded net, tucked well away from the engine noise. The clicking was right beside him now, coming from behind a crate. Holding his breath, he crouched low to look. Two eyes blinked back out of the shadow, bright and utterly unafraid.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_conv_go",
+          "label": "Crouch down and look behind the crate.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_risk",
+      "body": "Kai bolted across the open floor, boots skimming the metal grating. Halfway over, the engineer's wrench stopped scraping. She was turning. There was no time to weigh it twice: dive flat behind the row of fuel drums and hope the shadow covered him, or stand frozen where he was, lit up plain in the lamp glow with nowhere left to run.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_recover",
+          "label": "Dive behind the fuel drums.",
+          "target": "a_eng_recover"
+        },
+        {
+          "id": "c_eng_fail",
+          "label": "Stand frozen in the lamplight.",
+          "target": "e_set_eng"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_recover",
+      "body": "Behind the drums, Kai held perfectly still, lungs burning with the effort. The engineer only shrugged, muttering something about a trick of the light, and turned back to her valves. The instant her wrench began scraping again, steady as ever, he let his breath go and slid away, quiet and quick, deeper into the maze of hot pipes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_recover_go",
+          "label": "Slide away into the conduit maze.",
+          "target": "a_eng_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_eng",
+      "body": "She caught him before he'd gone three steps further. Not unkindly, though: she set down her wrench, took him gently by the shoulder, and marched him straight to the ship's office. Kai sat there a long while on a hard bench, listening to engines humming on without him. At the very next surface stop, he was walked up to the dock, his big dive over before it had truly begun.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_eng",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Caught by the Coal Fire"
+      }
+    },
+    {
+      "id": "b_hold1",
+      "body": "The stores bay was a whole cavern of strapped-down crates, lamps swaying overhead on their chains, the hull groaning softly with every roll. Two paths opened from where Kai crouched: a neat aisle between rows of labeled boxes, or a darker gap where a length of netting hung loose like a torn curtain. He would need to be quick either way, before a swinging lamp caught him in its light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_deep",
+          "label": "Take the neat aisle of crates.",
+          "target": "b_hold_deep"
+        },
+        {
+          "id": "c_hold_risk",
+          "label": "Squeeze into the loose netting.",
+          "target": "b_hold_risk"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_deep",
+      "body": "The tidy aisle ran on and on, past crate after silent crate. One stack bore a stamped crest he didn't recognize, from some harbor far away. Beside it, a stack of barrels formed a low tunnel curving toward the warmer part of the sub. He paused at the fork, unsure whether to study that strange crest a while longer or duck straight into the barrel tunnel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_a",
+          "label": "Study the stamped crest.",
+          "target": "b_hold_a"
+        },
+        {
+          "id": "c_hold_b",
+          "label": "Duck into the barrel tunnel.",
+          "target": "b_hold_b"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_a",
+      "body": "Stamped on the crest was a silver fish leaping over three curling waves, marking some distant port he'd only ever encountered in books. The crates below hummed faintly with the engine's rhythm. Beyond them, a narrow gap led deeper into the stores, toward the center of the Selkie. His curiosity settled, Kai squeezed through, curious to find out where it went.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_a_go",
+          "label": "Slip through the gap in the stores.",
+          "target": "b_hold_a2"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_a2",
+      "body": "The gap narrowed into a tight walk squeezed between towers of freight. One swaying lamp threw soft light across the crates. Deep in the shadows ahead, two small eyes caught the glow and blinked back. Kai froze, unsure what he'd stumbled on, then realized: whatever it was seemed just as curious about him. He crept a little nearer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_a2_go",
+          "label": "Creep toward the shining eyes.",
+          "target": "b_hold_conv"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_b",
+      "body": "The barrel tunnel was tight and dim, groaning with every roll of the sub, though it held firm the whole way through. Kai wriggled along on hands and knees until he popped out the far side, into a warmer stretch of the ballast bay where the stores thinned and a companionway led further in. He followed it, curious to see where it went.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_b_go",
+          "label": "Take the companionway further in.",
+          "target": "b_hold_b2"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_b2",
+      "body": "One swinging lamp lit the companionway, the deep hum of engines fading the further he went. Then, clearly this time: a small, hopeful sound, half click and half chirp, drawing him onward. He couldn't resist it. He had to know, once and for all, what it was.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_b2_go",
+          "label": "Follow the hopeful sound.",
+          "target": "b_hold_conv"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_conv",
+      "body": "The winding ballast bay finally brought Kai to a tucked-away nook, spare cable and folded net piled soft around him. The little sound came again, close now. He knelt and peered behind the nearest crate. Two bright eyes peeped back, unafraid, clearly hoping to be found.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_conv_go",
+          "label": "Peer behind the nearest crate.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_risk",
+      "body": "The sagging netting dumped Kai straight into a pile of unsecured crates, groaning and shifting as the Selkie rolled beneath his feet. Suddenly, an entire stack tipped toward him, its timbers creaking under the strain. He had barely a heartbeat to react: dive clear before it toppled, or squeeze himself into a gap between the boxes and ride out the lurch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_recover",
+          "label": "Dive clear of the leaning stack.",
+          "target": "b_hold_recover"
+        },
+        {
+          "id": "c_hold_fail",
+          "label": "Squeeze into the gap and wait.",
+          "target": "e_set_hold"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_recover",
+      "body": "Kai tumbled clear right as the crates crashed back into their places. Dust drifted down around him while his heart pounded wildly. He braced the nearest box so it wouldn't tip over again, then navigated his way back toward the tidy aisle, opting for the safer path this time around.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_recover_go",
+          "label": "Pick the safer route back in.",
+          "target": "b_hold_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_hold",
+      "body": "Shifting stores penned Kai into a tight corner he couldn't climb out of on his own. After a lengthy, dusty wait, he finally shouted for help, his voice sounding tiny amid the creaking dark. A startled deckhand caught the sound and dragged the crates out of the way. Once he was free, the ship's office arranged for him to go ashore at the very next dock, covered in dust, deeply disappointed, but entirely unharmed.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_hold",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Boxed In Below"
+      }
+    },
+    {
+      "id": "c_nest1",
+      "body": "The ladder toward the observation dome climbed through cool, humming air, rung after rung. Far below, Kai glimpsed the hull curving away and glowing jellyfish drifting past distant portholes. Two routes lay ahead: a boxed-in inner ladder, safe the whole climb, or a bare run of rungs bolted straight to the pressure hull, thrilling but exposed. He gripped the cold metal and made his choice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_deep",
+          "label": "Take the boxed-in inner ladder.",
+          "target": "c_nest_deep"
+        },
+        {
+          "id": "c_nest_risk",
+          "label": "Climb the bare pressure-hull rungs.",
+          "target": "c_nest_risk"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_deep",
+      "body": "The sheltered ladder brought him up into the round little dome, where a copper periscope hung ready on its mount. He could swing it outward to study the glowing reef stretching beyond the glass, or grab the coiled line instead and slide back down to the warmer decks. Both pulled at him equally.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_a",
+          "label": "Study the reef through the periscope.",
+          "target": "c_nest_a"
+        },
+        {
+          "id": "c_nest_b",
+          "label": "Slide down the coiled line.",
+          "target": "c_nest_b"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_a",
+      "body": "Through the periscope, the reef bloomed into a whole shimmering garden of coral and drifting light. Kai worked out, fascinated, how the great tanks kept the Selkie balanced against the deep, floating on nothing but careful weight. Satisfied, he lowered the scope and followed a line down toward the warmer decks below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_a_go",
+          "label": "Follow the line down.",
+          "target": "c_nest_a2"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_a2",
+      "body": "The line led to a sheltered walk, tucked well away from the crushing pressure outside. The hum of open water faded to a hush. Somewhere below, a small, curious sound drifted up toward him. He tilted his head, listened, and followed it down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_a2_go",
+          "label": "Follow the curious sound below.",
+          "target": "c_nest_conv"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_b",
+      "body": "The coiled line carried Kai down hand over hand, out of the chill above, until he landed soft on a heap of netting. A warm inner walk opened ahead, humming faintly with distant engines. After the cold dome, the warmth felt almost like being hugged. He stepped in gladly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_b_go",
+          "label": "Take the warm inner walk.",
+          "target": "c_nest_b2"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_b2",
+      "body": "The inner walk was tight and lamplit, the chill already fading into memory. A faint, hopeful clicking echoed somewhere ahead. Kai let it pull him on, step by step, toward the middle of the Selkie.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_b2_go",
+          "label": "Let the clicking lead you on.",
+          "target": "c_nest_conv"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_conv",
+      "body": "The inner ways gathered him at last into a tight, quiet pocket of cable and folded net, close to the sub's very core. The clicking sounded again, close by. He looked gently behind the nearest crate. Two shining eyes watched him back, patient, waiting to see what he'd do.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_conv_go",
+          "label": "Look gently behind the crate.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_risk",
+      "body": "Out on the bare rungs, pressure thumped in Kai's ears and the whole ladder trembled under his hands. A sudden shudder rocked the hull, hard enough to jolt the rung beneath his foot. No time to waste: grab the safety line bolted along the hull, or try to scramble higher before the next jolt struck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_recover",
+          "label": "Clip onto the safety line.",
+          "target": "c_nest_recover"
+        },
+        {
+          "id": "c_nest_fail",
+          "label": "Scramble higher before the next jolt.",
+          "target": "e_set_nest"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_recover",
+      "body": "Kai clipped on just in time. His fingers moved fast despite the cold. The shudder rattled past a moment later, never quite shaking his grip loose. He waited, knuckles pale, until the trembling eased, heart still hammering, before climbing carefully back to the sheltered ladder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_recover_go",
+          "label": "Climb back to the sheltered ladder.",
+          "target": "c_nest_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_nest",
+      "body": "The jolt left Kai clinging and shouting for help, over and over. The watch officer heard him at last and hauled him in over the guardrail, shaking but whole, wrapping him snug in a spare coat until the Selkie surfaced. He was helped up to the dock, his plans foiled for now, though not one bit hurt.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_nest",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Down from the Windy Nest"
+      }
+    },
+    {
+      "id": "d_salon1",
+      "body": "Copper gleamed and cushions glowed soft in the dining lounge, passengers chattering happily over their meal. A steward's cart rattled past, wheels clicking on the polished floor. Kai spotted two ways through unseen: along the curtained wall, or ducked low beneath the long tables. Either way, he needed to move before someone glanced down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_deep",
+          "label": "Slip along the curtained wall.",
+          "target": "d_salon_deep"
+        },
+        {
+          "id": "c_salon_risk",
+          "label": "Duck beneath the long tables.",
+          "target": "d_salon_risk"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_deep",
+      "body": "Behind the curtain sat a quiet service nook, tucked well out of sight. A glass case of tiny submarine models caught his eye at once, each one carved with care. Beside it, a steward's door stood ajar, leading toward the busy working half of the Selkie. He lingered, torn between the models and the door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_a",
+          "label": "Peer at the case of submarine models.",
+          "target": "d_salon_a"
+        },
+        {
+          "id": "c_salon_b",
+          "label": "Slip through the steward's hatch.",
+          "target": "d_salon_b"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_a",
+      "body": "A display case held a cutaway model of the entire Selkie, every level neatly labeled except one, which had been blacked out as if someone meant to hide it. Puzzled, Kai filed the mystery away for later and slipped off down the steward's passage, farther toward the quieter parts of the sub.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_a_go",
+          "label": "Take the steward's passage.",
+          "target": "d_salon_a2"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_a2",
+      "body": "The hallway left the chatter behind and grew plain and warm the further he walked. Lamps hung low, casting soft pools of light. A small, hopeful sound drifted to him, half click and half chirp, coming from somewhere near the sub's core. He couldn't ignore it and followed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_a2_go",
+          "label": "Follow the hopeful sound onward.",
+          "target": "d_salon_conv"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_b",
+      "body": "Beyond the steward's hatch lay a cramped pantry stocked with trays of bread and cheese piled to the ceiling. Kai swiped a crust for later and stowed it in his pocket, then ducked down a bare corridor leading away from the lounge's chatter, farther toward the working sections of the sub.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_b_go",
+          "label": "Continue down the bare corridor.",
+          "target": "d_salon_b2"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_b2",
+      "body": "The hallway turned tight and dim, warmed faintly by engines far below. A small clicking sound reached him, mixed with the smell of oil and warm bread. He followed it, curious and quick, deeper toward the middle of the sub.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_b2_go",
+          "label": "Let the clicking guide you in.",
+          "target": "d_salon_conv"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_conv",
+      "body": "Winding passages funneled Kai into a snug pocket tucked near the Selkie's core. That faint noise sounded again, from just behind the nearest crate. He peeked around its edge carefully. A pair of bright eyes blinked back at him, hopeful and completely unafraid.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_conv_go",
+          "label": "Peek carefully around the crate.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_risk",
+      "body": "Beneath the tables, Kai froze among a forest of passengers' shoes, barely daring to breathe. A steward's foot swung straight toward him. He had a heartbeat left: roll aside behind the serving cart and stay hidden, or bolt for the nearest door in full view.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_recover",
+          "label": "Roll behind the serving cart.",
+          "target": "d_salon_recover"
+        },
+        {
+          "id": "c_salon_fail",
+          "label": "Bolt for the door in full view.",
+          "target": "e_set_salon"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_recover",
+      "body": "Kai tucked behind the cart just as the steward passed, close enough to smell the hot soup on his tray. He held still until the coast cleared, then slipped out the far side, making for the curtained nook he'd noticed earlier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_recover_go",
+          "label": "Make for the curtained nook.",
+          "target": "d_salon_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_salon",
+      "body": "Kai burst into plain sight, and a startled passenger let out a yelp. The steward snagged him by the sleeve, more entertained than annoyed, and settled him down with a fresh bun in the ship's office while the Selkie continued onward. At the next dock, someone escorted him ashore, his hideaway discovered rather sooner than he'd hoped.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_salon",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Spotted in the Saloon"
+      }
+    },
+    {
+      "id": "n_friend",
+      "body": "However Kai had made his way there, every inner passage of the Selkie seemed to funnel into this one snug little pocket, packed with coiled cable and netting. Here at last he discovered what the sub had been concealing all along: a small blue octopus, thin from scavenging, hiding from the crew. It blinked up at him, then curled one gentle arm around his hand as though it had been waiting for exactly this moment. Kai named it Marbles, and just like that, he had a friend aboard. Three passages branched onward from the pocket: one carrying the smell of the galley, one leading to the commander's quiet cabin, and one climbing up into the cable rigging overhead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_friend_galley",
+          "label": "Sneak off to the galley with Marbles.",
+          "target": "f_galley1"
+        },
+        {
+          "id": "c_friend_cabin",
+          "label": "Head toward the commander's cabin.",
+          "target": "f_cabin1"
+        },
+        {
+          "id": "c_friend_rig",
+          "label": "Scramble into the rigging with Marbles.",
+          "target": "f_rig1"
+        }
+      ]
+    },
+    {
+      "id": "f_galley1",
+      "body": "Rich stew-smell filled the galley, pots bubbling on the stove, the cook busy at the far end with his back turned. Marbles's arms curled eagerly at the smell. Kai had to move fast: creep to the open pantry where good things waited, or wait quietly behind the flour sacks for a clearer moment.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_galley_a",
+          "label": "Creep to the open pantry.",
+          "target": "f_galley_a"
+        },
+        {
+          "id": "c_galley_b",
+          "label": "Wait behind the stacked ration sacks.",
+          "target": "f_galley_b"
+        }
+      ]
+    },
+    {
+      "id": "f_galley_a",
+      "body": "The pantry was stocked with more bread and cheese than Kai had seen in days, an absolute feast. He crammed his pockets full and set aside a scrap for Marbles. They'd only just started eating when the floor lurched suddenly and unsettlingly, the hanging lamps swinging wildly against their chains. Something had shifted outside, and clearly not for the better.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_galley_a_go",
+          "label": "Steady yourself as the floor lurches.",
+          "target": "f_galley_mid"
+        }
+      ]
+    },
+    {
+      "id": "f_galley_b",
+      "body": "Behind the sacks, Kai waited as quietly as he could manage, but the dust set Marbles off in a sudden squeak. The cook's head began to turn. No time to think twice: scoop Marbles up and slip out fast, or freeze and hope the cook hadn't really heard.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_galley_b_go",
+          "label": "Scoop up Marbles and slip out fast.",
+          "target": "f_galley_mid"
+        },
+        {
+          "id": "c_galley_fail",
+          "label": "Freeze and hope he didn't hear.",
+          "target": "e_set_galley"
+        }
+      ]
+    },
+    {
+      "id": "f_galley_mid",
+      "body": "Out in the hallway, the whole sub groaned and tilted hard underfoot. Loose tins rattled past on the floor, and somewhere above an alarm began sounding, over and over. Kai tucked Marbles into his coat and hurried toward the noise, the lamps swaying wild as he went.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_galley_mid_go",
+          "label": "Hurry toward the sounding alarm.",
+          "target": "n_storm"
+        }
+      ]
+    },
+    {
+      "id": "e_set_galley",
+      "body": "At last the cook spun around and discovered a boy and a small blue octopus hiding among the flour sacks, more startled than upset. He ladled them each a bowl of hot stew, then walked Kai firmly down to the ship's office. Kai waited there safely until the Selkie surfaced, and was sent home from the next dock, fed, caught, and thoroughly disappointed.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_galley",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cook Catches On"
+      }
+    },
+    {
+      "id": "f_cabin1",
+      "body": "The commander's door stood open a crack onto a room of charts and copper tools. She wasn't there, though voices murmured close by. Kai weighed it: slip inside for a quick look at the charts, or listen at the door first to catch what was being said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cabin_a",
+          "label": "Listen closely at the hatch.",
+          "target": "f_cabin_a"
+        },
+        {
+          "id": "c_cabin_b",
+          "label": "Duck inside for a fast peek.",
+          "target": "f_cabin_b"
+        }
+      ]
+    },
+    {
+      "id": "f_cabin_a",
+      "body": "Through the narrow gap, Kai overheard the officers murmuring about secret stores hidden somewhere deep within the sub, and a course plotted to dodge an oncoming current. He leaned in to catch more, but the Selkie shuddered violently before he could, and an alarm started blaring through the corridors.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cabin_a_go",
+          "label": "Back away as the alarm rings.",
+          "target": "f_cabin_mid"
+        }
+      ]
+    },
+    {
+      "id": "f_cabin_b",
+      "body": "Spread across the table, the charts showed the Selkie's course veering sharply around a dark smudge labeled current. Footsteps thudded just outside, approaching quickly. Kai needed cover immediately: crouch behind the heavy curtain by the porthole, or drop beneath the chart table instead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cabin_b_go",
+          "label": "Crouch behind the heavy curtain.",
+          "target": "f_cabin_mid"
+        },
+        {
+          "id": "c_cabin_fail",
+          "label": "Dive beneath the chart table.",
+          "target": "e_set_cabin"
+        }
+      ]
+    },
+    {
+      "id": "f_cabin_mid",
+      "body": "Out in the hall, the sub pitched hard as it met rough, churning water. The alarm clanged louder, boots pounding overhead. Kai held Marbles close and followed the running team, letting their hurrying feet lead him straight toward the trouble.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cabin_mid_go",
+          "label": "Follow the running team.",
+          "target": "n_storm"
+        }
+      ]
+    },
+    {
+      "id": "e_set_cabin",
+      "body": "The first mate marched in and noticed two small feet poking out from under the chart table. Startled but kind about it, she delivered Kai to the ship's office, where he remained secure for the rest of the dive. At the next dock, he was quietly sent ashore, his glimpse of the commander's secret ending sooner than he'd hoped.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cabin",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Under the Chart Table"
+      }
+    },
+    {
+      "id": "f_rig1",
+      "body": "The inner rigging ran like a warm forest of cable between the decks. Marbles scampered ahead, sure of every grip, while Kai followed more carefully, testing each cable's strength before trusting his weight. One steady walk led one way; a swinging cable control room swayed the other, toward the great ballast tanks overhead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rig_a",
+          "label": "Take the steady walk.",
+          "target": "f_rig_a"
+        },
+        {
+          "id": "c_rig_b",
+          "label": "Cross the swinging cable control room.",
+          "target": "f_rig_b"
+        }
+      ]
+    },
+    {
+      "id": "f_rig_a",
+      "body": "The walk gave Kai a wide view of the tanks above, a whole ceiling of conduit and metal. Marbles trotted the guardrail like a tiny tightrope-walker, unbothered by the height. Then, without warning, the whole sub leaned hard to one side: the first shove of the coming current against the hull. Kai grabbed the guardrail with both hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rig_a_go",
+          "label": "Grip the guardrail as the sub leans.",
+          "target": "f_rig_mid"
+        }
+      ]
+    },
+    {
+      "id": "f_rig_b",
+      "body": "Halfway across the cable control room, a sudden shudder set it swinging wild. Marbles clung tight to his shoulder. Kai gripped the handholds, water roaring around him: lunge for the far platform now, or freeze and ride out the swing where he was.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rig_b_go",
+          "label": "Reach for the distant platform.",
+          "target": "f_rig_mid"
+        },
+        {
+          "id": "c_rig_fail",
+          "label": "Freeze and ride out the swing.",
+          "target": "e_set_rig"
+        }
+      ]
+    },
+    {
+      "id": "f_rig_mid",
+      "body": "The rigging shook as the current took a fierce grip. Below, an alarm clanged nonstop, officers shouting back and forth. Kai held Marbles close, checked each rung before trusting it, and climbed steadily down toward the noise to see what had gone wrong.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rig_mid_go",
+          "label": "Scramble down to the shouting.",
+          "target": "n_storm"
+        }
+      ]
+    },
+    {
+      "id": "e_set_rig",
+      "body": "The control room lurched wildly back and forth until a rigger swung over on his own line and scooped up both Kai and Marbles at once, hauling them to solid footing, unharmed but firmly scolded. He kept them close by for the remainder of the dive, and at the next dock, Kai was helped ashore, grounded from deep-sea trips for the time being.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_rig",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Grounded from the Rigging"
+      }
+    },
+    {
+      "id": "n_storm",
+      "body": "However he'd gotten there, every path brought Kai to the sub's very core just as the current truly struck. Water thundered against the portholes, the Selkie pitching hard, the ballast tanks straining as balance began to slip. The team were stretched thin and scared, shouting over the roar. Kai realized something: a small stowaway who already knew this sub might actually help. He could fight his way to the open topside, join the struggling team, or head down to the deep ballast bay, where the plates groaned worst of all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_storm_deck",
+          "label": "Fight your way to the open topside.",
+          "target": "s_deck1"
+        },
+        {
+          "id": "c_storm_crew",
+          "label": "Join the struggling team.",
+          "target": "s_crew1"
+        },
+        {
+          "id": "c_storm_hold",
+          "label": "Head down to the groaning ballast bay.",
+          "target": "s_hold1"
+        }
+      ]
+    },
+    {
+      "id": "s_deck1",
+      "body": "The open topside roared with churning water and stinging spray, the whole world tilted sideways by the current's fury. A control line had whipped loose near the guardrail, snapping back and forth. The topside lurched hard underfoot. Kai could crawl low to catch that loose line before real damage was done, or grab the nearest post first and steady himself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_deck_a",
+          "label": "Crawl low to grab the loose line.",
+          "target": "s_deck_a"
+        },
+        {
+          "id": "c_deck_b",
+          "label": "Grab a post and steady up.",
+          "target": "s_deck_b"
+        }
+      ]
+    },
+    {
+      "id": "s_deck_a",
+      "body": "Flattened against the topside, Kai finally caught the whipping line and lashed it around a cleat, exactly how he'd seen the crew do it. A drenched officer noticed him, gave a startled nod of thanks, and pointed him toward a hatch leading down into the deep ballast bay, seemingly trusting him to check on it himself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_deck_a_go",
+          "label": "Take the hatch down into the sub.",
+          "target": "s_deck_mid"
+        }
+      ]
+    },
+    {
+      "id": "s_deck_b",
+      "body": "Gripping the post, Kai managed one quick breath before a sudden surge sent an unsecured crate sliding straight for him. There was no time left: he could duck through the nearest hatch to shelter, or make a run instead across the open, spray-drenched topside toward the far-off control room.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_deck_b_go",
+          "label": "Duck through the topside hatch.",
+          "target": "s_deck_mid"
+        },
+        {
+          "id": "c_deck_fail",
+          "label": "Run across the open topside.",
+          "target": "e_set_storm1"
+        }
+      ]
+    },
+    {
+      "id": "s_deck_mid",
+      "body": "Below decks, the roaring water softened into a deep, steady groan of straining metal, worst of all far down in the ballast bay, as though the sub itself were fighting to hold something in. Kai followed that groan downward, pulled by a feeling he couldn't quite name.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_deck_mid_go",
+          "label": "Follow the groan down to the ballast bay.",
+          "target": "n_secret"
+        }
+      ]
+    },
+    {
+      "id": "e_set_storm1",
+      "body": "The current was pushing far too hard for anyone to risk a dash across the open topside. A rigger grabbed Kai's arm and hauled him below, octopus and all, to ride out the roughest part of the churn. He stayed dry and unharmed, though by the time the current died down, the crew had already fixed everything without his help. He finished the crossing quietly, bundled in a blanket.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_storm1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Waiting Out the Blow"
+      }
+    },
+    {
+      "id": "s_crew1",
+      "body": "The crew strained together against a taut line, their boots skidding across the drenched topside. Short one pair of hands, they hollered for anybody willing to lend a grip. Kai was tiny next to them but eager: he could seize the line's end and throw his weight into the pull, or dash off instead for the heavy ballast buckets they kept shouting about.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_crew_a",
+          "label": "Grab the line and pull too.",
+          "target": "s_crew_a"
+        },
+        {
+          "id": "c_crew_b",
+          "label": "Dash for the ballast buckets.",
+          "target": "s_crew_b"
+        }
+      ]
+    },
+    {
+      "id": "s_crew_a",
+      "body": "Kai threw his whole weight onto the line, and his small extra pull turned out to be just enough. The line held. The team cheered hoarsely, and the bosun jerked a thumb toward a ladder leading down into the deep ballast bay, where more help was needed next.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_crew_a_go",
+          "label": "Head down the ladder to the ballast bay.",
+          "target": "s_crew_mid"
+        }
+      ]
+    },
+    {
+      "id": "s_crew_b",
+      "body": "Kai lugged the heavy buckets across the topside, muscles straining, right as the Selkie heaved and one bucket tilted dangerously to the side. There was no time to spare: he could grip the load steady with both hands and see the job through, or release it entirely and dive clear as it slid away.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_crew_b_go",
+          "label": "Brace the load and finish the task.",
+          "target": "s_crew_mid"
+        },
+        {
+          "id": "c_crew_fail",
+          "label": "Drop it and dive clear.",
+          "target": "e_set_storm2"
+        }
+      ]
+    },
+    {
+      "id": "s_crew_mid",
+      "body": "By now the crew trusted Kai enough to wave him past without a second glance. Then a low, mournful groan rose up from somewhere deep in the sub's belly, a sound nothing like the current could ever make. The bosun's face fell: whatever was wrong, it had to be down in the sealed ballast bay.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_crew_mid_go",
+          "label": "Head down to the sealed ballast bay.",
+          "target": "n_secret"
+        }
+      ]
+    },
+    {
+      "id": "e_set_storm2",
+      "body": "A row of sliding buckets swept Kai's legs out from under him and sent him skidding sideways across the floor. A firm hand hauled him upright before he slid any further. The bosun parked him out of harm's way next to Marbles until the surge eased off. Nothing was hurt but his pride; the Selkie righted itself without needing him this time, and the crossing to dock finished without further trouble.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_storm2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Knocked Off Her Feet"
+      }
+    },
+    {
+      "id": "s_hold1",
+      "body": "Deep down, the ballast bay groaned louder than anywhere else, and it wasn't only metal straining under pressure. Something alive was down there, and it sounded terrified. A heavy sealed door blocked his path, with a small glass-paned hatch set beside it and a locked panel bolted just above. He needed to decide: look through the glass first, or examine the panel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_hatch",
+          "label": "Look through the glass-paned hatch.",
+          "target": "s_hold_a"
+        },
+        {
+          "id": "c_hold_panel",
+          "label": "Examine the locked control panel.",
+          "target": "s_hold_b"
+        }
+      ]
+    },
+    {
+      "id": "s_hold_a",
+      "body": "Peering through the porthole, Kai spotted a dim, cavernous room, and inside it a massive shape, gentle and terrified, pale as bleached coral. Marbles pressed against the glass, letting out a curious click of its own. From beyond the pane came a mournful, low note in reply, one that seemed to ripple straight through every bulkhead of the Selkie.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shold_a_go",
+          "label": "Look for a way to the frightened creature.",
+          "target": "s_hold_mid"
+        }
+      ]
+    },
+    {
+      "id": "s_hold_b",
+      "body": "Neat handwriting on the panel, clearly the commander's own, read tending, feeding, calming. Kai realized, bit by bit, this was no ordinary stores lock. It was the entrance to some living creature's shelter, jarred partly open by the current, with a narrow beam of light escaping through the gap. Slowly, understanding dawned on him.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shold_b_go",
+          "label": "Ease the shelter door open.",
+          "target": "s_hold_mid"
+        }
+      ]
+    },
+    {
+      "id": "s_hold_mid",
+      "body": "Kai eased himself into the wide chamber, his pulse hammering in his ears. Outside, the current thudded against the hull in a steady, thunderous drumbeat. Before him, an enormous pale shape trembled from snout to tail, flinching at every new boom. Understanding hit him all at once: he had reached the very center of the Selkie's biggest mystery, near enough at last to see exactly what the sub had been hiding.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_mid_go",
+          "label": "Edge closer to the sub's secret.",
+          "target": "n_secret"
+        }
+      ]
+    },
+    {
+      "id": "n_secret",
+      "body": "However Kai had gotten there, every corridor through the current had eventually led to this sealed heart of the sub. Here he uncovered the secret the Selkie had guarded the whole voyage. Curled inside the wide chamber was a young glimmerfin, a luminous, pale, wondrous creature the commander had rescued and was smuggling toward a safe refuge, away from anyone who might hunt it. The pup's name was Glow, and the current had it badly frightened, its panicked thrashing making the sub pitch harder with every passing minute. Kai had to choose quickly: try calming Glow himself and rescue the sub, sprint to the control room to reveal what he'd discovered, or run to fetch the crew and commander.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_secret_save",
+          "label": "Try calming Glow and rescue the sub.",
+          "target": "p_save1"
+        },
+        {
+          "id": "c_secret_reveal",
+          "label": "Sprint to reveal what you found.",
+          "target": "p_reveal1"
+        },
+        {
+          "id": "c_secret_people",
+          "label": "Run to fetch the crew and commander.",
+          "target": "p_people1"
+        }
+      ]
+    },
+    {
+      "id": "p_save1",
+      "body": "Glow rolled and thumped against the hull, each jolt rocking the entire sub sideways. Kai crept nearer, Marbles perched fearlessly on his shoulder, entirely unbothered by the creature's size. He considered his options: hum the same low, soothing note Marbles made when it was happy, or reach up and try to unclip a tangled harness pinning down one of Glow's massive fins.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_save_a",
+          "label": "Hum quietly to soothe the frightened pup.",
+          "target": "p_save_a"
+        },
+        {
+          "id": "c_save_b",
+          "label": "Unclip the tangled harness strap.",
+          "target": "p_save_b"
+        }
+      ]
+    },
+    {
+      "id": "p_save_a",
+      "body": "Kai hummed a low note in his throat, mimicking the sound Marbles made whenever it was content. Slowly the massive pup grew still, fixing one huge, clouded eye on him with something close to trust. Its thrashing faded, and along with it the Selkie's violent pitching eased just enough for Kai to catch his breath and gather his thoughts.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_save_a_go",
+          "label": "Head for the control room with a plan.",
+          "target": "p_save_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_save_b",
+      "body": "Kai's fingers worked fast at the twisted harness straps despite the Selkie's shuddering. Suddenly it gave way, releasing all at once. Glow shivered with relief and sank lower, breathing easier, and under Kai's feet the sub's violent rocking eased off too, almost as if the whole vessel had exhaled.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_save_b_go",
+          "label": "Race up to the control room.",
+          "target": "p_save_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_save_mid",
+      "body": "Calmer now, Glow relaxed at Kai's touch, soothed simply by his presence nearby. An important thought struck Kai: if he made it to the control room, he could tell the commander what he'd figured out, that the pup grew steady whenever somebody stayed close and gentle beside it. Holding onto that idea, he pushed on toward the control room, with Marbles scouting ahead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_save_mid_go",
+          "label": "Climb to the control room.",
+          "target": "n_bridge"
+        }
+      ]
+    },
+    {
+      "id": "p_reveal1",
+      "body": "Kai spun around to sprint for the control room with his urgent news, his heart slamming in his chest, but the current had jammed the main stairwell shut tight. Two other routes remained open: a long, secure staircase curving around the outside, slower yet reliable, or a short passage cutting straight across, faster but already filling with seawater from a cracked hull seal.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_a",
+          "label": "Take the long, secure stair.",
+          "target": "p_reveal_a"
+        },
+        {
+          "id": "c_reveal_fail",
+          "label": "Chance the short flooded passage.",
+          "target": "e_set_reveal"
+        }
+      ]
+    },
+    {
+      "id": "p_reveal_a",
+      "body": "The long stair was slow but solid underfoot. Kai climbed it two steps at a time, Marbles clinging tight to his collar, rehearsing exactly what he'd say: that the ballast bay held a living, breathing pup, and its fear was what rocked the sub so badly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_a_go",
+          "label": "Keep climbing toward the control room.",
+          "target": "p_reveal_a2"
+        }
+      ]
+    },
+    {
+      "id": "p_reveal_a2",
+      "body": "Near the top of the stairwell, Kai came out into the officers' hall, ringing with shouted commands and the pounding of the current against the hull. The control room hatch waited just a few strides ahead. He sucked in one last breath, tucked Marbles firmly against his shoulder, and braced himself to burst through with the truth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_a2_go",
+          "label": "Rush the last stretch to the control room.",
+          "target": "p_reveal_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_reveal_mid",
+      "body": "Kai arrived at the control room hatch just as the Selkie shuddered again, hard enough to rattle every gauge on the wall. From inside, he heard the commander calling out for anything that might settle the vessel down. He already had the answer: a terrified pup, alone in the ballast bay. Drawing one calming breath, he pushed the hatch open and stepped through.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_mid_go",
+          "label": "Step into the control room.",
+          "target": "n_bridge"
+        }
+      ]
+    },
+    {
+      "id": "e_set_reveal",
+      "body": "Icy water rose in the flooded passage far quicker than Kai had guessed, swirling past his ankles and climbing toward his knees. He turned back before it got any deeper, soaked and thoroughly delayed. By the time he finally reached the control room, the crew had already leveled the Selkie out on their own. Someone wrapped him in a dry blanket by the heater, and he spent the rest of the trip drying off, safely on course for dock.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_reveal",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Slow Through the Flood"
+      }
+    },
+    {
+      "id": "p_people1",
+      "body": "Kai decided he couldn't fix this alone, not with the current worsening by the minute. He needed help fast: look for the friendly bosun he'd pulled lines alongside earlier, or go straight to the commander, who alone truly understood the pup's ways.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_people_a",
+          "label": "Fetch the friendly mechanic.",
+          "target": "p_people_a"
+        },
+        {
+          "id": "c_people_b",
+          "label": "Go straight to the commander.",
+          "target": "p_people_b"
+        }
+      ]
+    },
+    {
+      "id": "p_people_a",
+      "body": "Wide-eyed, the bosun listened as Kai blurted out the entire secret in one breathless rush, then broke into a grin and said the commander needed to hear this straight from him. The two of them shoved forward through the pounding current together, bracing against its roar as they made for the control room.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_people_a_go",
+          "label": "Go with the bosun to the control room.",
+          "target": "p_people_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_people_b",
+      "body": "Kai found the commander braced at a water-streaked porthole, watching the current with tired eyes, grim from the long fight against roar and pressure. He blurted out that he'd seen Glow and thought he could calm the pup. Her eyes sharpened with sudden hope, and she waved him quickly toward the lever.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_people_b_go",
+          "label": "Follow the commander to the lever.",
+          "target": "p_people_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_people_mid",
+      "body": "Kai pressed forward with the diver beside him, both of them pinned to a single hope while the Selkie pitched violently the entire way. For once during that chaotic dive, the adults on board were actually paying attention to what he said. Up ahead, the control room hatches banged open, letting in a blast of noise and spray.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_people_mid_go",
+          "label": "Push through the hatch together.",
+          "target": "n_bridge"
+        }
+      ]
+    },
+    {
+      "id": "n_bridge",
+      "body": "Every path through the current had brought him here, to the shuddering, storm-tossed control room, where the commander and crew turned to face Kai. He was the only one who'd gotten near enough to the terrified glimmerfin to understand what it truly needed. The Selkie was losing its depth control, and the current was winning the fight. There was time left for exactly one decision that might rescue the sub. Kai could head below to keep Glow calm, lend a hand bracing the straining hull, help guide Glow out to the open water it was desperate to reach, or stand in front of everyone and tell the whole story so the crew could act as one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bridge_steer",
+          "label": "Settle Glow so the sub can dive true.",
+          "target": "b_steer1"
+        },
+        {
+          "id": "c_bridge_patch",
+          "label": "Brace the straining hull.",
+          "target": "b_patch1"
+        },
+        {
+          "id": "c_bridge_free",
+          "label": "Guide Glow to open water.",
+          "target": "b_free1"
+        },
+        {
+          "id": "c_bridge_tell",
+          "label": "Tell everyone and rally the crew.",
+          "target": "b_tell1"
+        }
+      ]
+    },
+    {
+      "id": "b_steer1",
+      "body": "The commander asked Kai to go keep Glow settled, trusting what he knew of the frightened pup, speaking through a long tube down to the ballast bay while the team fought to steer above. Steadiness was everything now, she said. Kai could hum slow and sure into the tube, or let his fear win out and rush the song in a frightened hurry as the current roared.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_steer_ok",
+          "label": "Hum steady and calm into the tube.",
+          "target": "b_steer_ok"
+        },
+        {
+          "id": "c_steer_fail",
+          "label": "Rush the tune in a panic.",
+          "target": "e_set_final"
+        }
+      ]
+    },
+    {
+      "id": "b_steer_ok",
+      "body": "Kai hummed the same note over and over into the speaking tube, keeping his tone unhurried and gentle. Far below, Glow responded, quieting down little by little. Once the pup settled, the whole vessel stopped bucking against itself, and up in the control room, the crew felt the lever respond under their hands again at last.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_steer_ok_go",
+          "label": "Keep the pup settled through the worst part.",
+          "target": "b_steer_ok2"
+        }
+      ]
+    },
+    {
+      "id": "b_steer_ok2",
+      "body": "Minute after minute, Kai hummed the massive glimmerfin through the roughest part of the current without ever pausing, while the crew held their heading above him. Gradually the balance settled, the violent pitching easing into a gentle rocking, until the Selkie broke free beneath the churn into placid, glowing water. In the end, one small stowaway and his patient, unwavering song had saved the whole sub.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_steer_win",
+          "label": "Glide out into the calm glowing water.",
+          "target": "e_win_save_ship"
+        }
+      ]
+    },
+    {
+      "id": "e_set_final",
+      "body": "Kai's song came out shaky and rushed, and Glow refused to settle down for him no matter how he tried. From then on, the crew had to battle the current the hard way, coming through exhausted but unharmed. Still grateful, the commander surfaced at the nearest dock and saw Kai safely ashore, promising he'd get another chance someday.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_final",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Put Ashore at Port"
+      }
+    },
+    {
+      "id": "e_win_save_ship",
+      "body": "The Selkie glided onward through clear, silent water, rescued because one small stowaway had kept a full-grown glimmerfin settled through the roughest stretch of current. In front of the entire crew, the commander shook Kai's hand and declared him one of the Selkie's own. News arrived later that Glow had reached the marine refuge safe and sound. Kai had found where he belonged in the deep sea at last, Marbles curled snugly against his neck. It was, in every way, the ending he'd have wished for.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_save_ship",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Cirrus Sails On"
+      }
+    },
+    {
+      "id": "b_patch1",
+      "body": "Down below, the hull groaned under pressure exactly where its plates buckled worst against the current. A rigger shouted for a brave, small set of hands, somebody light enough to squeeze where he himself couldn't fit. Kai could scale the inner rigging to reach the weak spot directly, or operate the winch from below, cinching the brace tight from a safer distance.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_patch_ok",
+          "label": "Climb the rigging to reach the strain.",
+          "target": "b_patch_ok"
+        },
+        {
+          "id": "c_patch_alt",
+          "label": "Work the crank from below.",
+          "target": "b_patch_alt"
+        }
+      ]
+    },
+    {
+      "id": "b_patch_ok",
+      "body": "Light and quick, Kai clipped his harness to a tested line and scrambled into gaps a grown rigger could never fit through, threading the brace-line carefully along the straining ribs. The rigger hauled it tight from below with all his strength, and slowly the strain eased, the sub no longer losing its precious depth control.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_patch_win",
+          "label": "Watch the mended hull hold.",
+          "target": "e_win_patch"
+        }
+      ]
+    },
+    {
+      "id": "b_patch_alt",
+      "body": "Kai flung his whole body onto the winch handle, cranking it around and around until his arms burned. Bit by bit, the brace cinched tight over the weakened plating beneath him. The rigger whooped with pure relief as steady depth returned, right as the crew topside finally leveled the Selkie out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_patch_alt_win",
+          "label": "Feel the Selkie steady beneath you.",
+          "target": "e_win_steer"
+        }
+      ]
+    },
+    {
+      "id": "e_win_patch",
+      "body": "Once the hull was braced, the Selkie weathered the rest of the current, sinking steadily into water shimmering with glowing plankton. The riggers insisted the tiny stowaway had rescued every one of them, and the commander, once she'd heard the full story, let Kai remain aboard as an official crew helper. Glow, meanwhile, finally arrived at safe harbor. Kai had earned his place on the voyage, fair and square.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_patch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Mended Envelope"
+      }
+    },
+    {
+      "id": "e_win_steer",
+      "body": "In the end, steady depth carried the day, and the Selkie righted itself smoothly above a peaceful field of glowing coral. The crew hoisted Kai up onto their shoulders, cheering loudly, while the commander laughed for the first time that whole night, declaring that any sailor who could handle a winch like that always had a berth waiting on the Selkie.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_steer",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Steady Lift Wins"
+      }
+    },
+    {
+      "id": "b_free1",
+      "body": "Kai understood that Glow's fear wasn't the whole story: the pup, nearly full grown by now, was desperate for the open water and felt trapped inside. Nearby, the current had wrenched a stores hatch off its hinges. He could guide the glimmerfin out through that opening to swim free alongside the Selkie, checking first that the path was safe, or instead coax Glow toward a quieter inner alcove to settle down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_free_ok",
+          "label": "Guide Glow out to open water.",
+          "target": "b_free_ok"
+        },
+        {
+          "id": "c_free_alt",
+          "label": "Coax Glow to a quieter alcove.",
+          "target": "b_free_alt"
+        }
+      ]
+    },
+    {
+      "id": "b_free_ok",
+      "body": "With a careful nod from the commander, Kai hummed a low, even note, coaxing Glow toward the torn hatch. The pup braced itself, paused for one lasting moment, then pushed out into the current with sudden courage. Rather than sinking, it climbed, its broad fins spreading wide, circling free beside the straining Selkie.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_free_ok_go",
+          "label": "Watch the glimmerfin take to the water.",
+          "target": "b_free_ok2"
+        }
+      ]
+    },
+    {
+      "id": "b_free_ok2",
+      "body": "Free at last, Glow cut through the current as effortlessly as still water, and the turbulence itself seemed to soften wherever the pup passed. The glimmerfin guided the Selkie clear of the roughest churn, then swam on ahead, marking the way through the final miles toward the safe harbor waiting past the reef.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_free_win",
+          "label": "Follow Glow toward safe harbour.",
+          "target": "e_win_free"
+        }
+      ]
+    },
+    {
+      "id": "e_win_free",
+      "body": "Guided by the glimmerfin, the Selkie made it clear of the current and all the way home, with the entire crew watching in awe as Glow circled the mooring buoy once, graceful and unhurried, before darting off into the wild open ocean. The commander told Kai that the pup owed its freedom entirely to his courage, and that he'd always have a berth aboard the Selkie. A triumphant, joyful close to his very first voyage.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_free",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Sky-Whale Rises"
+      }
+    },
+    {
+      "id": "b_free_alt",
+      "body": "Deciding the current was much too rough for such a young pup, Kai instead hummed Glow toward a sheltered inner alcove, coaxing it along gently and lining the space with soft netting. Settled at last, the glimmerfin stopped its thrashing entirely, and the Selkie steadied enough for the crew below to finally dive it clear of the worst of the churn.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_free_alt_win",
+          "label": "Settle Glow safe for the voyage.",
+          "target": "e_win_friend"
+        }
+      ]
+    },
+    {
+      "id": "e_win_friend",
+      "body": "Tucked into its cushioned tank, Glow weathered the last of the current without a single frightened shudder while the Selkie cruised onward to the marine refuge. The staff there could hardly believe a runaway kid had kept a glimmerfin so settled the whole way. Best of all, Kai stood at the release pool and watched Glow swim out to join a whole pod of its own kind, flashing silver as it went. It was, without question, the finest way this trip could have ended.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_friend",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Nimbus Safe Ashore"
+      }
+    },
+    {
+      "id": "b_tell1",
+      "body": "Kai decided the Selkie's best shot now was everyone pulling in the same direction, so he shouted the secret out loud for every soul aboard. Exactly how he broke the news would decide what happened next. He could rally the working divers so they could act on the spot, hand the decision over to the commander alone, or march everyone below to see Glow with their own eyes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tell_crew",
+          "label": "Rally the working divers.",
+          "target": "b_tell_crew"
+        },
+        {
+          "id": "c_tell_captain",
+          "label": "Hand it to the commander.",
+          "target": "b_tell_captain"
+        },
+        {
+          "id": "c_tell_reveal",
+          "label": "Show them the glimmerfin.",
+          "target": "b_tell_reveal"
+        }
+      ]
+    },
+    {
+      "id": "b_tell_crew",
+      "body": "Not one diver doubted Kai's word; the crew split into groups at once, some racing to calm the frightened pup, others rushing to steer the sub through the worst of it. Everybody pulled in the same direction, and the Selkie finally clawed its way free of the current. By the time the ordeal ended, the divers had already claimed Kai as one of their own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tell_crew_win",
+          "label": "Take your place among the crew.",
+          "target": "e_win_crew"
+        }
+      ]
+    },
+    {
+      "id": "e_win_crew",
+      "body": "With the current beaten back, every diver on the Selkie let out a cheer for Kai. That night they rigged him a hammock of his own between two bunks, and the crew traded him a spare uniform shirt, hemmed down to fit. The bosun crouched to his level and said it plainly: anyone who pulled his weight like that wasn't a stowaway anymore, just crew. Kai grinned the whole way home, the newest and smallest diver the Selkie had ever signed on.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_crew",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One of the Crew"
+      }
+    },
+    {
+      "id": "b_tell_captain",
+      "body": "The commander took in every word Kai said, weighing it carefully before deciding what to do. She could trust this fearless young stowaway with genuine responsibility at the pup's side, letting him pitch in properly, or she could thank him warmly for his nerve and send him somewhere secure while the officers wrestled with the rest of the current on their own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tell_cap_win",
+          "label": "Accept the commander's trust and a real task.",
+          "target": "e_win_captain"
+        },
+        {
+          "id": "c_tell_cap_home",
+          "label": "Let the commander send you safely below.",
+          "target": "e_neu_home"
+        }
+      ]
+    },
+    {
+      "id": "e_win_captain",
+      "body": "Given real work to do, Kai stationed himself beside Glow and the officers, keeping the pup settled until the current finally gave up its grip. Once the readings steadied, the commander wrote his name into the ship's log herself and announced, loud enough for the whole bridge crew to hear, that no passenger aboard the Selkie had ever shown more nerve. His stowaway trip ended in the best way he could picture.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_captain",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Captain's Word"
+      }
+    },
+    {
+      "id": "e_neu_home",
+      "body": "Kai let himself be tucked below with Marbles while the crew wrestled the Selkie through the rest of the current on their own. He never got the chance to be the hero of the day, but he had lived through a genuine deep-sea crossing aboard a real research submarine and laid eyes on an actual glimmerfin. He stepped off at the dock with a friendly wave and a marvelous secret that belonged to him alone, forever.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_neu_home",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Safe Below, Secret Kept"
+      }
+    },
+    {
+      "id": "b_tell_reveal",
+      "body": "Rather than just explaining, Kai marched the commander and crew down to the hatch himself and let them see Glow in person, pale and gentle despite its terror. One look erased every scrap of doubt; nobody who saw that huge, timid creature could stay afraid of it. Amazed and united, the whole crew pitched in at once, soothing the frightened pup while rescuing the Selkie.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tell_reveal_win",
+          "label": "Save the sub together, secret revealed.",
+          "target": "e_win_discovery"
+        }
+      ]
+    },
+    {
+      "id": "e_win_discovery",
+      "body": "With the entire crew finally in on the wonder, everyone worked together, soothing Glow while steering the Selkie safely through the rest of the current. What had been a closely guarded secret became a marvel shared by the whole crew. Kai, the stowaway who had uncovered it, received warm thanks from every person aboard and was invited to keep sailing with them, his astonishing discovery now belonging to the whole ship.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_discovery",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Secret of the Cirrus"
+      }
+    }
+  ]
+}
