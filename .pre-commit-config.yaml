@@ -262,14 +262,14 @@ repos:
         alias: interrogate-scripts
         name: Interrogate (scripts/ scope, 85%)
         args: ['-v', '-c', 'pyproject.toml', '--fail-under', '85', 'scripts/']
-        language_version: python3.12
+        language_version: python3.14
         pass_filenames: false
         stages: [pre-commit]
       - id: interrogate
         alias: interrogate-src
         name: Interrogate (src/ scope, 80%)
         args: ['-v', '-c', 'pyproject.toml', '--fail-under', '80', 'src/']
-        language_version: python3.12
+        language_version: python3.14
         pass_filenames: false
         stages: [pre-commit]
 

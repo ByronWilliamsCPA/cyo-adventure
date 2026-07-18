@@ -15,6 +15,21 @@ Python 3.14 today, verified empirically, not just by lock-file resolution.
 The blocking work is operational (hardened image, CI gating, Renovate
 lockstep), not code-level.
 
+**Status update (2026-07-18, same day):** `dhi-python:3.14-debian13` was
+published and the migration is implemented on this branch (rollout steps 1-5
+below). Verified against the published image: `PYTHON_VERSION=3.14.6`
+(matching the interpreter this evaluation tested), amd64/linux, digest
+`sha256:5716c72a...`. One layout change surfaced by inspecting the image
+layers: the interpreter moved from `/opt/python/bin/python3.12` (3.12 image)
+to `/usr/bin/python3.14` (no `/opt/python` at all), so the Dockerfile's
+builder mirror block and the `fips-image-floor` probe now target
+`/usr/bin/python3.14`. The venv lockstep mechanism (symlink mirror plus
+`UV_PYTHON`) was re-verified against the new path with the pinned uv 0.8.17:
+`pyvenv.cfg` records `home = /usr/bin` and the venv's `python` symlink
+points at the mirrored path unresolved. Remaining: merge-time CI (runs the
+integration suite under 3.14 for the first time) and the staged deploy
+(step 6).
+
 ---
 
 ## Method

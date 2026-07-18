@@ -21,7 +21,7 @@ This project adheres to the [ByronWilliamsCPA organization Code of Conduct](http
 
 ### Prerequisites
 
-- Python 3.12 or higher
+- Python 3.11 or higher (3.14 is the primary target)
 - UV 1.7+ for dependency management
 - Git
 - GPG key configured for commit signing (recommended)
