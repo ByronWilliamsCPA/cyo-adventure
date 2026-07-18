@@ -400,6 +400,13 @@ def security_tests(session: nox.Session) -> None:
 
 
 @nox.session(python="3.12")
+def diversity_eval(session: nox.Session) -> None:
+    """Run the offline diversity regression gate over the committed panel."""
+    session.install("-e", ".")
+    session.run("python", "scripts/run_diversity_eval.py", "--check")
+
+
+@nox.session(python="3.12")
 def mutate(session: nox.Session) -> None:
     """Run mutation testing to verify test quality.
 

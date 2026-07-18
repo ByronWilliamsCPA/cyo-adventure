@@ -327,6 +327,50 @@ jobs:
         run: |
           git diff --exit-code -- frontend/src/client || (echo "::error::Generated OpenAPI client is out of date. Run 'npm run generate-client' against a live backend (see frontend/README.md) and commit the result." && exit 1)
 
+  # WS-0 Phase 2 diversity regression gate: pure Python over the committed
+  # tests/data/diversity_panel/ fixtures (~400 KB), seconds of wall time, no
+  # secrets, no network. Standalone (not folded into the reusable `ci` job)
+  # for the same reason as `contract`: the backend quality gate is delegated
+  # to an org-level reusable workflow that cannot take an extra step. Runs
+  # per-PR, not nightly (docs/planning/ws0-phase2-harness-design.md section
+  # 4.3): a regression gate is only cheap to act on when it fires on the PR
+  # that caused it, and the baseline-update review contract requires the
+  # gate and the causal change to land in the same PR.
+  diversity:
+    name: Diversity Regression Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+
+      # Base package only (no `dev`/`api` extras needed): the harness is pure
+      # Python over committed fixtures, but must be able to `import
+      # cyo_adventure`, so an editable install is required.
+      - name: Install backend
+        run: uv pip install --system -e .
+
+      - name: Diversity eval (offline panel, regression rules R1-R6)
+        run: uv run python scripts/run_diversity_eval.py --check
+
   # Uploads the backend's per-test-type coverage + JUnit to Codecov, INLINE so
   # it runs on PRs (the old workflow_run codecov.yml only ran on main). The
   # reusable `ci` job publishes coverage-{unit,integration,security}.xml and
