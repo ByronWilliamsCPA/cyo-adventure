@@ -4,19 +4,22 @@ Live status grid for the authoring run defined in
 `docs/planning/story-inventory-initial-run.md`. Updated by the supervisor at
 wave boundaries and major approvals.
 
-## CURRENT STATUS (2026-07-18)
+## CURRENT STATUS (2026-07-18): WAVE 5 COMPLETE (36 of 36 approved)
 
-**Wave 5 running on Opus.** Fable hit its usage limit again after the 10-13
-band completed; per operator direction ("try with opus") the designer role
-moved to Opus for the remaining hard cells. Opus-designed skeletons are
-clearing the independent Opus reviews as cleanly as the Fable ones (the
-first four: third-shift, quiet-harbor-protocol, hollow-sea,
-year-of-four-banners, all approved with 0-1 fixes). **26 of 36 approved.**
-All prose cells are complete except the 16+ Long pair (#33 tricameral-city
-sorting_hat, #34 longwinter-station open_map tier-2), which are designing
-now. Only the 8 dagger gamebook skeletons remain after that, and NO gauntlet
-pattern-setter exists yet (the first gauntlet is a novel topology for this
-run: must be an acyclic DAG with reconvergence, restart-on-fail unrolled).
+**All 36 new skeletons are designed, independently reviewed, and approved.**
+The 14 pre-run stories (below) plus the 36-skeleton catalog expansion are the
+full deliverable of the initial inventory run. Nothing has been imported to
+the database or published (deferred per ADR-005; see Import / publication).
+
+The wave ran on two designer models. Fable designed briefs #1-#20 (all bands
+through 10-13); when Fable hit its usage limit, operator direction ("try with
+opus") moved the designer role to Opus for the remaining hard cells (#21-#36:
+the 13-16 and 16+ prose pairs and all 8 dagger gamebooks). Opus-designed
+skeletons cleared the independent Opus reviews as cleanly as the Fable ones.
+Every one of the 36 passed check_skeleton on the designer's first sound build
+and cleared its adversarial review; the reviewer-required repairs were all
+bounded (grip-description accuracy, a setback->death re-tag, a capture-body
+widen, and one title-pool widen), never a structural reject.
 
 ## Stories (one per offered age x length combination, prose)
 
@@ -43,7 +46,7 @@ the Fable outage.
 
 ## Wave 5 skeletons (2 new per production cell; 36 total)
 
-**26 of 36 APPROVED** (each with a design report under
+**36 of 36 APPROVED** (each with a design report under
 `out/reports/skeletons/`):
 
 | Cell | Approved new skeletons |
@@ -59,22 +62,61 @@ the Fable outage.
 | 10-13 medium | the-envoy-of-three-courts, the-flooded-quarter |
 | 10-13 long | the-skyrail-heist, the-winter-of-the-wolf-queen |
 | 13-16 medium | the-undertow-season, the-conservatory-wars |
-| 13-16 long | the-year-of-four-banners (Opus), the-hollow-sea (Opus) |
-| 16+ medium | the-third-shift (Opus), the-quiet-harbor-protocol (Opus) |
-
-Designing now (Opus): the-tricameral-city (#33, 16+ long sorting_hat),
-the-longwinter-station (#34, 16+ long open_map tier-2).
-
-Remaining after those: the 8 dagger gamebook skeletons (13-16 medium #23/#24,
-13-16 long #27/#28, 16+ medium #31/#32, 16+ long #35/#36), each cell pairing
-one low-end and one ceiling-challenger per the dagger experiment.
+| 13-16 medium gamebook | the-iron-spire-trial (gauntlet T2), the-smugglers-cut (b&b) |
+| 13-16 long | the-year-of-four-banners, the-hollow-sea |
+| 13-16 long gamebook | the-labyrinth-of-glass (gauntlet, LOW), the-serpent-vaults (gauntlet T2, CHALLENGER) |
+| 16+ medium | the-third-shift, the-quiet-harbor-protocol |
+| 16+ medium gamebook | the-red-meridian-run (gauntlet, LOW), the-cinder-bazaar (b&b T2, CHALLENGER) |
+| 16+ long | the-tricameral-city, the-longwinter-station |
+| 16+ long gamebook | the-pale-road (gauntlet, LOW), the-tenfold-siege (gauntlet T2, CHALLENGER) |
 
 Pipeline metrics: every approved skeleton (Fable- and Opus-designed alike)
-passed check_skeleton on the designer's first run and cleared its
-independent Opus review with 0-1 node-level fixes; the catches only a
-reviewer could make were the recap-leak class (tier-1 statelessness), the
-guild track-isomorphism (replay rhythm), and the conservatory floor/telegraph
-polish. No skeleton has been rejected.
+passed check_skeleton on the designer's first sound build and cleared its
+independent Opus review; no skeleton was rejected. The catches only an
+adversarial reviewer could make were the recap-leak class (tier-1
+statelessness), the guild track-isomorphism (replay rhythm), the conservatory
+floor/telegraph polish, the pale-road setback-vs-death mislabel, and the two
+challenger prose defects (tenfold-siege title recycling, serpent-vaults
+capture-body templating).
+
+## New topology pattern-setters established this wave
+
+- **gauntlet** (the-red-meridian-run): the first gauntlet in the project.
+  Structurally an acyclic DAG with reconvergence (same class as b&b, declared
+  gauntlet); a shallow checkpoint spine with restart-on-fail unrolled forward
+  (no back-edge), fair-lethality telegraphs, few deep wins / many shallow
+  fails. Its 9-rule pattern set (in design-briefs.md) governed the other five
+  gauntlets, with a propagation refinement that fixed its one weakness:
+  per-checkpoint-specific dread beats (the-labyrinth-of-glass then hit 94/94
+  distinct dread beats).
+- **tier-2 gauntlet** (the-iron-spire-trial): state-gated survival plus wins
+  differentiated by accumulated state, exact-partition at the state gates with
+  unconditional companions so no state is choiceless.
+
+## Dagger-cell experiment result (per operator direction)
+
+Each dagger cell paired a low-end skeleton with a ceiling-challenger
+targeting the upper envelope, to test ADR-011's ~460-node hand-authoring
+ceiling. The three challengers give a clean three-point curve:
+
+| Challenger | Nodes | Distinct titles | Templated bodies | Structural correctness |
+| --- | --- | --- | --- | --- |
+| the-cinder-bazaar | 453 | 141/141 | ~57% (80/141 death beats) | clean by construction |
+| the-serpent-vaults | 530 | 172/172 (after 1 fix) | ~19% | clean by construction |
+| the-tenfold-siege | 677 | 209/209 (after title-pool widen) | shared death frame | best-win misgate caught only by the config walk |
+
+**Finding: the ~460 ceiling is a hand-reasoning-safety limit, not a
+structural one.** Machine-checkable invariants (acyclicity, exact partition,
+reachability, word budgets) scale by construction at every size tested
+(306 -> 677) with a builder + the Layer-2 walk. What breaks past ~600 is
+correctness-by-hand: tenfold-siege's best win was gated on a state
+(supplies==3 at the finale) that is unreachable because the command tradeoff
+spends the magazine to hold morale, a defect invisible to inspection and
+caught only by walking all 9,832 configs. Content-distinctness does NOT break
+structurally (title recycling was an authoring economy, widened to 209/209 as
+a bounded fix; and the 530-node book was proportionally CLEANER than the
+453-node one). Practical conclusion: past the ceiling, the config-walk gate
+becomes mandatory rather than optional.
 
 ## Firsts / pattern-setters established (with recorded rule sets)
 
@@ -92,6 +134,8 @@ polish. No skeleton has been rejected.
 - **tier-2 branch_and_bottleneck**: the-quiet-harbor-protocol (exact-partition at
   all convergence gates proven by the config walk; best outcome gated exactly at
   one config; dominator-clean high-weight funnel). First stateful b&b of the run.
+- **gauntlet** and **tier-2 gauntlet**: see "New topology pattern-setters
+  established this wave" below.
 
 ## Run-wide process rules (enforced in later prompts)
 
