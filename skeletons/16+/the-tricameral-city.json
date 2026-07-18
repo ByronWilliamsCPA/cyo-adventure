@@ -1076,7 +1076,7 @@
     },
     {
       "id": "b082",
-      "body": "<<FILL role=rising words=166 beats='not once does the auditor go down the lower stair; the count is guarded ferociously precisely because no one is meant to take it'>>",
+      "body": "<<FILL role=rising words=166 beats='the auditor mistakes the intensity of the guarding for the value of the guarded, and files report after report praising the Deepstore's security, each one another seal over the emptiness'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1088,7 +1088,7 @@
     },
     {
       "id": "b083",
-      "body": "<<FILL role=rising words=178 beats='the watch-roll thickens through Harvest; more keepers, more seals, more attestations that the grain is where it is written to be'>>",
+      "body": "<<FILL role=rising words=178 beats='not once does the auditor go down the lower stair; the count is guarded ferociously precisely because no one is meant to take it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1100,7 +1100,7 @@
     },
     {
       "id": "b084",
-      "body": "<<FILL role=rising words=174 beats='the auditor sets the new watch on the Deepstore and enters the count as the vault-book gives it, nine hundred measures held below'>>",
+      "body": "<<FILL role=rising words=174 beats='the watch-roll thickens through Harvest; more keepers, more seals, more attestations that the grain is where it is written to be'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1112,10 +1112,22 @@
     },
     {
       "id": "b085",
-      "body": "<<FILL role=resolution words=176 beats='the auditor certifies the Deepstore with a formal exception that its count rests on attestation, not on any weighing; it is the most honest paper anyone files this year and it still never learns what is actually below the stair'>>",
+      "body": "<<FILL role=rising words=176 beats='the auditor sets the new watch on the Deepstore and enters the count as the vault-book gives it, nine hundred measures held below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b085_0",
+          "label": "Go on.",
+          "target": "b084"
+        }
+      ]
+    },
+    {
+      "id": "b086",
+      "body": "<<FILL role=resolution words=168 beats='the auditor certifies the Deepstore with a formal exception that its count rests on attestation, not on any weighing; it is the most honest paper anyone files this year and it still never learns what is actually below the stair'>>",
       "is_ending": true,
       "ending": {
-        "id": "b085",
+        "id": "b086",
         "valence": "neutral",
         "kind": "discovery",
         "title": "The Provenance That Wasn't"
@@ -1123,20 +1135,8 @@
       "choices": []
     },
     {
-      "id": "b086",
-      "body": "<<FILL role=rising words=168 beats='the auditor cannot break the count on paper and will not walk the vault; the year ends with a formal exception noting the provenance is unproven, the nearest thing to truth that never touched the truth'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b086_0",
-          "label": "Go on.",
-          "target": "b085"
-        }
-      ]
-    },
-    {
       "id": "b087",
-      "body": "<<FILL role=rising words=184 beats='Roon watches the auditor chase the paper in circles and says, not unkindly, that some counts are held up by belief, not by grain'>>",
+      "body": "<<FILL role=rising words=184 beats='the auditor cannot break the count on paper and will not walk the vault; the year ends with a formal exception noting the provenance is unproven, the nearest thing to truth that never touched the truth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1148,7 +1148,7 @@
     },
     {
       "id": "b088",
-      "body": "<<FILL role=rising words=160 beats='the clerks produce attestations of attestations; nowhere a weighing, only keepers swearing to what prior keepers swore'>>",
+      "body": "<<FILL role=rising words=160 beats='Roon watches the auditor chase the paper in circles and says, not unkindly, that some counts are held up by belief, not by grain'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1160,7 +1160,7 @@
     },
     {
       "id": "b089",
-      "body": "<<FILL role=rising words=192 beats='the auditor refuses to certify the count on attestation alone and demands the vault-book's provenance, every entry sourced back to a weighing'>>",
+      "body": "<<FILL role=rising words=192 beats='the clerks produce attestations of attestations; nowhere a weighing, only keepers swearing to what prior keepers swore'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1172,41 +1172,41 @@
     },
     {
       "id": "b090",
-      "body": "<<FILL role=choice words=172 beats='the vault-book says nine hundred measures held below; Roon's rule for the watch is that a keeper reports the count he is given, not the count he takes; the auditor stands at the lower stair with the key'>>",
+      "body": "<<FILL role=rising words=172 beats='the auditor refuses to certify the count on attestation alone and demands the vault-book's provenance, every entry sourced back to a weighing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b090_0",
-          "label": "Break the count and walk the lower vault yourself.",
-          "target": "b079"
-        },
-        {
-          "id": "c_b090_1",
-          "label": "Post the extra watch Roon orders and log the count as held.",
-          "target": "b084"
-        },
-        {
-          "id": "c_b090_2",
-          "label": "Demand the vault-book's provenance in writing before you certify.",
+          "label": "Go on.",
           "target": "b089"
         }
       ]
     },
     {
       "id": "b091",
-      "body": "<<FILL role=rising words=180 beats='Roon's extra Harvest watch settles in over the granary, more eyes on a count than any honest granary needs, and the auditor learns to read the size of a guard as the measure of a secret'>>",
+      "body": "<<FILL role=choice words=180 beats='the vault-book says nine hundred measures held below; Roon's rule for the watch is that a keeper reports the count he is given, not the count he takes; the auditor stands at the lower stair with the key'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b091_0",
-          "label": "Go on.",
+          "label": "Break the count and walk the lower vault yourself.",
+          "target": "b079"
+        },
+        {
+          "id": "c_b091_1",
+          "label": "Post the extra watch Roon orders and log the count as held.",
+          "target": "b085"
+        },
+        {
+          "id": "c_b091_2",
+          "label": "Demand the vault-book's provenance in writing before you certify.",
           "target": "b090"
         }
       ]
     },
     {
       "id": "b092",
-      "body": "<<FILL role=rising words=158 beats='the keepers work the Deepstore in shifts that never overlap at the lower door, a rota built, the auditor slowly sees, so that no single keeper ever accounts for the whole of what is below'>>",
+      "body": "<<FILL role=rising words=158 beats='Roon's extra Harvest watch settles in over the granary, more eyes on a count than any honest granary needs, and the auditor learns to read the size of a guard as the measure of a secret'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1218,7 +1218,7 @@
     },
     {
       "id": "b093",
-      "body": "<<FILL role=rising words=196 beats='the upper aisles are honest, fragrant, exactly as the vault-book says; it is the lower stair, always locked, that the keepers grow quiet around'>>",
+      "body": "<<FILL role=rising words=196 beats='the keepers work the Deepstore in shifts that never overlap at the lower door, a rota built, the auditor slowly sees, so that no single keeper ever accounts for the whole of what is below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1230,7 +1230,7 @@
     },
     {
       "id": "b094",
-      "body": "<<FILL role=rising words=166 beats='the auditor takes the Deepstore posting, where the disputed count physically sits; keepers, seals, and a lower vault no auditor is encouraged to enter'>>",
+      "body": "<<FILL role=rising words=166 beats='the upper aisles are honest, fragrant, exactly as the vault-book says; it is the lower stair, always locked, that the keepers grow quiet around'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1242,10 +1242,22 @@
     },
     {
       "id": "b095",
-      "body": "<<FILL role=resolution words=178 beats='the auditor files a ward-by-ward reconciliation that exposes the grain flowing to the uncounted wards; the coin-balance can no longer hide it; Roon answers for it at the Reckoning and the city is made to see whom it has been feeding in the dark'>>",
+      "body": "<<FILL role=rising words=178 beats='the auditor takes the Deepstore posting, where the disputed count physically sits; keepers, seals, and a lower vault no auditor is encouraged to enter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b095_0",
+          "label": "Go on.",
+          "target": "b094"
+        }
+      ]
+    },
+    {
+      "id": "b096",
+      "body": "<<FILL role=resolution words=174 beats='the auditor files a ward-by-ward reconciliation that exposes the grain flowing to the uncounted wards; the coin-balance can no longer hide it; Roon answers for it at the Reckoning and the city is made to see whom it has been feeding in the dark'>>",
       "is_ending": true,
       "ending": {
-        "id": "b095",
+        "id": "b096",
         "valence": "positive",
         "kind": "completion",
         "title": "Balanced to the Ward"
@@ -1253,20 +1265,8 @@
       "choices": []
     },
     {
-      "id": "b096",
-      "body": "<<FILL role=rising words=174 beats='the auditor writes the reconciliation true, ward by ward, knowing whose name sits at the bottom of the honest column and choosing to sign beneath it anyway'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b096_0",
-          "label": "Go on.",
-          "target": "b095"
-        }
-      ]
-    },
-    {
       "id": "b097",
-      "body": "<<FILL role=rising words=176 beats='Roon does not interfere; she lets the auditor reach the bottom of the column alone, the way she reached it herself a long time ago'>>",
+      "body": "<<FILL role=rising words=176 beats='the auditor writes the reconciliation true, ward by ward, knowing whose name sits at the bottom of the honest column and choosing to sign beneath it anyway'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1278,7 +1278,7 @@
     },
     {
       "id": "b098",
-      "body": "<<FILL role=rising words=168 beats='the auditor sits with the two ledgers, the tidy false one and the true rough one, and understands that filing the second is not an accusation of theft but a confession of the city's real shape'>>",
+      "body": "<<FILL role=rising words=168 beats='Roon does not interfere; she lets the auditor reach the bottom of the column alone, the way she reached it herself a long time ago'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1290,7 +1290,7 @@
     },
     {
       "id": "b099",
-      "body": "<<FILL role=rising words=184 beats='the clerk is not threatening, only weary; he has drafted honest reconciliations before and watched them softened into nothing, and he wants the auditor to know the cost before paying it'>>",
+      "body": "<<FILL role=rising words=184 beats='the auditor sits with the two ledgers, the tidy false one and the true rough one, and understands that filing the second is not an accusation of theft but a confession of the city's real shape'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1302,7 +1302,7 @@
     },
     {
       "id": "b100",
-      "body": "<<FILL role=rising words=160 beats='a senior clerk warns that to name the flow is to name Roon, and to name Roon is to hand the Bench and the Register a Prefect to blame for a fault all three chambers share'>>",
+      "body": "<<FILL role=rising words=160 beats='the clerk is not threatening, only weary; he has drafted honest reconciliations before and watched them softened into nothing, and he wants the auditor to know the cost before paying it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1314,7 +1314,7 @@
     },
     {
       "id": "b101",
-      "body": "<<FILL role=rising words=192 beats='the outer wards resolve into something the levy-book was built to hide: not delinquents but dependents, a population the city taxes as a courtesy and feeds as a necessity'>>",
+      "body": "<<FILL role=rising words=192 beats='a senior clerk warns that to name the flow is to name Roon, and to name Roon is to hand the Bench and the Register a Prefect to blame for a fault all three chambers share'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1326,7 +1326,7 @@
     },
     {
       "id": "b102",
-      "body": "<<FILL role=rising words=172 beats='the auditor rebuilds each ward's true figure from the raw collection slips, going behind the balanced column to the weighings the clerks stopped copying forward years ago'>>",
+      "body": "<<FILL role=rising words=172 beats='the outer wards resolve into something the levy-book was built to hide: not delinquents but dependents, a population the city taxes as a courtesy and feeds as a necessity'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1338,7 +1338,7 @@
     },
     {
       "id": "b103",
-      "body": "<<FILL role=rising words=180 beats='the pattern is old and deliberate; grain flows out to wards the census barely lists, and the levy-book is balanced to make the flow invisible'>>",
+      "body": "<<FILL role=rising words=180 beats='the auditor rebuilds each ward's true figure from the raw collection slips, going behind the balanced column to the weighings the clerks stopped copying forward years ago'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1350,7 +1350,7 @@
     },
     {
       "id": "b104",
-      "body": "<<FILL role=rising words=158 beats='the auditor works the tallies ward by ward and finds the outer wards taxed lightly and fed heavily, a leak the coin-balance hides'>>",
+      "body": "<<FILL role=rising words=158 beats='the pattern is old and deliberate; grain flows out to wards the census barely lists, and the levy-book is balanced to make the flow invisible'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1362,10 +1362,22 @@
     },
     {
       "id": "b105",
-      "body": "<<FILL role=setback words=196 beats='the auditor certifies the levy on the coin-balance and lets the grain-flow lie; the Prefecture's books are clean, its secret intact, and the auditor has learned exactly how a chamber buys silence with tidiness'>>",
+      "body": "<<FILL role=rising words=196 beats='the auditor works the tallies ward by ward and finds the outer wards taxed lightly and fed heavily, a leak the coin-balance hides'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b105_0",
+          "label": "Go on.",
+          "target": "b104"
+        }
+      ]
+    },
+    {
+      "id": "b106",
+      "body": "<<FILL role=setback words=166 beats='the auditor certifies the levy on the coin-balance and lets the grain-flow lie; the Prefecture's books are clean, its secret intact, and the auditor has learned exactly how a chamber buys silence with tidiness'>>",
       "is_ending": true,
       "ending": {
-        "id": "b105",
+        "id": "b106",
         "valence": "negative",
         "kind": "setback",
         "title": "Closed on the Coin"
@@ -1373,20 +1385,8 @@
       "choices": []
     },
     {
-      "id": "b106",
-      "body": "<<FILL role=rising words=166 beats='Roon thanks the auditor for a clean close and means it; the Prefecture rewards the keeper who does not ask where the grain went'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b106_0",
-          "label": "Go on.",
-          "target": "b105"
-        }
-      ]
-    },
-    {
       "id": "b107",
-      "body": "<<FILL role=rising words=178 beats='the books are tidy, the levy certified, the flow to the outer wards untouched and unnamed beneath a balanced column'>>",
+      "body": "<<FILL role=rising words=178 beats='Roon thanks the auditor for a clean close and means it; the Prefecture rewards the keeper who does not ask where the grain went'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1398,7 +1398,7 @@
     },
     {
       "id": "b108",
-      "body": "<<FILL role=rising words=174 beats='the auditor closes the levy on the coin-balance, the way the Prefecture always closes it, and does not chase the grain the coin does not track'>>",
+      "body": "<<FILL role=rising words=174 beats='the books are tidy, the levy certified, the flow to the outer wards untouched and unnamed beneath a balanced column'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1410,10 +1410,22 @@
     },
     {
       "id": "b109",
-      "body": "<<FILL role=resolution words=176 beats='the auditor sees from the levy side what the census refuses: a fed, uncounted people at the city's edge; the truth is whole now but the choosing is not the auditor's alone, and the year ends holding a question three chambers have spent nineteen years not answering'>>",
+      "body": "<<FILL role=rising words=176 beats='the auditor closes the levy on the coin-balance, the way the Prefecture always closes it, and does not chase the grain the coin does not track'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b109_0",
+          "label": "Go on.",
+          "target": "b108"
+        }
+      ]
+    },
+    {
+      "id": "b110",
+      "body": "<<FILL role=resolution words=168 beats='the auditor sees from the levy side what the census refuses: a fed, uncounted people at the city's edge; the truth is whole now but the choosing is not the auditor's alone, and the year ends holding a question three chambers have spent nineteen years not answering'>>",
       "is_ending": true,
       "ending": {
-        "id": "b109",
+        "id": "b110",
         "valence": "neutral",
         "kind": "discovery",
         "title": "Who Eats in the Outer Wards"
@@ -1421,20 +1433,8 @@
       "choices": []
     },
     {
-      "id": "b110",
-      "body": "<<FILL role=rising words=168 beats='Roon finds the auditor at the ward-edge and does not explain herself; she only asks whether a true count would feed these people or merely name them for the winter's cut'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b110_0",
-          "label": "Go on.",
-          "target": "b109"
-        }
-      ]
-    },
-    {
       "id": "b111",
-      "body": "<<FILL role=rising words=184 beats='the auditor understands the shape of it now from the levy side: the Prefecture feeds the uncounted and the Register refuses to count them, and the gap is the shape of that refusal'>>",
+      "body": "<<FILL role=rising words=184 beats='Roon finds the auditor at the ward-edge and does not explain herself; she only asks whether a true count would feed these people or merely name them for the winter's cut'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1446,7 +1446,7 @@
     },
     {
       "id": "b112",
-      "body": "<<FILL role=rising words=160 beats='the thread runs out past the counted city to the outer wards, to lines of people the Roll never names, eating grain the levy-book swears is elsewhere'>>",
+      "body": "<<FILL role=rising words=160 beats='the auditor understands the shape of it now from the levy side: the Prefecture feeds the uncounted and the Register refuses to count them, and the gap is the shape of that refusal'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1458,10 +1458,22 @@
     },
     {
       "id": "b113",
-      "body": "<<FILL role=resolution words=192 beats='the auditor files a proven, partial finding that stops at the ward-gate; it is honest and incomplete, names the leak without the reason, and leaves the founding wound for a bolder year'>>",
+      "body": "<<FILL role=rising words=192 beats='the thread runs out past the counted city to the outer wards, to lines of people the Roll never names, eating grain the levy-book swears is elsewhere'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b113_0",
+          "label": "Go on.",
+          "target": "b112"
+        }
+      ]
+    },
+    {
+      "id": "b114",
+      "body": "<<FILL role=resolution words=172 beats='the auditor files a proven, partial finding that stops at the ward-gate; it is honest and incomplete, names the leak without the reason, and leaves the founding wound for a bolder year'>>",
       "is_ending": true,
       "ending": {
-        "id": "b113",
+        "id": "b114",
         "valence": "neutral",
         "kind": "discovery",
         "title": "As Far as the Gate"
@@ -1469,20 +1481,8 @@
       "choices": []
     },
     {
-      "id": "b114",
-      "body": "<<FILL role=rising words=172 beats='it is a careful, defensible document that names a leak and not a cause, a symptom and not the wound'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b114_0",
-          "label": "Go on.",
-          "target": "b113"
-        }
-      ]
-    },
-    {
       "id": "b115",
-      "body": "<<FILL role=rising words=180 beats='the auditor stops at the counted city's edge, unwilling to certify what cannot be weighed, and files only the proven flow to the gate'>>",
+      "body": "<<FILL role=rising words=180 beats='it is a careful, defensible document that names a leak and not a cause, a symptom and not the wound'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1494,10 +1494,22 @@
     },
     {
       "id": "b116",
-      "body": "<<FILL role=setback words=158 beats='the auditor reports the outer ward for under-levy and hands the Prefecture a tidy scapegoat; the winter's cut falls hardest on the wards already fed in secret, and the auditor never learns the grain was flowing the other way'>>",
+      "body": "<<FILL role=rising words=158 beats='the auditor stops at the counted city's edge, unwilling to certify what cannot be weighed, and files only the proven flow to the gate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b116_0",
+          "label": "Go on.",
+          "target": "b115"
+        }
+      ]
+    },
+    {
+      "id": "b117",
+      "body": "<<FILL role=setback words=196 beats='the auditor reports the outer ward for under-levy and hands the Prefecture a tidy scapegoat; the winter's cut falls hardest on the wards already fed in secret, and the auditor never learns the grain was flowing the other way'>>",
       "is_ending": true,
       "ending": {
-        "id": "b116",
+        "id": "b117",
         "valence": "negative",
         "kind": "setback",
         "title": "A Ward Reported Delinquent"
@@ -1505,20 +1517,8 @@
       "choices": []
     },
     {
-      "id": "b117",
-      "body": "<<FILL role=rising words=196 beats='the Prefecture is happy to accept a clean story of a delinquent ward; it is a smaller lie that protects a larger one, and it costs the poorest the most'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b117_0",
-          "label": "Go on.",
-          "target": "b116"
-        }
-      ]
-    },
-    {
       "id": "b118",
-      "body": "<<FILL role=rising words=166 beats='the auditor reads the light levy as evasion and reports the outer ward for under-payment, not seeing the feeding underneath the figure'>>",
+      "body": "<<FILL role=rising words=166 beats='the Prefecture is happy to accept a clean story of a delinquent ward; it is a smaller lie that protects a larger one, and it costs the poorest the most'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1530,63 +1530,63 @@
     },
     {
       "id": "b119",
-      "body": "<<FILL role=choice words=178 beats='the auditor follows a single ward's grain out of the levy-book and into the streets; Roon's rule bends here, that a keeper who traces one thread had better be ready for the whole cloth'>>",
+      "body": "<<FILL role=rising words=178 beats='the auditor reads the light levy as evasion and reports the outer ward for under-payment, not seeing the feeding underneath the figure'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b119_0",
-          "label": "Follow it to the outer wards and see who eats.",
-          "target": "b112"
-        },
-        {
-          "id": "c_b119_1",
-          "label": "Stop at the ward-gate and file what you can prove.",
-          "target": "b115"
-        },
-        {
-          "id": "c_b119_2",
-          "label": "Turn back and report the ward for under-levy.",
+          "label": "Go on.",
           "target": "b118"
         }
       ]
     },
     {
       "id": "b120",
-      "body": "<<FILL role=choice words=174 beats='the levy-books show the grain collected against the census; Roon's operational rule is that the levy is closed when the coin balances, whatever the grain does; the auditor holds the ward-by-ward tallies'>>",
+      "body": "<<FILL role=choice words=174 beats='the auditor follows a single ward's grain out of the levy-book and into the streets; Roon's rule bends here, that a keeper who traces one thread had better be ready for the whole cloth'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b120_0",
-          "label": "Reconcile the levy ward by ward against the census.",
-          "target": "b104"
+          "label": "Follow it to the outer wards and see who eats.",
+          "target": "b113"
         },
         {
           "id": "c_b120_1",
-          "label": "Accept the coin-balance and close the levy as Roon's rule allows.",
-          "target": "b108"
+          "label": "Stop at the ward-gate and file what you can prove.",
+          "target": "b116"
         },
         {
           "id": "c_b120_2",
-          "label": "Trace one ward's grain-flow to its end before deciding.",
+          "label": "Turn back and report the ward for under-levy.",
           "target": "b119"
         }
       ]
     },
     {
       "id": "b121",
-      "body": "<<FILL role=rising words=176 beats='Roon looks in once, sees which books are open, and says only that the levy feeds the city and the books feed the auditors, and that the auditor should be careful which one it is truly serving'>>",
+      "body": "<<FILL role=choice words=176 beats='the levy-books show the grain collected against the census; Roon's operational rule is that the levy is closed when the coin balances, whatever the grain does; the auditor holds the ward-by-ward tallies'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b121_0",
-          "label": "Go on.",
+          "label": "Reconcile the levy ward by ward against the census.",
+          "target": "b105"
+        },
+        {
+          "id": "c_b121_1",
+          "label": "Accept the coin-balance and close the levy as Roon's rule allows.",
+          "target": "b109"
+        },
+        {
+          "id": "c_b121_2",
+          "label": "Trace one ward's grain-flow to its end before deciding.",
           "target": "b120"
         }
       ]
     },
     {
       "id": "b122",
-      "body": "<<FILL role=rising words=168 beats='the auditor pulls three years of levy-books and finds the same hand softening the same wards, a quiet competence that has been managing this seam for longer than the auditor has been alive'>>",
+      "body": "<<FILL role=rising words=168 beats='Roon looks in once, sees which books are open, and says only that the levy feeds the city and the books feed the auditors, and that the auditor should be careful which one it is truly serving'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1598,7 +1598,7 @@
     },
     {
       "id": "b123",
-      "body": "<<FILL role=rising words=184 beats='the outer wards recur at the bottom of every page, lightly levied and heavily provisioned, a discrepancy so consistent it has plainly stopped being an error and become a policy no one will name'>>",
+      "body": "<<FILL role=rising words=184 beats='the auditor pulls three years of levy-books and finds the same hand softening the same wards, a quiet competence that has been managing this seam for longer than the auditor has been alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1610,7 +1610,7 @@
     },
     {
       "id": "b124",
-      "body": "<<FILL role=rising words=160 beats='an old ledger-clerk shows the auditor the house style: close on the coin, footnote the grain, and never let the two columns be asked the same question in the same room'>>",
+      "body": "<<FILL role=rising words=160 beats='the outer wards recur at the bottom of every page, lightly levied and heavily provisioned, a discrepancy so consistent it has plainly stopped being an error and become a policy no one will name'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1622,7 +1622,7 @@
     },
     {
       "id": "b125",
-      "body": "<<FILL role=rising words=192 beats='the coin totals reconcile to the last measure while the grain totals are only ever asserted, and the auditor notices the Prefecture proves what it collects and merely states what it holds'>>",
+      "body": "<<FILL role=rising words=192 beats='an old ledger-clerk shows the auditor the house style: close on the coin, footnote the grain, and never let the two columns be asked the same question in the same room'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1634,7 +1634,7 @@
     },
     {
       "id": "b126",
-      "body": "<<FILL role=rising words=172 beats='the balance is beautiful and the grain beneath it does not behave; the auditor senses a second story running under the arithmetic'>>",
+      "body": "<<FILL role=rising words=172 beats='the coin totals reconcile to the last measure while the grain totals are only ever asserted, and the auditor notices the Prefecture proves what it collects and merely states what it holds'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1646,7 +1646,7 @@
     },
     {
       "id": "b127",
-      "body": "<<FILL role=rising words=180 beats='the auditor takes the levy-books, where the census meets the collected grain in long columns balanced to the coin'>>",
+      "body": "<<FILL role=rising words=180 beats='the balance is beautiful and the grain beneath it does not behave; the auditor senses a second story running under the arithmetic'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1658,10 +1658,22 @@
     },
     {
       "id": "b128",
-      "body": "<<FILL role=resolution words=158 beats='the auditor counts the wagons true and finds the Prefecture's hidden distribution to the uncounted wards; the operational truth is plain from the road even when the paper hides it, and the auditor comes back changed by having seen the city feed its own shadow'>>",
+      "body": "<<FILL role=rising words=158 beats='the auditor takes the levy-books, where the census meets the collected grain in long columns balanced to the coin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b128_0",
+          "label": "Go on.",
+          "target": "b127"
+        }
+      ]
+    },
+    {
+      "id": "b129",
+      "body": "<<FILL role=resolution words=196 beats='the auditor counts the wagons true and finds the Prefecture's hidden distribution to the uncounted wards; the operational truth is plain from the road even when the paper hides it, and the auditor comes back changed by having seen the city feed its own shadow'>>",
       "is_ending": true,
       "ending": {
-        "id": "b128",
+        "id": "b129",
         "valence": "neutral",
         "kind": "discovery",
         "title": "The Second Distribution"
@@ -1669,20 +1681,8 @@
       "choices": []
     },
     {
-      "id": "b129",
-      "body": "<<FILL role=rising words=196 beats='the auditor understands the operation is not chaos but a second, hidden distribution the Prefecture runs alongside the counted one'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b129_0",
-          "label": "Go on.",
-          "target": "b128"
-        }
-      ]
-    },
-    {
       "id": "b130",
-      "body": "<<FILL role=rising words=166 beats='grain is being delivered to places that do not appear on the provisioning rolls, quietly, competently, as if it were the most ordinary thing'>>",
+      "body": "<<FILL role=rising words=166 beats='the auditor understands the operation is not chaos but a second, hidden distribution the Prefecture runs alongside the counted one'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1694,7 +1694,7 @@
     },
     {
       "id": "b131",
-      "body": "<<FILL role=rising words=178 beats='the auditor rides out with the wagons and counts each against the manifest; past the counted city the manifests thin and the wagons do not'>>",
+      "body": "<<FILL role=rising words=178 beats='grain is being delivered to places that do not appear on the provisioning rolls, quietly, competently, as if it were the most ordinary thing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1706,10 +1706,22 @@
     },
     {
       "id": "b132",
-      "body": "<<FILL role=resolution words=174 beats='the auditor reports the off-manifest deliveries as diversion and the run is suspended pending the Reckoning; the paper is honest, the ledger corrected, and the outer wards go hungry through the vote; the auditor certifies a true book and cannot forget the arithmetic of the choice'>>",
+      "body": "<<FILL role=rising words=174 beats='the auditor rides out with the wagons and counts each against the manifest; past the counted city the manifests thin and the wagons do not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b132_0",
+          "label": "Go on.",
+          "target": "b131"
+        }
+      ]
+    },
+    {
+      "id": "b133",
+      "body": "<<FILL role=resolution words=176 beats='the auditor reports the off-manifest deliveries as diversion and the run is suspended pending the Reckoning; the paper is honest, the ledger corrected, and the outer wards go hungry through the vote; the auditor certifies a true book and cannot forget the arithmetic of the choice'>>",
       "is_ending": true,
       "ending": {
-        "id": "b132",
+        "id": "b133",
         "valence": "negative",
         "kind": "setback",
         "title": "The Run That Stopped"
@@ -1717,20 +1729,8 @@
       "choices": []
     },
     {
-      "id": "b133",
-      "body": "<<FILL role=rising words=176 beats='Roon does not argue; she only asks the auditor to ride the run once more before deciding, and to count the faces this time, not the sacks'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b133_0",
-          "label": "Go on.",
-          "target": "b132"
-        }
-      ]
-    },
-    {
       "id": "b134",
-      "body": "<<FILL role=rising words=168 beats='the auditor weighs the clean report against the wagons it will halt, and learns that the honest word and the fed child are not always on the same side'>>",
+      "body": "<<FILL role=rising words=168 beats='Roon does not argue; she only asks the auditor to ride the run once more before deciding, and to count the faces this time, not the sacks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1742,7 +1742,7 @@
     },
     {
       "id": "b135",
-      "body": "<<FILL role=peril words=184 beats='a driver warns, flatly, that naming the run as theft will stop the run, and stopping the run will starve the wards before any chamber votes a remedy'>>",
+      "body": "<<FILL role=rising words=184 beats='the auditor weighs the clean report against the wagons it will halt, and learns that the honest word and the fed child are not always on the same side'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1754,7 +1754,7 @@
     },
     {
       "id": "b136",
-      "body": "<<FILL role=rising words=160 beats='the auditor documents the off-manifest deliveries as diversion of levied grain and prepares to lay them before the Reckoning'>>",
+      "body": "<<FILL role=peril words=160 beats='a driver warns, flatly, that naming the run as theft will stop the run, and stopping the run will starve the wards before any chamber votes a remedy'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1766,10 +1766,22 @@
     },
     {
       "id": "b137",
-      "body": "<<FILL role=resolution words=192 beats='the auditor keeps the provisioning run alive and folds it into the books as an honest, named exception; no one starves and no one is deceived; the founding fault is now a line the Reckoning must answer, put there by a keeper who refused both the lie and the clean cruelty'>>",
+      "body": "<<FILL role=rising words=192 beats='the auditor documents the off-manifest deliveries as diversion of levied grain and prepares to lay them before the Reckoning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b137_0",
+          "label": "Go on.",
+          "target": "b136"
+        }
+      ]
+    },
+    {
+      "id": "b138",
+      "body": "<<FILL role=resolution words=172 beats='the auditor keeps the provisioning run alive and folds it into the books as an honest, named exception; no one starves and no one is deceived; the founding fault is now a line the Reckoning must answer, put there by a keeper who refused both the lie and the clean cruelty'>>",
       "is_ending": true,
       "ending": {
-        "id": "b137",
+        "id": "b138",
         "valence": "positive",
         "kind": "success",
         "title": "The Run Written Down"
@@ -1777,20 +1789,8 @@
       "choices": []
     },
     {
-      "id": "b138",
-      "body": "<<FILL role=rising words=172 beats='she tells the auditor it is the first time the true shape of the year will reach the Reckoning without a body attached to carry the blame, and perhaps the only clean thing done in this chamber in her tenure'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b138_0",
-          "label": "Go on.",
-          "target": "b137"
-        }
-      ]
-    },
-    {
       "id": "b139",
-      "body": "<<FILL role=rising words=180 beats='Roon reads the exception line and, for once, looks something like relieved; a burden nineteen years carried is at last written down by someone willing to sign beneath it'>>",
+      "body": "<<FILL role=rising words=180 beats='she tells the auditor it is the first time the true shape of the year will reach the Reckoning without a body attached to carry the blame, and perhaps the only clean thing done in this chamber in her tenure'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1802,7 +1802,7 @@
     },
     {
       "id": "b140",
-      "body": "<<FILL role=rising words=158 beats='it is a keeper's compromise and the auditor knows it, feeding the wards and forcing the reckoning at once, refusing both the comfortable lie and the clean cruelty of a truth dropped without a remedy'>>",
+      "body": "<<FILL role=rising words=158 beats='Roon reads the exception line and, for once, looks something like relieved; a burden nineteen years carried is at last written down by someone willing to sign beneath it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1814,7 +1814,7 @@
     },
     {
       "id": "b141",
-      "body": "<<FILL role=rising words=196 beats='the exception line, finished, does what nineteen years of silence never did: it makes the shortfall a fact the chambers can argue over instead of a secret they must protect'>>",
+      "body": "<<FILL role=rising words=196 beats='it is a keeper's compromise and the auditor knows it, feeding the wards and forcing the reckoning at once, refusing both the comfortable lie and the clean cruelty of a truth dropped without a remedy'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1826,7 +1826,7 @@
     },
     {
       "id": "b142",
-      "body": "<<FILL role=rising words=166 beats='Corvin Ash, in the days before his forced resignation, quietly checks the auditor's figures against the bookkeeping he can no longer defend, and confirms them without complaint'>>",
+      "body": "<<FILL role=rising words=166 beats='the exception line, finished, does what nineteen years of silence never did: it makes the shortfall a fact the chambers can argue over instead of a secret they must protect'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1838,7 +1838,7 @@
     },
     {
       "id": "b143",
-      "body": "<<FILL role=rising words=178 beats='the auditor drafts and redrafts the exception through the last weeks of Harvest, testing each wording against the objection the Bench will raise and the objection the Register will raise'>>",
+      "body": "<<FILL role=rising words=178 beats='Corvin Ash, in the days before his forced resignation, quietly checks the auditor's figures against the bookkeeping he can no longer defend, and confirms them without complaint'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1850,7 +1850,7 @@
     },
     {
       "id": "b144",
-      "body": "<<FILL role=rising words=174 beats='it means inventing a form the Prefecture has never had, a line that records grain going to people the Register does not count, without either lying about the grain or denying the people'>>",
+      "body": "<<FILL role=rising words=174 beats='the auditor drafts and redrafts the exception through the last weeks of Harvest, testing each wording against the objection the Bench will raise and the objection the Register will raise'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1862,7 +1862,7 @@
     },
     {
       "id": "b145",
-      "body": "<<FILL role=rising words=176 beats='the auditor keeps the wagons moving and begins the slow work of writing the hidden distribution into the books as a named exception, neither buried nor accused'>>",
+      "body": "<<FILL role=rising words=176 beats='it means inventing a form the Prefecture has never had, a line that records grain going to people the Register does not count, without either lying about the grain or denying the people'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1874,10 +1874,22 @@
     },
     {
       "id": "b146",
-      "body": "<<FILL role=setback words=168 beats='the auditor hides the provisioning run inside the counted books so well that no future auditor will find it; the wards eat, the Abatement deepens, and the auditor's skill has become the newest brick in a nineteen-year wall'>>",
+      "body": "<<FILL role=rising words=168 beats='the auditor keeps the wagons moving and begins the slow work of writing the hidden distribution into the books as a named exception, neither buried nor accused'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b146_0",
+          "label": "Go on.",
+          "target": "b145"
+        }
+      ]
+    },
+    {
+      "id": "b147",
+      "body": "<<FILL role=setback words=184 beats='the auditor hides the provisioning run inside the counted books so well that no future auditor will find it; the wards eat, the Abatement deepens, and the auditor's skill has become the newest brick in a nineteen-year wall'>>",
       "is_ending": true,
       "ending": {
-        "id": "b146",
+        "id": "b147",
         "valence": "negative",
         "kind": "setback",
         "title": "Smoothed Into the Columns"
@@ -1885,20 +1897,8 @@
       "choices": []
     },
     {
-      "id": "b147",
-      "body": "<<FILL role=rising words=184 beats='the wards stay fed and the secret stays kept, but now it is the auditor's craftsmanship holding the lid down, not just Roon's'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b147_0",
-          "label": "Go on.",
-          "target": "b146"
-        }
-      ]
-    },
-    {
       "id": "b148",
-      "body": "<<FILL role=rising words=160 beats='the auditor smooths the hidden grain into the counted columns until the run vanishes into ordinary provisioning, tidy and untraceable'>>",
+      "body": "<<FILL role=rising words=160 beats='the wards stay fed and the secret stays kept, but now it is the auditor's craftsmanship holding the lid down, not just Roon's'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1910,10 +1910,22 @@
     },
     {
       "id": "b149",
-      "body": "<<FILL role=resolution words=192 beats='the auditor keeps the run alive and hands the Reckoning an unsettled, honest mess rather than a false neatness; the wards are fed and the choice is placed where it belongs, with the whole Concord, and the auditor's year ends having refused to be the one who decided alone'>>",
+      "body": "<<FILL role=rising words=192 beats='the auditor smooths the hidden grain into the counted columns until the run vanishes into ordinary provisioning, tidy and untraceable'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b149_0",
+          "label": "Go on.",
+          "target": "b148"
+        }
+      ]
+    },
+    {
+      "id": "b150",
+      "body": "<<FILL role=resolution words=172 beats='the auditor keeps the run alive and hands the Reckoning an unsettled, honest mess rather than a false neatness; the wards are fed and the choice is placed where it belongs, with the whole Concord, and the auditor's year ends having refused to be the one who decided alone'>>",
       "is_ending": true,
       "ending": {
-        "id": "b149",
+        "id": "b150",
         "valence": "neutral",
         "kind": "discovery",
         "title": "Left Open for the Reckoning"
@@ -1921,20 +1933,8 @@
       "choices": []
     },
     {
-      "id": "b150",
-      "body": "<<FILL role=rising words=172 beats='it is neither lie nor accusation, only a keeper handing the whole tangled truth up the chain exactly as it is, and letting the chambers own the choice'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_b150_0",
-          "label": "Go on.",
-          "target": "b149"
-        }
-      ]
-    },
-    {
       "id": "b151",
-      "body": "<<FILL role=rising words=180 beats='the auditor keeps the wagons rolling and refuses to settle the books at all, leaving the discrepancy raw and open for the Reckoning to see'>>",
+      "body": "<<FILL role=rising words=180 beats='it is neither lie nor accusation, only a keeper handing the whole tangled truth up the chain exactly as it is, and letting the chambers own the choice'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1946,63 +1946,63 @@
     },
     {
       "id": "b152",
-      "body": "<<FILL role=choice words=158 beats='Roon's road-rule wins for now; but settling the books to protect the run means writing the off-manifest grain into the counted columns, and the auditor holds the pen'>>",
+      "body": "<<FILL role=rising words=158 beats='the auditor keeps the wagons rolling and refuses to settle the books at all, leaving the discrepancy raw and open for the Reckoning to see'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b152_0",
-          "label": "Fold the hidden run into an honest exception line.",
-          "target": "b145"
-        },
-        {
-          "id": "c_b152_1",
-          "label": "Bury the run in the counted columns to hide it entirely.",
-          "target": "b148"
-        },
-        {
-          "id": "c_b152_2",
-          "label": "Keep the run but leave the books unsettled for the Reckoning.",
+          "label": "Go on.",
           "target": "b151"
         }
       ]
     },
     {
       "id": "b153",
-      "body": "<<FILL role=choice words=196 beats='Roon assigns the auditor to ride the provisioning run to the works and the outer wards; her present-tense rule governs: on the road you keep the wagons moving and settle the books after'>>",
+      "body": "<<FILL role=choice words=196 beats='Roon's road-rule wins for now; but settling the books to protect the run means writing the off-manifest grain into the counted columns, and the auditor holds the pen'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b153_0",
-          "label": "Ride the run and count the wagons honestly against the manifest.",
-          "target": "b131"
+          "label": "Fold the hidden run into an honest exception line.",
+          "target": "b146"
         },
         {
           "id": "c_b153_1",
-          "label": "Report the off-manifest deliveries to the Reckoning as diversion.",
-          "target": "b136"
+          "label": "Bury the run in the counted columns to hide it entirely.",
+          "target": "b149"
         },
         {
           "id": "c_b153_2",
-          "label": "Keep the run moving and settle the books to protect it.",
+          "label": "Keep the run but leave the books unsettled for the Reckoning.",
           "target": "b152"
         }
       ]
     },
     {
       "id": "b154",
-      "body": "<<FILL role=rising words=166 beats='the drivers treat the auditor with the wary courtesy of men who have seen inspectors before and know the run survives only if the paperwork never quite catches the wheels'>>",
+      "body": "<<FILL role=choice words=166 beats='Roon assigns the auditor to ride the provisioning run to the works and the outer wards; her present-tense rule governs: on the road you keep the wagons moving and settle the books after'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b154_0",
-          "label": "Go on.",
+          "label": "Ride the run and count the wagons honestly against the manifest.",
+          "target": "b132"
+        },
+        {
+          "id": "c_b154_1",
+          "label": "Report the off-manifest deliveries to the Reckoning as diversion.",
+          "target": "b137"
+        },
+        {
+          "id": "c_b154_2",
+          "label": "Keep the run moving and settle the books to protect it.",
           "target": "b153"
         }
       ]
     },
     {
       "id": "b155",
-      "body": "<<FILL role=rising words=178 beats='at a waystation the auditor watches grain unloaded to people who thank the drivers by name, a transaction so practiced and so unrecorded that it has clearly been the truest routine of the Prefecture for years'>>",
+      "body": "<<FILL role=rising words=178 beats='the drivers treat the auditor with the wary courtesy of men who have seen inspectors before and know the run survives only if the paperwork never quite catches the wheels'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2014,7 +2014,7 @@
     },
     {
       "id": "b156",
-      "body": "<<FILL role=rising words=174 beats='the auditor rides on with the discrepancy widening at every ward-edge, the paper saying one city and the wheels serving another, both of them Meridon'>>",
+      "body": "<<FILL role=rising words=174 beats='at a waystation the auditor watches grain unloaded to people who thank the drivers by name, a transaction so practiced and so unrecorded that it has clearly been the truest routine of the Prefecture for years'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2026,7 +2026,7 @@
     },
     {
       "id": "b157",
-      "body": "<<FILL role=rising words=176 beats='then the road bends past the last counted street and the manifests thin while the wagons do not, and a driver tells the auditor, without being asked, that some deliveries are better left uncounted for everyone's sake'>>",
+      "body": "<<FILL role=rising words=176 beats='the auditor rides on with the discrepancy widening at every ward-edge, the paper saying one city and the wheels serving another, both of them Meridon'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2038,7 +2038,7 @@
     },
     {
       "id": "b158",
-      "body": "<<FILL role=rising words=168 beats='the first days are ordinary, grain to the works, grain to the granary gates, every wagon matched to a line; the auditor almost relaxes into the rhythm of an honest job'>>",
+      "body": "<<FILL role=rising words=168 beats='then the road bends past the last counted street and the manifests thin while the wagons do not, and a driver tells the auditor, without being asked, that some deliveries are better left uncounted for everyone's sake'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2050,7 +2050,7 @@
     },
     {
       "id": "b159",
-      "body": "<<FILL role=rising words=184 beats='Roon says the run is where the auditor will actually see the shape of the year, if the auditor is willing to look past the paper'>>",
+      "body": "<<FILL role=rising words=184 beats='the first days are ordinary, grain to the works, grain to the granary gates, every wagon matched to a line; the auditor almost relaxes into the rhythm of an honest job'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2062,7 +2062,7 @@
     },
     {
       "id": "b160",
-      "body": "<<FILL role=rising words=160 beats='the auditor takes the provisioning run to the works and the wards, the Prefecture at its most physical, wagons and manifests and the road past the counted city'>>",
+      "body": "<<FILL role=rising words=160 beats='Roon says the run is where the auditor will actually see the shape of the year, if the auditor is willing to look past the paper'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2074,41 +2074,41 @@
     },
     {
       "id": "b161",
-      "body": "<<FILL role=choice words=192 beats='Roon names the three postings the Prefecture needs an auditor on before Harvest, each with its own edge of the gap: the Deepstore watch, the levy-books, or the outer-ward provisioning run'>>",
+      "body": "<<FILL role=rising words=192 beats='the auditor takes the provisioning run to the works and the wards, the Prefecture at its most physical, wagons and manifests and the road past the counted city'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b161_0",
-          "label": "Take the Deepstore watch.",
-          "target": "b094"
-        },
-        {
-          "id": "c_b161_1",
-          "label": "Take the levy-books.",
-          "target": "b127"
-        },
-        {
-          "id": "c_b161_2",
-          "label": "Take the outer-ward provisioning run.",
+          "label": "Go on.",
           "target": "b160"
         }
       ]
     },
     {
       "id": "b162",
-      "body": "<<FILL role=rising words=172 beats='Roon's first lesson is a shrug at the Bench's slowness; the Prefecture does not weigh, it feeds the city tonight and answers for it tomorrow, and the Deepstore's nine-hundred-measure gap is a thing to be handled, not contemplated'>>",
+      "body": "<<FILL role=choice words=172 beats='Roon names the three postings the Prefecture needs an auditor on before Harvest, each with its own edge of the gap: the Deepstore watch, the levy-books, or the outer-ward provisioning run'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b162_0",
-          "label": "Go on.",
+          "label": "Take the Deepstore watch.",
+          "target": "b095"
+        },
+        {
+          "id": "c_b162_1",
+          "label": "Take the levy-books.",
+          "target": "b128"
+        },
+        {
+          "id": "c_b162_2",
+          "label": "Take the outer-ward provisioning run.",
           "target": "b161"
         }
       ]
     },
     {
       "id": "b163",
-      "body": "<<FILL role=rising words=180 beats='the auditor reports to the Prefecture, all motion and torchlight, where Prefect Halda Roon runs the levy, the watch, and the Deepstore; the remit is spoken on the move: audit the levy-books and the watch-rolls, and find where the grain and coin actually went'>>",
+      "body": "<<FILL role=rising words=180 beats='Roon's first lesson is a shrug at the Bench's slowness; the Prefecture does not weigh, it feeds the city tonight and answers for it tomorrow, and the Deepstore's nine-hundred-measure gap is a thing to be handled, not contemplated'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2119,11 +2119,23 @@
       ]
     },
     {
-      "id": "c164",
-      "body": "<<FILL role=setback words=158 beats='the auditor lets the census be ratified unchanged, reasoning the count is the count and not the clerk's to question; the inflated Roll passes into another decade, the winter's cut is apportioned on phantom measures, and the auditor's name stands under a number everyone now half-knows is false'>>",
+      "id": "b164",
+      "body": "<<FILL role=rising words=158 beats='the auditor reports to the Prefecture, all motion and torchlight, where Prefect Halda Roon runs the levy, the watch, and the Deepstore; the remit is spoken on the move: audit the levy-books and the watch-rolls, and find where the grain and coin actually went'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b164_0",
+          "label": "Go on.",
+          "target": "b163"
+        }
+      ]
+    },
+    {
+      "id": "c165",
+      "body": "<<FILL role=setback words=196 beats='the auditor lets the census be ratified unchanged, reasoning the count is the count and not the clerk's to question; the inflated Roll passes into another decade, the winter's cut is apportioned on phantom measures, and the auditor's name stands under a number everyone now half-knows is false'>>",
       "is_ending": true,
       "ending": {
-        "id": "c164",
+        "id": "c165",
         "valence": "negative",
         "kind": "setback",
         "title": "Ratified as Written"
@@ -2131,11 +2143,11 @@
       "choices": []
     },
     {
-      "id": "c165",
-      "body": "<<FILL role=resolution words=196 beats='the auditor learns the Register's deepest habit is deference to its own past entries; the count is inherited, not audited, and the year ends with the auditor understanding the shape of the silence without yet daring to break a custom older than any living Recorder'>>",
+      "id": "c166",
+      "body": "<<FILL role=resolution words=166 beats='the auditor learns the Register's deepest habit is deference to its own past entries; the count is inherited, not audited, and the year ends with the auditor understanding the shape of the silence without yet daring to break a custom older than any living Recorder'>>",
       "is_ending": true,
       "ending": {
-        "id": "c165",
+        "id": "c166",
         "valence": "neutral",
         "kind": "discovery",
         "title": "What the Clerks Never Do"
@@ -2143,20 +2155,8 @@
       "choices": []
     },
     {
-      "id": "c166",
-      "body": "<<FILL role=rising words=166 beats='an older clerk explains it almost gently: the Roll is trusted precisely because it is never revised, and a chamber that started correcting its own memory would forfeit the one thing that makes its memory worth keeping'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_c166_0",
-          "label": "Go on.",
-          "target": "c165"
-        }
-      ]
-    },
-    {
       "id": "c167",
-      "body": "<<FILL role=rising words=178 beats='the answer is nobody; the Register's clerks certify, they do not correct, and a clerk who reaches for the founding count is reaching past every hand that trained them'>>",
+      "body": "<<FILL role=rising words=178 beats='an older clerk explains it almost gently: the Roll is trusted precisely because it is never revised, and a chamber that started correcting its own memory would forfeit the one thing that makes its memory worth keeping'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2168,7 +2168,7 @@
     },
     {
       "id": "c168",
-      "body": "<<FILL role=rising words=174 beats='the auditor lets the withdrawn memo lie and turns instead to the census clerks, asking who, in living memory, has ever amended the Roll rather than merely certified it'>>",
+      "body": "<<FILL role=rising words=174 beats='the answer is nobody; the Register's clerks certify, they do not correct, and a clerk who reaches for the founding count is reaching past every hand that trained them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2180,10 +2180,22 @@
     },
     {
       "id": "c169",
-      "body": "<<FILL role=resolution words=176 beats='the auditor moves Ledd's memorandum back onto the record in open session; the Register cannot un-hear it; the recurring gap becomes a matter of deliberation instead of a matter of silence, and Tamsin Ledd's name is on the finding that finally forces the count to be argued in the light'>>",
+      "body": "<<FILL role=rising words=176 beats='the auditor lets the withdrawn memo lie and turns instead to the census clerks, asking who, in living memory, has ever amended the Roll rather than merely certified it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c169_0",
+          "label": "Go on.",
+          "target": "c168"
+        }
+      ]
+    },
+    {
+      "id": "c170",
+      "body": "<<FILL role=resolution words=168 beats='the auditor moves Ledd's memorandum back onto the record in open session; the Register cannot un-hear it; the recurring gap becomes a matter of deliberation instead of a matter of silence, and Tamsin Ledd's name is on the finding that finally forces the count to be argued in the light'>>",
       "is_ending": true,
       "ending": {
-        "id": "c169",
+        "id": "c170",
         "valence": "positive",
         "kind": "discovery",
         "title": "The Memo Read Into the Roll"
@@ -2191,11 +2203,11 @@
       "choices": []
     },
     {
-      "id": "c170",
-      "body": "<<FILL role=setback words=168 beats='the auditor slips the memorandum out beyond the Register's order; it is dismissed as improperly obtained, Ledd is blamed for the breach, and the chamber closes ranks around its procedure while the true finding drowns in the argument over how it surfaced'>>",
+      "id": "c171",
+      "body": "<<FILL role=setback words=184 beats='the auditor slips the memorandum out beyond the Register's order; it is dismissed as improperly obtained, Ledd is blamed for the breach, and the chamber closes ranks around its procedure while the true finding drowns in the argument over how it surfaced'>>",
       "is_ending": true,
       "ending": {
-        "id": "c170",
+        "id": "c171",
         "valence": "negative",
         "kind": "setback",
         "title": "Circulated Out of Order"
@@ -2203,37 +2215,25 @@
       "choices": []
     },
     {
-      "id": "c171",
-      "body": "<<FILL role=choice words=184 beats='the Register's rule of order is that a suppressed paper is reintroduced only by motion, in session, on the record; to circulate it any other way is to break the very deliberation the chamber exists to protect'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_c171_0",
-          "label": "Reintroduce the memo by motion, on the record.",
-          "target": "c169"
-        },
-        {
-          "id": "c_c171_1",
-          "label": "Circulate it quietly to force the question.",
-          "target": "c170"
-        }
-      ]
-    },
-    {
       "id": "c172",
-      "body": "<<FILL role=rising words=160 beats='its arithmetic is quiet and total: the nine-hundred-measure gap is not new but recurring across at least three Reckonings, each one abated and each one buried under the next'>>",
+      "body": "<<FILL role=choice words=160 beats='the Register's rule of order is that a suppressed paper is reintroduced only by motion, in session, on the record; to circulate it any other way is to break the very deliberation the chamber exists to protect'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c172_0",
-          "label": "Go on.",
+          "label": "Reintroduce the memo by motion, on the record.",
+          "target": "c170"
+        },
+        {
+          "id": "c_c172_1",
+          "label": "Circulate it quietly to force the question.",
           "target": "c171"
         }
       ]
     },
     {
       "id": "c173",
-      "body": "<<FILL role=rising words=192 beats='the auditor pulls the Register's own working papers instead of waiting on the year's count, and there, misfiled among discharged drafts, is Tamsin Ledd's memorandum, unredacted'>>",
+      "body": "<<FILL role=rising words=192 beats='its arithmetic is quiet and total: the nine-hundred-measure gap is not new but recurring across at least three Reckonings, each one abated and each one buried under the next'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2245,10 +2245,22 @@
     },
     {
       "id": "c174",
-      "body": "<<FILL role=resolution words=172 beats='the auditor takes Ledd's full file on the promise to move it properly and keeps that promise; the disclosure is sequenced, the Concord holds the shock, and Tamsin Ledd is restored to the record as the one who was right and made to wait, not wrong and made to vanish'>>",
+      "body": "<<FILL role=rising words=172 beats='the auditor pulls the Register's own working papers instead of waiting on the year's count, and there, misfiled among discharged drafts, is Tamsin Ledd's memorandum, unredacted'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c174_0",
+          "label": "Go on.",
+          "target": "c173"
+        }
+      ]
+    },
+    {
+      "id": "c175",
+      "body": "<<FILL role=resolution words=180 beats='the auditor takes Ledd's full file on the promise to move it properly and keeps that promise; the disclosure is sequenced, the Concord holds the shock, and Tamsin Ledd is restored to the record as the one who was right and made to wait, not wrong and made to vanish'>>",
       "is_ending": true,
       "ending": {
-        "id": "c174",
+        "id": "c175",
         "valence": "positive",
         "kind": "discovery",
         "title": "Ledd's File, Kept Faith"
@@ -2256,11 +2268,11 @@
       "choices": []
     },
     {
-      "id": "c175",
-      "body": "<<FILL role=setback words=180 beats='the auditor takes Ledd's file and then moves it faster than promised, certain of being right; the Concord reels, the disclosure is blamed for the panic, and Ledd, twice used, gives no auditor her working papers ever again'>>",
+      "id": "c176",
+      "body": "<<FILL role=setback words=158 beats='the auditor takes Ledd's file and then moves it faster than promised, certain of being right; the Concord reels, the disclosure is blamed for the panic, and Ledd, twice used, gives no auditor her working papers ever again'>>",
       "is_ending": true,
       "ending": {
-        "id": "c175",
+        "id": "c176",
         "valence": "negative",
         "kind": "setback",
         "title": "A Promise to Ledd"
@@ -2268,11 +2280,11 @@
       "choices": []
     },
     {
-      "id": "c176",
-      "body": "<<FILL role=resolution words=158 beats='the auditor declines to be bound and works only from the public Roll; the finding is thinner without Ledd's file but wholly the auditor's own, and Tamsin Ledd keeps her papers and her hard-won distrust intact for whoever comes after'>>",
+      "id": "c177",
+      "body": "<<FILL role=resolution words=196 beats='the auditor declines to be bound and works only from the public Roll; the finding is thinner without Ledd's file but wholly the auditor's own, and Tamsin Ledd keeps her papers and her hard-won distrust intact for whoever comes after'>>",
       "is_ending": true,
       "ending": {
-        "id": "c176",
+        "id": "c177",
         "valence": "neutral",
         "kind": "discovery",
         "title": "The File Refused"
@@ -2280,42 +2292,30 @@
       "choices": []
     },
     {
-      "id": "c177",
-      "body": "<<FILL role=choice words=196 beats='Ledd offers her file if the auditor will promise to move it through the Register's order and not around it; a promise, she says, is the only instrument the Register truly honours, and a broken one is the only thing it never forgives'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_c177_0",
-          "label": "Promise to move it in order, and mean it.",
-          "target": "c174"
-        },
-        {
-          "id": "c_c177_1",
-          "label": "Take the file and move on your own judgment.",
-          "target": "c175"
-        },
-        {
-          "id": "c_c177_2",
-          "label": "Refuse the file rather than be bound by a promise.",
-          "target": "c176"
-        }
-      ]
-    },
-    {
       "id": "c178",
-      "body": "<<FILL role=rising words=166 beats='she is neither bitter nor broken, only exact, a clerk who was right at the wrong time and has decided the being-right was worth the cost, and she wants to know whether the auditor has decided the same'>>",
+      "body": "<<FILL role=choice words=166 beats='Ledd offers her file if the auditor will promise to move it through the Register's order and not around it; a promise, she says, is the only instrument the Register truly honours, and a broken one is the only thing it never forgives'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c178_0",
-          "label": "Go on.",
+          "label": "Promise to move it in order, and mean it.",
+          "target": "c175"
+        },
+        {
+          "id": "c_c178_1",
+          "label": "Take the file and move on your own judgment.",
+          "target": "c176"
+        },
+        {
+          "id": "c_c178_2",
+          "label": "Refuse the file rather than be bound by a promise.",
           "target": "c177"
         }
       ]
     },
     {
       "id": "c179",
-      "body": "<<FILL role=rising words=178 beats='she has kept her full working file, every recurrence traced, and she will part with it only on a condition the auditor must weigh honestly'>>",
+      "body": "<<FILL role=rising words=178 beats='she is neither bitter nor broken, only exact, a clerk who was right at the wrong time and has decided the being-right was worth the cost, and she wants to know whether the auditor has decided the same'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2327,7 +2327,7 @@
     },
     {
       "id": "c180",
-      "body": "<<FILL role=rising words=174 beats='she explains she was not silenced to bury the truth but to control its timing; Sarn feared an unsequenced disclosure would shatter the Concord before it could hold the shock'>>",
+      "body": "<<FILL role=rising words=174 beats='she has kept her full working file, every recurrence traced, and she will part with it only on a condition the auditor must weigh honestly'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2339,7 +2339,7 @@
     },
     {
       "id": "c181",
-      "body": "<<FILL role=rising words=176 beats='the auditor seeks out Tamsin Ledd herself, reassigned to a records annex at the cold end of the building, still certain of her arithmetic and wary of being used again'>>",
+      "body": "<<FILL role=rising words=176 beats='she explains she was not silenced to bury the truth but to control its timing; Sarn feared an unsequenced disclosure would shatter the Concord before it could hold the shock'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2351,10 +2351,22 @@
     },
     {
       "id": "c182",
-      "body": "<<FILL role=resolution words=168 beats='the auditor closes the Roll knowing the oldest fact in Meridon: the shortfall was never a theft, only a lie the city was founded telling itself and has abated ever since; the truth is whole and the auditor is entirely unsure any chamber wants it spoken aloud'>>",
+      "body": "<<FILL role=rising words=168 beats='the auditor seeks out Tamsin Ledd herself, reassigned to a records annex at the cold end of the building, still certain of her arithmetic and wary of being used again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c182_0",
+          "label": "Go on.",
+          "target": "c181"
+        }
+      ]
+    },
+    {
+      "id": "c183",
+      "body": "<<FILL role=resolution words=184 beats='the auditor closes the Roll knowing the oldest fact in Meridon: the shortfall was never a theft, only a lie the city was founded telling itself and has abated ever since; the truth is whole and the auditor is entirely unsure any chamber wants it spoken aloud'>>",
       "is_ending": true,
       "ending": {
-        "id": "c182",
+        "id": "c183",
         "valence": "neutral",
         "kind": "discovery",
         "title": "The Founding Count, Read Plain"
@@ -2362,20 +2374,8 @@
       "choices": []
     },
     {
-      "id": "c183",
-      "body": "<<FILL role=rising words=184 beats='the auditor sits alone with the oldest page in the city and does the arithmetic no Recorder has dared finish, watching every subsequent count inherit the original inflation and compound it, generation upon generation, into the gap the Prefecture now hides and the Bench now abates'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_c183_0",
-          "label": "Go on.",
-          "target": "c182"
-        }
-      ]
-    },
-    {
       "id": "c184",
-      "body": "<<FILL role=rising words=160 beats='there it is, plain as a wound: the founding measures were never on the land, only on the parchment, an inflated count the first chambers wrote to make Meridon larger than its fields could feed'>>",
+      "body": "<<FILL role=rising words=160 beats='the auditor sits alone with the oldest page in the city and does the arithmetic no Recorder has dared finish, watching every subsequent count inherit the original inflation and compound it, generation upon generation, into the gap the Prefecture now hides and the Bench now abates'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2387,7 +2387,7 @@
     },
     {
       "id": "c185",
-      "body": "<<FILL role=rising words=192 beats='the auditor takes the founding Roll down to its root alone, night after night, reading past every certified layer to the charter-count the city was born declaring'>>",
+      "body": "<<FILL role=rising words=192 beats='there it is, plain as a wound: the founding measures were never on the land, only on the parchment, an inflated count the first chambers wrote to make Meridon larger than its fields could feed'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2399,10 +2399,22 @@
     },
     {
       "id": "c186",
-      "body": "<<FILL role=setback words=172 beats='the auditor edits the ward counts until the census and the levy agree, and the gap vanishes into a clean total; the memory now lies more smoothly than before, the auditor's own arithmetic the newest layer over the founding fault'>>",
+      "body": "<<FILL role=rising words=172 beats='the auditor takes the founding Roll down to its root alone, night after night, reading past every certified layer to the charter-count the city was born declaring'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c186_0",
+          "label": "Go on.",
+          "target": "c185"
+        }
+      ]
+    },
+    {
+      "id": "c187",
+      "body": "<<FILL role=setback words=180 beats='the auditor edits the ward counts until the census and the levy agree, and the gap vanishes into a clean total; the memory now lies more smoothly than before, the auditor's own arithmetic the newest layer over the founding fault'>>",
       "is_ending": true,
       "ending": {
-        "id": "c186",
+        "id": "c187",
         "valence": "negative",
         "kind": "setback",
         "title": "The Gap Closed on Paper"
@@ -2410,11 +2422,11 @@
       "choices": []
     },
     {
-      "id": "c187",
-      "body": "<<FILL role=resolution words=180 beats='the auditor destroys the convenient reconciliation and leaves the discrepancy standing in the Roll, unexplained and undeniable; nothing is solved, but nothing new is falsified, and the gap remains where the next honest reader can find it'>>",
+      "id": "c188",
+      "body": "<<FILL role=resolution words=158 beats='the auditor destroys the convenient reconciliation and leaves the discrepancy standing in the Roll, unexplained and undeniable; nothing is solved, but nothing new is falsified, and the gap remains where the next honest reader can find it'>>",
       "is_ending": true,
       "ending": {
-        "id": "c187",
+        "id": "c188",
         "valence": "neutral",
         "kind": "discovery",
         "title": "The Gap Left Visible"
@@ -2422,37 +2434,25 @@
       "choices": []
     },
     {
-      "id": "c188",
-      "body": "<<FILL role=choice words=158 beats='the Register's plainest rule is that the Roll records what is counted, not what is convenient; to adjust a ward's figure to fit a total is to make the memory lie in a new and tidier hand'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_c188_0",
-          "label": "Adjust the ward figures to close the gap.",
-          "target": "c186"
-        },
-        {
-          "id": "c_c188_1",
-          "label": "Tear up the draft and leave the gap visible.",
-          "target": "c187"
-        }
-      ]
-    },
-    {
       "id": "c189",
-      "body": "<<FILL role=rising words=196 beats='it would be the easiest thing in the world and no one would ever check; the auditor sits with the blank correction and feels how a whole institution's dishonesty is really just this small act repeated by tired people who wanted the columns to agree'>>",
+      "body": "<<FILL role=choice words=196 beats='the Register's plainest rule is that the Roll records what is counted, not what is convenient; to adjust a ward's figure to fit a total is to make the memory lie in a new and tidier hand'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c189_0",
-          "label": "Go on.",
+          "label": "Adjust the ward figures to close the gap.",
+          "target": "c187"
+        },
+        {
+          "id": "c_c189_1",
+          "label": "Tear up the draft and leave the gap visible.",
           "target": "c188"
         }
       ]
     },
     {
       "id": "c190",
-      "body": "<<FILL role=rising words=166 beats='rather than take the finding to the chamber, the auditor drafts a private reconciliation reconciling the census to the levy by simply adjusting the wards' figures to close the gap on paper'>>",
+      "body": "<<FILL role=rising words=166 beats='it would be the easiest thing in the world and no one would ever check; the auditor sits with the blank correction and feels how a whole institution's dishonesty is really just this small act repeated by tired people who wanted the columns to agree'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2464,10 +2464,22 @@
     },
     {
       "id": "c191",
-      "body": "<<FILL role=setback words=178 beats='the auditor lays the founding over-count before the Bench and the Prefecture without the Register's leave; the fault is aired, but so is the auditor's breach of courtesy, and the Register spends the Reckoning defending its dignity instead of correcting its count'>>",
+      "body": "<<FILL role=rising words=178 beats='rather than take the finding to the chamber, the auditor drafts a private reconciliation reconciling the census to the levy by simply adjusting the wards' figures to close the gap on paper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c191_0",
+          "label": "Go on.",
+          "target": "c190"
+        }
+      ]
+    },
+    {
+      "id": "c192",
+      "body": "<<FILL role=setback words=174 beats='the auditor lays the founding over-count before the Bench and the Prefecture without the Register's leave; the fault is aired, but so is the auditor's breach of courtesy, and the Register spends the Reckoning defending its dignity instead of correcting its count'>>",
       "is_ending": true,
       "ending": {
-        "id": "c191",
+        "id": "c192",
         "valence": "negative",
         "kind": "setback",
         "title": "Over the Recorder's Head"
@@ -2475,11 +2487,11 @@
       "choices": []
     },
     {
-      "id": "c192",
-      "body": "<<FILL role=resolution words=174 beats='the auditor keeps the finding inside the Register and presses Sarn to own it before the Reckoning; the Recorder is slow and the year runs out, but the fault stays the chamber's to correct, and the auditor leaves the Register's standing intact for the harder fight ahead'>>",
+      "id": "c193",
+      "body": "<<FILL role=resolution words=176 beats='the auditor keeps the finding inside the Register and presses Sarn to own it before the Reckoning; the Recorder is slow and the year runs out, but the fault stays the chamber's to correct, and the auditor leaves the Register's standing intact for the harder fight ahead'>>",
       "is_ending": true,
       "ending": {
-        "id": "c192",
+        "id": "c193",
         "valence": "neutral",
         "kind": "discovery",
         "title": "Kept Within the Chamber"
@@ -2487,37 +2499,25 @@
       "choices": []
     },
     {
-      "id": "c193",
-      "body": "<<FILL role=choice words=176 beats='the Concord's oldest courtesy is that a chamber airs its own fault before another names it; to carry the Register's failing to the Bench and Prefecture unbidden is to spend the chamber's standing for a moment's leverage'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_c193_0",
-          "label": "Carry it to the other chambers unbidden.",
-          "target": "c191"
-        },
-        {
-          "id": "c_c193_1",
-          "label": "Keep it within the Register and press Sarn instead.",
-          "target": "c192"
-        }
-      ]
-    },
-    {
       "id": "c194",
-      "body": "<<FILL role=rising words=168 beats='the temptation is real: the Bench abates the gap and the Prefecture hides it, and here at last is the leverage to make all three own the founding lie in the same room at the same time'>>",
+      "body": "<<FILL role=choice words=168 beats='the Concord's oldest courtesy is that a chamber airs its own fault before another names it; to carry the Register's failing to the Bench and Prefecture unbidden is to spend the chamber's standing for a moment's leverage'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c194_0",
-          "label": "Go on.",
+          "label": "Carry it to the other chambers unbidden.",
+          "target": "c192"
+        },
+        {
+          "id": "c_c194_1",
+          "label": "Keep it within the Register and press Sarn instead.",
           "target": "c193"
         }
       ]
     },
     {
       "id": "c195",
-      "body": "<<FILL role=rising words=184 beats='the auditor considers taking the whole finding to the other two chambers at once, over Sarn's head, forcing all three to answer the founding count together'>>",
+      "body": "<<FILL role=rising words=184 beats='the temptation is real: the Bench abates the gap and the Prefecture hides it, and here at last is the leverage to make all three own the founding lie in the same room at the same time'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2529,10 +2529,22 @@
     },
     {
       "id": "c196",
-      "body": "<<FILL role=resolution words=160 beats='the auditor carries a motion to amend the founding count to what the land yields, paired with a provision for the wards the old count fed in shadow; the Register, hearing the whole of it in order, ratifies a true Roll for the first time in nineteen years, and the city at last begins to believe something it can actually feed'>>",
+      "body": "<<FILL role=rising words=160 beats='the auditor considers taking the whole finding to the other two chambers at once, over Sarn's head, forcing all three to answer the founding count together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c196_0",
+          "label": "Go on.",
+          "target": "c195"
+        }
+      ]
+    },
+    {
+      "id": "c197",
+      "body": "<<FILL role=resolution words=192 beats='the auditor carries a motion to amend the founding count to what the land yields, paired with a provision for the wards the old count fed in shadow; the Register, hearing the whole of it in order, ratifies a true Roll for the first time in nineteen years, and the city at last begins to believe something it can actually feed'>>",
       "is_ending": true,
       "ending": {
-        "id": "c196",
+        "id": "c197",
         "valence": "positive",
         "kind": "success",
         "title": "The Roll Amended True"
@@ -2540,11 +2552,11 @@
       "choices": []
     },
     {
-      "id": "c197",
-      "body": "<<FILL role=resolution words=192 beats='the auditor certifies the census unchanged but enters a formal note of the founding over-count into the Roll; nothing is amended this year, yet the memory now carries its own correction, waiting in the record for a chamber with the nerve to act on it'>>",
+      "id": "c198",
+      "body": "<<FILL role=resolution words=172 beats='the auditor certifies the census unchanged but enters a formal note of the founding over-count into the Roll; nothing is amended this year, yet the memory now carries its own correction, waiting in the record for a chamber with the nerve to act on it'>>",
       "is_ending": true,
       "ending": {
-        "id": "c197",
+        "id": "c198",
         "valence": "neutral",
         "kind": "completion",
         "title": "Noted for the Record"
@@ -2552,37 +2564,25 @@
       "choices": []
     },
     {
-      "id": "c198",
-      "body": "<<FILL role=choice words=172 beats='the Reckoning convenes; the census must be ratified or amended; the Register's final rule is the heaviest of all, that the Roll is the city's memory and to amend it is to amend what Meridon believes itself to be'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_c198_0",
-          "label": "Move to amend the Roll to a true count, with provision.",
-          "target": "c196"
-        },
-        {
-          "id": "c_c198_1",
-          "label": "Certify the census as-is and enter the flaw for the record.",
-          "target": "c197"
-        }
-      ]
-    },
-    {
       "id": "c199",
-      "body": "<<FILL role=rising words=180 beats='on the eve of the Reckoning the draft sits complete, and for the first time the founding fault has a remedy attached and not merely an accusation'>>",
+      "body": "<<FILL role=choice words=180 beats='the Reckoning convenes; the census must be ratified or amended; the Register's final rule is the heaviest of all, that the Roll is the city's memory and to amend it is to amend what Meridon believes itself to be'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c199_0",
-          "label": "Go on.",
+          "label": "Move to amend the Roll to a true count, with provision.",
+          "target": "c197"
+        },
+        {
+          "id": "c_c199_1",
+          "label": "Certify the census as-is and enter the flaw for the record.",
           "target": "c198"
         }
       ]
     },
     {
       "id": "c200",
-      "body": "<<FILL role=rising words=158 beats='the auditor drafts the motion the whole year has pointed toward, the true count and the provision that must ride with it, ordered and ready for the Roll'>>",
+      "body": "<<FILL role=rising words=158 beats='on the eve of the Reckoning the draft sits complete, and for the first time the founding fault has a remedy attached and not merely an accusation'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2594,7 +2594,7 @@
     },
     {
       "id": "c201",
-      "body": "<<FILL role=rising words=196 beats='he shows the auditor how a founding correction, badly timed, has broken cities before; the Register's slowness is scar tissue, not sloth'>>",
+      "body": "<<FILL role=rising words=196 beats='the auditor drafts the motion the whole year has pointed toward, the true count and the provision that must ride with it, ordered and ready for the Roll'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2606,7 +2606,7 @@
     },
     {
       "id": "c202",
-      "body": "<<FILL role=rising words=166 beats='Sarn, watching the care of it, finally trusts the auditor with the last of the story: the timing was always the point, and timing done right is not cowardice but the chamber's one real form of mercy'>>",
+      "body": "<<FILL role=rising words=166 beats='he shows the auditor how a founding correction, badly timed, has broken cities before; the Register's slowness is scar tissue, not sloth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2618,7 +2618,7 @@
     },
     {
       "id": "c203",
-      "body": "<<FILL role=rising words=178 beats='the auditor holds the finding through the coldest weeks and spends them sequencing it, so that when it is spoken it lands as deliberation and not as an ambush'>>",
+      "body": "<<FILL role=rising words=178 beats='Sarn, watching the care of it, finally trusts the auditor with the last of the story: the timing was always the point, and timing done right is not cowardice but the chamber's one real form of mercy'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2630,36 +2630,36 @@
     },
     {
       "id": "c204",
-      "body": "<<FILL role=choice words=174 beats='Deepwinter; the dole is cut on the census figure and the streets feel it; the auditor may press the founding over-count now, before the cut is apportioned, or hold it for the Reckoning where the whole Roll is heard in order'>>",
+      "body": "<<FILL role=rising words=174 beats='the auditor holds the finding through the coldest weeks and spends them sequencing it, so that when it is spoken it lands as deliberation and not as an ambush'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c204_0",
-          "label": "Take the finding to the other chambers now.",
-          "target": "c195"
-        },
-        {
-          "id": "c_c204_1",
-          "label": "Hold it for the Reckoning, in proper order.",
+          "label": "Go on.",
           "target": "c203"
         }
       ]
     },
     {
       "id": "c205",
-      "body": "<<FILL role=rising words=176 beats='Sarn asks the auditor, in front of the clerks, whether a memory can be both a duty and a lie at once, and does not pretend to know the answer himself'>>",
+      "body": "<<FILL role=choice words=176 beats='Deepwinter; the dole is cut on the census figure and the streets feel it; the auditor may press the founding over-count now, before the cut is apportioned, or hold it for the Reckoning where the whole Roll is heard in order'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c205_0",
-          "label": "Go on.",
+          "label": "Take the finding to the other chambers now.",
+          "target": "c196"
+        },
+        {
+          "id": "c_c205_1",
+          "label": "Hold it for the Reckoning, in proper order.",
           "target": "c204"
         }
       ]
     },
     {
       "id": "c206",
-      "body": "<<FILL role=rising words=168 beats='the chamber sits with that, and the auditor sees the weight the Register has carried in its slowness, neither innocent nor simply guilty'>>",
+      "body": "<<FILL role=rising words=168 beats='Sarn asks the auditor, in front of the clerks, whether a memory can be both a duty and a lie at once, and does not pretend to know the answer himself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2671,7 +2671,7 @@
     },
     {
       "id": "c207",
-      "body": "<<FILL role=rising words=184 beats='he does not defend it so much as explain the fear beneath it, that a city told the true size of itself might not survive the telling'>>",
+      "body": "<<FILL role=rising words=184 beats='the chamber sits with that, and the auditor sees the weight the Register has carried in its slowness, neither innocent nor simply guilty'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2683,7 +2683,7 @@
     },
     {
       "id": "c208",
-      "body": "<<FILL role=rising words=160 beats='Sarn does not flinch; he confirms the founding over-count has been known and quietly managed for nineteen years, the Abatement its downstream shadow across all three chambers'>>",
+      "body": "<<FILL role=rising words=160 beats='he does not defend it so much as explain the fear beneath it, that a city told the true size of itself might not survive the telling'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2695,7 +2695,7 @@
     },
     {
       "id": "c209",
-      "body": "<<FILL role=rising words=192 beats='the auditor lays the recurring gap before Sarn and the assembled clerks and asks, on the record, what the Register knew of it and when'>>",
+      "body": "<<FILL role=rising words=192 beats='Sarn does not flinch; he confirms the founding over-count has been known and quietly managed for nineteen years, the Abatement its downstream shadow across all three chambers'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2707,41 +2707,41 @@
     },
     {
       "id": "c210",
-      "body": "<<FILL role=choice words=172 beats='the closed Concordance has named the Abatement's age aloud, about nineteen years; the auditor must decide how the Register meets its own share of it, and the chamber's rule holds that memory is amended only by the chamber, never by one clerk acting alone'>>",
+      "body": "<<FILL role=rising words=172 beats='the auditor lays the recurring gap before Sarn and the assembled clerks and asks, on the record, what the Register knew of it and when'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c210_0",
-          "label": "Take the founding Roll down to its root yourself.",
-          "target": "c185"
-        },
-        {
-          "id": "c_c210_1",
-          "label": "Draft a private reconciliation to close the gap.",
-          "target": "c190"
-        },
-        {
-          "id": "c_c210_2",
-          "label": "Bring the question to Sarn and the full chamber.",
+          "label": "Go on.",
           "target": "c209"
         }
       ]
     },
     {
       "id": "c211",
-      "body": "<<FILL role=rising words=180 beats='it is not drift and it is not fraud in any ordinary sense; it is a single old decision reasserting itself annually, patient as erosion, and the auditor sees that to answer it means going all the way back to where the decision was first made'>>",
+      "body": "<<FILL role=choice words=180 beats='the closed Concordance has named the Abatement's age aloud, about nineteen years; the auditor must decide how the Register meets its own share of it, and the chamber's rule holds that memory is amended only by the chamber, never by one clerk acting alone'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c211_0",
-          "label": "Go on.",
+          "label": "Take the founding Roll down to its root yourself.",
+          "target": "c186"
+        },
+        {
+          "id": "c_c211_1",
+          "label": "Draft a private reconciliation to close the gap.",
+          "target": "c191"
+        },
+        {
+          "id": "c_c211_2",
+          "label": "Bring the question to Sarn and the full chamber.",
           "target": "c210"
         }
       ]
     },
     {
       "id": "c212",
-      "body": "<<FILL role=rising words=158 beats='the auditor requisitions the census tallies from the surrounding decade and lays them side by side, and the gap stands in every column like a watermark pressed into the paper at the mill'>>",
+      "body": "<<FILL role=rising words=158 beats='it is not drift and it is not fraud in any ordinary sense; it is a single old decision reasserting itself annually, patient as erosion, and the auditor sees that to answer it means going all the way back to where the decision was first made'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2753,7 +2753,7 @@
     },
     {
       "id": "c213",
-      "body": "<<FILL role=rising words=196 beats='Sarn watches the auditor arrive at the edge of the old question and, for once, does not steer away from it'>>",
+      "body": "<<FILL role=rising words=196 beats='the auditor requisitions the census tallies from the surrounding decade and lays them side by side, and the gap stands in every column like a watermark pressed into the paper at the mill'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2765,7 +2765,7 @@
     },
     {
       "id": "c214",
-      "body": "<<FILL role=rising words=166 beats='the steadiness points backward, to a count that was set rather than measured, and the auditor feels the year begin to lean toward the founding Roll'>>",
+      "body": "<<FILL role=rising words=166 beats='Sarn watches the auditor arrive at the edge of the old question and, for once, does not steer away from it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2777,7 +2777,7 @@
     },
     {
       "id": "c215",
-      "body": "<<FILL role=rising words=178 beats='the number is too clean to be an error; a mistake would wander from year to year, and this one holds as steady as a decision someone made and keeps making'>>",
+      "body": "<<FILL role=rising words=178 beats='the steadiness points backward, to a count that was set rather than measured, and the auditor feels the year begin to lean toward the founding Roll'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2789,7 +2789,7 @@
     },
     {
       "id": "c216",
-      "body": "<<FILL role=rising words=174 beats='the auditor reconciles this year's census against the levied grain, ward by ward, and confirms the nine-hundred-measure gap is exactly as posted, neither more nor less'>>",
+      "body": "<<FILL role=rising words=174 beats='the number is too clean to be an error; a mistake would wander from year to year, and this one holds as steady as a decision someone made and keeps making'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2801,36 +2801,36 @@
     },
     {
       "id": "c217",
-      "body": "<<FILL role=choice words=176 beats='the harvest comes in light and the census-levy gap is past denying; the auditor may audit this year's census against the levy in the ordinary way, or dig back into the Register's suppressed working papers where the pattern lives'>>",
+      "body": "<<FILL role=rising words=176 beats='the auditor reconciles this year's census against the levied grain, ward by ward, and confirms the nine-hundred-measure gap is exactly as posted, neither more nor less'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c217_0",
-          "label": "Dig into the suppressed working papers.",
-          "target": "c181"
-        },
-        {
-          "id": "c_c217_1",
-          "label": "Audit the current census against the levy.",
+          "label": "Go on.",
           "target": "c216"
         }
       ]
     },
     {
       "id": "c218",
-      "body": "<<FILL role=rising words=168 beats='the auditor reads it twice and understands that the paper was not wrong and so had to be withdrawn; in the Register a false memo is corrected, but a true one out of season is simply made to wait'>>",
+      "body": "<<FILL role=choice words=168 beats='the harvest comes in light and the census-levy gap is past denying; the auditor may audit this year's census against the levy in the ordinary way, or dig back into the Register's suppressed working papers where the pattern lives'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c218_0",
-          "label": "Go on.",
+          "label": "Dig into the suppressed working papers.",
+          "target": "c182"
+        },
+        {
+          "id": "c_c218_1",
+          "label": "Audit the current census against the levy.",
           "target": "c217"
         }
       ]
     },
     {
       "id": "c219",
-      "body": "<<FILL role=rising words=184 beats='the memo names, in Ledd's careful hand, every prior Reckoning where the gap recurred and was abated, a private history of the Register's forgetting compiled by the one clerk who refused to forget'>>",
+      "body": "<<FILL role=rising words=184 beats='the auditor reads it twice and understands that the paper was not wrong and so had to be withdrawn; in the Register a false memo is corrected, but a true one out of season is simply made to wait'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2842,7 +2842,7 @@
     },
     {
       "id": "c220",
-      "body": "<<FILL role=rising words=160 beats='the auditor signs for it in the margin, now formally a reader of a thing the chamber tried to un-write'>>",
+      "body": "<<FILL role=rising words=160 beats='the memo names, in Ledd's careful hand, every prior Reckoning where the gap recurred and was abated, a private history of the Register's forgetting compiled by the one clerk who refused to forget'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2854,7 +2854,7 @@
     },
     {
       "id": "c221",
-      "body": "<<FILL role=rising words=192 beats='the memo is Tamsin Ledd's, and its arithmetic is unanswerable; the gap is not new, and the Register has known and abated it Reckoning after Reckoning'>>",
+      "body": "<<FILL role=rising words=192 beats='the auditor signs for it in the margin, now formally a reader of a thing the chamber tried to un-write'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2866,7 +2866,7 @@
     },
     {
       "id": "c222",
-      "body": "<<FILL role=rising words=172 beats='the request is granted slowly, with a supervisor present, the paper handed over as a matter of record rather than a matter of rescue'>>",
+      "body": "<<FILL role=rising words=172 beats='the memo is Tamsin Ledd's, and its arithmetic is unanswerable; the gap is not new, and the Register has known and abated it Reckoning after Reckoning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2878,7 +2878,7 @@
     },
     {
       "id": "c223",
-      "body": "<<FILL role=rising words=180 beats='the auditor files the formal request for the withdrawn memorandum and waits, learning that patience is the Register's native tongue and impatience its one unforgivable accent'>>",
+      "body": "<<FILL role=rising words=180 beats='the request is granted slowly, with a supervisor present, the paper handed over as a matter of record rather than a matter of rescue'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2890,41 +2890,41 @@
     },
     {
       "id": "c224",
-      "body": "<<FILL role=choice words=158 beats='Long Light; the auditor learns a junior's memorandum was pulled from circulation before Harvest; the Register's rule of order governs how a withdrawn paper may be sought, and every way of reaching for it carries a different weight'>>",
+      "body": "<<FILL role=rising words=158 beats='the auditor files the formal request for the withdrawn memorandum and waits, learning that patience is the Register's native tongue and impatience its one unforgivable accent'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c224_0",
-          "label": "Let the withdrawn memo lie and probe the chamber's habits.",
-          "target": "c168"
-        },
-        {
-          "id": "c_c224_1",
-          "label": "Search the working papers for the memo yourself.",
-          "target": "c173"
-        },
-        {
-          "id": "c_c224_2",
-          "label": "Request the withdrawn memo through the proper channel.",
+          "label": "Go on.",
           "target": "c223"
         }
       ]
     },
     {
       "id": "c225",
-      "body": "<<FILL role=rising words=196 beats='Sarn, passing the desk, sees which pages are open and says only that the auditor is reading in the right order now, which is the nearest the Recorder comes to a warning'>>",
+      "body": "<<FILL role=choice words=196 beats='Long Light; the auditor learns a junior's memorandum was pulled from circulation before Harvest; the Register's rule of order governs how a withdrawn paper may be sought, and every way of reaching for it carries a different weight'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c225_0",
-          "label": "Go on.",
+          "label": "Let the withdrawn memo lie and probe the chamber's habits.",
+          "target": "c169"
+        },
+        {
+          "id": "c_c225_1",
+          "label": "Search the working papers for the memo yourself.",
+          "target": "c174"
+        },
+        {
+          "id": "c_c225_2",
+          "label": "Request the withdrawn memo through the proper channel.",
           "target": "c224"
         }
       ]
     },
     {
       "id": "c226",
-      "body": "<<FILL role=rising words=166 beats='each year's abatement is entered in the same bloodless formula, a line so standardized it must have a template somewhere, a form for forgetting kept as carefully as any form for remembering'>>",
+      "body": "<<FILL role=rising words=166 beats='Sarn, passing the desk, sees which pages are open and says only that the auditor is reading in the right order now, which is the nearest the Recorder comes to a warning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2936,7 +2936,7 @@
     },
     {
       "id": "c227",
-      "body": "<<FILL role=rising words=178 beats='the auditor turns the ratified pages back a decade and finds the same gap, smaller, quieter, always abated, never explained'>>",
+      "body": "<<FILL role=rising words=178 beats='each year's abatement is entered in the same bloodless formula, a line so standardized it must have a template somewhere, a form for forgetting kept as carefully as any form for remembering'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2948,7 +2948,7 @@
     },
     {
       "id": "c228",
-      "body": "<<FILL role=rising words=174 beats='Sarn teaches that the Register's power is memory held in common, and that a count, once ratified, becomes what the city knows of itself whether or not it is true'>>",
+      "body": "<<FILL role=rising words=174 beats='the auditor turns the ratified pages back a decade and finds the same gap, smaller, quieter, always abated, never explained'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2960,7 +2960,7 @@
     },
     {
       "id": "c229",
-      "body": "<<FILL role=rising words=176 beats='the year's numbers are orderly and the nine-hundred-measure gap sits inside them like a stone in a clear stream, undeniable and unexplained'>>",
+      "body": "<<FILL role=rising words=176 beats='Sarn teaches that the Register's power is memory held in common, and that a count, once ratified, becomes what the city knows of itself whether or not it is true'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2972,7 +2972,7 @@
     },
     {
       "id": "c230",
-      "body": "<<FILL role=rising words=168 beats='the auditor begins with the current census, learning the Register's grammar of counts, wards, ratified figures, and the long habit of trusting last year's total'>>",
+      "body": "<<FILL role=rising words=168 beats='the year's numbers are orderly and the nine-hundred-measure gap sits inside them like a stone in a clear stream, undeniable and unexplained'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2984,36 +2984,36 @@
     },
     {
       "id": "c231",
-      "body": "<<FILL role=choice words=184 beats='Sowing; Recorder Sarn sets the auditor's first task and the Register's first rule with it: the Roll is read in order, from the year's census inward, never skipping ahead to the root'>>",
+      "body": "<<FILL role=rising words=184 beats='the auditor begins with the current census, learning the Register's grammar of counts, wards, ratified figures, and the long habit of trusting last year's total'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c231_0",
-          "label": "Ask to see the founding Roll on the very first day.",
-          "target": "c164"
-        },
-        {
-          "id": "c_c231_1",
-          "label": "Begin with the year's census, as instructed.",
+          "label": "Go on.",
           "target": "c230"
         }
       ]
     },
     {
       "id": "c232",
-      "body": "<<FILL role=rising words=160 beats='the auditor is given a desk beneath shelves that hold every count Meridon has ever made of itself, and the sense settles in early that the answer to this year's gap is somewhere in that height, waiting to be read in order'>>",
+      "body": "<<FILL role=choice words=160 beats='Sowing; Recorder Sarn sets the auditor's first task and the Register's first rule with it: the Roll is read in order, from the year's census inward, never skipping ahead to the root'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c232_0",
-          "label": "Go on.",
+          "label": "Ask to see the founding Roll on the very first day.",
+          "target": "c165"
+        },
+        {
+          "id": "c_c232_1",
+          "label": "Begin with the year's census, as instructed.",
           "target": "c231"
         }
       ]
     },
     {
       "id": "c233",
-      "body": "<<FILL role=rising words=192 beats='Sarn's chamber moves at the speed of deliberation; nothing is true here until it is on the Roll in proper order, and the Deepstore gap is, to the Register, first of all and last of all a question about counting'>>",
+      "body": "<<FILL role=rising words=192 beats='the other clerks move around the auditor with the practiced incuriosity of people who have learned not to ask what a fresh pair of eyes might find, and the auditor understands the assignment is trusted precisely because auditors before have looked and then looked away'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3025,13 +3025,49 @@
     },
     {
       "id": "c234",
-      "body": "<<FILL role=rising words=172 beats='the auditor reports to the Register, all quiet and paper and the smell of old ink, where Recorder Ivo Sarn keeps the census, the statutes, and the founding Roll; the remit is set out in full, unhurried sentences: reconcile the census against the levy, and account for who was counted and who was not'>>",
+      "body": "<<FILL role=rising words=172 beats='Sarn introduces the founding Roll from a distance, the way one introduces a difficult elder, all reverence and a quiet instruction not to disturb it; the auditor notes that the most guarded document in the chamber is the oldest one'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c234_0",
           "label": "Go on.",
           "target": "c233"
+        }
+      ]
+    },
+    {
+      "id": "c235",
+      "body": "<<FILL role=rising words=180 beats='the auditor is given a desk beneath shelves that hold every count Meridon has ever made of itself, and the sense settles in early that the answer to this year's gap is somewhere in that height, waiting to be read in order'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c235_0",
+          "label": "Go on.",
+          "target": "c234"
+        }
+      ]
+    },
+    {
+      "id": "c236",
+      "body": "<<FILL role=rising words=158 beats='Sarn's chamber moves at the speed of deliberation; nothing is true here until it is on the Roll in proper order, and the Deepstore gap is, to the Register, first of all and last of all a question about counting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c236_0",
+          "label": "Go on.",
+          "target": "c235"
+        }
+      ]
+    },
+    {
+      "id": "c237",
+      "body": "<<FILL role=rising words=196 beats='the auditor reports to the Register, all quiet and paper and the smell of old ink, where Recorder Ivo Sarn keeps the census, the statutes, and the founding Roll; the remit is set out in full, unhurried sentences: reconcile the census against the levy, and account for who was counted and who was not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c237_0",
+          "label": "Go on.",
+          "target": "c236"
         }
       ]
     },
@@ -3072,12 +3108,12 @@
         {
           "id": "c_n03_1",
           "label": "Take the Prefecture, and walk the vaults where the grain should be.",
-          "target": "b163"
+          "target": "b164"
         },
         {
           "id": "c_n03_2",
           "label": "Take the Register, and read the count the city keeps of itself.",
-          "target": "c234"
+          "target": "c237"
         }
       ]
     }
