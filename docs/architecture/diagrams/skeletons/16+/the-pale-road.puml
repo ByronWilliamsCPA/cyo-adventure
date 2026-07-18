@@ -1,0 +1,1836 @@
+@startuml the-pale-road
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> sup0
+state sup0 #BBDEFB
+sup0 : setup · 88w
+state sup1 #BBDEFB
+sup1 : setup · 82w
+state sup2 #BBDEFB
+sup2 : setup · 80w
+state c01_ap #D1C4E9
+c01_ap : rising · 76w
+state c01_f0_c0 #D1C4E9
+c01_f0_c0 : rising · 64w
+state c01_f0_c1 #D1C4E9
+c01_f0_c1 : rising · 62w
+state c01_f0_end #FFCDD2
+c01_f0_end : death (negative)
+c01_f0_end : "Folded Through the Crust"
+state c01_f1_c0 #D1C4E9
+c01_f1_c0 : rising · 64w
+state c01_f1_c1 #D1C4E9
+c01_f1_c1 : rising · 62w
+state c01_f1_end #FFCDD2
+c01_f1_end : death (negative)
+c01_f1_end : "Lost in the Seam"
+state c01_f2_c0 #D1C4E9
+c01_f2_c0 : rising · 64w
+state c01_f2_c1 #D1C4E9
+c01_f2_c1 : rising · 62w
+state c01_f2_end #FFCDD2
+c01_f2_end : death (negative)
+c01_f2_end : "Sunk While Waiting"
+state c01_f3_c0 #D1C4E9
+c01_f3_c0 : rising · 64w
+state c01_f3_c1 #D1C4E9
+c01_f3_c1 : rising · 62w
+state c01_f3_end #FFCDD2
+c01_f3_end : death (negative)
+c01_f3_end : "Spread Too Thin"
+state c01_gate #FFF9C4
+c01_gate : choice · 92w
+state c01_pass #D1C4E9
+c01_pass : rising · 64w
+state c01_seen #FFF9C4
+c01_seen : choice · 80w
+state c01_fd_c0 #D1C4E9
+c01_fd_c0 : rising · 64w
+state c01_fd_c1 #D1C4E9
+c01_fd_c1 : rising · 62w
+state c01_fd_end #FFCDD2
+c01_fd_end : death (negative)
+c01_fd_end : "The Pressed Gamble at Threshold Crust"
+state c01_lost #FFCDD2
+c01_lost : death (negative)
+c01_lost : "Turned from the Road at Threshold Crust"
+state c02_ap #D1C4E9
+c02_ap : rising · 76w
+state c02_f0_c0 #D1C4E9
+c02_f0_c0 : rising · 64w
+state c02_f0_c1 #D1C4E9
+c02_f0_c1 : rising · 62w
+state c02_f0_end #FFCDD2
+c02_f0_end : death (negative)
+c02_f0_end : "Foundered at the Weighing"
+state c02_f1_c0 #D1C4E9
+c02_f1_c0 : rising · 64w
+state c02_f1_c1 #D1C4E9
+c02_f1_c1 : rising · 62w
+state c02_f1_end #FFCDD2
+c02_f1_end : death (negative)
+c02_f1_end : "Gone Out Dry"
+state c02_f2_c0 #D1C4E9
+c02_f2_c0 : rising · 64w
+state c02_f2_c1 #D1C4E9
+c02_f2_c1 : rising · 62w
+state c02_f2_end #FFCDD2
+c02_f2_end : death (negative)
+c02_f2_end : "The Worthless Charm"
+state c02_f3_c0 #D1C4E9
+c02_f3_c0 : rising · 64w
+state c02_f3_c1 #D1C4E9
+c02_f3_c1 : rising · 62w
+state c02_f3_end #FFCDD2
+c02_f3_end : death (negative)
+c02_f3_end : "Rested Into the Dry"
+state c02_gate #FFF9C4
+c02_gate : choice · 92w
+state c02_pass #D1C4E9
+c02_pass : rising · 64w
+state c02_seen #FFF9C4
+c02_seen : choice · 80w
+state c02_fd_c0 #D1C4E9
+c02_fd_c0 : rising · 64w
+state c02_fd_c1 #D1C4E9
+c02_fd_c1 : rising · 62w
+state c02_fd_end #FFCDD2
+c02_fd_end : death (negative)
+c02_fd_end : "The Pressed Gamble at Weighing House"
+state c02_lost #FFCDD2
+c02_lost : death (negative)
+c02_lost : "Turned from the Road at Weighing House"
+state c03_ap #D1C4E9
+c03_ap : rising · 76w
+state c03_f0_c0 #D1C4E9
+c03_f0_c0 : rising · 64w
+state c03_f0_c1 #D1C4E9
+c03_f0_c1 : rising · 62w
+state c03_f0_end #FFCDD2
+c03_f0_end : death (negative)
+c03_f0_end : "Seared at the Noon"
+state c03_f1_c0 #D1C4E9
+c03_f1_c0 : rising · 64w
+state c03_f1_c1 #D1C4E9
+c03_f1_c1 : rising · 62w
+state c03_f1_end #FFCDD2
+c03_f1_end : death (negative)
+c03_f1_end : "Blinded by the Angle"
+state c03_f2_c0 #D1C4E9
+c03_f2_c0 : rising · 64w
+state c03_f2_c1 #D1C4E9
+c03_f2_c1 : rising · 62w
+state c03_f2_end #FFCDD2
+c03_f2_end : death (negative)
+c03_f2_end : "Run Blind on the Pan"
+state c03_f3_c0 #D1C4E9
+c03_f3_c0 : rising · 64w
+state c03_f3_c1 #D1C4E9
+c03_f3_c1 : rising · 62w
+state c03_f3_end #FFCDD2
+c03_f3_end : death (negative)
+c03_f3_end : "Still at White Noon"
+state c03_gate #FFF9C4
+c03_gate : choice · 92w
+state c03_pass #D1C4E9
+c03_pass : rising · 64w
+state c03_seen #FFF9C4
+c03_seen : choice · 80w
+state c03_fd_c0 #D1C4E9
+c03_fd_c0 : rising · 64w
+state c03_fd_c1 #D1C4E9
+c03_fd_c1 : rising · 62w
+state c03_fd_end #FFCDD2
+c03_fd_end : death (negative)
+c03_fd_end : "The Pressed Gamble at White Noon"
+state c03_lost #FFCDD2
+c03_lost : death (negative)
+c03_lost : "Turned from the Road at White Noon"
+state c04_ap #D1C4E9
+c04_ap : rising · 76w
+state c04_f0_c0 #D1C4E9
+c04_f0_c0 : rising · 64w
+state c04_f0_c1 #D1C4E9
+c04_f0_c1 : rising · 62w
+state c04_f0_end #FFCDD2
+c04_f0_end : death (negative)
+c04_f0_end : "Flayed in the Scour"
+state c04_f1_c0 #D1C4E9
+c04_f1_c0 : rising · 64w
+state c04_f1_c1 #D1C4E9
+c04_f1_c1 : rising · 62w
+state c04_f1_end #FFCDD2
+c04_f1_end : death (negative)
+c04_f1_end : "Buried Where You Sat"
+state c04_f2_c0 #D1C4E9
+c04_f2_c0 : rising · 64w
+state c04_f2_c1 #D1C4E9
+c04_f2_c1 : rising · 62w
+state c04_f2_end #FFCDD2
+c04_f2_end : death (negative)
+c04_f2_end : "Driven Off the Line"
+state c04_f3_c0 #D1C4E9
+c04_f3_c0 : rising · 64w
+state c04_f3_c1 #D1C4E9
+c04_f3_c1 : rising · 62w
+state c04_f3_end #FFCDD2
+c04_f3_end : death (negative)
+c04_f3_end : "Choked on the Scour"
+state c04_f4_c0 #D1C4E9
+c04_f4_c0 : rising · 64w
+state c04_f4_c1 #D1C4E9
+c04_f4_c1 : rising · 62w
+state c04_f4_end #FFCDD2
+c04_f4_end : death (negative)
+c04_f4_end : "Under the Moving Drift"
+state c04_gate #FFF9C4
+c04_gate : choice · 92w
+state c04_pass #D1C4E9
+c04_pass : rising · 64w
+state c04_seen #FFF9C4
+c04_seen : choice · 80w
+state c04_fd_c0 #D1C4E9
+c04_fd_c0 : rising · 64w
+state c04_fd_c1 #D1C4E9
+c04_fd_c1 : rising · 62w
+state c04_fd_end #FFCDD2
+c04_fd_end : death (negative)
+c04_fd_end : "The Pressed Gamble at Scouring Wind"
+state c04_lost #FFCDD2
+c04_lost : death (negative)
+c04_lost : "Turned from the Road at Scouring Wind"
+state c05_ap #D1C4E9
+c05_ap : rising · 76w
+state c05_f0_c0 #D1C4E9
+c05_f0_c0 : rising · 64w
+state c05_f0_c1 #D1C4E9
+c05_f0_c1 : rising · 62w
+state c05_f0_end #FFCDD2
+c05_f0_end : death (negative)
+c05_f0_end : "Under the Fair Skin"
+state c05_f1_c0 #D1C4E9
+c05_f1_c0 : rising · 64w
+state c05_f1_c1 #D1C4E9
+c05_f1_c1 : rising · 62w
+state c05_f1_end #FFCDD2
+c05_f1_end : death (negative)
+c05_f1_end : "Trusted the Staff"
+state c05_f2_c0 #D1C4E9
+c05_f2_c0 : rising · 64w
+state c05_f2_c1 #D1C4E9
+c05_f2_c1 : rising · 62w
+state c05_f2_end #FFCDD2
+c05_f2_end : death (negative)
+c05_f2_end : "Waited at the Brink"
+state c05_f3_c0 #D1C4E9
+c05_f3_c0 : rising · 64w
+state c05_f3_c1 #D1C4E9
+c05_f3_c1 : rising · 62w
+state c05_f3_end #FFCDD2
+c05_f3_end : death (negative)
+c05_f3_end : "Short of the Neck"
+state c05_gate #FFF9C4
+c05_gate : choice · 92w
+state c05_pass #D1C4E9
+c05_pass : rising · 64w
+state c05_seen #FFF9C4
+c05_seen : choice · 80w
+state c05_fd_c0 #D1C4E9
+c05_fd_c0 : rising · 64w
+state c05_fd_c1 #D1C4E9
+c05_fd_c1 : rising · 62w
+state c05_fd_end #FFCDD2
+c05_fd_end : death (negative)
+c05_fd_end : "The Pressed Gamble at Brine Sink"
+state c05_lost #FFCDD2
+c05_lost : death (negative)
+c05_lost : "Turned from the Road at Brine Sink"
+state c06_ap #D1C4E9
+c06_ap : rising · 76w
+state c06_f0_c0 #D1C4E9
+c06_f0_c0 : rising · 64w
+state c06_f0_c1 #D1C4E9
+c06_f0_c1 : rising · 62w
+state c06_f0_end #FFCDD2
+c06_f0_end : death (negative)
+c06_f0_end : "Strayed Among the Bones"
+state c06_f1_c0 #D1C4E9
+c06_f1_c0 : rising · 64w
+state c06_f1_c1 #D1C4E9
+c06_f1_c1 : rising · 62w
+state c06_f1_end #FFCDD2
+c06_f1_end : death (negative)
+c06_f1_end : "The Robbed Dead"
+state c06_f2_c0 #D1C4E9
+c06_f2_c0 : rising · 64w
+state c06_f2_c1 #D1C4E9
+c06_f2_c1 : rising · 62w
+state c06_f2_end #FFCDD2
+c06_f2_end : death (negative)
+c06_f2_end : "After Fresher Tracks"
+state c06_f3_c0 #D1C4E9
+c06_f3_c0 : rising · 64w
+state c06_f3_c1 #D1C4E9
+c06_f3_c1 : rising · 62w
+state c06_f3_end #FFCDD2
+c06_f3_end : death (negative)
+c06_f3_end : "Rested with the Dead"
+state c06_gate #FFF9C4
+c06_gate : choice · 92w
+state c06_pass #D1C4E9
+c06_pass : rising · 64w
+state c06_seen #FFF9C4
+c06_seen : choice · 80w
+state c06_fd_c0 #D1C4E9
+c06_fd_c0 : rising · 64w
+state c06_fd_c1 #D1C4E9
+c06_fd_c1 : rising · 62w
+state c06_fd_end #FFCDD2
+c06_fd_end : death (negative)
+c06_fd_end : "The Pressed Gamble at Bone Field"
+state c06_lost #FFCDD2
+c06_lost : death (negative)
+c06_lost : "Turned from the Road at Bone Field"
+state c07_ap #D1C4E9
+c07_ap : rising · 76w
+state c07_f0_c0 #D1C4E9
+c07_f0_c0 : rising · 64w
+state c07_f0_c1 #D1C4E9
+c07_f0_c1 : rising · 62w
+state c07_f0_end #FFCDD2
+c07_f0_end : death (negative)
+c07_f0_end : "Drunk on Dry Salt"
+state c07_f1_c0 #D1C4E9
+c07_f1_c0 : rising · 64w
+state c07_f1_c1 #D1C4E9
+c07_f1_c1 : rising · 62w
+state c07_f1_end #FFCDD2
+c07_f1_end : death (negative)
+c07_f1_end : "Skins Full of Dust"
+state c07_f2_c0 #D1C4E9
+c07_f2_c0 : rising · 64w
+state c07_f2_c1 #D1C4E9
+c07_f2_c1 : rising · 62w
+state c07_f2_end #FFCDD2
+c07_f2_end : death (negative)
+c07_f2_end : "After the Green Shore"
+state c07_f3_c0 #D1C4E9
+c07_f3_c0 : rising · 64w
+state c07_f3_c1 #D1C4E9
+c07_f3_c1 : rising · 62w
+state c07_f3_end #FFCDD2
+c07_f3_end : death (negative)
+c07_f3_end : "Watched the Shining"
+state c07_gate #FFF9C4
+c07_gate : choice · 92w
+state c07_pass #D1C4E9
+c07_pass : rising · 64w
+state c07_seen #FFF9C4
+c07_seen : choice · 80w
+state c07_fd_c0 #D1C4E9
+c07_fd_c0 : rising · 64w
+state c07_fd_c1 #D1C4E9
+c07_fd_c1 : rising · 62w
+state c07_fd_end #FFCDD2
+c07_fd_end : death (negative)
+c07_fd_end : "The Pressed Gamble at Mirage Lake"
+state c07_lost #FFCDD2
+c07_lost : death (negative)
+c07_lost : "Turned from the Road at Mirage Lake"
+state c08_ap #D1C4E9
+c08_ap : rising · 76w
+state c08_f0_c0 #D1C4E9
+c08_f0_c0 : rising · 64w
+state c08_f0_c1 #D1C4E9
+c08_f0_c1 : rising · 62w
+state c08_f0_end #FFCDD2
+c08_f0_end : death (negative)
+c08_f0_end : "Opened on the Needles"
+state c08_f1_c0 #D1C4E9
+c08_f1_c0 : rising · 64w
+state c08_f1_c1 #D1C4E9
+c08_f1_c1 : rising · 62w
+state c08_f1_end #FFCDD2
+c08_f1_end : death (negative)
+c08_f1_end : "Fallen on the Points"
+state c08_f2_c0 #D1C4E9
+c08_f2_c0 : rising · 64w
+state c08_f2_c1 #D1C4E9
+c08_f2_c1 : rising · 62w
+state c08_f2_end #FFCDD2
+c08_f2_end : death (negative)
+c08_f2_end : "Down at a Run"
+state c08_f3_c0 #D1C4E9
+c08_f3_c0 : rising · 64w
+state c08_f3_c1 #D1C4E9
+c08_f3_c1 : rising · 62w
+state c08_f3_end #FFCDD2
+c08_f3_end : death (negative)
+c08_f3_end : "Turned onto the Blades"
+state c08_gate #FFF9C4
+c08_gate : choice · 92w
+state c08_pass #D1C4E9
+c08_pass : rising · 64w
+state c08_seen #FFF9C4
+c08_seen : choice · 80w
+state c08_fd_c0 #D1C4E9
+c08_fd_c0 : rising · 64w
+state c08_fd_c1 #D1C4E9
+c08_fd_c1 : rising · 62w
+state c08_fd_end #FFCDD2
+c08_fd_end : death (negative)
+c08_fd_end : "The Pressed Gamble at Needle Flats"
+state c08_lost #FFCDD2
+c08_lost : death (negative)
+c08_lost : "Turned from the Road at Needle Flats"
+state c09_ap #D1C4E9
+c09_ap : rising · 76w
+state c09_f0_c0 #D1C4E9
+c09_f0_c0 : rising · 64w
+state c09_f0_c1 #D1C4E9
+c09_f0_c1 : rising · 62w
+state c09_f0_end #FFCDD2
+c09_f0_end : death (negative)
+c09_f0_end : "Walked Into the Cold"
+state c09_f1_c0 #D1C4E9
+c09_f1_c0 : rising · 64w
+state c09_f1_c1 #D1C4E9
+c09_f1_c1 : rising · 62w
+state c09_f1_end #FFCDD2
+c09_f1_end : death (negative)
+c09_f1_end : "Sleep on the Open Pan"
+state c09_f2_c0 #D1C4E9
+c09_f2_c0 : rising · 64w
+state c09_f2_c1 #D1C4E9
+c09_f2_c1 : rising · 62w
+state c09_f2_end #FFCDD2
+c09_f2_end : death (negative)
+c09_f2_end : "The Guttered Fire"
+state c09_f3_c0 #D1C4E9
+c09_f3_c0 : rising · 64w
+state c09_f3_c1 #D1C4E9
+c09_f3_c1 : rising · 62w
+state c09_f3_end #FFCDD2
+c09_f3_end : death (negative)
+c09_f3_end : "Bared to the Freeze"
+state c09_gate #FFF9C4
+c09_gate : choice · 92w
+state c09_pass #D1C4E9
+c09_pass : rising · 64w
+state c09_seen #FFF9C4
+c09_seen : choice · 80w
+state c09_fd_c0 #D1C4E9
+c09_fd_c0 : rising · 64w
+state c09_fd_c1 #D1C4E9
+c09_fd_c1 : rising · 62w
+state c09_fd_end #FFCDD2
+c09_fd_end : death (negative)
+c09_fd_end : "The Pressed Gamble at First Night"
+state c09_lost #FFCDD2
+c09_lost : death (negative)
+c09_lost : "Turned from the Road at First Night"
+state c10_ap #D1C4E9
+c10_ap : rising · 76w
+state c10_f0_c0 #D1C4E9
+c10_f0_c0 : rising · 64w
+state c10_f0_c1 #D1C4E9
+c10_f0_c1 : rising · 62w
+state c10_f0_end #FFCDD2
+c10_f0_end : death (negative)
+c10_f0_end : "Dry Before the Top"
+state c10_f1_c0 #D1C4E9
+c10_f1_c0 : rising · 64w
+state c10_f1_c1 #D1C4E9
+c10_f1_c1 : rising · 62w
+state c10_f1_end #FFCDD2
+c10_f1_end : death (negative)
+c10_f1_end : "Spent on the Climb"
+state c10_f2_c0 #D1C4E9
+c10_f2_c0 : rising · 64w
+state c10_f2_c1 #D1C4E9
+c10_f2_c1 : rising · 62w
+state c10_f2_end #FFCDD2
+c10_f2_end : death (negative)
+c10_f2_end : "Water Left Below"
+state c10_f3_c0 #D1C4E9
+c10_f3_c0 : rising · 64w
+state c10_f3_c1 #D1C4E9
+c10_f3_c1 : rising · 62w
+state c10_f3_end #FFCDD2
+c10_f3_end : death (negative)
+c10_f3_end : "Emptied at the Foot"
+state c10_gate #FFF9C4
+c10_gate : choice · 92w
+state c10_pass #D1C4E9
+c10_pass : rising · 64w
+state c10_seen #FFF9C4
+c10_seen : choice · 80w
+state c10_fd_c0 #D1C4E9
+c10_fd_c0 : rising · 64w
+state c10_fd_c1 #D1C4E9
+c10_fd_c1 : rising · 62w
+state c10_fd_end #FFCDD2
+c10_fd_end : death (negative)
+c10_fd_end : "The Pressed Gamble at Thirst Ridge"
+state c10_lost #FFCDD2
+c10_lost : death (negative)
+c10_lost : "Turned from the Road at Thirst Ridge"
+state c11_ap #D1C4E9
+c11_ap : rising · 76w
+state c11_f0_c0 #D1C4E9
+c11_f0_c0 : rising · 64w
+state c11_f0_c1 #D1C4E9
+c11_f0_c1 : rising · 62w
+state c11_f0_end #FFCDD2
+c11_f0_end : death (negative)
+c11_f0_end : "The First Bad Well"
+state c11_f1_c0 #D1C4E9
+c11_f1_c0 : rising · 64w
+state c11_f1_c1 #D1C4E9
+c11_f1_c1 : rising · 62w
+state c11_f1_end #FFCDD2
+c11_f1_end : death (negative)
+c11_f1_end : "Untasted and Undone"
+state c11_f2_c0 #D1C4E9
+c11_f2_c0 : rising · 64w
+state c11_f2_c1 #D1C4E9
+c11_f2_c1 : rising · 62w
+state c11_f2_end #FFCDD2
+c11_f2_end : death (negative)
+c11_f2_end : "The Mixed Draught"
+state c11_f3_c0 #D1C4E9
+c11_f3_c0 : rising · 64w
+state c11_f3_c1 #D1C4E9
+c11_f3_c1 : rising · 62w
+state c11_f3_end #FFCDD2
+c11_f3_end : death (negative)
+c11_f3_end : "The Slow Bitter"
+state c11_gate #FFF9C4
+c11_gate : choice · 92w
+state c11_pass #D1C4E9
+c11_pass : rising · 64w
+state c11_seen #FFF9C4
+c11_seen : choice · 80w
+state c11_fd_c0 #D1C4E9
+c11_fd_c0 : rising · 64w
+state c11_fd_c1 #D1C4E9
+c11_fd_c1 : rising · 62w
+state c11_fd_end #FFCDD2
+c11_fd_end : death (negative)
+c11_fd_end : "The Pressed Gamble at Bitter Wells"
+state c11_lost #FFCDD2
+c11_lost : death (negative)
+c11_lost : "Turned from the Road at Bitter Wells"
+state c12_ap #D1C4E9
+c12_ap : rising · 76w
+state c12_f0_c0 #D1C4E9
+c12_f0_c0 : rising · 64w
+state c12_f0_c1 #D1C4E9
+c12_f0_c1 : rising · 62w
+state c12_f0_end #FFCDD2
+c12_f0_end : death (negative)
+c12_f0_end : "Run Off the Span"
+state c12_f1_c0 #D1C4E9
+c12_f1_c0 : rising · 64w
+state c12_f1_c1 #D1C4E9
+c12_f1_c1 : rising · 62w
+state c12_f1_end #FFCDD2
+c12_f1_end : death (negative)
+c12_f1_end : "Tested to Falling"
+state c12_f2_c0 #D1C4E9
+c12_f2_c0 : rising · 64w
+state c12_f2_c1 #D1C4E9
+c12_f2_c1 : rising · 62w
+state c12_f2_end #FFCDD2
+c12_f2_end : death (negative)
+c12_f2_end : "Weighed Off the Arch"
+state c12_f3_c0 #D1C4E9
+c12_f3_c0 : rising · 64w
+state c12_f3_c1 #D1C4E9
+c12_f3_c1 : rising · 62w
+state c12_f3_end #FFCDD2
+c12_f3_end : death (negative)
+c12_f3_end : "Waited the Arch Thin"
+state c12_gate #FFF9C4
+c12_gate : choice · 92w
+state c12_pass #D1C4E9
+c12_pass : rising · 64w
+state c12_seen #FFF9C4
+c12_seen : choice · 80w
+state c12_fd_c0 #D1C4E9
+c12_fd_c0 : rising · 64w
+state c12_fd_c1 #D1C4E9
+c12_fd_c1 : rising · 62w
+state c12_fd_end #FFCDD2
+c12_fd_end : death (negative)
+c12_fd_end : "The Pressed Gamble at Crust Bridge"
+state c12_lost #FFCDD2
+c12_lost : death (negative)
+c12_lost : "Turned from the Road at Crust Bridge"
+state c13_ap #D1C4E9
+c13_ap : rising · 76w
+state c13_f0_c0 #D1C4E9
+c13_f0_c0 : rising · 64w
+state c13_f0_c1 #D1C4E9
+c13_f0_c1 : rising · 62w
+state c13_f0_end #FFCDD2
+c13_f0_end : death (negative)
+c13_f0_end : "Under the Tall Pillar"
+state c13_f1_c0 #D1C4E9
+c13_f1_c0 : rising · 64w
+state c13_f1_c1 #D1C4E9
+c13_f1_c1 : rising · 62w
+state c13_f1_end #FFCDD2
+c13_f1_end : death (negative)
+c13_f1_end : "Closed Between the Leaners"
+state c13_f2_c0 #D1C4E9
+c13_f2_c0 : rising · 64w
+state c13_f2_c1 #D1C4E9
+c13_f2_c1 : rising · 62w
+state c13_f2_end #FFCDD2
+c13_f2_end : death (negative)
+c13_f2_end : "Toppled from the Pillar"
+state c13_f3_c0 #D1C4E9
+c13_f3_c0 : rising · 64w
+state c13_f3_c1 #D1C4E9
+c13_f3_c1 : rising · 62w
+state c13_f3_end #FFCDD2
+c13_f3_end : death (negative)
+c13_f3_end : "Waited Under the Fall"
+state c13_gate #FFF9C4
+c13_gate : choice · 92w
+state c13_pass #D1C4E9
+c13_pass : rising · 64w
+state c13_seen #FFF9C4
+c13_seen : choice · 80w
+state c13_fd_c0 #D1C4E9
+c13_fd_c0 : rising · 64w
+state c13_fd_c1 #D1C4E9
+c13_fd_c1 : rising · 62w
+state c13_fd_end #FFCDD2
+c13_fd_end : death (negative)
+c13_fd_end : "The Pressed Gamble at Salt Pillars"
+state c13_lost #FFCDD2
+c13_lost : death (negative)
+c13_lost : "Turned from the Road at Salt Pillars"
+state c14_ap #D1C4E9
+c14_ap : rising · 76w
+state c14_f0_c0 #D1C4E9
+c14_f0_c0 : rising · 64w
+state c14_f0_c1 #D1C4E9
+c14_f0_c1 : rising · 62w
+state c14_f0_end #FFCDD2
+c14_f0_end : death (negative)
+c14_f0_end : "Cooked in the Bowl"
+state c14_f1_c0 #D1C4E9
+c14_f1_c0 : rising · 64w
+state c14_f1_c1 #D1C4E9
+c14_f1_c1 : rising · 62w
+state c14_f1_end #FFCDD2
+c14_f1_end : death (negative)
+c14_f1_end : "Stopped in the Kiln"
+state c14_f2_c0 #D1C4E9
+c14_f2_c0 : rising · 64w
+state c14_f2_c1 #D1C4E9
+c14_f2_c1 : rising · 62w
+state c14_f2_end #FFCDD2
+c14_f2_end : death (negative)
+c14_f2_end : "Burned Running the Bowl"
+state c14_f3_c0 #D1C4E9
+c14_f3_c0 : rising · 64w
+state c14_f3_c1 #D1C4E9
+c14_f3_c1 : rising · 62w
+state c14_f3_end #FFCDD2
+c14_f3_end : death (negative)
+c14_f3_end : "Dry in the Basin"
+state c14_gate #FFF9C4
+c14_gate : choice · 92w
+state c14_pass #D1C4E9
+c14_pass : rising · 64w
+state c14_seen #FFF9C4
+c14_seen : choice · 80w
+state c14_fd_c0 #D1C4E9
+c14_fd_c0 : rising · 64w
+state c14_fd_c1 #D1C4E9
+c14_fd_c1 : rising · 62w
+state c14_fd_end #FFCDD2
+c14_fd_end : death (negative)
+c14_fd_end : "The Pressed Gamble at White Basin"
+state c14_lost #FFCDD2
+c14_lost : death (negative)
+c14_lost : "Turned from the Road at White Basin"
+state c15_ap #D1C4E9
+c15_ap : rising · 76w
+state c15_f0_c0 #D1C4E9
+c15_f0_c0 : rising · 64w
+state c15_f0_c1 #D1C4E9
+c15_f0_c1 : rising · 62w
+state c15_f0_end #FFCDD2
+c15_f0_end : death (negative)
+c15_f0_end : "Slid Under the Dune"
+state c15_f1_c0 #D1C4E9
+c15_f1_c0 : rising · 64w
+state c15_f1_c1 #D1C4E9
+c15_f1_c1 : rising · 62w
+state c15_f1_end #FFCDD2
+c15_f1_end : death (negative)
+c15_f1_end : "Filled in the Hollow"
+state c15_f2_c0 #D1C4E9
+c15_f2_c0 : rising · 64w
+state c15_f2_c1 #D1C4E9
+c15_f2_c1 : rising · 62w
+state c15_f2_end #FFCDD2
+c15_f2_end : death (negative)
+c15_f2_end : "Buried in the Digging"
+state c15_f3_c0 #D1C4E9
+c15_f3_c0 : rising · 64w
+state c15_f3_c1 #D1C4E9
+c15_f3_c1 : rising · 62w
+state c15_f3_end #FFCDD2
+c15_f3_end : death (negative)
+c15_f3_end : "Overtaken at Rest"
+state c15_gate #FFF9C4
+c15_gate : choice · 92w
+state c15_pass #D1C4E9
+c15_pass : rising · 64w
+state c15_seen #FFF9C4
+c15_seen : choice · 80w
+state c15_fd_c0 #D1C4E9
+c15_fd_c0 : rising · 64w
+state c15_fd_c1 #D1C4E9
+c15_fd_c1 : rising · 62w
+state c15_fd_end #FFCDD2
+c15_fd_end : death (negative)
+c15_fd_end : "The Pressed Gamble at Drifting Dunes"
+state c15_lost #FFCDD2
+c15_lost : death (negative)
+c15_lost : "Turned from the Road at Drifting Dunes"
+state c16_ap #D1C4E9
+c16_ap : rising · 76w
+state c16_f0_c0 #D1C4E9
+c16_f0_c0 : rising · 64w
+state c16_f0_c1 #D1C4E9
+c16_f0_c1 : rising · 62w
+state c16_f0_end #FFCDD2
+c16_f0_end : death (negative)
+c16_f0_end : "Led Off by a False Stone"
+state c16_f1_c0 #D1C4E9
+c16_f1_c0 : rising · 64w
+state c16_f1_c1 #D1C4E9
+c16_f1_c1 : rising · 62w
+state c16_f1_end #FFCDD2
+c16_f1_end : death (negative)
+c16_f1_end : "After the Great False Cairn"
+state c16_f2_c0 #D1C4E9
+c16_f2_c0 : rising · 64w
+state c16_f2_c1 #D1C4E9
+c16_f2_c1 : rising · 62w
+state c16_f2_end #FFCDD2
+c16_f2_end : death (negative)
+c16_f2_end : "Off the Bending Road"
+state c16_f3_c0 #D1C4E9
+c16_f3_c0 : rising · 64w
+state c16_f3_c1 #D1C4E9
+c16_f3_c1 : rising · 62w
+state c16_f3_end #FFCDD2
+c16_f3_end : death (negative)
+c16_f3_end : "Waited for the Sign"
+state c16_gate #FFF9C4
+c16_gate : choice · 92w
+state c16_pass #D1C4E9
+c16_pass : rising · 64w
+state c16_seen #FFF9C4
+c16_seen : choice · 80w
+state c16_fd_c0 #D1C4E9
+c16_fd_c0 : rising · 64w
+state c16_fd_c1 #D1C4E9
+c16_fd_c1 : rising · 62w
+state c16_fd_end #FFCDD2
+c16_fd_end : death (negative)
+c16_fd_end : "The Pressed Gamble at Cairn Maze"
+state c16_lost #FFCDD2
+c16_lost : death (negative)
+c16_lost : "Turned from the Road at Cairn Maze"
+state c17_ap #D1C4E9
+c17_ap : rising · 76w
+state c17_f0_c0 #D1C4E9
+c17_f0_c0 : rising · 64w
+state c17_f0_c1 #D1C4E9
+c17_f0_c1 : rising · 62w
+state c17_f0_end #FFCDD2
+c17_f0_end : death (negative)
+c17_f0_end : "Down in the Rime"
+state c17_f1_c0 #D1C4E9
+c17_f1_c0 : rising · 64w
+state c17_f1_c1 #D1C4E9
+c17_f1_c1 : rising · 62w
+state c17_f1_end #FFCDD2
+c17_f1_end : death (negative)
+c17_f1_end : "Rested in the Caustic"
+state c17_f2_c0 #D1C4E9
+c17_f2_c0 : rising · 64w
+state c17_f2_c1 #D1C4E9
+c17_f2_c1 : rising · 62w
+state c17_f2_end #FFCDD2
+c17_f2_end : death (negative)
+c17_f2_end : "The Caustic Cloth"
+state c17_f3_c0 #D1C4E9
+c17_f3_c0 : rising · 64w
+state c17_f3_c1 #D1C4E9
+c17_f3_c1 : rising · 62w
+state c17_f3_end #FFCDD2
+c17_f3_end : death (negative)
+c17_f3_end : "Scalded at a Run"
+state c17_gate #FFF9C4
+c17_gate : choice · 92w
+state c17_pass #D1C4E9
+c17_pass : rising · 64w
+state c17_seen #FFF9C4
+c17_seen : choice · 80w
+state c17_fd_c0 #D1C4E9
+c17_fd_c0 : rising · 64w
+state c17_fd_c1 #D1C4E9
+c17_fd_c1 : rising · 62w
+state c17_fd_end #FFCDD2
+c17_fd_end : death (negative)
+c17_fd_end : "The Pressed Gamble at Caustic Rime"
+state c17_lost #FFCDD2
+c17_lost : death (negative)
+c17_lost : "Turned from the Road at Caustic Rime"
+state c18_ap #D1C4E9
+c18_ap : rising · 76w
+state c18_f0_c0 #D1C4E9
+c18_f0_c0 : rising · 64w
+state c18_f0_c1 #D1C4E9
+c18_f0_c1 : rising · 62w
+state c18_f0_end #FFCDD2
+c18_f0_end : death (negative)
+c18_f0_end : "Flayed on the Pan"
+state c18_f1_c0 #D1C4E9
+c18_f1_c0 : rising · 64w
+state c18_f1_c1 #D1C4E9
+c18_f1_c1 : rising · 62w
+state c18_f1_end #FFCDD2
+c18_f1_end : death (negative)
+c18_f1_end : "Bled Standing Still"
+state c18_f2_c0 #D1C4E9
+c18_f2_c0 : rising · 64w
+state c18_f2_c1 #D1C4E9
+c18_f2_c1 : rising · 62w
+state c18_f2_end #FFCDD2
+c18_f2_end : death (negative)
+c18_f2_end : "Opened on the Sharp Line"
+state c18_f3_c0 #D1C4E9
+c18_f3_c0 : rising · 64w
+state c18_f3_c1 #D1C4E9
+c18_f3_c1 : rising · 62w
+state c18_f3_end #FFCDD2
+c18_f3_end : death (negative)
+c18_f3_end : "Shredded at a Run"
+state c18_gate #FFF9C4
+c18_gate : choice · 92w
+state c18_pass #D1C4E9
+c18_pass : rising · 64w
+state c18_seen #FFF9C4
+c18_seen : choice · 80w
+state c18_fd_c0 #D1C4E9
+c18_fd_c0 : rising · 64w
+state c18_fd_c1 #D1C4E9
+c18_fd_c1 : rising · 62w
+state c18_fd_end #FFCDD2
+c18_fd_end : death (negative)
+c18_fd_end : "The Pressed Gamble at Razor Pan"
+state c18_lost #FFCDD2
+c18_lost : death (negative)
+c18_lost : "Turned from the Road at Razor Pan"
+state c19_ap #D1C4E9
+c19_ap : rising · 76w
+state c19_f0_c0 #D1C4E9
+c19_f0_c0 : rising · 64w
+state c19_f0_c1 #D1C4E9
+c19_f0_c1 : rising · 62w
+state c19_f0_end #FFCDD2
+c19_f0_end : death (negative)
+c19_f0_end : "Caved Into the Void"
+state c19_f1_c0 #D1C4E9
+c19_f1_c0 : rising · 64w
+state c19_f1_c1 #D1C4E9
+c19_f1_c1 : rising · 62w
+state c19_f1_end #FFCDD2
+c19_f1_end : death (negative)
+c19_f1_end : "Stamped Through"
+state c19_f2_c0 #D1C4E9
+c19_f2_c0 : rising · 64w
+state c19_f2_c1 #D1C4E9
+c19_f2_c1 : rising · 62w
+state c19_f2_end #FFCDD2
+c19_f2_end : death (negative)
+c19_f2_end : "Down Through the Shell"
+state c19_f3_c0 #D1C4E9
+c19_f3_c0 : rising · 64w
+state c19_f3_c1 #D1C4E9
+c19_f3_c1 : rising · 62w
+state c19_f3_end #FFCDD2
+c19_f3_end : death (negative)
+c19_f3_end : "Waited Through the Crust"
+state c19_gate #FFF9C4
+c19_gate : choice · 92w
+state c19_pass #D1C4E9
+c19_pass : rising · 64w
+state c19_seen #FFF9C4
+c19_seen : choice · 80w
+state c19_fd_c0 #D1C4E9
+c19_fd_c0 : rising · 64w
+state c19_fd_c1 #D1C4E9
+c19_fd_c1 : rising · 62w
+state c19_fd_end #FFCDD2
+c19_fd_end : death (negative)
+c19_fd_end : "The Pressed Gamble at Hollow Ground"
+state c19_lost #FFCDD2
+c19_lost : death (negative)
+c19_lost : "Turned from the Road at Hollow Ground"
+state c20_ap #D1C4E9
+c20_ap : rising · 76w
+state c20_f0_c0 #D1C4E9
+c20_f0_c0 : rising · 64w
+state c20_f0_c1 #D1C4E9
+c20_f0_c1 : rising · 62w
+state c20_f0_end #FFCDD2
+c20_f0_end : death (negative)
+c20_f0_end : "Dry in Sight of the End"
+state c20_f1_c0 #D1C4E9
+c20_f1_c0 : rising · 64w
+state c20_f1_c1 #D1C4E9
+c20_f1_c1 : rising · 62w
+state c20_f1_end #FFCDD2
+c20_f1_end : death (negative)
+c20_f1_end : "Foundered at the Spring"
+state c20_f2_c0 #D1C4E9
+c20_f2_c0 : rising · 64w
+state c20_f2_c1 #D1C4E9
+c20_f2_c1 : rising · 62w
+state c20_f2_end #FFCDD2
+c20_f2_end : death (negative)
+c20_f2_end : "Lost with Full Skins"
+state c20_f3_c0 #D1C4E9
+c20_f3_c0 : rising · 64w
+state c20_f3_c1 #D1C4E9
+c20_f3_c1 : rising · 62w
+state c20_f3_end #FFCDD2
+c20_f3_end : death (negative)
+c20_f3_end : "Rested at the Last Spring"
+state c20_gate #FFF9C4
+c20_gate : choice · 92w
+state c20_pass #D1C4E9
+c20_pass : rising · 64w
+state c20_seen #FFF9C4
+c20_seen : choice · 80w
+state c20_fd_c0 #D1C4E9
+c20_fd_c0 : rising · 64w
+state c20_fd_c1 #D1C4E9
+c20_fd_c1 : rising · 62w
+state c20_fd_end #FFCDD2
+c20_fd_end : death (negative)
+c20_fd_end : "The Pressed Gamble at Last Water"
+state c20_lost #FFCDD2
+c20_lost : death (negative)
+c20_lost : "Turned from the Road at Last Water"
+state c21_ap #D1C4E9
+c21_ap : rising · 76w
+state c21_f0_c0 #D1C4E9
+c21_f0_c0 : rising · 64w
+state c21_f0_c1 #D1C4E9
+c21_f0_c1 : rising · 62w
+state c21_f0_end #FFCDD2
+c21_f0_end : death (negative)
+c21_f0_end : "Sheared Off the Face"
+state c21_f1_c0 #D1C4E9
+c21_f1_c0 : rising · 64w
+state c21_f1_c1 #D1C4E9
+c21_f1_c1 : rising · 62w
+state c21_f1_end #FFCDD2
+c21_f1_end : death (negative)
+c21_f1_end : "Off With the Bright Block"
+state c21_f2_c0 #D1C4E9
+c21_f2_c0 : rising · 64w
+state c21_f2_c1 #D1C4E9
+c21_f2_c1 : rising · 62w
+state c21_f2_end #FFCDD2
+c21_f2_end : death (negative)
+c21_f2_end : "Rested on the Rotten Ledge"
+state c21_f3_c0 #D1C4E9
+c21_f3_c0 : rising · 64w
+state c21_f3_c1 #D1C4E9
+c21_f3_c1 : rising · 62w
+state c21_f3_end #FFCDD2
+c21_f3_end : death (negative)
+c21_f3_end : "Short of the High Shelf"
+state c21_gate #FFF9C4
+c21_gate : choice · 92w
+state c21_pass #D1C4E9
+c21_pass : rising · 64w
+state c21_seen #FFF9C4
+c21_seen : choice · 80w
+state c21_fd_c0 #D1C4E9
+c21_fd_c0 : rising · 64w
+state c21_fd_c1 #D1C4E9
+c21_fd_c1 : rising · 62w
+state c21_fd_end #FFCDD2
+c21_fd_end : death (negative)
+c21_fd_end : "The Pressed Gamble at Rim Ascent"
+state c21_lost #FFCDD2
+c21_lost : death (negative)
+c21_lost : "Turned from the Road at Rim Ascent"
+state c22_ap #D1C4E9
+c22_ap : rising · 76w
+state c22_f0_c0 #D1C4E9
+c22_f0_c0 : rising · 64w
+state c22_f0_c1 #D1C4E9
+c22_f0_c1 : rising · 62w
+state c22_f0_end #FFCDD2
+c22_f0_end : death (negative)
+c22_f0_end : "Wedged in the Throat"
+state c22_f1_c0 #D1C4E9
+c22_f1_c0 : rising · 64w
+state c22_f1_c1 #D1C4E9
+c22_f1_c1 : rising · 62w
+state c22_f1_end #FFCDD2
+c22_f1_end : death (negative)
+c22_f1_end : "Jammed Behind the Pack"
+state c22_f2_c0 #D1C4E9
+c22_f2_c0 : rising · 64w
+state c22_f2_c1 #D1C4E9
+c22_f2_c1 : rising · 62w
+state c22_f2_end #FFCDD2
+c22_f2_end : death (negative)
+c22_f2_end : "Off the Brittle Lip"
+state c22_f3_c0 #D1C4E9
+c22_f3_c0 : rising · 64w
+state c22_f3_c1 #D1C4E9
+c22_f3_c1 : rising · 62w
+state c22_f3_end #FFCDD2
+c22_f3_end : death (negative)
+c22_f3_end : "Cold in the Narrows"
+state c22_gate #FFF9C4
+c22_gate : choice · 92w
+state c22_pass #D1C4E9
+c22_pass : rising · 64w
+state c22_seen #FFF9C4
+c22_seen : choice · 80w
+state c22_fd_c0 #D1C4E9
+c22_fd_c0 : rising · 64w
+state c22_fd_c1 #D1C4E9
+c22_fd_c1 : rising · 62w
+state c22_fd_end #FFCDD2
+c22_fd_end : death (negative)
+c22_fd_end : "The Pressed Gamble at Pilgrim Pass"
+state c22_lost #FFCDD2
+c22_lost : death (negative)
+c22_lost : "Turned from the Road at Pilgrim Pass"
+state c23_ap #D1C4E9
+c23_ap : rising · 76w
+state c23_f0_c0 #D1C4E9
+c23_f0_c0 : rising · 64w
+state c23_f0_c1 #D1C4E9
+c23_f0_c1 : rising · 62w
+state c23_f0_end #FFCDD2
+c23_f0_end : death (negative)
+c23_f0_end : "Turned in the Veil"
+state c23_f1_c0 #D1C4E9
+c23_f1_c0 : rising · 64w
+state c23_f1_c1 #D1C4E9
+c23_f1_c1 : rising · 62w
+state c23_f1_end #FFCDD2
+c23_f1_end : death (negative)
+c23_f1_end : "A Breath Short"
+state c23_f2_c0 #D1C4E9
+c23_f2_c0 : rising · 64w
+state c23_f2_c1 #D1C4E9
+c23_f2_c1 : rising · 62w
+state c23_f2_end #FFCDD2
+c23_f2_end : death (negative)
+c23_f2_end : "Waited Out the Fog"
+state c23_f3_c0 #D1C4E9
+c23_f3_c0 : rising · 64w
+state c23_f3_c1 #D1C4E9
+c23_f3_c1 : rising · 62w
+state c23_f3_end #FFCDD2
+c23_f3_end : death (negative)
+c23_f3_end : "Unheard at the Veil"
+state c23_gate #FFF9C4
+c23_gate : choice · 92w
+state c23_pass #D1C4E9
+c23_pass : rising · 64w
+state c23_seen #FFF9C4
+c23_seen : choice · 80w
+state c23_fd_c0 #D1C4E9
+c23_fd_c0 : rising · 64w
+state c23_fd_c1 #D1C4E9
+c23_fd_c1 : rising · 62w
+state c23_fd_end #FFCDD2
+c23_fd_end : death (negative)
+c23_fd_end : "The Pressed Gamble at Salt Veil"
+state c23_lost #FFCDD2
+c23_lost : death (negative)
+c23_lost : "Turned from the Road at Salt Veil"
+state c24_ap #D1C4E9
+c24_ap : rising · 76w
+state c24_f0_c0 #D1C4E9
+c24_f0_c0 : rising · 64w
+state c24_f0_c1 #D1C4E9
+c24_f0_c1 : rising · 62w
+state c24_f0_end #FFCDD2
+c24_f0_end : death (negative)
+c24_f0_end : "Heart Gone on the Mile"
+state c24_f1_c0 #D1C4E9
+c24_f1_c0 : rising · 64w
+state c24_f1_c1 #D1C4E9
+c24_f1_c1 : rising · 62w
+state c24_f1_end #FFCDD2
+c24_f1_end : death (negative)
+c24_f1_end : "Short of the Steps"
+state c24_f2_c0 #D1C4E9
+c24_f2_c0 : rising · 64w
+state c24_f2_c1 #D1C4E9
+c24_f2_c1 : rising · 62w
+state c24_f2_end #FFCDD2
+c24_f2_end : death (negative)
+c24_f2_end : "Held in the Last Pan"
+state c24_f3_c0 #D1C4E9
+c24_f3_c0 : rising · 64w
+state c24_f3_c1 #D1C4E9
+c24_f3_c1 : rising · 62w
+state c24_f3_end #FFCDD2
+c24_f3_end : death (negative)
+c24_f3_end : "Stopped in Sight"
+state c24_gate #FFF9C4
+c24_gate : choice · 92w
+state c24_pass #D1C4E9
+c24_pass : rising · 64w
+state c24_seen #FFF9C4
+c24_seen : choice · 80w
+state c24_fd_c0 #D1C4E9
+c24_fd_c0 : rising · 64w
+state c24_fd_c1 #D1C4E9
+c24_fd_c1 : rising · 62w
+state c24_fd_end #FFCDD2
+c24_fd_end : death (negative)
+c24_fd_end : "The Pressed Gamble at Pale Mile"
+state c24_lost #FFCDD2
+c24_lost : death (negative)
+c24_lost : "Turned from the Road at Pale Mile"
+state shr_ap0 #D1C4E9
+shr_ap0 : rising · 78w
+state shr_ap1 #D1C4E9
+shr_ap1 : rising · 88w
+state shr_f_c0 #D1C4E9
+shr_f_c0 : rising · 64w
+state shr_f_c1 #D1C4E9
+shr_f_c1 : rising · 62w
+state shr_f_end #FFCDD2
+shr_f_end : death (negative)
+shr_f_end : "Forced at the Threshold"
+state shr_gate #FFF9C4
+shr_gate : choice · 90w
+state shr_lost #FFCDD2
+shr_lost : death (negative)
+shr_lost : "Turned at the Threshold"
+state shr_res #D1C4E9
+shr_res : rising · 66w
+state win_gate #FFF9C4
+win_gate : choice · 86w
+state win_whole #C8E6C9
+win_whole : success (positive)
+win_whole : "The Whole Pilgrim"
+state win_broken #C8E6C9
+win_broken : completion (positive)
+win_broken : "The Broken Pilgrim"
+state win_offering #E0E0E0
+win_offering : completion (neutral)
+win_offering : "The Salt Offering"
+sup0 --> sup1 : Set out onto the salt.
+sup1 --> sup2 : Line up on the first marker.
+sup2 --> c01_ap : Go on.
+c01_ap --> c01_gate : Go on.
+c01_f0_c0 --> c01_f0_c1 : Go on.
+c01_f0_c1 --> c01_f0_end : Go on.
+c01_f1_c0 --> c01_f1_c1 : Go on.
+c01_f1_c1 --> c01_f1_end : Go on.
+c01_f2_c0 --> c01_f2_c1 : Go on.
+c01_f2_c1 --> c01_f2_end : Go on.
+c01_f3_c0 --> c01_f3_c1 : Go on.
+c01_f3_c1 --> c01_f3_end : Go on.
+c01_gate --> c01_pass : Follow the staked rope-line across the f...
+c01_gate --> c01_f0_c0 : Cut straight over the white sheen to sav...
+c01_gate --> c01_f1_c0 : Jump the dark seams between the firm pla...
+c01_gate --> c01_f2_c0 : Wait for the noon sun to dry the thin cr...
+c01_gate --> c01_f3_c0 : Crawl to spread your weight over the thi...
+c01_gate --> c01_seen : Gamble it and press on against the Thres...
+c01_pass --> c02_ap : Go on.
+c01_seen --> c02_ap : Hold your nerve and slip on past the Thr...
+c01_seen --> c01_fd_c0 : Push your luck harder and drive on throu...
+c01_seen --> c01_lost : Falter, and let the Threshold Crust turn...
+c01_fd_c0 --> c01_fd_c1 : Go on.
+c01_fd_c1 --> c01_fd_end : Go on.
+c02_ap --> c02_gate : Go on.
+c02_f0_c0 --> c02_f0_c1 : Go on.
+c02_f0_c1 --> c02_f0_end : Go on.
+c02_f1_c0 --> c02_f1_c1 : Go on.
+c02_f1_c1 --> c02_f1_end : Go on.
+c02_f2_c0 --> c02_f2_c1 : Go on.
+c02_f2_c1 --> c02_f2_end : Go on.
+c02_f3_c0 --> c02_f3_c1 : Go on.
+c02_f3_c1 --> c02_f3_end : Go on.
+c02_gate --> c02_pass : Take the pilgrim's measure exactly and s...
+c02_gate --> c02_f0_c0 : Fill every skin to the brim against the ...
+c02_gate --> c02_f1_c0 : Drink your fill now and go out light and...
+c02_gate --> c02_f2_c0 : Trade a ration to a guide for a charm of...
+c02_gate --> c02_f3_c0 : Rest a full day at the well to gather yo...
+c02_gate --> c02_seen : Gamble it and press on against the Weigh...
+c02_pass --> c03_ap : Go on.
+c02_seen --> c03_ap : Hold your nerve and slip on past the Wei...
+c02_seen --> c02_fd_c0 : Push your luck harder and drive on throu...
+c02_seen --> c02_lost : Falter, and let the Weighing House turn ...
+c02_fd_c0 --> c02_fd_c1 : Go on.
+c02_fd_c1 --> c02_fd_end : Go on.
+c03_ap --> c03_gate : Go on.
+c03_f0_c0 --> c03_f0_c1 : Go on.
+c03_f0_c1 --> c03_f0_end : Go on.
+c03_f1_c0 --> c03_f1_c1 : Go on.
+c03_f1_c1 --> c03_f1_end : Go on.
+c03_f2_c0 --> c03_f2_c1 : Go on.
+c03_f2_c1 --> c03_f2_end : Go on.
+c03_f3_c0 --> c03_f3_c1 : Go on.
+c03_f3_c1 --> c03_f3_end : Go on.
+c03_gate --> c03_pass : Bind the smoked-glass slit over your eye...
+c03_gate --> c03_f0_c0 : Walk with eyes open to keep the far shri...
+c03_gate --> c03_f1_c0 : Look up to fix the sun's angle and your ...
+c03_gate --> c03_f2_c0 : Press on hard to be past the pan before ...
+c03_gate --> c03_f3_c0 : Lie still and shut your eyes until the n...
+c03_gate --> c03_seen : Gamble it and press on against the White...
+c03_pass --> c04_ap : Go on.
+c03_seen --> c04_ap : Hold your nerve and slip on past the Whi...
+c03_seen --> c03_fd_c0 : Push your luck harder and drive on throu...
+c03_seen --> c03_lost : Falter, and let the White Noon turn you ...
+c03_fd_c0 --> c03_fd_c1 : Go on.
+c03_fd_c1 --> c03_fd_end : Go on.
+c04_ap --> c04_gate : Go on.
+c04_f0_c0 --> c04_f0_c1 : Go on.
+c04_f0_c1 --> c04_f0_end : Go on.
+c04_f1_c0 --> c04_f1_c1 : Go on.
+c04_f1_c1 --> c04_f1_end : Go on.
+c04_f2_c0 --> c04_f2_c1 : Go on.
+c04_f2_c1 --> c04_f2_end : Go on.
+c04_f3_c0 --> c04_f3_c1 : Go on.
+c04_f3_c1 --> c04_f3_end : Go on.
+c04_f4_c0 --> c04_f4_c1 : Go on.
+c04_f4_c1 --> c04_f4_end : Go on.
+c04_gate --> c04_pass : Wrap the face-cloth tight and crawl the ...
+c04_gate --> c04_f0_c0 : Stand and push through the wind upright.
+c04_gate --> c04_f1_c0 : Turn your back and wait the scouring out...
+c04_gate --> c04_f2_c0 : Run before the wind to let it carry you ...
+c04_gate --> c04_f3_c0 : Unwrap your face to breathe more easily.
+c04_gate --> c04_f4_c0 : Shelter in the lee of a drift and dig in...
+c04_gate --> c04_seen : Gamble it and press on against the Scour...
+c04_pass --> c05_ap : Go on.
+c04_seen --> c05_ap : Hold your nerve and slip on past the Sco...
+c04_seen --> c04_fd_c0 : Push your luck harder and drive on throu...
+c04_seen --> c04_lost : Falter, and let the Scouring Wind turn y...
+c04_fd_c0 --> c04_fd_c1 : Go on.
+c04_fd_c1 --> c04_fd_end : Go on.
+c05_ap --> c05_gate : Go on.
+c05_f0_c0 --> c05_f0_c1 : Go on.
+c05_f0_c1 --> c05_f0_end : Go on.
+c05_f1_c0 --> c05_f1_c1 : Go on.
+c05_f1_c1 --> c05_f1_end : Go on.
+c05_f2_c0 --> c05_f2_c1 : Go on.
+c05_f2_c1 --> c05_f2_end : Go on.
+c05_f3_c0 --> c05_f3_c1 : Go on.
+c05_f3_c1 --> c05_f3_end : Go on.
+c05_gate --> c05_pass : Skirt the discolored ground along the ri...
+c05_gate --> c05_f0_c0 : Cross the smooth white directly, straigh...
+c05_gate --> c05_f1_c0 : Probe ahead with your staff and trust wh...
+c05_gate --> c05_f2_c0 : Wait at the edge for the ground to firm ...
+c05_gate --> c05_f3_c0 : Leap the narrow neck of the white.
+c05_gate --> c05_seen : Gamble it and press on against the Brine...
+c05_pass --> c06_ap : Go on.
+c05_seen --> c06_ap : Hold your nerve and slip on past the Bri...
+c05_seen --> c05_fd_c0 : Push your luck harder and drive on throu...
+c05_seen --> c05_lost : Falter, and let the Brine Sink turn you ...
+c05_fd_c0 --> c05_fd_c1 : Go on.
+c05_fd_c1 --> c05_fd_end : Go on.
+c06_ap --> c06_gate : Go on.
+c06_f0_c0 --> c06_f0_c1 : Go on.
+c06_f0_c1 --> c06_f0_end : Go on.
+c06_f1_c0 --> c06_f1_c1 : Go on.
+c06_f1_c1 --> c06_f1_end : Go on.
+c06_f2_c0 --> c06_f2_c1 : Go on.
+c06_f2_c1 --> c06_f2_end : Go on.
+c06_f3_c0 --> c06_f3_c1 : Go on.
+c06_f3_c1 --> c06_f3_end : Go on.
+c06_gate --> c06_pass : Keep the cairn-and-bone line dead ahead ...
+c06_gate --> c06_f0_c0 : Cut across to a nearer marker off the li...
+c06_gate --> c06_f1_c0 : Gather relics from the dead for the shri...
+c06_gate --> c06_f2_c0 : Follow a fresher set of tracks off the m...
+c06_gate --> c06_f3_c0 : Sit down among the dead to rest a while.
+c06_gate --> c06_seen : Gamble it and press on against the Bone ...
+c06_pass --> c07_ap : Go on.
+c06_seen --> c07_ap : Hold your nerve and slip on past the Bon...
+c06_seen --> c06_fd_c0 : Push your luck harder and drive on throu...
+c06_seen --> c06_lost : Falter, and let the Bone Field turn you ...
+c06_fd_c0 --> c06_fd_c1 : Go on.
+c06_fd_c1 --> c06_fd_end : Go on.
+c07_ap --> c07_gate : Go on.
+c07_f0_c0 --> c07_f0_c1 : Go on.
+c07_f0_c1 --> c07_f0_end : Go on.
+c07_f1_c0 --> c07_f1_c1 : Go on.
+c07_f1_c1 --> c07_f1_end : Go on.
+c07_f2_c0 --> c07_f2_c1 : Go on.
+c07_f2_c1 --> c07_f2_end : Go on.
+c07_f3_c0 --> c07_f3_c1 : Go on.
+c07_f3_c1 --> c07_f3_end : Go on.
+c07_gate --> c07_pass : Hold your bearing and walk past the shin...
+c07_gate --> c07_f0_c0 : Turn off to the water and drink your fil...
+c07_gate --> c07_f1_c0 : Fill your empty skins at the lake's edge...
+c07_gate --> c07_f2_c0 : Follow the green far shore of the lake.
+c07_gate --> c07_f3_c0 : Wait at the lakeside for the water to pr...
+c07_gate --> c07_seen : Gamble it and press on against the Mirag...
+c07_pass --> c08_ap : Go on.
+c07_seen --> c08_ap : Hold your nerve and slip on past the Mir...
+c07_seen --> c07_fd_c0 : Push your luck harder and drive on throu...
+c07_seen --> c07_lost : Falter, and let the Mirage Lake turn you...
+c07_fd_c0 --> c07_fd_c1 : Go on.
+c07_fd_c1 --> c07_fd_end : Go on.
+c08_ap --> c08_gate : Go on.
+c08_f0_c0 --> c08_f0_c1 : Go on.
+c08_f0_c1 --> c08_f0_end : Go on.
+c08_f1_c0 --> c08_f1_c1 : Go on.
+c08_f1_c1 --> c08_f1_end : Go on.
+c08_f2_c0 --> c08_f2_c1 : Go on.
+c08_f2_c1 --> c08_f2_end : Go on.
+c08_f3_c0 --> c08_f3_c1 : Go on.
+c08_f3_c1 --> c08_f3_end : Go on.
+c08_gate --> c08_pass : Turn sideways and thread the wider lanes...
+c08_gate --> c08_f0_c0 : Push straight through the close-standing...
+c08_gate --> c08_f1_c0 : Climb over a low ridge of packed needles...
+c08_gate --> c08_f2_c0 : Run the flats to be quickly clear of the...
+c08_gate --> c08_f3_c0 : Hack a straight path with your staff.
+c08_gate --> c08_seen : Gamble it and press on against the Needl...
+c08_pass --> c09_ap : Go on.
+c08_seen --> c09_ap : Hold your nerve and slip on past the Nee...
+c08_seen --> c08_fd_c0 : Push your luck harder and drive on throu...
+c08_seen --> c08_lost : Falter, and let the Needle Flats turn yo...
+c08_fd_c0 --> c08_fd_c1 : Go on.
+c08_fd_c1 --> c08_fd_end : Go on.
+c09_ap --> c09_gate : Go on.
+c09_f0_c0 --> c09_f0_c1 : Go on.
+c09_f0_c1 --> c09_f0_end : Go on.
+c09_f1_c0 --> c09_f1_c1 : Go on.
+c09_f1_c1 --> c09_f1_end : Go on.
+c09_f2_c0 --> c09_f2_c1 : Go on.
+c09_f2_c1 --> c09_f2_end : Go on.
+c09_f3_c0 --> c09_f3_c1 : Go on.
+c09_f3_c1 --> c09_f3_end : Go on.
+c09_gate --> c09_pass : Dig into the still-warm underpan and cov...
+c09_gate --> c09_f0_c0 : Walk through the night to make more dist...
+c09_gate --> c09_f1_c0 : Rest out in the open on the pan.
+c09_gate --> c09_f2_c0 : Burn your staff for a small fire.
+c09_gate --> c09_f3_c0 : Strip your salt-wet clothes and press on...
+c09_gate --> c09_seen : Gamble it and press on against the First...
+c09_pass --> c10_ap : Go on.
+c09_seen --> c10_ap : Hold your nerve and slip on past the Fir...
+c09_seen --> c09_fd_c0 : Push your luck harder and drive on throu...
+c09_seen --> c09_lost : Falter, and let the First Night turn you...
+c09_fd_c0 --> c09_fd_c1 : Go on.
+c09_fd_c1 --> c09_fd_end : Go on.
+c10_ap --> c10_gate : Go on.
+c10_f0_c0 --> c10_f0_c1 : Go on.
+c10_f0_c1 --> c10_f0_end : Go on.
+c10_f1_c0 --> c10_f1_c1 : Go on.
+c10_f1_c1 --> c10_f1_end : Go on.
+c10_f2_c0 --> c10_f2_c1 : Go on.
+c10_f2_c1 --> c10_f2_end : Go on.
+c10_f3_c0 --> c10_f3_c1 : Go on.
+c10_f3_c1 --> c10_f3_end : Go on.
+c10_gate --> c10_pass : Climb slow in the cool hours and sip str...
+c10_gate --> c10_f0_c0 : Drink deep to keep your strength for the...
+c10_gate --> c10_f1_c0 : Climb through the heat to be over it soo...
+c10_gate --> c10_f2_c0 : Throw off your gear and skins to climb l...
+c10_gate --> c10_f3_c0 : Wait below for a cooler day to climb.
+c10_gate --> c10_seen : Gamble it and press on against the Thirs...
+c10_pass --> c11_ap : Go on.
+c10_seen --> c11_ap : Hold your nerve and slip on past the Thi...
+c10_seen --> c10_fd_c0 : Push your luck harder and drive on throu...
+c10_seen --> c10_lost : Falter, and let the Thirst Ridge turn yo...
+c10_fd_c0 --> c10_fd_c1 : Go on.
+c10_fd_c1 --> c10_fd_end : Go on.
+c11_ap --> c11_gate : Go on.
+c11_f0_c0 --> c11_f0_c1 : Go on.
+c11_f0_c1 --> c11_f0_end : Go on.
+c11_f1_c0 --> c11_f1_c1 : Go on.
+c11_f1_c1 --> c11_f1_end : Go on.
+c11_f2_c0 --> c11_f2_c1 : Go on.
+c11_f2_c1 --> c11_f2_end : Go on.
+c11_f3_c0 --> c11_f3_c1 : Go on.
+c11_f3_c1 --> c11_f3_end : Go on.
+c11_gate --> c11_pass : Taste a single drop, spit, and drink onl...
+c11_gate --> c11_f0_c0 : Drink from the first well you find.
+c11_gate --> c11_f1_c0 : Drink without tasting, too parched to ca...
+c11_gate --> c11_f2_c0 : Mix the bitter well with the sweet to ma...
+c11_gate --> c11_f3_c0 : Fill up and drink the well down as you w...
+c11_gate --> c11_seen : Gamble it and press on against the Bitte...
+c11_pass --> c12_ap : Go on.
+c11_seen --> c12_ap : Hold your nerve and slip on past the Bit...
+c11_seen --> c11_fd_c0 : Push your luck harder and drive on throu...
+c11_seen --> c11_lost : Falter, and let the Bitter Wells turn yo...
+c11_fd_c0 --> c11_fd_c1 : Go on.
+c11_fd_c1 --> c11_fd_end : Go on.
+c12_ap --> c12_gate : Go on.
+c12_f0_c0 --> c12_f0_c1 : Go on.
+c12_f0_c1 --> c12_f0_end : Go on.
+c12_f1_c0 --> c12_f1_c1 : Go on.
+c12_f1_c1 --> c12_f1_end : Go on.
+c12_f2_c0 --> c12_f2_c1 : Go on.
+c12_f2_c1 --> c12_f2_end : Go on.
+c12_f3_c0 --> c12_f3_c1 : Go on.
+c12_f3_c1 --> c12_f3_end : Go on.
+c12_gate --> c12_pass : Cross light and even, a single foot's we...
+c12_gate --> c12_f0_c0 : Cross at a run to be quickly over the sp...
+c12_gate --> c12_f1_c0 : Stamp midway to test that it will hold.
+c12_gate --> c12_f2_c0 : Cross laden without shedding any weight.
+c12_gate --> c12_f3_c0 : Wait for the span to look surer before c...
+c12_gate --> c12_seen : Gamble it and press on against the Crust...
+c12_pass --> c13_ap : Go on.
+c12_seen --> c13_ap : Hold your nerve and slip on past the Cru...
+c12_seen --> c12_fd_c0 : Push your luck harder and drive on throu...
+c12_seen --> c12_lost : Falter, and let the Crust Bridge turn yo...
+c12_fd_c0 --> c12_fd_c1 : Go on.
+c12_fd_c1 --> c12_fd_end : Go on.
+c13_ap --> c13_gate : Go on.
+c13_f0_c0 --> c13_f0_c1 : Go on.
+c13_f0_c1 --> c13_f0_end : Go on.
+c13_f1_c0 --> c13_f1_c1 : Go on.
+c13_f1_c1 --> c13_f1_end : Go on.
+c13_f2_c0 --> c13_f2_c1 : Go on.
+c13_f2_c1 --> c13_f2_end : Go on.
+c13_f3_c0 --> c13_f3_c1 : Go on.
+c13_f3_c1 --> c13_f3_end : Go on.
+c13_gate --> c13_pass : Read the wind and pass on the lee of eac...
+c13_gate --> c13_f0_c0 : Shelter against the tallest pillar from ...
+c13_gate --> c13_f1_c0 : Push between two leaners while the gust ...
+c13_gate --> c13_f2_c0 : Climb a pillar to see the road ahead.
+c13_gate --> c13_f3_c0 : Wait in the pillars for the wind to drop...
+c13_gate --> c13_seen : Gamble it and press on against the Salt ...
+c13_pass --> c14_ap : Go on.
+c13_seen --> c14_ap : Hold your nerve and slip on past the Sal...
+c13_seen --> c13_fd_c0 : Push your luck harder and drive on throu...
+c13_seen --> c13_lost : Falter, and let the Salt Pillars turn yo...
+c13_fd_c0 --> c13_fd_c1 : Go on.
+c13_fd_c1 --> c13_fd_end : Go on.
+c14_ap --> c14_gate : Go on.
+c14_f0_c0 --> c14_f0_c1 : Go on.
+c14_f0_c1 --> c14_f0_end : Go on.
+c14_f1_c0 --> c14_f1_c1 : Go on.
+c14_f1_c1 --> c14_f1_end : Go on.
+c14_f2_c0 --> c14_f2_c1 : Go on.
+c14_f2_c1 --> c14_f2_end : Go on.
+c14_f3_c0 --> c14_f3_c1 : Go on.
+c14_f3_c1 --> c14_f3_end : Go on.
+c14_gate --> c14_pass : Skirt the rim in the shade of your own c...
+c14_gate --> c14_f0_c0 : Cross the basin floor on the straight li...
+c14_gate --> c14_f1_c0 : Rest in the basin's center out of the wi...
+c14_gate --> c14_f2_c0 : Run the basin to be quickly across it.
+c14_gate --> c14_f3_c0 : Drink your water down to fight off the b...
+c14_gate --> c14_seen : Gamble it and press on against the White...
+c14_pass --> c15_ap : Go on.
+c14_seen --> c15_ap : Hold your nerve and slip on past the Whi...
+c14_seen --> c14_fd_c0 : Push your luck harder and drive on throu...
+c14_seen --> c14_lost : Falter, and let the White Basin turn you...
+c14_fd_c0 --> c14_fd_c1 : Go on.
+c14_fd_c1 --> c14_fd_end : Go on.
+c15_ap --> c15_gate : Go on.
+c15_f0_c0 --> c15_f0_c1 : Go on.
+c15_f0_c1 --> c15_f0_end : Go on.
+c15_f1_c0 --> c15_f1_c1 : Go on.
+c15_f1_c1 --> c15_f1_end : Go on.
+c15_f2_c0 --> c15_f2_c1 : Go on.
+c15_f2_c1 --> c15_f2_end : Go on.
+c15_f3_c0 --> c15_f3_c1 : Go on.
+c15_f3_c1 --> c15_f3_end : Go on.
+c15_gate --> c15_pass : Follow the wind-firmed windward faces of...
+c15_gate --> c15_f0_c0 : Climb the soft leeward slope, the shorte...
+c15_gate --> c15_f1_c0 : Camp in a sheltered hollow between two d...
+c15_gate --> c15_f2_c0 : Dig down for the buried road.
+c15_gate --> c15_f3_c0 : Wait for the dunes to settle before cros...
+c15_gate --> c15_seen : Gamble it and press on against the Drift...
+c15_pass --> c16_ap : Go on.
+c15_seen --> c16_ap : Hold your nerve and slip on past the Dri...
+c15_seen --> c15_fd_c0 : Push your luck harder and drive on throu...
+c15_seen --> c15_lost : Falter, and let the Drifting Dunes turn ...
+c15_fd_c0 --> c15_fd_c1 : Go on.
+c15_fd_c1 --> c15_fd_end : Go on.
+c16_ap --> c16_gate : Go on.
+c16_f0_c0 --> c16_f0_c1 : Go on.
+c16_f0_c1 --> c16_f0_end : Go on.
+c16_f1_c0 --> c16_f1_c1 : Go on.
+c16_f1_c1 --> c16_f1_end : Go on.
+c16_f2_c0 --> c16_f2_c1 : Go on.
+c16_f2_c1 --> c16_f2_end : Go on.
+c16_f3_c0 --> c16_f3_c1 : Go on.
+c16_f3_c1 --> c16_f3_end : Go on.
+c16_gate --> c16_pass : Trust only the twin-capped pilgrim cairn...
+c16_gate --> c16_f0_c0 : Follow the nearest cairn, whichever it i...
+c16_gate --> c16_f1_c0 : Follow the largest cairn, surely the tru...
+c16_gate --> c16_f2_c0 : Ignore the cairns and hold your own stra...
+c16_gate --> c16_f3_c0 : Wait among the cairns for a sign of the ...
+c16_gate --> c16_seen : Gamble it and press on against the Cairn...
+c16_pass --> c17_ap : Go on.
+c16_seen --> c17_ap : Hold your nerve and slip on past the Cai...
+c16_seen --> c16_fd_c0 : Push your luck harder and drive on throu...
+c16_seen --> c16_lost : Falter, and let the Cairn Maze turn you ...
+c16_fd_c0 --> c16_fd_c1 : Go on.
+c16_fd_c1 --> c16_fd_end : Go on.
+c17_ap --> c17_gate : Go on.
+c17_f0_c0 --> c17_f0_c1 : Go on.
+c17_f0_c1 --> c17_f0_end : Go on.
+c17_f1_c0 --> c17_f1_c1 : Go on.
+c17_f1_c1 --> c17_f1_end : Go on.
+c17_f2_c0 --> c17_f2_c1 : Go on.
+c17_f2_c1 --> c17_f2_end : Go on.
+c17_f3_c0 --> c17_f3_c1 : Go on.
+c17_f3_c1 --> c17_f3_end : Go on.
+c17_gate --> c17_pass : Walk tall and breathe only through the w...
+c17_gate --> c17_f0_c0 : Crawl low to stay under the wind.
+c17_gate --> c17_f1_c0 : Lie down in the field to rest.
+c17_gate --> c17_f2_c0 : Wet your cloth in a rime-pool to cool yo...
+c17_gate --> c17_f3_c0 : Run to cross the rime field fast.
+c17_gate --> c17_seen : Gamble it and press on against the Caust...
+c17_pass --> c18_ap : Go on.
+c17_seen --> c18_ap : Hold your nerve and slip on past the Cau...
+c17_seen --> c17_fd_c0 : Push your luck harder and drive on throu...
+c17_seen --> c17_lost : Falter, and let the Caustic Rime turn yo...
+c17_fd_c0 --> c17_fd_c1 : Go on.
+c17_fd_c1 --> c17_fd_end : Go on.
+c18_ap --> c18_gate : Go on.
+c18_f0_c0 --> c18_f0_c1 : Go on.
+c18_f0_c1 --> c18_f0_end : Go on.
+c18_f1_c0 --> c18_f1_c1 : Go on.
+c18_f1_c1 --> c18_f1_end : Go on.
+c18_f2_c0 --> c18_f2_c1 : Go on.
+c18_f2_c1 --> c18_f2_end : Go on.
+c18_f3_c0 --> c18_f3_c1 : Go on.
+c18_f3_c1 --> c18_f3_end : Go on.
+c18_gate --> c18_pass : Shuffle flat-footed along the dull, worn...
+c18_gate --> c18_f0_c0 : Stride out normally across the pan.
+c18_gate --> c18_f1_c0 : Wait to wrap your feet, standing on the ...
+c18_gate --> c18_f2_c0 : Cut across the unworn sharp crust for th...
+c18_gate --> c18_f3_c0 : Run the pan to spend less time on the bl...
+c18_gate --> c18_seen : Gamble it and press on against the Razor...
+c18_pass --> c19_ap : Go on.
+c18_seen --> c19_ap : Hold your nerve and slip on past the Raz...
+c18_seen --> c18_fd_c0 : Push your luck harder and drive on throu...
+c18_seen --> c18_lost : Falter, and let the Razor Pan turn you f...
+c18_fd_c0 --> c18_fd_c1 : Go on.
+c18_fd_c1 --> c18_fd_end : Go on.
+c19_ap --> c19_gate : Go on.
+c19_f0_c0 --> c19_f0_c1 : Go on.
+c19_f0_c1 --> c19_f0_end : Go on.
+c19_f1_c0 --> c19_f1_c1 : Go on.
+c19_f1_c1 --> c19_f1_end : Go on.
+c19_f2_c0 --> c19_f2_c1 : Go on.
+c19_f2_c1 --> c19_f2_end : Go on.
+c19_f3_c0 --> c19_f3_c1 : Go on.
+c19_f3_c1 --> c19_f3_end : Go on.
+c19_gate --> c19_pass : Spread your weight and creep the mapped ...
+c19_gate --> c19_f0_c0 : Walk normally over the hollow ground.
+c19_gate --> c19_f1_c0 : Stamp to find where the ground is solid.
+c19_gate --> c19_f2_c0 : Cross heavy and laden without lightening...
+c19_gate --> c19_f3_c0 : Wait for the ground to prove it will hol...
+c19_gate --> c19_seen : Gamble it and press on against the Hollo...
+c19_pass --> c20_ap : Go on.
+c19_seen --> c20_ap : Hold your nerve and slip on past the Hol...
+c19_seen --> c19_fd_c0 : Push your luck harder and drive on throu...
+c19_seen --> c19_lost : Falter, and let the Hollow Ground turn y...
+c19_fd_c0 --> c19_fd_c1 : Go on.
+c19_fd_c1 --> c19_fd_end : Go on.
+c20_ap --> c20_gate : Go on.
+c20_f0_c0 --> c20_f0_c1 : Go on.
+c20_f0_c1 --> c20_f0_end : Go on.
+c20_f1_c0 --> c20_f1_c1 : Go on.
+c20_f1_c1 --> c20_f1_end : Go on.
+c20_f2_c0 --> c20_f2_c1 : Go on.
+c20_f2_c1 --> c20_f2_end : Go on.
+c20_f3_c0 --> c20_f3_c1 : Go on.
+c20_f3_c1 --> c20_f3_end : Go on.
+c20_gate --> c20_pass : Fill full, drink full, and mark the true...
+c20_gate --> c20_f0_c0 : Hurry on without filling, the shrine in ...
+c20_gate --> c20_f1_c0 : Drink until you can barely walk.
+c20_gate --> c20_f2_c0 : Fill up but take a shorter unmarked line...
+c20_gate --> c20_f3_c0 : Rest long at the water, safe at last.
+c20_gate --> c20_seen : Gamble it and press on against the Last ...
+c20_pass --> c21_ap : Go on.
+c20_seen --> c21_ap : Hold your nerve and slip on past the Las...
+c20_seen --> c20_fd_c0 : Push your luck harder and drive on throu...
+c20_seen --> c20_lost : Falter, and let the Last Water turn you ...
+c20_fd_c0 --> c20_fd_c1 : Go on.
+c20_fd_c1 --> c20_fd_end : Go on.
+c21_ap --> c21_gate : Go on.
+c21_f0_c0 --> c21_f0_c1 : Go on.
+c21_f0_c1 --> c21_f0_end : Go on.
+c21_f1_c0 --> c21_f1_c1 : Go on.
+c21_f1_c1 --> c21_f1_end : Go on.
+c21_f2_c0 --> c21_f2_c1 : Go on.
+c21_f2_c1 --> c21_f2_end : Go on.
+c21_f3_c0 --> c21_f3_c1 : Go on.
+c21_f3_c1 --> c21_f3_end : Go on.
+c21_gate --> c21_pass : Climb the tested chimney, hold by proven...
+c21_gate --> c21_f0_c0 : Climb the fastest open face straight up.
+c21_gate --> c21_f1_c0 : Haul up on a bright, promising block.
+c21_gate --> c21_f2_c0 : Wait on a ledge to gather strength befor...
+c21_gate --> c21_f3_c0 : Jump the last gap to the top.
+c21_gate --> c21_seen : Gamble it and press on against the Rim A...
+c21_pass --> c22_ap : Go on.
+c21_seen --> c22_ap : Hold your nerve and slip on past the Rim...
+c21_seen --> c21_fd_c0 : Push your luck harder and drive on throu...
+c21_seen --> c21_lost : Falter, and let the Rim Ascent turn you ...
+c21_fd_c0 --> c21_fd_c1 : Go on.
+c21_fd_c1 --> c21_fd_end : Go on.
+c22_ap --> c22_gate : Go on.
+c22_f0_c0 --> c22_f0_c1 : Go on.
+c22_f0_c1 --> c22_f0_end : Go on.
+c22_f1_c0 --> c22_f1_c1 : Go on.
+c22_f1_c1 --> c22_f1_end : Go on.
+c22_f2_c0 --> c22_f2_c1 : Go on.
+c22_f2_c1 --> c22_f2_end : Go on.
+c22_f3_c0 --> c22_f3_c1 : Go on.
+c22_f3_c1 --> c22_f3_end : Go on.
+c22_gate --> c22_pass : Sidle through breathing out, your pack p...
+c22_gate --> c22_f0_c0 : Push through fast and full-chested.
+c22_gate --> c22_f1_c0 : Force your stuck pack and yourself after...
+c22_gate --> c22_f2_c0 : Climb over the top of the defile.
+c22_gate --> c22_f3_c0 : Wait in the pass for it to seem to widen...
+c22_gate --> c22_seen : Gamble it and press on against the Pilgr...
+c22_pass --> c23_ap : Go on.
+c22_seen --> c23_ap : Hold your nerve and slip on past the Pil...
+c22_seen --> c22_fd_c0 : Push your luck harder and drive on throu...
+c22_seen --> c22_lost : Falter, and let the Pilgrim Pass turn yo...
+c22_fd_c0 --> c22_fd_c1 : Go on.
+c22_fd_c1 --> c22_fd_end : Go on.
+c23_ap --> c23_gate : Go on.
+c23_f0_c0 --> c23_f0_c1 : Go on.
+c23_f0_c1 --> c23_f0_end : Go on.
+c23_f1_c0 --> c23_f1_c1 : Go on.
+c23_f1_c1 --> c23_f1_end : Go on.
+c23_f2_c0 --> c23_f2_c1 : Go on.
+c23_f2_c1 --> c23_f2_end : Go on.
+c23_f3_c0 --> c23_f3_c1 : Go on.
+c23_f3_c1 --> c23_f3_end : Go on.
+c23_gate --> c23_pass : Veil your face and follow the bell-rope ...
+c23_gate --> c23_f0_c0 : Walk into the fog toward the sound of th...
+c23_gate --> c23_f1_c0 : Hold your breath and run through the fog...
+c23_gate --> c23_f2_c0 : Wait at the veil's edge for the fog to l...
+c23_gate --> c23_f3_c0 : Call aloud for the shrine to answer and ...
+c23_gate --> c23_seen : Gamble it and press on against the Salt ...
+c23_pass --> c24_ap : Go on.
+c23_seen --> c24_ap : Hold your nerve and slip on past the Sal...
+c23_seen --> c23_fd_c0 : Push your luck harder and drive on throu...
+c23_seen --> c23_lost : Falter, and let the Salt Veil turn you f...
+c23_fd_c0 --> c23_fd_c1 : Go on.
+c23_fd_c1 --> c23_fd_end : Go on.
+c24_ap --> c24_gate : Go on.
+c24_f0_c0 --> c24_f0_c1 : Go on.
+c24_f0_c1 --> c24_f0_end : Go on.
+c24_f1_c0 --> c24_f1_c1 : Go on.
+c24_f1_c1 --> c24_f1_end : Go on.
+c24_f2_c0 --> c24_f2_c1 : Go on.
+c24_f2_c1 --> c24_f2_end : Go on.
+c24_f3_c0 --> c24_f3_c1 : Go on.
+c24_f3_c1 --> c24_f3_end : Go on.
+c24_gate --> c24_pass : Walk it steady and low, eyes down, one c...
+c24_gate --> c24_f0_c0 : Run for the shrine the moment you see it...
+c24_gate --> c24_f1_c0 : Throw down your gear and sprint the last...
+c24_gate --> c24_f2_c0 : Cut straight over the soft pale center.
+c24_gate --> c24_f3_c0 : Stop to rest within sight of the end.
+c24_gate --> c24_seen : Gamble it and press on against the Pale ...
+c24_pass --> shr_ap0 : Go on.
+c24_seen --> shr_ap0 : Hold your nerve and slip on past the Pal...
+c24_seen --> c24_fd_c0 : Push your luck harder and drive on throu...
+c24_seen --> c24_lost : Falter, and let the Pale Mile turn you f...
+c24_fd_c0 --> c24_fd_c1 : Go on.
+c24_fd_c1 --> c24_fd_end : Go on.
+shr_ap0 --> shr_ap1 : Go on.
+shr_ap1 --> shr_gate : Go on.
+shr_f_c0 --> shr_f_c1 : Go on.
+shr_f_c1 --> shr_f_end : Go on.
+shr_gate --> shr_res : Give the pilgrim's measure and kneel to ...
+shr_gate --> shr_f_c0 : Force past the rite and into the shrine.
+shr_gate --> shr_lost : Turn from the rite at the very threshold...
+shr_res --> win_gate : Go on.
+win_gate --> win_whole : Cross the threshold whole, walking in on...
+win_gate --> win_broken : Cross broken but alive, dragged in by th...
+win_gate --> win_offering : Cross by giving yourself over to the shr...
+c01_f0_end --> [*]
+c01_f1_end --> [*]
+c01_f2_end --> [*]
+c01_f3_end --> [*]
+c01_fd_end --> [*]
+c01_lost --> [*]
+c02_f0_end --> [*]
+c02_f1_end --> [*]
+c02_f2_end --> [*]
+c02_f3_end --> [*]
+c02_fd_end --> [*]
+c02_lost --> [*]
+c03_f0_end --> [*]
+c03_f1_end --> [*]
+c03_f2_end --> [*]
+c03_f3_end --> [*]
+c03_fd_end --> [*]
+c03_lost --> [*]
+c04_f0_end --> [*]
+c04_f1_end --> [*]
+c04_f2_end --> [*]
+c04_f3_end --> [*]
+c04_f4_end --> [*]
+c04_fd_end --> [*]
+c04_lost --> [*]
+c05_f0_end --> [*]
+c05_f1_end --> [*]
+c05_f2_end --> [*]
+c05_f3_end --> [*]
+c05_fd_end --> [*]
+c05_lost --> [*]
+c06_f0_end --> [*]
+c06_f1_end --> [*]
+c06_f2_end --> [*]
+c06_f3_end --> [*]
+c06_fd_end --> [*]
+c06_lost --> [*]
+c07_f0_end --> [*]
+c07_f1_end --> [*]
+c07_f2_end --> [*]
+c07_f3_end --> [*]
+c07_fd_end --> [*]
+c07_lost --> [*]
+c08_f0_end --> [*]
+c08_f1_end --> [*]
+c08_f2_end --> [*]
+c08_f3_end --> [*]
+c08_fd_end --> [*]
+c08_lost --> [*]
+c09_f0_end --> [*]
+c09_f1_end --> [*]
+c09_f2_end --> [*]
+c09_f3_end --> [*]
+c09_fd_end --> [*]
+c09_lost --> [*]
+c10_f0_end --> [*]
+c10_f1_end --> [*]
+c10_f2_end --> [*]
+c10_f3_end --> [*]
+c10_fd_end --> [*]
+c10_lost --> [*]
+c11_f0_end --> [*]
+c11_f1_end --> [*]
+c11_f2_end --> [*]
+c11_f3_end --> [*]
+c11_fd_end --> [*]
+c11_lost --> [*]
+c12_f0_end --> [*]
+c12_f1_end --> [*]
+c12_f2_end --> [*]
+c12_f3_end --> [*]
+c12_fd_end --> [*]
+c12_lost --> [*]
+c13_f0_end --> [*]
+c13_f1_end --> [*]
+c13_f2_end --> [*]
+c13_f3_end --> [*]
+c13_fd_end --> [*]
+c13_lost --> [*]
+c14_f0_end --> [*]
+c14_f1_end --> [*]
+c14_f2_end --> [*]
+c14_f3_end --> [*]
+c14_fd_end --> [*]
+c14_lost --> [*]
+c15_f0_end --> [*]
+c15_f1_end --> [*]
+c15_f2_end --> [*]
+c15_f3_end --> [*]
+c15_fd_end --> [*]
+c15_lost --> [*]
+c16_f0_end --> [*]
+c16_f1_end --> [*]
+c16_f2_end --> [*]
+c16_f3_end --> [*]
+c16_fd_end --> [*]
+c16_lost --> [*]
+c17_f0_end --> [*]
+c17_f1_end --> [*]
+c17_f2_end --> [*]
+c17_f3_end --> [*]
+c17_fd_end --> [*]
+c17_lost --> [*]
+c18_f0_end --> [*]
+c18_f1_end --> [*]
+c18_f2_end --> [*]
+c18_f3_end --> [*]
+c18_fd_end --> [*]
+c18_lost --> [*]
+c19_f0_end --> [*]
+c19_f1_end --> [*]
+c19_f2_end --> [*]
+c19_f3_end --> [*]
+c19_fd_end --> [*]
+c19_lost --> [*]
+c20_f0_end --> [*]
+c20_f1_end --> [*]
+c20_f2_end --> [*]
+c20_f3_end --> [*]
+c20_fd_end --> [*]
+c20_lost --> [*]
+c21_f0_end --> [*]
+c21_f1_end --> [*]
+c21_f2_end --> [*]
+c21_f3_end --> [*]
+c21_fd_end --> [*]
+c21_lost --> [*]
+c22_f0_end --> [*]
+c22_f1_end --> [*]
+c22_f2_end --> [*]
+c22_f3_end --> [*]
+c22_fd_end --> [*]
+c22_lost --> [*]
+c23_f0_end --> [*]
+c23_f1_end --> [*]
+c23_f2_end --> [*]
+c23_f3_end --> [*]
+c23_fd_end --> [*]
+c23_lost --> [*]
+c24_f0_end --> [*]
+c24_f1_end --> [*]
+c24_f2_end --> [*]
+c24_f3_end --> [*]
+c24_fd_end --> [*]
+c24_lost --> [*]
+shr_f_end --> [*]
+shr_lost --> [*]
+win_whole --> [*]
+win_broken --> [*]
+win_offering --> [*]
+
+legend right
+  The Pale Road
+  Band 16+ · Tier 1 · ~45 min
+  Topology: gauntlet
+  498 nodes · 150 endings (2+ / 1n / 147-)
+  Production-eligible
+  Scale: long · gamebook
+endlegend
+@enduml

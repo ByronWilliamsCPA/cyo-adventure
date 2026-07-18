@@ -1,0 +1,2467 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_quiet_harbor_protocol",
+  "version": 1,
+  "title": "The Quiet Harbor Protocol",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "tradecraft",
+      "suspicion and trust",
+      "the cost of the past",
+      "loyalty"
+    ],
+    "estimated_minutes": 24,
+    "ending_count": 28,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "evidence",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 3,
+      "description": "Corroborated hard proof accumulated across the three investigation legs (Corbett's keying fist, Petrel's authentic countersign plus the access trail, and the read of the trap and its second watcher). Monotone: +1 per leg via a proof route, never falls. evidence==3 is the full case; the clean rollup needs it."
+    },
+    {
+      "name": "exposure",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "How visible Nell's inquiries have made her. +1 for each leg she works a bold, radiating move (going active on the net, the after-hours break-in, the physical approach at the harbour); clamps at 2. Sets which single approach road is open at the pier."
+    },
+    {
+      "name": "flagged",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether Nell has tipped the adversary or carries a beacon: set true by any tradecraft violation (answering on the live net, taking the tagged physical file, or briefing the suspect Ashe). Governs whether she arrives clean or burned; the best outcome requires it stay false."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=165 beats='Retired signals officer Eleanor Nell Vane, sixty-three, at her valve receiver above the harbour town of Saltcombe Reach; insomnia and habit have her sweeping the dead maritime bands after midnight; out of the 4 MHz static climbs a hand-keyed preamble she has not heard in eleven years, the callsign GULL SEVEN and then a five-figure group; establish the cold, precise texture of a listener who knows exactly what she is hearing and cannot believe it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start",
+          "label": "Freeze the recording and play it back a second time.",
+          "target": "n_recognize"
+        }
+      ]
+    },
+    {
+      "id": "n_recognize",
+      "body": "<<FILL role=setup words=180 beats='What she is hearing is HARBOR, the retired activation protocol for a deep-cover maritime net, formally decommissioned after the Meridian collapse eleven years ago when the whole net was rolled up in a single night, three assets lost, one extraction aborted, a mole never named; Nell burned the one-time pads herself; the group decodes to a rendezvous, the disused Custom House pier at slack water, 23:00, the night of the autumn equinox, two nights off; only a handful living ever knew HARBOR'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_recognize",
+          "label": "Sit with the impossible fact of it, then think like an officer again.",
+          "target": "n_context"
+        }
+      ]
+    },
+    {
+      "id": "n_context",
+      "body": "<<FILL role=setup words=175 beats='Two readings of a dead protocol breathing again: either a burned asset is trying to come in from the cold the only way she still trusts, or the Meridian mole is using the old handshake to lure the last survivors into the open; name the small cast Nell must weigh without deciding for the reader, Reece Corbett her former comms deputy, Iris Wren the archive keeper, Daniel Ashe the handler who lost his network at Meridian, and Petrel, the codename in the reactivation itself, the asset presumed lost; state the cardinal rule plainly, trust nothing you have not corroborated and never announce yourself to the air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_context",
+          "label": "Two nights. Decide whether this is still your fight.",
+          "target": "n_stakes"
+        }
+      ]
+    },
+    {
+      "id": "n_stakes",
+      "body": "<<FILL role=setup words=160 beats='First real fork; Nell has thirty-six hours and three ways to work the problem before the rendezvous, the signal itself, the sealed record, and the ground; or she can pour the whisky, let a dead thing lie, and protect nobody but herself; make the temptation to walk away genuine and adult, the pull of a woman who has already buried this once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stakes_go",
+          "label": "Work it. Start where you are strongest: the signal.",
+          "target": "l1_enter"
+        },
+        {
+          "id": "c_stakes_decline",
+          "label": "Let it lie. This is not your war any more.",
+          "target": "n_decline"
+        }
+      ]
+    },
+    {
+      "id": "n_decline",
+      "body": "<<FILL role=rising words=160 beats='Nell switches the set off and does not switch it back on; the days pass, the equinox comes and goes; write the specific weight of a deliberate refusal, the discipline of not-knowing, a quiet that is either wisdom or cowardice and she will never be sure which'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_decline",
+          "label": "Let the tide keep its own counsel.",
+          "target": "e_decline"
+        }
+      ]
+    },
+    {
+      "id": "e_decline",
+      "body": "<<FILL role=setback words=165 beats='The equinox night passes with the receiver dark; whatever happened at the Custom House pier happened without her; some mornings she is certain she did the only sane thing, and some mornings she is not; a closed door she chose, no triumph and no disaster, only silence kept'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_decline",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Set Goes Quiet"
+      }
+    },
+    {
+      "id": "l1_enter",
+      "body": "<<FILL role=setup words=168 beats='Day one, Nell at the desk with the recording; she rethreads the retained pad copy she never quite destroyed and the archived Meridian traffic reels; the hand-keyed group waits to be read; keep the craft concrete, dot-lengths, the smell of warm valves, a pencil and a squared pad'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_enter",
+          "label": "Decide how to work the signal.",
+          "target": "l1_survey"
+        }
+      ]
+    },
+    {
+      "id": "l1_survey",
+      "body": "<<FILL role=choice words=150 beats='Three ways in, and the cardinal rule at her shoulder, never answer on the live net; work it silently on paper against the archive, or go active with a direction-find sweep and risk radiating her own position, or log it and stay wholly dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_careful",
+          "label": "Work it silently: decode by hand against the archive.",
+          "target": "l1_c1"
+        },
+        {
+          "id": "c_l1_bold",
+          "label": "Go active: run a direction-find sweep for the transmitter.",
+          "target": "l1_b1"
+        },
+        {
+          "id": "c_l1_cautious",
+          "label": "Stay dark: log the frequency and touch nothing.",
+          "target": "l1_s1"
+        }
+      ]
+    },
+    {
+      "id": "l1_c1",
+      "body": "<<FILL role=rising words=170 beats='The silent desk work; she lays the sender's group beside eleven-year-old Meridian traffic; two things can be read from a hand key, the message and the fist, the rhythm no operator can fully hide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_c1",
+          "label": "Choose what to read out of the signal.",
+          "target": "l1_c2"
+        }
+      ]
+    },
+    {
+      "id": "l1_c2",
+      "body": "<<FILL role=choice words=150 beats='What to pull from it: chase the sender's fist and match it against the archived operators, or simply decode the coordinates and be sure of the rendezvous, or only test whether the pad is genuine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_proof",
+          "label": "Match the sender's keying fist against the archived operators.",
+          "target": "l1_cp",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "evidence",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_l1_partial",
+          "label": "Decode only the coordinates; fix the rendezvous.",
+          "target": "l1_cn"
+        },
+        {
+          "id": "c_l1_confirm",
+          "label": "Test only whether the pad handshake is authentic.",
+          "target": "l1_ck"
+        }
+      ]
+    },
+    {
+      "id": "l1_cp",
+      "body": "<<FILL role=choice words=160 beats='The fist emerges under her pencil, a hurried down-stroke, a clipped dah, a signature as personal as handwriting; it matches one archived operator exactly, Reece Corbett, her own former deputy on the Meridian desk; hard proof the reactivation is keyed by the mole, not the asset'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_cpa",
+          "label": "Document the match cleanly, dot by dot.",
+          "target": "l1_cpa"
+        },
+        {
+          "id": "c_l1_cpb",
+          "label": "Pull Corbett's personnel keying sample to corroborate.",
+          "target": "l1_cpb"
+        }
+      ]
+    },
+    {
+      "id": "l1_cpa",
+      "body": "<<FILL role=rising words=175 beats='She writes it up the old way, timing every element, building a record that would stand in a hearing; the fist is Corbett's, and whatever walks the pier at slack water, his hand set this in motion'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_cpa_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_cpb",
+      "body": "<<FILL role=rising words=178 beats='She cross-checks against Corbett's own filed keying sample from training; the correlation is total, not a guess and not a hunch but a fingerprint; the proof is corroborated twice over'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_cpb_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_cn",
+      "body": "<<FILL role=rising words=172 beats='She decodes the coordinates and no more, the Custom House pier, slack water, the equinox; the where and when are certain now, the who as blank as the black band the signal rides on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_cn_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_cn2"
+        }
+      ]
+    },
+    {
+      "id": "l1_cn2",
+      "body": "<<FILL role=rising words=168 beats='Confirmation without attribution; she knows the appointment but not who keeps it, a fix on the trap and not on the hand that laid it; she files the coordinates and lets the fist go unread'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_cn2_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_ck",
+      "body": "<<FILL role=rising words=170 beats='She authenticates the handshake against the retained pad; the protocol is real, correctly keyed, not a spoof or a museum recording; HARBOR is genuinely live, which settles nothing and unsettles everything'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_ck_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_ck2"
+        }
+      ]
+    },
+    {
+      "id": "l1_ck2",
+      "body": "<<FILL role=rising words=166 beats='Entry to regroup on the signal; she sits a moment with a confirmation that carries no attribution, the outline of the thing and none of its proof; write the particular flatness of knowing something is true and being unable to show it to anyone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_ck2_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_b1",
+      "body": "<<FILL role=rising words=172 beats='She warms the transmitter; going active means radiating a carrier that a listening adversary can cross-bear as surely as she means to cross-bear them; her exposure rises the moment the valves glow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_b1",
+          "label": "Commit to the sweep.",
+          "target": "l1_b2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "exposure",
+          "value": 1
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "l1_b2",
+      "body": "<<FILL role=choice words=152 beats='At the key, three moves: answer the preamble on the live net to force a reply, or hold silent and take only a passive direction-find bearing, or lose nerve and kill the set half-swept'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_cross",
+          "label": "Answer the preamble on the live net to draw a response.",
+          "target": "l1_bf",
+          "effects": [
+            {
+              "op": "set",
+              "var": "flagged",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_l1_disc",
+          "label": "Stay silent; take a passive bearing only.",
+          "target": "l1_bd"
+        },
+        {
+          "id": "c_l1_break",
+          "label": "Abort the sweep; kill the set.",
+          "target": "l1_bx"
+        }
+      ]
+    },
+    {
+      "id": "l1_bf",
+      "body": "<<FILL role=rising words=175 beats='She keys a bare acknowledgement into the dark and a reply comes back at once, close, eager; but the rule she broke is absolute, whoever monitors this band now knows a survivor answered and is coming; she is on the adversary's board'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_bf_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_bf2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "l1_bf2",
+      "body": "<<FILL role=rising words=170 beats='The exchange gives her a sense the sender is near the estuary, but the cost is total, she has announced herself to the air; from here she moves as a known quantity, not a ghost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_bf2_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_bd",
+      "body": "<<FILL role=rising words=174 beats='Passive triangulation only; two bearings swung across the estuary give her a location on the far shore, a transmitter in a place and not a name on a hand, a fix without an identity'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_bd_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_bd2"
+        }
+      ]
+    },
+    {
+      "id": "l1_bd2",
+      "body": "<<FILL role=rising words=168 beats='She has a grid reference and a radiated position of her own she cannot take back, a location earned and an attribution missed; the who is still hers to find on the ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_bd2_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_bx",
+      "body": "<<FILL role=rising words=170 beats='Nerve fails halfway; she cuts the carrier and sits in the ringing silence wondering who heard the few seconds she was on the air, nothing gained but a radiated ghost of herself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_bx_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_bx2"
+        }
+      ]
+    },
+    {
+      "id": "l1_bx2",
+      "body": "<<FILL role=rising words=165 beats='Entry to regroup on the signal; the aborted bold move leaves only its cost behind, the exposure spent for nothing gained; she steadies her hands and counts what the gamble bought her, which is a wake and no catch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_bx2_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_s1",
+      "body": "<<FILL role=choice words=148 beats='Staying dark, she listens only; even pure listening yields something to a patient ear, or she can keep wholly clear and carry away nothing at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_glimpse",
+          "label": "Listen for the schedule pattern without transmitting.",
+          "target": "l1_s2"
+        },
+        {
+          "id": "c_l1_clear",
+          "label": "Keep wholly clear; note nothing.",
+          "target": "l1_s3"
+        },
+        {
+          "id": "c_l1_walkoff",
+          "label": "Log the frequency and switch off.",
+          "target": "l1_s4"
+        }
+      ]
+    },
+    {
+      "id": "l1_s2",
+      "body": "<<FILL role=rising words=168 beats='From listening alone she reads a schedule, the preamble repeating on a slack-water cycle, disciplined and patient; the sender knows tradecraft; suggestive, but nothing she could prove to anyone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_s2_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_s2b"
+        }
+      ]
+    },
+    {
+      "id": "l1_s2b",
+      "body": "<<FILL role=rising words=165 beats='A pattern in the air and no attribution to hang on it; she has the shape of the thing and none of its substance, a listener's intuition, unbanked'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_s2b_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_s3",
+      "body": "<<FILL role=rising words=165 beats='She keeps the set receive-only and lets the group wash past unworked; whatever it carries, she has not touched it and it has not touched her, clean hands and empty hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_s3_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_s3b"
+        }
+      ]
+    },
+    {
+      "id": "l1_s3b",
+      "body": "<<FILL role=rising words=162 beats='Entry to regroup on the signal; the clean-hands road runs out here, no evidence and no exposure and no lie told, only the thinness of a page she chose not to read; write the discipline and the doubt of it together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_s3b_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_s4",
+      "body": "<<FILL role=rising words=162 beats='She logs the frequency in the margin of an old notebook and switches off, a date and a band and nothing more, the smallest possible footprint and the smallest possible knowledge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_s4_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_s4b"
+        }
+      ]
+    },
+    {
+      "id": "l1_s4b",
+      "body": "<<FILL role=rising words=160 beats='Entry to regroup on the signal; the smallest footprint leaves her with the smallest knowledge, and she weighs whether caution was wisdom or just another way of looking away; a quiet beat before she moves on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_s4b_go",
+          "label": "Draw it together and move on.",
+          "target": "l1_mid"
+        }
+      ]
+    },
+    {
+      "id": "l1_mid",
+      "body": "<<FILL role=choice words=182 beats='Entry-neutral regroup at the desk in the small hours; write it arrival-agnostic and let the true state colour it, whether she now holds a name keyed into the signal or only a set of coordinates, whether her own carrier went out over the water or the band never heard her, whether her voice is on the net or she is still a ghost; recap only what every route shares, that the signal is real and the pier is the place'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_mid",
+          "label": "Bank what the night gave, and let the town sleep.",
+          "target": "l1_weigh"
+        }
+      ]
+    },
+    {
+      "id": "l1_weigh",
+      "body": "<<FILL role=choice words=172 beats='Entry-neutral second beat of the regroup; write it arrival-agnostic and let the true state colour it, the balance of what the signal gave against what it cost, proof or its absence, a wake raised or not, a rule kept or broken; recap only path-universal facts and let her decide the leg is closed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_weigh",
+          "label": "Close the leg and carry the balance forward.",
+          "target": "l1_exit"
+        }
+      ]
+    },
+    {
+      "id": "l1_exit",
+      "body": "<<FILL role=rising words=168 beats='Entry-neutral close of the comms leg; dawn greys the estuary and the archive opens in a few hours, the sealed record the next thing between her and the truth; reflect only the universal fact that day one is spent'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_exit",
+          "label": "Rest an hour, then drive to the records annex.",
+          "target": "l2_enter"
+        }
+      ]
+    },
+    {
+      "id": "l2_enter",
+      "body": "<<FILL role=setup words=168 beats='The regional records annex; Iris Wren at the counter, the only person here who still owes Nell a favour; behind glass, the sealed retired-protocol shelf, HARBOR's file among the dead; the telegraph is plain on a laminated notice, a physically pulled file is tagged and its movement logged'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_enter",
+          "label": "Decide how to reach the file.",
+          "target": "l2_survey"
+        }
+      ]
+    },
+    {
+      "id": "l2_survey",
+      "body": "<<FILL role=choice words=150 beats='Three ways to the record: ask Wren to pull it openly, logged but clean and vouched-for, or come back after hours and open the shelf herself, unlogged but a break-in, or never touch it and reconstruct from the public inquiry record and memory'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_careful",
+          "label": "Ask Wren to pull it openly, on the record.",
+          "target": "l2_c1"
+        },
+        {
+          "id": "c_l2_bold",
+          "label": "Return after hours and open the shelf yourself.",
+          "target": "l2_b1"
+        },
+        {
+          "id": "c_l2_cautious",
+          "label": "Leave it sealed; work from memory and the inquiry.",
+          "target": "l2_s1"
+        }
+      ]
+    },
+    {
+      "id": "l2_c1",
+      "body": "<<FILL role=rising words=170 beats='Wren hesitates, then trusts; the file comes out under supervision, its seal broken with two signatures; inside, the countersign page and, clipped behind it, the access log that records every hand that has touched it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_c1",
+          "label": "Choose how deep to read.",
+          "target": "l2_c2"
+        }
+      ]
+    },
+    {
+      "id": "l2_c2",
+      "body": "<<FILL role=choice words=150 beats='How far to read: study the countersign and the full access log together, or read only the countersign to confirm the asset is real, or let Wren summarise it aloud and handle nothing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_proof",
+          "label": "Read the countersign and the access log together.",
+          "target": "l2_cp",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "evidence",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_l2_partial",
+          "label": "Read only the countersign page.",
+          "target": "l2_cn"
+        },
+        {
+          "id": "c_l2_confirm",
+          "label": "Have Wren summarise it; handle nothing.",
+          "target": "l2_ck"
+        }
+      ]
+    },
+    {
+      "id": "l2_cp",
+      "body": "<<FILL role=choice words=160 beats='The countersign is there in the asset's own training hand, the tide runs both ways answered by and the gulls remember, a phrase only the true Petrel and her original handler ever held; and the access log shows the sealed file was quietly viewed months ago under Reece Corbett's lapsed credentials'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_cpa",
+          "label": "Document the countersign and the log entry.",
+          "target": "l2_cpa"
+        },
+        {
+          "id": "c_l2_cpb",
+          "label": "Photograph the log page for corroboration.",
+          "target": "l2_cpb"
+        }
+      ]
+    },
+    {
+      "id": "l2_cpa",
+      "body": "<<FILL role=rising words=175 beats='She records both facts precisely, the authentic countersign that proves the asset genuine and the credential trail that puts Corbett in this file before anyone else; authenticity and access, corroborating'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_cpa_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_cpb",
+      "body": "<<FILL role=rising words=178 beats='She photographs the log page, the date, the lapsed credential string, a second independent record of Corbett's fingerprint on the reactivation, banked where a hearing could weigh it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_cpb_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_cn",
+      "body": "<<FILL role=rising words=172 beats='She reads only the countersign; the phrase is right, the asset is real, someone alive holds Petrel's training authentication; but she leaves the access log unopened and never learns whose hand came before hers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_cn_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_cn2"
+        }
+      ]
+    },
+    {
+      "id": "l2_cn2",
+      "body": "<<FILL role=rising words=168 beats='Authenticity confirmed, provenance skipped; she knows the signal is a true asset's handshake and nothing of who else has been in this file, half the record honestly read'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_cn2_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_ck",
+      "body": "<<FILL role=rising words=170 beats='Wren summarises from memory across the counter, the file is genuine and recently disturbed, she cannot say by whom without pulling the log; Nell keeps her hands off the paper and takes only the archivist's word'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_ck_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_ck2"
+        }
+      ]
+    },
+    {
+      "id": "l2_ck2",
+      "body": "<<FILL role=rising words=166 beats='Entry to regroup on the record; she sits a moment with a confirmation that carries no attribution, the outline of the thing and none of its proof; write the particular flatness of knowing something is true and being unable to show it to anyone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_ck2_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_b1",
+      "body": "<<FILL role=rising words=172 beats='After hours she lets herself in through a fire door Wren never quite reported; every minute inside the unstaffed annex is a minute of raised exposure, a camera cycle, a caretaker's round to beat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_b1",
+          "label": "Cross into the dark stacks.",
+          "target": "l2_b2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "exposure",
+          "value": 1
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "l2_b2",
+      "body": "<<FILL role=choice words=152 beats='At the open shelf, three moves: take the physical file away to study at home, or photograph every page and reshelve it clean, or lose nerve at the last and take nothing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_cross",
+          "label": "Take the physical file away to study.",
+          "target": "l2_bf",
+          "effects": [
+            {
+              "op": "set",
+              "var": "flagged",
+              "value": true
+            },
+            {
+              "op": "inc",
+              "var": "evidence",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_l2_disc",
+          "label": "Photograph every page and reshelve it clean.",
+          "target": "l2_bd",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "evidence",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_l2_break",
+          "label": "Take nothing; slip back out.",
+          "target": "l2_bx"
+        }
+      ]
+    },
+    {
+      "id": "l2_bf",
+      "body": "<<FILL role=rising words=175 beats='She lifts the whole file; it holds everything, countersign and access log and Corbett's trail, real proof in her hands; but a pulled physical file is tagged, and she is now carrying a beacon the adversary can follow to the pier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_bf_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_bf2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "l2_bf2",
+      "body": "<<FILL role=rising words=170 beats='The proof is complete and so is her mistake; the record is genuine, the mole is named in it, and the very act of taking it has hung a marker on her; she leaves the annex compromised but carrying the truth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_bf2_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_bd",
+      "body": "<<FILL role=rising words=174 beats='She photographs the file in place, page by page, and reshelves it exactly as found; she has every fact the file holds, the countersign and Corbett's access trail, and has left no beacon on herself, only footprints in the log she cannot help'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_bd_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_bd2"
+        }
+      ]
+    },
+    {
+      "id": "l2_bd2",
+      "body": "<<FILL role=rising words=168 beats='Clean proof cleanly taken, the authentic countersign and the credential trail hers on film, the physical record undisturbed; costly only in the exposure of having been inside at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_bd2_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_bx",
+      "body": "<<FILL role=rising words=170 beats='In the dark stacks her nerve goes; she photographs nothing and takes nothing and eases back out through the fire door, having risked the break-in for an empty hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_bx_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_bx2"
+        }
+      ]
+    },
+    {
+      "id": "l2_bx2",
+      "body": "<<FILL role=rising words=165 beats='Entry to regroup on the record; the aborted bold move leaves only its cost behind, the exposure spent for nothing gained; she steadies her hands and counts what the gamble bought her, which is a wake and no catch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_bx2_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_s1",
+      "body": "<<FILL role=choice words=148 beats='Without the file she can still work the public inquiry record and her own memory, or keep even further clear and trust only what the signal already told her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_glimpse",
+          "label": "Reconstruct from the public inquiry record.",
+          "target": "l2_s2"
+        },
+        {
+          "id": "c_l2_clear",
+          "label": "Trust memory alone; read nothing.",
+          "target": "l2_s3"
+        },
+        {
+          "id": "c_l2_walkoff",
+          "label": "Thank Wren and leave it wholly sealed.",
+          "target": "l2_s4"
+        }
+      ]
+    },
+    {
+      "id": "l2_s2",
+      "body": "<<FILL role=rising words=168 beats='The public inquiry into Meridian is a wall of redactions, but she reads between them from memory, the net sold, the schedule leaked, the desk she and Corbett shared at the centre of it; suggestive, unprovable'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_s2_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_s2b"
+        }
+      ]
+    },
+    {
+      "id": "l2_s2b",
+      "body": "<<FILL role=rising words=165 beats='Redactions and recollection give her a shape without a signature; she can believe she knows and prove nothing, the record keeping its secret behind the black bars'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_s2b_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_s3",
+      "body": "<<FILL role=rising words=165 beats='She trusts only what she carries in her own head, eleven years old and worn smooth; the file stays sealed and her hands stay clean, memory and its comfortable lies'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_s3_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_s3b"
+        }
+      ]
+    },
+    {
+      "id": "l2_s3b",
+      "body": "<<FILL role=rising words=162 beats='Entry to regroup on the record; the clean-hands road runs out here, no evidence and no exposure and no lie told, only the thinness of a page she chose not to read; write the discipline and the doubt of it together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_s3b_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_s4",
+      "body": "<<FILL role=rising words=162 beats='She thanks Wren, signs nothing, and leaves the annex as she found it; whatever the file would have proved, it proves it to someone else, the smallest footprint again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_s4_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_s4b"
+        }
+      ]
+    },
+    {
+      "id": "l2_s4b",
+      "body": "<<FILL role=rising words=160 beats='Entry to regroup on the record; the smallest footprint leaves her with the smallest knowledge, and she weighs whether caution was wisdom or just another way of looking away; a quiet beat before she moves on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_s4b_go",
+          "label": "Draw it together and move on.",
+          "target": "l2_mid"
+        }
+      ]
+    },
+    {
+      "id": "l2_mid",
+      "body": "<<FILL role=choice words=182 beats='Entry-neutral regroup outside the annex; write it arrival-agnostic and let the true state colour it, whether she now holds the authentic countersign and Corbett's trail or only a half-read page, whether she is carrying a tagged file like a lit match or walked out clean, whether she risked the dark stacks or never crossed the threshold; recap only the shared fact that the record exists and the asset's handshake is real'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_mid",
+          "label": "Pocket what she has and let the annex close behind her.",
+          "target": "l2_weigh"
+        }
+      ]
+    },
+    {
+      "id": "l2_weigh",
+      "body": "<<FILL role=choice words=172 beats='Entry-neutral second beat of the regroup; write it arrival-agnostic and let the true state colour it, the balance of what the record gave against what it cost, proof or its absence, a wake raised or not, a rule kept or broken; recap only path-universal facts and let her decide the leg is closed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_weigh",
+          "label": "Close the leg and carry the balance forward.",
+          "target": "l2_exit"
+        }
+      ]
+    },
+    {
+      "id": "l2_exit",
+      "body": "<<FILL role=rising words=168 beats='Entry-neutral close of the archive leg; the second day tips toward dusk and the last unknown is the ground itself, the pier where all of this comes due; reflect only that two of the three roads are behind her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_exit",
+          "label": "Drive for the coast while the light lasts.",
+          "target": "l3_enter"
+        }
+      ]
+    },
+    {
+      "id": "l3_enter",
+      "body": "<<FILL role=setup words=168 beats='Dusk of the second day; the disused Custom House pier stands black on its piles over a falling tide, the rendezvous ground itself; a figure is already there, still and patient in the lee of the old weighbridge, and she knows the set of those shoulders, Daniel Ashe, who lost his network at Meridian; the telegraph is her own first rule, never brief a suspect'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_enter",
+          "label": "Decide how to read the ground.",
+          "target": "l3_survey"
+        }
+      ]
+    },
+    {
+      "id": "l3_survey",
+      "body": "<<FILL role=choice words=150 beats='Three ways to work the pier: set a clean observation post and read the whole ground before committing, or walk straight up to Ashe and break cover to a man who may be the mole, or withdraw and trust the picture the signal and the file already gave her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_careful",
+          "label": "Set a clean OP and read the ground first.",
+          "target": "l3_c1"
+        },
+        {
+          "id": "c_l3_bold",
+          "label": "Approach Ashe directly at the weighbridge.",
+          "target": "l3_b1"
+        },
+        {
+          "id": "c_l3_cautious",
+          "label": "Withdraw; trust the picture you already have.",
+          "target": "l3_s1"
+        }
+      ]
+    },
+    {
+      "id": "l3_c1",
+      "body": "<<FILL role=rising words=170 beats='From a cold OP in a gutted net-loft she glasses the whole approach; Ashe is not the only watcher; there is a discipline to the ground that takes an hour to read and cannot be rushed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_c1",
+          "label": "Choose what to confirm from cover.",
+          "target": "l3_c2"
+        }
+      ]
+    },
+    {
+      "id": "l3_c2",
+      "body": "<<FILL role=choice words=150 beats='What to nail down from cover: find and read the second watcher and the trap layout, or confirm only that Ashe is here and let the rest go, or map the pier's approaches without pinning any watcher'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_proof",
+          "label": "Find and read the second watcher and the trap layout.",
+          "target": "l3_cp",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "evidence",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_l3_partial",
+          "label": "Confirm Ashe's presence and no more.",
+          "target": "l3_cn"
+        },
+        {
+          "id": "c_l3_confirm",
+          "label": "Map the approaches; pin no one.",
+          "target": "l3_ck"
+        }
+      ]
+    },
+    {
+      "id": "l3_cp",
+      "body": "<<FILL role=choice words=160 beats='Patience pays; beyond Ashe, a second watcher works the seaward end with unmistakable Service tradecraft, a back-stop covering the pier head, positioned to take whoever comes to the rail; this is Corbett's man, and the rendezvous is a trap laid for the asset, ground truth she can act on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_cpa",
+          "label": "Fix the second watcher's position and fields of fire.",
+          "target": "l3_cpa"
+        },
+        {
+          "id": "c_l3_cpb",
+          "label": "Sketch the whole trap: watchers, exits, the killing ground.",
+          "target": "l3_cpb"
+        }
+      ]
+    },
+    {
+      "id": "l3_cpa",
+      "body": "<<FILL role=rising words=175 beats='She fixes the back-stop precisely, his sightlines, the blind angle along the west piling; she knows now where the trap closes and where it does not, proof of the ground written in cover and angle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_cpa_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_cpb",
+      "body": "<<FILL role=rising words=178 beats='She sketches the entire set, Ashe's watch, Corbett's back-stop, the two land exits, the pier head as the killing ground; a full picture of the trap, corroborated by an hour's disciplined observation'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_cpb_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_cn",
+      "body": "<<FILL role=rising words=172 beats='She confirms Ashe and stops there; the bitter handler keeps his vigil and she reads nothing past him, leaving the seaward end of the pier and whatever waits there unglassed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_cn_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_cn2"
+        }
+      ]
+    },
+    {
+      "id": "l3_cn2",
+      "body": "<<FILL role=rising words=168 beats='Ashe's presence noted, the wider ground unread; she knows one watcher and assumes no others, a partial truth that could be the whole of it or the least of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_cn2_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_ck",
+      "body": "<<FILL role=rising words=170 beats='She maps the approaches, the two lanes down, the tide stair, the rotten west piling, useful ground for later; but she pins no watcher to it and cannot say who owns the pier tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_ck_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_ck2"
+        }
+      ]
+    },
+    {
+      "id": "l3_ck2",
+      "body": "<<FILL role=rising words=166 beats='Entry to regroup on the ground; she sits a moment with a confirmation that carries no attribution, the outline of the thing and none of its proof; write the particular flatness of knowing something is true and being unable to show it to anyone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_ck2_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_b1",
+      "body": "<<FILL role=rising words=172 beats='She breaks from cover and crosses open ground to the weighbridge; the approach itself is exposure, a silhouette on a skyline any watcher would clock, and she feels the town's eyes settle on her back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_b1",
+          "label": "Cross to him.",
+          "target": "l3_b2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "exposure",
+          "value": 1
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "l3_b2",
+      "body": "<<FILL role=choice words=152 beats='Face to face with Ashe, three moves: tell him about the reactivation and enlist him, or draw him out for the field picture while revealing nothing of her own, or say nothing real and retreat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_cross",
+          "label": "Tell Ashe about the reactivation.",
+          "target": "l3_bf",
+          "effects": [
+            {
+              "op": "set",
+              "var": "flagged",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_l3_disc",
+          "label": "Draw out his field picture; reveal nothing.",
+          "target": "l3_bd",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "evidence",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_l3_break",
+          "label": "Say nothing real; retreat.",
+          "target": "l3_bx"
+        }
+      ]
+    },
+    {
+      "id": "l3_bf",
+      "body": "<<FILL role=rising words=175 beats='She tells him, HARBOR is live, Petrel is coming in, the pier is the place; Ashe goes white and rigid, and whether from guilt or terror she cannot tell, but the rule she broke is unforgiving, she has briefed a suspect and handed her whole hand to a man she cannot vouch for'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_bf_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_bf2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "l3_bf2",
+      "body": "<<FILL role=rising words=170 beats='He gives her nothing back but fear; she has spent her secret and bought no proof, and if Ashe is anything but clean she has just armed the trap; she withdraws having compromised herself to a face she cannot read'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_bf2_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_bd",
+      "body": "<<FILL role=rising words=174 beats='She lets Ashe do the talking, feeding him nothing; bitter and loose-tongued, he lays out what he has watched for months, a second man on the seaward end who is not one of his, the pier wired as a catch; he is loyal, and he has just handed her the ground truth without ever learning why she asked'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_bd_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_bd2"
+        }
+      ]
+    },
+    {
+      "id": "l3_bd2",
+      "body": "<<FILL role=rising words=168 beats='The field picture is hers and her own secret is intact, a back-stop on the pier head, a trap for whoever comes to the rail, confirmed by a man who lost everything last time and wants only to see it put right'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_bd2_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_bx",
+      "body": "<<FILL role=rising words=170 beats='She holds her tongue, trades a few empty words about the weather and the tide, and retreats; Ashe watches her go with red-rimmed eyes; she has risked the approach and carried nothing away but exposure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_bx_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_bx2"
+        }
+      ]
+    },
+    {
+      "id": "l3_bx2",
+      "body": "<<FILL role=rising words=165 beats='Entry to regroup on the ground; the aborted bold move leaves only its cost behind, the exposure spent for nothing gained; she steadies her hands and counts what the gamble bought her, which is a wake and no catch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_bx2_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_s1",
+      "body": "<<FILL role=choice words=148 beats='Withdrawing, she can still take a last careful look from distance, or keep wholly clear and commit to the pier on the strength of the signal and the file alone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_glimpse",
+          "label": "Take one distant look before withdrawing.",
+          "target": "l3_s2"
+        },
+        {
+          "id": "c_l3_clear",
+          "label": "Withdraw fully; commit on what you have.",
+          "target": "l3_s3"
+        },
+        {
+          "id": "c_l3_walkoff",
+          "label": "Leave the ground unread; go home to think.",
+          "target": "l3_s4"
+        }
+      ]
+    },
+    {
+      "id": "l3_s2",
+      "body": "<<FILL role=rising words=168 beats='From distance she catches only fragments, Ashe's stillness, a gull-scattered movement at the seaward end she cannot resolve, a hint of more than one watcher too far to swear to'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_s2_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_s2b"
+        }
+      ]
+    },
+    {
+      "id": "l3_s2b",
+      "body": "<<FILL role=rising words=165 beats='A distant impression of a crowded pier and nothing she could name; the ground keeps most of its secret and gives her only the sense that she is not the only one interested in slack water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_s2b_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_s3",
+      "body": "<<FILL role=rising words=165 beats='She withdraws clean, leaving the pier unread; whatever waits on the ground, she will meet it unrehearsed, carrying only what the signal and the file already told her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_s3_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_s3b"
+        }
+      ]
+    },
+    {
+      "id": "l3_s3b",
+      "body": "<<FILL role=rising words=162 beats='Entry to regroup on the ground; the clean-hands road runs out here, no evidence and no exposure and no lie told, only the thinness of a page she chose not to read; write the discipline and the doubt of it together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_s3b_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_s4",
+      "body": "<<FILL role=rising words=162 beats='She goes home to think, the ground a blank; the pier will be whatever it is when she gets there, and she will have no map of it but the one in her head'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_s4_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_s4b"
+        }
+      ]
+    },
+    {
+      "id": "l3_s4b",
+      "body": "<<FILL role=rising words=160 beats='Entry to regroup on the ground; the smallest footprint leaves her with the smallest knowledge, and she weighs whether caution was wisdom or just another way of looking away; a quiet beat before she moves on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_s4b_go",
+          "label": "Draw it together and move on.",
+          "target": "l3_mid"
+        }
+      ]
+    },
+    {
+      "id": "l3_mid",
+      "body": "<<FILL role=choice words=182 beats='Entry-neutral regroup in the failing light above the harbour; write it arrival-agnostic and let the true state colour it, whether she has read the trap and its second watcher or only Ashe's lonely vigil, whether her own approach put her on a skyline for others to see, whether she kept her secret or spent it on a frightened man; recap only the shared fact that the pier waits and slack water is hours off'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_mid",
+          "label": "Fold the ground into the plan and start back.",
+          "target": "l3_weigh"
+        }
+      ]
+    },
+    {
+      "id": "l3_weigh",
+      "body": "<<FILL role=choice words=172 beats='Entry-neutral second beat of the regroup; write it arrival-agnostic and let the true state colour it, the balance of what the ground gave against what it cost, proof or its absence, a wake raised or not, a rule kept or broken; recap only path-universal facts and let her decide the leg is closed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_weigh",
+          "label": "Close the leg and carry the balance forward.",
+          "target": "l3_exit"
+        }
+      ]
+    },
+    {
+      "id": "l3_exit",
+      "body": "<<FILL role=rising words=168 beats='Entry-neutral close of the ground leg; full dark is coming and the equinox rendezvous is the same night; there is nothing left to gather, only the choice of whether and how to go; reflect only that the three roads are walked and the hour is near'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_exit",
+          "label": "Go home to the hours before slack water.",
+          "target": "n_eve"
+        }
+      ]
+    },
+    {
+      "id": "n_eve",
+      "body": "<<FILL role=choice words=185 beats='Entry-neutral bottleneck; the hours before 23:00 in Nell's own kitchen, the whole investigation spread on the table; write it arrival-agnostic and let the true state colour it, how much corroborated proof she actually holds, how visible her inquiries have made her, whether she is carrying a beacon or her voice is already on the adversary's board; recap only the path-universal facts, that HARBOR is live and the pier keeps its appointment at slack water; two roads remain, to go down to the harbour or to abort the whole thing while she still can'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eve_go",
+          "label": "Go down to the pier and see it through.",
+          "target": "n_night"
+        },
+        {
+          "id": "c_eve_abort",
+          "label": "Abort. There is more than one way to end this.",
+          "target": "n_abort"
+        }
+      ]
+    },
+    {
+      "id": "n_abort",
+      "body": "<<FILL role=choice words=175 beats='Entry-neutral; she chooses not to walk onto the pier and must choose instead how to abandon the field, pass an anonymous warning up the Service's duty line, go dark and stay away in the hope that an unattended trap catches nobody, burn her notes and unremember the whole night, or hand everything to Ashe and let a broken man carry it; keep each option adult and costed, none of them clean'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_abort_warn",
+          "label": "Pass an anonymous warning up the duty line.",
+          "target": "n_abort_warn"
+        },
+        {
+          "id": "c_abort_dark",
+          "label": "Go dark; stay away and let the trap sit empty.",
+          "target": "n_abort_dark"
+        },
+        {
+          "id": "c_abort_burn",
+          "label": "Burn the notes and forget it happened.",
+          "target": "e_abort_burn"
+        },
+        {
+          "id": "c_abort_ashe",
+          "label": "Hand it all to Ashe and step back.",
+          "target": "e_abort_ashe"
+        }
+      ]
+    },
+    {
+      "id": "n_abort_warn",
+      "body": "<<FILL role=rising words=166 beats='She drafts the anonymous warning with an officer's care, spare and unsigned, and weighs where to send it and how much to say; every extra word is a thread back to her, every omission a chance it will be dismissed; a small craft of self-erasure practised one last time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_abort_warn_go",
+          "label": "Send it and step back into the dark.",
+          "target": "e_abort_warn"
+        }
+      ]
+    },
+    {
+      "id": "n_abort_dark",
+      "body": "<<FILL role=rising words=166 beats='She makes the deliberate arrangements of not-being-there, the unplugged set, the drawn curtains, the phone left off; write the discipline of chosen absence and the particular guilt that rides with it, the sense of a door she is holding shut with her own weight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_abort_dark_go",
+          "label": "Keep the door shut and let the night pass.",
+          "target": "e_abort_dark"
+        }
+      ]
+    },
+    {
+      "id": "e_abort_warn",
+      "body": "<<FILL role=rising words=170 beats='Her warning goes up the line into a machine that no longer knows her; a duty officer logs it, flags it, and does nothing she will ever hear of; she has done a correct and useless thing, and lies awake not knowing whether Petrel came to the rail and found no friend and no rescue, only Nell's silence dressed as caution'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_abort_warn",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Word in the Right Ear"
+      }
+    },
+    {
+      "id": "e_abort_dark",
+      "body": "<<FILL role=rising words=168 beats='She stays away and tells herself an unattended trap catches nothing; but a trap laid for one asset does not need Nell to spring it, and she will never learn whether staying dark saved Petrel or simply left her to walk the pier alone; the quiet she keeps is not the same as the quiet she wanted'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_abort_dark",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Let Sleeping Nets Lie"
+      }
+    },
+    {
+      "id": "e_abort_burn",
+      "body": "<<FILL role=setback words=170 beats='She burns the notes in the grate and watches Corbett's fist and Petrel's countersign curl to ash; whatever she knew is gone, deliberately, and with it any chance she could ever prove or undo it; some nights the smell of that small fire comes back to her, the night she chose not to know'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_abort_burn",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Ashes in the Grate"
+      }
+    },
+    {
+      "id": "e_abort_ashe",
+      "body": "<<FILL role=rising words=172 beats='She gives Ashe everything and steps back; a bitter, half-broken man now carries a live protocol and a mole's name, and what he does with them she cannot govern; she has traded her own judgement for his and will spend a long time wondering whether she handed the truth to a friend or to the very hand that sold Meridian'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_abort_ashe",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Handing It to Ashe"
+      }
+    },
+    {
+      "id": "n_night",
+      "body": "<<FILL role=rising words=172 beats='Entry-neutral; Nell goes down through the dark town toward the water, the tide near its turn; write the walk arrival-agnostic, the weight of whatever she carries in her head and pockets left implicit; the harbour lamps, the smell of weed and diesel, a woman keeping an eleven-year-old appointment'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_night",
+          "label": "Come down to the harbour and read the approach.",
+          "target": "n_approach"
+        }
+      ]
+    },
+    {
+      "id": "n_approach",
+      "body": "<<FILL role=choice words=182 beats='Entry-neutral exposure gate; the last hundred yards to the Custom House pier and the question of who, if anyone, sees her come; write it arrival-agnostic and let exposure decide the road, an unseen approach through the boat-yards, an approach she must assume is watched, or an approach into ground where she is certainly already clocked; exactly one road is open to her, set by how visible her inquiries have been'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_app_unseen",
+          "label": "Slip in unseen through the boat-yards.",
+          "target": "n_app_unseen",
+          "condition": {
+            "<=": [
+              {
+                "var": "exposure"
+              },
+              0
+            ]
+          }
+        },
+        {
+          "id": "c_app_watched",
+          "label": "Come in assuming eyes are on you.",
+          "target": "n_app_watched",
+          "condition": {
+            "==": [
+              {
+                "var": "exposure"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_app_seen",
+          "label": "Walk in knowing you are already clocked.",
+          "target": "n_app_seen",
+          "condition": {
+            ">=": [
+              {
+                "var": "exposure"
+              },
+              2
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "n_app_unseen",
+      "body": "<<FILL role=rising words=165 beats='Exposure is low and it shows; she comes through the dark boat-yards a ghost, unhurried, unobserved, choosing her own ground and her own moment, the quiet of the truly unseen; she reaches the pier approach on her own terms'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_app_unseen_go",
+          "label": "Take the pier approach in your own time.",
+          "target": "n_pier"
+        }
+      ]
+    },
+    {
+      "id": "n_app_watched",
+      "body": "<<FILL role=rising words=165 beats='Her inquiries have raised a wake; she cannot prove she is watched but must assume it, and moves accordingly, quick and careful, giving nothing away, a cat that knows the yard has another cat in it; she reaches the approach with less than she would like in hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_app_watched_go",
+          "label": "Close on the pier, watching the watchers.",
+          "target": "n_pier"
+        }
+      ]
+    },
+    {
+      "id": "n_app_seen",
+      "body": "<<FILL role=rising words=168 beats='There is no unseen left to her; she has been visible enough, long enough, that whoever runs this ground has surely clocked her coming, and she walks the last yards knowing it, her hand forced before she reaches the rail, the worst kind of arrival, into a set already sprung'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_app_seen_go",
+          "label": "Walk in with your hand already forced.",
+          "target": "n_pier"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_pier",
+      "body": "<<FILL role=choice words=188 beats='Entry-neutral highest-weight convergence; slack water at the Custom House pier, the tide dead still, the equinox moon on the mud; a single figure waits at the seaward rail exactly as the protocol promised, and it holds itself like an asset who has waited eleven years to come in; write this strictly arrival-agnostic, citing only what every route shares, that Nell reached the pier at the appointed slack water and that someone is at the rail; carry no fact that depends on which roads she walked'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pier",
+          "label": "Step onto the boards and read where you truly stand.",
+          "target": "n_read"
+        }
+      ],
+      "safety_scope": [
+        "peril",
+        "conflict"
+      ]
+    },
+    {
+      "id": "n_read",
+      "body": "<<FILL role=choice words=175 beats='Entry-neutral flag gate; the instant of committing, and the one question that governs everything after it, whether she has come clean or come burned; write it arrival-agnostic and let the true state decide which single door opens, the door of a woman who is still a ghost, or the door of a woman the adversary already knows is here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_read_clean",
+          "label": "You are still unseen by the enemy: play your own hand.",
+          "target": "n_clean",
+          "condition": {
+            "==": [
+              {
+                "var": "flagged"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_read_burned",
+          "label": "You are compromised: the enemy knows you came.",
+          "target": "n_burned",
+          "condition": {
+            "==": [
+              {
+                "var": "flagged"
+              },
+              true
+            ]
+          }
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_clean",
+      "body": "<<FILL role=choice words=182 beats='Entry-neutral clean-branch evidence gate; she is unburned, the adversary does not yet know she is on the pier, and everything now turns on how much she can actually prove; write it arrival-agnostic and let corroborated evidence pick the single road, a full case, a strong but incomplete one, a thin thread, or nothing but instinct; exactly one applies'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_clean_e3",
+          "label": "You can prove it all: the asset genuine, the mole named, the trap known.",
+          "target": "c_e3_scene",
+          "condition": {
+            ">=": [
+              {
+                "var": "evidence"
+              },
+              3
+            ]
+          }
+        },
+        {
+          "id": "c_clean_e2",
+          "label": "You can prove most of it, but a piece is missing.",
+          "target": "c_e2_scene",
+          "condition": {
+            "==": [
+              {
+                "var": "evidence"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_clean_e1",
+          "label": "You have one thread and little else.",
+          "target": "c_e1_scene",
+          "condition": {
+            "==": [
+              {
+                "var": "evidence"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_clean_e0",
+          "label": "You have nothing you could take to anyone.",
+          "target": "c_e0_scene",
+          "condition": {
+            "<=": [
+              {
+                "var": "evidence"
+              },
+              0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c_e3_scene",
+      "body": "<<FILL role=climax words=185 beats='The complete case, clean hands; she holds Corbett's keying fist, Petrel's authentic countersign, the access trail, and the read of the trap and its second watcher; unseen, she owns the ground; she gives the countersign to the figure at the rail and it answers true, the gulls remember, and Petrel is real and come in from eleven years of cold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_e3_scene_go",
+          "label": "Now deal with the man who laid the trap.",
+          "target": "c_e3_confront"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "c_e3_confront",
+      "body": "<<FILL role=climax words=182 beats='Everything she needs to roll it up clean is in her hands and the back-stop has not made her; she can bring a quiet arrest team down on Corbett with a case that will hold, she can let the tide and his own trap take him, or she can give him the chance to run that the rules, but not her grief, would grant a traitor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_e3_rollup",
+          "label": "Spring the clean arrest: take Corbett with the case that holds.",
+          "target": "e_clean_rollup"
+        },
+        {
+          "id": "c_e3_alive",
+          "label": "Take him alive and unhurried; let the law have him.",
+          "target": "e_clean_alive"
+        },
+        {
+          "id": "c_e3_tide",
+          "label": "Say nothing; let his own trap and the tide take him.",
+          "target": "c_e3_tide"
+        }
+      ],
+      "safety_scope": [
+        "conflict",
+        "peril"
+      ]
+    },
+    {
+      "id": "c_e3_tide",
+      "body": "<<FILL role=climax words=178 beats='Telegraphed cost made real; to let the tide take Corbett she must choose to be judge, and she was warned this is the one line an officer does not cross; she stands in the dark and does nothing while the trap he built closes on its maker, and Petrel watches her decide it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_e3_tide_go",
+          "label": "Watch the water do what you will not.",
+          "target": "e_clean_tide"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_clean_rollup",
+      "body": "<<FILL role=completion words=190 beats='The best of all the nights; Petrel comes in verified, Corbett is taken on the pier with a case no hearing can unpick, the reactivated net rolled up clean and the eleven-year wound finally closed on Nell's own terms; the quiet harbour protocol answered at last by the one person who never stopped listening; earned, complete, and clean'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_clean_rollup",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Quiet Harbor Protocol"
+      }
+    },
+    {
+      "id": "e_clean_alive",
+      "body": "<<FILL role=completion words=182 beats='She takes Corbett alive and unhurried and hands him to the law with the whole case intact; Petrel is in, safe, and will have a name and a life again; one loose thread frays somewhere in the paperwork, but the essential thing holds, both of them walk off the pier, one to freedom and one to a cell, because Nell kept her head and her hands clean'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_clean_alive",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Both of Them Walk Away"
+      }
+    },
+    {
+      "id": "e_clean_tide",
+      "body": "<<FILL role=climax words=180 beats='Petrel comes in and Corbett does not come off the pier; the tide he meant for others takes him in the dark, and Nell lets it, judge and jury on a rotten plank; the asset is saved and the mole is dead and something in Nell is spent that she will not get back, a clean win with a stain she chose'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_clean_tide",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Slack Water"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "c_e2_scene",
+      "body": "<<FILL role=climax words=180 beats='A strong case with a hole in it; unseen and clean, she can prove two of the three things she needs but not the third, and the gap decides who she can save and who slips; the figure at the rail gives the countersign or waits on hers, and the night narrows to a choice between the asset and the mole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_e2_scene_go",
+          "label": "Play the incomplete hand.",
+          "target": "c_e2_beat"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "c_e2_beat",
+      "body": "<<FILL role=climax words=176 beats='Second beat of the incomplete hand; unseen and clean but a piece short, she feels the gap in her case like a missing stair in the dark, and knows the choice she makes next will be governed by what she cannot prove rather than what she can'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_e2_beat_go",
+          "label": "Play it out.",
+          "target": "c_e2_final"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "c_e2_final",
+      "body": "<<FILL role=climax words=178 beats='Two of three, and no time for the third; she can spend her clean position to get Petrel off the pier and let Corbett melt away unproven, she can move on Corbett with what she has and watch the spooked asset vanish back into the cold, or she can hold the middle and settle for a wary standoff that resolves nothing tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_e2_petrel",
+          "label": "Get Petrel off the pier; let Corbett slip.",
+          "target": "e2_petrel"
+        },
+        {
+          "id": "c_e2_corbett",
+          "label": "Move on Corbett; let the asset vanish.",
+          "target": "e2_corbett"
+        },
+        {
+          "id": "c_e2_standoff",
+          "label": "Hold the middle; force a wary standoff.",
+          "target": "e2_standoff"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "e2_petrel",
+      "body": "<<FILL role=climax words=178 beats='She spends everything to bring Petrel in and it works; the asset is warm and safe and debriefing by dawn; but Corbett walks off into the dark unproven and un-taken, free to be someone else's problem, and Nell has saved a life at the cost of the name she came for, a real rescue and an unfinished hunt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e2_petrel",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Petrel Comes In"
+      }
+    },
+    {
+      "id": "e2_corbett",
+      "body": "<<FILL role=climax words=176 beats='She moves on Corbett and the case just holds; he is taken, the mole named at last; but the figure at the rail reads the change in the air and is gone before she can give the countersign, back into eleven more years of cold; she has the traitor and has lost the asset who could have come home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e2_corbett",
+        "valence": "neutral",
+        "kind": "success",
+        "title": "One Name, Not the Other"
+      }
+    },
+    {
+      "id": "e2_standoff",
+      "body": "<<FILL role=setback words=172 beats='She holds the middle and the night ends in a wary nothing; Petrel will not commit to a half-proven friend, Corbett will not move against a watcher who clearly knows something, and slack water passes with everyone alive and nothing resolved, a draw she can live with and cannot be proud of'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e2_standoff",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Draw at Slack Tide"
+      }
+    },
+    {
+      "id": "c_e1_scene",
+      "body": "<<FILL role=climax words=178 beats='One thread and little else; unseen and clean but nearly empty-handed, she has a single corroborated fact and a great deal of instinct; the figure at the rail waits, and she must decide how much weight a lone thread will bear on a pier in the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_e1_scene_go",
+          "label": "Play the one thread you have.",
+          "target": "c_e1_beat"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "c_e1_beat",
+      "body": "<<FILL role=climax words=174 beats='Second beat of the one thread; she turns the single fact over in the cold and weighs it against everything it does not cover, the temptation to make a lever of it or to trust it too far; the figure at the rail will not wait forever'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_e1_beat_go",
+          "label": "Play it out.",
+          "target": "c_e1_final"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "c_e1_final",
+      "body": "<<FILL role=climax words=175 beats='Too little to prove and too much to ignore; she can act on the hunch and give the countersign, trusting a picture she cannot back, she can challenge the shadows and hope the bluff holds, or she can pull the asset out on faith and settle for everyone alive and nothing proven'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_e1_hunch",
+          "label": "Act on the hunch; give the countersign and trust it.",
+          "target": "e1_hunch"
+        },
+        {
+          "id": "c_e1_bluff",
+          "label": "Challenge the dark and hope the bluff holds.",
+          "target": "e1_miss"
+        },
+        {
+          "id": "c_e1_safe",
+          "label": "Pull the asset out on faith; prove nothing.",
+          "target": "e1_safe"
+        }
+      ],
+      "safety_scope": [
+        "conflict",
+        "peril"
+      ]
+    },
+    {
+      "id": "e1_hunch",
+      "body": "<<FILL role=climax words=176 beats='She trusts the thread and the instinct behind it and gives the countersign; it is answered, and Petrel comes in on little more than Nell's judgement; whether Corbett is even here she never confirms, but the asset is warm and real and that, tonight, is enough, a hunch that happened to be right'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e1_hunch",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "On a Hunch"
+      }
+    },
+    {
+      "id": "e1_miss",
+      "body": "<<FILL role=climax words=174 beats='She challenges the dark with a bluff and the dark does not blink; the watcher she cannot prove is there does not move, the asset she cannot vouch for will not commit, and the moment curdles; she leaves the pier with the one thread she came with and the cold certainty she played it wrong'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e1_miss",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Word You Couldn't Prove"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e1_safe",
+      "body": "<<FILL role=climax words=172 beats='She will not gamble a life on a single thread, so she pulls the asset out on pure faith and asks nothing more; everyone walks off the pier alive and nothing at all is proven; better to be sure, she tells herself, and mostly believes it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e1_safe",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Better to Be Sure"
+      }
+    },
+    {
+      "id": "c_e0_scene",
+      "body": "<<FILL role=climax words=176 beats='Nothing she could take to anyone; unseen and clean, but empty-handed, running on instinct and eleven-year-old memory; the figure at the rail waits and she has no way to know if it is the asset she hopes or the bait she fears; the pier keeps its own counsel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_e0_scene_go",
+          "label": "Face the rail with nothing but nerve.",
+          "target": "c_e0_beat"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "c_e0_beat",
+      "body": "<<FILL role=climax words=172 beats='Second beat of the empty hand; running on instinct and old memory, she reads the dark pier for anything to anchor to and finds only the shape of her own hope and her own fear, and understands that whatever she does now is a wager blind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_e0_beat_go",
+          "label": "Play it out.",
+          "target": "c_e0_final"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "c_e0_final",
+      "body": "<<FILL role=climax words=174 beats='Empty-handed on a dark pier; she can risk the countersign blind and see what answers, she can hold back and simply watch the water and commit to nothing, or she can call the whole thing off and walk home the way she came, having learned only that she came unready'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_e0_blind",
+          "label": "Risk the countersign blind and see what answers.",
+          "target": "e0_blind"
+        },
+        {
+          "id": "c_e0_watch",
+          "label": "Hold back; watch the water and commit to nothing.",
+          "target": "e0_watch"
+        },
+        {
+          "id": "c_e0_walk",
+          "label": "Call it off; walk home unready.",
+          "target": "e0_walk"
+        },
+        {
+          "id": "c_e0_show",
+          "label": "Show yourself openly and let the figure choose.",
+          "target": "e0_show"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e0_show",
+      "body": "<<FILL role=climax words=174 beats='She steps into the open and lets herself be seen, a plain offer with no proof behind it, trusting the figure at the rail to read a friend where she cannot read an asset; it turns and looks a long moment and then, unhurried, walks the other way down the pier and is gone; she never learns whether she showed herself to Petrel or to the bait, only that honesty on an empty hand bought her nothing but the cold'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e0_show",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Nothing to Offer but Herself"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e0_blind",
+      "body": "<<FILL role=climax words=176 beats='She gives the countersign into the dark with nothing to back it and the wrong thing answers; the figure at the rail is not what she hoped, or is, and flees at her fumbling, she never learns which; she has spent the one card she held on a guess and comes away with less than nothing, having shown her hand to the night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e0_blind",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Nothing to Take to Anyone"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e0_watch",
+      "body": "<<FILL role=climax words=172 beats='She holds back and watches; slack water comes and goes, the figure waits and finally turns and is gone into the mud and dark, and Nell never moves; she has witnessed something and understood none of it, a watcher of water, and carries home only the ache of an appointment she could not read'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e0_watch",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "You Watched the Water"
+      }
+    },
+    {
+      "id": "e0_walk",
+      "body": "<<FILL role=climax words=170 beats='She admits she came unready and walks home before the tide turns; whatever the pier held, it holds it still, and she will read about it or never hear of it, but she will not walk blind onto a dark plank on the strength of a hunch, a retreat with its own hard dignity'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e0_walk",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Home Before the Tide Turned"
+      }
+    },
+    {
+      "id": "n_burned",
+      "body": "<<FILL role=choice words=184 beats='Entry-neutral burned-branch evidence gate; she has come to the pier compromised, her voice on the net or a beacon in her pocket or her secret spent on the wrong ear, and the adversary knows she is here; write it arrival-agnostic and let corroborated evidence pick the single road even now, real proof to salvage something from, one thread to bargain, or nothing at all as the trap closes; exactly one applies'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_burned_hi",
+          "label": "Burned, but you can prove it: leverage the case you hold.",
+          "target": "b_hi_scene",
+          "condition": {
+            ">=": [
+              {
+                "var": "evidence"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_burned_mid",
+          "label": "Burned, with a single thread to bargain.",
+          "target": "b_mid_scene",
+          "condition": {
+            "==": [
+              {
+                "var": "evidence"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_burned_lo",
+          "label": "Burned and blind: nothing between you and the trap.",
+          "target": "b_lo_scene",
+          "condition": {
+            "<=": [
+              {
+                "var": "evidence"
+              },
+              0
+            ]
+          }
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_hi_scene",
+      "body": "<<FILL role=climax words=184 beats='Proof in hand and a target on her back; she holds a real case, Corbett's fist or the countersign and access trail, but the adversary knows she came and the back-stop is already moving; the case is worth something only if she can get it, or the asset, or herself, off this pier before the trap shuts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_hi_go",
+          "label": "Spend the case against the closing trap.",
+          "target": "b_hi_final"
+        }
+      ],
+      "safety_scope": [
+        "peril",
+        "conflict"
+      ]
+    },
+    {
+      "id": "b_hi_final",
+      "body": "<<FILL role=climax words=180 beats='Telegraphed reckoning; being seen has a price and now it comes due; she can throw everything into nailing Corbett and accept that a tracked officer cannot also save the asset, she can trade herself and let them take her to get the proof into hands that will use it, or she can force a confrontation on the rail and let the night fall how it falls'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_hi_nail",
+          "label": "Nail Corbett; accept you cannot save Petrel too.",
+          "target": "b_hi_costly"
+        },
+        {
+          "id": "c_b_hi_trade",
+          "label": "Let them take you; get the proof out alive.",
+          "target": "b_hi_trade"
+        },
+        {
+          "id": "c_b_hi_rail",
+          "label": "Force it on the rail; let the night fall how it falls.",
+          "target": "b_hi_pyrrhic"
+        }
+      ],
+      "safety_scope": [
+        "peril",
+        "conflict"
+      ]
+    },
+    {
+      "id": "b_hi_costly",
+      "body": "<<FILL role=climax words=182 beats='She nails Corbett; the case is watertight and he is finished, the mole named after eleven years; but the beacon she carried did its work, and the back-stop reaches Petrel at the rail before Nell can, so the asset she came to save is taken in the dark while the traitor is caught, proof and a price paid in the one life she wanted most to keep'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_hi_costly",
+        "valence": "negative",
+        "kind": "success",
+        "title": "Proof, and a Price"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_hi_trade",
+      "body": "<<FILL role=climax words=180 beats='She lets them take her so the proof gets clear; Corbett's people close on a spent old woman while the case, slipped to Ashe or the duty line in the last seconds, travels on without her; she trades her freedom for the truth's survival and sits in a bare room certain only that she posted the letter before they came'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_hi_trade",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "The Beacon in Your Pocket"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_hi_pyrrhic",
+      "body": "<<FILL role=climax words=182 beats='She forces it on the rail and the trap springs all at once; in the confusion the case survives and Corbett does not, but neither does the figure who waited eleven years to come in, and Nell walks off a pier of the dead with the proof clutched to her and no one left to bring it home to, a victory indistinguishable, tonight, from a defeat'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_hi_pyrrhic",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Both Sides of the Rail"
+      },
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "b_mid_scene",
+      "body": "<<FILL role=climax words=180 beats='Burned with one thread; the adversary knows she came and she has a single corroborated fact and nothing else to bargain with; the back-stop is moving and the figure at the rail is exposed with her, a thin hand to play against a sprung trap'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_mid_go",
+          "label": "Play the thread against the trap.",
+          "target": "b_mid_beat"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_mid_beat",
+      "body": "<<FILL role=climax words=174 beats='Second beat of the one thread, burned; the back-stop is closing and the single fact in her pocket is worth only what a bluff can make it worth, and she measures how much of a run it could buy someone else'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_mid_beat_go",
+          "label": "Play it out.",
+          "target": "b_mid_final"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_mid_final",
+      "body": "<<FILL role=climax words=176 beats='Not enough and too late; she can try to bluff the one thread into a lever and buy the asset a run, she can break and scatter and draw the watchers off Petrel and onto herself, or she can freeze at the wrong instant and let the ground decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_mid_bluff",
+          "label": "Bluff the thread; buy the asset a run.",
+          "target": "b_mid_scatter"
+        },
+        {
+          "id": "c_b_mid_draw",
+          "label": "Break and scatter; draw them onto yourself.",
+          "target": "b_mid_flee"
+        },
+        {
+          "id": "c_b_mid_freeze",
+          "label": "Freeze at the wrong instant.",
+          "target": "b_mid_caught"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_mid_scatter",
+      "body": "<<FILL role=climax words=176 beats='She bluffs the single thread hard and it half-works; in the noise and doubt the figure at the rail breaks and runs and may get clear, she cannot see, while the watchers pivot to Nell; she has spent everything to make a gap for someone else and does not know if they took it, it all comes apart in the dark and she is left holding the frayed thread'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_mid_scatter",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "It All Comes Apart"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_mid_flee",
+      "body": "<<FILL role=climax words=174 beats='She breaks the other way on purpose, loud and clumsy, and the watchers come after the obvious old woman instead of the asset; she runs the wrong way down the tide stair with her heart going and no plan past the next piling; whether Petrel used the gap she bought will be a question for the rest of her life'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_mid_flee",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Running the Wrong Way"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_mid_caught",
+      "body": "<<FILL role=climax words=174 beats='The wrong instant catches her; she hesitates a half-second too long between bluff and flight and the back-stop is simply there, a hand on her arm, a quiet voice, the trap shut on the watcher instead of the watched; she is taken at the pier gate with one useless thread in her pocket'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_mid_caught",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Made at the Gate"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_lo_scene",
+      "body": "<<FILL role=climax words=180 beats='Burned and blind; she has announced herself and proven nothing, and walks onto the pier with the adversary ahead of her at every step and no card at all to play; telegraphed to the last, this is the trap she was warned of, entered without cover or proof'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_lo_go",
+          "label": "Meet the trap with nothing.",
+          "target": "b_lo_beat"
+        }
+      ],
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "b_lo_beat",
+      "body": "<<FILL role=climax words=172 beats='Second beat of the empty hand, burned; there is nothing to spend and everything to lose, the trap she was warned of already sprung around her, and she chooses only the manner of meeting it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_lo_beat_go",
+          "label": "Play it out.",
+          "target": "b_lo_final"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_lo_final",
+      "body": "<<FILL role=climax words=176 beats='Nothing between her and the closing dark; she can walk out onto the boards anyway and meet whatever waits at the rail, she can try to warn the figure and run, two people fleeing a set that anticipated them, or she can go still and silent and let them come, giving nothing even now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_lo_meet",
+          "label": "Walk out to the rail and meet it.",
+          "target": "b_lo_trap"
+        },
+        {
+          "id": "c_b_lo_warn",
+          "label": "Shout a warning and run with the asset.",
+          "target": "b_lo_petrel"
+        },
+        {
+          "id": "c_b_lo_still",
+          "label": "Go still and silent; give them nothing.",
+          "target": "b_lo_capture"
+        },
+        {
+          "id": "c_b_lo_surrender",
+          "label": "Walk to the back-stop and give yourself up first.",
+          "target": "b_lo_surrender"
+        }
+      ],
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "b_lo_trap",
+      "body": "<<FILL role=climax words=178 beats='She walks out onto the boards with nothing and the trap takes her exactly as it was built to; the figure at the rail was the bait or the doomed, and the dark closes on the pier head as Corbett's people fold it shut; she meets the end she was warned of, blind and burned, on an appointment eleven years in the laying'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_lo_trap",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Trap"
+      },
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "b_lo_petrel",
+      "body": "<<FILL role=climax words=176 beats='She shouts a warning into the dark and runs, and drags the figure at the rail into the same doomed flight; two people who cannot prove anything to anyone flee a ground that knew they were coming, and the tide stair and the closing watchers make the ending brief; her last clear thought is that Petrel came all that way to die running beside a stranger'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_lo_petrel",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Petrel Pays for It"
+      },
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "b_lo_capture",
+      "body": "<<FILL role=climax words=174 beats='She goes still and gives them nothing, and it changes only the manner of it; they were waiting, they had always been waiting, and a silent old woman is folded up as quietly as a wet chart and carried off the pier into a bare room and a long, patient dark; she never once saw who ran the ground'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_lo_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "They Were Waiting"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "b_lo_surrender",
+      "body": "<<FILL role=climax words=174 beats='She walks straight at the back-stop with her hands loose and open and gives herself up before they can take her, the last small control left to the burned and the blind; whether the figure at the rail slips away in the moment she buys is a thing the closing dark does not let her see; she trades the only coin she has, her own capture on her own terms, for a gap she will never know was used'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_lo_surrender",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "On Your Own Terms, Barely"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    }
+  ]
+}

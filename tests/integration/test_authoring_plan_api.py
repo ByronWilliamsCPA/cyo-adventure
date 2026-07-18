@@ -412,7 +412,8 @@ async def test_automated_provider_unallowlisted_model_is_422(
 async def test_skeleton_fill_response_includes_alternatives(
     client: AsyncClient, seed: Seed
 ) -> None:
-    """10-13/medium/prose has exactly one production skeleton on disk today."""
+    """10-13/medium/prose holds three production skeletons; the response lists
+    the full sorted cell as alternatives and picks one of them."""
     req_id = await _approved_request_id(client, seed, "a lighthouse keeper returns")
     res = await client.post(
         f"{_CREATE}/{req_id}/authoring-plan",
@@ -421,8 +422,10 @@ async def test_skeleton_fill_response_includes_alternatives(
     )
     assert res.status_code == 201, res.text
     body = res.json()
-    assert body["skeleton_slug"] == "the-hollow-lighthouse"
-    assert body["skeleton_alternatives"] == [{"slug": "the-hollow-lighthouse"}]
+    cell = ["the-envoy-of-three-courts", "the-flooded-quarter", "the-hollow-lighthouse"]
+    # The pick is a weighted-random draw over the cell (unseedable SystemRandom).
+    assert body["skeleton_slug"] in cell
+    assert body["skeleton_alternatives"] == [{"slug": slug} for slug in cell]
 
 
 async def test_skeleton_fill_override_out_of_cell_warns(

@@ -127,9 +127,10 @@ async def test_build_authoring_plan_deweights_recent_skeleton(
 ) -> None:
     """Gap 2: recency weighting is wired end to end through build_authoring_plan.
 
-    Every real cell holds exactly one production skeleton today, so exercising
-    the multi-candidate weighted pick requires monkeypatching the candidate
-    source. This test binds the three halves that are otherwise only tested
+    This test pins an exact two-candidate cell by monkeypatching the candidate
+    source, so the weighted pick is exercised deterministically regardless of
+    how many skeletons the real catalog holds. It binds the three halves that
+    are otherwise only tested
     independently: build_authoring_plan consults ``recent_skeleton_usage``
     against real seeded family history, feeds that usage into
     ``select_skeleton_for_cell``'s inverse-frequency weighting, and draws a

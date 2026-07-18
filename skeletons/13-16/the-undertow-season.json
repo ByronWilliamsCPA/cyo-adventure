@@ -1,0 +1,2116 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_undertow_season",
+  "version": 1,
+  "title": "The Undertow Season",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "truth",
+      "community",
+      "grief and repair",
+      "the sea"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 28,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "trust",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "How far Graywater's quiet circle has opened to Cass: 0 stranger, 1 vouched-for, 2 trusted with the season's weight. It rises once per completed kindness (a spoke seen through with care) and never falls. The full public truth at the remembrance needs 2."
+    },
+    {
+      "name": "duty",
+      "type": "bool",
+      "initial": true,
+      "description": "Whether Cass has kept every posted lifeguard shift. Trading one away (only ever a posted shift, never an active watch) buys archive time and honestly costs standing; it never resets within the season."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=160 beats='First morning of the season at Graywater Beach: Cass, sixteen, first summer on the chair as a junior lifeguard under head guard Dane Okafor; the station with its board racks and roster, the red flags, the smell of wax and salt; at the north end the old pier stands black on its pilings, chained off, closed to swimmers since before Cass was born; nobody in Graywater says why, the same way nobody says a lot of things; establish the town's practiced quiet as texture, not menace'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Sign the roster and follow Dane out to the chair line.",
+          "target": "n_chair"
+        }
+      ]
+    },
+    {
+      "id": "n_chair",
+      "body": "<<FILL role=setup words=150 beats='First shift on the stand beside Dane: his three rules, eyes on the water, juniors never work water alone, he runs the beach; then the rip lesson, taught as real craft: the seam of flat brown water between breakers, a current is a river not a monster, it ends, you swim parallel to shore and never fight it straight home; Cass repeats it back until it sits; Dane's eyes go to the old pier at slack tide the way a hand goes to a scar, a habit he does not know he has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_chair_1",
+          "label": "Watch the beach, and watch him watching the pier.",
+          "target": "n_spark"
+        }
+      ]
+    },
+    {
+      "id": "n_spark",
+      "body": "<<FILL role=setup words=150 beats='End of the first week, the station back room: duty logs going back decades on one shelf; taped inside a locker door, a curled photograph, five teenagers on the old pier rail in summer light, one name inked underneath rubbed to nothing; Vega, the other junior, passes on the rumor kids trade in whispers: somebody drowned off the pier thirty years ago and the town went quiet forever; Dane appears in the doorway, looks at the photo a half-second too long, and says only, closing time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_spark_1",
+          "label": "Let the season begin, and keep your eyes open.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL role=choice words=145 beats='The season finds its rhythm, and this node is its standing hub: shifts end at five, the town open in the long gold evenings, the roster board naming tomorrow; write this arrival-neutral, the same steady scene however often and in whatever state the reader lands here; the places where Graywater keeps what it keeps lie in easy reach: the pier at dusk, the tide-chart shop on Quay Street, the radio mast light on the bluff, the record office on Harbor Row, and Dane's after-close routine at the station'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_1",
+          "label": "Walk the old pier at dusk, where the fisherman always is.",
+          "target": "pr_pier"
+        },
+        {
+          "id": "c_n_hub_2",
+          "label": "Catch the tide-chart shop before Ida flips her sign.",
+          "target": "td_shop"
+        },
+        {
+          "id": "c_n_hub_3",
+          "label": "Take the bluff path up to the radio cottage and its wires.",
+          "target": "rd_cottage"
+        },
+        {
+          "id": "c_n_hub_4",
+          "label": "Spend a free morning at the record office, where the old Gazette sleeps.",
+          "target": "mg_office"
+        },
+        {
+          "id": "c_n_hub_5",
+          "label": "Stay after close and help Dane shut the beach down.",
+          "target": "dn_close"
+        },
+        {
+          "id": "c_n_hub_6",
+          "label": "Duck into the guard room and catch your breath.",
+          "target": "n_break"
+        },
+        {
+          "id": "c_n_hub_7",
+          "label": "Let the posted weeks run out toward the season's end.",
+          "target": "fin_eve"
+        }
+      ]
+    },
+    {
+      "id": "n_break",
+      "body": "<<FILL role=choice words=132 beats='The guard room between whiles: Vega and the cocoa tin, the roster in its grease-pencil grid, wet towels and easy talk; the season weighs what it weighs and this room is where guards set it down for ten minutes; nothing here hurries anyone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_break_1",
+          "label": "Rinse the mug and get back out into the evening.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_n_break_2",
+          "label": "Admit to Vega the summer has gotten heavier than the job you signed for.",
+          "target": "e_season_out"
+        }
+      ]
+    },
+    {
+      "id": "e_season_out",
+      "body": "<<FILL role=failure words=132 beats='Saying it out loud is its own kind of nerve: Cass steps back to the beach crew for the rest of the season, rakes and flags and no chair; Dane signs the change without one word of blame and means it; the pier keeps its silence and the questions keep till another summer; a season can be too big for a first year and saying so is the adult move, write it dignified'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_season_out",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Short Season"
+      }
+    },
+    {
+      "id": "pr_pier",
+      "body": "<<FILL role=choice words=135 beats='The old pier at dusk, boards silvered, the chain unhooked where one man steps over it nightly: Elias Pruitt, mid-pier with two rods out, the ebb sliding seaward under the pilings; write this arrival-neutral, the pier is the same ritual whatever evening of the summer this is; ways in: useful, quiet, or curious'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_pier_1",
+          "label": "Carry his bait bucket up the boards unasked.",
+          "target": "pr_gear"
+        },
+        {
+          "id": "c_pr_pier_2",
+          "label": "Stand at the rail short of him and read the water.",
+          "target": "pr_rail"
+        },
+        {
+          "id": "c_pr_pier_3",
+          "label": "Study the carvings in the rail wood on the way out.",
+          "target": "pr_carve"
+        }
+      ]
+    },
+    {
+      "id": "pr_gear",
+      "body": "<<FILL role=rising words=130 beats='The bucket set down by his boots; no thanks and no objection, which from him is a treaty; the silence has a working shape to it, gear passed, hooks baited, the evening's first mackerel coming in like punctuation'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_gear_1",
+          "label": "Take the second rod he nudges toward you.",
+          "target": "pr_bait"
+        },
+        {
+          "id": "c_pr_gear_2",
+          "label": "Ask about the water while your hands work.",
+          "target": "pr_rail"
+        }
+      ]
+    },
+    {
+      "id": "pr_bait",
+      "body": "<<FILL role=rising words=126 beats='The bait shack lee at the pier head, gear talk only: knots, weights, why the ebb hour fishes best; hands earning a place the way words here cannot; Pruitt watches Cass's clove hitch and does not redo it, which is a diploma'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_bait_1",
+          "label": "Fish beside him while the light goes.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_rail",
+      "body": "<<FILL role=rising words=130 beats='Reading the water from above: the seam of flat brown water past the third piling, running out hard while the waves argue around it; Cass names it for what it is, chair-taught; Pruitt's eyes flick over, measuring; you see it then, he says, to the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_rail_1",
+          "label": "Ask him how long that seam has run there.",
+          "target": "pr_tide"
+        },
+        {
+          "id": "c_pr_rail_2",
+          "label": "Join him at the rods without pressing.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_tide",
+      "body": "<<FILL role=rising words=130 beats='His answer is a fisherman's survey: watch the orange buoy lean, that is the ebb talking; the channel braids through the pilings on a spring tide and has since the pier was built; longer than you, he says, and longer than some it kept'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_tide_1",
+          "label": "Let that last line settle, and fish.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_carve",
+      "body": "<<FILL role=rising words=132 beats='The rail wood carries initials in pairs and dates, wax-dark against grey grain, decades of summer couples and crews; and one set alone, T.R., no date, the wax in the letters newer than the wood by thirty years; somebody keeps it filled; behind Cass, Pruitt's tackle box clicks shut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_carve_1",
+          "label": "Ask him who keeps the wax fresh in T.R.",
+          "target": "pr_moor"
+        },
+        {
+          "id": "c_pr_carve_2",
+          "label": "Say nothing yet and join him at the rods.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_moor",
+      "body": "<<FILL role=rising words=132 beats='He does not answer the wax question; instead he walks Cass to the pier head and shows the mooring cleats, one ring worn bright among the rusted row; boats used to tie here, he says; one slipped its lines on an ebb like tonight's, once; he says it like a man laying one card face up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_moor_1",
+          "label": "Ask what happened to the boat.",
+          "target": "pr_ask"
+        },
+        {
+          "id": "c_pr_moor_2",
+          "label": "Take the card as given and fish beside him.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_lines",
+      "body": "<<FILL role=choice words=140 beats='The rip lesson, fisherman's edition, over two rods and the dark coming on: he reads the channel the way Ida Marsh reads a table and Dane reads a break, and he teaches it straight because it is safety, not story: a current ends, panic does not; you swim parallel to shore and let the sea hand you back; the talk thins toward the thing that lives under it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_lines_1",
+          "label": "Let the question rise: ask about the summer nobody names.",
+          "target": "pr_ask"
+        },
+        {
+          "id": "c_pr_lines_2",
+          "label": "Help him strike the gear as a squall line walks in.",
+          "target": "pr_storm"
+        }
+      ]
+    },
+    {
+      "id": "pr_ask",
+      "body": "<<FILL role=choice words=145 beats='The asking, on his boards, over his water; his shoulders set before Cass says a word, because a season of evenings has taught him the shape of what is coming; how it is asked decides everything; write the four doors plainly: vouched-for directness, sideways respect, patience, or the street's version said out loud'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_ask_1",
+          "label": "Ask him straight what happened the night the town went quiet.",
+          "target": "pr_straight",
+          "condition": {
+            ">=": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_pr_ask_2",
+          "label": "Ask sideways: who keeps the wax fresh in the T.R. initials.",
+          "target": "pr_slant"
+        },
+        {
+          "id": "c_pr_ask_3",
+          "label": "Ask nothing; bait the hook he hands you.",
+          "target": "pr_fish"
+        },
+        {
+          "id": "c_pr_ask_4",
+          "label": "Repeat the story the kids tell and ask him if it is true.",
+          "target": "pr_push"
+        }
+      ]
+    },
+    {
+      "id": "pr_straight",
+      "body": "<<FILL role=rising words=170 beats='He tells it level, eyes on the rod tips, because the town has finally sent him somebody it vouches for: a boy, a skiff gone off its mooring on the ebb, a swimmer going out after his father's boat; himself going in next, the sea ambulance out of Harwick forty minutes away; he came out with nothing; what got said in the weeks after he does not repeat and does not dispute; some things you carry, he says, because setting them down feels like quitting the man you could not hold; YA gravity, no detail of the drowning itself, the weight is in his voice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_straight_1",
+          "label": "Walk him to the pier head in the dark.",
+          "target": "pr_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "pr_slant",
+      "body": "<<FILL role=rising words=145 beats='The sideways question gets a sideways answer, which from Pruitt is a whole confession: he keeps the wax; the boy was Tomas Rey, who fished this rail at his elbow for three summers; there was a boat, and an ebb, and a night; the rest he leaves below the surface where he keeps it, but he lets Cass see that there is a rest, and that it is heavy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_slant_1",
+          "label": "Carry the name off the pier with care.",
+          "target": "pr_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "pr_fish",
+      "body": "<<FILL role=rising words=130 beats='The patient hour: mackerel and quiet and the lamps of the town coming on behind; once, to the rods, he says the water did not dare anybody, and lets it stand without a story around it; a door left ajar for another evening, which is how his doors open'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_fish_1",
+          "label": "Call it an evening and walk back down the boards.",
+          "target": "pr_done"
+        },
+        {
+          "id": "c_pr_fish_2",
+          "label": "Let the evenings themselves become the whole answer.",
+          "target": "e_pr_quiet"
+        }
+      ]
+    },
+    {
+      "id": "pr_push",
+      "body": "<<FILL role=rising words=132 beats='The kids' version said out loud on his own boards, dare and all; his face closes like weather over water; he does not defend himself, which is the worst possible answer, and reels in the first rod without a word'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_push_1",
+          "label": "Watch him pack, and understand the size of the mistake.",
+          "target": "pr_cold"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "pr_cold",
+      "body": "<<FILL role=choice words=132 beats='He racks the rods and lids the bucket, courteous as a closed door; the pier is his and the evening is over; what Cass does in the next ten seconds decides whether it is over for the season'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_cold_1",
+          "label": "Apologize once, simply, and leave him the pier.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pr_cold_2",
+          "label": "Try to explain what you actually meant by it.",
+          "target": "e_pr_shut"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "pr_storm",
+      "body": "<<FILL role=rising words=130 beats='The squall walks in off the water and the two of them strike gear like one crew, rods, bucket, tarp lashed over the box, boards drumming under the first fat drops; in the bait shack lee, wet through and laughing once, short, he almost smiles; work is his language and Cass just spoke it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_storm_1",
+          "label": "See the gear stowed and the chain re-hooked behind you.",
+          "target": "pr_done"
+        }
+      ]
+    },
+    {
+      "id": "pr_done",
+      "body": "<<FILL role=choice words=150 beats='Leaving the pier under first stars, and write this arrival-neutral to whatever passed on the boards tonight: something has settled between Cass and the old man, the exact shape of it private; his same-time-tomorrow, grunted at the water, is the closest thing to a door standing open that the pier has offered anyone in thirty years'>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_done_1",
+          "label": "Back along the seafront to the station.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pr_done_2",
+          "label": "The tide shop's window is still lit on Quay Street.",
+          "target": "td_shop"
+        },
+        {
+          "id": "c_pr_done_3",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_pr_done_4",
+          "label": "Stay for the whole night tide at his shoulder.",
+          "target": "e_pr_watch"
+        }
+      ]
+    },
+    {
+      "id": "e_pr_shut",
+      "body": "<<FILL role=failure words=132 beats='Explaining makes it worse the way explaining does; he listens all the way through, nods once, and goes back to his rods alone; the pier evenings are over for the season; he still lifts two fingers off the rail when Cass passes on patrol, which is not nothing, and is not what it was; a social wound honestly earned and honestly felt, no melodrama'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pr_shut",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Closed Door"
+      }
+    },
+    {
+      "id": "e_pr_quiet",
+      "body": "<<FILL role=ending words=136 beats='The summer becomes the evenings: two rods, the ebb, the wax kept fresh in the rail; he never tells the story and Cass stops needing him to, which is its own kind of knowing; some questions are better held than answered, and somebody in Graywater finally learned to hold one beside him'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pr_quiet",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Second Rod"
+      }
+    },
+    {
+      "id": "e_pr_watch",
+      "body": "<<FILL role=ending words=135 beats='The full night tide at his shoulder: the seam dying at slack, turning, being born again the other way; thirty years of watching taught forward in one night, buoy by buoy, until the water at night is only water, known and named; at dawn he says, you will do for this pier, which is the largest thing he has said to anyone in years'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pr_watch",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Night Tide"
+      }
+    },
+    {
+      "id": "td_shop",
+      "body": "<<FILL role=choice words=135 beats='The tide-chart shop on Quay Street, a room made of drawers: fifty years of tables in labeled oak, brass pulls gone satiny with hands; Ida Marsh at the counter with her glasses up in her hair; write this arrival-neutral for any evening of the summer; the shop asks nothing and notices everything'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_shop_1",
+          "label": "Carry her delivery cartons in from the step first.",
+          "target": "td_boxes"
+        },
+        {
+          "id": "c_td_shop_2",
+          "label": "Ask her to teach the tide arithmetic a guard should know.",
+          "target": "td_rips"
+        },
+        {
+          "id": "c_td_shop_3",
+          "label": "Browse the chart wall back toward the oldest years.",
+          "target": "td_charts"
+        }
+      ]
+    },
+    {
+      "id": "td_boxes",
+      "body": "<<FILL role=rising words=126 beats='Cartons in, kettle on without being asked; she clocks the guard badge and the manners as two separate facts and files both; the shop smells of paper and iodine and the sea at a remove'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_boxes_1",
+          "label": "Take the tea she pours and the stool she points at.",
+          "target": "td_kettle"
+        }
+      ]
+    },
+    {
+      "id": "td_kettle",
+      "body": "<<FILL role=rising words=130 beats='Tea in the back of the shop among the map tubes; she talks shop rhythm, which captains buy which tables, which tourists frame them; she reads people the way she reads water, by what moves under the surface, and Cass can feel the reading happening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_kettle_1",
+          "label": "Answer the question she has not asked yet.",
+          "target": "td_talk"
+        },
+        {
+          "id": "c_td_kettle_2",
+          "label": "Ask about the oldest drawers on the wall.",
+          "target": "td_charts"
+        }
+      ]
+    },
+    {
+      "id": "td_rips",
+      "body": "<<FILL role=rising words=140 beats='The lesson, delivered like arithmetic because it is: spring tides, the ebb window, why a pier's pilings braid a channel and why the seam shows brown; she chalks a tide curve on butcher paper and makes Cass mark the dangerous hours; real safety knowledge, the kind that belongs on a chair between rescues; knowledge as respect, hers for the water and now Cass's'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_rips_1",
+          "label": "Ask what a junior guard should ask next.",
+          "target": "td_talk"
+        },
+        {
+          "id": "c_td_rips_2",
+          "label": "Follow the wall of drawers back through the years.",
+          "target": "td_charts"
+        }
+      ]
+    },
+    {
+      "id": "td_charts",
+      "body": "<<FILL role=rising words=132 beats='The chart wall runs backward in time drawer by drawer, decades under brass pulls; one August, thirty years down the wall, has a pull worn brighter than its neighbors, the way a stair tread wears where feet always land; somebody opens that drawer often, and has for a long time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_charts_1",
+          "label": "Rest a hand on the worn pull and see what happens.",
+          "target": "td_drawer"
+        }
+      ]
+    },
+    {
+      "id": "td_drawer",
+      "body": "<<FILL role=rising words=132 beats='Ida is at Cass's shoulder before the drawer moves, not fast, just present, the way weather is; she is not angry; she asks, not unkindly, what a junior guard wants with the old years, and the question has thirty years of practice in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_drawer_1",
+          "label": "Answer her straight, or do not.",
+          "target": "td_talk"
+        }
+      ]
+    },
+    {
+      "id": "td_talk",
+      "body": "<<FILL role=choice words=145 beats='Her question, direct across the counter: what is this about; the shop goes quiet around it; write the two honest roads: the truth, the photo in the locker and the initials in the rail and the town's practiced quiet, or the professional cover, charts for the job; she will honor either, but only one opens anything'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_talk_1",
+          "label": "Tell the truth: you want to understand the night nobody talks about.",
+          "target": "td_august"
+        },
+        {
+          "id": "c_td_talk_2",
+          "label": "Keep it professional: current tables, for the chair.",
+          "target": "td_job"
+        }
+      ]
+    },
+    {
+      "id": "td_job",
+      "body": "<<FILL role=choice words=128 beats='Fair dealing, nothing more: she sells the current table, teaches its use, wraps it in brown paper like always; at the door the bell waits, and the moment stretches just long enough to change a mind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_job_1",
+          "label": "Turn at the door and tell her the real reason.",
+          "target": "td_august"
+        },
+        {
+          "id": "c_td_job_2",
+          "label": "Let Saturdays at her counter become their own apprenticeship.",
+          "target": "e_td_counter"
+        }
+      ]
+    },
+    {
+      "id": "td_august",
+      "body": "<<FILL role=rising words=150 beats='Honesty lands; she looks at Cass a long moment, then pulls the worn August herself and opens it on the counter: the night's page, a surge measurement in her own young handwriting, a pencil line through the tide curve, and a note in the margin, no one could have read this in the dark; she was twenty-two and she measured it because nobody else was going to'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_august_1",
+          "label": "Ask why this page matters so much.",
+          "target": "td_vault"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "td_vault",
+      "body": "<<FILL role=choice words=150 beats='The back drawer under the counter: her original observation sheet from that night, and the carbon of the copy she gave the inquest, verdict word visible on the clipped slip, misadventure; a record kept thirty years against the day somebody asked properly; three ways to be in this moment, two of them worthy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_vault_1",
+          "label": "Ask why she kept it all these years.",
+          "target": "td_kept"
+        },
+        {
+          "id": "c_td_vault_2",
+          "label": "Ask what the paper printed instead.",
+          "target": "td_paper"
+        },
+        {
+          "id": "c_td_vault_3",
+          "label": "Reach for your phone to photograph the sheet uninvited.",
+          "target": "e_td_pry"
+        }
+      ]
+    },
+    {
+      "id": "td_kept",
+      "body": "<<FILL role=rising words=140 beats='Her answer, flat and enormous: a record is how a town remembers when its mouth will not; she measured the water because the water was the only witness that could not be argued with, and she kept the sheet because someday the arguing would stop and the number would still be true; she taps the surge figure twice, like a verdict of her own'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_kept_1",
+          "label": "Thank her the way the sheet deserves.",
+          "target": "td_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "td_paper",
+      "body": "<<FILL role=rising words=145 beats='What the Gazette printed she says in one sentence and will not say the middle word of in her own shop: a headline with dare in it, unnamed witnesses, a tide that does not match her sheet; there was a correction set in type, she heard, and it never ran because the paper folded that October; what is left of the Gazette sleeps in the record office on Harbor Row, and she says that like a map reference'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_paper_1",
+          "label": "Fold the fact away carefully and take your leave.",
+          "target": "td_done"
+        }
+      ]
+    },
+    {
+      "id": "td_done",
+      "body": "<<FILL role=choice words=150 beats='The sign flipped, the street blue with evening, a chart tube under Cass's arm, lent not sold; write this arrival-neutral to how deep the counter talk went: what is settled is that the shop's fifty years of drawers now count Cass among the people they are kept for, and Ida's goodnight has a next-time built into it'>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_done_1",
+          "label": "Back to the station through the gold streets.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_td_done_2",
+          "label": "The bluff path behind her shop climbs toward the mast light.",
+          "target": "rd_cottage"
+        },
+        {
+          "id": "c_td_done_3",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_td_done_4",
+          "label": "Go out at dead low with her to walk the pier channel's bones.",
+          "target": "e_td_tide"
+        }
+      ]
+    },
+    {
+      "id": "e_td_pry",
+      "body": "<<FILL role=failure words=132 beats='The drawer closes with no slam at all, which is worse; polite frost for the rest of the visit, the current table sold, the bell seeing Cass out; the difference between finding a record and being trusted with one, learned at exactly the counter where it costs most; she still nods on the street; the drawer stays shut this season, and it is fair'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_td_pry",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Not Yours to Take"
+      }
+    },
+    {
+      "id": "e_td_counter",
+      "body": "<<FILL role=ending words=132 beats='The craft without the history: Saturdays at the counter learning tables, curves, the moon's bookkeeping; the old August stays shut and the summer is good anyway; a guard who can read a tide by eye is worth having, and Ida builds one, and if her glance sometimes drifts down the wall of years, she keeps her own counsel, as always'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_td_counter",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Saturdays on Quay Street"
+      }
+    },
+    {
+      "id": "e_td_tide",
+      "body": "<<FILL role=ending words=135 beats='Dead low, the flats bared a quarter mile, and Ida in wellingtons walking Cass out to where the pier channel's bones lie printed in the sand: the braid of it, the scour under the pilings, the whole engine of that seam explained by the ground itself; the sea's grammar taught by the woman who wrote it down; safe as a walk can be and twice as instructive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_td_tide",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Dead Low"
+      }
+    },
+    {
+      "id": "rd_cottage",
+      "body": "<<FILL role=choice words=135 beats='The bluff path tops out at the radio cottage: guyed mast, cottage of weathered board, wires running everywhere like a spider's diagram; Wexler Cole, retired coast radio, still reads the shipping weather at six for anyone with a set; write this arrival-neutral for any evening of the season; three ways to arrive: useful, patient, or badge-first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_cottage_1",
+          "label": "Right the sagging guy-wire on the path before knocking.",
+          "target": "rd_wire"
+        },
+        {
+          "id": "c_rd_cottage_2",
+          "label": "Wait out the six o'clock weather on the step.",
+          "target": "rd_listen"
+        },
+        {
+          "id": "c_rd_cottage_3",
+          "label": "Knock and lead with the badge and your question.",
+          "target": "rd_gruff"
+        }
+      ]
+    },
+    {
+      "id": "rd_wire",
+      "body": "<<FILL role=rising words=130 beats='The guy-wire tensioned back to its stake, turnbuckle snugged the way the others are snugged, a job done to the standard of the yard it is done in; the curtain moves in the window; when Cass knocks, the door is already open; you will do, he says'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_wire_1",
+          "label": "Step into the cottage of wires.",
+          "target": "rd_mast"
+        }
+      ]
+    },
+    {
+      "id": "rd_mast",
+      "body": "<<FILL role=rising words=130 beats='He walks the mast base first, checking Cass's work without apology: the anchors, the storm of oh-nine that folded the old mast like a straw, the forty years of maintenance since; devotion wearing overalls; a man who keeps things standing because someone must'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_mast_1",
+          "label": "Follow him inside at last.",
+          "target": "rd_door"
+        }
+      ]
+    },
+    {
+      "id": "rd_listen",
+      "body": "<<FILL role=rising words=132 beats='The six o'clock weather in his slow coast voice through the open window: sea areas, pressures, visibilities, a litany for boats Cass will never see; the step is cold and the ritual is warm; when it ends he opens the door without surprise; heard the whole thing, did you, he says, approving'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_listen_1",
+          "label": "Come in out of the wind when he offers.",
+          "target": "rd_door"
+        }
+      ]
+    },
+    {
+      "id": "rd_gruff",
+      "body": "<<FILL role=choice words=132 beats='Badge-first gets the weather, pointedly: he recites the evening forecast at the doorstep, complete, unhurried, and hands over not one syllable more; the door frames him like a bulkhead; there is a right way to arrive at this cottage and this was not it, yet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_gruff_1",
+          "label": "Take the hint: sit down on the step and listen properly.",
+          "target": "rd_listen"
+        },
+        {
+          "id": "c_rd_gruff_2",
+          "label": "Press the question again over the forecast.",
+          "target": "e_rd_off"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "rd_door",
+      "body": "<<FILL role=choice words=136 beats='Inside: QSL cards papering two walls, call signs from half the world's coasts; the key and headphones on their bench, dusted daily; and one shelf of logbooks, thirty-one identical spines in order, except one turned backwards, spine to the wall, thirty years down the row'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_door_1",
+          "label": "Ask him to teach the log discipline first.",
+          "target": "rd_teach"
+        },
+        {
+          "id": "c_rd_door_2",
+          "label": "Accept tea and the story of the wall of cards.",
+          "target": "rd_tea"
+        },
+        {
+          "id": "c_rd_door_3",
+          "label": "Ask him plainly for the year everyone circles.",
+          "target": "rd_direct",
+          "condition": {
+            ">=": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rd_tea",
+      "body": "<<FILL role=rising words=132 beats='Tea strong enough to stand a spoon in, and the cards' geography: this one a trawler off Iceland, that one a girl in Lisbon with a homemade set; a lifetime spent listening for other people's trouble and logging it faithfully; the backwards book sits in the corner of every sentence'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_tea_1",
+          "label": "Ask about the cards until he trusts your patience.",
+          "target": "rd_cards"
+        }
+      ]
+    },
+    {
+      "id": "rd_cards",
+      "body": "<<FILL role=rising words=130 beats='One card he takes down himself: coast station to coast station, a thank you in five languages for a relay that found a fishing crew in fog; the wall is not souvenirs, it is receipts; every card says the same thing, somebody listened when it mattered'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_cards_1",
+          "label": "Ask him to teach you the discipline behind the wall.",
+          "target": "rd_teach"
+        },
+        {
+          "id": "c_rd_cards_2",
+          "label": "Let your eyes rest on the backwards spine, and let him see.",
+          "target": "rd_back"
+        }
+      ]
+    },
+    {
+      "id": "rd_teach",
+      "body": "<<FILL role=choice words=140 beats='The discipline, taught at the bench: log what happened, not what people say happened; time, call sign, position, fact; the page does not flinch and does not gossip; he makes Cass log a practice traffic list twice, the second time for neatness; there is a morality in it plainer than any sermon Graywater ever preached'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_teach_1",
+          "label": "Look up from the practice page to the backwards spine.",
+          "target": "rd_back"
+        },
+        {
+          "id": "c_rd_teach_2",
+          "label": "Let the log craft itself be the season's lesson.",
+          "target": "e_rd_net"
+        }
+      ]
+    },
+    {
+      "id": "rd_back",
+      "body": "<<FILL role=choice words=135 beats='The backwards book acknowledged at last, silently, between them; he follows Cass's eyes and does not pretend otherwise; the room holds its breath the way a frequency holds silence before traffic'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_back_1",
+          "label": "Ask nothing; let him take it down in his own time.",
+          "target": "rd_truth"
+        },
+        {
+          "id": "c_rd_back_2",
+          "label": "Offer out loud to leave it alone if it is his to keep.",
+          "target": "rd_respect"
+        }
+      ]
+    },
+    {
+      "id": "rd_respect",
+      "body": "<<FILL role=rising words=132 beats='The offer lands and he weighs it, thumb on the shelf edge; kept is not the same as hidden, he says finally; a log is kept FOR the day somebody asks properly; and he turns the book right way round and takes it down himself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_respect_1",
+          "label": "Stand beside him as he finds the page.",
+          "target": "rd_truth"
+        }
+      ]
+    },
+    {
+      "id": "rd_direct",
+      "body": "<<FILL role=rising words=135 beats='The vouched-for asking: he looks at Cass a long second, the season's word of mouth passing behind his eyes, then takes the backwards book down without ceremony; thirty years, he says, I have waited for somebody to ask the log instead of the street; sit down, junior guard'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_direct_1",
+          "label": "Sit, and watch him find the page.",
+          "target": "rd_truth"
+        }
+      ]
+    },
+    {
+      "id": "rd_truth",
+      "body": "<<FILL role=rising words=170 beats='The page, in his steady hand, thirty years young: 2214, mayday relayed, E.P., pier telephone, skiff adrift on the ebb, swimmer in the water; 2216, lifeguard station raised; 2231, sea ambulance out of Harwick, forty minutes; every line time-stamped fact; he lets Cass read it twice and then says the thing the log means: the man the town blamed for standing by is the man who ran for the phone and then went in himself; the log never lied, and in thirty years nobody ever asked it; YA gravity, grief without gore, the weight all in the timestamps'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_truth_1",
+          "label": "Close the book the way he taught you, carefully.",
+          "target": "rd_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "rd_done",
+      "body": "<<FILL role=choice words=150 beats='Down the bluff path with the mast light steady behind; write this arrival-neutral to how the logbook came down tonight: what is settled is that the coast's quiet net of listeners has counted Cass in, and the cottage door will open next time before the knock'>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_done_1",
+          "label": "Back to the station under the first stars.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_rd_done_2",
+          "label": "The pier lights show at the north end below.",
+          "target": "pr_pier"
+        },
+        {
+          "id": "c_rd_done_3",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_rd_done_4",
+          "label": "Stay for the night watch with the headphones on.",
+          "target": "e_rd_key"
+        }
+      ]
+    },
+    {
+      "id": "e_rd_off",
+      "body": "<<FILL role=failure words=128 beats='Pressed past the forecast, the door closes, gently, completely; some houses give one knock a season and this one is spent; the shipping weather goes on at six every evening all summer, audible from the bluff path, a ritual Cass now hears from outside; nothing cruel in it, just a door that knows its own worth, and a lesson about arriving'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_rd_off",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Weather Only"
+      }
+    },
+    {
+      "id": "e_rd_net",
+      "body": "<<FILL role=ending words=136 beats='The season becomes evenings at the bench: logging the shipping weather beside him, time, fact, neatness counts; nothing asked about any backwards book, nothing told; the coast's invisible net of listeners, and the plain peace of facts on paper; some summers you learn the instrument before you learn the song, and it is not a loss'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_rd_net",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Listening Watch"
+      }
+    },
+    {
+      "id": "e_rd_key",
+      "body": "<<FILL role=ending words=135 beats='The night watch, headphones warm, the coast murmuring in dots and voices; he starts teaching the watch itself, call signs, procedure, the ear for trouble under static; somebody has to listen, he says, and looks at Cass the way a man looks at a successor; the mast light burns over Graywater like a patient star'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_rd_key",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Fist on the Key"
+      }
+    },
+    {
+      "id": "mg_office",
+      "body": "<<FILL role=choice words=140 beats='Harbor Row on a free morning, the record office in the old Gazette building, brass letters ghosting on the stone; Mrs. Amaro at the desk, reading glasses and a date stamp; morning hours only, and Cass's shift starts at one, a fact the wall clock states plainly; write this arrival-neutral for whichever morning of the summer this is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_office_1",
+          "label": "Ask for the Gazette's August of the drowning year.",
+          "target": "mg_clerk"
+        },
+        {
+          "id": "c_mg_office_2",
+          "label": "Ask for everything on the old pier itself.",
+          "target": "mg_pier"
+        },
+        {
+          "id": "c_mg_office_3",
+          "label": "Start sideways with the harbormaster's ledgers.",
+          "target": "mg_ledger"
+        }
+      ]
+    },
+    {
+      "id": "mg_clerk",
+      "body": "<<FILL role=rising words=130 beats='Amaro pulls the reel without asking why, though her eyebrow files the request under interesting; the request slip filled in full, signed, dated, done properly; records answer whoever asks properly, she says, which sounds like a motto because it is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_clerk_1",
+          "label": "Follow her back through the stacks.",
+          "target": "mg_stacks"
+        }
+      ]
+    },
+    {
+      "id": "mg_stacks",
+      "body": "<<FILL role=rising words=130 beats='Through the stacks where the newsroom used to be: bound volumes where desks were, the smell of cold ink outlasting everyone who made it; the microfilm room's green lamp at the back like a harbor light; a building remembering being a newspaper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_stacks_1",
+          "label": "Thread the reel under the green lamp.",
+          "target": "mg_film"
+        }
+      ]
+    },
+    {
+      "id": "mg_pier",
+      "body": "<<FILL role=rising words=130 beats='The pier file first: built 1921, promenade and mooring; closed to swimming by council order the September after that summer; and one thin sheet that stops Cass cold, a works order for a warning sign at the pier head, current hazard, approved, filed, never executed; the pier got a chain and the town got a silence'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_pier_1",
+          "label": "Now the newspaper itself.",
+          "target": "mg_film"
+        },
+        {
+          "id": "c_mg_pier_2",
+          "label": "Cross-check the harbormaster's ledgers first.",
+          "target": "mg_ledger"
+        }
+      ]
+    },
+    {
+      "id": "mg_ledger",
+      "body": "<<FILL role=rising words=130 beats='The harbormaster's ledger in its marbled boards, the night's line in clerk's copperplate: Rey skiff adrift on the ebb, recovered at the jetty next morning, owner notified; a boat that slipped its mooring, recorded by a book with no opinions; the first fact of the night that no rumor ever bothered to include'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_ledger_1",
+          "label": "Now the newspaper's version of the same night.",
+          "target": "mg_film"
+        }
+      ]
+    },
+    {
+      "id": "mg_film",
+      "body": "<<FILL role=rising words=145 beats='The front page swims up under the green lamp: PIER DARE ENDS IN TRAGEDY, black caps, unnamed witnesses said; the story every whisper in Graywater descends from, four paragraphs long, and Cass reads it twice and feels how thin it is; under it a photograph of the pier, and a byline, R. Castellan'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_film_1",
+          "label": "Look closer at the photograph.",
+          "target": "mg_photo"
+        }
+      ]
+    },
+    {
+      "id": "mg_photo",
+      "body": "<<FILL role=rising words=130 beats='A guard's eye reads the printed photograph the way a chair reads a break: the tide in the picture is wrong for the timeline the story tells, water where the story needs sand; the picture and the paragraphs disagree with each other on the front page and nobody in thirty years looked hard enough to notice; a lie does not have to be good if nobody checks it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_photo_1",
+          "label": "Ask Amaro about the byline.",
+          "target": "mg_byline"
+        }
+      ]
+    },
+    {
+      "id": "mg_byline",
+      "body": "<<FILL role=choice words=140 beats='Castellan, Amaro says, quietly; his papers came to the office when the Gazette folded that October, boxes nobody has requested in thirty years; she says it the way a librarian leaves a door unlocked; the wall clock minds its own business loudly; the boxes are deep and the morning is not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_byline_1",
+          "label": "Pull the Castellan boxes and dig properly.",
+          "target": "mg_box"
+        },
+        {
+          "id": "c_mg_byline_2",
+          "label": "Read just the follow-up issues on the reel.",
+          "target": "mg_quick"
+        },
+        {
+          "id": "c_mg_byline_3",
+          "label": "Stop here: note the reel numbers and make your shift.",
+          "target": "mg_done"
+        }
+      ]
+    },
+    {
+      "id": "mg_quick",
+      "body": "<<FILL role=rising words=130 beats='The follow-ups, spooling fast: the inquest verdict, misadventure, one paragraph on page six where nobody reads; no correction in any issue after; the reel runs out in October with the paper itself, mid-season, like a voice cut off; whatever the Gazette owed this town it died owing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_quick_1",
+          "label": "The boxes, then; the reel has said all it can.",
+          "target": "mg_noon"
+        }
+      ]
+    },
+    {
+      "id": "mg_box",
+      "body": "<<FILL role=rising words=145 beats='The Castellan boxes: drafts, spiked galleys, letters on Gazette stock; and in the second box a proof-sheet stamped SET, NOT RUN: a correction, citing the inquest verdict, the tide-shop measurements, the coast radio log; the word dare formally withdrawn, in type that was locked, proofed, and never once touched ink'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_box_1",
+          "label": "Read it standing up, twice, and check the clock.",
+          "target": "mg_noon"
+        }
+      ]
+    },
+    {
+      "id": "mg_noon",
+      "body": "<<FILL role=choice words=150 beats='The noon bell down Harbor Row; shift at one; Amaro's hours end at one today too, and the boxes are half-read; the arithmetic is honest and unkind: the deep archive or the posted chair, not both; write the three doors plainly and let none of them be free'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_noon_1",
+          "label": "Trade the shift: call Vega to cover, and stay with the boxes.",
+          "target": "mg_deep",
+          "effects": [
+            {
+              "op": "set",
+              "var": "duty",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": "c_mg_noon_2",
+          "label": "Note the box numbers, sign a request slip for next time, and make your shift.",
+          "target": "mg_done"
+        },
+        {
+          "id": "c_mg_noon_3",
+          "label": "Slide the proof-sheet into your bag to show people tonight.",
+          "target": "e_mg_bell"
+        }
+      ]
+    },
+    {
+      "id": "mg_deep",
+      "body": "<<FILL role=rising words=160 beats='The bought afternoon under the green lamp: Castellan's letters, a reporter fighting his own masthead; his drafts of the correction, each one spiked; the owner's reply on cream stock, the town needs this settled, not reopened; and at the bottom of the box, sealed, stamped, never posted, a letter addressed in a dead man's hand to E. Pruitt, Graywater; the cost of the afternoon sits in Cass's pocket where the shift used to be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_deep_1",
+          "label": "Hold the sealed letter and decide what it is owed.",
+          "target": "mg_letter"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "mg_letter",
+      "body": "<<FILL role=choice words=145 beats='The unsent letter, thirty years sealed, addressed to the man the town blamed; Amaro in the doorway with her keys, closing time in her posture; what happens to it next decides what kind of finder Cass is; write the two worthy roads: the record's way, or the long vigil'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_letter_1",
+          "label": "Leave it sealed; log it with Amaro so it is found, never taken.",
+          "target": "mg_done"
+        },
+        {
+          "id": "c_mg_letter_2",
+          "label": "Stay past closing while she locks around you, reading the paper's last October.",
+          "target": "e_mg_dark"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "mg_done",
+      "body": "<<FILL role=choice words=150 beats='Out on Harbor Row with the slip signed and the boxes in Amaro's careful custody; write this arrival-neutral to how deep the morning went: what is settled is that the record office now opens for Cass the way it opens for scholars, because the past was handled here with clean hands; records answer whoever asks properly, and somebody finally asked'>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_done_1",
+          "label": "Back toward the station and the afternoon.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_mg_done_2",
+          "label": "Carry what the morgue holds toward the pier at dusk.",
+          "target": "pr_pier"
+        },
+        {
+          "id": "c_mg_done_3",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_mg_done_4",
+          "label": "Come back every free morning until the Castellan papers are formally accessioned.",
+          "target": "e_mg_return"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_bell",
+      "body": "<<FILL role=failure words=130 beats='The proof-sheet never clears the desk; Amaro's hand arrives on it at the same moment as her look, and the look is worse; returned, apologized for, accepted, and the reading room is done with Cass until next season even so; archives run on trust the way beaches run on watch, and both get exactly one breach; the boxes wait for cleaner hands, which could still be Cass's, next summer'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mg_bell",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Out the Door"
+      }
+    },
+    {
+      "id": "e_mg_dark",
+      "body": "<<FILL role=ending words=135 beats='The Gazette's whole last October read in one sitting while Amaro locks up around the lamp: circulation falling, the correction spiked a fourth time, the final issue thanking a town it had failed; how a place's record just stops; Cass walks home under the streetlights carrying knowledge heavy and undelivered, yet, and the sealed letter stays where the record keeps it, findable now, waiting'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mg_dark",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Last October"
+      }
+    },
+    {
+      "id": "e_mg_return",
+      "body": "<<FILL role=ending words=136 beats='The free mornings become method: the Castellan papers formally accessioned, acid-free and numbered, the unsent letter cataloged where no one can lose it again; Amaro teaches finding aids the way Dane teaches breaks; whatever else this season does or does not mend, the record of that night can never be lost again, and that is Cass's doing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mg_return",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Accession"
+      }
+    },
+    {
+      "id": "dn_close",
+      "body": "<<FILL role=choice words=135 beats='Staying after close: Dane's shutdown ritual, flags down and rolled, boards racked in order, the station log squared in his careful hand; the beach emptying to gulls; write this arrival-neutral for any evening of the season; a head guard's quiet is a different weather from the town's, and this is the hour it can be stood in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_close_1",
+          "label": "Take half the closing list unasked.",
+          "target": "dn_list"
+        },
+        {
+          "id": "c_dn_close_2",
+          "label": "Ask the junior's forbidden question: why does no guard ever walk the old pier.",
+          "target": "dn_rule"
+        },
+        {
+          "id": "c_dn_close_3",
+          "label": "Write the day into the station log honestly while he watches.",
+          "target": "dn_log"
+        }
+      ]
+    },
+    {
+      "id": "dn_list",
+      "body": "<<FILL role=rising words=130 beats='The list halved without being offered: Cass on flags while he racks boards; he talks easier with hands busy, small station history surfacing, chairs older than both of them, the summer the flag halyard parted twice; work as the door conversation comes through'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_list_1",
+          "label": "Fold the last flag with him.",
+          "target": "dn_flags"
+        }
+      ]
+    },
+    {
+      "id": "dn_flags",
+      "body": "<<FILL role=rising words=130 beats='The flag fold he does nightly, corners exact, a small ceremony nobody watches; tonight somebody does; he notices Cass noticing and slows down so the fold can be learned, which from Dane is an entire speech about what deserves keeping'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_flags_1",
+          "label": "Walk the beach with him while the light goes.",
+          "target": "dn_walk"
+        }
+      ]
+    },
+    {
+      "id": "dn_rule",
+      "body": "<<FILL role=rising words=130 beats='The official answer, delivered official: condemned decking, insurance, council order; and underneath it, audible the way a sandbar is visible, the unofficial one, which is silence with its cap pulled down; he does not lie, he just stops several sentences early, and knows Cass can count the missing ones'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_rule_1",
+          "label": "Let the log cabinet ask the next question.",
+          "target": "dn_log"
+        },
+        {
+          "id": "c_dn_rule_2",
+          "label": "Leave it and walk the beach with him.",
+          "target": "dn_walk"
+        }
+      ]
+    },
+    {
+      "id": "dn_log",
+      "body": "<<FILL role=choice words=135 beats='The station log cabinet: season books on one shelf back three decades, his own among them, back to when he was sixteen; he watches what Cass does with that fact the way he watches the water, without appearing to; the cabinet is not locked; it has never needed to be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_log_1",
+          "label": "Ask him, not the cabinet.",
+          "target": "dn_walk"
+        },
+        {
+          "id": "c_dn_log_2",
+          "label": "Ask to read his old season book.",
+          "target": "dn_cab"
+        }
+      ]
+    },
+    {
+      "id": "dn_cab",
+      "body": "<<FILL role=rising words=140 beats='He does not stop you; the year finds itself, spine cracked at one page from thirty years of one reader; that night's entry a single line, See coast radio log. I was sixteen.; nothing else all August, a month of blank days in a book that never has blank days; a sixteen-year-old's grief measured in what he could not write'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_cab_1",
+          "label": "Close the book and go find him on the sand.",
+          "target": "dn_walk"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "dn_walk",
+      "body": "<<FILL role=choice words=145 beats='The dusk walk he takes alone after close, tonight not alone: the beach going pewter, the pier black at the north end, the tide doing its slow arithmetic; he sets a pace that makes talking possible and looking at each other unnecessary, which is how hard things get said on beaches; four roads through this walk, one of them wearing the street's words'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_walk_1",
+          "label": "Tell him plainly what the summer has been teaching you around town.",
+          "target": "dn_open"
+        },
+        {
+          "id": "c_dn_walk_2",
+          "label": "Ask him straight why he never told anyone what he saw.",
+          "target": "dn_why"
+        },
+        {
+          "id": "c_dn_walk_3",
+          "label": "Match his silence step for step and let the water talk.",
+          "target": "dn_quiet"
+        },
+        {
+          "id": "c_dn_walk_4",
+          "label": "Repeat the street's version: people say a guard was on duty and froze.",
+          "target": "dn_flat"
+        }
+      ]
+    },
+    {
+      "id": "dn_open",
+      "body": "<<FILL role=rising words=170 beats='He listens to all of it without one word, eyes on the tide line, and the silence after lasts three whole waves; then, level: I was there; sixteen, off shift, on this sand when Pruitt went in; I helped pull HIM out, and there was nothing else in the water left to reach; the ambulance was forty minutes and the ebb was faster; I have waited thirty years for somebody to ask the water instead of the street; YA gravity, the drowning never staged, only its weight on the man carrying the memory'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_open_1",
+          "label": "Walk the rest of the beach with him in changed silence.",
+          "target": "dn_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "dn_why",
+      "body": "<<FILL role=rising words=160 beats='His answer arrives level as a log entry: grief needs an address, and the town wrote Pruitt's on it while a sixteen-year-old watched; the truth pointed at a dead boy's own bad luck, a slipped mooring, a brave stupid swim after his father's skiff, and who spends that on a grieving town; so he let the wrong address stand, and the not-correcting became its own sentence, thirty years, both men serving it on the same small beach; he says it like a man reading his own charge sheet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_why_1",
+          "label": "Carry the answer down the beach beside him.",
+          "target": "dn_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "dn_quiet",
+      "body": "<<FILL role=choice words=136 beats='The silence kept, step for step, half a mile of pewter light; at the pier's long shadow he stops, looks up at the black boards a moment, and walks on; some nights that is the whole lesson: where a man stops, and that he still walks past it every evening of his life'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_quiet_1",
+          "label": "Let the evening end at the station steps.",
+          "target": "dn_done"
+        },
+        {
+          "id": "c_dn_quiet_2",
+          "label": "Make the dusk walk the season's standing appointment.",
+          "target": "e_dn_dusk"
+        }
+      ]
+    },
+    {
+      "id": "dn_flat",
+      "body": "<<FILL role=choice words=136 beats='The street's words land wrong because they are wrong, and because they arrive in his junior's mouth; chief-to-junior formality drops like a visor, mid-stride; he does not raise his voice, he lowers the temperature; the walk is suddenly a debrief'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_flat_1",
+          "label": "Withdraw it plainly and take the silence as your answer.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_dn_flat_2",
+          "label": "Stand on the street's version and ask again.",
+          "target": "e_dn_push"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "dn_done",
+      "body": "<<FILL role=choice words=150 beats='The station steps in the last light; write this arrival-neutral to what was said or unsaid on the sand: his goodnight nod has changed shape, colleague-sized now, and whatever the walk held is carried between them, not by Cass alone; the season has a second keel under it from tonight'>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_done_1",
+          "label": "Goodnight, and back into the season.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_dn_done_2",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_dn_done_3",
+          "label": "Ask him, before goodnight, who Tomas actually was.",
+          "target": "e_dn_first"
+        }
+      ]
+    },
+    {
+      "id": "e_dn_push",
+      "body": "<<FILL role=failure words=132 beats='The season finishes correct and cold: evaluations fair, instruction thorough, distances kept; he never punishes Cass and never again walks the beach with the light going, either; some questions cost exactly the asking when they arrive wearing the street's words; a professional summer, complete, and lonelier than it needed to be'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dn_push",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Chief and Junior"
+      }
+    },
+    {
+      "id": "e_dn_dusk",
+      "body": "<<FILL role=ending words=132 beats='The standing appointment: a season of dusk walks where the truth stays folded and the trust does not; he teaches the evening water, the handover light, the reading of a beach emptying; next summer, maybe, or the one after; some men talk in geological time, and walking beside them is not waiting, it is the friendship itself'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dn_dusk",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Dusk Round"
+      }
+    },
+    {
+      "id": "e_dn_first",
+      "body": "<<FILL role=ending words=140 beats='He answers the better question: Tomas Rey as a person, not a story, the laugh that carried down a beach, the skiff he loved and moored badly, the guard he was two summers from becoming; the name said aloud on the evening sand for the first time in years, by the man who has carried it longest after Pruitt; a memorial made of nothing but accurate memory, which is the rarest kind'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dn_first",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "His Name Was Tomas"
+      }
+    },
+    {
+      "id": "fin_eve",
+      "body": "<<FILL role=rising words=150 beats='The season's last Friday, boards stacked, the water emptying of summer; write this arrival-neutral, entered from any corner of the season and any state of it: Dane holds the guards after close and says, plainly, that Sunday is thirty years; he has asked the town to meet him at the old pier at low tide; he means to mark it properly at last, his own decision, carried alone until this minute, and he needs hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_eve_1",
+          "label": "Stay at the table and hear the plan.",
+          "target": "fin_brief"
+        }
+      ]
+    },
+    {
+      "id": "fin_brief",
+      "body": "<<FILL role=choice words=150 beats='The plan on the station table, three jobs deep: a current-warning sign and a plaque the pier never had; word carried through town so Graywater comes as a town and not a rumor; and the beach itself closed down gently, one last watched morning to hold the gathering; every job real, none of them small; pick your Saturday'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_brief_1",
+          "label": "Take the sign and the plaque.",
+          "target": "fin_sign"
+        },
+        {
+          "id": "c_fin_brief_2",
+          "label": "Carry the word through town.",
+          "target": "fin_word"
+        },
+        {
+          "id": "c_fin_brief_3",
+          "label": "Hold the shore and close the season right.",
+          "target": "fin_shore"
+        }
+      ]
+    },
+    {
+      "id": "fin_sign",
+      "body": "<<FILL role=choice words=136 beats='The harbor workshop on Saturday: posts, coach bolts, the blank aluminum blazing under the strip light; Dane's sketch taped to the bench, where the sign should stand, where it should have stood; the works order from thirty years ago finally getting executed by hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_1",
+          "label": "Set the posts at the pier head with the harbor crew.",
+          "target": "fin_sign_a"
+        },
+        {
+          "id": "c_fin_sign_2",
+          "label": "Letter the plaque with Dane at the bench.",
+          "target": "fin_sign_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_sign_a",
+      "body": "<<FILL role=choice words=136 beats='Post holes in old concrete, the harbor crew's unhurried competence, the sign frame plumbed square to the sea it warns about; rip current, swim parallel to shore, the words that save people set in metal at last where the water can hear them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_a_1",
+          "label": "Bolt the last brace and get back for the evening briefing.",
+          "target": "fin_sign_j"
+        },
+        {
+          "id": "c_fin_sign_a_2",
+          "label": "Stay with the crew until the concrete cures in the dark.",
+          "target": "e_sign_posts"
+        }
+      ]
+    },
+    {
+      "id": "fin_sign_b",
+      "body": "<<FILL role=choice words=140 beats='The wording weighed like cargo at the bench: the current named as a current; Tomas named as a swimmer, seventeen; no word anywhere on the metal within a mile of dare; Dane's hand steady on the letter spacing, thirty years of choosing words finally getting them down in brass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_b_1",
+          "label": "Rack the finished plaque for Sunday and go.",
+          "target": "fin_sign_j"
+        },
+        {
+          "id": "c_fin_sign_b_2",
+          "label": "Sit with Dane until the lacquer sets, saying nothing much.",
+          "target": "e_sign_words"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_sign_j",
+      "body": "<<FILL role=rising words=126 beats='Sign and plaque under tarp at the pier head by dusk, waiting for Sunday like a held breath; the harbor crew drifts off to supper; the pier stands over its own reflection, about to mean something different'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_j_1",
+          "label": "Report the job done.",
+          "target": "fin_sign_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_sign_r",
+      "body": "<<FILL role=rising words=124 beats='Done, reported against Dane's checklist; his nod; one thing standing on this coast that was not standing yesterday, and it is the true kind: bolted, plumb, and honest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_r_1",
+          "label": "Sunday comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "e_sign_posts",
+      "body": "<<FILL role=ending words=132 beats='Safety made physical, bolt by bolt, cure by cure, the crew working lamp light like they have all done harder nights than this; the foreman's verdict, should have stood here before my knees went; the practical remembrance, which is the kind that stops the next one; Cass walks home with concrete under every fingernail and no regrets at all'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_sign_posts",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Set in Concrete"
+      }
+    },
+    {
+      "id": "e_sign_words",
+      "body": "<<FILL role=ending words=135 beats='The plaque's words found and set: current, swimmer, name, date, nothing else, because nothing else is fact; Dane and Cass sit with it while the lacquer cures, two guards and a finished sentence thirty years late; language doing at last what language failed to do then, which was tell the truth plainly and stop'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_sign_words",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Right Words"
+      }
+    },
+    {
+      "id": "fin_word",
+      "body": "<<FILL role=choice words=136 beats='The word carried through town, and write it neutral to whichever doors the summer already opened: Quay Street, the bluff, Harbor Row, the harbor sheds; Sunday, low tide, the old pier, Dane Okafor asks; the town takes the news like weather it has been expecting for thirty years, which it has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_1",
+          "label": "Make the rounds of shops and sheds till the yes is general.",
+          "target": "fin_word_a"
+        },
+        {
+          "id": "c_fin_word_2",
+          "label": "Walk out the boards and ask Pruitt himself.",
+          "target": "fin_word_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_word_a",
+      "body": "<<FILL role=choice words=136 beats='Door to door down the sea road, and the different silences answering: some relieved like a held breath let go, some rusted shut and creaking open one inch, all of them turning over; nobody asks what it is about; everybody in Graywater has always known exactly what it is about'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_a_1",
+          "label": "Enough doors; carry the count back.",
+          "target": "fin_word_j"
+        },
+        {
+          "id": "c_fin_word_a_2",
+          "label": "Keep going till every last house on the sea road is told in person.",
+          "target": "e_word_town"
+        }
+      ]
+    },
+    {
+      "id": "fin_word_b",
+      "body": "<<FILL role=choice words=145 beats='The hardest invitation, made plainly at his rail: Sunday, low tide, his pier, and his name in the right place this time; Pruitt watches the water so long the rod tip dips twice unattended; write his stillness as weather, not suspense; whatever he decides, the asking itself is a thing nobody in this town has done in thirty years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_b_1",
+          "label": "Leave him with it; the asking was the errand.",
+          "target": "fin_word_j"
+        },
+        {
+          "id": "c_fin_word_b_2",
+          "label": "Stay the evening; let him decide out loud in his own time.",
+          "target": "e_word_pier"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_word_j",
+      "body": "<<FILL role=rising words=124 beats='The word carried; the town's yes assembling itself house by house behind Cass like a tide coming in over flats, slow, certain, covering old ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_j_1",
+          "label": "Bring the count back to the station.",
+          "target": "fin_word_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_word_r",
+      "body": "<<FILL role=rising words=124 beats='The list read back at the station table; Dane goes down it twice with a pencil and no pencil marks; that is the town, then, he says, and folds the list into his breast pocket like orders'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_r_1",
+          "label": "Sunday comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "e_word_town",
+      "body": "<<FILL role=ending words=132 beats='Every door on the sea road knocked, the whole yes gathered by hand, porch by porch, name by name; remembrance as logistics, which it always partly is; the last house is the retired schoolteacher who taught them all, Dane and Pruitt and Tomas too, and she says, about time, and closes her door gently, and Cass stands on her step feeling the season click into place'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_word_town",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "House by House"
+      }
+    },
+    {
+      "id": "e_word_pier",
+      "body": "<<FILL role=ending words=135 beats='The long evening at the rail while he decides out loud, in pieces, between casts; the decision arrives the way tide arrives, no single moment you could point to; tell Okafor, he says finally, that I will be where I always am; which on Sunday, at low tide, will be the exact middle of it; the biggest yes in Graywater, delivered sideways like everything he means'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_word_pier",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "He Says He Will Come"
+      }
+    },
+    {
+      "id": "fin_shore",
+      "body": "<<FILL role=choice words=136 beats='The season's last close-down, done gently: boards in and racked for winter, floats hauled, flags to half for Sunday; the beach handed back to the gulls clean; and the pier approach to ready for a town's worth of feet that have not walked those boards in years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_1",
+          "label": "Run the last patrol sweep with Vega, end to end.",
+          "target": "fin_shore_a"
+        },
+        {
+          "id": "c_fin_shore_2",
+          "label": "Set the pier approach for Sunday: rope lines and chairs from the church hall.",
+          "target": "fin_shore_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_a",
+      "body": "<<FILL role=choice words=132 beats='The last sweep, the summer's whole map underfoot one more time: the sandbar, the rip seam quiet at low water, the castle moats of a hundred vanished families; the chair empty at the end of it, decommissioned for the year, throne of a country that closes every September'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_a_1",
+          "label": "Rack the flags and rejoin the crew.",
+          "target": "fin_shore_j"
+        },
+        {
+          "id": "c_fin_shore_a_2",
+          "label": "Sit the empty chair through the very last posted hour of the season.",
+          "target": "e_shore_last"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_b",
+      "body": "<<FILL role=choice words=132 beats='The approach set with a guard's eye: rope lines guiding feet away from the drop-off, chairs in rows on firm sand above the tide's reach, a clear lane for elderly knees and one for the wheelchair from the harbormaster's office; the practical hospitality of a small town doing a hard thing properly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_b_1",
+          "label": "Walk the setup once more and rejoin the crew.",
+          "target": "fin_shore_j"
+        },
+        {
+          "id": "c_fin_shore_b_2",
+          "label": "Ask Dane to teach you the station's flag fold, and do it right at dusk.",
+          "target": "e_shore_flag"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_j",
+      "body": "<<FILL role=rising words=124 beats='The shore ready: winter's beach with one morning of summer's care left in it, rope lines humming faintly in the offshore air, chairs facing the pier like an audience already seated'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_j_1",
+          "label": "Report the shore ready.",
+          "target": "fin_shore_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_r",
+      "body": "<<FILL role=rising words=124 beats='Dane walks the setup once at dusk, adjusting nothing, which from him is applause; he stands a moment at the rope line looking at the pier, and whatever he rehearses there he rehearses alone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_r_1",
+          "label": "Sunday comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "e_shore_last",
+      "body": "<<FILL role=ending words=132 beats='The empty chair, the whole beach, the hour observed to the minute, whistle on its lanyard and nobody left to whistle at; a season ended the way a watch ends, relieved and complete; Dane finds Cass there at the hour's turn and says nothing and stands the last five minutes of it alongside, two guards and an empty sea, which is a beach at its very best'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_shore_last",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Last Posted Hour"
+      }
+    },
+    {
+      "id": "e_shore_flag",
+      "body": "<<FILL role=ending words=136 beats='The fold taught at dusk, corners exact, the same small ceremony he has done alone for years done tonight by four hands; stations remember through ritual the way towns remember through records, and both need somebody younger eventually; the flag goes into winter square and true, and the teaching of it says everything the fold does not'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_shore_flag",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Flag Fold"
+      }
+    },
+    {
+      "id": "fin_tide",
+      "body": "<<FILL role=rising words=150 beats='Sunday, dead low, the water farther out than the town ever sees it, the sandbar's bones bare and shining; the sign sheeted at the pier head; and the town actually coming, in coats, in numbers, down the roped approach and out onto boards most of them have not walked in thirty years; write this arrival-neutral to whichever Saturday job the reader carried: all three were done, by many hands, and the morning shows it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_tide_1",
+          "label": "Walk out the boards with the town.",
+          "target": "fin_gather"
+        }
+      ]
+    },
+    {
+      "id": "fin_gather",
+      "body": "<<FILL role=rising words=160 beats='The boards full and quiet; Renata Rey down from the city at Dane's letter, thirty years older than her brother got to be, holding the rail like a hand; Amaro with a flat archive box; Ida with a chart tube; Wexler with one logbook under his arm; Pruitt at the far rail where he always is, the gathering arrived to him; write every arrival as that keeper's own doing and habit, whatever doors Cass did or did not knock on this summer; the keepers came keeping, because that is what they are'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gather_1",
+          "label": "Find a place at the rail as Dane steps up.",
+          "target": "fin_speak"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_speak",
+      "body": "<<FILL role=choice words=155 beats='Dane at the rail with the sheet off the sign, the town quiet, the ebb quiet under the boards; the moment balances: one man's account, or the whole record; Cass close enough to tip it, and standing where a season of choices has placed them; write the three roads with equal dignity, the asking, the witnessing, and the watch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_speak_1",
+          "label": "Stand up beside Dane and ask the keepers to read what they kept.",
+          "target": "fin_truth",
+          "condition": {
+            ">=": [
+              {
+                "var": "trust"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_fin_speak_2",
+          "label": "Hold the silence and let Dane say what one man saw.",
+          "target": "fin_half"
+        },
+        {
+          "id": "c_fin_speak_3",
+          "label": "Slip back and take the chair line so every senior guard can stand in the crowd.",
+          "target": "fin_watch"
+        }
+      ]
+    },
+    {
+      "id": "fin_truth",
+      "body": "<<FILL role=rising words=175 beats='The record speaks in its keepers' voices, each rising on their own: Ida's measurement and her pencil line, no one could have read this in the dark; Wexler's log, 2214, mayday relayed, E.P., the man who ran for the phone and then went in; Amaro's proof-sheet, set and never run, the word dare withdrawn out loud on the boards where it was coined; Dane last and briefest, sixteen again for one sentence, I helped pull out the man who went in, and there was no one else to reach; the truth assembled from what the town kept all along, needing only a season it trusted enough to say it to; write the causes as their keeping, never as Cass's collecting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_truth_1",
+          "label": "Look at Pruitt as the record finishes.",
+          "target": "fin_mend"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_mend",
+      "body": "<<FILL role=rising words=160 beats='What the end of thirty years of blame looks like: small; Renata Rey crossing the boards to Pruitt at the far rail; one sentence nobody else hears; his two-finger lift off the rail becoming, slowly, a whole hand, holding hers; the town not cheering, not weeping in any way it shows, just turning over at last, like ground; the sign bright at the pier head with Tomas's name catching the low sun; restraint carries this scene, keep every gesture at true scale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_mend_1",
+          "label": "Let the gathering loosen into the morning.",
+          "target": "fin_close"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_close",
+      "body": "<<FILL role=choice words=150 beats='After: the crowd thinning down the roped lane, chairs beginning to fold, Dane at the new sign with the season's paperwork under his arm and something unhurried in him for the first time all summer; he has one more thing to say to Cass and the shape of it depends on the season's ledger, which he has kept as carefully as everything else'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_close_1",
+          "label": "Take the winter-crew place he offers, chair to boat, the year round.",
+          "target": "e_fin_crew",
+          "condition": {
+            "==": [
+              {
+                "var": "duty"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_fin_close_2",
+          "label": "Before he says anything, square the ledger: name the shift you traded away.",
+          "target": "e_fin_square",
+          "condition": {
+            "==": [
+              {
+                "var": "duty"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_fin_close_3",
+          "label": "Shake his hand and let the season be what it was: enough.",
+          "target": "e_fin_season"
+        }
+      ]
+    },
+    {
+      "id": "fin_half",
+      "body": "<<FILL role=rising words=160 beats='Dane alone at the rail says what one man saw, first time aloud in thirty years: the boat, the ebb, the man who went in after; not the whole record, but a true piece of it, said standing where it happened, which is more than this town has managed in a generation; the sheet comes off the sign; Tomas's name in brass; the town breathes differently walking home, and the rest of the record stays kept, findable, patient'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_half_1",
+          "label": "Stay while the boards empty.",
+          "target": "fin_after"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_after",
+      "body": "<<FILL role=choice words=140 beats='The boards emptying in the flat noon light, two directions with weight left in them: the old man at the far rail rebaiting a hook as if it were any Sunday, and the head guard folding chairs as if they were the season itself; both doors are good ones; write them level'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_after_1",
+          "label": "Walk Pruitt down the pier at his own pace.",
+          "target": "e_fin_walk"
+        },
+        {
+          "id": "c_fin_after_2",
+          "label": "Stay folding chairs with Dane while the tide turns.",
+          "target": "e_fin_fold"
+        }
+      ]
+    },
+    {
+      "id": "fin_watch",
+      "body": "<<FILL role=choice words=140 beats='The chair line above the emptied beach, the remembrance carried back on the wind in pieces, a voice, a silence, a gull; the whole bare sea in front and the whole town behind, and between them one junior guard keeping the watch so that every senior guard can stand in the crowd where they belong this morning; duty as its own kind of attendance, chosen with open eyes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_watch_1",
+          "label": "Keep the watch to the last word and the last wave.",
+          "target": "e_fin_watch"
+        }
+      ]
+    },
+    {
+      "id": "e_fin_crew",
+      "body": "<<FILL role=success words=150 beats='The offer, made at the foot of the new sign: the winter crew, chair to boat, the year round; every shift kept all season is weighed in it and he says so in exactly six words; the town's water in good hands, and Cass now one of them; walking home past the tide shop and the bluff path and Harbor Row, every light along the sea road belongs to somebody who knows the truth now, and the season that carried it closes like a well-kept log: time, fact, name, nothing missing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_crew",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Winter Crew"
+      }
+    },
+    {
+      "id": "e_fin_square",
+      "body": "<<FILL role=ending words=145 beats='Squaring the ledger before he can speak: the traded shift named out loud, what it bought and what it cost, no excuses attached; Dane hears the honesty and the cost both, and nods the way he nods at a true log entry; the boxes needed somebody too, he says; next summer, earn the chair back; no winter place this year, and a handshake worth more than one; a clean ledger over a clean record, chosen twice now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_square",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Squared Ledger"
+      }
+    },
+    {
+      "id": "e_fin_season",
+      "body": "<<FILL role=ending words=140 beats='The handshake, and the season complete on its own terms: sixteen years old and part of how a town finally told itself the truth; no title, no offer, none needed; the bike ride home along a sea road where every house now knows, past the pier where the new sign stands its first watch; some summers are a whole education, and this one signs its name at the bottom like Amaro's date stamp: complete'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_season",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Enough"
+      }
+    },
+    {
+      "id": "e_fin_walk",
+      "body": "<<FILL role=ending words=140 beats='Pruitt's pace, his pier, the new sign passed slow enough to read every word of; at the pier head he stops at the rail where the wax sits dark in T.R., and says, tell Okafor the wax is his job now too; something set down at last between the three of them, thirty years heavy, carried from here by more hands than one; he casts on the turning tide, and Cass walks back down boards that feel different underfoot'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_walk",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Down the Boards"
+      }
+    },
+    {
+      "id": "e_fin_fold",
+      "body": "<<FILL role=ending words=140 beats='The unglamorous end of remembrance: chairs, rope lines, tarp, the church hall van loaded by two guards working in easy silence; ask me earlier next summer, Dane says at the end, which is both a thank-you and a promise; a true piece said aloud, the rest kept and findable, the town turning over like ground; seasons are how towns get anywhere, and this one moved'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_fold",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Folding Chairs"
+      }
+    },
+    {
+      "id": "e_fin_watch",
+      "body": "<<FILL role=success words=145 beats='The watch kept to the last word and the last wave, the beach handed over empty and safe; Dane comes down the sand after, and stands a minute at the chair rail before he says it: Tomas would have made a guard, you know; you already are one; the season ends at its post, which is where seasons like this one are supposed to end, and the new sign at the pier head catches the light all the way from here'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_watch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Season's Watch"
+      }
+    }
+  ]
+}

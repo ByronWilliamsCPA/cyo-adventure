@@ -1,0 +1,659 @@
+@startuml the-guild-of-junior-inventors
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 124w
+state n_tour #D1C4E9
+n_tour : rising · 112w
+state n_test #D1C4E9
+n_test : rising · 116w
+state n_sort #FFF9C4
+n_sort : choice · 118w
+state g_a1 #D1C4E9
+g_a1 : rising · 96w
+state g_a2 #D1C4E9
+g_a2 : rising · 102w
+state g_a3 #D1C4E9
+g_a3 : rising · 98w
+state g_b1 #FFF9C4
+g_b1 : choice · 108w
+state g_c1 #D1C4E9
+g_c1 : rising · 94w
+state g_c2 #D1C4E9
+g_c2 : rising · 92w
+state g_c3 #D1C4E9
+g_c3 : rising · 100w
+state g_c4 #FFF9C4
+g_c4 : choice · 106w
+state g_f1 #D1C4E9
+g_f1 : rising · 90w
+state g_f2 #D1C4E9
+g_f2 : rising · 94w
+state g_f3 #FFF9C4
+g_f3 : choice · 104w
+state g_f4 #D1C4E9
+g_f4 : rising · 88w
+state g_f5 #D1C4E9
+g_f5 : rising · 90w
+state g_g1 #D1C4E9
+g_g1 : rising · 92w
+state g_g2 #D1C4E9
+g_g2 : rising · 96w
+state g_g3 #FFF9C4
+g_g3 : choice · 104w
+state g_g4 #D1C4E9
+g_g4 : rising · 86w
+state g_g5 #D1C4E9
+g_g5 : rising · 90w
+state g_h1 #D1C4E9
+g_h1 : rising · 94w
+state g_h2 #D1C4E9
+g_h2 : rising · 98w
+state g_h3 #D1C4E9
+g_h3 : rising · 96w
+state g_h4 #FFF9C4
+g_h4 : choice · 108w
+state g_h5 #D1C4E9
+g_h5 : rising · 88w
+state g_h6 #D1C4E9
+g_h6 : rising · 86w
+state g_i1 #D1C4E9
+g_i1 : rising · 94w
+state g_i2 #D1C4E9
+g_i2 : rising · 92w
+state g_i3 #D1C4E9
+g_i3 : rising · 98w
+state g_i4 #FFF9C4
+g_i4 : choice · 106w
+state g_i5 #D1C4E9
+g_i5 : rising · 84w
+state g_i6 #D1C4E9
+g_i6 : rising · 86w
+state g_j1 #D1C4E9
+g_j1 : rising · 96w
+state g_j2 #D1C4E9
+g_j2 : rising · 94w
+state g_j3 #D1C4E9
+g_j3 : rising · 100w
+state g_j4 #FFF9C4
+g_j4 : choice · 104w
+state g_k1 #D1C4E9
+g_k1 : rising · 90w
+state g_k2 #D1C4E9
+g_k2 : rising · 98w
+state g_k3 #FFF9C4
+g_k3 : choice · 106w
+state g_k4 #D1C4E9
+g_k4 : rising · 88w
+state g_k5 #D1C4E9
+g_k5 : rising · 92w
+state g_l1 #D1C4E9
+g_l1 : rising · 92w
+state g_l2 #D1C4E9
+g_l2 : rising · 96w
+state g_l3 #D1C4E9
+g_l3 : rising · 98w
+state g_l4 #FFF9C4
+g_l4 : choice · 108w
+state g_l5 #D1C4E9
+g_l5 : rising · 90w
+state g_l6 #D1C4E9
+g_l6 : rising · 88w
+state g_m1 #D1C4E9
+g_m1 : rising · 94w
+state g_m2 #D1C4E9
+g_m2 : rising · 92w
+state g_m3 #D1C4E9
+g_m3 : rising · 100w
+state g_m4 #FFF9C4
+g_m4 : choice · 112w
+state g_m5 #D1C4E9
+g_m5 : rising · 86w
+state g_m6 #D1C4E9
+g_m6 : rising · 88w
+state g_m7 #D1C4E9
+g_m7 : rising · 90w
+state g_z1 #FFCDD2
+g_z1 : setback (negative)
+g_z1 : "The Fox That Waited"
+state g_z2 #E0E0E0
+g_z2 : discovery (neutral)
+g_z2 : "Keeper of Springs"
+state g_z3 #FFCDD2
+g_z3 : setback (negative)
+g_z3 : "Three Seasons Out of Four"
+state g_z4 #C8E6C9
+g_z4 : success (positive)
+g_z4 : "The Dry-Run Parade"
+state g_z5 #C8E6C9
+g_z5 : success (positive)
+g_z5 : "The Seasons Wake at Noon"
+state g_z6 #E0E0E0
+g_z6 : discovery (neutral)
+g_z6 : "The Hidden Crank"
+state g_z7 #FFCDD2
+g_z7 : setback (negative)
+g_z7 : "The Wheel Comes Out"
+state g_z8 #E0E0E0
+g_z8 : discovery (neutral)
+g_z8 : "The Paddle-Carver's Summer"
+state g_z9 #FFCDD2
+g_z9 : setback (negative)
+g_z9 : "The Hand-Rung Noon"
+state g_z10 #C8E6C9
+g_z10 : completion (positive)
+g_z10 : "The Midsummer Rewinding"
+state g_z11 #C8E6C9
+g_z11 : success (positive)
+g_z11 : "The Conductor of Bells"
+state g_z12 #FFCDD2
+g_z12 : setback (negative)
+g_z12 : "The Four-Minute Noon"
+state l_a1 #D1C4E9
+l_a1 : rising · 98w
+state l_a2 #D1C4E9
+l_a2 : rising · 100w
+state l_a3 #D1C4E9
+l_a3 : rising · 102w
+state l_b1 #FFF9C4
+l_b1 : choice · 106w
+state l_c1 #D1C4E9
+l_c1 : rising · 92w
+state l_c2 #D1C4E9
+l_c2 : rising · 90w
+state l_c3 #FFF9C4
+l_c3 : choice · 106w
+state l_f1 #D1C4E9
+l_f1 : rising · 90w
+state l_f2 #D1C4E9
+l_f2 : rising · 94w
+state l_f3 #FFF9C4
+l_f3 : choice · 104w
+state l_f4 #D1C4E9
+l_f4 : rising · 88w
+state l_f5 #D1C4E9
+l_f5 : rising · 92w
+state l_c4 #D1C4E9
+l_c4 : rising · 94w
+state l_g1 #D1C4E9
+l_g1 : rising · 92w
+state l_g2 #D1C4E9
+l_g2 : rising · 96w
+state l_g3 #FFF9C4
+l_g3 : choice · 104w
+state l_g4 #D1C4E9
+l_g4 : rising · 86w
+state l_g5 #D1C4E9
+l_g5 : rising · 90w
+state l_h1 #D1C4E9
+l_h1 : rising · 94w
+state l_h2 #D1C4E9
+l_h2 : rising · 96w
+state l_h3 #D1C4E9
+l_h3 : rising · 96w
+state l_h4 #FFF9C4
+l_h4 : choice · 108w
+state l_h5 #D1C4E9
+l_h5 : rising · 88w
+state l_h6 #D1C4E9
+l_h6 : rising · 86w
+state l_i1 #D1C4E9
+l_i1 : rising · 94w
+state l_i2 #D1C4E9
+l_i2 : rising · 90w
+state l_i3 #D1C4E9
+l_i3 : rising · 98w
+state l_i4 #FFF9C4
+l_i4 : choice · 106w
+state l_i5 #D1C4E9
+l_i5 : rising · 84w
+state l_i6 #D1C4E9
+l_i6 : rising · 86w
+state l_i7 #D1C4E9
+l_i7 : rising · 88w
+state l_j1 #D1C4E9
+l_j1 : rising · 96w
+state l_j2 #D1C4E9
+l_j2 : rising · 94w
+state l_j3 #D1C4E9
+l_j3 : rising · 100w
+state l_j6 #D1C4E9
+l_j6 : rising · 90w
+state l_j4 #FFF9C4
+l_j4 : choice · 104w
+state l_k1 #D1C4E9
+l_k1 : rising · 90w
+state l_k2 #D1C4E9
+l_k2 : rising · 98w
+state l_k3 #FFF9C4
+l_k3 : choice · 106w
+state l_k4 #D1C4E9
+l_k4 : rising · 88w
+state l_k5 #D1C4E9
+l_k5 : rising · 92w
+state l_l1 #D1C4E9
+l_l1 : rising · 92w
+state l_l2 #D1C4E9
+l_l2 : rising · 96w
+state l_l3 #D1C4E9
+l_l3 : rising · 98w
+state l_l4 #FFF9C4
+l_l4 : choice · 108w
+state l_l5 #D1C4E9
+l_l5 : rising · 90w
+state l_l6 #D1C4E9
+l_l6 : rising · 88w
+state l_m1 #D1C4E9
+l_m1 : rising · 94w
+state l_m2 #D1C4E9
+l_m2 : rising · 92w
+state l_m3 #D1C4E9
+l_m3 : rising · 100w
+state l_m4 #FFF9C4
+l_m4 : choice · 112w
+state l_m5 #D1C4E9
+l_m5 : rising · 86w
+state l_m6 #D1C4E9
+l_m6 : rising · 88w
+state l_m7 #D1C4E9
+l_m7 : rising · 90w
+state l_z1 #FFCDD2
+l_z1 : setback (negative)
+l_z1 : "Adrift at the Second Hoop"
+state l_z2 #E0E0E0
+l_z2 : discovery (neutral)
+l_z2 : "The Trim Doctor"
+state l_z3 #FFCDD2
+l_z3 : setback (negative)
+l_z3 : "The Slipped Hook"
+state l_z4 #C8E6C9
+l_z4 : success (positive)
+l_z4 : "Three Clean Hoops"
+state l_z5 #C8E6C9
+l_z5 : success (positive)
+l_z5 : "The Chimney Line"
+state l_z6 #E0E0E0
+l_z6 : discovery (neutral)
+l_z6 : "The Thermal River"
+state l_z7 #FFCDD2
+l_z7 : setback (negative)
+l_z7 : "The Featherweight Mistake"
+state l_z8 #E0E0E0
+l_z8 : discovery (neutral)
+l_z8 : "Signed for the Winter Mail"
+state l_z9 #FFCDD2
+l_z9 : setback (negative)
+l_z9 : "Grounded"
+state l_z10 #C8E6C9
+l_z10 : completion (positive)
+l_z10 : "First Bell, Two Birds"
+state l_z11 #C8E6C9
+l_z11 : success (positive)
+l_z11 : "Co-Captains of the Loft"
+state l_z12 #FFCDD2
+l_z12 : setback (negative)
+l_z12 : "The Early Launch"
+state m_a1 #D1C4E9
+m_a1 : rising · 96w
+state m_a2 #D1C4E9
+m_a2 : rising · 102w
+state m_a3 #D1C4E9
+m_a3 : rising · 100w
+state m_b1 #FFF9C4
+m_b1 : choice · 106w
+state m_c1 #D1C4E9
+m_c1 : rising · 94w
+state m_c2 #D1C4E9
+m_c2 : rising · 104w
+state m_c4 #FFF9C4
+m_c4 : choice · 106w
+state m_f1 #D1C4E9
+m_f1 : rising · 90w
+state m_f2 #D1C4E9
+m_f2 : rising · 94w
+state m_f3 #FFF9C4
+m_f3 : choice · 104w
+state m_f5 #D1C4E9
+m_f5 : rising · 92w
+state m_f6 #D1C4E9
+m_f6 : rising · 88w
+state m_f4 #D1C4E9
+m_f4 : rising · 88w
+state m_g1 #D1C4E9
+m_g1 : rising · 92w
+state m_g2 #D1C4E9
+m_g2 : rising · 96w
+state m_g3 #FFF9C4
+m_g3 : choice · 104w
+state m_h1 #D1C4E9
+m_h1 : rising · 94w
+state m_h2 #D1C4E9
+m_h2 : rising · 96w
+state m_h3 #D1C4E9
+m_h3 : rising · 96w
+state m_h5 #D1C4E9
+m_h5 : rising · 88w
+state m_h6 #D1C4E9
+m_h6 : rising · 86w
+state m_g4 #D1C4E9
+m_g4 : rising · 86w
+state m_g5 #D1C4E9
+m_g5 : rising · 90w
+state m_j1 #D1C4E9
+m_j1 : rising · 96w
+state m_j2 #D1C4E9
+m_j2 : rising · 94w
+state m_j3 #D1C4E9
+m_j3 : rising · 100w
+state m_j5 #D1C4E9
+m_j5 : rising · 90w
+state m_j4 #FFF9C4
+m_j4 : choice · 104w
+state m_k1 #D1C4E9
+m_k1 : rising · 90w
+state m_k2 #D1C4E9
+m_k2 : rising · 92w
+state m_k6 #D1C4E9
+m_k6 : rising · 96w
+state m_k3 #FFF9C4
+m_k3 : choice · 106w
+state m_k5 #D1C4E9
+m_k5 : rising · 92w
+state m_k4 #D1C4E9
+m_k4 : rising · 88w
+state m_l1 #D1C4E9
+m_l1 : rising · 92w
+state m_l2 #D1C4E9
+m_l2 : rising · 96w
+state m_l3 #D1C4E9
+m_l3 : rising · 98w
+state m_l4 #FFF9C4
+m_l4 : choice · 108w
+state m_l5 #D1C4E9
+m_l5 : rising · 90w
+state m_l6 #D1C4E9
+m_l6 : rising · 88w
+state m_m1 #D1C4E9
+m_m1 : rising · 94w
+state m_m2 #D1C4E9
+m_m2 : rising · 92w
+state m_m3 #D1C4E9
+m_m3 : rising · 100w
+state m_m4 #FFF9C4
+m_m4 : choice · 112w
+state m_m5 #D1C4E9
+m_m5 : rising · 88w
+state m_m6 #D1C4E9
+m_m6 : rising · 86w
+state m_m7 #D1C4E9
+m_m7 : rising · 90w
+state m_z1 #E0E0E0
+m_z1 : discovery (neutral)
+m_z1 : "The First Order Slip"
+state m_z2 #FFCDD2
+m_z2 : setback (negative)
+m_z2 : "The Extra-Crusty Specials"
+state m_z3 #C8E6C9
+m_z3 : success (positive)
+m_z3 : "The Breakfast Bun"
+state m_z4 #FFCDD2
+m_z4 : setback (negative)
+m_z4 : "The Day It Rained Rolls"
+state m_z5 #E0E0E0
+m_z5 : discovery (neutral)
+m_z5 : "The Jar-of-Peas Chart"
+state m_z6 #FFCDD2
+m_z6 : setback (negative)
+m_z6 : "The Cobble-Box Demo"
+state m_z7 #FFCDD2
+m_z7 : setback (negative)
+m_z7 : "A Certificate and a Knot"
+state m_z8 #C8E6C9
+m_z8 : success (positive)
+m_z8 : "Priya's First Ribbon"
+state m_z9 #C8E6C9
+m_z9 : completion (positive)
+m_z9 : "Forty Apples Home"
+state m_z10 #FFCDD2
+m_z10 : setback (negative)
+m_z10 : "The Stall That Moved"
+n_start --> n_tour : Follow the guildmaster on the tour.
+n_tour --> n_test : Take the tinker-test.
+n_test --> n_sort : Hear the guildmaster's verdict.
+n_sort --> g_a1 : Join the Gears workshop.
+n_sort --> l_a1 : Join the Gliders workshop.
+n_sort --> m_a1 : Join the Gadgets workshop.
+g_a1 --> g_a2 : Settle in at your bench.
+g_a2 --> g_a3 : Ask where you come in.
+g_a3 --> g_b1 : Hear the two jobs out.
+g_b1 --> g_c1 : Restore the four season figures.
+g_b1 --> g_j1 : Take on the chime train and water wheel.
+g_c1 --> g_c2 : Start with the spring heron.
+g_c2 --> g_c3 : Ask Master Pin for a better way.
+g_c3 --> g_c4 : Look at the two worst figures.
+g_c4 --> g_f1 : Reforge the fox's snapped leap spring.
+g_c4 --> g_g1 : Free the winter owl's seized head.
+g_f1 --> g_f2 : Coil your first spring.
+g_f2 --> g_f3 : Decide how to temper it.
+g_f3 --> g_f4 : Quench the spring fast and test it tomor...
+g_f3 --> g_f5 : Temper it slowly overnight, the old way.
+g_f4 --> g_z1 : Face Master Pin with the pieces.
+g_f5 --> g_z2 : Follow where the springs lead.
+g_g1 --> g_g2 : Find out who has the press.
+g_g2 --> g_g3 : Weigh Felix's trade.
+g_g3 --> g_g4 : Rig your own press from the bench vise.
+g_g3 --> g_h1 : Take Felix's trade and share the press.
+g_g4 --> g_g5 : Show Master Pin the damage.
+g_g5 --> g_z3 : Finish the summer without the owl.
+g_h1 --> g_h2 : Wake the winter owl.
+g_h2 --> g_h3 : Study the jammed parade ring.
+g_h3 --> g_h4 : Bring the old drawing to Pin.
+g_h4 --> g_h5 : Run the parade dry, a sure thing.
+g_h4 --> g_i1 : Hunt the lost drain gate with Felix.
+g_h5 --> g_h6 : Hold the dry-run reveal.
+g_h6 --> g_z4 : Take your bow.
+g_i1 --> g_i2 : Open the brass door.
+g_i2 --> g_i3 : Rehearse for Midsummer.
+g_i3 --> g_i4 : Step up to the clock.
+g_i4 --> g_i5 : Wind the clock yourself, as Pin offered.
+g_i4 --> g_i6 : Give Felix the key and take the hidden c...
+g_i5 --> g_z5 : Watch the seasons run.
+g_i6 --> g_z6 : Turn the crank at noon.
+g_j1 --> g_j2 : Survey your new kingdom.
+g_j2 --> g_j3 : Report to Master Pin.
+g_j3 --> g_j4 : Choose where to start.
+g_j4 --> g_k1 : Start below and free the water wheel.
+g_j4 --> g_l1 : Start above and rebuild the chime train.
+g_k1 --> g_k2 : Inspect the freed wheel.
+g_k2 --> g_k3 : Settle the paddle question.
+g_k3 --> g_k4 : Patch the paddles quickly with tin.
+g_k3 --> g_k5 : Carve proper oak paddles all summer.
+g_k4 --> g_z7 : Pull the choked grating.
+g_k5 --> g_z8 : Mount the last paddle.
+g_l1 --> g_l2 : Trace the late chimes.
+g_l2 --> g_l3 : Open the escapement housing.
+g_l3 --> g_l4 : Decide how the anchor gets made.
+g_l4 --> g_l5 : File an anchor alone, working nights.
+g_l4 --> g_m1 : Ask Pin to teach you, three slow weeks.
+g_l5 --> g_l6 : Wake up to Pin's lantern.
+g_l6 --> g_z9 : Keep time the old way.
+g_m1 --> g_m2 : Finish the true anchor.
+g_m2 --> g_m3 : Rehearse the full chime.
+g_m3 --> g_m4 : Answer at the noon rehearsal.
+g_m4 --> g_m5 : Take the winding post, Felix on bells.
+g_m4 --> g_m6 : Give Felix the winding and conduct the h...
+g_m4 --> g_m7 : Add your untested quarter-chime surprise...
+g_m5 --> g_z10 : Wind, and let noon come.
+g_m6 --> g_z11 : Conduct the first noon.
+g_m7 --> g_z12 : Ring the surprise at noon.
+l_a1 --> l_a2 : Clip in and look around.
+l_a2 --> l_a3 : Meet the rest of the roof.
+l_a3 --> l_b1 : Pick your first love.
+l_b1 --> l_c1 : Rebuild the trainer for the Glider Derby...
+l_b1 --> l_j1 : Join the pigeon post and race Admiral.
+l_c1 --> l_c2 : Test what the old wing knows.
+l_c2 --> l_c3 : Ask Sky about the tip stall.
+l_c3 --> l_f1 : Build the long soarer wing for the high ...
+l_c3 --> l_g1 : Build the short dart wing for the fast l...
+l_f1 --> l_f2 : Take the soarer up for a hop.
+l_f2 --> l_f3 : Face the trim tab problem.
+l_f3 --> l_f4 : Fly the trials solo tomorrow, no crew.
+l_f3 --> l_f5 : Ask Juno and a friend to crew the launch...
+l_f4 --> l_z1 : Fetch her down from the awning.
+l_f5 --> l_c4 : Fly the crewed month out.
+l_c4 --> l_z2 : See where the crew work leads.
+l_g1 --> l_g2 : Study the launch release.
+l_g2 --> l_g3 : Decide about the hook.
+l_g3 --> l_g4 : Rig a quiet copy of Juno's hook.
+l_g3 --> l_h1 : Ask Juno straight out to share the relea...
+l_g4 --> l_g5 : Pull the dart from the straw.
+l_g5 --> l_z3 : Shake on next season.
+l_h1 --> l_h2 : Train evenings, fly mornings.
+l_h2 --> l_h3 : Survey the wreckage with Sky.
+l_h3 --> l_h4 : Put the plan to the guild.
+l_h4 --> l_h5 : Rebuild the single rail, safe and proven...
+l_h4 --> l_i1 : Build the twin-rail catapult from the fl...
+l_h5 --> l_h6 : Fly the derby you trained for.
+l_h6 --> l_z4 : Land and hear the scores.
+l_i1 --> l_i2 : Bolt down the twin rails.
+l_i2 --> l_i3 : Take the times to Sky.
+l_i3 --> l_i4 : Call your line.
+l_i4 --> l_i5 : Fly the fast line under the chimneys.
+l_i4 --> l_i6 : Fly the high line over the weathervanes.
+l_i5 --> l_z5 : Cross the last hoop.
+l_i6 --> l_i7 : Ride the secret river.
+l_i7 --> l_z6 : Land where the river ends.
+l_j1 --> l_j2 : Meet your own bird.
+l_j2 --> l_j3 : Start Pip on the routes.
+l_j3 --> l_j6 : Plan Pip's training summer.
+l_j6 --> l_j4 : Choose her one great leg.
+l_j4 --> l_k1 : Train Pip for the market sprint.
+l_j4 --> l_l1 : Train Pip for the storm-bell return.
+l_k1 --> l_k2 : Shave the last seconds.
+l_k2 --> l_k3 : Choose Pip's trial capsule.
+l_k3 --> l_k4 : Fly the featherweight capsule in the tri...
+l_k3 --> l_k5 : Keep the regulation capsule and trust th...
+l_k4 --> l_z7 : Stand at the judges' table.
+l_k5 --> l_z8 : Fly the market sprint.
+l_l1 --> l_l2 : Watch the sky with Pip.
+l_l2 --> l_l3 : Say nothing, for now.
+l_l3 --> l_l4 : Take up the protocol problem.
+l_l4 --> l_l5 : Prove the protocol solo in the next squa...
+l_l4 --> l_m1 : Bring Juno in and design it together.
+l_l5 --> l_l6 : Answer for the broken rule.
+l_l6 --> l_z9 : Watch the trials from the loft.
+l_m1 --> l_m2 : Build the buddy protocol.
+l_m2 --> l_m3 : Train the first buddy pair.
+l_m3 --> l_m4 : Name the lead bird.
+l_m4 --> l_m5 : Let Pip lead the storm leg, Admiral flan...
+l_m4 --> l_m6 : Let Admiral lead, with Pip holding the l...
+l_m4 --> l_m7 : Launch early and chase the record crossi...
+l_m5 --> l_z10 : Bring them home to the bell.
+l_m6 --> l_z11 : Meet them at the loft door.
+l_m7 --> l_z12 : Wait at the loft rail for the sky to cle...
+m_a1 --> m_a2 : Walk Market Street with Gran.
+m_a2 --> m_a3 : Meet the other junior.
+m_a3 --> m_b1 : Choose your shopkeeper.
+m_b1 --> m_c1 : Adopt Mr. Crumb the baker.
+m_b1 --> m_j1 : Adopt Ms. Okafor the greengrocer.
+m_c1 --> m_c2 : Ask him what the problem is.
+m_c2 --> m_c4 : Weigh the two builds at the bench.
+m_c4 --> m_f1 : Build the proofing-clock with weighted f...
+m_c4 --> m_g1 : Build the dumbwaiter lift for the narrow...
+m_f1 --> m_f2 : Build version two.
+m_f2 --> m_f3 : Face the fair deadline.
+m_f3 --> m_f5 : Perfect the two-oven clock and enter it ...
+m_f3 --> m_f4 : Scale to all eight ovens before the fair...
+m_f5 --> m_f6 : Fit it at the bakery first.
+m_f6 --> m_z1 : Show it at the fair.
+m_f4 --> m_z2 : Untangle in front of the judges.
+m_g1 --> m_g2 : Rig the first test lift.
+m_g2 --> m_g3 : Solve the brake problem.
+m_g3 --> m_h1 : Offer Priya a trade for her brake design...
+m_g3 --> m_g4 : Improvise the rope-twist brake from the ...
+m_h1 --> m_h2 : Show Mr. Crumb the finished lift.
+m_h2 --> m_h3 : Design the guard cage.
+m_h3 --> m_h5 : Bolt the cage in before dawn.
+m_h5 --> m_h6 : Let the week tell the story.
+m_h6 --> m_z3 : Meet the judges at the bakery.
+m_g4 --> m_g5 : Chase the rolls down the street.
+m_g5 --> m_z4 : Read the drawings she left.
+m_j1 --> m_j2 : Ask her once, then twice.
+m_j2 --> m_j3 : Take the problem to the bench.
+m_j3 --> m_j5 : Learn the stall before you build.
+m_j5 --> m_j4 : Choose your line of attack.
+m_j4 --> m_k1 : Build the rumble-damper for the stall's ...
+m_j4 --> m_l1 : Build the apple-catcher rail and return ...
+m_k1 --> m_k2 : Plan the street test.
+m_k2 --> m_k6 : Ask the clerk about a permit.
+m_k6 --> m_k3 : Choose how to get your data.
+m_k3 --> m_k5 : Wait for the permit and lose the week.
+m_k3 --> m_k4 : Test on the street tonight, without the ...
+m_k5 --> m_z5 : Tune the damper to the chart.
+m_k4 --> m_z6 : Face the shop in the morning.
+m_l1 --> m_l2 : Cure the bruising.
+m_l2 --> m_l3 : Keep one eye on stall nine.
+m_l3 --> m_l4 : Decide what neighbors are for.
+m_l4 --> m_m1 : Knock on Priya's bench and offer your he...
+m_l4 --> m_l5 : Polish your own entry; the row is a cont...
+m_l5 --> m_l6 : Take a perfect entry to the row.
+m_l6 --> m_z7 : Hear the row scored as a row.
+m_m1 --> m_m2 : Rehearse Market Row together.
+m_m2 --> m_m3 : Wake early for fair morning.
+m_m3 --> m_m4 : Choose your place in the row.
+m_m4 --> m_m5 : Stand with Priya and co-run the scaler.
+m_m4 --> m_m6 : Run the apple-catcher at your own stall.
+m_m4 --> m_m7 : Move your stall to the head of the row.
+m_m5 --> m_z8 : Stand back for the scoring.
+m_m6 --> m_z9 : Count the apples home.
+m_m7 --> m_z10 : Present the catcher to the judges.
+g_z1 --> [*]
+g_z2 --> [*]
+g_z3 --> [*]
+g_z4 --> [*]
+g_z5 --> [*]
+g_z6 --> [*]
+g_z7 --> [*]
+g_z8 --> [*]
+g_z9 --> [*]
+g_z10 --> [*]
+g_z11 --> [*]
+g_z12 --> [*]
+l_z1 --> [*]
+l_z2 --> [*]
+l_z3 --> [*]
+l_z4 --> [*]
+l_z5 --> [*]
+l_z6 --> [*]
+l_z7 --> [*]
+l_z8 --> [*]
+l_z9 --> [*]
+l_z10 --> [*]
+l_z11 --> [*]
+l_z12 --> [*]
+m_z1 --> [*]
+m_z2 --> [*]
+m_z3 --> [*]
+m_z4 --> [*]
+m_z5 --> [*]
+m_z6 --> [*]
+m_z7 --> [*]
+m_z8 --> [*]
+m_z9 --> [*]
+m_z10 --> [*]
+
+legend right
+  The Guild of Junior Inventors
+  Band 8-11 · Tier 1 · ~12 min
+  Topology: sorting_hat
+  191 nodes · 34 endings (11+ / 8n / 15-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

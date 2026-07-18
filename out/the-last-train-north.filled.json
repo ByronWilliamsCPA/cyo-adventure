@@ -1,0 +1,2002 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_last_train_north",
+  "version": 1,
+  "title": "The Last Train North",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "the uncanny",
+      "journey and passage",
+      "memory",
+      "letting go"
+    ],
+    "estimated_minutes": 14,
+    "ending_count": 25,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Vera Lindqvist swings her case onto the last carriage of the last northbound train of the season. The whistle that sends it off sounds thin against a sky that cannot decide between sleet and snow. Behind her on the platform, the station clock has stopped at an hour she does not recognize, its hands fixed as if caught mid-breath. No one else seems to notice or to mind. The train pulls out anyway, past a signboard she has no time to read. The dark outside thickens with every mile, thickens and then something in it changes. Inside, the carriages are strangely empty for a night like this one, a scattering of passengers in cars built for hundreds, each keeping to some private errand the cold has not managed to freeze out of them. Vera settles into her seat and takes the measure of the compartment the way a person takes the measure of changing weather, sensing before she can name it that this ordinary journey is not going to stay ordinary. Down the corridor, a conductor she has not yet met is calling an hour that does not match her watch. Past the curtains of the sleeper cars, made-up berths wait in a silence that feels deliberate, arranged. On the seat across from her, someone has left a letter, folded once, addressed to no one she can name. And past the glass, the whole black country is sliding by, changing its shape mile on mile, as though the season itself cannot decide what it wants to become tonight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_0",
+          "label": "Find the night conductor.",
+          "target": "g0a0_1"
+        },
+        {
+          "id": "c_start_1",
+          "label": "Walk the sleeper cars.",
+          "target": "g0a1_1"
+        },
+        {
+          "id": "c_start_2",
+          "label": "Read the left-behind letter.",
+          "target": "g0a2_1"
+        },
+        {
+          "id": "c_start_3",
+          "label": "Watch the changing land.",
+          "target": "g0a3_1"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_1",
+      "body": "Vera turns down the corridor toward the conductor's voice. The whole carriage leans with the curve of the track as if urging her on. The window beside her holds her own reflection over the black nothing outside, doubled and pale in the cold glass, and for a moment she watches herself watching him instead of the country beyond. He is checking his silver punch-clock against the light of a lamp that gutters when the train sways, snapping the case shut, opening it again, as though the hour it shows will change if he looks hard enough. It is an ordinary gesture, the kind any conductor might make a hundred times a shift, except that his mouth moves faintly with the numbers. The numbers he mouths are not the ones stamped into any timetable Vera has ever read. She finds she cannot look away from the small silver case in his hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_1",
+          "label": "Look closer.",
+          "target": "g0a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_2",
+      "body": "There are two ways to press at the conductor and his stubborn clock. Vera weighs them the way she weighs most things, quickly, and then more slowly than she meant to. She could simply ask him outright why the numbers on his silver case do not match the hour on her own watch, and see what a direct question does to a man who seems, on the whole, to prefer being left alone with his instrument. Or she could hold back, let him finish his round without her interference, and trust that watching a thing long enough will eventually make it explain itself, the way frost on a window will eventually resolve into a shape if you do not blink. Pressing in risks his notice, the flicker of a man who does not want to be caught keeping strange time. Hanging back risks nothing but the slow erosion of the hour, and the chance that whatever she might have learned will pass her by while she waits for it to arrive on its own. The train sways on, indifferent to which kind of courage she chooses.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_2a",
+          "label": "Press in directly.",
+          "target": "g0a0_3a"
+        },
+        {
+          "id": "c_g0a0_2b",
+          "label": "Hang back and watch.",
+          "target": "g0a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_3a",
+      "body": "Vera asks him plainly. The conductor's hand stills over the punch-clock's case before he answers, which tells her almost as much as the answer does. The clock, he says, was stopped by the ninth stationmaster north of here, and has not been restarted since, not because it is broken but because restarting it was never anyone's job to finish. He says this the way a man recites a fact he has repeated so often it has worn smooth, then snaps the case shut and moves on down the carriage without waiting to see what she makes of it. The fact will not sit still in her: a clock, deliberately left unwound, kept by a man paid to keep it. It points her further into the train, past this one small wrongness, toward whatever waits at the place the ninth stationmaster left unfinished.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_3a",
+          "label": "Carry the fact onward.",
+          "target": "g0a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_3b",
+      "body": "From a few seats back, Vera watches the conductor work his way down the aisle, snapping the silver case open and shut, open and shut, never quite satisfied with what it tells him. She has learned something just by watching: his ritual with the clock is not performance for passengers but a private compulsion, the working of a man checking a wound that will not close. She could carry that observation forward, fold it into the strange arithmetic of the night, and see where it leads next. Or she could let the lateness of the hour do what lateness always does, let the rhythm of wheel on rail smooth the edges of what she has noticed until it no longer troubles her, and drift instead toward the easy, dangerous comfort of sleep. The carriage is warm in the way overheated trains are warm. Her eyelids have grown heavier with every mile since the platform clock stopped.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g0a0_4"
+        },
+        {
+          "id": "c_g0a0_3b2",
+          "label": "Let the hour take you.",
+          "target": "g0a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_4",
+      "body": "However Vera has come to it, by asking outright or by watching from the shadow of her own seat, what she now knows about the conductor and his silver punch-clock settles into the same small, specific wrongness: a clock kept by a man whose job is keeping it, and kept stopped on purpose. It is not the kind of fact that explains a night like this one. It is the kind that will not be argued back out of her, the kind that changes the weight of every ordinary thing around it. The lamp gutters again as the train takes a curve, and for a moment the whole carriage seems to hold itself very still, the way a person holds a breath before saying something they cannot take back. Vera holds it too. Something in her decides, without quite asking permission, to go on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_4",
+          "label": "Press on.",
+          "target": "g0a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_5",
+      "body": "She carries the fact of the stopped clock with her down the length of the train, through one swaying vestibule and then another, past doors that stick with cold and doors that do not stick at all. The dining car is dark except for a single working lamp. The sleeper cars breathe their curtained silence. Somewhere ahead, she can just make out the sound of a child's voice, low and unbothered, threading under the wheels' rhythm. None of it explains the ninth stationmaster, or why a train this empty needs a conductor at all. Each detail seems to lean the same direction, north and further north, toward whatever the night has actually been arranging since the platform clock first refused to move. Vera steadies herself against a handrail as the whole carriage shudders round a long curve, and understands, with the plain certainty of someone who has stopped pretending otherwise, that she is being asked a larger question than the one she started with.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_5",
+          "label": "Follow it to the pivot.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_end",
+      "body": "The warmth of the carriage wins in the end. Vera means only to close her eyes for a moment, to rest them against the ache of watching the silver case open and shut, open and shut. The moment lengthens and folds over her before she can stop it. When she wakes, the light through the window has changed to a flat, ordinary grey. The conductor is nowhere in the carriage, nor is the strange attention she had been holding onto so carefully only minutes before. She checks her watch out of habit. It agrees with nothing, and troubles her less than it should. Whatever she had almost understood about the stopped clock has gone the way sleep takes everything, quietly, without asking. She arrives at wherever this is unharmed, entirely safe, and empty in a way she cannot quite name.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "You Slept Through the Stop"
+      }
+    },
+    {
+      "id": "g0a1_1",
+      "body": "Vera walks toward the long row of curtained sleeper berths. The carriage sways beneath her with each joint in the rail, a rhythm she is already starting to trust more than she should. In the window at the end of the corridor her own reflection rides along over the dark, pale and doubled against a landscape she cannot make out. She catches herself studying that ghost of herself instead of the berths ahead. Every curtain along the row is drawn, neat as a row of closed eyes, save for one, three berths down, hanging slightly open on its rail. Nothing shows through the gap but shadow and the corner of a folded blanket. Something about that single unclosed curtain among all the closed ones keeps drawing her eye back to it, the way a single wrong note keeps drawing an ear back to a piece of music otherwise correctly played.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_1",
+          "label": "Look closer.",
+          "target": "g0a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_2",
+      "body": "There are two ways to read that one open curtain. Vera can feel herself choosing between them even before she names the choice. She could draw it back herself, quickly, and see plainly what the berth holds before anyone can tell her not to look. That is the direct way. It risks whatever attention a stranger's hand on a stranger's curtain might draw in a carriage this quiet. Or she could pass it by for now, noting only what a passing glance allows, and trust that a berth left half open on a night like this one will show itself fully in its own time, the way things left unattended on a train usually do. The patient way costs her nothing but the ache of not knowing yet, and lets whatever is inside that berth remain the train's secret a little longer, rather than becoming hers before she is ready to hold it. Either way, the curtain does not move on its own to help her decide.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_2a",
+          "label": "Press in directly.",
+          "target": "g0a1_3a"
+        },
+        {
+          "id": "c_g0a1_2b",
+          "label": "Hang back and watch.",
+          "target": "g0a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_3a",
+      "body": "Vera draws the curtain back herself. What she finds is almost worse for being so ordinary: a berth made up and slept in, blanket folded down with a traveler's habitual care, and beside the pillow a single boarding ticket, punched through for a station three stops past the end of the published line. No coat, no case, no sign of whoever last lay here, only that ticket and the clean, cold hollow their body left in the mattress. She turns the ticket over in her fingers, half expecting the station's name to rearrange itself into something she recognizes. It holds its shape stubbornly, printed as plainly as any name on any ordinary line. It is a hard fact and a small one, a station that should not exist stamped plainly into paper. It will not sit still in her. It points forward, past this berth, toward whatever keeps a line running past its own last stop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_3a",
+          "label": "Carry the fact onward.",
+          "target": "g0a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_3b",
+      "body": "Vera leaves the curtain as it is and watches instead, from a little distance, the shape the light makes moving across that half-open gap each time the train takes a curve. She learns something even without touching the fabric: whoever last slept there left in a hurry, or did not mean to leave the curtain open at all. That thought joins itself to the rest of what she has begun to notice about this train. The blanket's folded corner shifts a fraction with every sway, as if the berth itself were still faintly occupied by the idea of someone. She could carry that small observation forward and let it sharpen whatever comes next. Or she could give in to the hour, let the sway of the carriage and the low murmur of the wheels do what they have clearly been doing to every other half-attentive passenger tonight, and drift off before the thought has finished forming. The corridor is warm and dim and entirely willing to let her stop thinking, if she lets it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g0a1_4"
+        },
+        {
+          "id": "c_g0a1_3b2",
+          "label": "Let the hour take you.",
+          "target": "g0a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_4",
+      "body": "Whether she pulled the curtain back herself or only watched the gap it left, what Vera now understands about that berth settles into the same uneasy shape: someone slept here recently, and left for a station that has no business existing on any line she has ever traveled. It is a small wrongness, a single loose thread in an otherwise ordinary night. It will not stay small once she has noticed it, the way one crooked picture on a wall makes the whole room feel tilted. Every other berth along the row now seems to be waiting on the same unanswered question. The train takes another long curve and the row of curtains sways together, in and out, like something breathing in its sleep. Vera feels the journey close gently around the thought, the way a held breath closes around itself. She understands, without being told, that she is not finished with this yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_4",
+          "label": "Press on.",
+          "target": "g0a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_5",
+      "body": "She lets the curtain fall back into its place, more or less as she found it. She carries the thought of that impossible ticket with her down the corridor, through one vestibule and then another, the couplings groaning under the cold. Ahead, she can hear the low clink of dishes in an unlit dining car, and further still the small, unbothered voice of a child who does not sound as though she should be awake, let alone alone. None of it tells her outright what the berth's missing passenger has to do with a stopped clock or a season that cannot decide what it is becoming. Each detail seems to point the same way, further north, further into the night, as if the whole train were quietly arranging itself around a single unasked question. Vera steadies herself against the cold brass rail as the carriage sways, and goes to meet whatever that question turns out to be.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_5",
+          "label": "Follow it to the pivot.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_end",
+      "body": "The warmth of the corridor and the long, even sway of the carriage do what they have clearly been doing to every drowsy passenger tonight, and Vera's eyes close before she means them to. She dreams, briefly and without detail, of a door standing open somewhere just out of reach, and then there is no door at all, only the flat grey light of a morning she did not choose to arrive at. When she wakes, the curtain three berths down is drawn shut like all the others. No ticket, no hollow in the mattress, nothing remains to prove she ever saw what she thought she saw. She is unharmed, and warm, and entirely safe. She carries off the train only the faint, useless certainty that somewhere behind her a door stood open once, and that she is the one who let it close.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Door You Did Not Open"
+      }
+    },
+    {
+      "id": "g0a2_1",
+      "body": "Vera reaches instead for the letter someone has left folded on the seat across from her. The carriage sways under the motion of picking it up, as though the train itself were curious to see what she does next. In the black window beside her, her own reflection leans in too, pale and doubled over the dark rushing past, watching her hands the way she is watching them herself. The paper is thin and much folded, softened at the creases the way paper gets when it has been carried a long time and read more than once, though the ink across its face still looks fresh, almost wet. There is no name on the outside, no address, nothing to say who left it or for whom, only a single line showing through where the fold does not quite meet: something about a north line, and a promise. That half-hidden line is what will not let her put the letter down again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_1",
+          "label": "Look closer.",
+          "target": "g0a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_2",
+      "body": "There are two ways to read a letter that is not addressed to you. Vera feels the pull of both at once. She could unfold it fully, right here, and take in whatever it says in one direct pass, the way a person tears a bandage free rather than easing it. That is the quicker way, and the riskier one, since a letter meant for someone else has a way of making the reader feel caught, even alone in an empty carriage. Or she could turn it over slowly first, study the softened creases and the half-showing line before committing to the whole of it, and let the letter's meaning arrive at its own unhurried pace, the way patient readers let a difficult book. Reading it outright might tell her everything at once, and risk whatever notice a stranger's private words draw when handled too quickly. Waiting costs her only time, the small, persistent ache of a sentence she has seen half of and cannot yet finish.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_2a",
+          "label": "Press in directly.",
+          "target": "g0a2_3a"
+        },
+        {
+          "id": "c_g0a2_2b",
+          "label": "Hang back and watch.",
+          "target": "g0a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_3a",
+      "body": "Vera unfolds the letter the rest of the way and reads it straight through. One line refuses to loosen its grip on her afterward: a promise, made to somebody unnamed, that the writer would be on the last train north whatever the cost of the ticket, and would not get off again until the promise was kept. There is no date, no signature, nothing to say whether that promise was kept or broken, only the flat certainty of ink laid down by someone who meant every word of it. It is a small fact and a hard one, this idea of a promise heavy enough to survive its own writer. It will not sit still in her mind. It points her further into the train, toward whoever might still be waiting to see it honored.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_3a",
+          "label": "Carry the fact onward.",
+          "target": "g0a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_3b",
+      "body": "Vera turns the letter over instead of unfolding it fully, studying the shape of the half-hidden line without yet committing to the rest of the page. She learns something even from that much: the hand which wrote it was steady, careful, unhurried, the hand of someone who believed absolutely in what they were writing down. Even the crease itself seems deliberate, folded to hide exactly this much and no more, as though whoever wrote it wanted the promise glimpsed before it was ever fully read. She could carry that impression forward, fold it into everything else the night has shown her, and let it deepen on its own. Or she could let the letter rest in her lap unfinished. She could let the warmth of the carriage and the long even sway of the wheels pull her toward sleep before she has read the rest of what some stranger meant so badly to say. The paper is soft under her fingers, the ink a little blurred already where her thumb has rested too long against it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g0a2_4"
+        },
+        {
+          "id": "c_g0a2_3b2",
+          "label": "Let the hour take you.",
+          "target": "g0a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_4",
+      "body": "However far Vera has taken the letter, read whole or only half glimpsed, what settles in her afterward is the same small, specific wrongness: a promise written down by someone who meant it entirely. No way now to know if it was ever kept. It is not an answer, only a splinter of one. It will not be reasoned back out of her, the way one true thing rarely can be once it has lodged. She finds herself wondering, uselessly, whether the letter's writer ever finished this exact stretch of track, or whether the promise itself was the whole of what they carried north. The train takes a long curve and the letter shifts in her lap as though it, too, were listening for what comes next. Vera feels the whole journey draw in tight around that unfinished promise, like breath held a beat too long. Something in her, quietly, decides to keep going.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_4",
+          "label": "Press on.",
+          "target": "g0a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_5",
+      "body": "She folds the letter back along its old creases, more carefully than whoever left it there. She carries the weight of that unkept promise with her down the length of the train, through cold vestibules and swaying couplings, past a dining car lit by a single working lamp. Somewhere ahead a child's unhurried voice threads under the noise of the wheels. Further on she can just make out low, murmuring conversation from passengers who do not seem, on the whole, to be talking about anything so simple as their destination. None of it explains outright who the letter was meant for, or whether its writer ever finished the journey it describes. Every detail seems to lean the same direction, north and further north, as though the whole train has been quietly built around this one unanswered promise. Vera steadies herself against the cold rail and goes to find out what the night intends to ask of her next.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_5",
+          "label": "Follow it to the pivot.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_end",
+      "body": "The carriage is warm, warmer than the letter's cold ink deserves, and Vera's eyes close before she has decided to let them. She means only to rest a moment with the page still in her lap. The moment lengthens, and by the time she surfaces the light through the window has turned the flat grey of an ordinary morning. The letter is still folded in her hand, but when she opens it again the ink has smeared past reading, blurred by damp or by handling or simply by however long she slept holding it too tightly. She cannot now say what the promise was, only that there had been one, and that she came very close to knowing whom it was made to before the page gave the words up entirely. She arrives safe, unharmed, and empty-handed in the one way that matters.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Page Blurs to Nothing"
+      }
+    },
+    {
+      "id": "g0a3_1",
+      "body": "Vera turns instead to the window, to the black country sliding past it mile after mile. The whole carriage sways with her as she leans her forehead close to the cold glass. Her reflection rides there too, pale and half-transparent over the dark, so that for a moment she cannot tell whether she is watching the land or watching herself fail to see it clearly. At first there is nothing to make out beyond her own doubled face, only the vague suggestion of fields going by, fences, the black shapes of trees. But as her eyes adjust she begins to notice that the land itself does not look like land she recognizes anymore, though she cannot yet say what exactly has changed about it. She presses her palm flat against the glass, half expecting the cold to sharpen her eyes the way it sharpens everything else, and finds instead that the harder she looks, the less certain the shapes outside become. Somewhere out there the flat country of home has become something else, something with edges she has not agreed to.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_1",
+          "label": "Look closer.",
+          "target": "g0a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_2",
+      "body": "There are two ways to watch a landscape that has quietly stopped being the one you started in. Vera can feel herself torn between them. She could press her whole attention to the glass, study the changing shapes outside as directly and hungrily as she can manage, and risk whatever it is that notices being watched back. That is the bolder reading, the one that wants an answer now. Or she could let her gaze soften, take the country in sideways the way one takes in a shy animal, trusting that it will show more of itself to someone who does not seem to be looking too hard. Watching directly might tell her plainly what the land has become and why, at the cost of drawing whatever attention a too-eager stare tends to draw. Watching patiently costs her only the slow accumulation of small, uncertain details, and the chance that the night will keep its full shape hidden a while longer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_2a",
+          "label": "Press in directly.",
+          "target": "g0a3_3a"
+        },
+        {
+          "id": "c_g0a3_2b",
+          "label": "Hang back and watch.",
+          "target": "g0a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_3a",
+      "body": "Vera presses close to the glass and studies the country outside without blinking. The fact she comes away with is small, exact, and impossible to unsee. The fences along the line have stopped, entirely, replaced somewhere back along the miles by an unbroken white that does not look like snow so much as absence, a country with nothing left in it to fence. There is no gradual transition she can point to, only the fact of it, arrived at all at once the way a held note becomes silence. She scans back along the glass as though the missing fences might still be caught somewhere at the edge of her vision. She finds only the same clean, fenceless white stretching on in every direction she tries. It will not sit still in her, this vanished boundary between one field and the next. It points her onward, deeper into the train, toward whoever might be able to say when exactly the fences stopped.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_3a",
+          "label": "Carry the fact onward.",
+          "target": "g0a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_3b",
+      "body": "Vera softens her gaze instead and lets the country come to her sideways. What she notices this way is quieter but no less strange: the shapes outside are not passing at the speed a train should be passing them, slower in places, faster in others, as though the night itself were breathing unevenly. The unevenness has a rhythm to it, almost, if she does not try too hard to count it. It is like a tide that has a rhythm even when no single wave repeats the last exactly. She could carry that observation forward, weigh it against everything else the carriage has shown her, and let it sharpen into something she can use. Or she could let the rhythm of the glass and the low drone of the wheels lull her the rest of the way under, the way staring too long at moving water eventually pulls a tired mind down with it. The window is cold against her forehead. Sleep, when it comes for her here, comes gently, almost kindly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g0a3_4"
+        },
+        {
+          "id": "c_g0a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g0a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_4",
+      "body": "However Vera has come to notice it, watching hard at the glass or letting the country arrive sideways, what she knows now settles into the same small, unshakeable wrongness: the land outside no longer keeps the rules land is supposed to keep, not its fences, not its own steady speed past the window. She cannot explain this to anyone. It will not explain itself back into comfort either. But it will not loosen its hold on her, the way one strange word in an otherwise ordinary sentence keeps coming back long after the sentence is over. The train takes a long curve, and the whole black country outside seems, for a moment, to hold itself as still as she does. Vera lets the breath go. She means to keep watching.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_4",
+          "label": "Press on.",
+          "target": "g0a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_5",
+      "body": "She pulls back from the glass at last, carrying the fact of the fenceless, uneven country with her down the swaying length of the train, through vestibules where the cold gets in around the door frames and couplings that groan with every curve. Somewhere ahead, dishes clink faintly in an unlit dining car, and further on a child's voice threads calm and untroubled beneath the noise of the wheels, as if none of this were strange to her at all. She glances back once at the corridor's last window as she goes. The country there still refuses to settle into anything she can name, sliding by at its own uneven pace regardless of who is or is not watching it. None of it explains outright what has become of the world past the window. Every sound and every detail seems to lean the same way, further north, further into whatever the night has been quietly building toward since the platform clock stopped keeping time. Vera steadies herself against the cold rail and goes to meet it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_5",
+          "label": "Follow it to the pivot.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_end",
+      "body": "The glass is cold and the carriage is warm. Somewhere between the two Vera's eyes close before she means to let them. She surfaces later into the flat grey light of an ordinary morning. The window beside her shows only ordinary country now, fenced fields, black trees, nothing that argues with what a landscape should be. She cannot say when the fences came back, or whether they were ever truly gone, only that she was watching for something and then, without deciding to, she was not watching at all. She arrives unharmed, entirely safe, and troubled by nothing she can point to, only by the small, persistent sense that the night had been showing her something true, and that she let the snow and the warmth of the carriage lull her past the moment it mattered.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lulled by the Snow"
+      }
+    },
+    {
+      "id": "g1a0_1",
+      "body": "Vera makes her way to the dining car, drawn by the four regulars seated at the corner table. The carriage sways under her as the couplings take up the slack between cars. The long window at the end of the car throws her reflection back over the black rush of the night, doubled and faint, so that for a moment four seated shadows and one standing one all seem to share the glass together. The four at the table have menus open in front of them, have had them open, she guesses, for some time, and not one of the four has lifted a hand to call the steward or lift a fork. Their plates are clean, their glasses empty. Yet none of them looks impatient, or hungry, or even particularly awake. It is the stillness of the scene that catches her first, the way four people can sit so long at an empty table without once disturbing it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_1",
+          "label": "Look closer.",
+          "target": "g1a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_2",
+      "body": "There are two ways to read four regulars who never order. Vera turns both over before she moves. She could walk straight to their table and ask outright why they keep their seats through a meal they never touch, risking whatever it costs to interrupt people who seem, by every sign, content to be left exactly as they are. Or she could take an empty table nearby and watch a while first, note who speaks to whom and how the steward treats them, and let the pattern declare itself before she asks anything of it. Pressing in directly might get her a plain answer, or a closed door and four faces suddenly aware of being looked at. Waiting costs her nothing but time, and the risk that whatever keeps this table so still will simply go on being still, unexplained, for as long as she is willing to watch it. The four of them do not so much as glance her way while she decides, which somehow makes the choice feel larger rather than smaller.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_2a",
+          "label": "Press in directly.",
+          "target": "g1a0_3a"
+        },
+        {
+          "id": "c_g1a0_2b",
+          "label": "Hang back and watch.",
+          "target": "g1a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_3a",
+      "body": "Vera walks up and asks them plainly why they never order. The four regulars answer her together, in the mild, unbothered tone of people repeating something asked of them often. They are not hungry, one says, and have not been for longer than she would believe. They keep the table because the table is theirs, has always been theirs, on this train and on every one like it that has ever run this line. None of the four elaborates further. None seems to feel the need to, as though the answer were complete the moment it left their mouths. It is a small fact, oddly delivered, and it will not sit still in her afterward, this idea of passengers who ride without eating and without end. It points her further down the train, toward whatever else rides this line the same patient, permanent way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_3a",
+          "label": "Carry the fact onward.",
+          "target": "g1a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_3b",
+      "body": "Vera takes the table across the aisle instead and watches. The pattern she notices is this: the steward passes their table without pausing, without so much as a glance, as though it were as ordinary to him as an empty seat. No one at the corner table minds the omission. No one asks for anything to be brought. The four of them exchange a word now and then, low and unhurried, in the manner of people who have long since run out of anything urgent to say to one another and have made a kind of peace with that. She could carry that small, quiet detail forward and let it join everything else she has begun to notice about the night. Or she could let her own tiredness answer for her, let the warm dining car and the hum of the wheels carry her toward sleep before she has decided what the steward's indifference actually means. The lamp above her table gutters low and gold. It would be so easy, just now, to close her eyes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g1a0_4"
+        },
+        {
+          "id": "c_g1a0_3b2",
+          "label": "Let the hour take you.",
+          "target": "g1a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_4",
+      "body": "However Vera has learned it, by asking outright or by watching the steward's practiced indifference, what settles in her is the same small wrongness: four passengers who neither eat nor leave, kept apart in a way the whole car seems to have quietly agreed to. It is not an explanation, only a fact with edges. It will not be reasoned away, the way one strange guest at an otherwise ordinary table changes how the whole room reads. She finds herself wondering how long the four of them have been riding this exact line together, and whether they boarded as strangers or as something closer than that. The train rocks through a long curve and the four regulars sway together in their seats, unbothered, permanent. Vera feels the journey close in around the thought. Something in her, carefully, decides to keep asking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_4",
+          "label": "Press on.",
+          "target": "g1a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_5",
+      "body": "She leaves the dining car carrying the fact of the four regulars with her, out through the cold vestibule and into the next carriage, where a small girl sits wide awake at the far end, humming something low under the noise of the wheels. Further on, she can just make out a man's voice counting under his breath, and past him, seated alone, a woman dressed entirely in grey. Each of them, she notices now, keeps to the same kind of patient stillness the four regulars kept. It is as though the whole train had agreed on one unspoken manner of waiting. None of what she has learned tonight, not the clock, not the berth, not the letter, not the fenceless country, explains outright why this train carries passengers who never eat and never quite arrive. Every detail leans the same way, toward some larger truth about who is riding here and why. Vera steadies herself against the cold handrail and goes to find out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_5",
+          "label": "Follow it to the pivot.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_end",
+      "body": "Vera does not get the whole of it, not tonight. She keeps something true: four faces that have sat that table on every run of this line, never hungry, never leaving, watched over by a steward who has long since stopped finding them strange. It does not tell her who they are or what they are waiting for, only that they are waiting, patiently, permanently, the way certain things wait once they have stopped needing an answer. She wonders, walking away, whether she will still remember their faces clearly by morning, or whether they will blur the way dreams blur, true in feeling long after the details have gone soft. She carries the thought back to her own seat and holds it there, turning it over. It does not frighten her so much as it settles into her the way true things do, quietly, and for good. It is not the whole picture, but it is real, and it is hers now to keep.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Same Four Faces"
+      }
+    },
+    {
+      "id": "g1a1_1",
+      "body": "Vera goes toward the small child sitting wide awake at the end of the carriage. The train sways beneath her with each length of rail, a motion the girl does not seem to notice at all. In the window past the child's shoulder, Vera's own reflection rides along the dark, pale and doubled, watching itself approach. The girl cannot be more than seven or eight, no coat over her nightdress, no adult anywhere near her. Yet she sits with her hands folded, perfectly calm, humming some tune too old and too slow for a child that age to know. Her feet, too small to reach the floor, swing gently in time with the melody rather than with the rocking of the carriage, as though she were keeping her own private rhythm entirely apart from the train's. It is the calm that catches Vera first, more than the humming, more than the hour: a child alone on a train at this hour ought to be frightened, or at least tired. This one is neither.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_1",
+          "label": "Look closer.",
+          "target": "g1a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_2",
+      "body": "There are two ways to approach a child this calm at this hour. Vera feels both pulling at her. She could sit down directly and ask her plainly where her parents are, and risk whatever a straightforward question does to a girl who may simply prefer not to be asked. Or she could linger nearby first, let the child's own unhurried humming tell her something before she interrupts it, and trust that patience will earn more than a question fired too quickly. Asking outright might get her a name, a destination, an answer to hold onto, at the cost of breaking whatever quiet the girl has built around herself. Waiting costs her only the discomfort of not knowing yet, and the chance that the girl's calm, once disturbed, does not come back so easily. The girl, for her part, seems entirely unbothered by being watched, as if she has been waited on by careful adults before and found the waiting harmless.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_2a",
+          "label": "Press in directly.",
+          "target": "g1a1_3a"
+        },
+        {
+          "id": "c_g1a1_2b",
+          "label": "Hang back and watch.",
+          "target": "g1a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_3a",
+      "body": "Vera sits and asks her directly. The girl answers without any of the wariness a stranger's question usually earns from a child: she is riding to see her grandmother, she says, the way she does every year at this time, though when Vera asks which stop that is, the girl only shrugs and says it is the one that comes when it is ready. She says this the way another child might say the number of a favorite platform, with no sense at all that the answer is strange. It is a small, plain fact, delivered without a flicker of doubt. It will not sit still afterward: a stop that arrives on its own schedule, known to a child and to no timetable Vera has seen. It points her further into the train, toward whatever else on this line keeps its own private hours.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_3a",
+          "label": "Carry the fact onward.",
+          "target": "g1a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_3b",
+      "body": "Vera sits a little way off and listens instead. What she notices is this: the girl's humming never once breaks its pattern, the same handful of notes circling back on themselves like a wheel that has forgotten how to stop turning. No one comes to check on her. She does not look for anyone to come, her attention fixed instead on some point past the window that Vera cannot quite locate herself. The melody, the longer Vera listens to it, begins to feel less like a lullaby and more like a small, patient argument the girl is making to herself. Vera could carry that small observation forward and let it deepen alongside everything else the night has offered her. Or she could let the same slow circling rhythm work on her the way it seems to have worked on the girl, easing her, without her quite noticing, toward sleep. The car is warm and dim. The tune, once it has caught in her ear, is difficult to set down again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g1a1_4"
+        },
+        {
+          "id": "c_g1a1_3b2",
+          "label": "Let the hour take you.",
+          "target": "g1a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_4",
+      "body": "Whichever way Vera has come to it, by a direct question answered too easily or by a tune overheard too long, what she now knows about the child settles into the same small wrongness: a girl who rides this line as a matter of course, toward a stop that keeps its own hours and answers to no timetable. It is not enough to explain the whole of the night. It will not be talked back out of her either, the way a nursery rhyme half remembered keeps circling long after the room has gone quiet. She finds herself wondering how many years the girl has already made this exact same journey. She wonders whether a grandmother waiting at a stop with no fixed hour ever grows impatient. The train sways through another curve and the girl's humming rises and falls with it, patient, untroubled. Vera feels the journey draw close around the thought, and understands that she means to follow it further.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_4",
+          "label": "Press on.",
+          "target": "g1a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_5",
+      "body": "She leaves the child humming at the end of the carriage and carries the thought of that private, self-scheduling stop with her back through the train, past the dining car where four regulars keep their table in permanent, wordless patience. Further on, a man's voice counts something under his breath, station names, she thinks, though none of them ring familiar, and beyond him a woman in grey sits alone with a grief she has not spoken aloud to anyone. Each of them, in their own way, seems to be waiting on a schedule as private and untroubled as the girl's own. None of it explains outright why a child would ride toward a stop that arrives when it is ready. Every detail leans the same way, further into the question of who these passengers really are. Vera steadies herself against the cold rail and goes on to find out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_5",
+          "label": "Follow it to the pivot.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_end",
+      "body": "Vera does not learn everything the child could tell her, not tonight. She keeps one true thing: a girl who rides this line without fear because she has ridden it before, toward a stop that keeps its own private hours and has never yet failed to arrive when it is ready. It does not complete the larger picture, does not tell her what waits at that stop or why a child should travel it alone. It settles into her the way a small, certain fact settles, whole and undeniable. She thinks, walking away, of how easily the girl trusted a stop she could not name to arrive exactly when it needed to, and wonders what it would take to trust anything that completely herself. She carries it back to her own seat, turning it slowly, and finds that what she has learned unsettles her less than it should, and stays with her all the same. It is hers now, real, and worth the keeping.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Child Knows"
+      }
+    },
+    {
+      "id": "g1a2_1",
+      "body": "Vera follows the low, steady murmur to a man seated by himself near the end of the carriage, counting something under his breath in time with the wheels. The carriage sways with the rail joints, and in the dark window opposite her own reflection keeps pace, watching her watch him. He has a small, worn notebook open on his knee, and as she draws closer she can make out what he is saying: station names, one after another, ticked off in a murmur that never quite rises to a full voice. None of the names match anything on the printed timetable she glimpsed earlier. Yet he says them with the flat, practiced certainty of a man reciting a route he has traveled a thousand times. It is the certainty that catches her, more than the strangeness of the names themselves.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_1",
+          "label": "Look closer.",
+          "target": "g1a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_2",
+      "body": "There are two ways to approach a man counting stations that never come. Vera weighs them both. She could sit across from him and ask outright what list he is keeping and why, and risk whatever a direct question does to a man clearly absorbed in something private and precise. Or she could linger near enough to catch the names without interrupting the count, and trust that a list recited often enough will eventually explain itself to a patient listener. Asking plainly might get her the whole of his reasoning at once, at the cost of breaking a rhythm he may not easily find again. Waiting costs her only the slow accumulation of names she cannot yet place, and the risk that his count will simply go on, unexplained, mile after uncounted mile. He has not looked up once since she noticed him, which makes either choice feel, oddly, like an intrusion on something private.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_2a",
+          "label": "Press in directly.",
+          "target": "g1a2_3a"
+        },
+        {
+          "id": "c_g1a2_2b",
+          "label": "Hang back and watch.",
+          "target": "g1a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_3a",
+      "body": "Vera asks him directly what he is counting. He looks up as if surprised anyone would need to ask, then tells her plainly: he is counting the stations this line was meant to serve before they were taken off the schedule, one by one, over years he does not name, though the train still passes each abandoned platform whether or not anyone remembers to expect it. It is a small, hard fact, delivered without any doubt at all. It will not sit still afterward, this idea of stations still standing, still passed, though no one stops there and no one is meant to remember them. It points her further into the train, toward whoever else might know how many stops a line can lose before it stops being the line it was.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_3a",
+          "label": "Carry the fact onward.",
+          "target": "g1a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_3b",
+      "body": "Vera listens instead from a little distance. What she gathers this way is a rhythm more than a fact: his count never falters, never repeats a name twice, and never once seems to reach an end he is satisfied with. Each name, when she catches it clearly, sounds ordinary enough on its own, some small town or crossing or halt. It is only the sheer unbroken length of the recitation that begins to feel wrong the longer she listens to it. She could carry that steady, unfinished rhythm forward and let it settle alongside everything else the carriage has shown her. Or she could let its very steadiness work the same way the wheels do, lulling her by increments toward sleep before she has understood what he is truly keeping track of. The car is warm, the murmur almost musical. It would take so little, just now, to let her eyes close on the sound of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g1a2_4"
+        },
+        {
+          "id": "c_g1a2_3b2",
+          "label": "Let the hour take you.",
+          "target": "g1a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_4",
+      "body": "Whichever way Vera has come to it, by asking outright or by listening from the edge of his private ritual, what settles in her is the same small wrongness: a line with more stations behind it than ahead, stations dropped and yet somehow still passed, remembered by one man with a notebook and by no one else. It is not enough to explain the whole shape of the night. It will not loosen its grip either, the way a name once learned refuses to go back to being unknown. She pictures, briefly and without meaning to, all those darkened platforms sliding past the windows unremarked. They wait on a memory kept by exactly one tired passenger. The train sways through another long curve and his count continues underneath it, patient, unbroken. Vera feels the journey close around the thought, and understands, quietly, that she is not done following it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_4",
+          "label": "Press on.",
+          "target": "g1a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_5",
+      "body": "She leaves him to his count and carries the thought of the vanished stations back through the swaying train, past the dining car where four passengers keep an untouched table, past the child humming her own patient tune at the end of another carriage. Somewhere ahead a woman dressed in grey sits with a grief that has not yet found its way into words. Vera senses, without being able to prove it, that whatever this man has been counting connects to her too, and to the child, and to the four at the table who never eat. Each of them, in their own separate way, seems to be keeping some private ledger the rest of the train has agreed not to ask about. None of it resolves outright. Every detail leans the same direction, toward some larger accounting the whole train seems quietly engaged in. She steadies herself against the cold rail and carries on to find it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_5",
+          "label": "Follow it to the pivot.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_end",
+      "body": "Vera does not learn the whole of his count, not tonight. She keeps one true thing: a line with more stations lost than kept, still passed in the dark whether or not anyone remembers to look for them, tallied faithfully by a man who may be the last one keeping the tally at all. It does not tell her why the stations vanished, or what waits at whichever one comes next. It settles into her the way an old, sad fact settles, complete in itself even without a larger frame around it. She thinks of him still murmuring away in the dark carriage behind her, keeping his lonely and exact accounting for an audience of no one, and finds the thought oddly companionable rather than sad. She carries it back to her seat, turning the number over. It does not undo her, only weighs a little, honestly, in her chest. It is real, and she means to keep it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Numbers Without a Sum"
+      }
+    },
+    {
+      "id": "g1a3_1",
+      "body": "Vera makes her way toward the woman seated alone in grey, travelling, by every outward sign, in mourning. The carriage sways beneath her with the same patient rhythm it has kept all night. Her own reflection rides the dark window behind the woman's shoulder, pale and doubled, watching the meeting before it happens. The woman sits with her hands folded in her lap exactly as the child's were folded three carriages back, her coat and dress and even the scarf at her throat all the same unbroken grey. She has not moved, as far as Vera can tell, since the train left the platform. Her gaze rests somewhere just past the window, fixed on nothing Vera can identify, the way a person looks when the thing they are actually seeing is not outside the glass at all. It is the stillness that catches her first, a grief held so carefully in place that it looks, from a distance, almost like peace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_1",
+          "label": "Look closer.",
+          "target": "g1a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_2",
+      "body": "There are two ways to approach a grief held this still. Vera can feel herself weighing both at once. She could sit beside the woman directly and ask, gently but plainly, who she has lost and where she is travelling to see them laid to rest, and risk whatever a stranger's direct sympathy does to someone guarding her sorrow so carefully. Or she could take the seat across the aisle instead, offer nothing but her presence, and let the woman's own quiet, if she chooses to break it, come in its own time. Asking outright might bring the whole of her story forward at once, at the cost of trespassing on a grief that has clearly built its own walls. Waiting costs Vera only patience, and the chance that the woman's silence simply continues, undisturbed and unexplained, for as long as the night allows. Neither choice feels entirely right, which is itself, Vera suspects, exactly the kind of choice grief usually offers a stranger.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_2a",
+          "label": "Press in directly.",
+          "target": "g1a3_3a"
+        },
+        {
+          "id": "c_g1a3_2b",
+          "label": "Hang back and watch.",
+          "target": "g1a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_3a",
+      "body": "Vera asks her gently. The woman answers without flinching, in the flat, careful voice of someone who has said the words before and made her peace with saying them again: she buried her husband three winters past, she says, and has ridden this same train north every year since on the night closest to the date, though she could not say, if pressed, what exactly she expects to find at the end of it. It is a small, plain fact. It will not sit still in Vera afterward, this idea of a grief that repeats itself yearly on a train that may not exist for anyone else to ride. It points her further into the carriage, toward whoever else might understand what this line is truly for.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_3a",
+          "label": "Carry the fact onward.",
+          "target": "g1a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_3b",
+      "body": "Vera sits across the aisle instead and watches. What she gathers without a single word exchanged is this: the woman's stillness is not emptiness but discipline, the careful holding of something that would otherwise break loose entirely. Once, and only once, the woman's folded hands tighten briefly against each other before easing again, the smallest possible sign of the effort the stillness is costing her. Vera could carry that quiet understanding forward, let it join the rest of what the night has shown her about who rides this train and why. Or she could let the woman's very stillness settle over her too, the way grief in a room can become a kind of hush that pulls everyone in it toward silence, and toward sleep. The carriage is warm, the woman's calm strangely contagious. It would be easy, here, to let her own eyes close before she has understood what she has seen.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g1a3_4"
+        },
+        {
+          "id": "c_g1a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g1a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_4",
+      "body": "Whichever way Vera has come to it, by a gentle question answered honestly or by a shared silence that told her almost as much, what she now understands about the woman in grey settles into the same small wrongness: a mourning repeated yearly on a train that keeps no ordinary schedule, ridden by someone who no longer quite expects an answer and rides anyway. It is not enough to explain the whole of the night. It will not be reasoned back out of her, the way another person's grief, once witnessed honestly, stays lodged where it lands. She finds herself wondering what it would take to keep returning to the same unanswered place year after year. She wonders, too, whether she herself has ever loved anything that faithfully. The train sways through a long curve and the woman's folded hands do not move. Vera feels the journey close around the thought. She understands that she is not yet finished with it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_4",
+          "label": "Press on.",
+          "target": "g1a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_5",
+      "body": "She leaves the woman to her stillness and carries the thought of that yearly, unfinished mourning back through the train, past the four regulars keeping their silent table, past the child humming her patient tune. Somewhere ahead a man murmurs the names of stations that no longer exist. Vera senses, without proof, that his list and her grief and the child's private schedule are all threads of the same larger cloth, though she cannot yet see the whole of the weave. She finds herself walking a little more carefully than before, as though the carriage itself has grown heavier with everything she now knows it is carrying. None of it resolves outright. Every detail leans the same way, deeper into the question of what kind of passengers this train has agreed to carry. She steadies herself against the cold rail and goes on to learn more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_5",
+          "label": "Follow it to the pivot.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_end",
+      "body": "Vera does not learn everything the woman carries, not tonight. She keeps one true thing: a grief so carefully tended that it has become its own kind of ritual, repeated yearly on a train that seems to exist, at least in part, to hold it. It does not tell her what the woman hopes to find at the end of the line, or whether she has ever found it. It settles into Vera whole and unmistakable, the way another person's sorrow does when it is witnessed rather than explained away. She thinks of the woman's folded hands, of the one small tremor she allowed herself, and understands that some griefs are not meant to be solved, only accompanied for however long the accompanying is offered. She carries it back to her own seat and sits with it a while. It does not undo her, only asks something quiet of her in return. It is real. It is hers to carry now too.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a3",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Grief Held Very Still"
+      }
+    },
+    {
+      "id": "g2a0_1",
+      "body": "The conductor finds Vera again near the vestibule where the rail begins its long climb into higher ground. The carriage sways harder now, as though the grade itself were arguing with the wheels. In the black glass beside them both, her reflection and his stand together over the dark, doubled and strangely companionable, two shapes riding the same uncertain light. He has his silver punch-clock out again, snapping it open and shut in a restless, dissatisfied rhythm, as though the hour it shows still refuses to settle. This time he pauses, catches her eye, and does not immediately look away, as though some part of him has been waiting for her to come find him a second time. The lamp overhead gutters with the strain of the climb, and for a moment his whole face is lit gold and uncertain, a man weighing something he has clearly weighed before. It is that pause, more than anything he has done all night, that tells her he might, if pressed properly now, actually answer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_1",
+          "label": "Look closer.",
+          "target": "g2a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_2",
+      "body": "There are two ways to press the conductor now that he has paused. Vera feels the weight of both. She could ask him outright, here in the cold vestibule with the grade steepening under them, exactly what waits at the tunnel ahead and why he keeps consulting a clock that answers to no ordinary hour. Or she could hold her question a moment longer, let his own hesitation finish its work, and trust that a man who has already paused once will finish the thought himself if she gives him room to. Asking directly might get her the plain truth before the tunnel arrives, at the cost of pushing a cautious man back into his old silence. Waiting risks nothing but the shortening distance to the tunnel mouth, and the chance that his nerve, once broken, does not mend itself before the dark closes over them both. The mountain ahead offers her no further time to weigh it than that.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_2a",
+          "label": "Press in directly.",
+          "target": "g2a0_3a"
+        },
+        {
+          "id": "c_g2a0_2b",
+          "label": "Hang back and watch.",
+          "target": "g2a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_3a",
+      "body": "Vera asks him plainly what waits beyond the tunnel. This time the conductor answers, quietly, as though relieved finally to be asked directly. The tunnel, he says, is not a passage through the mountain so much as a passage through the night itself. What a passenger carries into it is generally what that passenger carries back out, changed or unchanged depending on how honestly they entered. He says it the way a man says something he has watched prove true more times than he cares to count, without embellishment and without doubt. It is a strange, exact answer for so plain a question. It will not sit still in her afterward: a tunnel that asks something of its travellers rather than simply delaying them. It points her onward, toward whatever choice waits at the mouth of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_3a",
+          "label": "Carry the fact onward.",
+          "target": "g2a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_3b",
+      "body": "Vera lets her question wait a moment longer, and watches instead as the conductor's own hesitation plays itself out: he opens the punch-clock, studies it, closes it again, and murmurs something about the tunnel under his breath that she does not quite catch. The tone of it is closer to warning than to simple timekeeping. His hand does not quite steady itself around the silver case this time, a small tremor she has not noticed in him before tonight. She could carry that overheard fragment forward, weigh it against everything the night has already shown her about this line and what it asks of its passengers. Or she could let the climbing grade and the low, steady effort of the engine lull her instead, the way the whole night has been trying, gently and insistently, to lull her. The vestibule is cold. The carriage behind her is warm, and warmth, just now, argues its own case.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g2a0_4"
+        },
+        {
+          "id": "c_g2a0_3b2",
+          "label": "Let the hour take you.",
+          "target": "g2a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_4",
+      "body": "Whichever way Vera has come to it, by a plain question answered honestly or by a murmured warning caught only half clearly, what settles in her about the tunnel ahead is the same small, exact wrongness: it is not a length of track so much as a test. What a traveller carries into it says something true about what they will carry back out. It is not a comforting fact. It will not be reasoned away either, the way any true warning tends to stay lodged exactly where it lands. She finds herself taking a private inventory of everything she has learned and carried tonight, wondering, without quite finishing the thought, which of it she means to keep. The train shudders through another steepening curve, and for a moment the whole carriage seems to hold its breath along with her. Vera lets hers go, and understands that she means to meet the tunnel with her eyes open.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_4",
+          "label": "Press on.",
+          "target": "g2a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_5",
+      "body": "She carries the conductor's warning with her back through the climbing train, past a letter's faint map inked in careful hand, past signal lamps burning steady and then not steady at all ahead of the tunnel mouth, past passengers gathering in twos and threes to weigh the choice together in low, urgent voices. Every one of them seems to be bracing for the same mountain in their own private way, as though the whole carriage had quietly agreed on the shape of what is coming without needing to say so aloud. None of it tells her outright what she will be asked to carry into the dark. Every detail leans the same way, toward the mountain itself and whatever waits inside it. Vera steadies herself against the cold rail as the grade steepens further. She goes to find out what the tunnel intends to ask of her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_5",
+          "label": "Follow it to the pivot.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_end",
+      "body": "Vera does not get the whole of what the conductor knows, not tonight. She keeps one true thing: that the tunnel ahead means to test its passengers rather than merely delay them, and that he, at least, believes this completely enough to warn a stranger twice. It does not tell her what the test will demand of her specifically, or whether she is ready to meet it. It settles into her whole and certain, the way a warning does when it comes from someone with nothing to gain by giving it. She thinks of his careful, unhurried voice as he said it, a man who has clearly delivered this same warning to strangers before her and will likely deliver it again after she is gone. She holds the thought as the train climbs on. It does not frighten her so much as steady her, the way knowing the shape of a danger sometimes does. It is real, and worth carrying the rest of the way.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Conductor Won't Say"
+      }
+    },
+    {
+      "id": "g2a1_1",
+      "body": "With the train beginning its long climb, Vera turns her attention to the letter someone left folded aboard. The lamplight catches something in it she has not seen until now: a faint map inked into the margins, so lightly pressed that it is barely more than a shadow. It traces a line up through folded mountains toward a black mark that could be a tunnel or could be nothing at all. The carriage sways with the steepening grade. Her own reflection leans close in the cold window beside her, studying the map over her shoulder as though it too were trying to make sense of the faint marks. It is the map, more than anything the letter says outright, that will not let her look away now. Someone drew this single route here in secret and left it for the light to find.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_1",
+          "label": "Look closer.",
+          "target": "g2a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_2",
+      "body": "There are two ways to read a map this faint. Vera feels both pulling at her at once. She could hold the page directly to the lamp, tilt it hard against the light, and force the ink to show itself all at once, plainly, whatever the cost to the fragile paper. Or she could turn it slowly by the window instead, let the shifting angle of passing light bring the lines forward gradually, trusting patience over force to preserve whatever the map is trying to say. Forcing it might reveal the whole route at once, at the risk of smearing ink already faint enough to vanish under too rough a hand. Waiting costs her only time, and the chance that the map fades back into the paper before she has read enough of it to matter. The paper itself feels thinner than it did in the small hours, as if the climb were wearing it down along with everything else aboard.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_2a",
+          "label": "Press in directly.",
+          "target": "g2a1_3a"
+        },
+        {
+          "id": "c_g2a1_2b",
+          "label": "Hang back and watch.",
+          "target": "g2a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_3a",
+      "body": "Vera holds the page hard against the lamp. The map comes forward all at once: a single line climbing from a station she does not recognize to a black mark plainly labelled, in the same careful hand as the letter itself, the mouth of the mountain. Beside the mark, in ink smaller still, someone has written a single word she can just make out: enough. The lamp's heat warms the paper under her fingers, and for a moment she is almost afraid the ink itself will lift free of the page entirely, the word mattering more than the fibers holding it. It is a small, hard fact, three words and a mark on a page. It will not sit still in her afterward, this idea that someone once traced this exact climb and judged, at the end of it, that they had carried enough. It points her onward, up through the same climbing dark, toward whatever waits at that mark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_3a",
+          "label": "Carry the fact onward.",
+          "target": "g2a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_3b",
+      "body": "Vera turns the page slowly instead, letting the passing lamplight bring the faint ink forward by degrees. What she gathers this way is a shape more than a word: a route that climbs steadily, without a single fork or hesitation, straight toward the mountain's black heart. There is something almost restful in tracing it this way, degree by degree, rather than demanding it show itself all at once. She could carry that steady, single-minded shape forward, let it join everything else the night has shown her about where this line is truly headed. Or she could let the effort of holding the page just so, tilted precisely against the shifting light, finally tire her enough to let it rest, and let her eyes rest along with it. The paper is thin, the light unsteady, and sleep, when it comes for her this way, comes as a kind of surrender to how hard she has been trying to see.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g2a1_4"
+        },
+        {
+          "id": "c_g2a1_3b2",
+          "label": "Let the hour take you.",
+          "target": "g2a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_4",
+      "body": "However Vera has read it, forced into the lamplight or coaxed forward by degrees, what the map now tells her settles into the same small, exact wrongness: a single climbing route, no forks, no hesitation, traced once by someone who reached the mountain's mouth and judged that they had carried enough to meet it. It is not the whole of the letter's mystery. It will not be argued back into vagueness either, the way a line once traced in ink stays traced no matter how faint it has become. She wonders whether the hand that drew it was steady with confidence or simply resigned to where the line was always going to lead. The train shudders through another steep curve. The map trembles in her hand with it, as though the paper itself remembers the climb. Vera feels the journey draw close around the thought, and understands that she is meant to trace it too.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_4",
+          "label": "Press on.",
+          "target": "g2a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_5",
+      "body": "She folds the letter carefully back over its faint map and carries the thought of that single climbing line with her through the train. She passes the conductor with his silver clock, and signal lamps burning steady and then not, ahead of a tunnel she can feel drawing nearer with every mile. Somewhere behind her, passengers have gathered in low voices to weigh some choice together that she has not yet been asked to share. She keeps the letter in her coat pocket rather than her hand now, as though it were something that needed to stay close but did not need to be looked at again just yet. None of it tells her outright what enough meant to whoever wrote that word beside the mark. Every detail leans the same way, up through the mountain, toward the place the map insists is the whole point of the line. Vera steadies herself against the cold rail and climbs on to meet it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_5",
+          "label": "Follow it to the pivot.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_end",
+      "body": "The lamp gutters low with the effort of the climb. Somewhere between one sway of the carriage and the next the faint ink of the map slips from focus entirely, blurred past reading by the unsteady light or by the dampness of her own tired eyes, she cannot afterward say which. She surfaces from that half-attention to find the letter still in her lap, the map still there in shape but no longer legible, the single climbing line and the small word beside it both gone the way faint things go when no one is watching closely enough. She is unhurt by the loss, only sorry for it, the particular sorrow of having held something true for just long enough to almost understand it. The cold pulls in at the window. The climb goes on without the map to guide her through it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Ink Runs in the Cold"
+      }
+    },
+    {
+      "id": "g2a2_1",
+      "body": "Vera presses her face to the cold glass as the grade steepens, watching for the signal lamps she has heard other passengers murmur about. There they are at last, two small points of colored light burning steady against the black shoulder of the mountain ahead. The carriage sways harder on this climb than it has all night, and her reflection wavers in the glass along with the lamps themselves, so that for a moment she cannot tell which light is glass and which is truly burning out there in the dark. The near lamp glows a plain, honest green, the kind that means go on, proceed, the line ahead is clear. It is the second lamp, further on, that catches and holds her attention, because it does not seem to be able to decide what color it wants to be.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_1",
+          "label": "Look closer.",
+          "target": "g2a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_2",
+      "body": "There are two ways to watch signal lamps that will not settle on a color. Vera weighs them both as the mountain looms nearer. She could fix her eyes on the far lamp directly, refuse to look away until it declares itself one way or the other, and risk whatever strain comes from staring too hard at a light that may simply be built to resist being read. Or she could let her attention drift between the two lamps, near and far, trusting the pattern between them to explain itself in time without her forcing the question. The mountain's shoulder is close enough now that both lamps seem almost within reach, though she knows the distance is deceiving her. Watching the far lamp directly might resolve its color at once, or it might only tire her eyes into imagining colors that are not there. Watching patiently costs her only the discomfort of an answer deferred, and the risk that the tunnel arrives before the second lamp ever settles.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_2a",
+          "label": "Press in directly.",
+          "target": "g2a2_3a"
+        },
+        {
+          "id": "c_g2a2_2b",
+          "label": "Hang back and watch.",
+          "target": "g2a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_3a",
+      "body": "Vera fixes her eyes on the far lamp and refuses to look away. After a long, uncomfortable stretch of watching, it settles, definitively, into red, then flickers once more back toward green before holding red again, as though genuinely uncertain which signal the mountain wants to give the train behind it. Her eyes ache with the effort of not blinking. She keeps them open anyway, half convinced that looking away even once would let the lamp settle into whichever color she is not watching for. It is a small, hard fact, exact and specific: a signal that cannot decide whether the way ahead is clear, delivered by a mechanism that ought to be simpler than that. It will not sit still in her, this flickering indecision at the very door of the tunnel. It points her onward, toward whoever aboard might know why the mountain's own warning cannot make up its mind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_3a",
+          "label": "Carry the fact onward.",
+          "target": "g2a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_3b",
+      "body": "Vera lets her gaze move between the two lamps instead, near and far. What she gathers this way is a rhythm rather than a single fact: the near lamp burns steady green the whole time, while the far one cycles through red and green and back again in a pattern that seems, the longer she watches, almost deliberate, almost a message meant for someone patient enough to read it whole. She counts the beats between each change without quite meaning to, the way one counts the gap between lightning and thunder, though the count never resolves into anything she can name. She could carry that rhythm forward, let it join the rest of what the night has shown her about a line that keeps its own uncertain rules. Or she could let the steady rocking of the climb and the low murmur of the engine pull her toward sleep before the pattern has finished repeating itself for her. The glass is cold, her own breath fogging it. The lamps blur gently the longer she does not blink.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g2a2_4"
+        },
+        {
+          "id": "c_g2a2_3b2",
+          "label": "Let the hour take you.",
+          "target": "g2a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_4",
+      "body": "However Vera has watched them, staring hard at the far lamp or letting her eyes move between the two, what she now understands settles into the same small wrongness: one lamp burns a plain and steady green. The other cannot, or will not, decide whether the way ahead is truly clear. It is not enough to explain the whole of the mountain. It will not loosen its grip on her either, the way an uncertain signal, once noticed, cannot simply be waved past. She wonders whether the mountain itself keeps two minds about its own travellers, one welcoming and one wary, and whether every passenger sees whichever lamp matches what they carry. The train shudders through the steepest part of the grade yet. Both lamps flare bright for a moment against the dark, then settle again. Vera feels the journey draw tight around the thought, and understands she means to go on toward it anyway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_4",
+          "label": "Press on.",
+          "target": "g2a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_5",
+      "body": "She pulls back from the glass at last, carrying the memory of the uncertain signal with her through the swaying, climbing train, past the conductor who has finally begun to answer plainly, past a faint map traced once by some earlier traveller who judged that they had carried enough. Behind her, passengers gather in low, urgent voices to weigh some choice she has not yet been asked to share in. She catches her own reflection once more in a darkened window as she passes. For a moment the flicker of red and green from the distant lamps seems to pass across her own face too, as though the signal were meant for her specifically. None of it tells her outright why the mountain's own warning light cannot settle on an answer. Every detail leans the same way, toward the black mouth of the tunnel now visibly ahead. Vera steadies herself against the cold rail and climbs on to meet whatever waits there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_5",
+          "label": "Follow it to the pivot.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_end",
+      "body": "Vera does not get a final, settled answer from the lamps, not tonight. She keeps one true thing: that the mountain's own signal, right at the door of the tunnel, could not commit itself fully to either warning or welcome, and that this uncertainty is, in its own way, an honest answer about what waits ahead. It does not tell her whether the way through is truly clear, only that no one, not even the line itself, is entirely sure. She glances back once more at the two small points of colored light before they slip from view behind the climbing curve, and finds she does not resent them for their indecision. She carries the thought with her as the train climbs on, and finds that it does not frighten her so much as clarify something about the whole strange night: certainty was never on offer here, only the choosing, made anyway, in spite of the flickering light. It is real. She means to hold onto it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Green, and Then Not"
+      }
+    },
+    {
+      "id": "g2a3_1",
+      "body": "Vera follows a low murmur of voices to the vestibule where several passengers have gathered, drawn together, it seems, by the same steepening climb that has drawn her. The carriage sways hard beneath the group of them. In the dark window at the end of the corridor their reflections crowd together over the black rush of the mountain outside, more shapes than she can easily count. They are debating, quietly but with real feeling, whether the train ought to go on through the tunnel at all tonight, or whether some among them ought to ask the conductor to hold the whole climb until morning. No one in the small crowd seems to hold the deciding vote. Yet none of them looks willing to walk away from the conversation either. It is the seriousness of it that catches Vera, more than the disagreement itself: whatever this choice is, it clearly matters to all of them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_1",
+          "label": "Look closer.",
+          "target": "g2a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_2",
+      "body": "There are two ways to join a conversation this serious. Vera feels the pull of each as she steps nearer the small gathered crowd. She could speak up directly, ask them plainly what exactly they fear waits inside the tunnel, and risk whatever attention a stranger's blunt question draws from people already tense with disagreement. Or she could stand at the edge of the group first and listen, let their argument run its own course a while longer, and trust that the shape of what frightens them will become clear without her having to ask for it outright. Speaking up might get her the heart of the matter quickly, at the cost of interrupting people clearly still working it out for themselves. Listening costs her only patience, and the risk that the group disperses, decision made or not, before she has understood what was truly at stake.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_2a",
+          "label": "Press in directly.",
+          "target": "g2a3_3a"
+        },
+        {
+          "id": "c_g2a3_2b",
+          "label": "Hang back and watch.",
+          "target": "g2a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_3a",
+      "body": "Vera asks them plainly what they fear. One of the gathered passengers, an older man with the tired, careful voice of someone who has made this argument before, tells her outright: every year, he says, someone on this train chooses to stay behind rather than go on through the tunnel. Every year the ones who go on arrive changed by however much they were willing to carry with them into the dark. It is a small, hard fact, delivered without embellishment. It will not sit still in her afterward, this idea of a toll the tunnel takes not in coin but in whatever a passenger brings along. It points her onward, toward the tunnel mouth itself, and toward whatever she herself is carrying that might be weighed there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_3a",
+          "label": "Carry the fact onward.",
+          "target": "g2a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_3b",
+      "body": "Vera stands at the edge of the group and listens instead. What she gathers, without asking a single question of her own, is the shape of their fear rather than its exact cause: not one of them speaks of danger to the train itself, only of what they might lose, or gain, or be forced to see clearly, once the tunnel closes over them. Their voices rise and fall together in a way that reminds her, faintly, of the four regulars at their silent table, people bound by something older than tonight's conversation. She could carry that shape of fear forward, weigh it against everything else the night has shown her about what this line asks of the people riding it. Or she could let the drone of their low voices and the effort of the climbing engine lull her instead, the way the whole night has been quietly, persistently trying to lull her. The vestibule is cold. Weariness, by now, argues loudly of its own accord.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g2a3_4"
+        },
+        {
+          "id": "c_g2a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g2a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_4",
+      "body": "However Vera has come to understand it, by a plain answer given outright or by the shape of fear gathered secondhand, what she now knows about the choice ahead settles into the same small wrongness: the tunnel does not threaten the train so much as it asks something of each passenger individually, a toll weighed in whatever they carry rather than in anything so simple as a fare. It is not enough to explain the whole of the night. It will not be reasoned back out of her either, the way a warning shared by strangers stays lodged exactly where it lands. The train shudders through the steepest curve of the climb yet. The gathered group falls quiet together, as though bracing for the same thing at once. Vera braces with them, and understands she means to meet it too.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_4",
+          "label": "Press on.",
+          "target": "g2a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_5",
+      "body": "She steps back from the gathered passengers at last, carrying the weight of their shared fear with her through the climbing train, past the conductor now finally willing to speak plainly, past a faint map traced once by some earlier traveller who judged they had carried enough. The lamps outside still burn their uncertain double signal against the mountainside. Somewhere ahead the black mouth of the tunnel has begun to fill the whole of the forward glass. She finds herself glancing back once toward the vestibule where the group still stands debating, and wonders whether any of them will follow her example or simply keep weighing the question until the mountain decides for them. None of what the group told her explains outright what she herself will be asked to carry through the dark. Every voice in that vestibule leaned the same way, toward the tunnel and the toll it seems to keep. Vera steadies herself against the cold rail as the grade steepens further, and goes on to meet whatever waits there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_5",
+          "label": "Follow it to the pivot.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_end",
+      "body": "Vera does not learn precisely what she herself will be asked to weigh, not tonight. She keeps one true thing from the gathered passengers: that every year someone chooses to stay rather than risk the tunnel's toll, and that this choice is treated, by everyone who has ridden the line before her, with real and unembarrassed seriousness. No one in that vestibule looked at her as though the fear were foolish. She does not intend to treat it as foolish either. She carries the thought back through the swaying carriage, turning it over, and finds it settling into her honestly, without drama, the way a true warning does when it is offered without malice. It is not the whole picture. It is real, and worth the carrying.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "No One Will Meet Your Eye"
+      }
+    },
+    {
+      "id": "g3a0_1",
+      "body": "The train slows further still as it enters the mountain's shadow. The conductor is there again at the head of the carriage, waiting for her, it seems, rather than merely passing through on his rounds. The carriage sways gently now on the last of the level track before the true climb into the tunnel begins, and in the black glass beside them both, their two reflections stand close together, as steady as the moment allows. He has put the silver punch-clock away entirely, hands for once empty. There is something in the set of his shoulders that Vera reads, correctly she thinks, as a man finally ready to be asked the whole of it. It is that stillness in him, more than anything he says yet, that tells her this exchange will be different from the ones before it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_1",
+          "label": "Look closer.",
+          "target": "g3a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_2",
+      "body": "There are two ways to take this last chance at the conductor's honesty. Vera weighs them carefully as the tunnel mouth grows larger in the glass. She could ask him outright for the entire truth of the north line, every part of it, plainly and all at once, and risk that so large a question asked too bluntly might close him again just when he seems ready to open. Or she could let him begin in his own time, offer only a small, patient prompt, and trust that a man finally willing to talk will say more, not less, if he is allowed to find his own way into it. Pressing for everything at once might get her the whole shape of the truth immediately, at the risk of overwhelming a story that wants telling gently. Waiting a moment longer costs her only the last of the level track, and the small chance that his nerve fails again before the tunnel takes the choice out of her hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_2a",
+          "label": "Press in directly.",
+          "target": "g3a0_3a"
+        },
+        {
+          "id": "c_g3a0_2b",
+          "label": "Hang back and watch.",
+          "target": "g3a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_3a",
+      "body": "Vera asks him for the whole truth, plainly. The conductor gives it to her without flinching this time: the north line, he says, was never built to connect one place to another so much as to carry certain travellers through whatever they are not yet ready to let go of. The tunnel ahead is where that carrying is finally, always, put to its test. He says it looking directly at her rather than past her, as though the answer were meant specifically for whoever finally had the nerve to ask it outright. It is a hard, exact answer, larger than she expected and delivered without any softening at all. It will not sit still in her afterward: a line built for letting go, not for arriving. It points her onward, straight into the mountain, toward whatever she herself has been carrying without quite admitting it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_3a",
+          "label": "Carry the fact onward.",
+          "target": "g3a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_3b",
+      "body": "Vera lets him begin in his own time instead. He does, haltingly at first and then more steadily: the north line, he says, has always run for passengers who need one particular night more than they need a fixed destination. He has kept its clock exactly as stopped as it needs to be for as long as anyone has trusted him with the keeping of it. His voice steadies as he goes, as though the telling itself were a weight easing rather than one being added. She could carry that quieter, unfinished confession forward, let it settle alongside everything else the night has shown her about what this train truly does. Or she could let the last of the level track and the low, patient hum of the engine ease her toward sleep before he finishes saying all of it. The carriage is warm despite the mountain's shadow outside, and rest, just now, argues for itself quietly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g3a0_4"
+        },
+        {
+          "id": "c_g3a0_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_4",
+      "body": "Whichever way Vera has drawn it from him, in one plain and total answer or in a slower, gentler unfolding, what she now understands about the north line settles into the same exact wrongness, or perhaps the same exact mercy: this train exists to carry people through whatever they have not yet let go of. The tunnel ahead is where that carrying comes finally due. It is not a comfortable fact. It will not be argued back into simple geography either, the way a truth once spoken plainly cannot be unspoken again. The train shudders as the grade steepens toward the tunnel mouth at last. The conductor's stillness beside her deepens into something almost like peace. Vera feels the journey close entirely around the thought, and understands she means to meet it honestly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_4",
+          "label": "Press on.",
+          "target": "g3a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_5",
+      "body": "She thanks him and carries what he has told her forward through the last swaying carriage before the tunnel. She passes a child offering, with perfect calm, to show her the way through the dark, a mourning woman with one quiet request still unspoken, and a timetable whose columns of stations refuse to end. She finds herself looking at each of them differently now. They are no longer merely strange fellow passengers but travellers carrying their own version of exactly what the conductor described. None of it changes what the conductor has told her about what this line is truly for. Every detail now seems to confirm it, mile after mile, traveller after traveller, all of them carrying something north that they have not yet managed to set down. Vera steadies herself against the cold rail as the tunnel mouth swallows the last of the daylight ahead. She goes forward to meet the dawn on the other side of it, whatever it turns out to hold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_5",
+          "label": "Follow it to the pivot.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_end",
+      "body": "Vera does not receive every last detail the conductor could offer, not tonight. She keeps one true thing, entire and unmistakable: that this train runs for those who are not yet ready to let something go, and that the man charged with keeping its stopped clock has spent years doing exactly that, faithfully, for strangers he will likely never see again. It does not tell her precisely what she herself is meant to release before the tunnel closes, only that the question is real, and has been asked of everyone who has ever ridden this far. She thinks of him standing at his post through countless identical nights, patiently answering when he finally could, and finds a strange comfort in imagining that patience passed on to whoever needs it next. She carries the thought back through the carriage, turning it over gently. It settles into her whole, honest, and a little heavier than she expected. It is real. It is hers to carry the rest of the way.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Conductor Carries"
+      }
+    },
+    {
+      "id": "g3a1_1",
+      "body": "The small girl who was humming three carriages back has found her own way to Vera now, standing steady in the aisle despite the steepening grade. She offers, in the same calm voice as before, to show her the way through the tunnel ahead. The carriage sways hard beneath them both as the mountain's shadow closes over the glass. In the darkened window Vera's reflection and the child's stand together, one tall and uncertain, one small and entirely sure of herself. The girl has no coat still, no fear either, only her folded hands and that unhurried patience Vera noticed the first time she saw her. It is the girl's total lack of hesitation, more than the offer itself, that makes Vera study her closely now, the way one studies anyone who claims to know a dark road better than the person about to walk it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_1",
+          "label": "Look closer.",
+          "target": "g3a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_2",
+      "body": "There are two ways to answer a child so certain of the way through. Vera turns them over as the tunnel mouth fills more of the glass with every passing second. She could take her hand directly, right now, and trust a stranger's small, steady certainty over her own uncertainty, and risk whatever it means to let a child lead an adult somewhere neither has been named for certain. Or she could hold back a moment first, ask what exactly the girl has seen in there before, and let caution have its say before trust does. The girl waits, patient and unhurried, her small hand still extended, entirely unbothered by how long Vera takes to decide. Taking her hand at once might carry her through more safely, or it might mean trusting a guide whose reasons Vera has not yet fully understood. Holding back costs her only a little time, and the risk that the girl's small, patient hand is not offered twice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_2a",
+          "label": "Press in directly.",
+          "target": "g3a1_3a"
+        },
+        {
+          "id": "c_g3a1_2b",
+          "label": "Hang back and watch.",
+          "target": "g3a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_3a",
+      "body": "Vera takes her hand without waiting further. The girl's grip is warm and entirely sure, steadier than Vera's own. Walk with your eyes open the whole way through, the girl tells her, plainly, the way she might repeat a rule she has followed many times herself, and do not let go of what you are carrying until you can see the light on the other side. She says it once, simply, and does not repeat herself, as though the instruction were complete and did not need embellishing. It is a small, exact instruction, delivered with none of a child's usual uncertainty. It will not sit still in Vera afterward: eyes open, hold on, wait for the light. It points her straight into the tunnel now closing over the whole train, steadied by the one small hand willing to lead her through it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_3a",
+          "label": "Carry the fact onward.",
+          "target": "g3a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_3b",
+      "body": "Vera holds back a moment first and asks the girl what waits inside. The girl only smiles, unbothered, and says that it is different for everyone, though it is never, in her own experience, as bad as the waiting outside the tunnel makes it seem. She says it the way a much older person might, with a kindness that seems to have been earned rather than simply given. She could carry that small, patient reassurance forward, let it steady her the rest of the way into the dark. Or she could let her own remaining caution win out entirely, let the warmth of the carriage and the last of her resistance pull her toward sleep instead, missing the girl's offered hand altogether while she hesitates. The tunnel mouth swallows the last daylight from the glass. It would be so easy, in this last moment of light, to simply close her eyes instead of using them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g3a1_4"
+        },
+        {
+          "id": "c_g3a1_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_4",
+      "body": "Whichever way Vera has come to trust her, by taking the offered hand at once or by asking first and being reassured, what she now understands about the wakeful child settles into the same steadying certainty: this girl has made this exact passage before, calmly, more than once, and means only kindness by the offer of her small, sure hand. It is not an explanation of everything the night has shown her. It will not be doubted back out of her either, the way a child's plain confidence, once earned honestly, tends to stay earned. The train shudders as the tunnel finally closes fully over the glass. The girl's hand tightens gently in hers, or in the space where it would be, in warning and in comfort both. Vera feels the journey close around the thought entirely, and goes forward steadied by it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_4",
+          "label": "Press on.",
+          "target": "g3a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_5",
+      "body": "She walks on with the girl's calm certainty carried close beside her, through the last swaying length of carriage before the tunnel proper. She passes the conductor, now finally willing to speak the whole truth of the line, a mourning woman with one quiet request left unspoken, and an endless timetable of stations no one seems able to finish counting. The child's hand stays loosely in hers the whole way, not gripping, only present, the way a good guide leads without ever needing to pull. None of it changes what the child has told her, that this passage is different for everyone and never quite as bad as the waiting makes it seem. Every detail now confirms the shape of it: a line built to carry people through exactly this kind of dark. Vera steadies herself as the tunnel mouth closes fully around the train, and goes forward to meet whatever dawn waits on its far side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_5",
+          "label": "Follow it to the pivot.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_end",
+      "body": "Vera does not need the girl's hand held all the way through in the end. It is enough, she finds, to have been offered it honestly, and to have offered something honest back. Somewhere in the dark of the tunnel she keeps pace with the child's steady, unhurried walk, matching her own longer stride to the smaller, surer one, and by the time they reach whatever ordinary light waits beyond the mountain, she has done one whole, quiet good thing for a fellow traveler who asked for nothing but company through a hard stretch of the journey. The girl hums, very softly, the same unhurried tune from earlier in the night. Vera finds herself humming a few notes of it back, not quite sure when she learned the shape of it herself. The doing of it is enough, entire in itself, without needing to become anything larger, a kindness offered and received without either of them needing to name it. The carriage around her seems to warm by some small, real degree, as though the train itself had noticed and approved. The girl's hand, when it finally slips from hers at the tunnel's far end, feels less like a parting than like a promise kept.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a1",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Child Shows the Way"
+      }
+    },
+    {
+      "id": "g3a2_1",
+      "body": "The woman in grey has left her seat at last and come to find Vera as the mountain's shadow falls fully over the glass, moving slowly, carefully, the way people move when they have decided something and do not want to lose their nerve before they finish deciding it. The carriage sways hard on the last of the climb. In the darkened window their two reflections stand close, one upright and grieving, one uncertain what exactly she is being asked. The woman's folded hands have come slightly apart now. She holds instead a small, worn photograph she has not shown to anyone all night, not until this moment, with the tunnel closing over the last of the daylight. It is the care in how she holds it, more than the photograph itself, that tells Vera something important is finally about to be asked of her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_1",
+          "label": "Look closer.",
+          "target": "g3a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_2",
+      "body": "There are two ways to receive a request this carefully considered. Vera feels the weight of both as the woman waits, patient, for her answer. She could agree at once, directly, before hearing the whole of what carrying the message might actually require of her, trusting the woman's evident grief to be reason enough. Or she could ask first, gently, exactly what the message is and to whom it must go, and let caution have its say before she commits to carrying something this heavy the rest of the way. The woman's hands have gone still around the small photograph, waiting on Vera's answer with the same patience she has shown all through the night. Agreeing immediately might spare the woman the pain of explaining further, at the cost of Vera not fully understanding what she has taken on. Asking first costs the woman a little more of the explaining she has clearly dreaded, and risks nothing worse than a delay before the tunnel finally closes over them both.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_2a",
+          "label": "Press in directly.",
+          "target": "g3a2_3a"
+        },
+        {
+          "id": "c_g3a2_2b",
+          "label": "Hang back and watch.",
+          "target": "g3a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_3a",
+      "body": "Vera agrees at once, without waiting for the whole explanation. The woman's shoulders ease, visibly, as though a weight long carried has finally found somewhere else to rest. Tell him, she says, quietly, that she stopped being angry a long time before she stopped riding this train to say so, and that the anger was never the truest thing she felt anyway. It is a small, exact fact. It will not sit still in Vera afterward: a message of forgiveness, carried faithfully by a woman who rode north every year rather than let it go unsaid, entrusted now to a stranger with no more warning than the tunnel's approach. It points her forward into the dark, carrying something now that is no longer only her own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_3a",
+          "label": "Carry the fact onward.",
+          "target": "g3a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_3b",
+      "body": "Vera asks first, gently, what exactly the message is. The woman answers slowly, choosing her words with evident care: only that she stopped being angry long before she stopped needing to say so, and that whoever receives the message will understand why it took a stranger to finally carry it. Her voice does not break as she says it, though something in her posture eases, as if the asking itself had already begun to lighten the weight. Vera could accept the message now, fully informed, and carry it forward the rest of the way through the tunnel. Or she could let her own hesitation, understandable as it is, cost her this particular chance, letting the warmth of the carriage and her own tiredness answer for her instead. The tunnel mouth swallows the last of the light from the glass. There is very little time left now to decide either way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g3a2_4"
+        },
+        {
+          "id": "c_g3a2_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_4",
+      "body": "However Vera has come to it, by agreeing at once or by asking first and then agreeing, what she now carries is the same exact weight: a message of forgiveness, long overdue, entrusted to her by a woman who has ridden this line every year rather than leave it unspoken any longer. It is not a fact so much as a responsibility. It will not be set down again once it has been accepted, the way a promise made honestly cannot simply be returned. She finds herself repeating the words silently to make certain she has them exactly right, aware that some things are only worth carrying if they are carried whole. The train shudders as the tunnel closes fully over the glass. The woman's hand rests, briefly and gratefully, on Vera's arm. Vera feels the journey close around the message entirely, and understands she means to carry it faithfully the rest of the way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_4",
+          "label": "Press on.",
+          "target": "g3a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_5",
+      "body": "She walks on into the dark with the woman's message held carefully, the way one holds something that must not be dropped. She passes the conductor, now willing to speak the whole truth of the line, the wakeful child offering her steady hand to anyone who needs guiding through, and an endless timetable that seems, the longer she looks at it, to be counting something other than stations. She repeats the message once under her breath, quietly, to be sure she has kept the words exactly as they were given to her. None of it changes what the woman has asked of her. It only confirms the shape of it: a train built to carry exactly this kind of unfinished business north until someone is finally willing to see it delivered. Vera steadies herself as the tunnel closes fully around the train. She goes forward to meet whatever dawn waits for her on the other side of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_5",
+          "label": "Follow it to the pivot.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_end",
+      "body": "Vera carries the message the whole way through the dark, matching the woman's own patient, unhurried pace. Somewhere on the far side of the mountain, in a light she cannot afterward describe exactly, she meets the journey on its own strange terms and finds herself answered in turn: the message lands somewhere it was needed. Something the woman had carried for three long winters is finally, quietly, set down. Vera does not fully understand how she knows this, only that she does, with the same plain certainty she has trusted all through the night, the way one sometimes knows a letter has been read even before an answer arrives. She thinks of the small worn photograph the woman held out to her, of the steadiness in her voice as she spoke her forgiveness aloud for the first time in three years. She understands that she has been given something rarer than an explanation: a small part in someone else's healing, offered freely and accepted without hesitation. The woman's hand rests once more on her arm, lighter now. The carriage around them both seems, in some way too small to name and too real to doubt, entirely at peace. Vera carries that peace forward with her, quietly, the way she has learned to carry everything true this night has given her.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a2",
+        "valence": "positive",
+        "kind": "success",
+        "title": "You Carried Her Message"
+      }
+    },
+    {
+      "id": "g3a3_1",
+      "body": "Vera returns to the timetable pinned by the vestibule door, drawn back to it now that the mountain's shadow has fallen fully over the glass. She finds its columns of stations running on far past the edge of the page, wrapping around onto a second sheet pinned just beneath the first, and a third beneath that. The carriage sways hard on the last of the climb. Her reflection in the darkened window studies the endless columns along with her, equally unable to find where they stop. Each station name is smaller than the last, crowded in tighter and tighter as the sheets go on, as though whoever kept this record refused, on principle, to let the list ever reach a final line. It is the sheer refusal of an ending, more than any single name on the page, that holds her attention now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_1",
+          "label": "Look closer.",
+          "target": "g3a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_2",
+      "body": "There are two ways to read a list that will not end. Vera weighs them as the tunnel mouth grows nearer in the glass. She could search the columns directly for her own name, or for anything she recognizes, forcing the endless list to yield something personal before the tunnel takes the choice from her. Or she could simply follow the columns in order, patiently, from the first station to wherever her attention gives out, trusting the shape of the whole record to tell her more than any single name could. Both approaches feel, in their own way, like tempting a fact she is not sure she is ready to meet. Searching directly for herself might confirm or deny something she is not certain she wants confirmed or denied. Reading patiently in order costs her only the mounting discomfort of a list that refuses, station after station, to resolve into anything final.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_2a",
+          "label": "Press in directly.",
+          "target": "g3a3_3a"
+        },
+        {
+          "id": "c_g3a3_2b",
+          "label": "Hang back and watch.",
+          "target": "g3a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_3a",
+      "body": "Vera searches the columns directly for her own name. Near the very bottom of the third pinned sheet, in ink no fresher or older than any other line on the page, she finds it: her own name, plainly listed, beside a station she does not recognize and a date she cannot yet have reached. She reads it twice, then a third time, half hoping the letters will rearrange themselves into someone else's name if she looks hard enough. They hold their shape exactly as stubbornly as the impossible ticket did hours ago. It is a small, exact fact, and an unsettling one. It will not sit still in her afterward: her name already entered into a record that has been keeping itself, apparently, before she ever boarded. It points her onward, into the tunnel now closing fully over the train, toward whatever station that entry was actually written for.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_3a",
+          "label": "Carry the fact onward.",
+          "target": "g3a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_3b",
+      "body": "Vera reads the columns in order instead, patiently, station by station. What she notices this way is a pattern rather than any single name: the stations grow steadily stranger the further down the list she reads, shifting from ordinary town names to names that sound more like feelings than places. The ink itself seems to be reaching for something language was never quite built to hold. She traces her finger down the page as she reads, the way she might follow a difficult passage in an unfamiliar language, unwilling to lose her place among so many crowded lines. She could carry that strange, gradual shift forward, let it settle alongside everything else the night has tried to show her. Or she could let the sheer length of the list, and her own tiredness, finally win out, letting her eyes close before she reaches whatever the columns are actually building toward. The lamp above the timetable gutters low. The list, unfinished, keeps its own patient silence.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g3a3_4"
+        },
+        {
+          "id": "c_g3a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_4",
+      "body": "However Vera has read it, hunting directly for her own name or following the columns patiently in order, what she now understands about the timetable settles into the same exact wrongness. This is not a record of a line's stations. It is a record of its passengers, kept faithfully and without end, by someone or something with far more patience than any ordinary stationmaster. It is not a comfortable fact. It will not be reasoned back into simple bureaucracy either, the way a list that knows your name before you have finished the journey cannot be dismissed as paperwork. The train shudders as the tunnel closes fully over the glass. The pinned sheets tremble with it, page after page after page. Vera feels the journey close around the thought completely. She understands there is no unreading it now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_4",
+          "label": "Press on.",
+          "target": "g3a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_5",
+      "body": "She leaves the timetable pinned where she found it, carrying the weight of that endless, patient record with her into the last stretch of carriage before the tunnel proper. She passes the conductor, now willing to speak the whole truth of the line, the wakeful child offering her steady hand to anyone in need of guiding, and a mourning woman with one quiet request finally spoken aloud. She wonders, walking past each of them, whether their own names appear somewhere in those endless columns too. Perhaps they were entered long before any of them thought to look. None of it explains outright why her own name should already be entered into a record she never asked to be kept. Every detail now confirms the same plain, unsettling shape: this train keeps track of far more than its stops. Vera steadies herself as the tunnel closes fully around the carriage. She goes forward, list and all, to meet whatever dawn waits for her on the far side of the mountain.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_5",
+          "label": "Follow it to the pivot.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_end",
+      "body": "The pinned sheets flutter hard as the train enters the full dark of the tunnel. Somewhere in the noise and cold of that passage Vera loses her place entirely among the endless columns, her eyes giving out before the list does. She surfaces later into ordinary carriage light, the timetable still pinned by the door exactly where she left it. The page she had been reading, when she checks it again, shows only the stations any ordinary line would keep: nothing stranger, nothing endless, no name she recognizes as her own. She cannot say now whether she truly read what she thought she read, or only feared it into being somewhere in the dark. She arrives safe and unharmed. She is quietly certain that she let something important slip past her among all those uncounted, unfinished columns.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost Among the Columns"
+      }
+    },
+    {
+      "id": "p1_never_arrives",
+      "body": "Whatever detail Vera has been carrying, a stopped clock, an impossible ticket, an unkept promise, a country gone strange past the glass, it leads her to the same plain, unsettling fact: this train is not arriving anywhere, not on any schedule a clock could measure. She finds the timetable pinned by the vestibule door and reads it twice to be sure. Both times the north terminus sits exactly one hour ahead of wherever the night currently is, no matter how far the train has already run or how many hours have already passed beneath it. An hour that never closes is not a delay. It is a kind of arrangement, deliberate, patient, built to hold rather than to end. Vera stands with that thought a while, feeling the whole carriage sway around her. She understands that the fact alone will not tell her what kind of arrangement it is. Somewhere down the train, passengers she has barely noticed until now are still awake at this hour for reasons of their own: regulars keeping their table in the dining car, a child who ought to be asleep, a man murmuring names of stations, a woman dressed for a grief she has not spoken of. Any one of them might know something about a train that has agreed never quite to arrive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_never_arrives_0",
+          "label": "Sit with the dining-car regulars.",
+          "target": "g1a0_1"
+        },
+        {
+          "id": "c_p1_never_arrives_1",
+          "label": "Find the child who never sleeps.",
+          "target": "g1a1_1"
+        },
+        {
+          "id": "c_p1_never_arrives_2",
+          "label": "Follow the man counting stations.",
+          "target": "g1a2_1"
+        },
+        {
+          "id": "c_p1_never_arrives_3",
+          "label": "Approach the woman in mourning.",
+          "target": "g1a3_1"
+        }
+      ]
+    },
+    {
+      "id": "p2_who_passengers",
+      "body": "Whatever Vera has learned, of four who never eat, a child who keeps her own schedule, a man who counts what the line has lost, a woman who mourns on a yearly, private clock, it gathers into the same unsettled question. Who, exactly, is riding this train, and why has none of them said where they first got on? She asks the question of herself as much as of them, standing in the cold vestibule between two cars. She finds she cannot answer it for her own boarding either, not with any certainty beyond the fact of the platform and the stopped clock upon it. Every traveller she has met tonight seems to be riding for a reason older than this one evening. Each is carried forward year after year, or mile after uncounted mile. It is as though the last train north were less a service than an appointment kept. Ahead, past the next vestibule, she can feel the line beginning to climb, the rail bending toward higher, colder ground. Somewhere in that climb, she senses, waits whatever this train is truly built to reach. It could be a conductor who might be pressed again for the truth. It could be a letter whose margins hide more than its lines, signal lamps burning ahead of a black tunnel mouth, or the passengers themselves, gathered to decide together what none of them will say alone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_who_passengers_0",
+          "label": "Consult the conductor again.",
+          "target": "g2a0_1"
+        },
+        {
+          "id": "c_p2_who_passengers_1",
+          "label": "Decode the letter's map.",
+          "target": "g2a1_1"
+        },
+        {
+          "id": "c_p2_who_passengers_2",
+          "label": "Read the tunnel signal lights.",
+          "target": "g2a2_1"
+        },
+        {
+          "id": "c_p2_who_passengers_3",
+          "label": "Gather the passengers to decide.",
+          "target": "g2a3_1"
+        }
+      ]
+    },
+    {
+      "id": "p3_tunnel_choice",
+      "body": "Whatever Vera has carried this far, a conductor's warning, a faint map traced by someone who judged they had enough, a signal lamp too honest to settle on an answer, a gathered fear shared freely among strangers, it all arrives with her at the same black mouth in the mountainside. The train slows here for the first time all night. The engine's effort eases. The couplings settle. Through the forward glass she can see the tunnel opening ahead, like a held breath about to be let go. This line has been building toward something since the platform clock stopped. It clearly means to ask it of her here, at the very door of the dark, and not one mile further on. She has time only to decide, quickly now, what she means to carry through with her and what she means to leave behind on this last, strange platform before the mountain closes over the train. She could take the plain truth from a conductor finally willing to give it. She could take the sure hand of a child who has made this passage before, the quiet request of a woman still carrying her own private grief, or the long, patient record kept in a timetable that never seems to end.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_tunnel_choice_0",
+          "label": "Ask the conductor for the whole truth.",
+          "target": "g3a0_1"
+        },
+        {
+          "id": "c_p3_tunnel_choice_1",
+          "label": "Let the child lead you.",
+          "target": "g3a1_1"
+        },
+        {
+          "id": "c_p3_tunnel_choice_2",
+          "label": "Answer the mourning woman's request.",
+          "target": "g3a2_1"
+        },
+        {
+          "id": "c_p3_tunnel_choice_3",
+          "label": "Search the endless timetable.",
+          "target": "g3a3_1"
+        }
+      ]
+    },
+    {
+      "id": "p4_dawn_reveal",
+      "body": "Whatever Vera has carried through the black length of the tunnel, a hard truth plainly spoken, a child's steady hand, a grief finally set into words, a name found or lost among endless columns, the mountain lets the train go at last. The first grey light of morning touches the peaks on either side of the line at almost the same moment the wheels find level ground again. In that thin, early light she can see the other passengers clearly for the first time all night: the conductor, the child, the mourning woman, the four regulars, the man with his notebook. All of them are turned toward the windows, as though the dawn itself were the one arrival this whole journey had ever truly been aiming for. She understands, watching them, that she has been thinking about this train wrongly from the very start. It was never a route between one station and another. It was only a passage, offered each year to whoever needed one particular night more than they needed a destination. What she does with the rest of this last hour is entirely hers now to decide. She could stay present in it, reach for someone else who needs her, chase the last of what she does not yet understand, or try simply to step off safely before the mountain closes again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p4_peace",
+          "label": "Ride on and simply be present.",
+          "target": "r_peace1"
+        },
+        {
+          "id": "c_p4_help",
+          "label": "Turn to the traveler who needs you.",
+          "target": "r_help1"
+        },
+        {
+          "id": "c_p4_truth",
+          "label": "Chase the last of the truth.",
+          "target": "r_truth1"
+        },
+        {
+          "id": "c_p4_leave",
+          "label": "Try to get off before the tunnel.",
+          "target": "r_leave1"
+        }
+      ]
+    },
+    {
+      "id": "r_peace1",
+      "body": "Vera chooses, in the end, to do nothing at all except be entirely present for what is left of the night. The choice settles over her more like relief than like resolve. She does not go looking for the traveler who might need her, or for the last unread lines of the letter, or for the cold door at the end of the car. She simply sits, awake, and lets the whole long climb down from the mountain arrange itself around her without asking anything more of it. The carriage narrows, in her attention, to exactly this: one long, lucid stretch of track running on ahead of the train before whatever waits at the tunnel's far side finally arrives. Outside, the grey that comes before true dawn has begun to gather at the edges of the sky, faint but unmistakable, the first sign all night that the hour is finally willing to move forward instead of only sideways. She feels, for the first time since the platform clock stopped, something close to peace, unearned and entirely welcome.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_peace1",
+          "label": "Follow it toward dawn.",
+          "target": "r_peace2"
+        }
+      ]
+    },
+    {
+      "id": "r_peace2",
+      "body": "The plain act of riding on, wide awake, turns out to have its own quiet fork in it, one Vera had not expected to need. A smaller door presents itself first, an easy, early close to the night, a chance to let this calm stand as the whole of what she takes from the journey and ask for nothing further. A larger one waits past it, open toward the coming light, offering more of the same peace but only if she is willing to stay with it all the way to whatever the dawn actually brings. Closing the smaller door now would cost her nothing but the rest of the climb, and would keep this calm exactly as whole and untested as it feels in this moment. Staying open risks the peace changing shape before she is ready, the way even good things shift once morning gets a proper look at them. The train rocks gently beneath her, patient either way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_peace2a",
+          "label": "Stay open to the dawn.",
+          "target": "r_peace3"
+        },
+        {
+          "id": "c_r_peace2b",
+          "label": "Close it here.",
+          "target": "e_peace_early"
+        }
+      ]
+    },
+    {
+      "id": "r_peace3",
+      "body": "Vera chooses to stay open to whatever the dawn intends. The plain act of simply riding on, wide awake, carries her the rest of the way toward it. It asks nothing further of her than her own attention. The grey along the ridgeline deepens, then warms. Gold begins to climb the peaks the way it always has and always will, indifferent to the strangeness of the night that came before it. She feels the whole scattered length of the journey gather itself here, at this one threshold, every stopped clock and impossible ticket and unkept promise folding quietly into the plain fact of a morning arriving on schedule at last. There is no fanfare to it, no sudden clarity handed down from the peaks, only the steady accumulation of ordinary light where there was none an hour before. Vera finds that this plainness is itself the answer she did not know she had been waiting for. She comes level with it, unhurried. She understands that she has not been waiting for an answer so much as for exactly this: the simple, sufficient fact of being here to see it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_peace3",
+          "label": "Meet the dawn.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_peace_early",
+      "body": "Vera closes the door on her own calm sooner than she needed to, choosing certainty over the risk of staying open a little longer. The choice costs her more than she expects. The peace she found was real while she held it, warm and whole and entirely hers. It slips through her fingers before the dawn arrives to meet it, gone the way anything goes when it is set down too soon out of caution rather than readiness. She arrives at wherever the train finally stops feeling unsettled rather than calm, sure of only one thing: that she let a moment pass that would not have cost her anything at all to keep holding. The station around her is ordinary, indifferent, and entirely unable to give the moment back.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_calm_unkept",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Calm You Cannot Keep"
+      }
+    },
+    {
+      "id": "r_help1",
+      "body": "Vera goes instead to the traveler waiting quietly at the far end of the carriage, someone she has half noticed all night without ever quite stopping to help. She gives herself over entirely to being useful to another person rather than to her own understanding of the night. Whatever she meant to learn for herself narrows now, gladly, to this one long, lucid stretch of track before the tunnel's far side finally arrives, spent on someone else's behalf instead of her own. The traveler is tired in the particular way that has nothing to do with the hour, grateful for company more than for any specific help Vera can offer. Vera finds she does not mind at all that the gratitude is the whole of the reward. She settles into the seat beside them without being asked twice. She finds the settling itself easier than any of the choices she has made all night. Outside, the grey that comes before dawn has begun gathering at the ridgeline, patient, unhurried, willing to wait for her to finish what she has started here first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_help1",
+          "label": "Follow it toward dawn.",
+          "target": "r_help2"
+        }
+      ]
+    },
+    {
+      "id": "r_help2",
+      "body": "Staying with the traveler at the carriage end who needs a hand turns out to offer its own quiet fork, smaller than Vera expected and no easier for that. She could close the night here, having given what comfort she could and calling it sufficient, a whole and complete kindness that asks nothing further of either of them. Or she could stay open instead, and carry this small act of care all the way to the dawn and whatever it demands of her there. The traveler's need and her own readiness to meet it have not yet finished their asking. The traveler beside her says nothing to sway the choice either way, leaving it entirely, generously, in Vera's hands. Closing it now costs nothing but the risk of leaving before the help is truly finished. Staying open risks more of herself than she has yet given, though it promises, in turn, to mean more once the light arrives to measure it by.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_help2a",
+          "label": "Stay open to the dawn.",
+          "target": "r_help3"
+        },
+        {
+          "id": "c_r_help2b",
+          "label": "Close it here.",
+          "target": "e_help_early"
+        }
+      ]
+    },
+    {
+      "id": "r_help3",
+      "body": "Vera chooses to stay open. The traveler at the carriage end who needed a hand rides the rest of the way beside her, steadier now, into the grey light gathering along the ridgeline outside. She comes level with the dawn there, at the traveler's side rather than alone. Everything the night has shown her, the stopped clock, the unkept promise, the toll the tunnel takes in whatever a passenger carries, gathers itself quietly around this one plain fact: helping someone else through a hard stretch of dark was never a distraction from her own journey, only another shape it was always going to take. Neither of them says much as the light strengthens. The silence between them now is companionable rather than uncertain, the kind two people share once the hardest part of a night is behind them both. The gold climbing the peaks outside seems, in this moment, to belong to both of them equally.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_help3",
+          "label": "Meet the dawn.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_help_early",
+      "body": "Vera hesitates one beat too long, weighing her own tiredness against the traveler's evident need. In that single beat, the hand she meant to offer is quietly withdrawn before she can take it. The traveler rides on alone into whatever the dawn holds, no worse for the missed kindness than they were before it was offered. Vera is left with the plain, unglamorous knowledge that she almost did the right thing and did not quite manage it in time. She replays the moment more than once as the light strengthens outside, turning over exactly where the hesitation came from and finding no answer that satisfies her. She rides on alone too, unharmed, safe, and entirely unable to explain to herself why one small hesitation should feel as heavy as it does. The window shows only ordinary grey, indifferent to what she failed, by one beat, to give.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hand_untaken",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Hand You Did Not Take"
+      }
+    },
+    {
+      "id": "r_truth1",
+      "body": "Vera takes up the stranger's letter and gives herself over entirely to its last unread lines. The rest of the carriage narrows away from her attention. This one long, lucid stretch of track before the tunnel's far side becomes the whole of what she is willing to notice, the letter held steady in hands that have stopped shaking with the cold some time in the last hour without her quite registering when. The words come slowly, the ink faded by handling, but they come. Each one seems to matter more than it should for a message meant for someone she has never met. She reads each sentence twice, unwilling to let even one faint word slip past her. Outside, the grey before dawn gathers along the ridgeline, patient, willing to let her finish this before it asks anything more of her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_truth1",
+          "label": "Follow it toward dawn.",
+          "target": "r_truth2"
+        }
+      ]
+    },
+    {
+      "id": "r_truth2",
+      "body": "The last unread lines of the stranger's letter open onto their own small fork, smaller than Vera expected from something she has waited all night to finish. She could close the letter here, satisfied with however much of the truth she has already gathered, and let that be the whole of what this night gave her. Or she could stay open to it, read past the point where the ink grows hardest to make out, and trust that whatever waits in those final, faintest words is worth the strain of finishing them properly. The paper has gone almost translucent in places from handling, as though it too were nearing some kind of limit. Closing it now costs her only the last few lines, likely the smallest part of the whole. Staying open risks more effort than the letter may reward, though it promises, if it does reward her, to matter more than anything she has read so far.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_truth2a",
+          "label": "Stay open to the dawn.",
+          "target": "r_truth3"
+        },
+        {
+          "id": "c_r_truth2b",
+          "label": "Close it here.",
+          "target": "e_truth_early"
+        }
+      ]
+    },
+    {
+      "id": "r_truth3",
+      "body": "Vera chooses to stay with it. She reads the last unread lines of the stranger's letter through to their faint, difficult end just as the grey along the ridgeline begins its slow turn toward gold. She comes level with the dawn there, letter still open in her lap, and understands, all at once, the shape of everything the night was actually telling her: a promise, a stopped clock, a train built to carry the unfinished north until someone was ready to finish it properly. She thinks of the stranger who wrote these words long before Vera ever boarded. She finds herself grateful to them in a way she cannot quite explain, as though they had left this letter behind knowing exactly who might need to find it. The letter's last line, when she finally makes it out, is not an ending so much as a permission. She takes it as one, folding the page closed at last with something like gratitude rather than reluctance.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_truth3",
+          "label": "Meet the dawn.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_truth_early",
+      "body": "Vera closes the letter before she reaches its very last line, satisfied, or telling herself she is satisfied, with what she has already gathered from it. What she has read is enough to know the shape of the thing: this train is kind, in its own strange, patient way, to whoever it carries. She folds the page back along its worn creases and slips it into her coat pocket rather than reading further, telling herself the choice is rest rather than retreat. Some quieter part of her suspects otherwise. It is not enough to know why it chose her particularly, or what the final faint words might have added to that understanding. She suspects, folding the page closed, that she will wonder about that gap for longer than she would like to admit. She arrives at wherever this is with half a truth held carefully, and finds that half, honestly, is still worth having kept.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_half_timetable",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Half the Timetable"
+      }
+    },
+    {
+      "id": "r_leave1",
+      "body": "Vera makes her way to the cold vestibule door instead, drawn by the plain, persistent idea of stepping down before whatever waits at the end of this line can ask anything more of her. The rest of the carriage falls away from her attention, narrowed now to this one long, lucid stretch of track and the door's cold handle under her palm. She stands there a while simply considering the shape of leaving rather than committing to it outright. Her breath fogs the small window set into the door. She wipes it clear with her sleeve out of habit more than curiosity, though nothing waits on the other side but darkness and the rush of cold air past the frame. The wind through the door's seams smells of snow and iron and, faintly, of something warmer just beginning to gather beyond the mountain. Outside, the grey before dawn has started along the ridgeline, patient, entirely willing to let her decide in her own time whether she means to meet it from the train or from the ground.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_leave1",
+          "label": "Follow it toward dawn.",
+          "target": "r_leave2"
+        }
+      ]
+    },
+    {
+      "id": "r_leave2",
+      "body": "The cold vestibule door and the idea of stepping down turn out to hold their own small fork. Vera studies it the way she has studied everything else tonight, carefully. She could open the door now, step down onto whatever platform the mountain offers at this hour, and close the night early on her own plain terms. Or she could stay open instead, keep her hand on the cold handle without yet turning it, and let the dawn arrive first to show her what stepping down would actually mean before she commits to it. The handle is colder than the rest of the door, as though it alone remembers every hand that has ever hesitated over it before hers. Leaving now costs her the rest of the climb and whatever waits at its end. Staying open costs her only a little longer standing in the cold, weighing a door that is not, she senses, going anywhere without her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_leave2a",
+          "label": "Stay open to the dawn.",
+          "target": "r_leave3"
+        },
+        {
+          "id": "c_r_leave2b",
+          "label": "Close it here.",
+          "target": "e_leave_early"
+        }
+      ]
+    },
+    {
+      "id": "r_leave3",
+      "body": "Vera keeps her hand on the door but does not turn it, choosing to stay open a little longer. The grey along the ridgeline outside warms steadily toward gold while she waits. She comes level with the dawn there, still standing at the cold vestibule, and understands, watching the light climb the peaks, that the idea of stepping down was never really about the door at all, only about wanting some say in how the night ended. The handle grows a little warmer under her palm as the light strengthens, or perhaps it is only her own hand growing used to the cold. She has that say now, freely given rather than seized in haste, and finds the door easier to leave closed once she is no longer afraid of what standing beside it means. Whatever waits beyond it can wait a little longer still, she decides. The deciding itself feels like the truer arrival.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_leave3",
+          "label": "Meet the dawn.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_leave_early",
+      "body": "Vera turns the handle and steps down before the dawn has finished arriving. The door opens, impossibly, onto the very first platform of the whole journey, the one with the stopped clock still fixed at the same unrecognizable hour. She wakes there fully. The last train north pulls away from her into a mountain light she will now never see arrive, its wheels finding the northbound track without her aboard to feel the grade change under her. The night, whatever it was building toward, goes unspent, folded back into a beginning she cannot now unmake. She stands on the cold platform a long while, watching the train's lamps shrink into distance. She understands only that the choosing was hers, and that she chose to leave before she had to.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_first_platform",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Back at the First Platform"
+      }
+    },
+    {
+      "id": "r_dawn",
+      "body": "Whichever thread Vera has followed toward it, a peace held quietly, a hand offered to someone who needed it, a letter's last faint lines, a door considered and, perhaps, left closed, every route through this long, strange night gathers her here, above the tunnel, where the mountain finally lets the light in properly. The peaks around the train have gone entirely gold now. The other passengers have grown quiet in a way that feels less like sleep than like attention, all of them turned toward whatever the morning is about to ask of everyone aboard. Vera feels the whole shape of the journey settle into this one last threshold. It is not an arrival, exactly, since the north terminus never promised to be a place so much as a passage, but a turning all the same, the final one the night intends to offer her. What she does with it is hers now, entirely and only hers, to decide. She could let the night simply end here or give whatever she has left to someone who needs it. She could try to name the whole of what she has understood, or ask only to come through unharmed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_peace",
+          "label": "Set the night down and stay.",
+          "target": "r_choice_peace"
+        },
+        {
+          "id": "c_dawn_help",
+          "label": "Give the traveler your seat.",
+          "target": "r_choice_help"
+        },
+        {
+          "id": "c_dawn_truth",
+          "label": "Name what you have understood.",
+          "target": "r_choice_truth"
+        },
+        {
+          "id": "c_dawn_safe",
+          "label": "Ask only to wake unharmed.",
+          "target": "r_choice_safe"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_peace",
+      "body": "Vera stops trying to arrive. She lets the north terminus stay exactly one hour off, forever if it needs to. She finds, to her own quiet surprise, that she does not mind the distance nearly as much as she expected to mind it. The whole night has been asking her, in one form or another, to let go of the need for a clean ending, and here, at last, with the gold light climbing steadily up the peaks, she simply does. She thinks of the stopped clock on the platform behind her, of the conductor's silver punch-clock, of every timepiece this train has kept deliberately, stubbornly wrong. She understands for the first time that none of them were ever broken. They were only honest about what this journey had never promised to be. The clock in her own chest, the one that has been counting toward some resolution since the platform clock first stopped, eases its grip without any drama at all, the way a held breath finally released does not announce itself so much as simply stop being held.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rcp",
+          "label": "Make peace with the journey.",
+          "target": "e_make_peace"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_help",
+      "body": "A traveler settles into the warm seat beside her. The offer in the moment is plain: stay through whatever the tunnel's aftermath still asks, at the cost of her own clean arrival, or step back now, gently, and keep the arrival for herself while it is still hers to keep. Neither choice is wrong, exactly. Vera can feel both pulling at her with equal honesty, the way two true things sometimes pull against each other without either one being false. She thinks of the four regulars who never left their table, of the woman who has ridden north every year rather than let her grief go unspoken, and wonders whether staying too long and leaving too soon are simply two shapes of the same fear. Staying costs her the last of her own certainty about how this night ends for her personally. Stepping back costs the traveler beside her a comfort Vera is not certain anyone else aboard is willing to offer in her place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rch_stay",
+          "label": "Stay beside her.",
+          "target": "e_help_passenger"
+        },
+        {
+          "id": "c_rch_cost",
+          "label": "Stay far too long.",
+          "target": "e_help_cost"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_truth",
+      "body": "Vera speaks the north line's whole quiet truth aloud, to the grey window and to no one else in particular. The naming of it becomes its own kind of arrival, entire in itself. This line runs, she says, for those who are not yet ready to let something go. It asked that same question of her tonight as honestly as it asked it of every stopped clock and unkept promise and unfinished timetable she has met along the way. She says it slowly, testing the shape of each word against everything she has gathered since the platform clock first stopped, the conductor's warnings, the child's calm certainty, the letter's fading promise, and finds that the sentence holds, entire and unforced, the way only a true thing can. Saying it does not change the mountain outside, or the gold now fully climbing the peaks. It changes something in her, settling a fact into place that she suspects she will carry long after the platform clock resumes, if it ever does.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rct",
+          "label": "Speak the northbound names.",
+          "target": "e_uncover_truth"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_safe",
+      "body": "Vera asks the train for nothing more than a safe waking, setting aside every larger question the night has offered her, the stopped clock, the tunnel's toll, the passengers riding for reasons older than tonight, in favor of the one plain thing she is certain she wants. The train, kinder in the end than she let herself fear through most of the dark, grants her exactly that and nothing else, no explanation, no larger understanding, only the promise of an ordinary morning arriving on schedule. She feels, asking it, a small pang of something like regret, as though she were closing a door on a room she might have liked to sit in a while longer. The wanting to be safe is honest too. She trusts it as much as she trusted anything else tonight. It is a smaller thing to ask for than everything else the night held out to her. She chooses it anyway, plainly, and without apology.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rcs",
+          "label": "Wake unharmed.",
+          "target": "e_unsettled_safe"
+        }
+      ]
+    },
+    {
+      "id": "e_make_peace",
+      "body": "Vera rides the last train north with her eyes open and her whole heart finally willing to be there for it. Dawn, rather than closing the night down, simply holds, gold and steady, the way she has needed something to hold since the platform clock first stopped keeping any ordinary hour. She understands now, completely and without needing anyone to explain it further, that this journey was never meant to end at a station, only to be met honestly for exactly as long as it lasted. The stopped clock, the unkept promise, the tunnel's quiet toll, all of it settles into a single plain truth: some passages exist only to be travelled, not arrived from. She thinks of the conductor still somewhere behind her in the swaying carriages, faithfully keeping his impossible hour. She thinks too of every stranger who rode this same climb before her and found, in their own time, the same quiet permission she has finally found in hers. She is, for the first time since she boarded, wholly and entirely here. The last train north carries her forward into a morning that asks nothing more of her than the presence she has finally, fully given it. Gold light fills the windows on both sides of the carriage, as though the whole mountain had been waiting only for this.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_peace",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Last Train North"
+      }
+    },
+    {
+      "id": "e_help_passenger",
+      "body": "Vera stays beside the traveler through the last of the tunnel's grey aftermath and delivers them safely into the gold light climbing the peaks, steady the whole way, asking nothing back for the staying. It is only once the light has fully arrived that she understands what has actually happened. Helping someone else home, all along, was the arrival she had been riding toward since the platform clock first stopped, though she could not have named it as such at the start of the night. The traveler thanks her plainly. The thanks lands somewhere true in her, settling a question she did not know she had been carrying until it was finally answered. She thinks of the four regulars who never rose from their table, of the mourning woman who rode north every year with her grief still folded tight. She understands, watching the traveler beside her finally breathe easy, that she has been given the one chance this whole train seemed built to offer, and she did not let it pass her by. She steps off, at last, not empty but full, having given the one thing this whole strange journey ever really asked of anyone.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_help",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Seat Beside Her"
+      }
+    },
+    {
+      "id": "e_help_cost",
+      "body": "Vera stays with the traveler past every reasonable hour, past the point where staying was kindness and into the point where it has become something closer to habit. The dawn she meant to meet slips by entirely while her attention stays fixed elsewhere. The traveler is helped, genuinely and completely. Vera surfaces from the long effort of it frayed, hollowed out, further from herself than she has been at any point since she boarded. The good she did remains good, whole and true. It is shadowed now by what it cost her to do it for so long without once asking anything for herself. She arrives somewhere ordinary at last, tired in a way rest will not easily undo, and understands only that kindness, unmeasured, can still leave a person emptier than they meant to become.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_cost",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "You Stayed Too Long"
+      }
+    },
+    {
+      "id": "e_uncover_truth",
+      "body": "Vera names the north line for exactly what it is, a passage the season lends, every year, to travelers who are finally ready for it, and speaks the whole of that understanding aloud until it settles fully into her rather than staying half formed. She does not stay aboard once the naming is done. The ordinary platform arrives beneath her feet in its own time, indifferent now to the strangeness of the night that came before it. She looks back once at the train as it pulls away, gold light catching the windows of the carriages she walked through all night, the conductor's silhouette faint behind the glass, and finds she is not sorry to be the one standing still while it goes on without her. But she leaves knowing, completely, in a way she did not know when she boarded. The knowing settles something in her that she suspects would have gone on unsettled for a very long time otherwise. It is not the whole of every mystery the night offered her. It is enough. She carries it forward the way one carries anything finally, properly understood.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_truth",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Northbound Names"
+      }
+    },
+    {
+      "id": "e_unsettled_safe",
+      "body": "Vera wakes at her own quiet station exactly as she asked to, unharmed, entirely safe, and a little haunted all the same by everything she chose not to pursue further. The train is gone by the time she is fully awake, its lamps already shrunk to nothing along the northbound track. The night it carried her through goes unexplained, folded away into a stretch of hours she will likely never be able to account for honestly to anyone who asks. She carries only the plain, quiet sense of a door she chose not to walk through, not out of fear exactly, but out of a wish to keep herself whole rather than risk whatever walking through it might have cost her. It is not nothing, this safe and unremarkable morning. She tells herself, standing on the ordinary platform, that it was enough to have asked for it plainly and been granted it in full.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_safe",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Awake and Unharmed"
+      }
+    }
+  ]
+}

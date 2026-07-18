@@ -1,0 +1,2017 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_glass_comet",
+  "version": 1,
+  "title": "The Glass Comet",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "astronomy",
+      "patience",
+      "craft",
+      "resource-management"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 20,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "plates",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Unexposed photographic plates remaining in the felt box."
+    },
+    {
+      "name": "dome_oiled",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the dome shutter mechanism has been oiled; gates smooth tracking and the perfect shot."
+    },
+    {
+      "name": "clock",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 4,
+      "description": "Night phase: 0 dusk, 1 first hours, 2 the clear gap (prime window), 3 late, 4 dawn edge."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=120 beats='Wren, the youngest member of the Hartwell Hill astronomy club, climbs the lane to the little public observatory at dusk; comet Vitrea rounds the sun in days and tonight is the club's one clear-forecast night to photograph it; Halloran, the night warden, unlocks the green door and says the old glass-plate camera is hers if she can earn it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_in",
+          "label": "Step inside before your nerve changes its mind.",
+          "target": "n_plate_box"
+        }
+      ]
+    },
+    {
+      "id": "n_plate_box",
+      "body": "<<FILL role=setup words=115 beats='inside, the brass refractor and the wooden plate camera wait under dust sheets; Halloran opens the felt-lined box: exactly three unexposed glass plates left in the whole club, no more until spring; one perfect shot is all anyone needs, but plates crack, fog, and forgive nothing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_box_nod",
+          "label": "Nod, and ask where to start.",
+          "target": "n_prep_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_prep_hub",
+      "body": "<<FILL role=choice words=110 beats='an hour of dusk remains and three jobs want doing before dark: the dome and its stiff old shutter mechanism upstairs, the darkroom where plates must be loaded blind, and the charts to work out exactly where Vitrea will cross; Wren can only give the hour to one of them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_dome",
+          "label": "Climb to the dome and check the shutter mechanism.",
+          "target": "a1_dome_floor"
+        },
+        {
+          "id": "c_hub_darkroom",
+          "label": "Learn the darkroom and the plate holders.",
+          "target": "b1_darkroom"
+        },
+        {
+          "id": "c_hub_charts",
+          "label": "Sit down with the charts and the ephemeris.",
+          "target": "c1_charts"
+        }
+      ]
+    },
+    {
+      "id": "a1_dome_floor",
+      "body": "<<FILL role=rising words=100 beats='the dome floor smells of cold iron and old grease; the shutter crank stands against a ring of gears that has turned since 1958; three things invite a closer look: the runners the shutter rides on, the crank itself, and a maintenance log hanging from a nail'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_runners",
+          "label": "Run a thumb along the shutter runners.",
+          "target": "a2_runners"
+        },
+        {
+          "id": "c_a1_crank",
+          "label": "Try the crank, one careful notch.",
+          "target": "a3_crank"
+        },
+        {
+          "id": "c_a1_log",
+          "label": "Read the maintenance log first.",
+          "target": "a4_log"
+        }
+      ]
+    },
+    {
+      "id": "a2_runners",
+      "body": "<<FILL role=choice words=100 beats='the runners are caked with grease gone hard as toffee; a tin of fresh oil sits on the shelf, and working it in properly would take the rest of the dusk hour; Wren weighs the boring job against the fading light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_oil",
+          "label": "Spend the hour oiling the runners properly.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_a2_leave",
+          "label": "Note it and leave the iron as it is.",
+          "target": "a6_left"
+        }
+      ]
+    },
+    {
+      "id": "a3_crank",
+      "body": "<<FILL role=choice words=95 beats='the crank turns with a groan like a door in a storybook; something in the ring drags, not broken but dry; the grease tin on the shelf catches the last light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_oil",
+          "label": "Fetch the tin and oil the ring before dark.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_a3_enough",
+          "label": "One notch worked; that is enough for now.",
+          "target": "a6_left"
+        }
+      ]
+    },
+    {
+      "id": "a4_log",
+      "body": "<<FILL role=choice words=100 beats='the log's last page, in a copperplate hand: OIL BEFORE OPENING, underlined twice, signed R.H. 1958; below it decades of initials, and a gap of three years since anyone wrote anything at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a4_heed",
+          "label": "Heed the log; oil the mechanism now.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_a4_later",
+          "label": "Pocket the advice for later; dusk is short.",
+          "target": "a6_left"
+        }
+      ]
+    },
+    {
+      "id": "a5_oiled",
+      "body": "<<FILL role=rising words=95 beats='multi-parent beat, keep entry-agnostic: the fresh oil goes in dark and silky and the old ring drinks it; by the end Wren's hands are black and the shutter runners gleam; somewhere below, Halloran is whistling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a5_down",
+          "label": "Wipe your hands and head down the ladder.",
+          "target": "a7_down"
+        }
+      ]
+    },
+    {
+      "id": "a6_left",
+      "body": "<<FILL role=choice words=95 beats='multi-parent beat: Wren leaves the mechanism dry; on the ladder down, a small doubt tugs, the kind that sounds exactly like an underlined sentence in an old log book'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a6_down",
+          "label": "Shrug the doubt off and climb down.",
+          "target": "a7_down"
+        },
+        {
+          "id": "c_a6_return",
+          "label": "Turn back and oil the runners after all.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a7_down",
+      "body": "<<FILL role=rising words=90 beats='multi-parent beat: back on the observing floor Halloran asks if the dome is ready for the night; Wren answers honestly, whatever was or was not done up there, and the first star comes out through the open door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a7_night",
+          "label": "Tell him it is time to open up.",
+          "target": "n_nightfall"
+        }
+      ]
+    },
+    {
+      "id": "b1_darkroom",
+      "body": "<<FILL role=choice words=110 beats='the darkroom glows red as the inside of an eyelid; Halloran demonstrates loading a plate holder entirely by feel, dark-slide out, glass in, never touching the emulsion; then he offers Wren the bench: practice on a real plate and spend one of the three, drill with the cracked dud from 1962, or just watch his hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b1_real",
+          "label": "Sacrifice a real plate to learn it properly.",
+          "target": "b2_spent",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_b1_dud",
+          "label": "Drill with the cracked dud plate.",
+          "target": "b3_dud"
+        },
+        {
+          "id": "c_b1_watch",
+          "label": "Keep your hands still and just watch.",
+          "target": "b4_watch"
+        }
+      ]
+    },
+    {
+      "id": "b2_spent",
+      "body": "<<FILL role=rising words=100 beats='the sacrificed plate fogs the instant the light touches it, exactly as planned; but Wren's fingers now know the weight of glass in the dark, the click of a seated dark-slide; expensive knowledge, honestly bought (plates are now one fewer)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b2_count",
+          "label": "Open the felt box and count what is left.",
+          "target": "b7_two_left"
+        }
+      ]
+    },
+    {
+      "id": "b7_two_left",
+      "body": "<<FILL role=rising words=90 beats='the felt box, counted twice by lamplight; the remaining plates lie like panes of frozen pond; every one now has to matter; reference the exact number of plates remaining'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b7_out",
+          "label": "Close the box gently and head out.",
+          "target": "b5_out"
+        }
+      ]
+    },
+    {
+      "id": "b3_dud",
+      "body": "<<FILL role=choice words=100 beats='multi-parent beat: the cracked 1962 dud teaches almost as well as the real thing, its broken edge biting Wren's fingertips as a reminder; the drill repeats until the moves begin to smooth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b3_again",
+          "label": "Run the drill until it feels like a card trick.",
+          "target": "b5_out"
+        },
+        {
+          "id": "c_b3_story",
+          "label": "Ask about the framed 1910 comet plate on the wall.",
+          "target": "b6_story"
+        }
+      ]
+    },
+    {
+      "id": "b4_watch",
+      "body": "<<FILL role=choice words=95 beats='watching is not knowing: Halloran's hands move like a magician's and explain nothing; Wren's own hands stay clean, untested, and a little jealous'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b4_dryrun",
+          "label": "Admit you need one dry run with the dud.",
+          "target": "b3_dud"
+        },
+        {
+          "id": "c_b4_trust",
+          "label": "Trust your eyes and call it learned.",
+          "target": "b5_out"
+        }
+      ]
+    },
+    {
+      "id": "b6_story",
+      "body": "<<FILL role=rising words=95 beats='Halloran's story of the 1910 plate: the member who waited four cloudy nights and got one clear hour, and how patience is the only chemical that never goes stale; the red light makes his face young'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b6_out",
+          "label": "Carry the story out into the dark.",
+          "target": "b5_out"
+        }
+      ]
+    },
+    {
+      "id": "b5_out",
+      "body": "<<FILL role=rising words=90 beats='multi-parent beat, keep entry-agnostic: out of the red light the world is blue-black and enormous; night has nearly come down over Hartwell Hill and the dome stands waiting; reference plates remaining if fewer than three'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b5_night",
+          "label": "Join Halloran; it is time to open the dome.",
+          "target": "n_nightfall"
+        }
+      ]
+    },
+    {
+      "id": "c1_charts",
+      "body": "<<FILL role=choice words=105 beats='the chart table under a gooseneck lamp: the ephemeris gives Vitrea's path in cold columns of numbers, the club's notebook gives it in soft pencil, and Halloran, filling a kettle, offers to check anyone's working'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c1_math",
+          "label": "Work the crossing out yourself from the ephemeris.",
+          "target": "c2_own_math"
+        },
+        {
+          "id": "c_c1_notes",
+          "label": "Use the club notebook's penciled positions.",
+          "target": "c3_notes"
+        },
+        {
+          "id": "c_c1_ask",
+          "label": "Ask Halloran to work it through with you.",
+          "target": "c4_check"
+        }
+      ]
+    },
+    {
+      "id": "c2_own_math",
+      "body": "<<FILL role=choice words=100 beats='Wren's own arithmetic puts Vitrea crossing the western sky in mid-evening; the answer looks right, sits right, and still whispers the oldest question in astronomy: are you sure?'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c2_again",
+          "label": "Check it a third time, every column.",
+          "target": "c5_linger",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_c2_lock",
+          "label": "Trust it; set the circles and wind the drive.",
+          "target": "c6_set"
+        }
+      ]
+    },
+    {
+      "id": "c3_notes",
+      "body": "<<FILL role=choice words=100 beats='the club notebook's positions are off by a thumb's width, and someone has corrected them in red ink without signing; trusting strangers' red ink is quick; redoing the sums from scratch is sure but slow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c3_red",
+          "label": "Trust the red ink and set the circles.",
+          "target": "c6_set"
+        },
+        {
+          "id": "c_c3_redo",
+          "label": "Redo the whole calculation from scratch.",
+          "target": "c5_linger",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c4_check",
+      "body": "<<FILL role=rising words=95 beats='Halloran checks Wren's working over tea and teaches the drift trick: let the target sail through the eyepiece and time it, and the sky will confess its own speed; the numbers agree'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c4_set",
+          "label": "Set the circles while the tea is still warm.",
+          "target": "c6_set"
+        }
+      ]
+    },
+    {
+      "id": "c5_linger",
+      "body": "<<FILL role=rising words=95 beats='multi-parent beat: the third pass through the numbers changes nothing but the sky, which has gone from violet to nearly black while Wren checked; certainty was bought with dusk (the clock has moved on one band)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c5_set",
+          "label": "Enough; set the circles by lamplight.",
+          "target": "c6_set"
+        }
+      ]
+    },
+    {
+      "id": "c6_set",
+      "body": "<<FILL role=rising words=90 beats='multi-parent beat, keep entry-agnostic: setting circles locked, clock drive wound tight, the refractor aimed at a patch of western sky that means nothing yet and everything later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c6_finder",
+          "label": "Take one look through the finder scope.",
+          "target": "c7_first_sight"
+        }
+      ]
+    },
+    {
+      "id": "c7_first_sight",
+      "body": "<<FILL role=rising words=95 beats='in the finder, low and pale: Vitrea herself, a fuzzy pearl with the faintest breath of tail, real in a way no chart ever is; Wren's heart knocks; full dark is minutes away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c7_night",
+          "label": "Call Halloran; the dome has to open now.",
+          "target": "n_nightfall"
+        }
+      ]
+    },
+    {
+      "id": "n_nightfall",
+      "body": "<<FILL role=choice words=120 beats='bottleneck, multi-parent, keep entry-agnostic: full dark over Hartwell Hill; Vitrea's crossing hour is coming and the dome shutter must open; the crank waits, and how the old mechanism answers depends on whether anyone oiled it (reflect dome_oiled: silky confidence or a dry, doubtful iron smell); the clock has entered the first band of night'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_night_glide",
+          "label": "Ease the crank; let the oiled shutter glide open.",
+          "target": "n_open_glide",
+          "condition": {
+            "==": [
+              {
+                "var": "dome_oiled"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_night_heave",
+          "label": "Heave the crank hard and fast, dry iron or not.",
+          "target": "n_dome_jam",
+          "condition": {
+            "==": [
+              {
+                "var": "dome_oiled"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_night_slow",
+          "label": "Work it open slow and steady, notch by patient notch.",
+          "target": "n_open_slow",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "n_open_glide",
+      "body": "<<FILL role=rising words=95 beats='the oiled shutter rolls back like silk on silk, the whole slit of sky arriving at once; stars pour into the dome; the afternoon's boring job pays itself off in one long easy breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glide_look",
+          "label": "Step to the rail and let the sky in.",
+          "target": "n_first_light"
+        }
+      ]
+    },
+    {
+      "id": "n_first_light",
+      "body": "<<FILL role=rising words=90 beats='through the open slit the night steps inside: winter-sharp stars, the town's lights pooled small below, and low in the west the field where Vitrea will cross; the telescope hums quietly on its drive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_first_band",
+          "label": "Find the west; watch for the comet's field.",
+          "target": "n_band_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_open_slow",
+      "body": "<<FILL role=rising words=95 beats='notch by notch the dry shutter grinds open, safe and slow and maddening; by the time the slit is wide, a first band of cloud is already sliding in from the west (a whole band of the night went to caution)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_slow_west",
+          "label": "Open at last; check the western sky.",
+          "target": "n_slow_clouds"
+        }
+      ]
+    },
+    {
+      "id": "n_slow_clouds",
+      "body": "<<FILL role=rising words=90 beats='the west is curdling, cloud pouring over the hills like spilled milk; somewhere behind it Vitrea keeps her appointment whether anyone is ready or not; Halloran joins Wren at the rail'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_slowc_band",
+          "label": "Settle in; the cloud band owns the sky for now.",
+          "target": "n_band_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_dome_jam",
+      "body": "<<FILL role=choice words=115 beats='the crank bucks, shrieks, and stops dead: the dry shutter has seized half a metre open, a mean slice of sky and no more; Wren's hands sting; three ways out: raw force on the crank, fetching Halloran and his grease tin, or the red emergency lever nobody has pulled in years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_jam_bang",
+          "label": "Throw your whole weight on the crank.",
+          "target": "n_jam_bang"
+        },
+        {
+          "id": "c_jam_warden",
+          "label": "Swallow your pride; go down and fetch Halloran.",
+          "target": "n_jam_warden",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_jam_force",
+          "label": "Pull the emergency lever, hard.",
+          "target": "n_jam_forced"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_jam_bang",
+      "body": "<<FILL role=rising words=95 beats='the crank gives with a BANG that rings the whole dome like a bell; the shutter is free and grinds fully open, but every turn now carries a dry shiver up through the floor and into Wren's teeth; knuckles skinned, sky won (the mechanism remains unoiled)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bang_band",
+          "label": "Shake out your hands and check the west.",
+          "target": "n_band_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_jam_warden",
+      "body": "<<FILL role=rising words=100 beats='Halloran climbs up with the grease tin, laughing gently, not unkindly; together they free the shutter and oil the ring properly while precious dark slides past outside (a band of night spent, the mechanism now oiled and sweet)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_band",
+          "label": "Thank him and turn to the western sky.",
+          "target": "n_band_watch"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "dome_oiled",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "n_jam_forced",
+      "body": "<<FILL role=rising words=100 beats='the emergency lever moves something that was never meant to move that way; a soft awful crunch, and the shutter stops for good at a crooked hand-span of sky; the track is visibly bent; shame arrives before the echo dies'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_forced_stare",
+          "label": "Stare at the bent track and breathe.",
+          "target": "s1_bent"
+        }
+      ]
+    },
+    {
+      "id": "n_band_watch",
+      "body": "<<FILL role=choice words=120 beats='bottleneck, multi-parent, keep entry-agnostic: the first cloud band slides across the west with Vitrea somewhere behind it; nothing to do but choose how to spend the wait: keep vigil at the rail with Halloran, stage the darkroom for fast plate changes, gamble a plate on a shot through the thin gauzy edge of the cloud, or doze in the warm room and trust him to wake you (reflect clock band and plates remaining)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_band_vigil",
+          "label": "Keep vigil at the rail and wait it out.",
+          "target": "w1_vigil"
+        },
+        {
+          "id": "c_band_stage",
+          "label": "Use the wait: stage the darkroom for speed.",
+          "target": "d1_staging"
+        },
+        {
+          "id": "c_band_gauze",
+          "label": "Line up on the comet through the cloud's thin edge.",
+          "target": "g0_gauze"
+        },
+        {
+          "id": "c_band_doze",
+          "label": "Doze in the warm room until the sky clears.",
+          "target": "w4_doze",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "w1_vigil",
+      "body": "<<FILL role=choice words=100 beats='multi-parent beat: the vigil at the rail, cocoa going cold; the cloud band's silver underside crawls; Halloran is a comfortable silence beside Wren, full of things worth asking about'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w1_story",
+          "label": "Ask about the plate he never got.",
+          "target": "w2_story"
+        },
+        {
+          "id": "c_w1_seams",
+          "label": "Study the cloud for its seams and tears.",
+          "target": "w3_seams"
+        },
+        {
+          "id": "c_w1_clouds",
+          "label": "Have him name the kinds of cloud, one by one.",
+          "target": "w5_clouds"
+        }
+      ]
+    },
+    {
+      "id": "w2_story",
+      "body": "<<FILL role=rising words=100 beats='his story: the comet of '86, the plate he fumbled at the last moment, and why he has opened this dome every clear night since; 'plates run out,' he says, 'nights come back'; the band is thinning as he talks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w2_gap",
+          "label": "The west is tearing open; stand ready.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "w3_seams",
+      "body": "<<FILL role=rising words=95 beats='Wren learns to read the sky's seams, the places where cloud wears thin and starlight leaks through; it is like watching fabric decide to tear; the band is nearly done'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w3_gap",
+          "label": "There, a rip of clear black; move.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "w5_clouds",
+      "body": "<<FILL role=rising words=95 beats='altostratus, he says, then the ragged fast stuff underneath with the unlovely name, and Wren will never see a grey sky the same way again; behind the last of it, a hard little light is waiting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w5_gap",
+          "label": "The band's trailing edge; get to the eyepiece.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "w4_doze",
+      "body": "<<FILL role=rising words=100 beats='Halloran wakes Wren kindly, but the warm-room clock is merciless: the band cleared a while ago and the window's first minutes are already spent (the clock moved a band while Wren slept); the stairs go two at a time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w4_gap",
+          "label": "Up the stairs, heart pounding.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "d1_staging",
+      "body": "<<FILL role=choice words=100 beats='the red light again, put to work: holders lined up in order, dark-slides loosened a thumb's width, everything placed where blind hands will find it; the professional's trick of being fast by never hurrying'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_swap",
+          "label": "Rehearse the plate swap once more.",
+          "target": "d2_swap"
+        },
+        {
+          "id": "c_d1_bath",
+          "label": "Check the developer bath and its thermometer.",
+          "target": "d4_bath"
+        }
+      ]
+    },
+    {
+      "id": "d2_swap",
+      "body": "<<FILL role=rising words=90 beats='the swap runs smooth as a card trick now, holder out, holder in, dark-slide, done; Wren's hands have stopped asking permission; overhead, boots cross the dome floor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_up",
+          "label": "Halloran is calling; the sky is tearing.",
+          "target": "d3_stairs"
+        }
+      ]
+    },
+    {
+      "id": "d4_bath",
+      "body": "<<FILL role=rising words=90 beats='eighteen degrees exactly, the thermometer steady as a promise; developer, stop, fixer, all mixed and waiting in their trays like a small silent orchestra; Halloran's voice comes down the stairs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_up",
+          "label": "The sky is clearing; take the stairs.",
+          "target": "d3_stairs"
+        }
+      ]
+    },
+    {
+      "id": "d3_stairs",
+      "body": "<<FILL role=rising words=90 beats='multi-parent beat: up the spiral stairs two at a time and out under the slit: the cloud band is tearing itself to rags in the west and the field is nearly clear; everything below is staged and ready'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_gap",
+          "label": "To the eyepiece; here it comes.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "g0_gauze",
+      "body": "<<FILL role=choice words=105 beats='through the eyepiece the comet is a soft blur behind the cloud's thin gauzy edge, teasing; a plate spent now, through moving cloud, is a plate that cannot be spent later in clean sky; Wren knows better; the shutter cable is in her hand anyway'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0_shoot",
+          "label": "Take the shot through the gauze; spend the plate.",
+          "target": "g1_gamble",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_g0_lower",
+          "label": "Lower the cable; save the plate for clear sky.",
+          "target": "w1_vigil"
+        }
+      ]
+    },
+    {
+      "id": "g1_gamble",
+      "body": "<<FILL role=choice words=100 beats='eight impatient minutes of exposure through drifting gauze, the guide star swimming; the plate comes out of the camera holding either a comet or a smear, and only the developer knows which (one plate fewer now)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1_race",
+          "label": "Race the plate down and develop it right now.",
+          "target": "g2_ghost_dev",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_g1_rack",
+          "label": "Rack the holder for later; stay with the sky.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "g2_ghost_dev",
+      "body": "<<FILL role=choice words=110 beats='in the tray a ghost swims up out of the glass: Vitrea as a smeared silk scarf, blurred by cloud and hurry, and yet, faint at the sunward edge, a second thin spike of tail that should not be there; upstairs the sky is clearing without you (the trip cost a band of the clock)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2_stay",
+          "label": "Stay with the ghost; call Halloran down to see.",
+          "target": "n_end_ghost"
+        },
+        {
+          "id": "c_g2_up",
+          "label": "Pin the ghost to dry and race back up.",
+          "target": "g4_race_up"
+        }
+      ]
+    },
+    {
+      "id": "g4_race_up",
+      "body": "<<FILL role=rising words=90 beats='back up the spiral stairs with lungs burning and fixer smell still in your nose; through the slit the cloud band is in rags and the west is opening like a door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g4_gap",
+          "label": "Get to the eyepiece before the door opens fully.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "n_gap_opens",
+      "body": "<<FILL role=choice words=125 beats='bottleneck, multi-parent, keep entry-agnostic: the band tears open and there she is, Vitrea in clear black sky, a hard bright head and a tail like breath on cold glass; this is the window; how much night is left and how many plates remain decide everything after this (reflect clock band: prime evening, running late, or perilously near dawn; reference plates remaining)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gap_look",
+          "label": "Take one long look with your own eyes first.",
+          "target": "n_look"
+        },
+        {
+          "id": "c_gap_warden",
+          "label": "Wave Halloran to the eyepiece to see her first.",
+          "target": "n_warden_look"
+        },
+        {
+          "id": "c_gap_work",
+          "label": "Straight to work; load a plate now.",
+          "target": "n_load1"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "n_look",
+      "body": "<<FILL role=rising words=95 beats='one long look, spent like money: the comet stands in the eyepiece with her tail combed out by sunlight nobody down here can see yet; a sight to keep; then hands take over from eyes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_load",
+          "label": "Now the camera: load the first plate.",
+          "target": "n_attempt1"
+        }
+      ]
+    },
+    {
+      "id": "n_warden_look",
+      "body": "<<FILL role=rising words=95 beats='Halloran bends to the eyepiece and goes quiet in the particular way of a man meeting an old appointment; 'well now,' he says at last, standing clear; 'go get her''>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_load",
+          "label": "Load the first plate with steady hands.",
+          "target": "n_attempt1"
+        }
+      ]
+    },
+    {
+      "id": "n_load1",
+      "body": "<<FILL role=rising words=95 beats='holder seated, dark-slide drawn, the clock drive taking up Vitrea's slow drift; the camera is a held breath at the back of the telescope; all that remains is the exposure itself, long minutes of stillness'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_load_begin",
+          "label": "Open the shutter and begin the exposure.",
+          "target": "n_attempt1"
+        }
+      ]
+    },
+    {
+      "id": "n_attempt1",
+      "body": "<<FILL role=climax words=115 beats='multi-parent, keep entry-agnostic: the first exposure, eight full minutes with the guide star pinned in the crosshairs; stillness is the whole job and every instinct argues against it: the itch to check the plate, the twitch to correct a hair of drift that would cure itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_att1_hold",
+          "label": "Hold the star. Breathe. Count the whole eight minutes.",
+          "target": "n_done1",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att1_peek",
+          "label": "Halfway in, peek at the plate to be sure it is catching.",
+          "target": "n_fog1",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att1_nudge",
+          "label": "The star drifts a hair; nudge the tube to fix it.",
+          "target": "n_smear1",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "n_done1",
+      "body": "<<FILL role=climax words=115 beats='the shutter closes on a full clean exposure and the plate holder comes away warm as a loaf; what the glass actually caught depends on the night so far: whether the dome tracked smooth or shuddered, and whether the comet stood high in prime dark or had already sunk toward the late sky (the choice taken here simply follows the true state)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_perfect",
+          "label": "Carry the plate down like a relic; the night was perfect for it.",
+          "target": "p1_descent",
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  {
+                    "var": "dome_oiled"
+                  },
+                  true
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_d1_shiver",
+          "label": "Carry it down hoping the dome's dry shudder stayed out of the glass.",
+          "target": "q1_shudder",
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  {
+                    "var": "dome_oiled"
+                  },
+                  false
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_d1_late",
+          "label": "Carry it down knowing the comet sat low in thickening air.",
+          "target": "l1_low",
+          "condition": {
+            "==": [
+              {
+                "var": "clock"
+              },
+              3
+            ]
+          }
+        },
+        {
+          "id": "c_d1_dawn",
+          "label": "Carry it down through a sky already going grey at the edge.",
+          "target": "z1_pale",
+          "condition": {
+            ">=": [
+              {
+                "var": "clock"
+              },
+              4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "n_fog1",
+      "body": "<<FILL role=climax words=110 beats='the peek cost everything: a fan of grey fog eats across the plate where light licked in past the dark-slide; eight minutes and a plate, gone in one second of doubt; the comet burns on overhead, not caring (reference plates remaining and how much night is left)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fog_retry",
+          "label": "Load the next plate. Slower. You know the mistake now.",
+          "target": "n_reload",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_fog_lesson",
+          "label": "Take the fogged plate down and develop the lesson.",
+          "target": "n_lesson_dev"
+        },
+        {
+          "id": "c_fog_step",
+          "label": "Step back from the camera and let the night have it.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_smear1",
+      "body": "<<FILL role=climax words=110 beats='the nudge dragged the sky: the comet is a bright smear across the plate, eight minutes of light spread like butter; the drive would have carried the drift out on its own if Wren's hands had let it (reference plates remaining and how much night is left)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_smear_retry",
+          "label": "Load another plate and trust the drive this time.",
+          "target": "n_reload",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_smear_lesson",
+          "label": "Develop the smear anyway; motion tells its own story.",
+          "target": "n_lesson_dev"
+        },
+        {
+          "id": "c_smear_step",
+          "label": "Step back from the camera; enough harm done.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_reload",
+      "body": "<<FILL role=climax words=100 beats='multi-parent beat, keep entry-agnostic: a fresh plate goes into the holder, the old lesson goes in with it; Wren breathes until her hands are still, and the night, which does not wait, has moved along a band while she reset (reflect the later clock: lower comet, longer shadows)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reload_go",
+          "label": "Back to the eyepiece; begin again.",
+          "target": "n_attempt2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "n_attempt2",
+      "body": "<<FILL role=climax words=110 beats='the second exposure, wiser and later: the guide star sits in the crosshairs and Wren's hands know their job now; but the comet rides lower than before and some corner of her mind is counting plates instead of seconds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_att2_hold",
+          "label": "Hold steady the full eight minutes; you know the count.",
+          "target": "n_done2",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att2_rush",
+          "label": "Cut the exposure short to beat the sinking sky.",
+          "target": "n_short2",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att2_cap",
+          "label": "Cap the lens unspent; your nerve is gone. Step back.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_done2",
+      "body": "<<FILL role=climax words=105 beats='the second exposure runs its full honest length and the holder comes away warm; the night has moved on around it, and what the glass holds depends on how late the sky had grown (the choice here follows the true state)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_late",
+          "label": "Carry it down; the comet was low but the sky still held.",
+          "target": "l1_low",
+          "condition": {
+            "<=": [
+              {
+                "var": "clock"
+              },
+              3
+            ]
+          }
+        },
+        {
+          "id": "c_d2_dawn",
+          "label": "Carry it down under a sky already paling at the rim.",
+          "target": "z1_pale",
+          "condition": {
+            ">=": [
+              {
+                "var": "clock"
+              },
+              4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "n_short2",
+      "body": "<<FILL role=climax words=110 beats='pulled early: the shutter snaps shut minutes short and the plate holds a starved thin image, a comet on rations; a real photograph, but barely fed with light (reference plates remaining and how much night is left)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_short_retry",
+          "label": "One more plate, the full count this time, glow be damned.",
+          "target": "n_attempt3",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_short_dev",
+          "label": "Develop the thin plate; something beats nothing.",
+          "target": "n_thin_dev"
+        },
+        {
+          "id": "c_short_step",
+          "label": "Step back; the night has taken enough.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_attempt3",
+      "body": "<<FILL role=climax words=105 beats='the last-chance exposure at the raw end of night: dawn glow is climbing the eastern rim and Vitrea hangs low with her tail going pale; one plate in the holder, hands cold, everything learned tonight gathered into one long stillness'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_att3_hold",
+          "label": "Expose it. Steady. Give it the whole count.",
+          "target": "n_done3",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att3_cap",
+          "label": "Cap it; keep the last plate for another year.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_done3",
+      "body": "<<FILL role=climax words=95 beats='the shutter closes as true dawn puts its first grey finger on the east; whatever the glass caught, it caught against the coming day; the plate holder is warm and the stairs are dark and familiar'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_down",
+          "label": "Down to the red light with the dawn plate.",
+          "target": "z1_pale"
+        }
+      ]
+    },
+    {
+      "id": "n_stepback",
+      "body": "<<FILL role=choice words=110 beats='multi-parent, keep entry-agnostic: Wren steps back from the camera and lets the night go; Vitrea rides on overhead, keeping her appointment without them; Halloran's hand lands warm on one shoulder, and there is more than one good way to finish a night like this (reference plates remaining, spent or saved, without blame)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_step_eyes",
+          "label": "Watch her with your own eyes until she sets.",
+          "target": "n_end_eyes"
+        },
+        {
+          "id": "c_step_sketch",
+          "label": "Open the logbook and sketch her, tail angle and all.",
+          "target": "n_end_sketch"
+        },
+        {
+          "id": "c_step_ask",
+          "label": "Ask Halloran what he would have done.",
+          "target": "n_end_words"
+        }
+      ]
+    },
+    {
+      "id": "n_lesson_dev",
+      "body": "<<FILL role=choice words=110 beats='multi-parent beat, keep entry-agnostic: down in the red light Wren develops the ruined plate on purpose, watching exactly how the failure wrote itself into the silver; Halloran calls this the second-best use of a plate there is (retry is only possible while plates and night remain)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lesson_retry",
+          "label": "Lesson learned; get back up there while sky remains.",
+          "target": "n_reload",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_lesson_study",
+          "label": "Measure the failure with him, edge to edge.",
+          "target": "n_end_lesson"
+        },
+        {
+          "id": "c_lesson_stay",
+          "label": "Stay in the warm red light; the night is done for you.",
+          "target": "n_end_redlight"
+        }
+      ]
+    },
+    {
+      "id": "n_thin_dev",
+      "body": "<<FILL role=choice words=105 beats='the starved plate goes through the trays and a faint comet rises in it, real but weak, like a voice from another room; Halloran turns it in the red light and mentions, casually, an old chemist's trick for feeding a thin image'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_thin_save",
+          "label": "Try the old intensifier trick together.",
+          "target": "n_end_thin_saved"
+        },
+        {
+          "id": "c_thin_honest",
+          "label": "Leave it honest and faint, exactly as shot.",
+          "target": "n_end_thin_honest"
+        }
+      ]
+    },
+    {
+      "id": "p1_descent",
+      "body": "<<FILL role=climax words=105 beats='down the spiral stairs with the plate held like a live thing: a full exposure, prime dark, and the dome ran silk-smooth the whole eight minutes; everything is right and everyone knows it; Halloran waits in the red light, saying nothing loudly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_self",
+          "label": "Develop it yourself: your plate, your hands.",
+          "target": "p2_self"
+        },
+        {
+          "id": "c_p1_with",
+          "label": "Ask him to stand at your shoulder while you work.",
+          "target": "p3_with"
+        }
+      ]
+    },
+    {
+      "id": "p2_self",
+      "body": "<<FILL role=climax words=110 beats='alone at the trays with the biggest plate of your life: the developer whispers, the image climbs, and the temptation to lift the glass early crawls up both arms; the count is the only law left'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_full",
+          "label": "Full time. Count every second. Lift only when it is done.",
+          "target": "n_end_perfect"
+        },
+        {
+          "id": "c_p2_early",
+          "label": "You cannot bear it; lift the plate early to see.",
+          "target": "n_end_pulled"
+        }
+      ]
+    },
+    {
+      "id": "p3_with",
+      "body": "<<FILL role=climax words=105 beats='his shadow steady beside yours, his voice low: temperature, time, patience; the developer breathes and something magnificent is surfacing in the dark red hush'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_count",
+          "label": "Count it out loud together to the last second.",
+          "target": "n_end_shared"
+        },
+        {
+          "id": "c_p3_early",
+          "label": "Your nerve breaks; you lift it early despite him.",
+          "target": "n_end_pulled"
+        }
+      ]
+    },
+    {
+      "id": "q1_shudder",
+      "body": "<<FILL role=climax words=105 beats='the exposure ran full and true, but for eight minutes the dry dome shuddered against every turn of the drive, and Wren felt each shiver in her teeth; the plate went through it all; the stairs down are a long question'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_q1_dev",
+          "label": "Develop it and face whatever the shudder wrote.",
+          "target": "q2_doubled"
+        },
+        {
+          "id": "c_q1_ask",
+          "label": "Ask Halloran first whether a shiver can ruin a plate.",
+          "target": "q3_ask"
+        }
+      ]
+    },
+    {
+      "id": "q3_ask",
+      "body": "<<FILL role=rising words=90 beats=''oil,' he says, wincing like a man remembering a bruise, 'before opening. always.' then, kinder: 'but glass forgives more than you would think. let us see what you got''>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_q3_dev",
+          "label": "Into the developer, then, and no more guessing.",
+          "target": "q2_doubled"
+        }
+      ]
+    },
+    {
+      "id": "q2_doubled",
+      "body": "<<FILL role=climax words=110 beats='multi-parent beat: the image rises: Vitrea sharp and lovely, and every star around her wearing a tiny doubled edge, the dome's tremor written into the silver like a signature nobody asked for; a good plate with an honest flaw'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_q2_claim",
+          "label": "Claim it: title it honestly, tremor and all.",
+          "target": "n_end_shiver"
+        },
+        {
+          "id": "c_q2_compare",
+          "label": "Set it against the 1910 plate and measure the tremor.",
+          "target": "n_end_tremor"
+        }
+      ]
+    },
+    {
+      "id": "l1_low",
+      "body": "<<FILL role=climax words=105 beats='multi-parent beat, keep entry-agnostic: the exposure ran clean but the comet sat low, shot through the thick trembling air near the horizon; the plate rode down the stairs like a coin at the bottom of a stream, real and wavering'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_now",
+          "label": "Develop it now, before doubt gets a vote.",
+          "target": "l2_amber"
+        },
+        {
+          "id": "c_l1_hands",
+          "label": "Warm your hands first; steady beats fast.",
+          "target": "l3_hands"
+        }
+      ]
+    },
+    {
+      "id": "l3_hands",
+      "body": "<<FILL role=rising words=85 beats='two minutes over the radiator, flexing feeling back into cold fingers while the plate waits patient in its holder; the same sky is in the emulsion either way; steadier hands carry it to the trays'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_dev",
+          "label": "Now the developer, with hands that obey.",
+          "target": "l2_amber"
+        }
+      ]
+    },
+    {
+      "id": "l2_amber",
+      "body": "<<FILL role=climax words=105 beats='multi-parent beat: the low-sky plate develops into something true: Vitrea soft-edged and amber-aired, wobbling with horizon heat, tail and all, unmistakably herself; not the dream plate, but absolutely a comet, absolutely caught'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_proud",
+          "label": "Print it proud: the eleventh-hour plate.",
+          "target": "n_end_late"
+        },
+        {
+          "id": "c_l2_log",
+          "label": "Log the seeing conditions beside it like a scientist.",
+          "target": "n_end_provenance"
+        }
+      ]
+    },
+    {
+      "id": "z1_pale",
+      "body": "<<FILL role=climax words=105 beats='multi-parent beat, keep entry-agnostic: this plate was exposed against the coming dawn and everyone in the red-lit darkroom knows it; the developer tray waits like a held breath; some questions can still be left unasked until morning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_z1_dev",
+          "label": "Develop it; even dawn writes something.",
+          "target": "z2_wash"
+        },
+        {
+          "id": "c_z1_carry",
+          "label": "Leave it sealed; carry it to the club's better darkroom.",
+          "target": "n_end_carried"
+        }
+      ]
+    },
+    {
+      "id": "z2_wash",
+      "body": "<<FILL role=climax words=100 beats='a pale wash floods half the frame where dawn bled in, and in the clear half a stub of comet stands dawn-drowned but defiant, tail streaming into the fog like a flag into weather; half ruined, half wonderful'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_z2_mask",
+          "label": "Mask the fogged half and print the clear half.",
+          "target": "n_end_dawn"
+        },
+        {
+          "id": "c_z2_archive",
+          "label": "Give it whole to the club's archive of honest failures.",
+          "target": "n_end_archive"
+        }
+      ]
+    },
+    {
+      "id": "s1_bent",
+      "body": "<<FILL role=choice words=105 beats='the shutter stands seized at a crooked hand-span of sky, the track bent where the lever forced it; the dome is hurt and it is nobody's fault but hurry's; below, Halloran's kettle is whistling, oblivious; the night is not over, but it is changed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s1_confess",
+          "label": "Go down and confess to Halloran now.",
+          "target": "s2_confess"
+        },
+        {
+          "id": "c_s1_geometry",
+          "label": "First work out what the crooked slit can still see.",
+          "target": "s3_geometry"
+        }
+      ]
+    },
+    {
+      "id": "s2_confess",
+      "body": "<<FILL role=rising words=100 beats='Halloran looks at the bent track a long quiet time; 'machines forgive slower than people,' he says at last, 'but the sky is still up there'; together they measure the crooked slice of stars the dome has left'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s2_plan",
+          "label": "Then let us use the slice we have.",
+          "target": "s4_lane"
+        }
+      ]
+    },
+    {
+      "id": "s3_geometry",
+      "body": "<<FILL role=rising words=100 beats='notebook geometry by torchlight: the jammed slit sweeps one narrow lane of sky as the dome turns, and Vitrea's path crosses that lane exactly once tonight; a bent window, but a window; Halloran arrives mid-diagram and says nothing about the track, yet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s3_plan",
+          "label": "Show him the lane and the crossing time.",
+          "target": "s4_lane"
+        }
+      ]
+    },
+    {
+      "id": "s4_lane",
+      "body": "<<FILL role=choice words=115 beats='multi-parent beat, keep entry-agnostic: the plan is patience itself: aim the camera down the crooked lane and wait for Vitrea to sail through it, one pass, no second helpings; waiting for the crossing eats a band of the night (reflect the later clock; reference plates remaining)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s4_wait",
+          "label": "Load a plate and wait dead-still on the lane.",
+          "target": "s_watch"
+        },
+        {
+          "id": "c_s4_test",
+          "label": "Spend one plate first to test the lane's exact edge.",
+          "target": "s6_test",
+          "condition": {
+            ">=": [
+              {
+                "var": "plates"
+              },
+              3
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_s4_away",
+          "label": "Put the plates away; tonight is for repairs.",
+          "target": "n_stepback"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "s_watch",
+      "body": "<<FILL role=rising words=95 beats='multi-parent beat: the long dead-still wait on the lane, stars wheeling slowly through the crooked slot like fish past a porthole; Halloran brings up two mugs and the repair ledger, and does his waiting in figures'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_swatch_cross",
+          "label": "A brightening at the lane's edge: she is coming.",
+          "target": "s5_crossing"
+        }
+      ]
+    },
+    {
+      "id": "s6_test",
+      "body": "<<FILL role=rising words=100 beats='the test plate, developed quick and rough, maps the lane's true edges a finger's width off the notebook guess; now the aim is certain, bought with glass (one plate fewer; the real shot must not miss)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s6_cross",
+          "label": "Re-aim on the corrected lane and wait for her.",
+          "target": "s5_crossing"
+        }
+      ]
+    },
+    {
+      "id": "s5_crossing",
+      "body": "<<FILL role=climax words=110 beats='multi-parent beat: Vitrea's head slides toward the crooked slot of sky, brightening; there is time for exactly one exposure as she crosses, and the choice of what to catch: her bright head as it enters, or a gamble on the full sweep of tail behind it (the crossing spends time either way)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s5_head",
+          "label": "Expose the moment her head enters the lane.",
+          "target": "s7_head",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            },
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_s5_tail",
+          "label": "Wait, and give the plate to the whole tail or nothing.",
+          "target": "s8_tail_wait",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            },
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s7_head",
+      "body": "<<FILL role=choice words=105 beats='caught: her hard bright head and half a tail, threaded clean through the bent slot before the dome's crooked edge cut her off; a real comet on real glass through a broken window (reference whether plates remain for one more pass at the lane's far end)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s7_develop",
+          "label": "Develop it with Halloran, and face the track tomorrow.",
+          "target": "n_end_slit"
+        },
+        {
+          "id": "c_s7_second",
+          "label": "Spend one more plate at the lane's far edge for her tail.",
+          "target": "s_second",
+          "condition": {
+            ">=": [
+              {
+                "var": "plates"
+              },
+              2
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s8_tail_wait",
+      "body": "<<FILL role=climax words=100 beats='the gamble: let the head pass unphotographed and open the shutter on the long banner of tail sweeping through the slot; eight minutes of ribbon and no comet-head at all; the dome's bent edge closes the show as the shutter clicks home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s8_dev",
+          "label": "Down to the red light to see what the ribbon holds.",
+          "target": "n_end_tail"
+        }
+      ]
+    },
+    {
+      "id": "s_second",
+      "body": "<<FILL role=climax words=95 beats='the second exposure at the lane's far edge catches what the first one missed: the tail's long ribbon trailing her out of the crooked window; two half-comets on two plates, one whole comet between them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ssec_dev",
+          "label": "Develop the pair together and lay them edge to edge.",
+          "target": "n_end_tail"
+        }
+      ]
+    },
+    {
+      "id": "n_end_perfect",
+      "body": "<<FILL role=completion words=120 beats='the full count holds and the plate comes up perfect: Vitrea razor-sharp, her tail split like light through a prism, the finest plate Hartwell Hill has made in forty years; Halloran hangs it dripping beside the 1910 plate and writes Wren's name on the card; patience, oil, and one clear window, all of it in the glass forever; the triumphant earned ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_perfect",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Glass Comet"
+      }
+    },
+    {
+      "id": "n_end_shared",
+      "body": "<<FILL role=completion words=115 beats='counted out loud together to the last second, the plate comes up perfect: Vitrea sharp as cut glass with her doubled tail in full sail; two names go on the card, his steadying and hers doing, and the club will argue happily forever about which mattered more; a shared triumphant ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shared",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Two Counts, One Comet"
+      }
+    },
+    {
+      "id": "n_end_pulled",
+      "body": "<<FILL role=failure words=105 beats='lifted early, the plate stops developing a breath before greatness: Vitrea lovely but faint, a whisper of the photograph it was becoming; it still goes on the clubroom wall, and under it Wren writes the truest caption in the room: thirty seconds more; a dignified sting of a lesson, nobody hurt but pride'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pulled",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pulled Too Soon"
+      }
+    },
+    {
+      "id": "n_end_shiver",
+      "body": "<<FILL role=completion words=110 beats='the plate is fine, truly fine: Vitrea sharp, and every star wearing the tiny doubled edge of the dry dome's tremor; Wren titles it honestly, tremor and all, and the club loves it the more for the story; a proud success carrying one honest flaw, and a quiet promise to oil the ring next time'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shiver",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Shivered Star"
+      }
+    },
+    {
+      "id": "n_end_tremor",
+      "body": "<<FILL role=completion words=105 beats='laid against the 1910 plate, the doubled stars become data: Wren and Halloran measure the dome's shudder to a fraction and pin the comparison in the clubroom as the new calibration standard; the comet photo is flawed, the flaw becomes knowledge, and knowledge outlives comets; a thoughtful discovery ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tremor",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Tremor Study"
+      }
+    },
+    {
+      "id": "n_end_late",
+      "body": "<<FILL role=completion words=110 beats='softer than the dream, realer than iron: the low-sky plate prints with Vitrea wobbling in horizon air, tail and all, unmistakable; the club cheers the eleventh-hour shot exactly because the night fought it; late, trembling, and absolutely caught; a hard-won success ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_late",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Eleventh-Hour Plate"
+      }
+    },
+    {
+      "id": "n_end_provenance",
+      "body": "<<FILL role=completion words=105 beats='beside the soft late-sky image Wren logs everything: altitude, air, temperature, the honest wobble; Halloran nods slowly, because a photograph with its provenance is science and a photograph without is only a picture; the plate is modest and the record makes it matter; a scientist's quiet discovery ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_provenance",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Plate and Provenance"
+      }
+    },
+    {
+      "id": "n_end_dawn",
+      "body": "<<FILL role=completion words=105 beats='the fogged half is masked away and the clear half prints: a dawn-drowned stub of comet, defiant against the coming day, tail streaming into the fog like a flag; half a comet, a whole night's work, and nobody at the club will call it less than a photograph of Vitrea; a salvaged, half-lit success'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dawn",
+        "valence": "neutral",
+        "kind": "success",
+        "title": "Half Past Dawn"
+      }
+    },
+    {
+      "id": "n_end_archive",
+      "body": "<<FILL role=failure words=105 beats='the dawn-fogged plate goes whole into the club's archive of honest failures, filed beside plates by better astronomers on worse nights; Halloran writes the label without pity or blame; Wren reads the drawer's other cards and understands she is in good company; a dignified failure that joins a long tradition'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_archive",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Honest Archive"
+      }
+    },
+    {
+      "id": "n_end_carried",
+      "body": "<<FILL role=failure words=100 beats='the last plate rides home sealed in its holder, an unopened letter from the night; next club meeting, in a proper darkroom, everyone will find out together what the dawn left of Vitrea; Wren carries it down the hill like something warm; an ending of suspended hope, unresolved on purpose'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_carried",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Unopened Letter"
+      }
+    },
+    {
+      "id": "n_end_ghost",
+      "body": "<<FILL role=completion words=110 beats='the impatient cloud-blurred plate turns out to hold something the clean shots of other clubs may not: a faint sunward anti-tail, smeared but measurable; Halloran and Wren spend the rest of the night measuring the ghost while the clear sky goes unphotographed overhead; the wrong shot that taught the right thing; a bittersweet discovery'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ghost",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Ghost of Vitrea"
+      }
+    },
+    {
+      "id": "n_end_lesson",
+      "body": "<<FILL role=failure words=105 beats='measured edge to edge with Halloran, the ruined plate gives up exactly how the fault wrote itself into the silver; it gets pinned to the clubroom wall with a card in Wren's handwriting explaining the mistake, so the next junior member never has to make it; the failure becomes the club's textbook; a generous, dignified ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lesson",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Teaching Plate"
+      }
+    },
+    {
+      "id": "n_end_redlight",
+      "body": "<<FILL role=failure words=100 beats='dawn finds Wren still in the warm red light, the ruined plate rinsed and drying, understood completely and too late; upstairs the sky performed without her; Halloran brings down two mugs and says nothing that needs saying; a quiet failure fully owned, and the walk home is somehow not heavy'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_redlight",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Red Light, Long Night"
+      }
+    },
+    {
+      "id": "n_end_thin_saved",
+      "body": "<<FILL role=completion words=105 beats='the old intensifier trick feeds the starved image until a modest, believable Vitrea stands in the glass, rescued by chemistry and a steady old hand; not the plate of anyone's dreams, but a comet saved from nothing at all, and a whole branch of darkroom craft learned at midnight; a rescue discovery ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_thin_saved",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Saved in the Bath"
+      }
+    },
+    {
+      "id": "n_end_thin_honest",
+      "body": "<<FILL role=completion words=100 beats='printed exactly as shot, the thin plate shows a faint comet on rations of light, and its caption says so plainly; Halloran approves: better a true whisper than a fed-up lie; the club's youngest member turns out to have the club's oldest virtue; an honest, modest discovery ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_thin_honest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Faint but True"
+      }
+    },
+    {
+      "id": "n_end_eyes",
+      "body": "<<FILL role=failure words=105 beats='no plate, only the long watch: Wren stays at the rail while Vitrea crosses and sinks, memorizing what glass will not hold this time, the exact green-white of her and the slow comb of her tail; Halloran watches too and says some sights are for keeping, not catching; empty hands, full eyes, and the club's respect'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_eyes",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Eyes Only"
+      }
+    },
+    {
+      "id": "n_end_sketch",
+      "body": "<<FILL role=completion words=105 beats='the pencil does what the plates would not: position, tail angle, brightness against the field stars, all sketched into the club logbook in Wren's careful hand; a hundred years from now that page will be somebody's data; no photograph, but a real observation, formally entered; a quietly proud discovery ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_sketch",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Logbook Page"
+      }
+    },
+    {
+      "id": "n_end_words",
+      "body": "<<FILL role=failure words=100 beats=''what would I have done?' Halloran considers the question honestly, then tells the truth: the same things, most of them, forty years ago; 'plates run out,' he says, 'comets come back, and so do we'; the walk down the hill at dawn is a failure carried lightly, with next year already forming in it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_words",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Halloran's Lesson"
+      }
+    },
+    {
+      "id": "n_end_slit",
+      "body": "<<FILL role=completion words=110 beats='developed together in the red light: Vitrea's bright head threaded clean through the bent slot, half a tail and a hard diagonal of dome edge framing her like a keyhole; the best apology a bent dome ever received; tomorrow there is a track to fix and a repair fund to feed, and tonight there is, despite everything, a comet'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_slit",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Crooked Window"
+      }
+    },
+    {
+      "id": "n_end_tail",
+      "body": "<<FILL role=completion words=105 beats='multi-parent ending, keep entry-agnostic: the developed glass holds the long ribbon of Vitrea's tail sweeping the crooked lane, banner without a head, gorgeous and strange; Halloran laughs until he has to sit down, then pins it up anyway; nobody else on the hill has anything like it; a crooked night's crooked treasure'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tail",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Headless Banner"
+      }
+    }
+  ]
+}

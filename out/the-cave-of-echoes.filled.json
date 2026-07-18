@@ -1,0 +1,863 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cave_of_echoes",
+  "version": 1,
+  "title": "The Cave of Echoes",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "exploration",
+      "courage",
+      "wonder",
+      "nature"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 16,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Maya ducks under the lighthouse rocks with Biscuit at her heels, right as the tide begins pulling back from the sea caves. Her aunt, who keeps the lighthouse, knows they are exploring the cove until the tide turns. Three dark openings wait in the cliff, and cool air breathes out of each one. Each mouth sends back its own sound: the left one hums, warm and low, while the right one drips, slow and steady. Straight ahead, something almost whispers in the dark. Biscuit's tail thumps on the sand as Maya checks the wet line on the rocks behind her. She has about an hour before the sea comes back and seals every cave mouth shut. She switches on her torch and picks the sound that calls to her first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_left",
+          "label": "Follow the humming echo to the left.",
+          "target": "la_tunnel"
+        },
+        {
+          "id": "c_right",
+          "label": "Follow the dripping echo to the right.",
+          "target": "ra_drip"
+        },
+        {
+          "id": "c_down",
+          "label": "Follow the whispering echo straight down.",
+          "target": "da_dark"
+        }
+      ]
+    },
+    {
+      "id": "la_tunnel",
+      "body": "The left passage narrows fast, folding into a low tunnel that hums like one held note. Biscuit's ears prick up, and he trots ahead with his nose working. The rock walls press close on both sides, feeling cool and damp under Maya's hand. Ahead, past a bend, a soft light glows, and a faint rustle drifts back toward them, sounding like wind through paper. Maya crouches low and edges forward, wanting to see what waits around the bend.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_fork",
+          "label": "Press on toward the glow.",
+          "target": "la_fork"
+        }
+      ]
+    },
+    {
+      "id": "la_fork",
+      "body": "The humming tunnel splits into two, and Maya stops right at the split, swinging her torch both ways. One wall glitters faintly with tiny specks that catch her light like small stars. The other way, the hum grows warmer, sounding almost like a voice murmuring nearby. Biscuit sniffs one path, then the other, and cannot decide. Maya must pick a way now, before the turning tide makes the choice for her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glitter",
+          "label": "Go toward the glittering wall.",
+          "target": "la_glitter"
+        },
+        {
+          "id": "c_hum",
+          "label": "Go toward the warm murmur.",
+          "target": "la_hum"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter",
+      "body": "Maya turns toward the glittering wall, and it does not let her down. Tiny bits of quartz stud the stone, catching her torchlight and throwing it back in small sparks. She runs her fingers along the cold rock as she walks beside it. Ahead, the floor slopes gently down, curving toward a narrow crack in the stone. Cold air sighs out of that crack, and Biscuit noses at it first, his tail wagging fast and urging her to follow the slope down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_slope",
+          "label": "Follow the sloping floor down.",
+          "target": "la_glitter2"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter2",
+      "body": "The sloping floor opens into a small, round room, quiet and still. Across the room, a crack in the wall glows with soft blue light, looking like trapped moonlight. The air smells clean and wet, and somewhere near, water drips in a slow beat. Biscuit pads straight toward the glow, his tail low but curious. Maya follows close behind, her torch beam swallowed by that strange blue shimmer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_crack",
+          "label": "Approach the glowing crack.",
+          "target": "la_grotto_app"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto_app",
+      "body": "The crack is narrow, and Maya could just squeeze through it sideways. But cold water is pooling around her boots. It is seeping in from somewhere deep in the rock. Biscuit whines softly. He is caught between the glow ahead and the cold at his paws. Maya presses one hand on the chilly stone. She must decide fast: squeeze through before the water rises, or turn back while the way out is still dry?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_squeeze",
+          "label": "Squeeze through the glowing crack.",
+          "target": "la_squeeze"
+        },
+        {
+          "id": "c_retreat",
+          "label": "Turn back before the water rises.",
+          "target": "la_retreat_pool"
+        }
+      ]
+    },
+    {
+      "id": "la_retreat_pool",
+      "body": "Maya decides the glowing crack can wait, scoops up Biscuit, and splashes back the way they came. Cold water rises around her ankles with every step. By the time they reach the cave mouth, the sea has crept halfway up the rocks, and daylight glares bright and welcome. They tumble out into the sun, damp and muddy, and Maya laughs with relief. She looks back at the dark opening and promises Biscuit they will return at the next low tide.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Back to the Mouth"
+      }
+    },
+    {
+      "id": "la_squeeze",
+      "body": "Maya turns sideways and wriggles through the cool crack, torch pointing ahead of her. Stone brushes both her shoulders, then lets go all at once. She pops free into open space. Biscuit squeezes through right behind her, shaking himself hard and spraying water across the floor. Ahead, the blue glow brightens fast. It fills a wide, shimmering room just past the next step.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_room",
+          "label": "Step into the shimmering room.",
+          "target": "la_grotto"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto",
+      "body": "The shimmering room is a crystal grotto. Its walls hold glowing blue crystals. They light the whole space like a sky underwater. Maya turns slowly in a circle, mouth open in wonder. One loose crystal sits right at her eye level. It wobbles gently in its stone socket. Deeper in the grotto, a rounded archway hums with a low sound. It seems to promise more wonders ahead. Biscuit noses the loose crystal, then glances toward the archway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take",
+          "label": "Gently take the loose crystal.",
+          "target": "la_crystal_take"
+        },
+        {
+          "id": "c_deeper",
+          "label": "Follow the humming archway deeper.",
+          "target": "la_crystal_deeper"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_take",
+      "body": "Maya reaches up and eases the loose crystal free. It slips into her palm, cool and heavy, glowing softly with its own blue light. The little crystal lights up a low passage Maya had not seen before. It curves back the way she came, toward the old lighthouse stairs. Biscuit trots eagerly into the glow, tail wagging fast, ready to follow the light home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_up",
+          "label": "Follow the crystal's light back up.",
+          "target": "la_crystal_out"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_out",
+      "body": "The glowing crystal lights every step of the climb. It leads up a narrow stone stair that ends at a little wooden door, tucked behind the old lighthouse. Maya pushes it open and steps into the cool evening air, where orange light spreads wide over the sea. In her hands, still glowing faintly against her palm, she holds a real cave crystal. Biscuit presses against her leg, tail wagging fast. Maya cannot wait to show everyone back home what the caves gave her tonight.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crystal",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Glowing Crystal"
+      }
+    },
+    {
+      "id": "la_crystal_deeper",
+      "body": "Maya follows the humming archway deeper into the grotto. The sound grows richer with every step. It slowly swells into something like a chord. The glowing crystals thin out around her. Smooth, ribbed walls take their place. They curve overhead like the inside of a great shell. This stone seems shaped on purpose, built to carry sound. Biscuit's ears twitch at every echo as they push onward together.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chord",
+          "label": "Follow the chord toward the sound.",
+          "target": "la_song_app"
+        }
+      ]
+    },
+    {
+      "id": "la_song_app",
+      "body": "Ahead, the ribbed walls curve open into a great round chamber. It is vast and dim and full of quiet. Every drip and every footstep rings out. The sounds layer into something like music. Biscuit lets out a low, wondering whine. It comes back doubled, then tripled, almost like a choir answering. Maya stands at the chamber's edge. Her heart thumps fast. She lifts her torch high and gathers her courage to step inside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_sing",
+          "label": "Step into the ringing chamber.",
+          "target": "la_song"
+        }
+      ]
+    },
+    {
+      "id": "la_song",
+      "body": "Maya steps to the center of the round chamber and sings a single note, soft at first. The whole chamber sings it back to her, layered and shimmering, richer than one voice alone. Biscuit sits very still beside her, ears up, as the sound swells and settles around them like warm water. Maya has found the chamber that sings, a secret she thinks only the old lighthouse keeper ever knew. She climbs out humming that same note, all the way home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Chamber That Sings"
+      }
+    },
+    {
+      "id": "la_hum",
+      "body": "Maya follows the warm murmur down a rounded passage. Biscuit walks ahead with steady, confident steps. The sound is not wind at all, she slowly realizes. It is something ringing, low and even, like a bell struck far below. The passage curves and dips beneath her boots. The ringing grows clearer with each step down. Maya keeps one hand on the smooth stone wall. She follows the sound toward whatever is making it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_ring",
+          "label": "Follow the ringing downward.",
+          "target": "la_hum2"
+        }
+      ]
+    },
+    {
+      "id": "la_hum2",
+      "body": "The passage steepens sharply under Maya's boots. The ringing steadies into a slow, deep chime. It seems to rise from right beneath her feet. Pale light leaks up from a chamber below. Something metal flashes faintly in that glow. Biscuit peers over the edge of the slope, tail stiff with interest. Maya crouches at the top of the drop. She tilts her torch beam down, trying to see what is chiming in the dark below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chime",
+          "label": "Climb down toward the chiming light.",
+          "target": "la_bell_app"
+        }
+      ]
+    },
+    {
+      "id": "la_bell_app",
+      "body": "An old rope ladder hangs down into the chamber below, left there by someone long ago. Maya tugs it once, and it holds firm, swaying only a little. But the tide-clock in her head warns her that time is short, and she wants a dry walk back to the mouth. Biscuit whines softly at the ladder's edge, not sure about this. Maya must decide now: climb down toward the chiming light, or scramble back up while there is still time to be safe.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bell",
+          "label": "Climb down the old rope ladder.",
+          "target": "la_bell"
+        },
+        {
+          "id": "c_humback",
+          "label": "Scramble back up to be safe.",
+          "target": "la_hum_back"
+        }
+      ]
+    },
+    {
+      "id": "la_hum_back",
+      "body": "Maya looks at the swaying rope ladder. She decides the chime can wait for a safer day. She calls Biscuit back gently from the edge. Together they climb up through the rounded passage toward daylight. They reach the cave mouth salt-damp and a little breathless, but perfectly safe. The sea is only just beginning to lap at the entrance stones. Maya glances back once into the dark. She is already planning her next visit.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_hum",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Another Low Tide"
+      }
+    },
+    {
+      "id": "la_bell",
+      "body": "The rope ladder holds firm all the way down. At the bottom, Maya finds a huge old ship's bell, hanging green with age from a natural stone arch. Slow drips fall from the ceiling and strike its rim. They make it ring softly, again and again, in the patient dark. Biscuit noses at the bell's long shadow, tail wagging. Maya stares up at it in wonder, then steps closer for a proper look.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell2",
+          "label": "Walk up to the great bell.",
+          "target": "la_bell2"
+        }
+      ]
+    },
+    {
+      "id": "la_bell2",
+      "body": "Letters are cast deep into the bell's green lip, spelling out the name of a ship lost a hundred years ago. Maya traces them slowly with one finger, her breath catching in her chest. Behind the bell, on a dry ledge, sits a rusted lantern and a coil of good rope, left there long ago and forgotten. Biscuit sniffs at the ledge with real interest. Maya leans in to read the name properly and see what else waits behind the old bell.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell3",
+          "label": "Read the name and look behind the bell.",
+          "target": "la_bell3"
+        }
+      ]
+    },
+    {
+      "id": "la_bell3",
+      "body": "Maya copies the ship's name carefully into her notebook. She presses hard so the marks stay clear. The rusted lantern still holds a stub of old candle. The coil of rope looks strong enough to help them climb back out. Biscuit noses the rope hopefully, tail wagging. Maya gathers both items into her arms. She pictures the climb ahead, then turns toward the passage that will carry them home again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell4",
+          "label": "Take the lantern and rope and head out.",
+          "target": "la_bell4"
+        }
+      ]
+    },
+    {
+      "id": "la_bell4",
+      "body": "The ship's name is safe in her notebook now, and the old lantern is lit against the dark. Maya and Biscuit climb the good rope back up toward daylight, hand over hand. They spill out of the cave mouth just as gold evening light hits the water. Maya can already picture the whole town gathering close. They will be eager to hear about the lost ship that still rings, faithfully, somewhere under the sea near her home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Bell of the Lost Ship"
+      }
+    },
+    {
+      "id": "ra_drip",
+      "body": "Maya turns right into the dripping passage. Her torch beam catches wet black walls. They glisten like polished stone. A thin trickle of water runs along the floor. It leads deeper into the dark ahead. The air here feels colder than the other tunnels. It tastes faintly of salt and old brine. Biscuit sniffs at the trickle, then trots after it eagerly. Maya follows the thin stream of water, letting it guide her deeper into the cave.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_fork",
+          "label": "Follow the trickle deeper.",
+          "target": "ra_fork"
+        }
+      ]
+    },
+    {
+      "id": "ra_fork",
+      "body": "The trickle of water leads Maya to a sudden split. Down one way, the water sound grows into a slow, hollow lapping. It sounds like something large and still. Down the other, a sharp briny smell drifts from a low, narrow side-tunnel. It is salty and strange in her nose. Biscuit lifts his nose toward the smell, then looks back at the lapping sound. He cannot decide. Maya weighs both paths, her torch beam swinging slowly from one to the other.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lake",
+          "label": "Head toward the lapping water.",
+          "target": "ra_lake_way"
+        },
+        {
+          "id": "c_pool",
+          "label": "Follow the briny smell.",
+          "target": "ra_pool_way"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_way",
+      "body": "Maya follows the low lapping sound. It grows steadily louder with each step. The passage floor changes under her boots. Smooth, wet pebbles click softly as she walks. Overhead, the ceiling lifts away into darkness. Her torch cannot quite reach it. The space suddenly feels much bigger than before. Biscuit's claws click on the pebbles beside her. Maya crosses carefully, testing her footing on the smooth stones.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_pebbles",
+          "label": "Cross the wet pebbles.",
+          "target": "ra_lake2"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake2",
+      "body": "The pebbles give way to a wide shelf of rock. Beyond it stretches black, still water. It vanishes clean out of sight into the dark. The lapping sound, it turns out, is only Biscuit's paw. He is testing the cold edge of the water. Small ripples spread out quietly. Maya crouches beside him. Her torch beam skates uselessly across the flat black surface. She stands again and looks along the rocky shelf, wondering how far it runs.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shelf",
+          "label": "Edge along the rocky shelf.",
+          "target": "ra_lake_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_app",
+      "body": "The rocky shelf narrows ahead, turning slick and green with clinging weed. Below it waits the vast underground lake, dark and silent. Maya tests one foot on the slippery rock. She grips a knob of stone first and checks that it holds before she trusts her weight to it. The rock still slides a little under her boot. Biscuit hangs back, unsure of the footing. Maya must choose now. She can climb carefully down to the lake's pale shore, keeping low and using both hands, or back off the slippery shelf before anyone falls into that cold black water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_descend",
+          "label": "Climb down to the lake shore.",
+          "target": "ra_descend"
+        },
+        {
+          "id": "c_lakeback",
+          "label": "Back off the slippery shelf.",
+          "target": "ra_lake_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_back",
+      "body": "The weed-slick rock feels far too risky to trust. Maya coaxes Biscuit back along the narrow shelf. She takes one careful step at a time. Soon solid stone is safely under both their feet again. They retrace the dripping passage all the way back to the cave mouth. They arrive damp and muddy, but perfectly safe. Maya looks back once at the dark opening. She leaves the black lake for braver boots on another day.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_lake",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Weed-Slick Shelf"
+      }
+    },
+    {
+      "id": "ra_descend",
+      "body": "Maya picks her way down the rocky shelf, staying low and keeping three points on the rock at all times. She reaches a shore of pale, smooth gravel beside the vast, still lake. The water lies glassy and cold, stretching into darkness. Something long and dark rests half out of the water on the gravel nearby, its shape strange in the dim torchlight. Biscuit trots toward it first, tail low with curiosity. Maya follows along the shore to see what has washed up here.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shore",
+          "label": "Walk along the gravel shore.",
+          "target": "ra_lakeshore"
+        }
+      ]
+    },
+    {
+      "id": "ra_lakeshore",
+      "body": "The dark shape turns out to be an old wooden rowboat. Its hull is cracked in places, but still whole and solid. Maya runs a hand along the weathered wood. She is surprised it has lasted so long down here. Further along the gravel shore, the shallow water glows faintly. It looks lit from beneath the surface. Biscuit noses at the boat, then trots toward the glowing shallows instead. Maya must decide which mystery to follow first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_boat",
+          "label": "Examine the old rowboat.",
+          "target": "ra_boat"
+        },
+        {
+          "id": "c_wade",
+          "label": "Wade into the glowing shallows.",
+          "target": "ra_wade"
+        }
+      ]
+    },
+    {
+      "id": "ra_boat",
+      "body": "Maya crouches beside the old rowboat. Its oars are still lashed safely inside, waiting. She tips out a puddle of rainwater from the bottom. The little craft settles, floating steady and true on the still black water. Biscuit hops in first. His claws scrabble on the wooden seat, tail wagging hard. The little boat rocks gently. It is ready to carry them both out across the wide, mirror-still lake.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_row",
+          "label": "Climb in and push off.",
+          "target": "ra_row"
+        }
+      ]
+    },
+    {
+      "id": "ra_row",
+      "body": "Maya rows steadily across the silent lake. Biscuit sits proud in the bow. Her oars dip quietly into the cold black water, again and again. Ahead, a shelf of glimmering rock rises up. A natural stone chimney lets a coin of daylight fall through from far above. They climb out onto the rock and up through the chimney into soft dune grass and open sky. Maya grins wide. She is certain they are the first people in a lifetime to cross the hidden lake.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rowboat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Across the Hidden Lake"
+      }
+    },
+    {
+      "id": "ra_wade",
+      "body": "Maya steps into the glowing shallows. The water lights up around her boots with a soft, shifting shimmer. Thousands of tiny pale shells carpet the sandy bottom. They glow faintly wherever her feet stir them. Biscuit splashes in beside her. Ripples of soft light spread outward across the water. Ahead, the glow seems to lead toward a low, bright opening in the cave wall. Maya wades onward, following the trail of shells.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_islet",
+          "label": "Follow the glowing shells.",
+          "target": "ra_islet"
+        }
+      ]
+    },
+    {
+      "id": "ra_islet",
+      "body": "The glowing shells lead Maya and Biscuit onward. They reach a tiny islet of white sand. A narrow shaft of open sky lights it from above. Glowing water rings the little island like a secret pool. It shines softly in the dim cave light. Maya kneels and fills a small jar with pale shells to take home. Then she wades back through the shallows toward daylight. She promises Biscuit, and herself, to keep this shining place a secret.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_islet",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Glowing Islet"
+      }
+    },
+    {
+      "id": "ra_pool_way",
+      "body": "Maya crouches low to follow the briny side-tunnel. It is tight and heavy with the smell of salt and seaweed. She ducks under dripping ledges of stone. Her torch scrapes along the low rock overhead. Biscuit squeezes ahead of her easily. He is small enough to trot where Maya must crawl. Ahead, a paler light glows faintly through the narrow gap. Maya follows Biscuit toward that light, elbows and knees scraping on cold stone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_crouch",
+          "label": "Crouch through toward the pale light.",
+          "target": "ra_pool2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool2",
+      "body": "The tight tunnel opens a little wider. Maya can almost stand straight again. Strands of green weed hang down from the low ceiling. They brush softly against her shoulders as she passes beneath them. A shallow channel of clear seawater runs along the floor. It trickles steadily toward a rounded chamber ahead. Biscuit splashes through the channel happily. Maya follows the clear, cold water, curious where it leads.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_channel",
+          "label": "Follow the clear channel.",
+          "target": "ra_pool_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_app",
+      "body": "The clear channel leads Maya to a curtain of hanging weed. Beyond it, a bright, watery light glows softly. But behind her, the channel is already filling with the tide. Water rises fast around her ankles. Biscuit whines, glancing between the curtain ahead and the water behind them. Maya has only moments to decide. Should she push through the weed curtain now, or hurry back before the whole channel floods shut?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter",
+          "label": "Push through the weed curtain.",
+          "target": "ra_pool_enter"
+        },
+        {
+          "id": "c_poolback",
+          "label": "Hurry back before the channel fills.",
+          "target": "ra_pool_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_back",
+      "body": "Maya will not risk the rising channel. She scoops up Biscuit and hurries back the way they came. She splashes hard through water that climbs higher with every step. They burst out at the cave mouth just as the sea pours in behind them. They are wet to the knees, hearts thumping hard, but entirely safe. Maya catches her breath in the warm sun. She is already thinking about trying again at the next low tide.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Beat the Tide Back"
+      }
+    },
+    {
+      "id": "ra_pool_enter",
+      "body": "Maya pushes firmly through the curtain of hanging weed. The chamber beyond opens into a bright, hidden tide-pool. The water is so clear it looks almost like air. Soft sunlight filters down from somewhere high above. Anemones cling to the rocky bowl's edges. Small darting fish flash bright silver through the shallows. Biscuit peers down at the water, tail wagging slowly. Maya kneels right at the edge, drawn in by the tiny, perfect world.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_kneel",
+          "label": "Kneel by the clear tide-pool.",
+          "target": "ra_pool_chamber"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_chamber",
+      "body": "The tide-pool holds a whole tiny world within its rocky bowl. In one corner, a rare cushion starfish glows a deep, bright orange. Maya has never seen anything like it before. On the far side, small crab tracks lead toward a deeper, darker basin tucked into the rock. Biscuit noses toward the tracks curiously, tail low. Maya must choose: study the glowing starfish up close, or follow the tracks into the darker water beyond.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star",
+          "label": "Look closely at the orange starfish.",
+          "target": "ra_starfish"
+        },
+        {
+          "id": "c_deep",
+          "label": "Follow the crab-track to the dark basin.",
+          "target": "ra_pool_deep"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish",
+      "body": "Maya leans close to the cushion starfish. It is bigger than her own hand and the deep orange of a sunset. She pulls out her notebook and sketches it with care. She draws every ridge and curve, leaving the starfish right where it clings to the rock. Biscuit watches patiently beside her, tail still. Maya snaps a photo of the whole glowing pool. Then she closes her notebook gently and slips back out the way she came.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_sketch",
+          "label": "Finish the sketch and slip out.",
+          "target": "ra_starfish2"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish2",
+      "body": "Maya backs carefully out of the tide-pool chamber. Her notebook is tucked safe under her arm. Its pages are now full of careful drawings of the rare orange starfish. She knows the rockpool club back home will not believe her story. Not until they see the sketch with their own eyes. Biscuit trots proudly beside her, tail held high. They climb back out toward daylight together, both of them grinning at their small, quiet find.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_starfish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Rare Starfish"
+      }
+    },
+    {
+      "id": "ra_pool_deep",
+      "body": "Maya follows the small crab tracks to a darker basin. The water here turns a deep, murky green. Something smooth and pale gleams faintly at the very bottom. It is half-buried in soft sand, catching the last thin light from above. Biscuit peers over the edge, whining softly with real interest. Maya rolls up her sleeve. She leans down close to the water, reaching carefully into the green basin to see what is hidden there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_reach",
+          "label": "Reach into the green basin.",
+          "target": "ra_pool_deep2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_deep2",
+      "body": "Maya's fingers close gently around something smooth. She lifts out a perfect spiral shell. It is as big as her two hands together, its inside pearled a soft, glowing pink. It is the finest thing she has ever found in her whole life. Biscuit barks proudly, circling her legs in excitement. Maya carries the shell up out of the tide-pool chamber and into the bright daylight, like a trophy held high.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Spiral Shell"
+      }
+    },
+    {
+      "id": "da_dark",
+      "body": "Maya steps straight down into the darkest of the three passages. Biscuit stays pressed close against her leg. The whispering echo turns out to be only a draft of air. It sighs over cold stone, over and over, patient and low. Maya keeps one hand flat against the wall as she goes down. Her torch beam stays small and steady in the thick, waiting dark. Biscuit stays glued to her side, ears low, as they move carefully downward together.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_fork",
+          "label": "Feel along the wall downward.",
+          "target": "da_fork"
+        }
+      ]
+    },
+    {
+      "id": "da_fork",
+      "body": "The dark passage forks ahead. Maya pauses to listen carefully in the quiet. From one branch drifts a papery squeaking and flutter, small and busy. From the other comes the slow creak of old wood. A faint glint of rusted iron catches her torchlight. Biscuit's ears swivel toward the squeaking sound, unsure which way to go. Maya must choose which sound to follow deeper into the dark: the fluttering, or the patient creaking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bat",
+          "label": "Go toward the squeaking and flutter.",
+          "target": "da_bat_way"
+        },
+        {
+          "id": "c_cache",
+          "label": "Go toward the creaking wood.",
+          "target": "da_cache_way"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_way",
+      "body": "Maya follows the squeaking sound. It grows busier and louder with every careful step she takes. The ceiling lifts high overhead. Her torch beam catches hundreds of small, folded shapes hanging up in the dark. They twitch gently in their sleep. Biscuit presses hard against her leg. He is unsure of these strange, restless shadows above them. Maya moves slowly, torch lowered, careful not to wake whatever is roosting up there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_creep",
+          "label": "Creep on under the hanging shapes.",
+          "target": "da_bat2"
+        }
+      ]
+    },
+    {
+      "id": "da_bat2",
+      "body": "The small shapes turn out to be bats. Hundreds of them roost together in a great, vaulted chamber. They twitch softly in their deep sleep. The air here is warm and smells rich and earthy. It is unlike anywhere else Maya has walked in the caves. High in the roof, a faint circle of grey light shows through a narrow gap. Biscuit stays low and quiet beside Maya. She studies that distant grey glow, wondering if it leads all the way outside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_grey",
+          "label": "Move quietly toward the grey light.",
+          "target": "da_bat_app"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_app",
+      "body": "The grey light overhead comes from a narrow shaft in the roof. It might be a way up and out of the caves. But reaching it means crossing the floor right beneath the sleeping bats, close enough to risk waking the whole roost. These are wild animals, and Maya knows she must never touch them. She can only pass by slow and hushed, keeping her distance. Biscuit crouches low, waiting for Maya's lead. She must decide now: tiptoe carefully across under the roost, or back quietly away and leave the bats to sleep in peace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_batenter",
+          "label": "Tiptoe across under the bats.",
+          "target": "da_bat_enter"
+        },
+        {
+          "id": "c_batback",
+          "label": "Back away and leave the bats be.",
+          "target": "da_bat_back"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_back",
+      "body": "Maya will not risk waking the whole sleeping roost tonight. She and Biscuit ease back, one quiet step at a time. They retrace the dark passage toward the distant cave mouth. They emerge into daylight dusty and awed, but completely safe. Behind them, the hundreds of bats sleep on, peaceful in the dark. Maya likes knowing she made the kind choice. She wonders what it looks like when the whole roost wakes and pours into the night sky to hunt. She decides to ask the lighthouse ranger about it tomorrow.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_bat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Let the Bats Sleep"
+      }
+    },
+    {
+      "id": "da_bat_enter",
+      "body": "Maya and Biscuit cross the chamber floor on soft, careful feet. They move slow and hushed, giving the wild roost all the space it needs. Not a single bat stirs above them. Beneath the shaft of grey light, a jumble of fallen rock forms a rough staircase. It climbs steadily toward the distant circle of daylight far overhead. Biscuit noses at the loose stones eagerly, tail wagging. Maya steadies herself against the rock. She begins picking her way up the rocky steps toward the light above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_stair",
+          "label": "Start up the fallen-rock stair.",
+          "target": "da_roost"
+        }
+      ]
+    },
+    {
+      "id": "da_roost",
+      "body": "The rock stair climbs steeply, but the stones hold firm under Maya's careful feet. Halfway up, she spots something scratched deep into the wall. It is an old carved arrow and a set of faded initials. Someone climbed this very chimney long before her, and left proof in the stone. Biscuit waits patiently a step above her, tail wagging steadily. Maya traces the old carving once with her finger, then climbs on past it toward the light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_climb",
+          "label": "Climb on past the old carving.",
+          "target": "da_roost2"
+        }
+      ]
+    },
+    {
+      "id": "da_roost2",
+      "body": "The rocky stair narrows into a mossy funnel, damp and green. Cool air pours down through it, carrying the good smell of grass and open ground. Maya boosts Biscuit up ahead of her first. She pushes him gently through the narrowing gap. Then she hauls herself up the last few mossy metres. Her fingers find grips in the soft, wet stone. Above her, green light grows brighter with every pull upward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_push",
+          "label": "Push up through the mossy funnel.",
+          "target": "da_skylight"
+        }
+      ]
+    },
+    {
+      "id": "da_skylight",
+      "body": "Maya climbs out through a hidden hole in the clifftop meadow, high above the lighthouse. She blinks hard in the sudden bright sun. Biscuit shakes himself off in the long grass, tail wagging fast with relief. Maya turns back to look at the small, hidden opening behind her. She already imagines how the museum will react. It is a whole secret way into the caves. And it comes with a colony of bats nobody else ever knew was living below the meadow.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bats",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Skylight in the Meadow"
+      }
+    },
+    {
+      "id": "da_cache_way",
+      "body": "The creaking wood grows nearer as Maya follows the dark passage onward. Her torch beam finds broken barrel staves scattered loosely across the floor. Ahead, a leaning door made of grey planks sits wedged into a side-cave. Its rusted nails weep long streaks of orange down the old wood. Biscuit sniffs at the leaning door curiously, tail held low. Maya steps closer, studying the old door and wondering what someone once hid behind it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_door",
+          "label": "Approach the leaning plank door.",
+          "target": "da_cache2"
+        }
+      ]
+    },
+    {
+      "id": "da_cache2",
+      "body": "Maya pushes on the old door, and it swings open with a long, tired groan. Behind it lies a dry hollow, walled off carefully by hand long, long ago. It was clearly meant as a hiding place. In the shifting torchlight, Maya can just make out shapes of stacked crates crowded in the shadows. Biscuit noses forward eagerly into the hollow. Maya leans in through the doorway to get a proper look at what is stored inside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_peer",
+          "label": "Peer into the walled-off hollow.",
+          "target": "da_cache_app"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_app",
+      "body": "It is an old smuggler's cache, forgotten here for a hundred years. Crates are stacked quietly together in the dark. But the tide is turning outside, and the floor of the hollow already glistens with creeping water. Biscuit paces at the doorway, unsettled by the damp underfoot. Maya must choose quickly now. Should she step inside for one fast look at the old crates, or leave them be and beat the rising tide back to daylight?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cacheenter",
+          "label": "Step in for a quick look.",
+          "target": "da_cache_enter"
+        },
+        {
+          "id": "c_cacheback",
+          "label": "Leave the cache and beat the tide.",
+          "target": "da_cache_back"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_back",
+      "body": "The wet floor makes the choice for her in the end. Maya marks the spot carefully on her map. She hurries out with Biscuit trotting ahead of the rising tide. They reach the cave mouth breathless, muddy, and safe. The water starts lapping at the entrance just behind them. Maya folds her map away carefully. She is already planning to come back for the old cache on a drier day.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cache",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Mark It on the Map"
+      }
+    },
+    {
+      "id": "da_cache_enter",
+      "body": "Inside the hollow, the stacked crates are thick with dust. Most of them have rotted through to soft splinters at Maya's lightest touch. But two smaller boxes sit apart on a dry stone shelf. Their lids are stiff with age, but whole and unbroken. Biscuit sniffs at the boxes eagerly, tail wagging fast. Maya crouches beside the shelf, curious what might be waiting, sealed quietly inside them after all this time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_boxes",
+          "label": "Open the two dry boxes.",
+          "target": "da_cache_room"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_room",
+      "body": "Maya pries open the first box. Inside sits a green-crusted brass compass. The second box is heavier. It rattles like a whole handful of loose coins when she shifts its weight. Water is creeping steadily across the floor behind her now. She knows she can only carry one box out cleanly before the tide catches up. Biscuit watches quietly, waiting for her decision, as Maya weighs the small compass against the heavy, rattling box.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_compass",
+          "label": "Take the old brass compass.",
+          "target": "da_compass"
+        },
+        {
+          "id": "c_coins",
+          "label": "Take the heavy rattling box.",
+          "target": "da_coins"
+        }
+      ]
+    },
+    {
+      "id": "da_compass",
+      "body": "Maya wipes the green crust from the compass with her sleeve, and the needle still swings true, pointing her the quickest way back to the cave mouth. Biscuit trots ahead, sure of the way, while Maya follows the needle through the dark passage. She moves fast now, because the tide is rising close behind them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_out",
+          "label": "Follow the compass out.",
+          "target": "da_compass2"
+        }
+      ]
+    },
+    {
+      "id": "da_compass2",
+      "body": "The century-old compass leads Maya and Biscuit straight out to the cave mouth. They arrive just as the sea comes rushing back in behind them. Maya steps onto dry sand, breathless and grinning. A real smuggler's compass sits clutched in her hand, its needle still finding true north after all these years. She already knows the whole town will beg to hear this story, the one about the compass she found deep beneath the old lighthouse.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_compass",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Smuggler's Compass"
+      }
+    },
+    {
+      "id": "da_coins",
+      "body": "The heavy box turns out to be full of blackened old coins. Strange faces are stamped faintly into the tarnished silver. Maya cannot stop to count them now, not with cold water already creeping across the cache floor. But she can manage the whole box if she moves quickly. Biscuit paces anxiously by the doorway. Maya hefts the heavy box against her chest and heads for the passage at once, moving as fast as the weight allows.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_carry",
+          "label": "Carry the box out quickly.",
+          "target": "da_coins2"
+        }
+      ]
+    },
+    {
+      "id": "da_coins2",
+      "body": "Maya lugs the heavy box up to daylight, just ahead of the rising tide. Her arms ache and her breath comes ragged with the effort. Biscuit bursts out beside her into the warm sun, tail wagging hard with relief. Maya sets the box down on dry sand and grins wide. She is already picturing the museum polishing every coin and printing her name on a little card: the girl who found the smugglers' hoard.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coins",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Smuggler's Coins"
+      }
+    }
+  ]
+}

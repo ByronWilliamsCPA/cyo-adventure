@@ -16,6 +16,22 @@ from cyo_adventure.story_requests.authoring_plan import (
     eligibility_warnings,
 )
 
+# In-cell candidate lists (sorted, as candidates_for_cell returns them) for the
+# two cells these tests exercise. Each cell now holds three production
+# skeletons, and the pick within a cell is a weighted-random draw over an
+# unseedable SystemRandom, so tests assert membership in the cell rather than a
+# single fixed slug.
+_CELL_8_11_SHORT_PROSE = [
+    "the-cave-of-echoes",
+    "the-locked-carousel",
+    "the-robot-fair-sabotage",
+]
+_CELL_13_16_MEDIUM_PROSE = [
+    "the-conservatory-wars",
+    "the-signal-in-the-static",
+    "the-undertow-season",
+]
+
 
 class _FakeResult:
     """A no-op result for the recent-usage query; every test starts with no history."""
@@ -136,9 +152,9 @@ async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:
         actor=_admin_actor(),
     )
     assert result.job.status == "awaiting_manual_fill"
-    assert result.skeleton_slug == "the-cave-of-echoes"
+    assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
     assert result.job.authoring_metadata == {
-        "skeleton_slug": "the-cave-of-echoes",
+        "skeleton_slug": result.skeleton_slug,
         "skeleton_band": "8-11",
         "theme_brief": concept.brief,
         "review_stage1_model": None,
@@ -177,11 +193,11 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
         session, _request(), concept, plan, actor=_admin_actor()
     )
     assert result.job.status == "queued"
-    assert result.skeleton_slug == "the-cave-of-echoes"
+    assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
     assert result.job.authoring_metadata == {
         "provider": "anthropic",
         "model": "claude-sonnet-4-6",
-        "skeleton_slug": "the-cave-of-echoes",
+        "skeleton_slug": result.skeleton_slug,
         "skeleton_band": "8-11",
         "theme_brief": concept.brief,
         "review_stage1_model": None,
@@ -321,9 +337,10 @@ async def test_skeleton_fill_populates_alternatives() -> None:
         ),
         actor=_admin_actor(),
     )
-    # 8-11/short/prose has exactly one production skeleton on disk today.
-    assert result.skeleton_alternatives == ["the-cave-of-echoes"]
-    assert result.skeleton_slug == "the-cave-of-echoes"
+    # 8-11/short/prose now has three production skeletons; the result carries
+    # the full sorted cell and the pick is one of them.
+    assert result.skeleton_alternatives == _CELL_8_11_SHORT_PROSE
+    assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
 
 
 @pytest.mark.asyncio
@@ -421,7 +438,7 @@ async def test_skeleton_fill_null_length_falls_back_to_short() -> None:
         ),
         actor=_admin_actor(),
     )
-    assert result.skeleton_slug == "the-cave-of-echoes"
+    assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
 
 
 @pytest.mark.asyncio
@@ -447,8 +464,8 @@ async def test_skeleton_fill_teen_band_null_length_falls_back_to_medium() -> Non
         ),
         actor=_admin_actor(),
     )
-    # 13-16/medium/prose has exactly one production skeleton on disk today.
-    assert result.skeleton_slug == "the-signal-in-the-static"
+    # 13-16/medium/prose now has three production skeletons; the pick is one.
+    assert result.skeleton_slug in _CELL_13_16_MEDIUM_PROSE
 
 
 @pytest.mark.asyncio
@@ -514,7 +531,7 @@ async def test_skeleton_fill_defaulted_length_appends_warning() -> None:
         actor=_admin_actor(),
     )
     assert any("defaulted to 'medium'" in w for w in result.warnings)
-    assert result.skeleton_slug == "the-signal-in-the-static"
+    assert result.skeleton_slug in _CELL_13_16_MEDIUM_PROSE
 
 
 @pytest.mark.asyncio
@@ -539,4 +556,4 @@ async def test_skeleton_fill_specified_length_no_default_warning() -> None:
         actor=_admin_actor(),
     )
     assert not any("defaulted to" in w for w in result.warnings)
-    assert result.skeleton_slug == "the-cave-of-echoes"
+    assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE

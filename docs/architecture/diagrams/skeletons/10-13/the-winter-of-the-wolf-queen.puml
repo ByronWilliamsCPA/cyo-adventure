@@ -1,0 +1,935 @@
+@startuml the-winter-of-the-wolf-queen
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 125w
+state n_sledge #BBDEFB
+n_sledge : setup · 110w
+state n_guild #BBDEFB
+n_guild : setup · 115w
+state n_hub #FFF9C4
+n_hub : choice · 115w
+state gh_hall #FFF9C4
+gh_hall : choice · 95w
+state gh_maps #D1C4E9
+gh_maps : rising · 100w
+state e_hearth #FFCDD2
+e_hearth : setback (negative)
+e_hearth : "The Hearth Rule"
+state af_road #FFF9C4
+af_road : choice · 105w
+state af_stone #D1C4E9
+af_stone : rising · 95w
+state af_flags #FFF9C4
+af_flags : choice · 100w
+state af_drift #D1C4E9
+af_drift : rising · 95w
+state af_squall #D1C4E9
+af_squall : rising · 100w
+state af_push #D1C4E9
+af_push : rising · 100w
+state af_bothy #FFF9C4
+af_bothy : choice · 105w
+state af_watch #D1C4E9
+af_watch : rising · 90w
+state af_wood #FFF9C4
+af_wood : choice · 100w
+state af_blaze #D1C4E9
+af_blaze : rising · 95w
+state af_sign #D1C4E9
+af_sign : rising · 95w
+state af_compass #D1C4E9
+af_compass : rising · 90w
+state af_meet #FFF9C4
+af_meet : choice · 100w
+state af_mill #D1C4E9
+af_mill : rising · 90w
+state af_gate #FFF9C4
+af_gate : choice · 110w
+state af_call #D1C4E9
+af_call : rising · 100w
+state af_alder #D1C4E9
+af_alder : rising · 95w
+state af_bett #FFF9C4
+af_bett : choice · 105w
+state af_fetch #D1C4E9
+af_fetch : rising · 95w
+state af_hens #D1C4E9
+af_hens : rising · 95w
+state af_fold #D1C4E9
+af_fold : rising · 100w
+state af_byres #D1C4E9
+af_byres : rising · 95w
+state af_stories #D1C4E9
+af_stories : rising · 105w
+state af_tribute #D1C4E9
+af_tribute : rising · 100w
+state af_tasks #FFF9C4
+af_tasks : choice · 100w
+state af_kitchen #D1C4E9
+af_kitchen : rising · 90w
+state af_answers #FFF9C4
+af_answers : choice · 100w
+state af_done #FFF9C4
+af_done : choice · 115w
+state e_af_turnback #FFCDD2
+e_af_turnback : setback (negative)
+e_af_turnback : "The Squall Report"
+state e_af_bothy #E0E0E0
+e_af_bothy : setback (neutral)
+e_af_bothy : "A Night in the Larch Bothy"
+state e_af_byres #C8E6C9
+e_af_byres : discovery (positive)
+e_af_byres : "Every Lamp Answered"
+state e_af_guest #E0E0E0
+e_af_guest : discovery (neutral)
+e_af_guest : "The Hearth-Keeper's Guest"
+state e_af_lamps #C8E6C9
+e_af_lamps : discovery (positive)
+e_af_lamps : "The Valley Lamps"
+state sc_still #FFF9C4
+sc_still : choice · 110w
+state sc_zig #D1C4E9
+sc_zig : rising · 100w
+state sc_dig #D1C4E9
+sc_dig : rising · 95w
+state sc_scout #D1C4E9
+sc_scout : rising · 95w
+state sc_plate #D1C4E9
+sc_plate : rising · 90w
+state sc_fork #FFF9C4
+sc_fork : choice · 105w
+state sc_ladder #D1C4E9
+sc_ladder : rising · 95w
+state sc_upper #D1C4E9
+sc_upper : rising · 95w
+state sc_rest #FFF9C4
+sc_rest : choice · 95w
+state sc_bore #D1C4E9
+sc_bore : rising · 95w
+state sc_echo #D1C4E9
+sc_echo : rising · 90w
+state sc_shelf #D1C4E9
+sc_shelf : rising · 100w
+state sc_shrine #D1C4E9
+sc_shrine : rising · 95w
+state sc_top #FFF9C4
+sc_top : choice · 100w
+state sc_bell #D1C4E9
+sc_bell : rising · 90w
+state sc_gate #D1C4E9
+sc_gate : rising · 100w
+state sc_fever #FFF9C4
+sc_fever : choice · 105w
+state sc_iben #FFF9C4
+sc_iben : choice · 100w
+state sc_dose #D1C4E9
+sc_dose : rising · 95w
+state sc_water #D1C4E9
+sc_water : rising · 90w
+state sc_ward #FFF9C4
+sc_ward : choice · 100w
+state sc_tale #D1C4E9
+sc_tale : rising · 105w
+state sc_leave #FFF9C4
+sc_leave : choice · 95w
+state sc_done #FFF9C4
+sc_done : choice · 115w
+state e_sc_turnback #FFCDD2
+e_sc_turnback : setback (negative)
+e_sc_turnback : "Reported From the Fourth Turn"
+state e_sc_morning #E0E0E0
+e_sc_morning : setback (neutral)
+e_sc_morning : "The Morning Team"
+state e_sc_stay #E0E0E0
+e_sc_stay : discovery (neutral)
+e_sc_stay : "Fever-House Hands"
+state e_sc_bells #C8E6C9
+e_sc_bells : discovery (positive)
+e_sc_bells : "Smoke and Bells"
+state e_sc_hoist #C8E6C9
+e_sc_hoist : discovery (positive)
+e_sc_hoist : "The Crag Basket"
+state dr_bank #FFF9C4
+dr_bank : choice · 105w
+state dr_span #D1C4E9
+dr_span : rising · 95w
+state dr_test #D1C4E9
+dr_test : rising · 100w
+state dr_creak #FFF9C4
+dr_creak : choice · 100w
+state dr_reflag #D1C4E9
+dr_reflag : rising · 95w
+state dr_hut #FFF9C4
+dr_hut : choice · 110w
+state dr_stakes #D1C4E9
+dr_stakes : rising · 95w
+state dr_lantern #D1C4E9
+dr_lantern : rising · 90w
+state dr_list #FFF9C4
+dr_list : choice · 100w
+state dr_cottage #D1C4E9
+dr_cottage : rising · 95w
+state dr_hetta #D1C4E9
+dr_hetta : rising · 100w
+state dr_walkers #D1C4E9
+dr_walkers : rising · 95w
+state dr_cross #FFF9C4
+dr_cross : choice · 105w
+state dr_main #D1C4E9
+dr_main : rising · 100w
+state dr_mid #D1C4E9
+dr_mid : rising · 100w
+state dr_plank #D1C4E9
+dr_plank : rising · 95w
+state dr_island #D1C4E9
+dr_island : rising · 100w
+state dr_far #FFF9C4
+dr_far : choice · 95w
+state dr_bellpull #D1C4E9
+dr_bellpull : rising · 90w
+state dr_mardy #FFF9C4
+dr_mardy : choice · 105w
+state dr_kettle #D1C4E9
+dr_kettle : rising · 95w
+state dr_word #D1C4E9
+dr_word : rising · 95w
+state dr_back #FFF9C4
+dr_back : choice · 100w
+state dr_done #FFF9C4
+dr_done : choice · 115w
+state e_dr_holdoff #FFCDD2
+e_dr_holdoff : setback (negative)
+e_dr_holdoff : "The Ice Says No"
+state e_dr_kitchens #E0E0E0
+e_dr_kitchens : discovery (neutral)
+e_dr_kitchens : "Two Grandmothers' Kitchens"
+state e_dr_hand #C8E6C9
+e_dr_hand : discovery (positive)
+e_dr_hand : "The Crossing-Hand"
+state e_dr_bounds #C8E6C9
+e_dr_bounds : discovery (positive)
+e_dr_bounds : "Two Bounds on the River"
+state e_dr_lampline #E0E0E0
+e_dr_lampline : discovery (neutral)
+e_dr_lampline : "Three Low Stars"
+state th_stile #FFF9C4
+th_stile : choice · 110w
+state th_book #D1C4E9
+th_book : rising · 100w
+state th_wands #D1C4E9
+th_wands : rising · 100w
+state th_notch #D1C4E9
+th_notch : rising · 95w
+state th_gully #D1C4E9
+th_gully : rising · 95w
+state th_moor #D1C4E9
+th_moor : rising · 100w
+state th_springs #D1C4E9
+th_springs : rising · 95w
+state th_tarn #D1C4E9
+th_tarn : rising · 100w
+state th_isle #D1C4E9
+th_isle : rising · 95w
+state th_pine #FFF9C4
+th_pine : choice · 105w
+state th_beds #D1C4E9
+th_beds : rising · 100w
+state th_line2 #FFF9C4
+th_line2 : choice · 105w
+state th_cache #D1C4E9
+th_cache : rising · 100w
+state th_ledger #D1C4E9
+th_ledger : rising · 110w
+state th_tops #D1C4E9
+th_tops : rising · 100w
+state th_view #D1C4E9
+th_view : rising · 105w
+state th_tracks #D1C4E9
+th_tracks : rising · 100w
+state th_line3 #FFF9C4
+th_line3 : choice · 105w
+state th_glass #D1C4E9
+th_glass : rising · 95w
+state th_stone #D1C4E9
+th_stone : rising · 100w
+state th_done #FFF9C4
+th_done : choice · 115w
+state e_th_half #FFCDD2
+e_th_half : setback (negative)
+e_th_half : "Half a Line Read"
+state e_th_hut #E0E0E0
+e_th_hut : setback (neutral)
+e_th_hut : "The Watch-Hut Night"
+state e_th_lists #C8E6C9
+e_th_lists : discovery (positive)
+e_th_lists : "Maren's Lists"
+state e_th_watch #E0E0E0
+e_th_watch : discovery (neutral)
+e_th_watch : "The Far Watcher"
+state e_th_bearing #C8E6C9
+e_th_bearing : discovery (positive)
+e_th_bearing : "The Ridge Bearing"
+state fg_shoulder #FFF9C4
+fg_shoulder : choice · 110w
+state fg_knee #FFF9C4
+fg_knee : choice · 100w
+state fg_zig #D1C4E9
+fg_zig : rising · 100w
+state fg_cleft #D1C4E9
+fg_cleft : rising · 90w
+state fg_cairns #D1C4E9
+fg_cairns : rising · 95w
+state fg_ropefix #D1C4E9
+fg_ropefix : rising · 90w
+state fg_bore #D1C4E9
+fg_bore : rising · 100w
+state fg_lampway #D1C4E9
+fg_lampway : rising · 95w
+state fg_gap #FFF9C4
+fg_gap : choice · 100w
+state fg_gatehouse #FFF9C4
+fg_gatehouse : choice · 110w
+state fg_team #D1C4E9
+fg_team : rising · 100w
+state fg_raise #D1C4E9
+fg_raise : rising · 95w
+state fg_line #D1C4E9
+fg_line : rising · 100w
+state fg_scent #D1C4E9
+fg_scent : rising · 95w
+state fg_galleries #D1C4E9
+fg_galleries : rising · 100w
+state fg_bothy2 #D1C4E9
+fg_bothy2 : rising · 95w
+state fg_found #D1C4E9
+fg_found : rising · 110w
+state fg_ankle #D1C4E9
+fg_ankle : rising · 95w
+state fg_signal #D1C4E9
+fg_signal : rising · 90w
+state fg_carry #D1C4E9
+fg_carry : rising · 95w
+state fg_return #FFF9C4
+fg_return : choice · 100w
+state fg_tale #D1C4E9
+fg_tale : rising · 105w
+state fg_wrap #FFF9C4
+fg_wrap : choice · 95w
+state fg_done #FFF9C4
+fg_done : choice · 115w
+state e_fg_verdict #FFCDD2
+e_fg_verdict : setback (negative)
+e_fg_verdict : "The Cornice Verdict"
+state e_fg_anchor #E0E0E0
+e_fg_anchor : setback (neutral)
+e_fg_anchor : "Holding the Anchor"
+state e_fg_bell #C8E6C9
+e_fg_bell : discovery (positive)
+e_fg_bell : "The Search's Voice"
+state e_fg_feast #E0E0E0
+e_fg_feast : discovery (neutral)
+e_fg_feast : "The Cutters' Feast"
+state e_fg_skyline #C8E6C9
+e_fg_skyline : discovery (positive)
+e_fg_skyline : "The Skyline Crossing"
+state gh_wax #D1C4E9
+gh_wax : rising · 90w
+state af_out #D1C4E9
+af_out : rising · 95w
+state af_river #D1C4E9
+af_river : rising · 95w
+state af_alders #D1C4E9
+af_alders : rising · 90w
+state af_otter #D1C4E9
+af_otter : rising · 85w
+state af_count #D1C4E9
+af_count : rising · 90w
+state af_hush #D1C4E9
+af_hush : rising · 90w
+state af_lane #D1C4E9
+af_lane : rising · 90w
+state af_lane2 #D1C4E9
+af_lane2 : rising · 85w
+state af_brazier #D1C4E9
+af_brazier : rising · 90w
+state af_trough #D1C4E9
+af_trough : rising · 85w
+state af_hallfire #D1C4E9
+af_hallfire : rising · 90w
+state af_seal #D1C4E9
+af_seal : rising · 85w
+state sc_yard #D1C4E9
+sc_yard : rising · 95w
+state sc_low #D1C4E9
+sc_low : rising · 90w
+state sc_basket #D1C4E9
+sc_basket : rising · 90w
+state sc_gustrun #D1C4E9
+sc_gustrun : rising · 90w
+state sc_rail #D1C4E9
+sc_rail : rising · 85w
+state sc_bend #D1C4E9
+sc_bend : rising · 90w
+state sc_steps #D1C4E9
+sc_steps : rising · 85w
+state sc_terrace #D1C4E9
+sc_terrace : rising · 85w
+state sc_count #D1C4E9
+sc_count : rising · 90w
+state sc_window #D1C4E9
+sc_window : rising · 90w
+state sc_dusk #D1C4E9
+sc_dusk : rising · 90w
+state sc_barrow #D1C4E9
+sc_barrow : rising · 85w
+state dr_road #D1C4E9
+dr_road : rising · 95w
+state dr_heave #D1C4E9
+dr_heave : rising · 90w
+state dr_augur #D1C4E9
+dr_augur : rising · 90w
+state dr_boy #D1C4E9
+dr_boy : rising · 85w
+state dr_order #D1C4E9
+dr_order : rising · 85w
+state dr_dogleg #D1C4E9
+dr_dogleg : rising · 90w
+state dr_racehut #D1C4E9
+dr_racehut : rising · 85w
+state dr_leeend #D1C4E9
+dr_leeend : rising · 85w
+state dr_lane #D1C4E9
+dr_lane : rising · 85w
+state dr_cat #D1C4E9
+dr_cat : rising · 85w
+state dr_gatherback #D1C4E9
+dr_gatherback : rising · 85w
+state th_fell #D1C4E9
+th_fell : rising · 95w
+state th_margin #D1C4E9
+th_margin : rising · 90w
+state th_pine1 #D1C4E9
+th_pine1 : rising · 90w
+state th_cairn #D1C4E9
+th_cairn : rising · 90w
+state th_hare #D1C4E9
+th_hare : rising · 90w
+state th_mosslight #D1C4E9
+th_mosslight : rising · 85w
+state th_ring #D1C4E9
+th_ring : rising · 90w
+state th_shore #D1C4E9
+th_shore : rising · 85w
+state th_knoll #D1C4E9
+th_knoll : rising · 85w
+state th_shelves #D1C4E9
+th_shelves : rising · 85w
+state th_crest #D1C4E9
+th_crest : rising · 85w
+state th_partways #D1C4E9
+th_partways : rising · 85w
+state th_lee #D1C4E9
+th_lee : rising · 85w
+state fg_out #D1C4E9
+fg_out : rising · 95w
+state fg_seventh #D1C4E9
+fg_seventh : rising · 90w
+state fg_rime #D1C4E9
+fg_rime : rising · 85w
+state fg_mouth #D1C4E9
+fg_mouth : rising · 85w
+state fg_street #D1C4E9
+fg_street : rising · 90w
+state fg_dayhuts #D1C4E9
+fg_dayhuts : rising · 85w
+state fg_ropeorder #D1C4E9
+fg_ropeorder : rising · 85w
+state fg_secondteam #D1C4E9
+fg_secondteam : rising · 85w
+state fg_moraine #D1C4E9
+fg_moraine : rising · 85w
+state fg_streetlamps #D1C4E9
+fg_streetlamps : rising · 85w
+state fg_songs #D1C4E9
+fg_songs : rising · 85w
+state fin_muster #FFF9C4
+fin_muster : choice · 110w
+state fin_gather #D1C4E9
+fin_gather : rising · 105w
+state fin_book #D1C4E9
+fin_book : rising · 110w
+state fin_council #FFF9C4
+fin_council : choice · 105w
+state fin_edda #D1C4E9
+fin_edda : rising · 95w
+state fin_bearing #D1C4E9
+fin_bearing : rising · 105w
+state fin_lanterns #D1C4E9
+fin_lanterns : rising · 100w
+state fin_climb #FFF9C4
+fin_climb : choice · 100w
+state fin_shelf #FFF9C4
+fin_shelf : choice · 100w
+state fin_sight #D1C4E9
+fin_sight : rising · 110w
+state fin_watch #FFF9C4
+fin_watch : choice · 110w
+state fin_reveal #D1C4E9
+fin_reveal : rising · 110w
+state fin_choice #FFF9C4
+fin_choice : choice · 115w
+state fin_feed1 #D1C4E9
+fin_feed1 : rising · 100w
+state fin_feed2 #D1C4E9
+fin_feed2 : rising · 105w
+state fin_ward1 #D1C4E9
+fin_ward1 : rising · 100w
+state fin_ward2 #D1C4E9
+fin_ward2 : rising · 100w
+state fin_see1 #D1C4E9
+fin_see1 : rising · 100w
+state fin_see2 #D1C4E9
+fin_see2 : rising · 105w
+state fin_full1 #D1C4E9
+fin_full1 : rising · 110w
+state fin_full2 #D1C4E9
+fin_full2 : rising · 110w
+state fin_home1 #D1C4E9
+fin_home1 : rising · 95w
+state fin_home2 #D1C4E9
+fin_home2 : rising · 95w
+state e_fin_weather #FFCDD2
+e_fin_weather : setback (negative)
+e_fin_weather : "Turned by the Weather"
+state e_fin_kind #E0E0E0
+e_fin_kind : setback (neutral)
+e_fin_kind : "The Halfway Kindness"
+state e_fin_ridgewatch #C8E6C9
+e_fin_ridgewatch : discovery (positive)
+e_fin_ridgewatch : "First Ridge-Watch"
+state e_feed_line #C8E6C9
+e_feed_line : completion (positive)
+e_feed_line : "The Tribute Line"
+state e_feed_bones #C8E6C9
+e_feed_bones : discovery (positive)
+e_feed_bones : "Marrow and Tallow"
+state e_ward_way #C8E6C9
+e_ward_way : completion (positive)
+e_ward_way : "The Wide Way Round"
+state e_ward_ground #E0E0E0
+e_ward_ground : completion (neutral)
+e_ward_ground : "The Queen's Ground"
+state e_see_five #C8E6C9
+e_see_five : discovery (positive)
+e_see_five : "Five Villages on the Crest"
+state e_see_hearths #E0E0E0
+e_see_hearths : discovery (neutral)
+e_see_hearths : "The Telling at the Hearths"
+state e_full_heir #C8E6C9
+e_full_heir : success (positive)
+e_full_heir : "The Wayfinder's Heir"
+state e_full_queen #C8E6C9
+e_full_queen : success (positive)
+e_full_queen : "Queen's-Ward of the Fells"
+state e_full_book #C8E6C9
+e_full_book : success (positive)
+e_full_book : "The Book's Next Hand"
+state e_home_lamps #E0E0E0
+e_home_lamps : completion (neutral)
+e_home_lamps : "Down Among the Lamps"
+state e_home_door #C8E6C9
+e_home_door : completion (positive)
+e_home_door : "The Keeper at the Door"
+n_start --> n_sledge : Climb down, whistle Bracken, and answer ...
+n_sledge --> n_guild : Haul the sledge round to the guildhall p...
+n_guild --> n_hub : Step out to the porch and read the route...
+n_hub --> af_out : Take the Ashfirth leg: the pass-ledger a...
+n_hub --> sc_yard : Take the Scarpsett leg: healer Iben's me...
+n_hub --> dr_road : Take the Drumford leg: the winter bridge...
+n_hub --> th_fell : Take the Thornmere line: Maren's old rou...
+n_hub --> fg_out : Take the Fellgate leg over the High Shou...
+n_hub --> gh_hall : Step into the hall to refit and catch yo...
+n_hub --> fin_muster : Answer the beacon-call: Edda is musterin...
+gh_hall --> n_hub : Repack the crate to full day-marks from ...
+gh_hall --> n_hub : Just soup, two minutes of warm, and back...
+gh_hall --> gh_maps : Slip into Maren's old map room off the h...
+gh_hall --> e_hearth : Admit to Edda that the winter has won to...
+gh_hall --> gh_wax : Spend ten minutes at the wax bench putti...
+gh_maps --> n_hub : Copy the cache marks into your own book ...
+gh_maps --> n_hub : Close the book gently and return to the ...
+af_road --> af_flags : Keep to the flagged road round the open ...
+af_road --> af_wood : Take the dark-bough cut through the larc...
+af_road --> af_stone : Stop at the waystone and read the sky fi...
+af_road --> af_river : Take the river-ice line under the alder ...
+af_stone --> af_flags : Take the flagged road and race the squal...
+af_stone --> af_wood : Duck into the dark-bough cut where the w...
+af_stone --> e_af_turnback : Judge the squall too close, turn back, a...
+af_flags --> af_count : Stop and re-set the leaning wands while ...
+af_flags --> af_squall : Push on and make distance before the wea...
+af_drift --> af_bothy : Make for the Larch bothy, half a line aw...
+af_drift --> af_squall : Trust the fresh-set line and keep moving...
+af_squall --> af_bothy : Do the sensible thing: run down the wind...
+af_squall --> af_push : Work wand to wand, hand on the sledge ra...
+af_push --> af_meet : The wind slackens a breath: press on to ...
+af_push --> af_bothy : Swallow pride and double back to the bot...
+af_bothy --> af_meet : When the squall thins, take the last str...
+af_bothy --> af_watch : Watch the pale shape through the shutter...
+af_bothy --> e_af_bothy : Let the squall keep you: bank the stove ...
+af_watch --> af_meet : When the field is empty, go on down to t...
+af_wood --> af_blaze : Follow the blazes quick, tree to tree.
+af_wood --> af_hush : Hold to the compass line and count paces...
+af_blaze --> af_meet : Pocket the list, close the tin gently, a...
+af_blaze --> af_sign : Cast around the cache tree in the lamp-r...
+af_sign --> af_meet : Leave the beds unbothered and follow the...
+af_compass --> af_meet : Count the last fifties and come out at t...
+af_meet --> af_lane : Climb the lane to the village gate lante...
+af_meet --> af_mill : Check the weir ice and the mill first, s...
+af_mill --> af_lane2 : Up the lane to the gate lanterns.
+af_gate --> af_call : Help call in the outlying households wit...
+af_gate --> af_fold : Go round the fold with Piet, her son, to...
+af_gate --> af_brazier : Ask Sorrel first what she knows of the W...
+af_call --> af_alder : Take the sledge out to the Aldercroft, t...
+af_call --> af_bett : Go up the fell path to aunt Bett's with ...
+af_alder --> af_bett : Go on up the fell to aunt Bett's yoursel...
+af_alder --> af_tasks : Carry the good news back to Sorrel at th...
+af_bett --> af_fetch : Fetch Piet and Sorrel's word up the fell...
+af_bett --> af_hens : Offer to carry her cheeses and hens down...
+af_fetch --> af_tasks : Walk Bett and the basket down to the vil...
+af_hens --> af_tasks : Deliver Bett, hens and all, to the gate ...
+af_fold --> af_trough : Bed the herd in and go find Sorrel at th...
+af_fold --> af_byres : Stay and help board the far byres agains...
+af_byres --> af_tasks : Climb down and find Sorrel at the hall.
+af_byres --> e_af_byres : Stay the evening to finish every byre wi...
+af_stories --> af_tribute : Ask what became of the custom when Maren...
+af_stories --> af_tasks : Leave the story by the fire and get on w...
+af_tribute --> af_tasks : Carry that thought carefully and get bac...
+af_tasks --> af_hallfire : Sit with Sorrel and take down the villag...
+af_tasks --> af_kitchen : Let the kitchen repack the sledge crate ...
+af_kitchen --> af_answers : Back to Sorrel's table for the sealed an...
+af_answers --> af_seal : Bag the answers and take the line home.
+af_answers --> e_af_guest : Accept the guest-bed by the hearth and l...
+af_done --> n_hub : Take the flagged line home to the guildh...
+af_done --> th_stile : Cut across the fell path to the Thornmer...
+af_done --> fin_muster : Make for the beacon knoll: the ridge mus...
+af_done --> e_af_lamps : Pause at the crest first to watch the va...
+sc_still --> sc_low : Strap the chest aboard and take the flag...
+sc_still --> sc_shelf : Strap the chest aboard and go the long s...
+sc_still --> sc_scout : Go up light first to check the line and ...
+sc_zig --> sc_dig : Dig the fourth turn clear, wand by wand,...
+sc_zig --> sc_shelf : Back the sledge down and take the long s...
+sc_zig --> e_sc_turnback : Judge the drift too raw to trust today a...
+sc_dig --> sc_fork : Haul through the cleared turn and on up ...
+sc_scout --> sc_plate : Flash word ahead: chest coming, send car...
+sc_scout --> sc_fork : Save the signal and just climb to the fo...
+sc_plate --> sc_basket : Climb on to the fork under the crag.
+sc_fork --> sc_upper : Take the upper switchbacks, the line tha...
+sc_fork --> sc_ladder : Go straight up the iron ladder-line, qui...
+sc_fork --> sc_bore : Light the lamp and take the quarry bore ...
+sc_ladder --> sc_top : Top out onto the saddle above the villag...
+sc_upper --> sc_rest : Wait out the next gust-set at the rest l...
+sc_upper --> sc_gustrun : Push the last turns to the saddle betwee...
+sc_rest --> sc_top : Between gust-sets, take the last turns t...
+sc_rest --> e_sc_morning : Judge the gusts too raw, wait for the mo...
+sc_bore --> sc_echo : Follow the lamp through to the mid-cliff...
+sc_echo --> sc_rail : Take the gallery walk up onto the saddle...
+sc_shelf --> sc_bend : Keep the steady pace round to the saddle...
+sc_shelf --> sc_shrine : Stop at the old wayside shrine tree on t...
+sc_shrine --> sc_top : Leave the tin closed and take the road o...
+sc_top --> sc_steps : Go down the terrace steps to the village...
+sc_top --> sc_bell : Ring the saddle bell first so the carrie...
+sc_bell --> sc_barrow : Meet the carriers on the steps and go do...
+sc_bell --> e_sc_hoist : Stay at the hoist head and overhaul the ...
+sc_gate --> sc_terrace : Go straight along the terrace to the fev...
+sc_fever --> sc_iben : Ask Iben for work: a runner's hands are ...
+sc_fever --> sc_water : Carry wood and water for the sick-room s...
+sc_iben --> sc_dose : Carry the dose rounds with her, cot to c...
+sc_iben --> sc_water : Take the steam kettles round and keep th...
+sc_iben --> sc_count : Count the chest's bottles into Iben's le...
+sc_dose --> sc_window : Settle the ward and step back to the dis...
+sc_water --> sc_ward : Round done, step back to the dispensary.
+sc_ward --> sc_tale : Ask Iben what she is looking for on the ...
+sc_ward --> sc_leave : Leave her to it and get ready for the li...
+sc_tale --> sc_leave : Carry it, then, and make ready for the l...
+sc_leave --> sc_dusk : Take the saddle and the line for home.
+sc_leave --> e_sc_stay : Stay the evening as fever-house hands an...
+sc_done --> n_hub : Run the line home to the guildhall board...
+sc_done --> dr_bank : Drop down the river side to the Drumford...
+sc_done --> fin_muster : Make for the beacon knoll: the ridge mus...
+sc_done --> e_sc_bells : Stand a moment on the saddle and watch t...
+dr_bank --> dr_hut : Report to Nan Plum at the watch hut for ...
+dr_bank --> dr_test : Walk out and pole-test the flagged line ...
+dr_bank --> dr_span : Look over the fallen span from the bank ...
+dr_span --> dr_heave : Take the reading to Nan Plum at the watc...
+dr_test --> dr_reflag : Mark the weak lens and re-flag the line ...
+dr_test --> dr_creak : Note it, finish the test line, and repor...
+dr_creak --> dr_reflag : The line is workable if re-flagged: go d...
+dr_creak --> e_dr_holdoff : The lens is spreading: post the warning ...
+dr_reflag --> dr_hut : In to the watch hut and the day's crossi...
+dr_hut --> dr_cottage : Take the sledge along the cottages and b...
+dr_hut --> dr_stakes : Rig the guide rope-line across with Nan ...
+dr_hut --> dr_list : Walk the crossing list to the near cotta...
+dr_hut --> dr_augur : Run the morning bore-holes with Nan's au...
+dr_stakes --> dr_lantern : Line rigged: back to the hut for the cro...
+dr_lantern --> dr_list : Back along the bank to gather the crosse...
+dr_list --> dr_hetta : Bundle Hetta into the sledge lashings, c...
+dr_list --> dr_boy : Walk the gathered crossers to the bank f...
+dr_cottage --> dr_hetta : Bundle her into the lashings, quilts, ca...
+dr_hetta --> dr_cross : Down to the bank and the flagged crossin...
+dr_walkers --> dr_order : Lead the parade onto the flagged line.
+dr_cross --> dr_main : Take the main flagged line, slow and sur...
+dr_cross --> dr_plank : Cut over the millrace plank-line, quick ...
+dr_cross --> dr_island : Take the long island road in the lee, bu...
+dr_main --> dr_dogleg : Mid-river now: keep the rhythm.
+dr_mid --> dr_far : Bring the crossing up the far-bank rise.
+dr_plank --> dr_racehut : Up the far-bank rise to the lane.
+dr_island --> dr_leeend : Leave the hut in peace and follow the la...
+dr_far --> dr_lane : Deliver everyone to their doors, Mardy's...
+dr_far --> dr_bellpull : Send word up the lane by the ferry bell ...
+dr_bellpull --> dr_mardy : Up the lane to Mardy's gable lamp.
+dr_mardy --> dr_cat : Stay for the kettle ceremony: some thing...
+dr_mardy --> dr_word : Take Mardy's word and counts for the gui...
+dr_kettle --> dr_word : Rise before the third pot and take Mardy...
+dr_kettle --> e_dr_kitchens : Give the evening to the two kitchens and...
+dr_word --> dr_gatherback : Gather the returners and shepherd the ba...
+dr_back --> dr_done : Sign the crossing into Nan's ice-book an...
+dr_back --> e_dr_hand : Stay on as Nan's crossing-hand for the e...
+dr_back --> e_dr_lampline : Take the lantern watch on the near bank ...
+dr_done --> n_hub : Run the line home to the guildhall board...
+dr_done --> fin_muster : Make for the beacon knoll: the ridge mus...
+dr_done --> e_dr_bounds : Climb the alder knoll first and look dow...
+th_stile --> th_wands : Work the line wand by wand from the stil...
+th_stile --> th_book : Sit on the stile and read Maren's page f...
+th_stile --> th_tarn : Cross the tarn straight over on the blac...
+th_book --> th_margin : Take the line wand by wand and see what ...
+th_book --> th_tarn : Cross the tarn on the bearing black ice ...
+th_wands --> th_gully : Cross the gully on the packed lee side, ...
+th_wands --> th_notch : Read Maren's wand-notch code on the stub...
+th_wands --> th_pine1 : Step off-line to the first pine and chec...
+th_notch --> th_gully : Cross the gully high on her mark.
+th_gully --> th_cairn : Take the open moor stretch while the sky...
+th_gully --> e_th_half : The sky is considering too much: mark wh...
+th_moor --> th_hare : Follow line and tracks together to the s...
+th_moor --> th_springs : Detour by the warm springs seep where th...
+th_springs --> th_mosslight : Follow the big prints back to the line a...
+th_tarn --> th_ring : Run the singing line straight for the fa...
+th_tarn --> th_isle : Bear by the tarn islet and its old watch...
+th_isle --> th_shore : Cross the last ice to the far shore and ...
+th_isle --> e_th_hut : The wind is rising off the tops: bar the...
+th_pine --> th_beds : Read the beds and the bark and take the ...
+th_pine --> th_line2 : Leave the ground unbothered and carry th...
+th_beds --> th_line2 : Carry what the ground said up the line a...
+th_line2 --> th_knoll : Turn up to the cache-house knoll and its...
+th_line2 --> th_tops : Take the far loop over the tops to the l...
+th_line2 --> th_tracks : Parallel the fresh tracks at guild dista...
+th_cache --> th_ledger : Repack the crate to full day-marks and r...
+th_cache --> th_shelves : Just the ledger: some pages matter more ...
+th_ledger --> th_line3 : Close the ledger gently and carry the cu...
+th_ledger --> e_th_lists : Stay by the lamp and copy every tribute ...
+th_tops --> th_crest : Turn along the crest for the long view b...
+th_tops --> th_line3 : Drop straight back to the line's high tu...
+th_view --> th_line3 : Watch until she passes from sight, then ...
+th_view --> e_th_watch : Keep the long watch till dusk and map ev...
+th_tracks --> th_partways : Let the tracks go their way and take the...
+th_line3 --> th_stone : Finish the flagging to the shelter stone...
+th_line3 --> th_glass : Take a long reading of the Queen's Ridge...
+th_glass --> th_stone : Carry it to the shelter stone and close ...
+th_stone --> th_lee : Turn for home with the line singing behi...
+th_done --> n_hub : Run the line home to the guildhall board...
+th_done --> fg_shoulder : Cross the fell shoulder to the High Shou...
+th_done --> fin_muster : Make for the beacon knoll: the ridge mus...
+th_done --> e_th_bearing : Stand at the stile a moment and take the...
+fg_shoulder --> fg_zig : Take the flagged zigzags straight up the...
+fg_shoulder --> fg_bore : Take the old quarry bore through the sho...
+fg_shoulder --> fg_knee : Climb to the knee first and read the cor...
+fg_knee --> fg_zig : Commit to the zigzags while the wind is ...
+fg_knee --> fg_bore : Take the bore instead, out of the wind, ...
+fg_knee --> e_fg_verdict : Judge the pass too near closing and carr...
+fg_zig --> fg_seventh : Work wand to wand through the gust-line ...
+fg_zig --> fg_cleft : Duck into the shelter cleft below the tu...
+fg_cleft --> fg_cairns : Gusts spent: back onto the line and up t...
+fg_cairns --> fg_ropefix : Stop and re-anchor the stake properly fo...
+fg_cairns --> fg_rime : Note it for the quarrymaster and keep mo...
+fg_ropefix --> fg_gap : On along the cairn line to the gap.
+fg_bore --> fg_lampway : Follow the lamp down the long gallery to...
+fg_lampway --> fg_mouth : Out the far mouth and down to the gap ab...
+fg_gap --> fg_street : Drop down to the gatehouse and report to...
+fg_gatehouse --> fg_team : Join Brand's rope-team out along the tar...
+fg_gatehouse --> fg_raise : Run the bell-round to raise the second t...
+fg_gatehouse --> fg_line : Take Bracken along the cutters' own flag...
+fg_team --> fg_ropeorder : Work the gallery line with the team towa...
+fg_team --> e_fg_anchor : Take the anchor post at the gallery mout...
+fg_raise --> fg_secondteam : Guide the second team out to join the ga...
+fg_raise --> e_fg_bell : Stay as bell-runner at the gatehouse, th...
+fg_line --> fg_dayhuts : Trust the dog and follow the scent line ...
+fg_line --> fg_galleries : Hold the flag-line to the galleries and ...
+fg_scent --> fg_bothy2 : Up the moraine to the bothy door.
+fg_galleries --> fg_moraine : Up the moraine path to the storm bothy.
+fg_bothy2 --> fg_found : In, and let the whole story land.
+fg_found --> fg_ankle : Splint the ankle properly with Osk and r...
+fg_found --> fg_signal : Signal the find to the other searchers f...
+fg_ankle --> fg_carry : Take the carry down in rope-order.
+fg_signal --> fg_carry : Rig the carry and take it down together.
+fg_carry --> fg_streetlamps : Down into the street and the counting.
+fg_return --> fg_tale : Stay for the telling and hear the wolf's...
+fg_return --> fg_wrap : Slip out early and make ready for the li...
+fg_tale --> fg_songs : Carry the telling with you and make read...
+fg_wrap --> fg_done : Take the shoulder line for home.
+fg_wrap --> e_fg_feast : Stay for the cutters' thanks-feast and c...
+fg_done --> n_hub : Run the line home to the guildhall board...
+fg_done --> fin_muster : Make for the beacon knoll: the ridge mus...
+fg_done --> e_fg_skyline : Stand at the crest a moment where the pa...
+gh_wax --> n_hub : Back out to the route board.
+af_out --> af_road : Down the fell road to where the Ashfirth...
+af_river --> af_alders : Hold the fast line all the way down to t...
+af_alders --> af_meet : On to the weir and up toward the village...
+af_alders --> af_otter : Pause at the otter slides a moment, beca...
+af_otter --> af_meet : Back to the line and on to the weir.
+af_count --> af_drift : Stop at the buried stretch and take stoc...
+af_hush --> af_compass : Settle into the count and follow the nee...
+af_lane --> af_gate : Up to the gate lanterns.
+af_lane2 --> af_gate : Join the lane at the crest and go up to ...
+af_brazier --> af_stories : Settle by the brazier and ask for the tr...
+af_trough --> af_tasks : Finish up and find Sorrel at the hall.
+af_hallfire --> af_answers : Through to Sorrel's table and the sealed...
+af_seal --> af_done : Take the line away from Ashfirth.
+sc_yard --> sc_still : In to the stillroom bench.
+sc_low --> sc_zig : On up to where the fourth turn should be...
+sc_basket --> sc_fork : Climb on to the fork under the crag.
+sc_gustrun --> sc_top : Through the notch onto the saddle.
+sc_rail --> sc_top : Up the last rail-length onto the saddle.
+sc_bend --> sc_top : Round the bend and on to the saddle.
+sc_steps --> sc_gate : Down the last flight to the gate.
+sc_terrace --> sc_fever : To the fever house porch.
+sc_count --> sc_ward : Ledger squared: back to the ward.
+sc_window --> sc_ward : Draw the door to and step back to the di...
+sc_dusk --> sc_done : Over the saddle and onto the line.
+sc_barrow --> sc_gate : Down to the gate with the parade.
+dr_road --> dr_bank : Down to the near bank and the watch hut ...
+dr_heave --> dr_hut : Take the reading in to the watch hut.
+dr_augur --> dr_hut : Auger stowed: back to the hut and the da...
+dr_boy --> dr_walkers : Gather the last crossers at the bank.
+dr_order --> dr_cross : Lead off onto the flagged line in order.
+dr_dogleg --> dr_mid : Straighten out mid-river and carry on.
+dr_racehut --> dr_far : Up the rise into the lane.
+dr_leeend --> dr_far : Cross the last open stretch to the far b...
+dr_lane --> dr_mardy : Up to Mardy's gable lamp.
+dr_cat --> dr_kettle : Surrender to the kettle ceremony.
+dr_gatherback --> dr_back : Out onto the line for the back-crossing.
+th_fell --> th_stile : Along to the Thornmere stile.
+th_margin --> th_wands : Fold the page away and take up the line.
+th_pine1 --> th_gully : Back to the line and on toward the gully...
+th_cairn --> th_moor : Take the open moor stretch behind the me...
+th_hare --> th_pine : On along the line to the second pine.
+th_mosslight --> th_pine : Follow the golden smoke to the second pi...
+th_ring --> th_pine : Follow the tracks' line off the ice to t...
+th_shore --> th_pine : Up the rise to the pine.
+th_knoll --> th_cache : Up to the cache-house door.
+th_shelves --> th_ledger : Open the ledger by the lamp.
+th_crest --> th_view : Stop at the overlook and glass the moor ...
+th_partways --> th_line3 : Take the line's high turn for the shelte...
+th_lee --> th_done : Turn for home down the finished line.
+fg_out --> fg_shoulder : Up to the foot of the shoulder.
+fg_seventh --> fg_cairns : Top out onto the cairn line.
+fg_rime --> fg_gap : Along the last cairns to the gap.
+fg_mouth --> fg_gap : Out and down toward the gap.
+fg_street --> fg_gatehouse : In to the quarrymaster's table.
+fg_dayhuts --> fg_scent : Follow the dog's line past the last hut.
+fg_ropeorder --> fg_galleries : Into the galleries on the line.
+fg_secondteam --> fg_galleries : Join the search at the galleries.
+fg_moraine --> fg_bothy2 : Up the last of the moraine to the bothy.
+fg_streetlamps --> fg_return : Into the crowd and the counting.
+fg_songs --> fg_wrap : Slip out while the last verse settles.
+fin_muster --> fin_gather : Join the circle at the stone table.
+fin_gather --> fin_book : Listen as Edda lays the guild's evidence...
+fin_book --> fin_council : Hear the council's question said out lou...
+fin_council --> fin_bearing : Stand with the muster: to the Queen's Ri...
+fin_council --> fin_edda : Ask Edda outright what Maren would have ...
+fin_edda --> fin_bearing : To the Queen's Ridge bearing with the mu...
+fin_bearing --> fin_lanterns : Up the beacon path in the lantern file.
+fin_lanterns --> fin_climb : Climb with the file to the shoulder of t...
+fin_climb --> fin_shelf : Take the last pitch to the shelf below t...
+fin_climb --> e_fin_weather : The wind rises hard: stand with Edda as ...
+fin_shelf --> fin_sight : Go up the last rise with Edda to look ov...
+fin_shelf --> e_fin_kind : Take the frightened youngest's other han...
+fin_sight --> fin_watch : Be absolutely still, and watch, as the g...
+fin_watch --> fin_reveal : Ease back off the crest with the muster ...
+fin_watch --> e_fin_ridgewatch : Volunteer to stay as first ridge-watch w...
+fin_reveal --> fin_choice : Step to the middle of the lantern ring.
+fin_choice --> fin_feed1 : Feed her: reopen Maren's cache line as t...
+fin_choice --> fin_ward1 : Ward her ground: lead the villages in cl...
+fin_choice --> fin_see1 : Bring the full elder council of all five...
+fin_choice --> fin_full1 : Answer with the whole winter: stand as t...
+fin_choice --> fin_home1 : Slip back with Bracken and let the elder...
+fin_feed1 --> fin_feed2 : Carry the first tribute out along Maren'...
+fin_feed2 --> e_feed_line : Stand with Edda while she writes the cus...
+fin_feed2 --> e_feed_bones : Watch until she finishes and goes, and k...
+fin_ward1 --> fin_ward2 : Walk the first stretch of the new way-ro...
+fin_ward2 --> e_ward_way : Stand at the last wand while Edda names ...
+fin_ward2 --> e_ward_ground : Carry the signed map down to hang in the...
+fin_see1 --> fin_see2 : Bring the council to the crest, hooded a...
+fin_see2 --> e_see_five : Stand aside and let the council speak it...
+fin_see2 --> e_see_hearths : Walk down with the elders and hear the t...
+fin_full1 --> fin_full2 : Take the book, and say what the custom w...
+fin_full2 --> e_full_heir : Sign the standing route in Maren's book ...
+fin_full2 --> e_full_queen : Climb to the crest once more and let her...
+fin_full2 --> e_full_book : Hand the book's copy-work to the guild's...
+fin_home1 --> fin_home2 : In through the yard, dog fed first, the ...
+fin_home2 --> e_home_lamps : Bank the fire and be asleep before the m...
+fin_home2 --> e_home_door : Wait up by the door to hear the decision...
+e_hearth --> [*]
+e_af_turnback --> [*]
+e_af_bothy --> [*]
+e_af_byres --> [*]
+e_af_guest --> [*]
+e_af_lamps --> [*]
+e_sc_turnback --> [*]
+e_sc_morning --> [*]
+e_sc_stay --> [*]
+e_sc_bells --> [*]
+e_sc_hoist --> [*]
+e_dr_holdoff --> [*]
+e_dr_kitchens --> [*]
+e_dr_hand --> [*]
+e_dr_bounds --> [*]
+e_dr_lampline --> [*]
+e_th_half --> [*]
+e_th_hut --> [*]
+e_th_lists --> [*]
+e_th_watch --> [*]
+e_th_bearing --> [*]
+e_fg_verdict --> [*]
+e_fg_anchor --> [*]
+e_fg_bell --> [*]
+e_fg_feast --> [*]
+e_fg_skyline --> [*]
+e_fin_weather --> [*]
+e_fin_kind --> [*]
+e_fin_ridgewatch --> [*]
+e_feed_line --> [*]
+e_feed_bones --> [*]
+e_ward_way --> [*]
+e_ward_ground --> [*]
+e_see_five --> [*]
+e_see_hearths --> [*]
+e_full_heir --> [*]
+e_full_queen --> [*]
+e_full_book --> [*]
+e_home_lamps --> [*]
+e_home_door --> [*]
+
+legend right
+  The Winter of the Wolf Queen
+  Band 10-13 · Tier 2 · ~12 min
+  Topology: open_map
+  250 nodes · 40 endings (19+ / 14n / 7-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

@@ -1,0 +1,1129 @@
+@startuml the-red-meridian-run
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> sup0
+state sup0 #BBDEFB
+sup0 : setup · 92w
+state sup1 #BBDEFB
+sup1 : setup · 80w
+state st01_ap0 #D1C4E9
+st01_ap0 : rising · 76w
+state st01_pass #D1C4E9
+st01_pass : rising · 60w
+state st01_f0_c0 #D1C4E9
+st01_f0_c0 : rising · 58w
+state st01_f0_c1 #D1C4E9
+st01_f0_c1 : rising · 56w
+state st01_f0_end #FFCDD2
+st01_f0_end : death (negative)
+st01_f0_end : "Fouled on the Boom"
+state st01_f1_c0 #D1C4E9
+st01_f1_c0 : rising · 58w
+state st01_f1_c1 #D1C4E9
+st01_f1_c1 : rising · 56w
+state st01_f1_end #FFCDD2
+st01_f1_end : death (negative)
+st01_f1_end : "Held Fast in the Net"
+state st01_f2_c0 #D1C4E9
+st01_f2_c0 : rising · 58w
+state st01_f2_c1 #D1C4E9
+st01_f2_c1 : rising · 56w
+state st01_f2_end #FFCDD2
+st01_f2_end : death (negative)
+st01_f2_end : "Caught at the Boom"
+state st01_f3_c0 #D1C4E9
+st01_f3_c0 : rising · 58w
+state st01_f3_c1 #D1C4E9
+st01_f3_c1 : rising · 56w
+state st01_f3_end #FFCDD2
+st01_f3_end : death (negative)
+st01_f3_end : "Broken on the Floats"
+state st01_f4_c0 #D1C4E9
+st01_f4_c0 : rising · 58w
+state st01_f4_c1 #D1C4E9
+st01_f4_c1 : rising · 56w
+state st01_f4_end #FFCDD2
+st01_f4_end : death (negative)
+st01_f4_end : "Under the Harbor Wall"
+state st01_slip #D1C4E9
+st01_slip : rising · 64w
+state st01_fd_c0 #D1C4E9
+st01_fd_c0 : rising · 58w
+state st01_fd_c1 #D1C4E9
+st01_fd_c1 : rising · 56w
+state st01_fd_end #FFCDD2
+st01_fd_end : death (negative)
+st01_fd_end : "Run Down at the Boom"
+state st01_cap #FFCDD2
+st01_cap : capture (negative)
+st01_cap : "Taken at the Boom"
+state st01_seen #FFF9C4
+st01_seen : choice · 74w
+state st01_gate #D1C4E9
+st01_gate : rising · 88w
+state st02_ap0 #D1C4E9
+st02_ap0 : rising · 74w
+state st02_pass #D1C4E9
+st02_pass : rising · 60w
+state st02_f0_c0 #D1C4E9
+st02_f0_c0 : rising · 58w
+state st02_f0_c1 #D1C4E9
+st02_f0_c1 : rising · 56w
+state st02_f0_end #FFCDD2
+st02_f0_end : death (negative)
+st02_f0_end : "Off the Swept Water"
+state st02_f1_c0 #D1C4E9
+st02_f1_c0 : rising · 58w
+state st02_f1_c1 #D1C4E9
+st02_f1_c1 : rising · 56w
+state st02_f1_end #FFCDD2
+st02_f1_end : death (negative)
+st02_f1_end : "The False Buoy"
+state st02_f2_c0 #D1C4E9
+st02_f2_c0 : rising · 58w
+state st02_f2_c1 #D1C4E9
+st02_f2_c1 : rising · 56w
+state st02_f2_end #FFCDD2
+st02_f2_end : death (negative)
+st02_f2_end : "Wide Into the Field"
+state st02_f3_c0 #D1C4E9
+st02_f3_c0 : rising · 58w
+state st02_f3_c1 #D1C4E9
+st02_f3_c1 : rising · 56w
+state st02_f3_end #FFCDD2
+st02_f3_end : death (negative)
+st02_f3_end : "Fast Through the Marks"
+state st02_f4_c0 #D1C4E9
+st02_f4_c0 : rising · 58w
+state st02_f4_c1 #D1C4E9
+st02_f4_c1 : rising · 56w
+state st02_f4_end #FFCDD2
+st02_f4_end : death (negative)
+st02_f4_end : "By the Wrong Light"
+state st02_slip #D1C4E9
+st02_slip : rising · 64w
+state st02_fd_c0 #D1C4E9
+st02_fd_c0 : rising · 58w
+state st02_fd_c1 #D1C4E9
+st02_fd_c1 : rising · 56w
+state st02_fd_end #FFCDD2
+st02_fd_end : death (negative)
+st02_fd_end : "Lost on the Buoy Line"
+state st02_cap #FFCDD2
+st02_cap : capture (negative)
+st02_cap : "Boarded on the Buoys"
+state st02_seen #FFF9C4
+st02_seen : choice · 74w
+state st02_gate #D1C4E9
+st02_gate : rising · 88w
+state st03_ap0 #D1C4E9
+st03_ap0 : rising · 74w
+state st03_pass #D1C4E9
+st03_pass : rising · 60w
+state st03_f0_c0 #D1C4E9
+st03_f0_c0 : rising · 58w
+state st03_f0_c1 #D1C4E9
+st03_f0_c1 : rising · 56w
+state st03_f0_end #FFCDD2
+st03_f0_end : death (negative)
+st03_f0_end : "Under the Cutter's Bow"
+state st03_f1_c0 #D1C4E9
+st03_f1_c0 : rising · 58w
+state st03_f1_c1 #D1C4E9
+st03_f1_c1 : rising · 56w
+state st03_f1_end #FFCDD2
+st03_f1_end : death (negative)
+st03_f1_end : "Shadowing the Cutter"
+state st03_f2_c0 #D1C4E9
+st03_f2_c0 : rising · 58w
+state st03_f2_c1 #D1C4E9
+st03_f2_c1 : rising · 56w
+state st03_f2_end #FFCDD2
+st03_f2_end : death (negative)
+st03_f2_end : "Dead in the Lane"
+state st03_f3_c0 #D1C4E9
+st03_f3_c0 : rising · 58w
+state st03_f3_c1 #D1C4E9
+st03_f3_c1 : rising · 56w
+state st03_f3_end #FFCDD2
+st03_f3_end : death (negative)
+st03_f3_end : "Beneath the Stern Gun"
+state st03_f4_c0 #D1C4E9
+st03_f4_c0 : rising · 58w
+state st03_f4_c1 #D1C4E9
+st03_f4_c1 : rising · 56w
+state st03_f4_end #FFCDD2
+st03_f4_end : death (negative)
+st03_f4_end : "Waiting Out the Cutter"
+state st03_slip #D1C4E9
+st03_slip : rising · 66w
+state st03_fd_c0 #D1C4E9
+st03_fd_c0 : rising · 58w
+state st03_fd_c1 #D1C4E9
+st03_fd_c1 : rising · 56w
+state st03_fd_end #FFCDD2
+st03_fd_end : death (negative)
+st03_fd_end : "Outrun in the Lane"
+state st03_cap #FFCDD2
+st03_cap : capture (negative)
+st03_cap : "Hove To for the Cutter"
+state st03_seen #FFF9C4
+st03_seen : choice · 74w
+state st03_gate #D1C4E9
+st03_gate : rising · 88w
+state st04_ap0 #D1C4E9
+st04_ap0 : rising · 76w
+state st04_pass #D1C4E9
+st04_pass : rising · 60w
+state st04_f0_c0 #D1C4E9
+st04_f0_c0 : rising · 58w
+state st04_f0_c1 #D1C4E9
+st04_f0_c1 : rising · 56w
+state st04_f0_end #FFCDD2
+st04_f0_end : death (negative)
+st04_f0_end : "Caught Moving in the Beam"
+state st04_f1_c0 #D1C4E9
+st04_f1_c0 : rising · 58w
+state st04_f1_c1 #D1C4E9
+st04_f1_c1 : rising · 56w
+state st04_f1_end #FFCDD2
+st04_f1_end : death (negative)
+st04_f1_end : "Turning in the Light"
+state st04_f2_c0 #D1C4E9
+st04_f2_c0 : rising · 58w
+state st04_f2_c1 #D1C4E9
+st04_f2_c1 : rising · 56w
+state st04_f2_end #FFCDD2
+st04_f2_end : death (negative)
+st04_f2_end : "Racing the Searchlight"
+state st04_f3_c0 #D1C4E9
+st04_f3_c0 : rising · 58w
+state st04_f3_c1 #D1C4E9
+st04_f3_c1 : rising · 56w
+state st04_f3_end #FFCDD2
+st04_f3_end : death (negative)
+st04_f3_end : "Into the Glare"
+state st04_f4_c0 #D1C4E9
+st04_f4_c0 : rising · 58w
+state st04_f4_c1 #D1C4E9
+st04_f4_c1 : rising · 56w
+state st04_f4_end #FFCDD2
+st04_f4_end : death (negative)
+st04_f4_end : "Answering the Light"
+state st04_slip #D1C4E9
+st04_slip : rising · 66w
+state st04_fd_c0 #D1C4E9
+st04_fd_c0 : rising · 58w
+state st04_fd_c1 #D1C4E9
+st04_fd_c1 : rising · 56w
+state st04_fd_end #FFCDD2
+st04_fd_end : death (negative)
+st04_fd_end : "Tracked Across the Reach"
+state st04_cap #FFCDD2
+st04_cap : capture (negative)
+st04_cap : "Stood Into the Light"
+state st04_seen #FFF9C4
+st04_seen : choice · 74w
+state st04_gate #D1C4E9
+st04_gate : rising · 88w
+state st05_ap0 #D1C4E9
+st05_ap0 : rising · 70w
+state st05_pass #D1C4E9
+st05_pass : rising · 60w
+state st05_f0_c0 #D1C4E9
+st05_f0_c0 : rising · 58w
+state st05_f0_c1 #D1C4E9
+st05_f0_c1 : rising · 56w
+state st05_f0_end #FFCDD2
+st05_f0_end : death (negative)
+st05_f0_end : "Heard from the Point"
+state st05_f1_c0 #D1C4E9
+st05_f1_c0 : rising · 58w
+state st05_f1_c1 #D1C4E9
+st05_f1_c1 : rising · 56w
+state st05_f1_end #FFCDD2
+st05_f1_end : death (negative)
+st05_f1_end : "One Sound Too Many"
+state st05_f2_c0 #D1C4E9
+st05_f2_c0 : rising · 58w
+state st05_f2_c1 #D1C4E9
+st05_f2_c1 : rising · 56w
+state st05_f2_end #FFCDD2
+st05_f2_end : death (negative)
+st05_f2_end : "Sprint Through the Silence"
+state st05_f3_c0 #D1C4E9
+st05_f3_c0 : rising · 58w
+state st05_f3_c1 #D1C4E9
+st05_f3_c1 : rising · 56w
+state st05_f3_end #FFCDD2
+st05_f3_end : death (negative)
+st05_f3_end : "Astern in the Quiet"
+state st05_slip #D1C4E9
+st05_slip : rising · 64w
+state st05_fd_c0 #D1C4E9
+st05_fd_c0 : rising · 58w
+state st05_fd_c1 #D1C4E9
+st05_fd_c1 : rising · 56w
+state st05_fd_end #FFCDD2
+st05_fd_end : death (negative)
+st05_fd_end : "Run from the Sound"
+state st05_cap #FFCDD2
+st05_cap : capture (negative)
+st05_cap : "Silent and Taken"
+state st05_seen #FFF9C4
+st05_seen : choice · 74w
+state st05_gate #D1C4E9
+st05_gate : rising · 88w
+state st06_ap0 #D1C4E9
+st06_ap0 : rising · 78w
+state st06_pass #D1C4E9
+st06_pass : rising · 60w
+state st06_f0_c0 #D1C4E9
+st06_f0_c0 : rising · 58w
+state st06_f0_c1 #D1C4E9
+st06_f0_c1 : rising · 56w
+state st06_f0_end #FFCDD2
+st06_f0_end : death (negative)
+st06_f0_end : "The Wider Gap"
+state st06_f1_c0 #D1C4E9
+st06_f1_c0 : rising · 58w
+state st06_f1_c1 #D1C4E9
+st06_f1_c1 : rising · 56w
+state st06_f1_end #FFCDD2
+st06_f1_end : death (negative)
+st06_f1_end : "Fast Through the Field"
+state st06_f2_c0 #D1C4E9
+st06_f2_c0 : rising · 58w
+state st06_f2_c1 #D1C4E9
+st06_f2_c1 : rising · 56w
+state st06_f2_end #FFCDD2
+st06_f2_end : death (negative)
+st06_f2_end : "Weaving the Wires"
+state st06_f3_c0 #D1C4E9
+st06_f3_c0 : rising · 58w
+state st06_f3_c1 #D1C4E9
+st06_f3_c1 : rising · 56w
+state st06_f3_end #FFCDD2
+st06_f3_end : death (negative)
+st06_f3_end : "Nudging the Float"
+state st06_f4_c0 #D1C4E9
+st06_f4_c0 : rising · 58w
+state st06_f4_c1 #D1C4E9
+st06_f4_c1 : rising · 56w
+state st06_f4_end #FFCDD2
+st06_f4_end : death (negative)
+st06_f4_end : "Following the Wake"
+state st06_slip #D1C4E9
+st06_slip : rising · 66w
+state st06_fd_c0 #D1C4E9
+st06_fd_c0 : rising · 58w
+state st06_fd_c1 #D1C4E9
+st06_fd_c1 : rising · 56w
+state st06_fd_end #FFCDD2
+st06_fd_end : death (negative)
+st06_fd_end : "No Luck in the Field"
+state st06_cap #FFCDD2
+st06_cap : capture (negative)
+st06_cap : "Stopped in the Minefield"
+state st06_seen #FFF9C4
+st06_seen : choice · 74w
+state st06_gate #D1C4E9
+st06_gate : rising · 88w
+state st07_ap0 #D1C4E9
+st07_ap0 : rising · 72w
+state st07_pass #D1C4E9
+st07_pass : rising · 60w
+state st07_f0_c0 #D1C4E9
+st07_f0_c0 : rising · 58w
+state st07_f0_c1 #D1C4E9
+st07_f0_c1 : rising · 56w
+state st07_f0_end #FFCDD2
+st07_f0_end : death (negative)
+st07_f0_end : "Opened on the Wreck"
+state st07_f1_c0 #D1C4E9
+st07_f1_c0 : rising · 58w
+state st07_f1_c1 #D1C4E9
+st07_f1_c1 : rising · 56w
+state st07_f1_end #FFCDD2
+st07_f1_end : death (negative)
+st07_f1_end : "Grounded at the Bow"
+state st07_f2_c0 #D1C4E9
+st07_f2_c0 : rising · 58w
+state st07_f2_c1 #D1C4E9
+st07_f2_c1 : rising · 56w
+state st07_f2_end #FFCDD2
+st07_f2_end : death (negative)
+st07_f2_end : "Skipping the Iron"
+state st07_f3_c0 #D1C4E9
+st07_f3_c0 : rising · 58w
+state st07_f3_c1 #D1C4E9
+st07_f3_c1 : rising · 56w
+state st07_f3_end #FFCDD2
+st07_f3_end : death (negative)
+st07_f3_end : "Set Down on the Plating"
+state st07_slip #D1C4E9
+st07_slip : rising · 64w
+state st07_fd_c0 #D1C4E9
+st07_fd_c0 : rising · 58w
+state st07_fd_c1 #D1C4E9
+st07_fd_c1 : rising · 56w
+state st07_fd_end #FFCDD2
+st07_fd_end : death (negative)
+st07_fd_end : "Committed to the Iron"
+state st07_cap #FFCDD2
+st07_cap : capture (negative)
+st07_cap : "Aground and Taken"
+state st07_seen #FFF9C4
+st07_seen : choice · 74w
+state st07_gate #D1C4E9
+st07_gate : rising · 88w
+state st08_ap0 #D1C4E9
+st08_ap0 : rising · 78w
+state st08_pass #D1C4E9
+st08_pass : rising · 60w
+state st08_f0_c0 #D1C4E9
+st08_f0_c0 : rising · 58w
+state st08_f0_c1 #D1C4E9
+st08_f0_c1 : rising · 56w
+state st08_f0_end #FFCDD2
+st08_f0_end : death (negative)
+st08_f0_end : "Ahead of the Rows"
+state st08_f1_c0 #D1C4E9
+st08_f1_c0 : rising · 58w
+state st08_f1_c1 #D1C4E9
+st08_f1_c1 : rising · 56w
+state st08_f1_end #FFCDD2
+st08_f1_end : death (negative)
+st08_f1_end : "Waiting Out the Guns"
+state st08_f2_c0 #D1C4E9
+st08_f2_c0 : rising · 58w
+state st08_f2_c1 #D1C4E9
+st08_f2_c1 : rising · 56w
+state st08_f2_end #FFCDD2
+st08_f2_end : death (negative)
+st08_f2_end : "Zigzag Under Fire"
+state st08_f3_c0 #D1C4E9
+st08_f3_c0 : rising · 58w
+state st08_f3_c1 #D1C4E9
+st08_f3_c1 : rising · 56w
+state st08_f3_end #FFCDD2
+st08_f3_end : death (negative)
+st08_f3_end : "Charging the Guns"
+state st08_f4_c0 #D1C4E9
+st08_f4_c0 : rising · 58w
+state st08_f4_c1 #D1C4E9
+st08_f4_c1 : rising · 56w
+state st08_f4_end #FFCDD2
+st08_f4_end : death (negative)
+st08_f4_end : "Turned Under Fire"
+state st08_slip #D1C4E9
+st08_slip : rising · 66w
+state st08_fd_c0 #D1C4E9
+st08_fd_c0 : rising · 58w
+state st08_fd_c1 #D1C4E9
+st08_fd_c1 : rising · 56w
+state st08_fd_end #FFCDD2
+st08_fd_end : death (negative)
+st08_fd_end : "Through the Fall"
+state st08_cap #FFCDD2
+st08_cap : capture (negative)
+st08_cap : "Stopped Under the Guns"
+state st08_seen #FFF9C4
+st08_seen : choice · 74w
+state st08_gate #D1C4E9
+st08_gate : rising · 88w
+state st09_ap0 #D1C4E9
+st09_ap0 : rising · 70w
+state st09_pass #D1C4E9
+st09_pass : rising · 60w
+state st09_f0_c0 #D1C4E9
+st09_f0_c0 : rising · 58w
+state st09_f0_c1 #D1C4E9
+st09_f0_c1 : rising · 56w
+state st09_f0_end #FFCDD2
+st09_f0_end : death (negative)
+st09_f0_end : "Lost in the Fog"
+state st09_f1_c0 #D1C4E9
+st09_f1_c0 : rising · 58w
+state st09_f1_c1 #D1C4E9
+st09_f1_c1 : rising · 56w
+state st09_f1_end #FFCDD2
+st09_f1_end : death (negative)
+st09_f1_end : "Blind and Fast"
+state st09_f2_c0 #D1C4E9
+st09_f2_c0 : rising · 58w
+state st09_f2_c1 #D1C4E9
+st09_f2_c1 : rising · 56w
+state st09_f2_end #FFCDD2
+st09_f2_end : death (negative)
+st09_f2_end : "Answered in the Fog"
+state st09_f3_c0 #D1C4E9
+st09_f3_c0 : rising · 58w
+state st09_f3_c1 #D1C4E9
+st09_f3_c1 : rising · 56w
+state st09_f3_end #FFCDD2
+st09_f3_end : death (negative)
+st09_f3_end : "Drifted Off the Course"
+state st09_slip #D1C4E9
+st09_slip : rising · 66w
+state st09_fd_c0 #D1C4E9
+st09_fd_c0 : rising · 58w
+state st09_fd_c1 #D1C4E9
+st09_fd_c1 : rising · 56w
+state st09_fd_end #FFCDD2
+st09_fd_end : death (negative)
+st09_fd_end : "Off the Needle"
+state st09_cap #FFCDD2
+st09_cap : capture (negative)
+st09_cap : "Found in the Fog"
+state st09_seen #FFF9C4
+st09_seen : choice · 74w
+state st09_gate #D1C4E9
+st09_gate : rising · 88w
+state st10_ap0 #D1C4E9
+st10_ap0 : rising · 78w
+state st10_pass #D1C4E9
+st10_pass : rising · 60w
+state st10_f0_c0 #D1C4E9
+st10_f0_c0 : rising · 58w
+state st10_f0_c1 #D1C4E9
+st10_f0_c1 : rising · 56w
+state st10_f0_end #FFCDD2
+st10_f0_end : death (negative)
+st10_f0_end : "Close Under the Lamp"
+state st10_f1_c0 #D1C4E9
+st10_f1_c0 : rising · 58w
+state st10_f1_c1 #D1C4E9
+st10_f1_c1 : rising · 56w
+state st10_f1_end #FFCDD2
+st10_f1_end : death (negative)
+st10_f1_end : "Charging the Line"
+state st10_f2_c0 #D1C4E9
+st10_f2_c0 : rising · 58w
+state st10_f2_c1 #D1C4E9
+st10_f2_c1 : rising · 56w
+state st10_f2_end #FFCDD2
+st10_f2_end : death (negative)
+st10_f2_end : "Behind the Picket"
+state st10_f3_c0 #D1C4E9
+st10_f3_c0 : rising · 58w
+state st10_f3_c1 #D1C4E9
+st10_f3_c1 : rising · 56w
+state st10_f3_end #FFCDD2
+st10_f3_end : death (negative)
+st10_f3_end : "Waiting on the Lamp"
+state st10_f4_c0 #D1C4E9
+st10_f4_c0 : rising · 58w
+state st10_f4_c1 #D1C4E9
+st10_f4_c1 : rising · 56w
+state st10_f4_end #FFCDD2
+st10_f4_end : death (negative)
+st10_f4_end : "Into the Overlap"
+state st10_slip #D1C4E9
+st10_slip : rising · 66w
+state st10_fd_c0 #D1C4E9
+st10_fd_c0 : rising · 58w
+state st10_fd_c1 #D1C4E9
+st10_fd_c1 : rising · 56w
+state st10_fd_end #FFCDD2
+st10_fd_end : death (negative)
+st10_fd_end : "Ridden Down at the Line"
+state st10_cap #FFCDD2
+st10_cap : capture (negative)
+st10_cap : "Closed On at the Line"
+state st10_seen #FFF9C4
+st10_seen : choice · 74w
+state st10_gate #D1C4E9
+st10_gate : rising · 88w
+state st11_ap0 #D1C4E9
+st11_ap0 : rising · 72w
+state st11_pass #D1C4E9
+st11_pass : rising · 60w
+state st11_f0_c0 #D1C4E9
+st11_f0_c0 : rising · 58w
+state st11_f0_c1 #D1C4E9
+st11_f0_c1 : rising · 56w
+state st11_f0_end #FFCDD2
+st11_f0_end : death (negative)
+st11_f0_end : "Under the Lantern"
+state st11_f1_c0 #D1C4E9
+st11_f1_c0 : rising · 58w
+state st11_f1_c1 #D1C4E9
+st11_f1_c1 : rising · 56w
+state st11_f1_end #FFCDD2
+st11_f1_end : death (negative)
+st11_f1_end : "Over the Logs"
+state st11_f2_c0 #D1C4E9
+st11_f2_c0 : rising · 58w
+state st11_f2_c1 #D1C4E9
+st11_f2_c1 : rising · 56w
+state st11_f2_end #FFCDD2
+st11_f2_end : death (negative)
+st11_f2_end : "Cutting the Net"
+state st11_f3_c0 #D1C4E9
+st11_f3_c0 : rising · 58w
+state st11_f3_c1 #D1C4E9
+st11_f3_c1 : rising · 56w
+state st11_f3_end #FFCDD2
+st11_f3_end : death (negative)
+st11_f3_end : "Waiting in the Reeds"
+state st11_slip #D1C4E9
+st11_slip : rising · 64w
+state st11_fd_c0 #D1C4E9
+st11_fd_c0 : rising · 58w
+state st11_fd_c1 #D1C4E9
+st11_fd_c1 : rising · 56w
+state st11_fd_end #FFCDD2
+st11_fd_end : death (negative)
+st11_fd_end : "Past the Warden"
+state st11_cap #FFCDD2
+st11_cap : capture (negative)
+st11_cap : "Held by the Warden"
+state st11_seen #FFF9C4
+st11_seen : choice · 74w
+state st11_gate #D1C4E9
+st11_gate : rising · 88w
+state st12_ap0 #D1C4E9
+st12_ap0 : rising · 74w
+state st12_pass #D1C4E9
+st12_pass : rising · 60w
+state st12_f0_c0 #D1C4E9
+st12_f0_c0 : rising · 58w
+state st12_f0_c1 #D1C4E9
+st12_f0_c1 : rising · 56w
+state st12_f0_end #FFCDD2
+st12_f0_end : death (negative)
+st12_f0_end : "Rolled on the Bar"
+state st12_f1_c0 #D1C4E9
+st12_f1_c0 : rising · 58w
+state st12_f1_c1 #D1C4E9
+st12_f1_c1 : rising · 56w
+state st12_f1_end #FFCDD2
+st12_f1_end : death (negative)
+st12_f1_end : "Broached on the Shallows"
+state st12_f2_c0 #D1C4E9
+st12_f2_c0 : rising · 58w
+state st12_f2_c1 #D1C4E9
+st12_f2_c1 : rising · 56w
+state st12_f2_end #FFCDD2
+st12_f2_end : death (negative)
+st12_f2_end : "Slammed Over the Bar"
+state st12_f3_c0 #D1C4E9
+st12_f3_c0 : rising · 58w
+state st12_f3_c1 #D1C4E9
+st12_f3_c1 : rising · 56w
+state st12_f3_end #FFCDD2
+st12_f3_end : death (negative)
+st12_f3_end : "Quartered and Caught"
+state st12_slip #D1C4E9
+st12_slip : rising · 68w
+state st12_fd_c0 #D1C4E9
+st12_fd_c0 : rising · 58w
+state st12_fd_c1 #D1C4E9
+st12_fd_c1 : rising · 56w
+state st12_fd_end #FFCDD2
+st12_fd_end : death (negative)
+st12_fd_end : "Into the Whitewater"
+state st12_cap #FFCDD2
+st12_cap : capture (negative)
+st12_cap : "Standing Off the Bar"
+state st12_seen #FFF9C4
+st12_seen : choice · 74w
+state st12_gate #D1C4E9
+st12_gate : rising · 88w
+state st13_ap0 #D1C4E9
+st13_ap0 : rising · 80w
+state st13_pass #D1C4E9
+st13_pass : rising · 60w
+state st13_f0_c0 #D1C4E9
+st13_f0_c0 : rising · 58w
+state st13_f0_c1 #D1C4E9
+st13_f0_c1 : rising · 56w
+state st13_f0_end #FFCDD2
+st13_f0_end : death (negative)
+st13_f0_end : "Hung on the Wire"
+state st13_f1_c0 #D1C4E9
+st13_f1_c0 : rising · 58w
+state st13_f1_c1 #D1C4E9
+st13_f1_c1 : rising · 56w
+state st13_f1_end #FFCDD2
+st13_f1_end : death (negative)
+st13_f1_end : "Punched Into the Belt"
+state st13_f2_c0 #D1C4E9
+st13_f2_c0 : rising · 58w
+state st13_f2_c1 #D1C4E9
+st13_f2_c1 : rising · 56w
+state st13_f2_end #FFCDD2
+st13_f2_end : death (negative)
+st13_f2_end : "Off the Flank"
+state st13_f3_c0 #D1C4E9
+st13_f3_c0 : rising · 58w
+state st13_f3_c1 #D1C4E9
+st13_f3_c1 : rising · 56w
+state st13_f3_end #FFCDD2
+st13_f3_end : death (negative)
+st13_f3_end : "A Guess at the Mark"
+state st13_slip #D1C4E9
+st13_slip : rising · 66w
+state st13_fd_c0 #D1C4E9
+st13_fd_c0 : rising · 58w
+state st13_fd_c1 #D1C4E9
+st13_fd_c1 : rising · 56w
+state st13_fd_end #FFCDD2
+st13_fd_end : death (negative)
+st13_fd_end : "Driven Onto the Wire"
+state st13_cap #FFCDD2
+st13_cap : capture (negative)
+st13_cap : "Taken in the Wash"
+state st13_seen #FFF9C4
+st13_seen : choice · 74w
+state st13_gate #D1C4E9
+st13_gate : rising · 88w
+state land_ap0 #D1C4E9
+land_ap0 : rising · 72w
+state land_ap1 #D1C4E9
+land_ap1 : rising · 70w
+state shore_gate #FFE0B2
+shore_gate : climax · 92w
+state shore_run #FFCDD2
+shore_run : capture (negative)
+shore_run : "Run Down on Dry Land"
+state shore_shoot #FFCDD2
+shore_shoot : death (negative)
+shore_shoot : "Wrong Shot on the Beach"
+state shore_res0 #D1C4E9
+shore_res0 : rising · 70w
+state win_gate #FFE0B2
+win_gate : climax · 88w
+state win_clean #C8E6C9
+win_clean : success (positive)
+win_clean : "The Clean Run"
+state win_costly #C8E6C9
+win_costly : completion (positive)
+win_costly : "The Costly Run"
+state win_quiet #E0E0E0
+win_quiet : completion (neutral)
+win_quiet : "The Quiet Arrival"
+sup0 --> sup1 : Take her out.
+sup1 --> st01_ap0 : Line up on the first mark.
+st01_ap0 --> st01_gate : Go on.
+st01_pass --> st02_ap0 : Go on.
+st01_f0_c0 --> st01_f0_c1 : Go on.
+st01_f0_c1 --> st01_f0_end : Go on.
+st01_f1_c0 --> st01_f1_c1 : Go on.
+st01_f1_c1 --> st01_f1_end : Go on.
+st01_f2_c0 --> st01_f2_c1 : Go on.
+st01_f2_c1 --> st01_f2_end : Go on.
+st01_f3_c0 --> st01_f3_c1 : Go on.
+st01_f3_c1 --> st01_f3_end : Go on.
+st01_f4_c0 --> st01_f4_c1 : Go on.
+st01_f4_c1 --> st01_f4_end : Go on.
+st01_slip --> st02_ap0 : Go on.
+st01_fd_c0 --> st01_fd_c1 : Go on.
+st01_fd_c1 --> st01_fd_end : Go on.
+st01_seen --> st01_slip : Hold the line and slip on quiet.
+st01_seen --> st01_fd_c0 : Rev clear and run loud past the guardhou...
+st01_seen --> st01_cap : Cut power and drift to the guard boat.
+st01_gate --> st01_pass : Slip the ebb gap on the seaward corner.
+st01_gate --> st01_f0_c0 : Cut straight over the chain floats.
+st01_gate --> st01_f1_c0 : Gun the engine and force the net.
+st01_gate --> st01_f2_c0 : Wait at the boom for the gap to widen.
+st01_gate --> st01_f3_c0 : Ram the floats to break a wider gap.
+st01_gate --> st01_f4_c0 : Try the shoreward end, nearer the wall.
+st01_gate --> st01_seen : Gamble it and take the risk.
+st02_ap0 --> st02_gate : Go on.
+st02_pass --> st03_ap0 : Go on.
+st02_f0_c0 --> st02_f0_c1 : Go on.
+st02_f0_c1 --> st02_f0_end : Go on.
+st02_f1_c0 --> st02_f1_c1 : Go on.
+st02_f1_c1 --> st02_f1_end : Go on.
+st02_f2_c0 --> st02_f2_c1 : Go on.
+st02_f2_c1 --> st02_f2_end : Go on.
+st02_f3_c0 --> st02_f3_c1 : Go on.
+st02_f3_c1 --> st02_f3_end : Go on.
+st02_f4_c0 --> st02_f4_c1 : Go on.
+st02_f4_c1 --> st02_f4_end : Go on.
+st02_slip --> st03_ap0 : Go on.
+st02_fd_c0 --> st02_fd_c1 : Go on.
+st02_fd_c1 --> st02_fd_end : Go on.
+st02_seen --> st02_slip : Hold the line and slip on quiet.
+st02_seen --> st02_fd_c0 : Trust the wrong buoy and hold on.
+st02_seen --> st02_cap : Signal the launch shadowing the line.
+st02_gate --> st02_pass : Steer the single-topmark line, buoy to b...
+st02_gate --> st02_f0_c0 : Cut inside the line to save the distance...
+st02_gate --> st02_f1_c0 : Follow the nearest buoy, mark unread.
+st02_gate --> st02_f2_c0 : Swing wide around the whole buoy line.
+st02_gate --> st02_f3_c0 : Hold speed and thread it fast.
+st02_gate --> st02_f4_c0 : Steer by the buoys' lights alone.
+st02_gate --> st02_seen : Gamble it and take the risk.
+st03_ap0 --> st03_gate : Go on.
+st03_pass --> st04_ap0 : Go on.
+st03_f0_c0 --> st03_f0_c1 : Go on.
+st03_f0_c1 --> st03_f0_end : Go on.
+st03_f1_c0 --> st03_f1_c1 : Go on.
+st03_f1_c1 --> st03_f1_end : Go on.
+st03_f2_c0 --> st03_f2_c1 : Go on.
+st03_f2_c1 --> st03_f2_end : Go on.
+st03_f3_c0 --> st03_f3_c1 : Go on.
+st03_f3_c1 --> st03_f3_end : Go on.
+st03_f4_c0 --> st03_f4_c1 : Go on.
+st03_f4_c1 --> st03_f4_end : Go on.
+st03_slip --> st04_ap0 : Go on.
+st03_fd_c0 --> st03_fd_c1 : Go on.
+st03_fd_c1 --> st03_fd_end : Go on.
+st03_seen --> st03_slip : Hold the line and slip on quiet.
+st03_seen --> st03_fd_c0 : Open up and outrun her down the lane.
+st03_seen --> st03_cap : Show a light and heave to.
+st03_gate --> st03_pass : Cross astern on her turn, in the wake.
+st03_gate --> st03_f0_c0 : Dash across ahead of her bow.
+st03_gate --> st03_f1_c0 : Match her speed and shadow her up the la...
+st03_gate --> st03_f2_c0 : Stop dead and let her pass close by.
+st03_gate --> st03_f3_c0 : Duck across right under her stern gun.
+st03_gate --> st03_f4_c0 : Wait for her to leave the lane entirely.
+st03_gate --> st03_seen : Gamble it and take the risk.
+st04_ap0 --> st04_gate : Go on.
+st04_pass --> st05_ap0 : Go on.
+st04_f0_c0 --> st04_f0_c1 : Go on.
+st04_f0_c1 --> st04_f0_end : Go on.
+st04_f1_c0 --> st04_f1_c1 : Go on.
+st04_f1_c1 --> st04_f1_end : Go on.
+st04_f2_c0 --> st04_f2_c1 : Go on.
+st04_f2_c1 --> st04_f2_end : Go on.
+st04_f3_c0 --> st04_f3_c1 : Go on.
+st04_f3_c1 --> st04_f3_end : Go on.
+st04_f4_c0 --> st04_f4_c1 : Go on.
+st04_f4_c1 --> st04_f4_end : Go on.
+st04_slip --> st05_ap0 : Go on.
+st04_fd_c0 --> st04_fd_c1 : Go on.
+st04_fd_c1 --> st04_fd_end : Go on.
+st04_seen --> st04_slip : Hold the line and slip on quiet.
+st04_seen --> st04_fd_c0 : Gun it and dare the gunners.
+st04_seen --> st04_cap : Cut power and stand into the light.
+st04_gate --> st04_pass : Run on the dark, freeze under the beam.
+st04_gate --> st04_f0_c0 : Keep steady speed through the sweep.
+st04_gate --> st04_f1_c0 : Turn hard away when the light appears.
+st04_gate --> st04_f2_c0 : Race to beat the beam across.
+st04_gate --> st04_f3_c0 : Hide in the glare by steering at the sou...
+st04_gate --> st04_f4_c0 : Signal-flash back to confuse the crew.
+st04_gate --> st04_seen : Gamble it and take the risk.
+st05_ap0 --> st05_gate : Go on.
+st05_pass --> st06_ap0 : Go on.
+st05_f0_c0 --> st05_f0_c1 : Go on.
+st05_f0_c1 --> st05_f0_end : Go on.
+st05_f1_c0 --> st05_f1_c1 : Go on.
+st05_f1_c1 --> st05_f1_end : Go on.
+st05_f2_c0 --> st05_f2_c1 : Go on.
+st05_f2_c1 --> st05_f2_end : Go on.
+st05_f3_c0 --> st05_f3_c1 : Go on.
+st05_f3_c1 --> st05_f3_end : Go on.
+st05_slip --> st06_ap0 : Go on.
+st05_fd_c0 --> st05_fd_c1 : Go on.
+st05_fd_c1 --> st05_fd_end : Go on.
+st05_seen --> st05_slip : Hold the line and slip on quiet.
+st05_seen --> st05_fd_c0 : Open up and run for it.
+st05_seen --> st05_cap : Cut the engine dead and wait.
+st05_gate --> st05_pass : Throttle down to a crawl and drift the t...
+st05_gate --> st05_f0_c0 : Hold cruising revs to clear it quickly.
+st05_gate --> st05_f1_c0 : Blip the throttle to hold your heading.
+st05_gate --> st05_f2_c0 : Sprint the silent stretch outright.
+st05_gate --> st05_f3_c0 : Reverse to hold against the tide.
+st05_gate --> st05_seen : Gamble it and take the risk.
+st06_ap0 --> st06_gate : Go on.
+st06_pass --> st07_ap0 : Go on.
+st06_f0_c0 --> st06_f0_c1 : Go on.
+st06_f0_c1 --> st06_f0_end : Go on.
+st06_f1_c0 --> st06_f1_c1 : Go on.
+st06_f1_c1 --> st06_f1_end : Go on.
+st06_f2_c0 --> st06_f2_c1 : Go on.
+st06_f2_c1 --> st06_f2_end : Go on.
+st06_f3_c0 --> st06_f3_c1 : Go on.
+st06_f3_c1 --> st06_f3_end : Go on.
+st06_f4_c0 --> st06_f4_c1 : Go on.
+st06_f4_c1 --> st06_f4_end : Go on.
+st06_slip --> st07_ap0 : Go on.
+st06_fd_c0 --> st06_fd_c1 : Go on.
+st06_fd_c1 --> st06_fd_end : Go on.
+st06_seen --> st06_slip : Hold the line and slip on quiet.
+st06_seen --> st06_fd_c0 : Force a new lane on nerve.
+st06_seen --> st06_cap : Stop and hail the shore for a pilot.
+st06_gate --> st06_pass : Hold dead center down the clear drift.
+st06_gate --> st06_f0_c0 : Take the wider gap to starboard.
+st06_gate --> st06_f1_c0 : Speed up to spend less time in it.
+st06_gate --> st06_f2_c0 : Weave between the visible wires.
+st06_gate --> st06_f3_c0 : Nudge a float aside to open the lane.
+st06_gate --> st06_f4_c0 : Follow another wake through, unseen.
+st06_gate --> st06_seen : Gamble it and take the risk.
+st07_ap0 --> st07_gate : Go on.
+st07_pass --> st08_ap0 : Go on.
+st07_f0_c0 --> st07_f0_c1 : Go on.
+st07_f0_c1 --> st07_f0_end : Go on.
+st07_f1_c0 --> st07_f1_c1 : Go on.
+st07_f1_c1 --> st07_f1_end : Go on.
+st07_f2_c0 --> st07_f2_c1 : Go on.
+st07_f2_c1 --> st07_f2_end : Go on.
+st07_f3_c0 --> st07_f3_c1 : Go on.
+st07_f3_c1 --> st07_f3_end : Go on.
+st07_slip --> st08_ap0 : Go on.
+st07_fd_c0 --> st07_fd_c1 : Go on.
+st07_fd_c1 --> st07_fd_end : Go on.
+st07_seen --> st07_slip : Hold the line and slip on quiet.
+st07_seen --> st07_fd_c0 : Ram at full speed and commit.
+st07_seen --> st07_cap : Ground her gently and wave in the skiff.
+st07_gate --> st07_pass : Run the deep scour off the wreck's stern...
+st07_gate --> st07_f0_c0 : Cross amidships where it looks calm.
+st07_gate --> st07_f1_c0 : Try the bow end, nearer and quicker.
+st07_gate --> st07_f2_c0 : Ram across to skip the plating.
+st07_gate --> st07_f3_c0 : Drift over slow on the current alone.
+st07_gate --> st07_seen : Gamble it and take the risk.
+st08_ap0 --> st08_gate : Go on.
+st08_pass --> st09_ap0 : Go on.
+st08_f0_c0 --> st08_f0_c1 : Go on.
+st08_f0_c1 --> st08_f0_end : Go on.
+st08_f1_c0 --> st08_f1_c1 : Go on.
+st08_f1_c1 --> st08_f1_end : Go on.
+st08_f2_c0 --> st08_f2_c1 : Go on.
+st08_f2_c1 --> st08_f2_end : Go on.
+st08_f3_c0 --> st08_f3_c1 : Go on.
+st08_f3_c1 --> st08_f3_end : Go on.
+st08_f4_c0 --> st08_f4_c1 : Go on.
+st08_f4_c1 --> st08_f4_end : Go on.
+st08_slip --> st09_ap0 : Go on.
+st08_fd_c0 --> st08_fd_c1 : Go on.
+st08_fd_c1 --> st08_fd_end : Go on.
+st08_seen --> st08_slip : Hold the line and slip on quiet.
+st08_seen --> st08_fd_c0 : Push through the fall on nerve.
+st08_seen --> st08_cap : Show a white light and stop.
+st08_gate --> st08_pass : Run the lull just behind the last row.
+st08_gate --> st08_f0_c0 : Push ahead of the rows to clear it.
+st08_gate --> st08_f1_c0 : Hold position and wait it out.
+st08_gate --> st08_f2_c0 : Zigzag to spoil their aim.
+st08_gate --> st08_f3_c0 : Charge straight through at full power.
+st08_gate --> st08_f4_c0 : Turn back seaward out of range.
+st08_gate --> st08_seen : Gamble it and take the risk.
+st09_ap0 --> st09_gate : Go on.
+st09_pass --> st10_ap0 : Go on.
+st09_f0_c0 --> st09_f0_c1 : Go on.
+st09_f0_c1 --> st09_f0_end : Go on.
+st09_f1_c0 --> st09_f1_c1 : Go on.
+st09_f1_c1 --> st09_f1_end : Go on.
+st09_f2_c0 --> st09_f2_c1 : Go on.
+st09_f2_c1 --> st09_f2_end : Go on.
+st09_f3_c0 --> st09_f3_c1 : Go on.
+st09_f3_c1 --> st09_f3_end : Go on.
+st09_slip --> st10_ap0 : Go on.
+st09_fd_c0 --> st09_fd_c1 : Go on.
+st09_fd_c1 --> st09_fd_end : Go on.
+st09_seen --> st09_slip : Hold the line and slip on quiet.
+st09_seen --> st09_fd_c0 : Trust your gut over the needle.
+st09_seen --> st09_cap : Lie still and wait to be found.
+st09_gate --> st09_pass : Hold the compass course, slow and steady...
+st09_gate --> st09_f0_c0 : Steer by feel toward the shore.
+st09_gate --> st09_f1_c0 : Speed up through the grey.
+st09_gate --> st09_f2_c0 : Sound the horn to fix a bearing.
+st09_gate --> st09_f3_c0 : Stop and drift until it lifts.
+st09_gate --> st09_seen : Gamble it and take the risk.
+st10_ap0 --> st10_gate : Go on.
+st10_pass --> st11_ap0 : Go on.
+st10_f0_c0 --> st10_f0_c1 : Go on.
+st10_f0_c1 --> st10_f0_end : Go on.
+st10_f1_c0 --> st10_f1_c1 : Go on.
+st10_f1_c1 --> st10_f1_end : Go on.
+st10_f2_c0 --> st10_f2_c1 : Go on.
+st10_f2_c1 --> st10_f2_end : Go on.
+st10_f3_c0 --> st10_f3_c1 : Go on.
+st10_f3_c1 --> st10_f3_end : Go on.
+st10_f4_c0 --> st10_f4_c1 : Go on.
+st10_f4_c1 --> st10_f4_end : Go on.
+st10_slip --> st11_ap0 : Go on.
+st10_fd_c0 --> st10_fd_c1 : Go on.
+st10_fd_c1 --> st10_fd_end : Go on.
+st10_seen --> st10_slip : Hold the line and slip on quiet.
+st10_seen --> st10_fd_c0 : Ram the gap and outrun them.
+st10_seen --> st10_cap : Douse everything and let them close.
+st10_gate --> st10_pass : Thread the dark gap between two lamps.
+st10_gate --> st10_f0_c0 : Slip close past the nearest picket.
+st10_gate --> st10_f1_c0 : Charge where the gap looks widest.
+st10_gate --> st10_f2_c0 : Follow a picket in as a screen.
+st10_gate --> st10_f3_c0 : Wait for a lamp to be doused.
+st10_gate --> st10_f4_c0 : Cross where two lamps overlap, thinking ...
+st10_gate --> st10_seen : Gamble it and take the risk.
+st11_ap0 --> st11_gate : Go on.
+st11_pass --> st12_ap0 : Go on.
+st11_f0_c0 --> st11_f0_c1 : Go on.
+st11_f0_c1 --> st11_f0_end : Go on.
+st11_f1_c0 --> st11_f1_c1 : Go on.
+st11_f1_c1 --> st11_f1_end : Go on.
+st11_f2_c0 --> st11_f2_c1 : Go on.
+st11_f2_c1 --> st11_f2_end : Go on.
+st11_f3_c0 --> st11_f3_c1 : Go on.
+st11_f3_c1 --> st11_f3_end : Go on.
+st11_slip --> st12_ap0 : Go on.
+st11_fd_c0 --> st11_fd_c1 : Go on.
+st11_fd_c1 --> st11_fd_end : Go on.
+st11_seen --> st11_slip : Hold the line and slip on quiet.
+st11_seen --> st11_fd_c0 : Run past the warden loud and fast.
+st11_seen --> st11_cap : Lay off and let the warden come.
+st11_gate --> st11_pass : Slip the boom behind the skiff's turn.
+st11_gate --> st11_f0_c0 : Cross right under the skiff's lantern.
+st11_gate --> st11_f1_c0 : Force the log line at speed.
+st11_gate --> st11_f2_c0 : Cut the net with a knife over the side.
+st11_gate --> st11_f3_c0 : Wait in the reeds for the skiff to moor.
+st11_gate --> st11_seen : Gamble it and take the risk.
+st12_ap0 --> st12_gate : Go on.
+st12_pass --> st13_ap0 : Go on.
+st12_f0_c0 --> st12_f0_c1 : Go on.
+st12_f0_c1 --> st12_f0_end : Go on.
+st12_f1_c0 --> st12_f1_c1 : Go on.
+st12_f1_c1 --> st12_f1_end : Go on.
+st12_f2_c0 --> st12_f2_c1 : Go on.
+st12_f2_c1 --> st12_f2_end : Go on.
+st12_f3_c0 --> st12_f3_c1 : Go on.
+st12_f3_c1 --> st12_f3_end : Go on.
+st12_slip --> st13_ap0 : Go on.
+st12_fd_c0 --> st12_fd_c1 : Go on.
+st12_fd_c1 --> st12_fd_end : Go on.
+st12_seen --> st12_slip : Hold the line and slip on quiet.
+st12_seen --> st12_fd_c0 : Power straight through the whitewater.
+st12_seen --> st12_cap : Stand off and signal for a shore boat.
+st12_gate --> st12_pass : Cross on a swell's back through the deep...
+st12_gate --> st12_f0_c0 : Drive in without waiting on the sets.
+st12_gate --> st12_f1_c0 : Take the shortest line over the shallows...
+st12_gate --> st12_f2_c0 : Gun over the break and slam through.
+st12_gate --> st12_f3_c0 : Quarter the swell at an angle.
+st12_gate --> st12_seen : Gamble it and take the risk.
+st13_ap0 --> st13_gate : Go on.
+st13_pass --> land_ap0 : Go on.
+st13_f0_c0 --> st13_f0_c1 : Go on.
+st13_f0_c1 --> st13_f0_end : Go on.
+st13_f1_c0 --> st13_f1_c1 : Go on.
+st13_f1_c1 --> st13_f1_end : Go on.
+st13_f2_c0 --> st13_f2_c1 : Go on.
+st13_f2_c1 --> st13_f2_end : Go on.
+st13_f3_c0 --> st13_f3_c1 : Go on.
+st13_f3_c1 --> st13_f3_end : Go on.
+st13_slip --> land_ap0 : Go on.
+st13_fd_c0 --> st13_fd_c1 : Go on.
+st13_fd_c1 --> st13_fd_end : Go on.
+st13_seen --> st13_slip : Hold the line and slip on quiet.
+st13_seen --> st13_fd_c0 : Gun the beach and drive over the wire.
+st13_seen --> st13_cap : Stop in the wash and stand with hands ra...
+st13_gate --> st13_pass : Come in on the leading mark, down the cu...
+st13_gate --> st13_f0_c0 : Beach her wherever the shore is nearest.
+st13_gate --> st13_f1_c0 : Hit the beach hard to punch the belt.
+st13_gate --> st13_f2_c0 : Land off on the flank away from the lane...
+st13_gate --> st13_f3_c0 : Come straight in fast on a guess at the ...
+st13_gate --> st13_seen : Gamble it and take the risk.
+land_ap0 --> land_ap1 : Go on.
+land_ap1 --> shore_gate : Go on.
+shore_gate --> shore_res0 : Give the countersign and hold your groun...
+shore_gate --> shore_run : Break inland past the figure without wai...
+shore_gate --> shore_shoot : Draw first on the figure that moves.
+shore_res0 --> win_gate : Go on.
+win_gate --> win_clean : Take the clean quiet handoff and vanish ...
+win_gate --> win_costly : Take the hard fast route out under the g...
+win_gate --> win_quiet : Simply hand off the cargo and stand down...
+st01_f0_end --> [*]
+st01_f1_end --> [*]
+st01_f2_end --> [*]
+st01_f3_end --> [*]
+st01_f4_end --> [*]
+st01_fd_end --> [*]
+st01_cap --> [*]
+st02_f0_end --> [*]
+st02_f1_end --> [*]
+st02_f2_end --> [*]
+st02_f3_end --> [*]
+st02_f4_end --> [*]
+st02_fd_end --> [*]
+st02_cap --> [*]
+st03_f0_end --> [*]
+st03_f1_end --> [*]
+st03_f2_end --> [*]
+st03_f3_end --> [*]
+st03_f4_end --> [*]
+st03_fd_end --> [*]
+st03_cap --> [*]
+st04_f0_end --> [*]
+st04_f1_end --> [*]
+st04_f2_end --> [*]
+st04_f3_end --> [*]
+st04_f4_end --> [*]
+st04_fd_end --> [*]
+st04_cap --> [*]
+st05_f0_end --> [*]
+st05_f1_end --> [*]
+st05_f2_end --> [*]
+st05_f3_end --> [*]
+st05_fd_end --> [*]
+st05_cap --> [*]
+st06_f0_end --> [*]
+st06_f1_end --> [*]
+st06_f2_end --> [*]
+st06_f3_end --> [*]
+st06_f4_end --> [*]
+st06_fd_end --> [*]
+st06_cap --> [*]
+st07_f0_end --> [*]
+st07_f1_end --> [*]
+st07_f2_end --> [*]
+st07_f3_end --> [*]
+st07_fd_end --> [*]
+st07_cap --> [*]
+st08_f0_end --> [*]
+st08_f1_end --> [*]
+st08_f2_end --> [*]
+st08_f3_end --> [*]
+st08_f4_end --> [*]
+st08_fd_end --> [*]
+st08_cap --> [*]
+st09_f0_end --> [*]
+st09_f1_end --> [*]
+st09_f2_end --> [*]
+st09_f3_end --> [*]
+st09_fd_end --> [*]
+st09_cap --> [*]
+st10_f0_end --> [*]
+st10_f1_end --> [*]
+st10_f2_end --> [*]
+st10_f3_end --> [*]
+st10_f4_end --> [*]
+st10_fd_end --> [*]
+st10_cap --> [*]
+st11_f0_end --> [*]
+st11_f1_end --> [*]
+st11_f2_end --> [*]
+st11_f3_end --> [*]
+st11_fd_end --> [*]
+st11_cap --> [*]
+st12_f0_end --> [*]
+st12_f1_end --> [*]
+st12_f2_end --> [*]
+st12_f3_end --> [*]
+st12_fd_end --> [*]
+st12_cap --> [*]
+st13_f0_end --> [*]
+st13_f1_end --> [*]
+st13_f2_end --> [*]
+st13_f3_end --> [*]
+st13_fd_end --> [*]
+st13_cap --> [*]
+shore_run --> [*]
+shore_shoot --> [*]
+win_clean --> [*]
+win_costly --> [*]
+win_quiet --> [*]
+
+legend right
+  The Red Meridian Run
+  Band 16+ · Tier 1 · ~30 min
+  Topology: gauntlet
+  306 nodes · 90 endings (2+ / 1n / 87-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml

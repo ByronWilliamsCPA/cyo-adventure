@@ -1,0 +1,727 @@
+@startuml the-hundred-door-hotel
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 120w
+state n_doors #BBDEFB
+n_doors : setup · 110w
+state n_pearl #BBDEFB
+n_pearl : setup · 128w
+state n_hub #FFF9C4
+n_hub : choice · 108w
+state lb_gate #FFF9C4
+lb_gate : choice · 96w
+state lb_desk #FFF9C4
+lb_desk : choice · 100w
+state lb_ask #FFF9C4
+lb_ask : choice · 104w
+state lb_ball #FFF9C4
+lb_ball : choice · 100w
+state lb_storm #FFF9C4
+lb_storm : choice · 102w
+state lb_keywall #FFF9C4
+lb_keywall : choice · 96w
+state lb_mail #FFF9C4
+lb_mail : choice · 98w
+state lb_box9 #D1C4E9
+lb_box9 : rising · 96w
+state lb_box44 #D1C4E9
+lb_box44 : rising · 94w
+state lb_ladder #FFF9C4
+lb_ladder : choice · 92w
+state lb_topbox #D1C4E9
+lb_topbox : rising · 94w
+state lb_switch #FFF9C4
+lb_switch : choice · 98w
+state lb_plug #FFF9C4
+lb_plug : choice · 100w
+state lb_listen #D1C4E9
+lb_listen : rising · 92w
+state lb_speak #D1C4E9
+lb_speak : rising · 94w
+state lb_horn #FFF9C4
+lb_horn : choice · 98w
+state lb_office #FFF9C4
+lb_office : choice · 100w
+state lb_portrait #FFF9C4
+lb_portrait : choice · 98w
+state lb_rolltop #FFF9C4
+lb_rolltop : choice · 100w
+state lb_names #FFF9C4
+lb_names : choice · 94w
+state lb_clock #FFF9C4
+lb_clock : choice · 94w
+state lb_show #D1C4E9
+lb_show : rising · 104w
+state lb_story #FFF9C4
+lb_story : choice · 106w
+state lb_door100 #D1C4E9
+lb_door100 : rising · 94w
+state lb_promise #FFF9C4
+lb_promise : choice · 100w
+state e_lb_ladder #FFCDD2
+e_lb_ladder : setback (negative)
+e_lb_ladder : "The Ladder Takes a Ride"
+state e_lb_horn #FFCDD2
+e_lb_horn : setback (negative)
+e_lb_horn : "Four Answers, No Footsteps"
+state e_lb_chimes #E0E0E0
+e_lb_chimes : discovery (neutral)
+e_lb_chimes : "The Hotel Agrees About the Time"
+state e_lb_letters #E0E0E0
+e_lb_letters : discovery (neutral)
+e_lb_letters : "Till Someone Younger Comes"
+state e_lb_keys #E0E0E0
+e_lb_keys : discovery (neutral)
+e_lb_keys : "One Hundred Keys, One Hundred Stories"
+state kt_doors #FFF9C4
+kt_doors : choice · 98w
+state kt_main #FFF9C4
+kt_main : choice · 104w
+state kt_hello #FFF9C4
+kt_hello : choice · 96w
+state kt_soup #FFF9C4
+kt_soup : choice · 94w
+state kt_watch #FFF9C4
+kt_watch : choice · 100w
+state kt_chairs #FFF9C4
+kt_chairs : choice · 94w
+state kt_ticket #D1C4E9
+kt_ticket : rising · 92w
+state kt_who #FFF9C4
+kt_who : choice · 96w
+state kt_for #FFF9C4
+kt_for : choice · 96w
+state kt_cook #FFF9C4
+kt_cook : choice · 100w
+state kt_tell #D1C4E9
+kt_tell : rising · 100w
+state kt_gentle #D1C4E9
+kt_gentle : rising · 96w
+state kt_show #D1C4E9
+kt_show : rising · 96w
+state kt_pantry #FFF9C4
+kt_pantry : choice · 96w
+state kt_cold #FFF9C4
+kt_cold : choice · 98w
+state kt_figures #FFF9C4
+kt_figures : choice · 96w
+state kt_cakechef #D1C4E9
+kt_cakechef : rising · 100w
+state kt_shelf #FFF9C4
+kt_shelf : choice · 92w
+state kt_bakery #FFF9C4
+kt_bakery : choice · 94w
+state kt_oven #FFF9C4
+kt_oven : choice · 94w
+state kt_song #FFF9C4
+kt_song : choice · 96w
+state kt_flour #FFF9C4
+kt_flour : choice · 92w
+state kt_dumb #FFF9C4
+kt_dumb : choice · 96w
+state kt_note #D1C4E9
+kt_note : rising · 92w
+state kt_promise #FFF9C4
+kt_promise : choice · 102w
+state e_kt_jam #FFCDD2
+e_kt_jam : setback (negative)
+e_kt_jam : "The Plum Jam Avalanche"
+state e_kt_cocoa #FFCDD2
+e_kt_cocoa : setback (negative)
+e_kt_cocoa : "Cocoa Gets the Last Word"
+state e_kt_ride #FFCDD2
+e_kt_ride : setback (negative)
+e_kt_ride : "Stairs Exist"
+state e_kt_sketch #E0E0E0
+e_kt_sketch : discovery (neutral)
+e_kt_sketch : "A Family Drawn From Sugar"
+state e_kt_feast #E0E0E0
+e_kt_feast : discovery (neutral)
+e_kt_feast : "Seven Courses and Their Stories"
+state wg_doors #FFF9C4
+wg_doors : choice · 98w
+state wg_mist #FFF9C4
+wg_mist : choice · 92w
+state wg_leaf #FFF9C4
+wg_leaf : choice · 90w
+state wg_path #FFF9C4
+wg_path : choice · 96w
+state wg_follow #D1C4E9
+wg_follow : rising · 92w
+state wg_hello #FFF9C4
+wg_hello : choice · 98w
+state wg_grow #FFF9C4
+wg_grow : choice · 96w
+state wg_water #FFF9C4
+wg_water : choice · 98w
+state wg_plants #FFF9C4
+wg_plants : choice · 96w
+state wg_trellis #FFF9C4
+wg_trellis : choice · 92w
+state wg_rose #D1C4E9
+wg_rose : rising · 92w
+state wg_tell #D1C4E9
+wg_tell : rising · 100w
+state wg_order #FFF9C4
+wg_order : choice · 94w
+state wg_gardenias #FFF9C4
+wg_gardenias : choice · 96w
+state wg_five #FFF9C4
+wg_five : choice · 94w
+state wg_fountain #FFF9C4
+wg_fountain : choice · 96w
+state wg_fish #FFF9C4
+wg_fish : choice · 92w
+state wg_coins #FFF9C4
+wg_coins : choice · 94w
+state wg_wish #FFF9C4
+wg_wish : choice · 96w
+state wg_shed #FFF9C4
+wg_shed : choice · 96w
+state wg_ledger #FFF9C4
+wg_ledger : choice · 94w
+state wg_seeds #FFF9C4
+wg_seeds : choice · 92w
+state wg_fig #FFF9C4
+wg_fig : choice · 92w
+state wg_spy #FFF9C4
+wg_spy : choice · 90w
+state wg_promise #FFF9C4
+wg_promise : choice · 100w
+state e_wg_tap #FFCDD2
+e_wg_tap : setback (negative)
+e_wg_tap : "The Forty-Year Rainstorm"
+state e_wg_fish #E0E0E0
+e_wg_fish : discovery (neutral)
+e_wg_fish : "The Goldfish Made of Light"
+state e_wg_climb #FFCDD2
+e_wg_climb : setback (negative)
+e_wg_climb : "The Compost Heap Catches"
+state e_wg_plant #E0E0E0
+e_wg_plant : discovery (neutral)
+e_wg_plant : "The Next Keeper's Row"
+state e_wg_bloom #E0E0E0
+e_wg_bloom : discovery (neutral)
+e_wg_bloom : "The Night-Blooming Hour"
+state gf_stairs #FFF9C4
+gf_stairs : choice · 98w
+state gf_three #FFF9C4
+gf_three : choice · 96w
+state gf_chase #FFF9C4
+gf_chase : choice · 96w
+state gf_playalong #FFF9C4
+gf_playalong : choice · 98w
+state gf_yank #FFF9C4
+gf_yank : choice · 92w
+state gf_tag #D1C4E9
+gf_tag : rising · 94w
+state gf_wait #D1C4E9
+gf_wait : rising · 92w
+state gf_ask #FFF9C4
+gf_ask : choice · 100w
+state gf_rule #FFF9C4
+gf_rule : choice · 96w
+state gf_tellp #FFF9C4
+gf_tellp : choice · 100w
+state gf_game #FFF9C4
+gf_game : choice · 98w
+state gf_score #FFF9C4
+gf_score : choice · 100w
+state gf_play #FFF9C4
+gf_play : choice · 96w
+state gf_trick #FFF9C4
+gf_trick : choice · 94w
+state gf_deal #D1C4E9
+gf_deal : rising · 100w
+state gf_lift #FFF9C4
+gf_lift : choice · 94w
+state gf_pearlbtn #D1C4E9
+gf_pearlbtn : rising · 92w
+state gf_nine #FFF9C4
+gf_nine : choice · 96w
+state gf_keyhole #FFF9C4
+gf_keyhole : choice · 94w
+state gf_ear #D1C4E9
+gf_ear : rising · 92w
+state gf_linen #FFF9C4
+gf_linen : choice · 96w
+state gf_drawing #FFF9C4
+gf_drawing : choice · 94w
+state gf_caps #FFF9C4
+gf_caps : choice · 92w
+state gf_promise #FFF9C4
+gf_promise : choice · 98w
+state e_gf_lost #FFCDD2
+e_gf_lost : setback (negative)
+e_gf_lost : "Warmer, Colder, Morning"
+state e_gf_early #FFCDD2
+e_gf_early : setback (negative)
+e_gf_early : "The Point That Would Not Count"
+state e_gf_rounds #FFCDD2
+e_gf_rounds : setback (negative)
+e_gf_rounds : "Thirty Rounds Past Bedtime"
+state e_gf_chute #E0E0E0
+e_gf_chute : discovery (neutral)
+e_gf_chute : "The Laundry That Tucks You In"
+state e_gf_fort #E0E0E0
+e_gf_fort : discovery (neutral)
+e_gf_fort : "Sworn Into the Blanket Fort"
+state ob_stairs #FFF9C4
+ob_stairs : choice · 94w
+state ob_gallery #FFF9C4
+ob_gallery : choice · 96w
+state ob_dome #FFF9C4
+ob_dome : choice · 100w
+state ob_scope #FFF9C4
+ob_scope : choice · 94w
+state ob_perseids #D1C4E9
+ob_perseids : rising · 92w
+state ob_charts #FFF9C4
+ob_charts : choice · 96w
+state ob_names #FFF9C4
+ob_names : choice · 92w
+state ob_book #FFF9C4
+ob_book : choice · 98w
+state ob_orrery #FFF9C4
+ob_orrery : choice · 96w
+state ob_crank #FFF9C4
+ob_crank : choice · 92w
+state ob_roof #FFF9C4
+ob_roof : choice · 98w
+state ob_moon #D1C4E9
+ob_moon : rising · 90w
+state ob_sign #FFF9C4
+ob_sign : choice · 94w
+state ob_flip #D1C4E9
+ob_flip : rising · 96w
+state ob_turret #FFF9C4
+ob_turret : choice · 92w
+state ob_pennants #FFF9C4
+ob_pennants : choice · 94w
+state ob_chest #FFF9C4
+ob_chest : choice · 96w
+state ob_whistle #FFF9C4
+ob_whistle : choice · 94w
+state ob_promise #FFF9C4
+ob_promise : choice · 98w
+state e_ob_ride #FFCDD2
+e_ob_ride : setback (negative)
+e_ob_ride : "Two Laps of the Heavens"
+state e_ob_banner #FFCDD2
+e_ob_banner : setback (negative)
+e_ob_banner : "The Banner Wants a Calmer Night"
+state e_ob_camp #E0E0E0
+e_ob_camp : discovery (neutral)
+e_ob_camp : "Keeping the Family's Watch"
+state e_ob_orrery #E0E0E0
+e_ob_orrery : discovery (neutral)
+e_ob_orrery : "The Clockwork Year"
+state e_ob_plan #E0E0E0
+e_ob_plan : discovery (neutral)
+e_ob_plan : "The First New Page"
+state fin_approach #FFF9C4
+fin_approach : choice · 122w
+state fin_peek #D1C4E9
+fin_peek : rising · 96w
+state fin_doors #D1C4E9
+fin_doors : rising · 92w
+state fin_hall #FFF9C4
+fin_hall : choice · 104w
+state fp_light1 #D1C4E9
+fp_light1 : rising · 94w
+state fp_light2 #D1C4E9
+fp_light2 : rising · 90w
+state fp_music1 #D1C4E9
+fp_music1 : rising · 96w
+state fp_music2 #D1C4E9
+fp_music2 : rising · 92w
+state fp_table1 #D1C4E9
+fp_table1 : rising · 94w
+state fp_table2 #D1C4E9
+fp_table2 : rising · 96w
+state fin_ready #FFF9C4
+fin_ready : choice · 98w
+state fin_summon #FFF9C4
+fin_summon : choice · 106w
+state fs_gong #D1C4E9
+fs_gong : rising · 92w
+state fs_bell #D1C4E9
+fs_bell : rising · 92w
+state fs_waltz #D1C4E9
+fs_waltz : rising · 94w
+state fin_gather #D1C4E9
+fin_gather : rising · 126w
+state fin_pearl #D1C4E9
+fin_pearl : rising · 100w
+state fin_reunion #D1C4E9
+fin_reunion : rising · 122w
+state fin_evening #D1C4E9
+fin_evening : rising · 118w
+state fin_midnight #FFF9C4
+fin_midnight : choice · 124w
+state fr_rest #FFF9C4
+fr_rest : choice · 104w
+state fr_stay #FFF9C4
+fr_stay : choice · 102w
+state fr_each #FFF9C4
+fr_each : choice · 106w
+state e_rest_stars #C8E6C9
+e_rest_stars : completion (positive)
+e_rest_stars : "The Wish Comes Home"
+state e_rest_waltz #C8E6C9
+e_rest_waltz : success (positive)
+e_rest_waltz : "The Last Waltz of the Meridian"
+state e_stay_secret #C8E6C9
+e_stay_secret : success (positive)
+e_stay_secret : "The Hotel That Remembers You"
+state e_stay_open #C8E6C9
+e_stay_open : completion (positive)
+e_stay_open : "One Hundred Doors, All Open"
+state e_each_wishes #C8E6C9
+e_each_wishes : completion (positive)
+e_each_wishes : "A Door on Every Ring"
+state e_each_door #C8E6C9
+e_each_door : success (positive)
+e_each_door : "The Hundredth Door"
+n_start --> n_doors : Lift the big key, unlock the grand door,...
+n_doors --> n_pearl : Walk toward the one lit lamp at the fron...
+n_pearl --> n_hub : Promise her, take the keys, and climb to...
+n_hub --> lb_gate : Go back down into the lobby wing, where ...
+n_hub --> kt_doors : Follow the warm bread smell to the kitch...
+n_hub --> wg_doors : Push through the frosted doors of the wi...
+n_hub --> gf_stairs : Climb to the numbered guest floors and t...
+n_hub --> ob_stairs : Take the narrow stair up toward the roof...
+n_hub --> fin_approach : Cross to the grand ballroom doors.
+lb_gate --> lb_desk : Go to Pearl at the glowing desk.
+lb_gate --> lb_mail : Slip behind the counter to the pigeonhol...
+lb_gate --> lb_switch : Ease open the side door to the old switc...
+lb_desk --> lb_ask : Ask Pearl about her family.
+lb_desk --> lb_ball : Ask about the hotel's greatest night.
+lb_desk --> lb_keywall : Ask about the wall of gleaming keys.
+lb_ask --> lb_mail : Search the pigeonhole mail wall for what...
+lb_ask --> lb_office : Try the manager's office behind the desk...
+lb_ball --> lb_storm : Ask gently what happened to the ball.
+lb_ball --> lb_office : Go look for the reservation book in the ...
+lb_storm --> lb_office : Look for the ball's reservation book in ...
+lb_storm --> lb_mail : Check what the mail wall still holds fro...
+lb_keywall --> lb_ask : Ask her about the family the keys were p...
+lb_keywall --> lb_office : Slip into the manager's office behind th...
+lb_mail --> lb_box9 : Open box 9 and the thyme-smelling envelo...
+lb_mail --> lb_box44 : Unfold the paper darts in box 44.
+lb_mail --> lb_ladder : Roll the ladder over and climb toward th...
+lb_box9 --> lb_show : Carry the menu card to Pearl at the desk...
+lb_box9 --> lb_switch : Check the switchboard room too.
+lb_box44 --> lb_show : Take a dart and the score sheet to Pearl...
+lb_box44 --> lb_switch : Check the switchboard room too.
+lb_ladder --> lb_topbox : Steady the ladder and open the clean-cir...
+lb_ladder --> e_lb_ladder : Stretch on tiptoe for the far corner box...
+lb_topbox --> lb_show : Bring the pressed gardenia down to Pearl...
+lb_topbox --> lb_switch : Look into the switchboard room as well.
+lb_switch --> lb_plug : Plug the headset into the buzzing line.
+lb_switch --> lb_horn : Page the whole hotel through the speakin...
+lb_switch --> lb_office : Leave it and try the manager's office.
+lb_plug --> lb_listen : Keep listening, sound by sound, and map ...
+lb_plug --> lb_speak : Speak into the line.
+lb_listen --> lb_show : Go tell Pearl what the line just told yo...
+lb_listen --> n_hub : Head back to the staircase landing.
+lb_speak --> lb_show : Tell Pearl what the line hummed.
+lb_speak --> n_hub : Slip back to the staircase landing.
+lb_horn --> lb_show : Run and tell Pearl the whole hotel answe...
+lb_horn --> e_lb_horn : Wait right here by the horn for someone ...
+lb_office --> lb_portrait : Turn the portrait around.
+lb_office --> lb_rolltop : Work the rolltop desk open.
+lb_office --> e_lb_letters : Slip the rubber band off the bundle of l...
+lb_portrait --> lb_rolltop : Open the rolltop and hunt for their name...
+lb_portrait --> lb_show : Carry the portrait out to Pearl.
+lb_rolltop --> lb_names : Read the five names aloud, right here.
+lb_rolltop --> lb_show : Carry the ledger straight to Pearl.
+lb_names --> lb_show : Bring the ledger and the names to Pearl.
+lb_names --> lb_clock : First, wind the stopped mantel clock bac...
+lb_clock --> e_lb_chimes : Follow the chiming upstairs, clock to cl...
+lb_clock --> lb_show : Go show Pearl what you have found tonigh...
+lb_show --> lb_story : Ask her to tell the rest, now that it is...
+lb_story --> lb_promise : Promise her the evening, properly this t...
+lb_story --> lb_door100 : Ask what waits behind door 100 first.
+lb_door100 --> lb_promise : Promise her the evening, balcony and all...
+lb_promise --> n_hub : Head back to the grand staircase landing...
+lb_promise --> fin_approach : Go straight to the ballroom and begin.
+lb_promise --> e_lb_keys : Stay a while and sort the hundred keys w...
+kt_doors --> kt_main : Push into the great main kitchen.
+kt_doors --> kt_pantry : Take the narrow pantry passage.
+kt_doors --> kt_bakery : Follow the bread smell to the bakery.
+kt_main --> kt_hello : Say hello politely from the doorway.
+kt_main --> kt_watch : Watch him work a while first.
+kt_hello --> kt_soup : Sit and try the soup he ladles out.
+kt_hello --> kt_who : Ask who taught him the thyme trick.
+kt_soup --> kt_who : Ask who taught him to cook like this.
+kt_soup --> kt_for : Ask who all this cooking is for.
+kt_watch --> kt_hello : Step in and say hello.
+kt_watch --> kt_ticket : Quietly read the yellowed ticket on the ...
+kt_watch --> kt_chairs : Look closer at the five chairs at the st...
+kt_chairs --> kt_hello : Go say hello to the cook who sets it.
+kt_chairs --> kt_ticket : Read the yellowed ticket on the order ra...
+kt_ticket --> kt_show : Show the ticket to the cook.
+kt_ticket --> n_hub : Slip out to the staircase landing to thi...
+kt_who --> kt_for : Ask who the seven courses are for.
+kt_who --> kt_cook : Offer to help him cook while he thinks.
+kt_for --> kt_cook : Offer to help him cook.
+kt_for --> kt_ticket : Go find the original order ticket on the...
+kt_cook --> kt_tell : Tell him the lady at the front desk is c...
+kt_cook --> kt_gentle : Stay quiet and let him chase the memory ...
+kt_tell --> kt_promise : Promise him the call, and a real dinner ...
+kt_gentle --> kt_tell : Now tell him about the lady at the front...
+kt_gentle --> kt_promise : Let that be enough for tonight, and make...
+kt_show --> kt_promise : Promise him the Hundredth Night will fin...
+kt_pantry --> kt_cold : Open the frosted cold-room door.
+kt_pantry --> kt_shelf : Climb toward the high preserve shelves.
+kt_pantry --> kt_bakery : Follow the passage on to the bakery.
+kt_cold --> kt_figures : Lean close and study the five sugar figu...
+kt_cold --> kt_main : Go find the cook and ask about the cake.
+kt_figures --> kt_cakechef : Bring the cook to see his own cake.
+kt_figures --> e_kt_sketch : Stay and sketch each figure by lantern l...
+kt_cakechef --> kt_promise : Promise him the candles will be lit.
+kt_shelf --> kt_cold : Leave the jars and open the cold room.
+kt_shelf --> e_kt_jam : Reach up and check the loose-lidded jar.
+kt_bakery --> kt_oven : Peek inside the warm oven.
+kt_bakery --> kt_flour : Follow the floury footprints.
+kt_oven --> kt_main : Go meet whoever bakes at midnight.
+kt_oven --> kt_song : Follow the humming instead.
+kt_song --> kt_tell : Tell him the lady at the desk is called ...
+kt_song --> kt_gentle : Hum along and let the memory circle clos...
+kt_flour --> kt_main : Head for the main kitchen and its cook.
+kt_flour --> kt_dumb : Open the little brass dumbwaiter door.
+kt_dumb --> kt_note : Send a thank-you note back on the tray.
+kt_dumb --> e_kt_cocoa : Drink the cocoa right here, every warm d...
+kt_dumb --> e_kt_ride : Climb in and ride the dumbwaiter.
+kt_note --> kt_promise : Go find the cook and seal the promise pr...
+kt_promise --> n_hub : Head back to the grand staircase landing...
+kt_promise --> fin_approach : Go straight to the ballroom and begin.
+kt_promise --> e_kt_feast : Stay and taste every course as he builds...
+wg_doors --> wg_mist : Take the main path under the little indo...
+wg_doors --> wg_shed : Try the side door to the potting shed.
+wg_doors --> wg_fountain : Follow the sound of singing water.
+wg_mist --> wg_path : Press on along the palm path.
+wg_mist --> wg_leaf : Shelter under a giant leaf and watch the...
+wg_leaf --> wg_path : Follow the cloud's route up the palm pat...
+wg_leaf --> wg_fountain : Cut across toward the singing water inst...
+wg_path --> wg_follow : Follow the walking watering can quietly.
+wg_path --> wg_hello : Call out a friendly hello.
+wg_follow --> wg_gardenias : Slip ahead to the gardenia bed.
+wg_hello --> wg_grow : Ask what she is growing.
+wg_hello --> wg_water : Offer to help with the watering.
+wg_grow --> wg_order : Ask who placed the order for a hundred b...
+wg_grow --> wg_water : Roll up your sleeves and help her water.
+wg_water --> wg_tell : Tell her where the names come from.
+wg_water --> wg_plants : Ask to meet each named plant properly.
+wg_plants --> wg_tell : Tell her the names belong to people.
+wg_plants --> wg_trellis : Look closer at the racing vines' knot.
+wg_trellis --> wg_tell : Answer her question, gently.
+wg_trellis --> wg_rose : Ask about the rose that rings like a bel...
+wg_rose --> wg_tell : Tell her whose bell the rose is copying.
+wg_rose --> wg_gardenias : Walk on to the gardenia bed.
+wg_tell --> wg_promise : Promise to fetch her when the music star...
+wg_order --> wg_tell : Tell her who P is, and where she keeps h...
+wg_order --> wg_gardenias : Go see the five best-kept bushes.
+wg_gardenias --> wg_five : Ask the gardener about the five center b...
+wg_gardenias --> wg_fountain : Drift toward the singing fountain.
+wg_five --> wg_tell : Finish her sentence for her, kindly.
+wg_five --> wg_shed : Go look for the planting records in the ...
+wg_fountain --> wg_fish : Dip a hand among the light-fish.
+wg_fountain --> wg_coins : Look closer at the coins in the basin.
+wg_fountain --> e_wg_tap : Find the old tap and turn it.
+wg_fish --> wg_gardenias : Follow the fish-arrow toward the gardeni...
+wg_fish --> e_wg_fish : Stay and play with the light-fish a whil...
+wg_coins --> wg_wish : Ask the gardener what the five of them w...
+wg_coins --> wg_path : Head back along the palm path.
+wg_wish --> wg_tell : Tell her the evening is coming, and who ...
+wg_wish --> wg_gardenias : Walk with her to the gardenia bed.
+wg_shed --> wg_ledger : Read the open planting ledger.
+wg_shed --> wg_fig : Climb the ladder into the fig tree's bra...
+wg_shed --> wg_seeds : Open the drawer marked FOR THE NEXT KEEP...
+wg_ledger --> wg_tell : Carry the ledger to the gardener.
+wg_ledger --> wg_gardenias : Go stand by the five bushes it describes...
+wg_seeds --> wg_ledger : Read the planting ledger next.
+wg_seeds --> e_wg_plant : Plant the starter row right now, by lant...
+wg_fig --> wg_spy : Look through the lashed spyglass.
+wg_fig --> e_wg_climb : Climb higher into the fig's crown.
+wg_spy --> wg_tell : Climb down and tell the gardener what th...
+wg_spy --> n_hub : Head back to the staircase landing.
+wg_promise --> n_hub : Head back to the grand staircase landing...
+wg_promise --> fin_approach : Go straight to the ballroom and begin.
+wg_promise --> e_wg_bloom : Stay for the night-blooming hour she kee...
+gf_stairs --> gf_three : Follow the running feet to floor three.
+gf_stairs --> gf_lift : Ride the caged service lift.
+gf_stairs --> gf_nine : Climb all the way to the ninth-floor lan...
+gf_three --> gf_chase : Chase after the runaway trolley.
+gf_three --> gf_linen : Knock politely at the LINEN door it stop...
+gf_chase --> gf_playalong : Play along, wondering loudly where the b...
+gf_chase --> gf_yank : Yank the curtain back.
+gf_chase --> e_gf_lost : Duck through the service door to head th...
+gf_playalong --> gf_game : Accept whatever game they are clearly ab...
+gf_playalong --> gf_ask : Ask who they are and what the rules of t...
+gf_yank --> gf_tag : Give honest chase.
+gf_yank --> gf_wait : Sit down on the carpet and wait them out...
+gf_tag --> gf_ask : Ask who they are, between gulps of air.
+gf_tag --> gf_game : Ask what the next game is.
+gf_wait --> gf_ask : Ask about them and their endless shift.
+gf_wait --> gf_game : Ask what game the trolley was playing.
+gf_ask --> gf_rule : Ask about the grandmother rule and who m...
+gf_ask --> gf_game : Ask about the game they refuse to lose.
+gf_rule --> gf_tellp : Tell them about the lady at the front de...
+gf_rule --> gf_game : Cheer them up by asking about the game.
+gf_tellp --> gf_deal : Help them figure out how they can come s...
+gf_tellp --> gf_score : Ask why they cannot simply run down this...
+gf_game --> gf_score : Ask why the score stopped at 499 all.
+gf_game --> gf_play : Ask for a practice round right now.
+gf_score --> gf_tellp : Tell them the bell they are waiting for ...
+gf_score --> e_gf_early : Beg them to play point nine hundred nine...
+gf_score --> gf_deal : Promise them their audience, and shake o...
+gf_play --> gf_trick : Attempt the legendary triple-bank shot.
+gf_play --> gf_deal : Call it a draw and talk about the big ni...
+gf_trick --> gf_deal : While they are glowing, talk about the b...
+gf_trick --> e_gf_rounds : Play just one more round.
+gf_deal --> gf_promise : Seal it and get their send-off.
+gf_lift --> gf_three : Press three and follow the noise.
+gf_lift --> gf_nine : Press nine for the quiet top floor.
+gf_lift --> gf_pearlbtn : Press the unnumbered pearl button.
+gf_pearlbtn --> gf_three : Ride to floor three instead.
+gf_pearlbtn --> gf_nine : Ride to the ninth floor.
+gf_nine --> gf_keyhole : Try the hundred keys in the keyhole, one...
+gf_nine --> gf_ear : Press an ear to the warm outline and lis...
+gf_keyhole --> gf_ear : Press an ear to the wall anyway.
+gf_keyhole --> gf_three : Go find the bellhops and ask about the d...
+gf_ear --> gf_three : Go find the bellhops, who surely know th...
+gf_ear --> n_hub : Carry the sound back to the staircase la...
+gf_linen --> gf_drawing : Look closely at the five-figure drawing.
+gf_linen --> gf_caps : Admire the bottle-cap museum properly.
+gf_linen --> e_gf_chute : Peek down the gleaming laundry chute.
+gf_drawing --> gf_tellp : Tell them about the silver-bell lady you...
+gf_drawing --> gf_caps : First, ask about the bottle-cap medals.
+gf_caps --> gf_drawing : Ask about the five-figure drawing on the...
+gf_caps --> gf_playalong : Follow them back out to the corridor and...
+gf_promise --> n_hub : Head back to the grand staircase landing...
+gf_promise --> fin_approach : Go straight to the ballroom and begin.
+gf_promise --> e_gf_fort : Stay for the blanket-fort midnight feast...
+ob_stairs --> ob_gallery : Climb slowly past the little framed phot...
+ob_stairs --> ob_roof : Take the low side door straight out to t...
+ob_gallery --> ob_dome : Spin the brass wheel and enter the dome.
+ob_gallery --> ob_roof : Step out onto the roof walk instead.
+ob_dome --> ob_scope : Look through the great telescope.
+ob_dome --> ob_charts : Study the charts on the curved wall.
+ob_dome --> ob_crank : Crank the stuck shutter wide open.
+ob_scope --> ob_perseids : Leave it exactly as aimed, and look wher...
+ob_scope --> ob_charts : Take the five initials to the charts.
+ob_perseids --> ob_charts : Check the wall charts against the date.
+ob_perseids --> ob_book : Open the observation log on the desk.
+ob_charts --> ob_book : Open the leather observation log on the ...
+ob_charts --> ob_names : Look at the pencil marks climbing the do...
+ob_names --> ob_book : Find that last date in the observation l...
+ob_names --> ob_crank : Crank the shutter wide and let the sky i...
+ob_book --> ob_roof : Carry that knowledge out to the roof wal...
+ob_book --> ob_orrery : Wind the little brass machine beside the...
+ob_orrery --> e_ob_orrery : Wind it again and again, learning the pa...
+ob_orrery --> ob_roof : Take the pattern out to the roof walk.
+ob_crank --> e_ob_ride : Crank harder and ride the spinning dome ...
+ob_crank --> ob_scope : Steady it and look at the freed sky thro...
+ob_roof --> ob_sign : Find the sign's switch box.
+ob_roof --> ob_moon : Follow the worn scuff marks along the bo...
+ob_roof --> ob_turret : Walk to the flag turret at the end.
+ob_moon --> ob_turret : Dance the square once, then walk to the ...
+ob_moon --> ob_sign : Go find the sign's switch box.
+ob_sign --> ob_flip : Flip OCCASIONS, just to see.
+ob_sign --> ob_turret : Leave it ready and walk to the turret.
+ob_flip --> ob_turret : Walk on to the flag turret.
+ob_flip --> n_hub : Head down to the staircase landing.
+ob_turret --> ob_pennants : String a short practice line of pennants...
+ob_turret --> ob_chest : Open the cedar chest.
+ob_pennants --> ob_chest : Open the cedar chest next.
+ob_pennants --> e_ob_banner : Rig the grand banner marked 100 as well,...
+ob_chest --> ob_whistle : Try one soft blast on the brass whistle.
+ob_chest --> e_ob_camp : Set the five chairs in their worn dents ...
+ob_whistle --> ob_promise : Hang the whistle ready and square away t...
+ob_whistle --> n_hub : Head down to the staircase landing.
+ob_promise --> n_hub : Head back down to the grand staircase la...
+ob_promise --> fin_approach : Go straight down to the ballroom and beg...
+ob_promise --> e_ob_plan : Stay and write the after-party plan into...
+fin_approach --> fin_doors : Fit the BALLROOM key and unlock the gran...
+fin_approach --> fin_peek : Press an eye to the crack and look the l...
+fin_peek --> fin_doors : Unlock the grand doors.
+fin_doors --> fin_hall : Step inside and size up what a finished ...
+fin_hall --> fp_light1 : See to the chandelier and its hundred ca...
+fin_hall --> fp_music1 : See to the gramophone on the little stag...
+fin_hall --> fp_table1 : See to the long family table.
+fp_light1 --> fp_light2 : Hoist the chandelier home and light the ...
+fp_light2 --> fin_ready : Step back and see what the evening still...
+fp_music1 --> fp_music2 : Set the needle down and test one bar.
+fp_music2 --> fin_ready : Step back and see what the evening still...
+fp_table1 --> fp_table2 : Set the five family places properly.
+fp_table2 --> fin_ready : Step back and see what the evening still...
+fin_ready --> fin_hall : See to another corner of the hall.
+fin_ready --> fin_summon : It is ready enough. Sound the call.
+fin_summon --> fs_gong : Strike the great dinner gong.
+fin_summon --> fs_bell : Pull the bell-wire that rings at Pearl's...
+fin_summon --> fs_waltz : Let the waltz play with every door open.
+fs_gong --> fin_gather : Stand by the open doors and watch the da...
+fs_bell --> fin_gather : Stand by the open doors and watch the da...
+fs_waltz --> fin_gather : Stand by the open doors and watch the da...
+fin_gather --> fin_pearl : Run down and bring Pearl from her desk.
+fin_pearl --> fin_reunion : Walk her up to the ballroom doors.
+fin_reunion --> fin_evening : Let the evening finally begin.
+fin_evening --> fin_midnight : Meet the family at the clock as it readi...
+fin_midnight --> fr_rest : Wish them rest, and one sweet goodnight ...
+fin_midnight --> fr_stay : Ask them to stay and help wake the Merid...
+fin_midnight --> fr_each : Say the choice belongs to each of them a...
+fr_rest --> e_rest_stars : Settle under the blanket and watch for t...
+fr_rest --> e_rest_waltz : Dance one last waltz on the roof walk fi...
+fr_stay --> e_stay_secret : Keep the ghost family the hotel's warm s...
+fr_stay --> e_stay_open : Reopen as exactly what you are, the frie...
+fr_each --> e_each_wishes : Climb to the roof and hear each wish und...
+fr_each --> e_each_door : Walk together to the hundredth door and ...
+e_lb_ladder --> [*]
+e_lb_horn --> [*]
+e_lb_chimes --> [*]
+e_lb_letters --> [*]
+e_lb_keys --> [*]
+e_kt_jam --> [*]
+e_kt_cocoa --> [*]
+e_kt_ride --> [*]
+e_kt_sketch --> [*]
+e_kt_feast --> [*]
+e_wg_tap --> [*]
+e_wg_fish --> [*]
+e_wg_climb --> [*]
+e_wg_plant --> [*]
+e_wg_bloom --> [*]
+e_gf_lost --> [*]
+e_gf_early --> [*]
+e_gf_rounds --> [*]
+e_gf_chute --> [*]
+e_gf_fort --> [*]
+e_ob_ride --> [*]
+e_ob_banner --> [*]
+e_ob_camp --> [*]
+e_ob_orrery --> [*]
+e_ob_plan --> [*]
+e_rest_stars --> [*]
+e_rest_waltz --> [*]
+e_stay_secret --> [*]
+e_stay_open --> [*]
+e_each_wishes --> [*]
+e_each_door --> [*]
+
+legend right
+  The Hundred-Door Hotel
+  Band 8-11 · Tier 1 · ~12 min
+  Topology: open_map
+  176 nodes · 31 endings (6+ / 13n / 12-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

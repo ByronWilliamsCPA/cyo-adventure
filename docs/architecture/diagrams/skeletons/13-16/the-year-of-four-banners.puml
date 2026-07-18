@@ -1,0 +1,720 @@
+@startuml the-year-of-four-banners
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 168w
+state n_council #D1C4E9
+n_council : rising · 172w
+state n_sort #FFF9C4
+n_sort : choice · 178w
+state g_a1 #D1C4E9
+g_a1 : rising · 150w
+state g_a2 #D1C4E9
+g_a2 : rising · 148w
+state g_a3 #D1C4E9
+g_a3 : rising · 150w
+state g_will #FFF9C4
+g_will : choice · 170w
+state g_xa1 #D1C4E9
+g_xa1 : rising · 148w
+state g_xa2 #D1C4E9
+g_xa2 : rising · 146w
+state g_x_bridge #FFF9C4
+g_x_bridge : choice · 168w
+state gE1_t1 #ECEFF1
+gE1_t1 : consequence · 150w
+state gE1_t2 #ECEFF1
+gE1_t2 : consequence · 146w
+state gE1_t3 #ECEFF1
+gE1_t3 : consequence · 140w
+state gE1 #FFCDD2
+gE1 : setback (negative)
+gE1 : "The Gate That Held the City"
+state g_xb1 #D1C4E9
+g_xb1 : rising · 150w
+state g_xb2 #D1C4E9
+g_xb2 : rising · 146w
+state g_x_council #FFF9C4
+g_x_council : choice · 160w
+state gE2_t1 #ECEFF1
+gE2_t1 : consequence · 150w
+state gE2_t2 #ECEFF1
+gE2_t2 : consequence · 146w
+state gE2_t3 #ECEFF1
+gE2_t3 : consequence · 144w
+state gE2_t4 #ECEFF1
+gE2_t4 : consequence · 140w
+state gE2_t5 #ECEFF1
+gE2_t5 : consequence · 142w
+state gE2_t6 #ECEFF1
+gE2_t6 : consequence · 138w
+state gE2 #E0E0E0
+gE2 : completion (neutral)
+gE2 : "The Walls That Would Not Break"
+state gE3_t1 #ECEFF1
+gE3_t1 : consequence · 150w
+state gE3_t2 #ECEFF1
+gE3_t2 : consequence · 146w
+state gE3_t3 #ECEFF1
+gE3_t3 : consequence · 144w
+state gE3_t4 #ECEFF1
+gE3_t4 : consequence · 140w
+state gE3_t5 #ECEFF1
+gE3_t5 : consequence · 142w
+state gE3_t6 #ECEFF1
+gE3_t6 : consequence · 138w
+state gE3 #C8E6C9
+gE3 : success (positive)
+gE3 : "The King Who Went Out by Water"
+state g_ya1 #D1C4E9
+g_ya1 : rising · 148w
+state g_ya2 #D1C4E9
+g_ya2 : rising · 146w
+state g_ya3 #D1C4E9
+g_ya3 : rising · 148w
+state g_y_feast #FFF9C4
+g_y_feast : choice · 166w
+state g_yb1 #D1C4E9
+g_yb1 : rising · 150w
+state g_yb2 #D1C4E9
+g_yb2 : rising · 146w
+state g_y_trial #FFF9C4
+g_y_trial : choice · 156w
+state gE4_t1 #ECEFF1
+gE4_t1 : consequence · 148w
+state gE4_t2 #ECEFF1
+gE4_t2 : consequence · 144w
+state gE4_t3 #ECEFF1
+gE4_t3 : consequence · 138w
+state gE4 #E0E0E0
+gE4 : discovery (neutral)
+gE4 : "The Half of the Truth You Could Prove"
+state gE5_t1 #ECEFF1
+gE5_t1 : consequence · 148w
+state gE5_t2 #ECEFF1
+gE5_t2 : consequence · 144w
+state gE5_t3 #ECEFF1
+gE5_t3 : consequence · 142w
+state gE5_t4 #ECEFF1
+gE5_t4 : consequence · 140w
+state gE5_t5 #ECEFF1
+gE5_t5 : consequence · 138w
+state gE5 #E0E0E0
+gE5 : completion (neutral)
+gE5 : "A Peace Kept by a Sealed Letter"
+state gE6_t1 #ECEFF1
+gE6_t1 : consequence · 150w
+state gE6_t2 #ECEFF1
+gE6_t2 : consequence · 146w
+state gE6_t3 #ECEFF1
+gE6_t3 : consequence · 144w
+state gE6_t4 #ECEFF1
+gE6_t4 : consequence · 142w
+state gE6_t5 #ECEFF1
+gE6_t5 : consequence · 140w
+state gE6_t6 #ECEFF1
+gE6_t6 : consequence · 140w
+state gE6_t7 #ECEFF1
+gE6_t7 : consequence · 138w
+state gE6_t8 #ECEFF1
+gE6_t8 : consequence · 138w
+state gE6 #C8E6C9
+gE6 : success (positive)
+gE6 : "The Charge That Broke on the Law"
+state g_za1 #D1C4E9
+g_za1 : rising · 148w
+state g_za2 #D1C4E9
+g_za2 : rising · 146w
+state g_za3 #D1C4E9
+g_za3 : rising · 148w
+state g_z_offer #FFF9C4
+g_z_offer : choice · 166w
+state gE7_t1 #ECEFF1
+gE7_t1 : consequence · 150w
+state gE7_t2 #ECEFF1
+gE7_t2 : consequence · 146w
+state gE7_t3 #ECEFF1
+gE7_t3 : consequence · 144w
+state gE7_t4 #ECEFF1
+gE7_t4 : consequence · 142w
+state gE7_t5 #ECEFF1
+gE7_t5 : consequence · 140w
+state gE7_t6 #ECEFF1
+gE7_t6 : consequence · 140w
+state gE7_t7 #ECEFF1
+gE7_t7 : consequence · 140w
+state gE7_t8 #ECEFF1
+gE7_t8 : consequence · 138w
+state gE7 #C8E6C9
+gE7 : success (positive)
+gE7 : "The Council of Banners"
+state gE8_t1 #ECEFF1
+gE8_t1 : consequence · 150w
+state gE8_t2 #ECEFF1
+gE8_t2 : consequence · 146w
+state gE8_t3 #ECEFF1
+gE8_t3 : consequence · 140w
+state gE8 #FFCDD2
+gE8 : capture (negative)
+gE8 : "The Surety of Good Faith"
+state g_zb1 #D1C4E9
+g_zb1 : rising · 150w
+state g_zb2 #D1C4E9
+g_zb2 : rising · 146w
+state g_z_end #FFF9C4
+g_z_end : choice · 158w
+state gE9_t1 #ECEFF1
+gE9_t1 : consequence · 150w
+state gE9_t2 #ECEFF1
+gE9_t2 : consequence · 146w
+state gE9_t3 #ECEFF1
+gE9_t3 : consequence · 142w
+state gE9_t4 #ECEFF1
+gE9_t4 : consequence · 140w
+state gE9_t5 #ECEFF1
+gE9_t5 : consequence · 138w
+state gE9 #C8E6C9
+gE9 : completion (positive)
+gE9 : "The Hand That Opened in Time"
+state gE10_t1 #ECEFF1
+gE10_t1 : consequence · 150w
+state gE10_t2 #ECEFF1
+gE10_t2 : consequence · 146w
+state gE10 #FFCDD2
+gE10 : death (negative)
+gE10 : "The Crown He Would Not Set Down"
+state r_s1 #D1C4E9
+r_s1 : rising · 150w
+state r_s2 #D1C4E9
+r_s2 : rising · 148w
+state r_s3 #D1C4E9
+r_s3 : rising · 148w
+state r_s4 #D1C4E9
+r_s4 : rising · 146w
+state r_s5 #ECEFF1
+r_s5 : spine · 150w
+state r_s6 #ECEFF1
+r_s6 : spine · 150w
+state r_s7 #ECEFF1
+r_s7 : spine · 146w
+state r_s8 #ECEFF1
+r_s8 : spine · 150w
+state r_s9 #ECEFF1
+r_s9 : spine · 150w
+state r_s10 #ECEFF1
+r_s10 : spine · 148w
+state r_s11 #ECEFF1
+r_s11 : spine · 146w
+state r_s12 #ECEFF1
+r_s12 : spine · 148w
+state r_s13 #ECEFF1
+r_s13 : spine · 150w
+state r_c1 #FFF9C4
+r_c1 : choice · 160w
+state rE1_t1 #ECEFF1
+rE1_t1 : consequence · 146w
+state rE1 #FFCDD2
+rE1 : setback (negative)
+rE1 : "The Lie in the Boy-King Hand"
+state r_c2 #FFF9C4
+r_c2 : choice · 156w
+state rE2_t1 #ECEFF1
+rE2_t1 : consequence · 148w
+state rE2_t2 #ECEFF1
+rE2_t2 : consequence · 140w
+state rE2 #FFCDD2
+rE2 : discovery (negative)
+rE2 : "The Truth They Called Treason"
+state r_c3 #FFF9C4
+r_c3 : choice · 152w
+state rE3_t1 #ECEFF1
+rE3_t1 : consequence · 146w
+state rE3 #E0E0E0
+rE3 : discovery (neutral)
+rE3 : "The Secret Sent Over the Wall"
+state r_c4 #FFF9C4
+r_c4 : choice · 150w
+state rE4_t1 #ECEFF1
+rE4_t1 : consequence · 146w
+state rE4 #FFCDD2
+rE4 : setback (negative)
+rE4 : "The Ultimatum Carried Whole"
+state r_c5 #FFF9C4
+r_c5 : choice · 156w
+state rE5_t1 #ECEFF1
+rE5_t1 : consequence · 148w
+state rE5_t2 #ECEFF1
+rE5_t2 : consequence · 140w
+state rE5 #FFCDD2
+rE5 : capture (negative)
+rE5 : "The Child on the Battlements"
+state r_c6 #FFF9C4
+r_c6 : choice · 150w
+state rE6_t1 #ECEFF1
+rE6_t1 : consequence · 148w
+state rE6 #FFCDD2
+rE6 : setback (negative)
+rE6 : "The Postern Sold in the Dark"
+state r_c7 #FFF9C4
+r_c7 : choice · 152w
+state rE7_t1 #ECEFF1
+rE7_t1 : consequence · 148w
+state rE7_t2 #ECEFF1
+rE7_t2 : consequence · 140w
+state rE7 #E0E0E0
+rE7 : completion (neutral)
+rE7 : "The Surrender Brokered in the Snow"
+state r_c8 #FFF9C4
+r_c8 : choice · 152w
+state rE8_t1 #ECEFF1
+rE8_t1 : consequence · 150w
+state rE8 #E0E0E0
+rE8 : discovery (neutral)
+rE8 : "The Mirror Held to the Duke"
+state r_c9 #FFF9C4
+r_c9 : choice · 150w
+state rE9_t1 #ECEFF1
+rE9_t1 : consequence · 148w
+state rE9 #E0E0E0
+rE9 : completion (neutral)
+rE9 : "The Hollow Crown of Redwater"
+state r_c10 #FFF9C4
+r_c10 : choice · 152w
+state rE10_t1 #ECEFF1
+rE10_t1 : consequence · 150w
+state rE10_t2 #ECEFF1
+rE10_t2 : consequence · 140w
+state rE10 #C8E6C9
+rE10 : success (positive)
+rE10 : "The King Hidden Until He Is Grown"
+state r_c11 #FFF9C4
+r_c11 : choice · 152w
+state rE11_t1 #ECEFF1
+rE11_t1 : consequence · 150w
+state rE11 #C8E6C9
+rE11 : success (positive)
+rE11 : "The Garrison That Turned"
+state r_c12 #FFF9C4
+r_c12 : choice · 156w
+state rE12_t1 #ECEFF1
+rE12_t1 : consequence · 150w
+state rE12_t2 #ECEFF1
+rE12_t2 : consequence · 140w
+state rE12 #C8E6C9
+rE12 : success (positive)
+rE12 : "The Gold Heron Over Redwater"
+state rE13_t1 #ECEFF1
+rE13_t1 : consequence · 148w
+state rE13 #FFCDD2
+rE13 : completion (negative)
+rE13 : "The Falcon Raised, the Cost Uncounted"
+state gr_r1 #D1C4E9
+gr_r1 : rising · 148w
+state gr_r2 #D1C4E9
+gr_r2 : rising · 148w
+state gr_r3 #D1C4E9
+gr_r3 : rising · 146w
+state gr_r4 #D1C4E9
+gr_r4 : rising · 144w
+state gr_petition #FFF9C4
+gr_petition : choice · 158w
+state gr_m1 #D1C4E9
+gr_m1 : rising · 146w
+state gr_m2 #D1C4E9
+gr_m2 : rising · 146w
+state gr_bridge #FFF9C4
+gr_bridge : choice · 162w
+state gr_p1 #D1C4E9
+gr_p1 : rising · 148w
+state gr_p2 #D1C4E9
+gr_p2 : rising · 146w
+state gr_proof #FFF9C4
+gr_proof : choice · 156w
+state gnE1_t1 #ECEFF1
+gnE1_t1 : consequence · 148w
+state gnE1_t2 #ECEFF1
+gnE1_t2 : consequence · 140w
+state gnE1 #FFCDD2
+gnE1 : setback (negative)
+gnE1 : "The Proof That Became a Riot"
+state gnE2_t1 #ECEFF1
+gnE2_t1 : consequence · 150w
+state gnE2_t2 #ECEFF1
+gnE2_t2 : consequence · 146w
+state gnE2_t3 #ECEFF1
+gnE2_t3 : consequence · 144w
+state gnE2_t4 #ECEFF1
+gnE2_t4 : consequence · 142w
+state gnE2_t5 #ECEFF1
+gnE2_t5 : consequence · 140w
+state gnE2_t6 #ECEFF1
+gnE2_t6 : consequence · 138w
+state gnE2 #E0E0E0
+gnE2 : completion (neutral)
+gnE2 : "The Order Laid on the Table"
+state gr_h1 #D1C4E9
+gr_h1 : rising · 146w
+state gr_h2 #D1C4E9
+gr_h2 : rising · 146w
+state gr_hold #FFF9C4
+gr_hold : choice · 154w
+state gnE3_t1 #ECEFF1
+gnE3_t1 : consequence · 150w
+state gnE3_t2 #ECEFF1
+gnE3_t2 : consequence · 146w
+state gnE3_t3 #ECEFF1
+gnE3_t3 : consequence · 144w
+state gnE3_t4 #ECEFF1
+gnE3_t4 : consequence · 142w
+state gnE3_t5 #ECEFF1
+gnE3_t5 : consequence · 138w
+state gnE3 #C8E6C9
+gnE3 : success (positive)
+gnE3 : "The Granaries Thrown Open"
+state gnE4_t1 #ECEFF1
+gnE4_t1 : consequence · 150w
+state gnE4_t2 #ECEFF1
+gnE4_t2 : consequence · 140w
+state gnE4 #FFCDD2
+gnE4 : setback (negative)
+gnE4 : "The Thorn That Grew Teeth"
+state gr_b1 #D1C4E9
+gr_b1 : rising · 146w
+state gr_b2 #D1C4E9
+gr_b2 : rising · 146w
+state gr_council #FFF9C4
+gr_council : choice · 154w
+state gr_c1 #D1C4E9
+gr_c1 : rising · 146w
+state gr_c2 #D1C4E9
+gr_c2 : rising · 146w
+state gr_confront #FFF9C4
+gr_confront : choice · 152w
+state gnE5_t1 #ECEFF1
+gnE5_t1 : consequence · 150w
+state gnE5_t2 #ECEFF1
+gnE5_t2 : consequence · 146w
+state gnE5_t3 #ECEFF1
+gnE5_t3 : consequence · 144w
+state gnE5_t4 #ECEFF1
+gnE5_t4 : consequence · 142w
+state gnE5_t5 #ECEFF1
+gnE5_t5 : consequence · 140w
+state gnE5 #E0E0E0
+gnE5 : completion (neutral)
+gnE5 : "The Vote Forced in the Open"
+state gnE6_t1 #ECEFF1
+gnE6_t1 : consequence · 148w
+state gnE6_t2 #ECEFF1
+gnE6_t2 : consequence · 140w
+state gnE6 #E0E0E0
+gnE6 : discovery (neutral)
+gnE6 : "The Country That Withdrew Itself"
+state gr_q1 #D1C4E9
+gr_q1 : rising · 146w
+state gr_q2 #D1C4E9
+gr_q2 : rising · 148w
+state gr_letter #FFF9C4
+gr_letter : choice · 158w
+state gr_pub1 #D1C4E9
+gr_pub1 : rising · 148w
+state gr_publish #FFF9C4
+gr_publish : choice · 152w
+state gnE7_t1 #ECEFF1
+gnE7_t1 : consequence · 150w
+state gnE7_t2 #ECEFF1
+gnE7_t2 : consequence · 140w
+state gnE7 #FFCDD2
+gnE7 : setback (negative)
+gnE7 : "The Truth That Lit the War"
+state gnE8_t1 #ECEFF1
+gnE8_t1 : consequence · 148w
+state gnE8 #E0E0E0
+gnE8 : discovery (neutral)
+gnE8 : "The Letter Shown Behind Closed Doors"
+state gr_br1 #D1C4E9
+gr_br1 : rising · 148w
+state gr_broker #FFF9C4
+gr_broker : choice · 154w
+state gnE9_t1 #ECEFF1
+gnE9_t1 : consequence · 150w
+state gnE9_t2 #ECEFF1
+gnE9_t2 : consequence · 146w
+state gnE9_t3 #ECEFF1
+gnE9_t3 : consequence · 142w
+state gnE9_t4 #ECEFF1
+gnE9_t4 : consequence · 140w
+state gnE9_t5 #ECEFF1
+gnE9_t5 : consequence · 138w
+state gnE9 #C8E6C9
+gnE9 : success (positive)
+gnE9 : "The Council Convened at the Fords"
+state gnE10_t1 #ECEFF1
+gnE10_t1 : consequence · 150w
+state gnE10_t2 #ECEFF1
+gnE10_t2 : consequence · 144w
+state gnE10_t3 #ECEFF1
+gnE10_t3 : consequence · 140w
+state gnE10 #C8E6C9
+gnE10 : completion (positive)
+gnE10 : "The Page Traded for the Child"
+n_start --> n_council : Follow the tolling bells into the waking...
+n_council --> n_sort : Take your place among the households as ...
+n_sort --> g_a1 : Serve Steward Vane under the Grey Banner...
+n_sort --> r_s1 : Serve Duke Corven under the Red Banner.
+n_sort --> gr_r1 : Serve Lady Miren under the Green Banner.
+g_a1 --> g_a2 : Read on into the grey keep.
+g_a2 --> g_a3 : Cross the cold hall to the council table...
+g_a3 --> g_will : Stand at the Steward shoulder as the wil...
+g_will --> g_xa1 : Counsel him to hold the capital by force...
+g_will --> g_ya1 : Counsel him to keep to the letter of the...
+g_will --> g_za1 : Counsel him to offer Corven a shared reg...
+g_xa1 --> g_xa2 : Walk the closed walls with Captain Sarn.
+g_xa2 --> g_x_bridge : Weigh the cost of a drowned crossing.
+g_x_bridge --> gE1_t1 : Carry Sarn order and open the river-gate...
+g_x_bridge --> g_xb1 : Refuse, and warn the Steward what it wil...
+gE1_t1 --> gE1_t2 : See the water rise in the dark.
+gE1_t2 --> gE1_t3 : Count what the flood took to save the wa...
+gE1_t3 --> gE1 : Carry the seal-ring back through a silen...
+g_xb1 --> g_xb2 : Bring the true cost to the Steward.
+g_xb2 --> g_x_council : Face the capital with fewer choices left...
+g_x_council --> gE2_t1 : Hold the capital and stand the siege.
+g_x_council --> gE3_t1 : Yield the capital and escort the prince ...
+gE2_t1 --> gE2_t2 : Bar the gates for a long winter.
+gE2_t2 --> gE2_t3 : Watch the red ring close around the wall...
+gE2_t3 --> gE2_t4 : Carry orders down through the hard month...
+gE2_t4 --> gE2_t5 : Hold the line through the worst of it.
+gE2_t5 --> gE2_t6 : Feel the siege loosen with the thaw.
+gE2_t6 --> gE2 : Walk the empty meadows at spring.
+gE3_t1 --> gE3_t2 : Wake the prince in the last dark hour.
+gE3_t2 --> gE3_t3 : Slip the true prize out of a closing tra...
+gE3_t3 --> gE3_t4 : Row upriver under a dark sky.
+gE3_t4 --> gE3_t5 : Pass the heir up the loyal water.
+gE3_t5 --> gE3_t6 : Deliver the king into safe hands.
+gE3_t6 --> gE3 : Understand what a steward is for.
+g_ya1 --> g_ya2 : Keep the grey house to the law.
+g_ya2 --> g_ya3 : Carry the law between the banners.
+g_ya3 --> g_y_feast : Come to the truce feast at Midsummer.
+g_y_feast --> g_yb1 : Demand proof and try to expose the stagi...
+g_y_feast --> gE6_t1 : Let the Steward answer with cold restrai...
+g_yb1 --> g_yb2 : Hunt the truth of the poisoned cup.
+g_yb2 --> g_y_trial : Weigh half a truth against a whole war.
+g_y_trial --> gE4_t1 : Bring the proof before the Council openl...
+g_y_trial --> gE5_t1 : Hold the proof to force a truce.
+gE4_t1 --> gE4_t2 : Stand before the assembled banners.
+gE4_t2 --> gE4_t3 : Watch the Duke walk out uncondemned.
+gE4_t3 --> gE4 : Learn the shape of provable truth.
+gE5_t1 --> gE5_t2 : Carry the sealed proof to the Duke tent.
+gE5_t2 --> gE5_t3 : Strike a truce in the space between.
+gE5_t3 --> gE5_t4 : Watch the leashed season hold.
+gE5_t4 --> gE5_t5 : Carry a peace you can never explain.
+gE5_t5 --> gE5 : Set the sealed proof away in the dark.
+gE6_t1 --> gE6_t2 : Watch the Steward answer with the law.
+gE6_t2 --> gE6_t3 : See the accusation lose its footing.
+gE6_t3 --> gE6_t4 : Feel the hall change its mind.
+gE6_t4 --> gE6_t5 : Steady the boy-king through the long nig...
+gE6_t5 --> gE6_t6 : Hold the co-signing intact.
+gE6_t6 --> gE6_t7 : Read the harvest in a quieter realm.
+gE6_t7 --> gE6_t8 : Walk the keep at the year turn.
+gE6_t8 --> gE6 : Know which banner served the crown.
+g_za1 --> g_za2 : Carry the Steward offer between the bann...
+g_za2 --> g_za3 : Sound the mood of each house.
+g_za3 --> g_z_offer : Bring the three roads back to Vane.
+g_z_offer --> gE7_t1 : Ally openly with Lady Miren for a Counci...
+g_z_offer --> gE8_t1 : Deal privately with Duke Corven, house t...
+g_z_offer --> g_zb1 : Keep the Steward above the factions.
+gE7_t1 --> gE7_t2 : Bind the grey and green banners together...
+gE7_t2 --> gE7_t3 : Watch Corven find a door he cannot widen...
+gE7_t3 --> gE7_t4 : Draft the shared regency clause by claus...
+gE7_t4 --> gE7_t5 : Bring the houses to the Heron hall.
+gE7_t5 --> gE7_t6 : See the small king warded by many hands.
+gE7_t6 --> gE7_t7 : Bind the rule onto every banner.
+gE7_t7 --> gE7_t8 : Watch the boy-king breathe easier.
+gE7_t8 --> gE7 : Close the year under a shared banner.
+gE8_t1 --> gE8_t2 : Shake hands with the Duke in his tent.
+gE8_t2 --> gE8_t3 : Learn what a gift becomes in Corven hand...
+gE8_t3 --> gE8 : Feel the cage close one clause at a time...
+g_zb1 --> g_zb2 : Hold the Steward clear of every faction.
+g_zb2 --> g_z_end : Watch the balance narrow to one choice.
+g_z_end --> gE9_t1 : Counsel him to resign the regency to a C...
+g_z_end --> gE10_t1 : Back him in holding the regency to the l...
+gE9_t1 --> gE9_t2 : Help an old man lay down a heavy thing.
+gE9_t2 --> gE9_t3 : Pass the boy-king into shared keeping.
+gE9_t3 --> gE9_t4 : Walk the Steward out of the keep at dusk...
+gE9_t4 --> gE9_t5 : Learn the hardest part of guarding.
+gE9_t5 --> gE9 : Close the year with the honor whole.
+gE10_t1 --> gE10_t2 : Watch an old man close his fist on a cro...
+gE10_t2 --> gE10 : Take up the seal from a fallen Steward.
+r_s1 --> r_s2 : Ride into the red war-camp.
+r_s2 --> r_s3 : Take the Duke measure by firelight.
+r_s3 --> r_s4 : Ride north with the border army.
+r_s4 --> r_s5 : Watch the Duke co-sign the will.
+r_s5 --> r_s6 : Carry the letter you were never shown.
+r_s6 --> r_s7 : Hear the camp blame the wrong house.
+r_s7 --> r_s8 : March on toward the truce feast.
+r_s8 --> r_s9 : Overhear what must never be spoken.
+r_s9 --> r_s10 : Sit through the poisoned feast.
+r_s10 --> r_s11 : Ride guard as the Duke takes the boy.
+r_s11 --> r_s12 : Come to the red fortress by the water.
+r_s12 --> r_s13 : Watch the winter armies gather.
+r_s13 --> r_c1 : Stand at the Duke side on the siege eve.
+r_c1 --> rE1_t1 : Forge the proclamation in the boy-king n...
+r_c1 --> r_c2 : Refuse the lie and keep your word clean.
+rE1_t1 --> rE1 : Set your hand to a child forged wish.
+r_c2 --> rE2_t1 : Reveal to the garrison that the poisonin...
+r_c2 --> r_c3 : Keep the secret and stay silent.
+rE2_t1 --> rE2_t2 : Say the unsayable in the muster yard.
+rE2_t2 --> rE2 : Wear the traitor name for a true word.
+r_c3 --> rE3_t1 : Smuggle word of the sellsword letter to ...
+r_c3 --> r_c4 : Hold it, and trust no other house.
+rE3_t1 --> rE3 : Send the secret over the wall by night.
+r_c4 --> rE4_t1 : Deliver the ultimatum exactly, and burn ...
+r_c4 --> r_c5 : Soften it, and leave a door open.
+rE4_t1 --> rE4 : Speak the words meant to end the talking...
+r_c5 --> rE5_t1 : Obey, and set the child on the battlemen...
+r_c5 --> r_c6 : Refuse, and hide the boy away.
+rE5_t1 --> rE5_t2 : Walk a nine-year-old into the wind on th...
+rE5_t2 --> rE5 : Answer for a shield of children.
+r_c6 --> rE6_t1 : Open the postern gate to Vane men by nig...
+r_c6 --> r_c7 : Keep faith with the walls.
+rE6_t1 --> rE6 : Turn a key you were never given.
+r_c7 --> rE7_t1 : Broker a quiet surrender of the prince t...
+r_c7 --> r_c8 : Press on for a bigger prize.
+rE7_t1 --> rE7_t2 : Carry the terms between two stubborn arm...
+rE7_t2 --> rE7 : Watch the armies stand down in the thaw.
+r_c8 --> rE8_t1 : Confront Corven with the truth of his st...
+r_c8 --> r_c9 : Swallow it, and keep your place.
+rE8_t1 --> rE8 : Name the Duke crimes to his own face.
+r_c9 --> rE9_t1 : Help crown Doran a puppet under red prot...
+r_c9 --> r_c10 : Move to stop the false crowning.
+rE9_t1 --> rE9 : Set a hollow crown on a small head.
+r_c10 --> rE10_t1 : Spirit Doran out of Redwater to true hid...
+r_c10 --> r_c11 : Stay the course and keep him a piece.
+rE10_t1 --> rE10_t2 : Steal a king out of his own captivity.
+rE10_t2 --> rE10 : Vanish from the year with your honor who...
+r_c11 --> rE11_t1 : Turn the garrison to force Corven to a C...
+r_c11 --> r_c12 : Hold, and let the siege decide.
+rE11_t1 --> rE11 : Whisper a fortress into changing its min...
+r_c12 --> rE12_t1 : Raise the gold heron over Redwater, for ...
+r_c12 --> rE13_t1 : Raise the red falcon, and live with it.
+rE12_t1 --> rE12_t2 : Run a boy-king banner up a captured towe...
+rE12_t2 --> rE12 : Close the year under the right banner.
+rE13_t1 --> rE13 : Raise the falcon and count the cost.
+gr_r1 --> gr_r2 : Enter the green chancery.
+gr_r2 --> gr_r3 : Learn the shape of the green cause.
+gr_r3 --> gr_r4 : Take up the pen for the river folk.
+gr_r4 --> gr_petition : Walk the wharves of Wend before the year...
+gr_petition --> gr_m1 : Draft the petition moderate and careful.
+gr_petition --> gr_b1 : Draft the petition bold and demanding.
+gr_m1 --> gr_m2 : Set a careful petition on the page.
+gr_m2 --> gr_bridge : Wake to the news from the fords.
+gr_bridge --> gr_p1 : Pursue the proof of who opened the gate.
+gr_bridge --> gr_h1 : Set it aside and hold the river-towns to...
+gr_p1 --> gr_p2 : Follow the flood to its source.
+gr_p2 --> gr_proof : Hold a drowning-order in your hand.
+gr_proof --> gnE1_t1 : Name Sarn and the Steward openly to the ...
+gr_proof --> gnE2_t1 : Carry the proof quietly to force a truce...
+gnE1_t1 --> gnE1_t2 : Cry murder from the guild-hall steps.
+gnE1_t2 --> gnE1 : Watch the shout become a sword.
+gnE2_t1 --> gnE2_t2 : Lay the drowning-order on the Council ta...
+gnE2_t2 --> gnE2_t3 : Name the price of your silence.
+gnE2_t3 --> gnE2_t4 : Bring the truce home to the river-city.
+gnE2_t4 --> gnE2_t5 : Hold the secret and the seat together.
+gnE2_t5 --> gnE2_t6 : Count the cost and the gain.
+gnE2_t6 --> gnE2 : Close the season with the table changed.
+gr_h1 --> gr_h2 : Turn from proof to people.
+gr_h2 --> gr_hold : Count the cost of the hungry season.
+gr_hold --> gnE3_t1 : Feed the river-towns first, and keep not...
+gr_hold --> gnE4_t1 : Ration hard and arm the river folk.
+gnE3_t1 --> gnE3_t2 : Throw open every green granary.
+gnE3_t2 --> gnE3_t3 : Carry bread down the broken fords.
+gnE3_t3 --> gnE3_t4 : Watch the towns hold through the dark.
+gnE3_t4 --> gnE3_t5 : See the commons come through alive.
+gnE3_t5 --> gnE3 : Learn what the cause was always for.
+gnE4_t1 --> gnE4_t2 : Put pikes in the hands of ferrymen.
+gnE4_t2 --> gnE4 : Count the hunger the pikes cost.
+gr_b1 --> gr_b2 : Set a bold petition on the page.
+gr_b2 --> gr_council : Ride north to the Council in green.
+gr_council --> gr_c1 : Confront the banners and demand a Counci...
+gr_council --> gr_q1 : Walk out and build a coalition of guilds...
+gr_c1 --> gr_c2 : Stand green up before the great banners.
+gr_c2 --> gr_confront : Weigh the mood of a hostile hall.
+gr_confront --> gnE5_t1 : Force the vote in the Council hall.
+gr_confront --> gnE6_t1 : Lead a walkout and rally the river-city.
+gnE5_t1 --> gnE5_t2 : Call the vote and count the raised hands...
+gnE5_t2 --> gnE5_t3 : Win a seat that cannot be taken back.
+gnE5_t3 --> gnE5_t4 : Steady the new order through its first d...
+gnE5_t4 --> gnE5_t5 : Read the year into the record.
+gnE5_t5 --> gnE5 : Close the year at a fuller table.
+gnE6_t1 --> gnE6_t2 : Lead the green delegates out the great d...
+gnE6_t2 --> gnE6 : Teach the banners a quiet lesson.
+gr_q1 --> gr_q2 : Build green outside the great hall.
+gr_q2 --> gr_letter : Come into the proof only green can hold.
+gr_letter --> gr_pub1 : Publish the letter and expose the Duke.
+gr_letter --> gr_br1 : Hold it, and broker a Council with the l...
+gr_pub1 --> gr_publish : Set the Duke letter before the realm.
+gr_publish --> gnE7_t1 : Publish to the whole realm and brace for...
+gr_publish --> gnE8_t1 : Publish only to the houses, privately.
+gnE7_t1 --> gnE7_t2 : Loose the truth on every street.
+gnE7_t2 --> gnE7 : Watch a real truth light a real war.
+gnE8_t1 --> gnE8 : Show the letter to the banners alone.
+gr_br1 --> gr_broker : Trade on the truth instead of loosing it...
+gr_broker --> gnE9_t1 : Convene the Council of Banners at the fo...
+gr_broker --> gnE10_t1 : Trade the letter for the prince safety.
+gnE9_t1 --> gnE9_t2 : Convene the banners where the fords drow...
+gnE9_t2 --> gnE9_t3 : Bind every banner to one table.
+gnE9_t3 --> gnE9_t4 : Write the year into a new shape.
+gnE9_t4 --> gnE9_t5 : Read the whole cause into the record.
+gnE9_t5 --> gnE9 : Stand on the mended fords at winter.
+gnE10_t1 --> gnE10_t2 : Trade a page for a child safety.
+gnE10_t2 --> gnE10_t3 : Choose the certain life over the maybe.
+gnE10_t3 --> gnE10 : Close the year with a king kept safe.
+gE1 --> [*]
+gE2 --> [*]
+gE3 --> [*]
+gE4 --> [*]
+gE5 --> [*]
+gE6 --> [*]
+gE7 --> [*]
+gE8 --> [*]
+gE9 --> [*]
+gE10 --> [*]
+rE1 --> [*]
+rE2 --> [*]
+rE3 --> [*]
+rE4 --> [*]
+rE5 --> [*]
+rE6 --> [*]
+rE7 --> [*]
+rE8 --> [*]
+rE9 --> [*]
+rE10 --> [*]
+rE11 --> [*]
+rE12 --> [*]
+rE13 --> [*]
+gnE1 --> [*]
+gnE2 --> [*]
+gnE3 --> [*]
+gnE4 --> [*]
+gnE5 --> [*]
+gnE6 --> [*]
+gnE7 --> [*]
+gnE8 --> [*]
+gnE9 --> [*]
+gnE10 --> [*]
+
+legend right
+  The Year of Four Banners
+  Band 13-16 · Tier 1 · ~26 min
+  Topology: sorting_hat
+  212 nodes · 33 endings (10+ / 11n / 12-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

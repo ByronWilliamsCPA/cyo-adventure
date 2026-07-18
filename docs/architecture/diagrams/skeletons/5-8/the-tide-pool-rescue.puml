@@ -1,0 +1,233 @@
+@startuml the-tide-pool-rescue
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 85w
+state n_walk #D1C4E9
+n_walk : rising · 75w
+state n_meet #D1C4E9
+n_meet : rising · 80w
+state st_scene #D1C4E9
+st_scene : rising · 70w
+state st_meet #D1C4E9
+st_meet : rising · 75w
+state st_plan #FFF9C4
+st_plan : choice · 80w
+state st_flop_hands #FFF9C4
+st_flop_hands : choice · 75w
+state st_flop_bucket #FFF9C4
+st_flop_bucket : choice · 75w
+state st_gran #FFF9C4
+st_gran : choice · 65w
+state st_win #D1C4E9
+st_win : rising · 75w
+state st_thanks #FFF9C4
+st_thanks : choice · 60w
+state t_st_fi #D1C4E9
+t_st_fi : rising · 60w
+state fi_scene #D1C4E9
+fi_scene : rising · 70w
+state fi_meet #D1C4E9
+fi_meet : rising · 75w
+state fi_plan #FFF9C4
+fi_plan : choice · 80w
+state fi_flop_hands #FFF9C4
+fi_flop_hands : choice · 75w
+state fi_flop_dig #FFF9C4
+fi_flop_dig : choice · 75w
+state fi_gran #FFF9C4
+fi_gran : choice · 65w
+state fi_win #D1C4E9
+fi_win : rising · 75w
+state fi_thanks #D1C4E9
+fi_thanks : rising · 60w
+state t_fi_cr #D1C4E9
+t_fi_cr : rising · 60w
+state cr_scene #D1C4E9
+cr_scene : rising · 70w
+state cr_meet #D1C4E9
+cr_meet : rising · 75w
+state cr_plan #FFF9C4
+cr_plan : choice · 80w
+state cr_flop_tug #FFF9C4
+cr_flop_tug : choice · 75w
+state cr_flop_spoon #FFF9C4
+cr_flop_spoon : choice · 75w
+state cr_gran #FFF9C4
+cr_gran : choice · 65w
+state cr_win #D1C4E9
+cr_win : rising · 75w
+state cr_thanks #FFF9C4
+cr_thanks : choice · 60w
+state t_cr_pw #D1C4E9
+t_cr_pw : rising · 60w
+state pw_scene #D1C4E9
+pw_scene : rising · 70w
+state pw_meet #D1C4E9
+pw_meet : rising · 75w
+state pw_plan #FFF9C4
+pw_plan : choice · 80w
+state pw_flop_roll #FFF9C4
+pw_flop_roll : choice · 75w
+state pw_flop_cheer #FFF9C4
+pw_flop_cheer : choice · 75w
+state pw_gran #FFF9C4
+pw_gran : choice · 65w
+state pw_win #D1C4E9
+pw_win : rising · 75w
+state pw_thanks #D1C4E9
+pw_thanks : rising · 60w
+state n_alldone #D1C4E9
+n_alldone : rising · 80w
+state n_tide #FFF9C4
+n_tide : choice · 85w
+state n_fill #FFF9C4
+n_fill : choice · 75w
+state n_race #D1C4E9
+n_race : rising · 60w
+state n_check #FFF9C4
+n_check : choice · 70w
+state n_wave #FFF9C4
+n_wave : choice · 75w
+state n_picnic #FFF9C4
+n_picnic : choice · 75w
+state e_tide_star #E0E0E0
+e_tide_star : setback (neutral)
+e_tide_star : "The Tide Lends a Hand"
+state e_tide_snail #E0E0E0
+e_tide_snail : setback (neutral)
+e_tide_snail : "The Periwinkle Rides the Waves"
+state e_cartwheel #C8E6C9
+e_cartwheel : success (positive)
+e_cartwheel : "Stella's Thank-You Cartwheel"
+state e_race_win #C8E6C9
+e_race_win : success (positive)
+e_race_win : "Racing the Friendly Tide"
+state e_hermit #C8E6C9
+e_hermit : discovery (positive)
+e_hermit : "The Hermit Crab Surprise"
+state e_shell #C8E6C9
+e_shell : discovery (positive)
+e_shell : "The Glitter-Trail Shell"
+state e_song #C8E6C9
+e_song : completion (positive)
+e_song : "The Welcome-Home Song"
+state e_hooray #C8E6C9
+e_hooray : success (positive)
+e_hooray : "Three Cheers for the Sea"
+state e_names #C8E6C9
+e_names : completion (positive)
+e_names : "Everyone Home"
+state e_toast #C8E6C9
+e_toast : completion (positive)
+e_toast : "A Toast to the Rescue Team"
+state e_story #C8E6C9
+e_story : completion (positive)
+e_story : "The Best Beach Story"
+state e_patrol #C8E6C9
+e_patrol : success (positive)
+e_patrol : "The Low-Tide Rescue Patrol"
+n_start --> n_walk : Follow Gran down the sandy path.
+n_walk --> n_meet : Step out onto the flat low-tide rocks.
+n_meet --> st_scene : Hurry to the sea star on the high ledge.
+st_scene --> st_meet : Climb the low steps for a closer look.
+st_meet --> st_plan : Think up a rescue plan for Stella.
+st_plan --> st_flop_hands : Toss water up with your cupped hands.
+st_plan --> st_flop_bucket : Carry the full bucket up the little slop...
+st_plan --> st_win : Wet your hands and gently slide Stella d...
+st_flop_hands --> st_plan : Line up the plans and try again.
+st_flop_hands --> st_gran : Ask Gran for a tip.
+st_flop_bucket --> st_plan : Shake off the splash and try again.
+st_flop_bucket --> st_gran : Ask Gran for a tip.
+st_gran --> st_win : Try Gran's gentle sliding idea.
+st_gran --> st_plan : Look over the plans once more.
+st_win --> st_thanks : Watch Stella settle into her pool.
+st_thanks --> t_st_fi : Hurry toward the flappy splashing sound.
+st_thanks --> e_tide_star : Sit with Gran and let the tide finish th...
+t_st_fi --> fi_scene : Kneel beside the shrinking puddle.
+fi_scene --> fi_meet : Lean in and say hello to the little fish...
+fi_meet --> fi_plan : Think up a plan to move Flick.
+fi_plan --> fi_flop_hands : Catch Flick with your bare hands.
+fi_plan --> fi_flop_dig : Dig a little river over to the big pool.
+fi_plan --> fi_win : Scoop water and fish up together in the ...
+fi_flop_hands --> fi_plan : Line up the plans and try again.
+fi_flop_hands --> fi_gran : Ask Gran for a tip.
+fi_flop_dig --> fi_plan : Smooth the sand and try again.
+fi_flop_dig --> fi_gran : Ask Gran for a tip.
+fi_gran --> fi_win : Scoop water and fish up together, Gran's...
+fi_gran --> fi_plan : Look over the plans once more.
+fi_win --> fi_thanks : Watch Flick zoom around his big new pool...
+fi_thanks --> t_fi_cr : Follow the clack-clack sound to the seaw...
+t_fi_cr --> cr_scene : Cross the rocks to the seaweed patch.
+cr_scene --> cr_meet : Crouch down beside the tangled crab.
+cr_meet --> cr_plan : Think up a plan to untangle Pinch.
+cr_plan --> cr_flop_tug : Give the seaweed one quick tug.
+cr_plan --> cr_flop_spoon : Hold out the picnic spoon for Pinch to g...
+cr_plan --> cr_win : Untangle one seaweed ribbon at a time.
+cr_flop_tug --> cr_plan : Stand up and try again.
+cr_flop_tug --> cr_gran : Ask Gran for a tip.
+cr_flop_spoon --> cr_plan : Pocket the spoon and try again.
+cr_flop_spoon --> cr_gran : Ask Gran for a tip.
+cr_gran --> cr_win : Untangle one ribbon at a time, Gran's wa...
+cr_gran --> cr_plan : Look over the plans once more.
+cr_win --> cr_thanks : Watch Pinch scuttle into the cool pool.
+cr_thanks --> t_cr_pw : Head for the tiny shell far up the rock.
+cr_thanks --> e_tide_snail : Watch from Gran's towel while the tide f...
+t_cr_pw --> pw_scene : Tiptoe up the dry rock to the tiny shell...
+pw_scene --> pw_meet : Bend down and greet the little periwinkl...
+pw_meet --> pw_plan : Think up a plan to bring Winnie home.
+pw_plan --> pw_flop_roll : Roll Winnie along like a tiny wheel.
+pw_plan --> pw_flop_cheer : Cheer for Winnie to walk faster.
+pw_plan --> pw_win : Offer Winnie a ride on your wet palm.
+pw_flop_roll --> pw_plan : Smile at the stubborn shell and try agai...
+pw_flop_roll --> pw_gran : Ask Gran for a tip.
+pw_flop_cheer --> pw_plan : Line up the plans and try again.
+pw_flop_cheer --> pw_gran : Ask Gran for a tip.
+pw_gran --> pw_win : Offer Winnie a wet-palm ride, Gran's way...
+pw_gran --> pw_plan : Look over the plans once more.
+pw_win --> pw_thanks : Lower Winnie into her cool pool.
+pw_thanks --> n_alldone : Look up at the sparkling line of the sea...
+n_alldone --> n_tide : Watch the first wave-finger slide in.
+n_tide --> n_fill : Follow the tide from pool to pool.
+n_tide --> n_wave : Climb up beside Gran on the flat rock.
+n_tide --> n_picnic : Open the picnic basket to celebrate.
+n_fill --> e_cartwheel : Cheer as Stella's pool spills over.
+n_fill --> n_race : Race the foam line up the dry sand.
+n_fill --> n_check : Peek around for anyone else who needs he...
+n_race --> e_race_win : Run the last few splashy-sounding steps.
+n_check --> e_hermit : Peek under the shadowy ledge.
+n_check --> e_shell : Follow the glittery trail.
+n_wave --> e_song : Sing the welcome-home song.
+n_wave --> e_hooray : Shout three hip-hip-hoorays.
+n_wave --> e_names : Call each friend's name as their pool fi...
+n_picnic --> e_toast : Raise juice cups to the rescue team.
+n_picnic --> e_story : Tell Gran the whole rescue story.
+n_picnic --> e_patrol : Plan the next low-tide rescue patrol.
+e_tide_star --> [*]
+e_tide_snail --> [*]
+e_cartwheel --> [*]
+e_race_win --> [*]
+e_hermit --> [*]
+e_shell --> [*]
+e_song --> [*]
+e_hooray --> [*]
+e_names --> [*]
+e_toast --> [*]
+e_story --> [*]
+e_patrol --> [*]
+
+legend right
+  The Tide Pool Rescue
+  Band 5-8 · Tier 1 · ~7 min
+  Topology: loop_and_grow
+  57 nodes · 12 endings (10+ / 2n / 0-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

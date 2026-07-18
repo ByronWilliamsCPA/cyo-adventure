@@ -1,0 +1,276 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_puddle_jumping_day",
+  "version": 1,
+  "title": "Puddle Jumping Day",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "rain",
+      "family",
+      "play",
+      "kindness",
+      "wonder"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 4,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_window",
+  "nodes": [
+    {
+      "id": "n_window",
+      "body": "<<FILL role=setup words=42 beats='rain patters on the window while Milo watches; the big rain softens to a gentle drizzle; Grandma smiles and says today is Puddle Jumping Day; Milo cheers and runs to find his rain things'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_get_ready",
+          "label": "Put on boots and raincoat.",
+          "target": "n_door"
+        }
+      ]
+    },
+    {
+      "id": "n_door",
+      "body": "<<FILL role=setup words=40 beats='Milo tugs on his red rubber boots and his yellow raincoat, zip; Grandma opens the door to a drippy, shiny world that smells like wet leaves; the wet sidewalk sparkles as if it is waiting just for them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_step_out",
+          "label": "Step outside with Grandma.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "<<FILL role=setup words=38 beats='by the garden gate waits the very first puddle, small and round like a cookie; Milo does a warm-up hop, splish; Grandma laughs and takes his hand, and they walk down to the corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_corner",
+          "label": "Walk to the corner.",
+          "target": "n_corner"
+        }
+      ]
+    },
+    {
+      "id": "n_corner",
+      "body": "<<FILL role=choice words=44 beats='at the corner the walk splits two ways; down the quiet lane, trees drip and little puddles dot the path like polka dots; down the hill, rainwater hurries along the curb in a chattering little stream; Grandma says Milo gets to pick'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lane",
+          "label": "Take the drippy tree lane.",
+          "target": "n_lane"
+        },
+        {
+          "id": "c_hill",
+          "label": "Take the hill with the stream.",
+          "target": "n_hill"
+        }
+      ]
+    },
+    {
+      "id": "n_lane",
+      "body": "<<FILL role=rising words=40 beats='under the dripping trees, raindrops go plip plop on Milo’s hood; he hops puddle to puddle down the polka-dot lane; then he stops, because something small and pink is wiggling on the wet path just ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_close",
+          "label": "Look closer at the wiggle.",
+          "target": "n_wiggle"
+        }
+      ]
+    },
+    {
+      "id": "n_wiggle",
+      "body": "<<FILL role=choice words=44 beats='it is a little earthworm, wiggling on the hard wet path far from any dirt; just past it shines a huge flat puddle, smooth as a mirror; Grandma asks what Milo wants to do, help the worm get home or tiptoe to the giant mirror puddle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_help_worm",
+          "label": "Help the worm home.",
+          "target": "n_worm_carry"
+        },
+        {
+          "id": "c_mirror",
+          "label": "Tiptoe to the mirror puddle.",
+          "target": "n_mirror"
+        }
+      ]
+    },
+    {
+      "id": "n_worm_carry",
+      "body": "<<FILL role=rising words=38 beats='Milo finds a big wet leaf and Grandma helps him scoot the worm gently onto it, like a tiny stretcher; slow and careful, step by step, they carry the worm over to the soft brown dirt of the flower bed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_set_down",
+          "label": "Set the worm down gently.",
+          "target": "n_worm_end"
+        }
+      ]
+    },
+    {
+      "id": "n_worm_end",
+      "body": "<<FILL role=completion words=45 beats='the worm slides into the soft rainy dirt and does a happy wiggle, home at last; Grandma gives Milo a high five with a squelchy glove; they splash all the way home for warm cocoa, and Milo tells the worm story at dinner'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_worm_home",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Home for the Worm"
+      }
+    },
+    {
+      "id": "n_mirror",
+      "body": "<<FILL role=rising words=38 beats='the mirror puddle is the biggest puddle Milo has ever seen, flat and shiny, holding a whole upside-down sky with clouds and their two smiling faces; Milo backs up three big steps and bends his knees'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_count",
+          "label": "Count one, two, three!",
+          "target": "n_mirror_climax"
+        }
+      ]
+    },
+    {
+      "id": "n_mirror_climax",
+      "body": "<<FILL role=rising words=36 beats='Grandma counts one, two, three; Milo runs, boots thumping, raincoat flapping, and jumps as high as he can over the shining sky puddle; for one whole second he is flying'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_splash",
+          "label": "Come down with a great big splash.",
+          "target": "n_splash_end"
+        }
+      ]
+    },
+    {
+      "id": "n_splash_end",
+      "body": "<<FILL role=completion words=45 beats='SPLASH; silver drops fly up like fireworks and patter down on their hoods; the mirror puddle wobbles into giggly rings; Milo is soaked and Grandma is soaked and nobody minds one bit, because that was the biggest splash of the whole day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_biggest_splash",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Biggest Splash"
+      }
+    },
+    {
+      "id": "n_hill",
+      "body": "<<FILL role=rising words=40 beats='rainwater hurries along the curb in a busy little stream, burbling downhill; a leaf sails past like a tiny boat, spins, and zooms away; far down at the bottom of the hill, the clouds are opening and one warm sunbeam pokes through'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_follow_stream",
+          "label": "Follow the busy stream.",
+          "target": "n_stream_fork"
+        }
+      ]
+    },
+    {
+      "id": "n_stream_fork",
+      "body": "<<FILL role=choice words=44 beats='Milo trots beside the chattering stream; Grandma spots a big shiny leaf that would make a splendid boat, and far below the sunbeam grows brighter and warmer; Milo can race a leaf boat down the stream, or follow the sunbeam all the way down the hill'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_race",
+          "label": "Race a leaf boat.",
+          "target": "n_race"
+        },
+        {
+          "id": "c_sun",
+          "label": "Follow the sunbeam down.",
+          "target": "n_downhill"
+        }
+      ]
+    },
+    {
+      "id": "n_race",
+      "body": "<<FILL role=rising words=38 beats='Milo sets the leaf boat on the stream and it zips off, bobbing and twirling through tiny rapids, past a twig and around a pebble; Milo runs alongside in his red boots, cheering his boat on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chase",
+          "label": "Run to the finish line.",
+          "target": "n_race_finish"
+        }
+      ]
+    },
+    {
+      "id": "n_race_finish",
+      "body": "<<FILL role=rising words=36 beats='near the bottom of the hill the water swirls toward a drain grate, the finish line; the leaf boat wobbles, tips, then rights itself and shoots ahead; Milo reaches out his hand just in time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_catch",
+          "label": "Catch the leaf boat.",
+          "target": "n_race_end"
+        }
+      ]
+    },
+    {
+      "id": "n_race_end",
+      "body": "<<FILL role=completion words=45 beats='got it; Milo scoops up the champion leaf boat right at the finish line, drippy and proud; Grandma cheers hooray; Milo tucks the winning leaf into his pocket like a shiny medal, and they stomp-splash all the way home to tell everyone'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_leaf_boat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Champion Leaf Boat"
+      }
+    },
+    {
+      "id": "n_downhill",
+      "body": "<<FILL role=rising words=38 beats='they follow the sunbeam down the hill as the drizzle turns to sprinkles and then to nothing at all; every puddle turns gold in the new light, like little mirrors full of treasure, and the wet street begins to sparkle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_up",
+          "label": "Look up at the sky.",
+          "target": "n_sky"
+        }
+      ]
+    },
+    {
+      "id": "n_sky",
+      "body": "<<FILL role=rising words=34 beats='Grandma stops at the bottom of the hill and points up over the rooftops; Milo tips his head way back, holds Grandma’s hand tight, and looks up, up, up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_see",
+          "label": "See what the sky made.",
+          "target": "n_rainbow_end"
+        }
+      ]
+    },
+    {
+      "id": "n_rainbow_end",
+      "body": "<<FILL role=completion words=45 beats='a whole rainbow arches over the town, red and orange and yellow and green and blue and purple, glowing in the washed-clean sky; Milo and Grandma name every color together and walk home right under it, the best surprise of Puddle Jumping Day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rainbow",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Rainbow Surprise"
+      }
+    }
+  ]
+}

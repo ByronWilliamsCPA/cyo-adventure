@@ -1,0 +1,513 @@
+@startuml the-undertow-season
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 160w
+state n_chair #BBDEFB
+n_chair : setup · 150w
+state n_spark #BBDEFB
+n_spark : setup · 150w
+state n_hub #FFF9C4
+n_hub : choice · 145w
+state n_break #FFF9C4
+n_break : choice · 132w
+state e_season_out #FFCDD2
+e_season_out : setback (negative)
+e_season_out : "The Short Season"
+state pr_pier #FFF9C4
+pr_pier : choice · 135w
+state pr_gear #D1C4E9
+pr_gear : rising · 130w
+state pr_bait #D1C4E9
+pr_bait : rising · 126w
+state pr_rail #D1C4E9
+pr_rail : rising · 130w
+state pr_tide #D1C4E9
+pr_tide : rising · 130w
+state pr_carve #D1C4E9
+pr_carve : rising · 132w
+state pr_moor #D1C4E9
+pr_moor : rising · 132w
+state pr_lines #FFF9C4
+pr_lines : choice · 140w
+state pr_ask #FFF9C4
+pr_ask : choice · 145w
+state pr_straight #D1C4E9
+pr_straight : rising · 170w
+state pr_slant #D1C4E9
+pr_slant : rising · 145w
+state pr_fish #D1C4E9
+pr_fish : rising · 130w
+state pr_push #D1C4E9
+pr_push : rising · 132w
+state pr_cold #FFF9C4
+pr_cold : choice · 132w
+state pr_storm #D1C4E9
+pr_storm : rising · 130w
+state pr_done #FFF9C4
+pr_done : choice · 150w
+state e_pr_shut #FFCDD2
+e_pr_shut : setback (negative)
+e_pr_shut : "The Closed Door"
+state e_pr_quiet #E0E0E0
+e_pr_quiet : discovery (neutral)
+e_pr_quiet : "The Second Rod"
+state e_pr_watch #C8E6C9
+e_pr_watch : discovery (positive)
+e_pr_watch : "Night Tide"
+state td_shop #FFF9C4
+td_shop : choice · 135w
+state td_boxes #D1C4E9
+td_boxes : rising · 126w
+state td_kettle #D1C4E9
+td_kettle : rising · 130w
+state td_rips #D1C4E9
+td_rips : rising · 140w
+state td_charts #D1C4E9
+td_charts : rising · 132w
+state td_drawer #D1C4E9
+td_drawer : rising · 132w
+state td_talk #FFF9C4
+td_talk : choice · 145w
+state td_job #FFF9C4
+td_job : choice · 128w
+state td_august #D1C4E9
+td_august : rising · 150w
+state td_vault #FFF9C4
+td_vault : choice · 150w
+state td_kept #D1C4E9
+td_kept : rising · 140w
+state td_paper #D1C4E9
+td_paper : rising · 145w
+state td_done #FFF9C4
+td_done : choice · 150w
+state e_td_pry #FFCDD2
+e_td_pry : setback (negative)
+e_td_pry : "Not Yours to Take"
+state e_td_counter #E0E0E0
+e_td_counter : discovery (neutral)
+e_td_counter : "Saturdays on Quay Street"
+state e_td_tide #C8E6C9
+e_td_tide : discovery (positive)
+e_td_tide : "Dead Low"
+state rd_cottage #FFF9C4
+rd_cottage : choice · 135w
+state rd_wire #D1C4E9
+rd_wire : rising · 130w
+state rd_mast #D1C4E9
+rd_mast : rising · 130w
+state rd_listen #D1C4E9
+rd_listen : rising · 132w
+state rd_gruff #FFF9C4
+rd_gruff : choice · 132w
+state rd_door #FFF9C4
+rd_door : choice · 136w
+state rd_tea #D1C4E9
+rd_tea : rising · 132w
+state rd_cards #D1C4E9
+rd_cards : rising · 130w
+state rd_teach #FFF9C4
+rd_teach : choice · 140w
+state rd_back #FFF9C4
+rd_back : choice · 135w
+state rd_respect #D1C4E9
+rd_respect : rising · 132w
+state rd_direct #D1C4E9
+rd_direct : rising · 135w
+state rd_truth #D1C4E9
+rd_truth : rising · 170w
+state rd_done #FFF9C4
+rd_done : choice · 150w
+state e_rd_off #FFCDD2
+e_rd_off : setback (negative)
+e_rd_off : "Weather Only"
+state e_rd_net #E0E0E0
+e_rd_net : discovery (neutral)
+e_rd_net : "The Listening Watch"
+state e_rd_key #C8E6C9
+e_rd_key : discovery (positive)
+e_rd_key : "Fist on the Key"
+state mg_office #FFF9C4
+mg_office : choice · 140w
+state mg_clerk #D1C4E9
+mg_clerk : rising · 130w
+state mg_stacks #D1C4E9
+mg_stacks : rising · 130w
+state mg_pier #D1C4E9
+mg_pier : rising · 130w
+state mg_ledger #D1C4E9
+mg_ledger : rising · 130w
+state mg_film #D1C4E9
+mg_film : rising · 145w
+state mg_photo #D1C4E9
+mg_photo : rising · 130w
+state mg_byline #FFF9C4
+mg_byline : choice · 140w
+state mg_quick #D1C4E9
+mg_quick : rising · 130w
+state mg_box #D1C4E9
+mg_box : rising · 145w
+state mg_noon #FFF9C4
+mg_noon : choice · 150w
+state mg_deep #D1C4E9
+mg_deep : rising · 160w
+state mg_letter #FFF9C4
+mg_letter : choice · 145w
+state mg_done #FFF9C4
+mg_done : choice · 150w
+state e_mg_bell #FFCDD2
+e_mg_bell : setback (negative)
+e_mg_bell : "Out the Door"
+state e_mg_dark #E0E0E0
+e_mg_dark : discovery (neutral)
+e_mg_dark : "The Last October"
+state e_mg_return #C8E6C9
+e_mg_return : discovery (positive)
+e_mg_return : "Accession"
+state dn_close #FFF9C4
+dn_close : choice · 135w
+state dn_list #D1C4E9
+dn_list : rising · 130w
+state dn_flags #D1C4E9
+dn_flags : rising · 130w
+state dn_rule #D1C4E9
+dn_rule : rising · 130w
+state dn_log #FFF9C4
+dn_log : choice · 135w
+state dn_cab #D1C4E9
+dn_cab : rising · 140w
+state dn_walk #FFF9C4
+dn_walk : choice · 145w
+state dn_open #D1C4E9
+dn_open : rising · 170w
+state dn_why #D1C4E9
+dn_why : rising · 160w
+state dn_quiet #FFF9C4
+dn_quiet : choice · 136w
+state dn_flat #FFF9C4
+dn_flat : choice · 136w
+state dn_done #FFF9C4
+dn_done : choice · 150w
+state e_dn_push #FFCDD2
+e_dn_push : setback (negative)
+e_dn_push : "Chief and Junior"
+state e_dn_dusk #E0E0E0
+e_dn_dusk : discovery (neutral)
+e_dn_dusk : "The Dusk Round"
+state e_dn_first #C8E6C9
+e_dn_first : discovery (positive)
+e_dn_first : "His Name Was Tomas"
+state fin_eve #D1C4E9
+fin_eve : rising · 150w
+state fin_brief #FFF9C4
+fin_brief : choice · 150w
+state fin_sign #FFF9C4
+fin_sign : choice · 136w
+state fin_sign_a #FFF9C4
+fin_sign_a : choice · 136w
+state fin_sign_b #FFF9C4
+fin_sign_b : choice · 140w
+state fin_sign_j #D1C4E9
+fin_sign_j : rising · 126w
+state fin_sign_r #D1C4E9
+fin_sign_r : rising · 124w
+state e_sign_posts #E0E0E0
+e_sign_posts : discovery (neutral)
+e_sign_posts : "Set in Concrete"
+state e_sign_words #C8E6C9
+e_sign_words : discovery (positive)
+e_sign_words : "The Right Words"
+state fin_word #FFF9C4
+fin_word : choice · 136w
+state fin_word_a #FFF9C4
+fin_word_a : choice · 136w
+state fin_word_b #FFF9C4
+fin_word_b : choice · 145w
+state fin_word_j #D1C4E9
+fin_word_j : rising · 124w
+state fin_word_r #D1C4E9
+fin_word_r : rising · 124w
+state e_word_town #E0E0E0
+e_word_town : discovery (neutral)
+e_word_town : "House by House"
+state e_word_pier #C8E6C9
+e_word_pier : discovery (positive)
+e_word_pier : "He Says He Will Come"
+state fin_shore #FFF9C4
+fin_shore : choice · 136w
+state fin_shore_a #FFF9C4
+fin_shore_a : choice · 132w
+state fin_shore_b #FFF9C4
+fin_shore_b : choice · 132w
+state fin_shore_j #D1C4E9
+fin_shore_j : rising · 124w
+state fin_shore_r #D1C4E9
+fin_shore_r : rising · 124w
+state e_shore_last #E0E0E0
+e_shore_last : discovery (neutral)
+e_shore_last : "Last Posted Hour"
+state e_shore_flag #C8E6C9
+e_shore_flag : discovery (positive)
+e_shore_flag : "The Flag Fold"
+state fin_tide #D1C4E9
+fin_tide : rising · 150w
+state fin_gather #D1C4E9
+fin_gather : rising · 160w
+state fin_speak #FFF9C4
+fin_speak : choice · 155w
+state fin_truth #D1C4E9
+fin_truth : rising · 175w
+state fin_mend #D1C4E9
+fin_mend : rising · 160w
+state fin_close #FFF9C4
+fin_close : choice · 150w
+state fin_half #D1C4E9
+fin_half : rising · 160w
+state fin_after #FFF9C4
+fin_after : choice · 140w
+state fin_watch #FFF9C4
+fin_watch : choice · 140w
+state e_fin_crew #C8E6C9
+e_fin_crew : success (positive)
+e_fin_crew : "The Winter Crew"
+state e_fin_square #E0E0E0
+e_fin_square : completion (neutral)
+e_fin_square : "The Squared Ledger"
+state e_fin_season #C8E6C9
+e_fin_season : completion (positive)
+e_fin_season : "Enough"
+state e_fin_walk #C8E6C9
+e_fin_walk : completion (positive)
+e_fin_walk : "Down the Boards"
+state e_fin_fold #E0E0E0
+e_fin_fold : completion (neutral)
+e_fin_fold : "Folding Chairs"
+state e_fin_watch #C8E6C9
+e_fin_watch : success (positive)
+e_fin_watch : "The Season's Watch"
+n_start --> n_chair : Sign the roster and follow Dane out to t...
+n_chair --> n_spark : Watch the beach, and watch him watching ...
+n_spark --> n_hub : Let the season begin, and keep your eyes...
+n_hub --> pr_pier : Walk the old pier at dusk, where the fis...
+n_hub --> td_shop : Catch the tide-chart shop before Ida fli...
+n_hub --> rd_cottage : Take the bluff path up to the radio cott...
+n_hub --> mg_office : Spend a free morning at the record offic...
+n_hub --> dn_close : Stay after close and help Dane shut the ...
+n_hub --> n_break : Duck into the guard room and catch your ...
+n_hub --> fin_eve : Let the posted weeks run out toward the ...
+n_break --> n_hub : Rinse the mug and get back out into the ...
+n_break --> e_season_out : Admit to Vega the summer has gotten heav...
+pr_pier --> pr_gear : Carry his bait bucket up the boards unas...
+pr_pier --> pr_rail : Stand at the rail short of him and read ...
+pr_pier --> pr_carve : Study the carvings in the rail wood on t...
+pr_gear --> pr_bait : Take the second rod he nudges toward you...
+pr_gear --> pr_rail : Ask about the water while your hands wor...
+pr_bait --> pr_lines : Fish beside him while the light goes.
+pr_rail --> pr_tide : Ask him how long that seam has run there...
+pr_rail --> pr_lines : Join him at the rods without pressing.
+pr_tide --> pr_lines : Let that last line settle, and fish.
+pr_carve --> pr_moor : Ask him who keeps the wax fresh in T.R.
+pr_carve --> pr_lines : Say nothing yet and join him at the rods...
+pr_moor --> pr_ask : Ask what happened to the boat.
+pr_moor --> pr_lines : Take the card as given and fish beside h...
+pr_lines --> pr_ask : Let the question rise: ask about the sum...
+pr_lines --> pr_storm : Help him strike the gear as a squall lin...
+pr_ask --> pr_straight : Ask him straight what happened the night...
+pr_ask --> pr_slant : Ask sideways: who keeps the wax fresh in...
+pr_ask --> pr_fish : Ask nothing; bait the hook he hands you.
+pr_ask --> pr_push : Repeat the story the kids tell and ask h...
+pr_straight --> pr_done : Walk him to the pier head in the dark.
+pr_slant --> pr_done : Carry the name off the pier with care.
+pr_fish --> pr_done : Call it an evening and walk back down th...
+pr_fish --> e_pr_quiet : Let the evenings themselves become the w...
+pr_push --> pr_cold : Watch him pack, and understand the size ...
+pr_cold --> n_hub : Apologize once, simply, and leave him th...
+pr_cold --> e_pr_shut : Try to explain what you actually meant b...
+pr_storm --> pr_done : See the gear stowed and the chain re-hoo...
+pr_done --> n_hub : Back along the seafront to the station.
+pr_done --> td_shop : The tide shop's window is still lit on Q...
+pr_done --> fin_eve : The season's last week is posted; let it...
+pr_done --> e_pr_watch : Stay for the whole night tide at his sho...
+td_shop --> td_boxes : Carry her delivery cartons in from the s...
+td_shop --> td_rips : Ask her to teach the tide arithmetic a g...
+td_shop --> td_charts : Browse the chart wall back toward the ol...
+td_boxes --> td_kettle : Take the tea she pours and the stool she...
+td_kettle --> td_talk : Answer the question she has not asked ye...
+td_kettle --> td_charts : Ask about the oldest drawers on the wall...
+td_rips --> td_talk : Ask what a junior guard should ask next.
+td_rips --> td_charts : Follow the wall of drawers back through ...
+td_charts --> td_drawer : Rest a hand on the worn pull and see wha...
+td_drawer --> td_talk : Answer her straight, or do not.
+td_talk --> td_august : Tell the truth: you want to understand t...
+td_talk --> td_job : Keep it professional: current tables, fo...
+td_job --> td_august : Turn at the door and tell her the real r...
+td_job --> e_td_counter : Let Saturdays at her counter become thei...
+td_august --> td_vault : Ask why this page matters so much.
+td_vault --> td_kept : Ask why she kept it all these years.
+td_vault --> td_paper : Ask what the paper printed instead.
+td_vault --> e_td_pry : Reach for your phone to photograph the s...
+td_kept --> td_done : Thank her the way the sheet deserves.
+td_paper --> td_done : Fold the fact away carefully and take yo...
+td_done --> n_hub : Back to the station through the gold str...
+td_done --> rd_cottage : The bluff path behind her shop climbs to...
+td_done --> fin_eve : The season's last week is posted; let it...
+td_done --> e_td_tide : Go out at dead low with her to walk the ...
+rd_cottage --> rd_wire : Right the sagging guy-wire on the path b...
+rd_cottage --> rd_listen : Wait out the six o'clock weather on the ...
+rd_cottage --> rd_gruff : Knock and lead with the badge and your q...
+rd_wire --> rd_mast : Step into the cottage of wires.
+rd_mast --> rd_door : Follow him inside at last.
+rd_listen --> rd_door : Come in out of the wind when he offers.
+rd_gruff --> rd_listen : Take the hint: sit down on the step and ...
+rd_gruff --> e_rd_off : Press the question again over the foreca...
+rd_door --> rd_teach : Ask him to teach the log discipline firs...
+rd_door --> rd_tea : Accept tea and the story of the wall of ...
+rd_door --> rd_direct : Ask him plainly for the year everyone ci...
+rd_tea --> rd_cards : Ask about the cards until he trusts your...
+rd_cards --> rd_teach : Ask him to teach you the discipline behi...
+rd_cards --> rd_back : Let your eyes rest on the backwards spin...
+rd_teach --> rd_back : Look up from the practice page to the ba...
+rd_teach --> e_rd_net : Let the log craft itself be the season's...
+rd_back --> rd_truth : Ask nothing; let him take it down in his...
+rd_back --> rd_respect : Offer out loud to leave it alone if it i...
+rd_respect --> rd_truth : Stand beside him as he finds the page.
+rd_direct --> rd_truth : Sit, and watch him find the page.
+rd_truth --> rd_done : Close the book the way he taught you, ca...
+rd_done --> n_hub : Back to the station under the first star...
+rd_done --> pr_pier : The pier lights show at the north end be...
+rd_done --> fin_eve : The season's last week is posted; let it...
+rd_done --> e_rd_key : Stay for the night watch with the headph...
+mg_office --> mg_clerk : Ask for the Gazette's August of the drow...
+mg_office --> mg_pier : Ask for everything on the old pier itsel...
+mg_office --> mg_ledger : Start sideways with the harbormaster's l...
+mg_clerk --> mg_stacks : Follow her back through the stacks.
+mg_stacks --> mg_film : Thread the reel under the green lamp.
+mg_pier --> mg_film : Now the newspaper itself.
+mg_pier --> mg_ledger : Cross-check the harbormaster's ledgers f...
+mg_ledger --> mg_film : Now the newspaper's version of the same ...
+mg_film --> mg_photo : Look closer at the photograph.
+mg_photo --> mg_byline : Ask Amaro about the byline.
+mg_byline --> mg_box : Pull the Castellan boxes and dig properl...
+mg_byline --> mg_quick : Read just the follow-up issues on the re...
+mg_byline --> mg_done : Stop here: note the reel numbers and mak...
+mg_quick --> mg_noon : The boxes, then; the reel has said all i...
+mg_box --> mg_noon : Read it standing up, twice, and check th...
+mg_noon --> mg_deep : Trade the shift: call Vega to cover, and...
+mg_noon --> mg_done : Note the box numbers, sign a request sli...
+mg_noon --> e_mg_bell : Slide the proof-sheet into your bag to s...
+mg_deep --> mg_letter : Hold the sealed letter and decide what i...
+mg_letter --> mg_done : Leave it sealed; log it with Amaro so it...
+mg_letter --> e_mg_dark : Stay past closing while she locks around...
+mg_done --> n_hub : Back toward the station and the afternoo...
+mg_done --> pr_pier : Carry what the morgue holds toward the p...
+mg_done --> fin_eve : The season's last week is posted; let it...
+mg_done --> e_mg_return : Come back every free morning until the C...
+dn_close --> dn_list : Take half the closing list unasked.
+dn_close --> dn_rule : Ask the junior's forbidden question: why...
+dn_close --> dn_log : Write the day into the station log hones...
+dn_list --> dn_flags : Fold the last flag with him.
+dn_flags --> dn_walk : Walk the beach with him while the light ...
+dn_rule --> dn_log : Let the log cabinet ask the next questio...
+dn_rule --> dn_walk : Leave it and walk the beach with him.
+dn_log --> dn_walk : Ask him, not the cabinet.
+dn_log --> dn_cab : Ask to read his old season book.
+dn_cab --> dn_walk : Close the book and go find him on the sa...
+dn_walk --> dn_open : Tell him plainly what the summer has bee...
+dn_walk --> dn_why : Ask him straight why he never told anyon...
+dn_walk --> dn_quiet : Match his silence step for step and let ...
+dn_walk --> dn_flat : Repeat the street's version: people say ...
+dn_open --> dn_done : Walk the rest of the beach with him in c...
+dn_why --> dn_done : Carry the answer down the beach beside h...
+dn_quiet --> dn_done : Let the evening end at the station steps...
+dn_quiet --> e_dn_dusk : Make the dusk walk the season's standing...
+dn_flat --> n_hub : Withdraw it plainly and take the silence...
+dn_flat --> e_dn_push : Stand on the street's version and ask ag...
+dn_done --> n_hub : Goodnight, and back into the season.
+dn_done --> fin_eve : The season's last week is posted; let it...
+dn_done --> e_dn_first : Ask him, before goodnight, who Tomas act...
+fin_eve --> fin_brief : Stay at the table and hear the plan.
+fin_brief --> fin_sign : Take the sign and the plaque.
+fin_brief --> fin_word : Carry the word through town.
+fin_brief --> fin_shore : Hold the shore and close the season righ...
+fin_sign --> fin_sign_a : Set the posts at the pier head with the ...
+fin_sign --> fin_sign_b : Letter the plaque with Dane at the bench...
+fin_sign_a --> fin_sign_j : Bolt the last brace and get back for the...
+fin_sign_a --> e_sign_posts : Stay with the crew until the concrete cu...
+fin_sign_b --> fin_sign_j : Rack the finished plaque for Sunday and ...
+fin_sign_b --> e_sign_words : Sit with Dane until the lacquer sets, sa...
+fin_sign_j --> fin_sign_r : Report the job done.
+fin_sign_r --> fin_tide : Sunday comes on the ebb.
+fin_word --> fin_word_a : Make the rounds of shops and sheds till ...
+fin_word --> fin_word_b : Walk out the boards and ask Pruitt himse...
+fin_word_a --> fin_word_j : Enough doors; carry the count back.
+fin_word_a --> e_word_town : Keep going till every last house on the ...
+fin_word_b --> fin_word_j : Leave him with it; the asking was the er...
+fin_word_b --> e_word_pier : Stay the evening; let him decide out lou...
+fin_word_j --> fin_word_r : Bring the count back to the station.
+fin_word_r --> fin_tide : Sunday comes on the ebb.
+fin_shore --> fin_shore_a : Run the last patrol sweep with Vega, end...
+fin_shore --> fin_shore_b : Set the pier approach for Sunday: rope l...
+fin_shore_a --> fin_shore_j : Rack the flags and rejoin the crew.
+fin_shore_a --> e_shore_last : Sit the empty chair through the very las...
+fin_shore_b --> fin_shore_j : Walk the setup once more and rejoin the ...
+fin_shore_b --> e_shore_flag : Ask Dane to teach you the station's flag...
+fin_shore_j --> fin_shore_r : Report the shore ready.
+fin_shore_r --> fin_tide : Sunday comes on the ebb.
+fin_tide --> fin_gather : Walk out the boards with the town.
+fin_gather --> fin_speak : Find a place at the rail as Dane steps u...
+fin_speak --> fin_truth : Stand up beside Dane and ask the keepers...
+fin_speak --> fin_half : Hold the silence and let Dane say what o...
+fin_speak --> fin_watch : Slip back and take the chair line so eve...
+fin_truth --> fin_mend : Look at Pruitt as the record finishes.
+fin_mend --> fin_close : Let the gathering loosen into the mornin...
+fin_close --> e_fin_crew : Take the winter-crew place he offers, ch...
+fin_close --> e_fin_square : Before he says anything, square the ledg...
+fin_close --> e_fin_season : Shake his hand and let the season be wha...
+fin_half --> fin_after : Stay while the boards empty.
+fin_after --> e_fin_walk : Walk Pruitt down the pier at his own pac...
+fin_after --> e_fin_fold : Stay folding chairs with Dane while the ...
+fin_watch --> e_fin_watch : Keep the watch to the last word and the ...
+e_season_out --> [*]
+e_pr_shut --> [*]
+e_pr_quiet --> [*]
+e_pr_watch --> [*]
+e_td_pry --> [*]
+e_td_counter --> [*]
+e_td_tide --> [*]
+e_rd_off --> [*]
+e_rd_net --> [*]
+e_rd_key --> [*]
+e_mg_bell --> [*]
+e_mg_dark --> [*]
+e_mg_return --> [*]
+e_dn_push --> [*]
+e_dn_dusk --> [*]
+e_dn_first --> [*]
+e_sign_posts --> [*]
+e_sign_words --> [*]
+e_word_town --> [*]
+e_word_pier --> [*]
+e_shore_last --> [*]
+e_shore_flag --> [*]
+e_fin_crew --> [*]
+e_fin_square --> [*]
+e_fin_season --> [*]
+e_fin_walk --> [*]
+e_fin_fold --> [*]
+e_fin_watch --> [*]
+
+legend right
+  The Undertow Season
+  Band 13-16 · Tier 2 · ~11 min
+  Topology: open_map
+  128 nodes · 28 endings (12+ / 10n / 6-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

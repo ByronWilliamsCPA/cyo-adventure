@@ -1,0 +1,3124 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_hollow_sea",
+  "version": 1,
+  "title": "The Hollow Sea",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "exploration",
+      "silence and awe",
+      "mastery and inheritance",
+      "the sea"
+    ],
+    "estimated_minutes": 24,
+    "ending_count": 40,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "open_map",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "soundings",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "How far into the Hollow Wren has truly pressed: how many of the sea's deep reaches have been sounded to their heart. It climbs one mark (once per reach) each time a crossing is seen through at that reach's departure, caps at 2 below the six-reach count, and never falls. It is the clock the sea mutates under; the Hollow gives its fullest answer at the center only to a boat that has read at least two of its reaches (soundings at max)."
+    },
+    {
+      "name": "supplies",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Kestrel's stores in quarter-marks: water, lamp-oil, tallow, spare line. Long or hard crossings inside a reach burn them; Cradle Cove and the finale muster renew them to full on arrival. A deep crossing to a reach's heart needs stores of 2 or more; a boat run low can still complete the reach by the honest shallow reading."
+    },
+    {
+      "name": "hull",
+      "type": "bool",
+      "initial": true,
+      "description": "Whether Kestrel's clinker hull is whole or holed. Reef and wreck hazards inside a reach can open a seam; Cradle Cove and the finale muster careen and patch her sound again on arrival. A deep dive or a storm-climb needs a whole boat riding safe below; a holed boat can still complete the reach by the honest shallow reading."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=158 beats='Dawn at Cradle Cove: Wren, fifteen, apprentice charter aboard the sounding-lugger Kestrel, keeper of the lead-line and the log; old Sounder Mabe, the last living charter of the Hollow, the great inland sea that swallows sound; Fen, Wren's age, the other hand who tends sail and stores; establish the Hollow's one strange law as plain fact, that a voice or a bell or a gull's cry goes flat and dies a few yards out over the water, and dies more the deeper and farther you go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Cast off with Mabe and Fen into the grey morning.",
+          "target": "n_deck"
+        }
+      ]
+    },
+    {
+      "id": "n_deck",
+      "body": "<<FILL role=setup words=152 beats='Aboard Kestrel standing out of the cove: Mabe teaches the first rule of the Hollow, that out here you steer by eye and lead and hand and never by ear, and that the silence is a thing to meet with awe and not with fear; Wren learns the hand-signs the crew talks in once the shore drops away and speech stops carrying over the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_deck_1",
+          "label": "Learn the signs and take up the lead-line.",
+          "target": "n_shed"
+        }
+      ]
+    },
+    {
+      "id": "n_shed",
+      "body": "<<FILL role=setup words=150 beats='Mabe's chart-shed at the cove, walls hung with the great chart of the Hollow, its reaches half-blank: the reefs and burnt isles and drowned places waiting to be read; Mabe says the season's work is to sound them one by one, and that a charter is made by the sea and not by the shed, and that the craft will die with Mabe unless a pair of young hands takes it up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_shed_1",
+          "label": "Study the blank reaches and choose where to begin.",
+          "target": "n_launch"
+        }
+      ]
+    },
+    {
+      "id": "n_launch",
+      "body": "<<FILL role=setup words=148 beats='Kestrel provisioned, water-breakers full and the hull freshly payed: Mabe names the plan plainly, cross to the reaches from the cove and read each, then come back to Cradle Cove to re-store and careen between crossings; the anchorage is the one safe breath and the last place sound still works; everything past the headland is the Hollow, and it is silent'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_launch_1",
+          "label": "Point Kestrel for the headland and the open Hollow.",
+          "target": "n_cove"
+        }
+      ]
+    },
+    {
+      "id": "n_cove",
+      "body": "<<FILL role=choice words=150 beats='Cradle Cove, the anchorage and the standing hub: the sheltered notch where Kestrel moors, the last place a voice carries, Mabe's chart-shed on the shingle, the water-breakers and the pitch-pot and the careening posts; write this arrival-neutral, the same steady cove however often and in whatever state Kestrel comes home; the reaches of the Hollow lie beyond the headland to be read in any order, and the stores are renewed and the hull made whole here between them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cove_1",
+          "label": "Cross to the Bell Skerries, where the drowned bell hangs.",
+          "target": "bs_shore"
+        },
+        {
+          "id": "c_n_cove_2",
+          "label": "Cross to the Weedland, the floating raft miles wide.",
+          "target": "wl_shore"
+        },
+        {
+          "id": "c_n_cove_3",
+          "label": "Cross to Cinder Isle under its dead black light.",
+          "target": "ci_shore"
+        },
+        {
+          "id": "c_n_cove_4",
+          "label": "Cross to the Glass Flats, the mute mirror-shallows.",
+          "target": "gf_shore"
+        },
+        {
+          "id": "c_n_cove_5",
+          "label": "Cross to the Drowned Stair over Kirktown-under.",
+          "target": "ds_shore"
+        },
+        {
+          "id": "c_n_cove_6",
+          "label": "Cross to the Breathing Cave on the far cliff.",
+          "target": "bc_shore"
+        },
+        {
+          "id": "c_n_cove_7",
+          "label": "Stay in the cove a while and gather yourself.",
+          "target": "n_galley"
+        },
+        {
+          "id": "c_n_cove_8",
+          "label": "Answer the muster: the Stilling is near.",
+          "target": "fin_muster"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "supplies",
+          "value": 3
+        },
+        {
+          "op": "set",
+          "var": "hull",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "n_galley",
+      "body": "<<FILL role=choice words=132 beats='The crew's rest at the cove between crossings, the one place the Hollow's silence lets go: Fen's kettle on the little stove, Mabe mending a lead-line by the door, the chart-shed warm with lamplight; a breath is allowed here, and the next reach can wait for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_galley_1",
+          "label": "Warm up and get back out to the boat.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_n_galley_2",
+          "label": "Tell Mabe the silence has grown too heavy to keep crossing into.",
+          "target": "e_ashore"
+        }
+      ]
+    },
+    {
+      "id": "e_ashore",
+      "body": "<<FILL role=failure words=134 beats='Saying it plainly is its own kind of courage: Wren tells Mabe the Hollow's silence has grown too heavy to keep rowing into, and Mabe, without one word of blame, gives Wren the chart-shed and the log to keep while the season's soundings go on with Fen at the lead; some seas are too big for a first year, and naming that is the grown thing to do, not the small one; write it dignified, a limit honestly met'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ashore",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Put Ashore"
+      }
+    },
+    {
+      "id": "bs_shore",
+      "body": "<<FILL role=choice words=152 beats='Kestrel raises the Bell Skerries at first light: a low reef of black rock where the swell climbs and falls with no sound at all, and below the surface the green shadow of a drowned chapel's bronze bell hangs from its broken beam; Mabe names the reef at the tiller; write arrival-neutral, the same reef whatever crossing brings Wren here; three ways to come at it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_shore_1",
+          "label": "Take the lead beside Mabe along the reef's edge.",
+          "target": "bs_help"
+        },
+        {
+          "id": "c_bs_shore_2",
+          "label": "Stand off at the oars and watch the bell-water.",
+          "target": "bs_watch"
+        },
+        {
+          "id": "c_bs_shore_3",
+          "label": "Row in close to the near gap in the black teeth.",
+          "target": "bs_near"
+        }
+      ]
+    },
+    {
+      "id": "bs_help",
+      "body": "<<FILL role=rising words=130 beats='Working the tallowed lead along the reef's edge beside Mabe, the lead coming up scored and scratched by black rock, learning to read a reef by the marks it leaves on the tallow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_help_1",
+          "label": "Let Mabe teach the reef's grain.",
+          "target": "bs_helpb"
+        }
+      ]
+    },
+    {
+      "id": "bs_helpb",
+      "body": "<<FILL role=rising words=132 beats='Mabe teaches the reef's grain by touch, where the rock bites a keel and where it lets one by, a chart drawn in scratches on the wax and read with the fingers, not the eye'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_helpb_1",
+          "label": "Bring the boat over the bell-water.",
+          "target": "bs_conv"
+        }
+      ]
+    },
+    {
+      "id": "bs_watch",
+      "body": "<<FILL role=rising words=132 beats='Ship the oars and watch the swell climb the reef where the bell hangs, a bell that should toll in this weight of water and gives back nothing, the silence sitting exactly where a voice should be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_watch_1",
+          "label": "Watch the bronze lip meet the water.",
+          "target": "bs_watchb"
+        }
+      ]
+    },
+    {
+      "id": "bs_watchb",
+      "body": "<<FILL role=choice words=134 beats='The swell lifts the bell and drops it and the bronze lip strikes the water and not one note of it carries, and the awe of a sea that can swallow a bell's whole voice settles over Wren, cold and enormous'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_watchb_1",
+          "label": "Bring the boat over the bell-water.",
+          "target": "bs_conv"
+        },
+        {
+          "id": "c_bs_watchb_2",
+          "label": "Stay with the soundless bell as the light climbs.",
+          "target": "e_bs_awe"
+        }
+      ]
+    },
+    {
+      "id": "bs_near",
+      "body": "<<FILL role=choice words=132 beats='Rowing in close to the near gap between two black teeth, where the bell-water lies quiet and deep, Fen at the bow with a hand out to fend the rock off; how hard you take the gap'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_near_1",
+          "label": "Scrape her through the narrow gap to reach it fast.",
+          "target": "bs_risk",
+          "effects": [
+            {
+              "op": "set",
+              "var": "hull",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": "c_bs_near_2",
+          "label": "Back the oars and go the long clean way around.",
+          "target": "bs_safe"
+        },
+        {
+          "id": "c_bs_near_3",
+          "label": "Push deeper among the teeth as the light shifts.",
+          "target": "bs_reckless"
+        }
+      ]
+    },
+    {
+      "id": "bs_reckless",
+      "body": "<<FILL role=choice words=130 beats='Pushing the boat deeper among the black teeth as the light shifts on the water, the rock closing on both sides, Fen's warning shout going flat and dying two feet from the mouth that makes it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_reckless_1",
+          "label": "Press on and trust your eye in the closing rock.",
+          "target": "e_bs_risk"
+        },
+        {
+          "id": "c_bs_reckless_2",
+          "label": "Pull back while there is still water to pull into.",
+          "target": "bs_safe"
+        }
+      ]
+    },
+    {
+      "id": "bs_risk",
+      "body": "<<FILL role=rising words=132 beats='Scraping Kestrel through the narrow gap to reach the bell-water fast: a black tooth opens a seam low in the planking and the sea starts in; Fen goes hard to the bail; the boat holed but afloat and over the bell'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_risk_1",
+          "label": "Hold her over the bell and take stock.",
+          "target": "bs_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "bs_safe",
+      "body": "<<FILL role=rising words=128 beats='Backing the oars and taking the long clean water around the reef's shoulder, slower by half an hour, the hull whole and dry under you and the bell-water reached without a scratch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_safe_1",
+          "label": "Bring her over the bell.",
+          "target": "bs_conv"
+        }
+      ]
+    },
+    {
+      "id": "bs_conv",
+      "body": "<<FILL role=choice words=134 beats='Over the bell-water at the slack now, the bronze shadow steady and green below the hull, the reef quiet all around; it is time to read the drowned bell'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_conv_1",
+          "label": "Ready the gear and read the bell.",
+          "target": "bs_read"
+        },
+        {
+          "id": "c_bs_conv_2",
+          "label": "Let the crew settle the boat first.",
+          "target": "bs_extra1"
+        }
+      ]
+    },
+    {
+      "id": "bs_extra1",
+      "body": "<<FILL role=rising words=128 beats='Fen holds the boat on the oars while Mabe rigs the sounding gear, the three of them working by hand-sign in the silence, a crew that long ago learned to say everything it needs with its hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_extra1_1",
+          "label": "Ready the gear and read the bell.",
+          "target": "bs_read"
+        }
+      ]
+    },
+    {
+      "id": "bs_read",
+      "body": "<<FILL role=choice words=145 beats='The bell green and close under the hull, the slack tide holding the boat steady over it; how you take this reading of a bell that cannot ring'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_read_1",
+          "label": "Decide how to read the drowned bell.",
+          "target": "bs_gate"
+        },
+        {
+          "id": "c_bs_read_2",
+          "label": "Ask Mabe about the bell first.",
+          "target": "bs_extra2"
+        }
+      ]
+    },
+    {
+      "id": "bs_extra2",
+      "body": "<<FILL role=rising words=128 beats='Mabe signs that the chapel bell was rung once for every soul the reef ever took, and that when the drownings passed all counting the sea took the bell's own voice too, so it could not name them anymore; a reef that keeps a silence on purpose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_extra2_1",
+          "label": "Decide how to read the drowned bell.",
+          "target": "bs_gate"
+        }
+      ]
+    },
+    {
+      "id": "bs_gate",
+      "body": "<<FILL role=choice words=140 beats='The choice over the bell: go down to it with a sound boat riding above, or read it from the surface with the lead; the deep way needs a whole hull under you and the sea gives no allowance for a holed one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_gate_1",
+          "label": "Go over the side and down to the bell.",
+          "target": "bs_deep1",
+          "condition": {
+            "==": [
+              {
+                "var": "hull"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_bs_gate_2",
+          "label": "Read the bell from the surface with the lead.",
+          "target": "bs_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bs_deep1",
+      "body": "<<FILL role=rising words=155 beats='Over the side and down the anchor line to the bell, a sound boat riding safe above you, the water clearing as you go; the bronze grows close and cold and you set your knuckle to its lip and strike it, and feel in your own chest the toll the sea will not let your ears have'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_deep1_1",
+          "label": "Hang by the bell in the deep hush.",
+          "target": "bs_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "bs_deep2",
+      "body": "<<FILL role=choice words=148 beats='Hanging by the bell in the total underwater hush, the swallowed toll still ringing somewhere behind your ribs, the green light and the cold and the awe of it holding you longer than your breath should; how long you stay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_deep2_1",
+          "label": "Surface, log the reading, and come away.",
+          "target": "bs_done"
+        },
+        {
+          "id": "c_bs_deep2_2",
+          "label": "Stay with the bell one breath too long, and know it.",
+          "target": "e_bs_deep"
+        }
+      ]
+    },
+    {
+      "id": "bs_shallow",
+      "body": "<<FILL role=rising words=132 beats='Reading the bell-chamber from the surface, the lead lowered gently into the bronze mouth, sounding the depth of a swallowed voice, careful and exact, the craft doing what the dive would do and keeping you dry to do it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_shallow_1",
+          "label": "Log the reading and come away.",
+          "target": "bs_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "bs_shallowb",
+      "body": "<<FILL role=choice words=134 beats='The lead comes up with its reading, the bell and its chamber logged, the black reef charted from above the water; an honest survey, the whole of it got without going down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_shallowb_1",
+          "label": "Stow the gear and come away.",
+          "target": "bs_done"
+        },
+        {
+          "id": "c_bs_shallowb_2",
+          "label": "Sit a while over the sounded bell before you go.",
+          "target": "e_bs_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bs_done",
+      "body": "<<FILL role=choice words=148 beats='Kestrel pulls off the Bell Skerries, the black reef sinking astern, the bronze going back to its own silence; write arrival-neutral to whatever passed on the reef, the reading is taken and logged either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_done_1",
+          "label": "Bear away for Cradle Cove to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_bs_done_2",
+          "label": "Answer the muster if the Stilling has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_bs_done_3",
+          "label": "Lie off the reef and chart it fully before you leave.",
+          "target": "e_bs_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_bs_awe",
+      "body": "<<FILL role=ending words=136 beats='The soundless bell watched through a whole climbing tide, the bronze lifting and dropping and never once ringing, until Wren understands the reef keeps its quiet the way the crew keeps theirs, on purpose and out of a kind of respect; some things the sea unmakes so they cannot be said carelessly; awe over terror, and no reading needed to know it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Bell That Cannot Toll"
+      }
+    },
+    {
+      "id": "e_bs_risk",
+      "body": "<<FILL role=failure words=132 beats='The black teeth close the last of the water and Kestrel fetches up hard, a plank stove, the crew hauling her off by main strength with the pump going; no one hurt and the boat saved, but the reef won this reading and sends them limping for the cove with nothing charted; a reef does not bluff, and Wren will remember that it did not; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Holed on the Teeth"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_bs_deep",
+      "body": "<<FILL role=ending words=142 beats='One breath too long by the bell, and the cold and the hush nearly keep Wren; Mabe's hand on the line brings them up gasping into the grey air, and neither says a word, because the bell has already said the only thing it says; the reading is logged and the lesson under it deeper than the reef, that the Hollow's beauty and its danger are the same thing wearing one face'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Toll in Your Bones"
+      }
+    },
+    {
+      "id": "e_bs_shallow",
+      "body": "<<FILL role=ending words=134 beats='The reef charted whole from the surface, the bell sounded, the chamber measured, the black grain of the rock drawn clean on the wax; Mabe reads the log and gives the small nod that is the whole of praise; a careful hand kept a whole boat, and the Bell Skerries are the Hollow's no longer only, they are on the chart'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Sounded from Above"
+      }
+    },
+    {
+      "id": "e_bs_linger",
+      "body": "<<FILL role=ending words=138 beats='Lying off the reef until the light goes gold, Wren charts every tooth and gut of the Bell Skerries by lead and eye, the fullest reading the reef has had in a generation; Mabe watches the young hands work and says by sign only that the reef will do for a charter, which from Mabe is a coronation'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Charting the Black Reef"
+      }
+    },
+    {
+      "id": "wl_shore",
+      "body": "<<FILL role=choice words=152 beats='Kestrel comes to the edge of the Weedland at noon: a raft of floating weed miles wide, green and matted, the open water simply gone; the poles come out; somewhere at its heart Mabe swears there lies a clear becalmed lagoon no charter has read in twenty years; write arrival-neutral, the weed the same wall whatever crossing brings Wren here; three ways to take it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_shore_1",
+          "label": "Work the poles with Fen and find the drift lanes.",
+          "target": "wl_help"
+        },
+        {
+          "id": "c_wl_shore_2",
+          "label": "Rest the pole and read the green silence.",
+          "target": "wl_watch"
+        },
+        {
+          "id": "c_wl_shore_3",
+          "label": "Strike off toward a dark seam that might be a fast lane.",
+          "target": "wl_near"
+        }
+      ]
+    },
+    {
+      "id": "wl_help",
+      "body": "<<FILL role=rising words=130 beats='Working the poles beside Fen, reading the weed for the drift lanes where it thins to a green soup a boat can be leaned through, a slow craft of finding water inside water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_help_1",
+          "label": "Let Mabe teach the current under the weed.",
+          "target": "wl_helpb"
+        }
+      ]
+    },
+    {
+      "id": "wl_helpb",
+      "body": "<<FILL role=rising words=132 beats='Mabe shows how the weed hides the current beneath it, how a lane that looks solid will part if you set the pole and lean it right, patience made into a way of steering'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_helpb_1",
+          "label": "Push on toward the pale water at the heart.",
+          "target": "wl_conv"
+        }
+      ]
+    },
+    {
+      "id": "wl_watch",
+      "body": "<<FILL role=rising words=132 beats='Resting the pole a moment to listen, and there is nothing at all to hear, the weed drinking even the drip off the blade, a green silence as total and deep as the middle of the sea'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_watch_1",
+          "label": "Watch the heron lift from the weed.",
+          "target": "wl_watchb"
+        }
+      ]
+    },
+    {
+      "id": "wl_watchb",
+      "body": "<<FILL role=choice words=134 beats='A heron stands on the weed a stone's throw off and lifts, and its great wings beat and beat and make no sound whatever, and the Hollow shows Wren a new face of itself, a whole living world with the sound switched clean off'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_watchb_1",
+          "label": "Push on toward the pale water at the heart.",
+          "target": "wl_conv"
+        },
+        {
+          "id": "c_wl_watchb_2",
+          "label": "Stay and watch the soundless birds a while.",
+          "target": "e_wl_awe"
+        }
+      ]
+    },
+    {
+      "id": "wl_near",
+      "body": "<<FILL role=choice words=132 beats='Striking off toward a darker seam in the weed that might be a fast lane and might be a swallowing trap, Fen doubtful at the bow; how hard you push the boat into it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_near_1",
+          "label": "Pole the long lee hard around the thickest raft.",
+          "target": "wl_risk",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "supplies",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_wl_near_2",
+          "label": "Wait for the slow drift lane to open of itself.",
+          "target": "wl_safe"
+        },
+        {
+          "id": "c_wl_near_3",
+          "label": "Force the poles straight into the matted thick.",
+          "target": "wl_reckless"
+        }
+      ]
+    },
+    {
+      "id": "wl_reckless",
+      "body": "<<FILL role=choice words=130 beats='Forcing the poles straight into the matted thick of it, driving Kestrel by main strength where there is no lane, the weed gripping the hull, too far in now to easily back her out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_reckless_1",
+          "label": "Drive her on into the heart of the raft.",
+          "target": "e_wl_risk"
+        },
+        {
+          "id": "c_wl_reckless_2",
+          "label": "Work her back to clear water while you still can.",
+          "target": "wl_safe"
+        }
+      ]
+    },
+    {
+      "id": "wl_risk",
+      "body": "<<FILL role=rising words=132 beats='Poling the long hard lee around the thickest raft, hours of labor that drink the water-breakers and burn the whole afternoon, the stores running low in the reckoning; but the boat kept moving and the heart drawing nearer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_risk_1",
+          "label": "Come up on the pale water at the heart.",
+          "target": "wl_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "wl_safe",
+      "body": "<<FILL role=rising words=128 beats='Waiting for the slow drift lane to open, letting the Hollow's own set carry Kestrel through the parting weed, costing time and not stores, the water-breakers untouched'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_safe_1",
+          "label": "Come up on the pale water at the heart.",
+          "target": "wl_conv"
+        }
+      ]
+    },
+    {
+      "id": "wl_conv",
+      "body": "<<FILL role=choice words=134 beats='Near the heart of the Weedland now, the weed thinning under the poles, a paleness ahead that can only be open water, the clear lagoon Mabe promised'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_conv_1",
+          "label": "Come to the edge of the clear lagoon.",
+          "target": "wl_read"
+        },
+        {
+          "id": "c_wl_conv_2",
+          "label": "Let the crew mend and settle first.",
+          "target": "wl_extra1"
+        }
+      ]
+    },
+    {
+      "id": "wl_extra1",
+      "body": "<<FILL role=rising words=128 beats='Fen splices a pole-lashing that parted in the thick while Mabe cons the boat standing in the bow, the crew's silent routine holding them steady in the green hush the way a keel holds a course'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_extra1_1",
+          "label": "Come to the edge of the clear lagoon.",
+          "target": "wl_read"
+        }
+      ]
+    },
+    {
+      "id": "wl_read",
+      "body": "<<FILL role=choice words=145 beats='The edge of the clear lagoon at the Weedland's heart, mirror-still and ringed all round with weed, the deepest quiet yet; how far into it you go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_read_1",
+          "label": "Decide how to read the heart-lagoon.",
+          "target": "wl_gate"
+        },
+        {
+          "id": "c_wl_read_2",
+          "label": "Ask Mabe about the heart-lagoon first.",
+          "target": "wl_extra2"
+        }
+      ]
+    },
+    {
+      "id": "wl_extra2",
+      "body": "<<FILL role=rising words=128 beats='Mabe signs that no charter has read the heart-lagoon in twenty years, that it wants stores enough to pole in and pole back out again, and that the weed does not give a boat run dry a second chance to find its lane'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_extra2_1",
+          "label": "Decide how to read the heart-lagoon.",
+          "target": "wl_gate"
+        }
+      ]
+    },
+    {
+      "id": "wl_gate",
+      "body": "<<FILL role=choice words=140 beats='The choice at the lagoon: pole out to its exact center where the reading is truest, or take the reading honestly from the weeded edge; the center is a long crossing and back, and the weed only lets in a boat that still has the stores to leave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_gate_1",
+          "label": "Pole out to the center of the heart-lagoon.",
+          "target": "wl_deep1",
+          "condition": {
+            ">=": [
+              {
+                "var": "supplies"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_wl_gate_2",
+          "label": "Read the lagoon from its weeded edge.",
+          "target": "wl_shallow"
+        }
+      ]
+    },
+    {
+      "id": "wl_deep1",
+      "body": "<<FILL role=rising words=155 beats='Poling out across the open mirror to the exact center of the heart-lagoon, stores enough aboard to make the crossing and win back out, the weed sealing slowly shut behind the transom, the stillest water in the whole Hollow sliding clear beneath the keel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_deep1_1",
+          "label": "Take the reading at the lagoon's dead center.",
+          "target": "wl_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "wl_deep2",
+      "body": "<<FILL role=choice words=148 beats='At the dead center of the heart-lagoon, the sea a held breath, the lead going down through water so clear you watch it fall for fathoms; the reading of a lifetime coming up on the wet line, and the weed patient at the rim; how you carry it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_deep2_1",
+          "label": "Log the center reading and pole for home.",
+          "target": "wl_done"
+        },
+        {
+          "id": "c_wl_deep2_2",
+          "label": "Rest in the lagoon's stillness before you turn back.",
+          "target": "e_wl_deep"
+        }
+      ]
+    },
+    {
+      "id": "wl_shallow",
+      "body": "<<FILL role=rising words=132 beats='Reading the lagoon from its weeded edge, the lead cast as far as a careful throw will carry, an honest partial sounding of the heart got without spending the stores the crossing would cost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_shallow_1",
+          "label": "Log the edge reading and pole for home.",
+          "target": "wl_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "wl_shallowb",
+      "body": "<<FILL role=choice words=134 beats='The edge reading logged, the lagoon glimpsed and not entered, the water-breakers kept full for the long pole home; craft chosen over daring, and no shame in the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_shallowb_1",
+          "label": "Turn the boat and pole for the open sea.",
+          "target": "wl_done"
+        },
+        {
+          "id": "c_wl_shallowb_2",
+          "label": "Hold at the rim a while and take the lagoon in.",
+          "target": "e_wl_shallow"
+        }
+      ]
+    },
+    {
+      "id": "wl_done",
+      "body": "<<FILL role=choice words=148 beats='Kestrel poles back out of the Weedland, the green raft releasing her at last to open water, the heart-lagoon sealing shut behind as if it had never opened; write arrival-neutral, the reading taken and logged either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_done_1",
+          "label": "Bear away for Cradle Cove to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_wl_done_2",
+          "label": "Answer the muster if the Stilling has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_wl_done_3",
+          "label": "Drift the weed's edge and chart its lanes before leaving.",
+          "target": "e_wl_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_wl_awe",
+      "body": "<<FILL role=ending words=136 beats='A whole afternoon spent watching the soundless birds work the weed, herons and terns lifting and dropping in perfect silence, and Wren stops needing to reach the heart to understand the Weedland; the reading that matters is that the Hollow is alive and merely voiceless, which is a stranger and kinder thing than dead; awe over terror, and the log the richer for the watching'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Soundless Heron"
+      }
+    },
+    {
+      "id": "e_wl_risk",
+      "body": "<<FILL role=failure words=132 beats='Driven too far into the matted thick, Kestrel grips fast and will not answer the poles, and the crew spends the daylight and the last of the stores hauling her clear yard by yard; they reach open water spent and empty-handed, the heart-lagoon unread, the weed keeping its twenty-year secret one more season; the Weedland does not fight, it simply holds, and holding was enough; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Run Dry in the Weed"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_wl_deep",
+      "body": "<<FILL role=ending words=142 beats='Resting a long moment at the lagoon's dead center, the boat and the crew and the water all perfectly still, Wren feels the twenty unread years lift off the place like a held breath let go; the deepest reading in a generation logged, and under the figures a thing no chart holds, that a secret kept long enough becomes a kind of grace when it is finally, gently, read'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Heart of the Weedland"
+      }
+    },
+    {
+      "id": "e_wl_shallow",
+      "body": "<<FILL role=ending words=134 beats='The lagoon sounded honestly from its rim, the heart glimpsed and left whole, the stores kept for the road home; Mabe reads the edge figures and nods, because a charter who knows when not to cross is a charter who comes home to cross again; the Weedland is on the chart now, and the boat is dry, and both of those are wins'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Read from the Weed-Edge"
+      }
+    },
+    {
+      "id": "e_wl_linger",
+      "body": "<<FILL role=ending words=138 beats='Drifting the whole weeded rim until dusk, Wren charts every drift lane and current-seam of the Weedland, a green maze drawn clear for the charters who come after; Fen says by sign that it is the best map of the weed anyone has ever kept, and Mabe, watching, keeps a silence that is plainly pride'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_linger",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Green Crossing"
+      }
+    },
+    {
+      "id": "ci_shore",
+      "body": "<<FILL role=choice words=152 beats='Kestrel raises Cinder Isle at grey noon: a burnt island under a dead black lighthouse, the shore fanged with the ribs of old wrecks, the keeper's stair climbing to a cold lamp forty years dark; to windward the sky is the color of a bruise; write arrival-neutral, the isle the same ruin whatever crossing brings Wren here; three ways in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_shore_1",
+          "label": "Sound the approach with the lead for the clean gut.",
+          "target": "ci_help"
+        },
+        {
+          "id": "c_ci_shore_2",
+          "label": "Ship the oars and look up at the dead light.",
+          "target": "ci_watch"
+        },
+        {
+          "id": "c_ci_shore_3",
+          "label": "Run for the near landing past the wreck-fangs.",
+          "target": "ci_near"
+        }
+      ]
+    },
+    {
+      "id": "ci_help",
+      "body": "<<FILL role=rising words=130 beats='Sounding the approach with the lead, finding the one clean gut through the wreck-fangs, Mabe reading the bottom for iron the way another reads a page, the drowned hulls charted by the rust they leave on the tallow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_help_1",
+          "label": "Read the graveyard on the tallow.",
+          "target": "ci_helpb"
+        }
+      ]
+    },
+    {
+      "id": "ci_helpb",
+      "body": "<<FILL role=rising words=132 beats='The lead comes up smeared with rust off the drowned wrecks, and Mabe charts the graveyard by touch alone, each old hull named by where it lies and what it leaves on the wax, a whole disaster read blind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_helpb_1",
+          "label": "Take the boat ashore under the dead light.",
+          "target": "ci_conv"
+        }
+      ]
+    },
+    {
+      "id": "ci_watch",
+      "body": "<<FILL role=rising words=132 beats='Shipping the oars to look up at the dead light, forty years without a flame, and listening for the sea striking the island and hearing it only as a tremble come up through the hull, never once as a sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_watch_1",
+          "label": "Watch the squall walk in off the water.",
+          "target": "ci_watchb"
+        }
+      ]
+    },
+    {
+      "id": "ci_watchb",
+      "body": "<<FILL role=choice words=134 beats='The squall to windward walks nearer and the lightning inside it is silent, a white flare with no thunder anywhere behind it, and Wren feels the doubled awe and dread of a storm that gives no warning you can hear coming'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_watchb_1",
+          "label": "Take the boat ashore under the dead light.",
+          "target": "ci_conv"
+        },
+        {
+          "id": "c_ci_watchb_2",
+          "label": "Watch the silent storm build a while longer.",
+          "target": "e_ci_awe"
+        }
+      ]
+    },
+    {
+      "id": "ci_near",
+      "body": "<<FILL role=choice words=132 beats='Rowing for the near landing straight past the wreck-fangs to beat the coming squall, Fen at the bow calling the old iron by hand-sign; how you take the point'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_near_1",
+          "label": "Run the wreck-fangs to beat the squall ashore.",
+          "target": "ci_risk",
+          "effects": [
+            {
+              "op": "set",
+              "var": "hull",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": "c_ci_near_2",
+          "label": "Pull the long clean gut that Mabe sounded.",
+          "target": "ci_safe"
+        },
+        {
+          "id": "c_ci_near_3",
+          "label": "Crowd the point to save the last few minutes.",
+          "target": "ci_reckless"
+        }
+      ]
+    },
+    {
+      "id": "ci_reckless",
+      "body": "<<FILL role=choice words=130 beats='Crowding every last foot of the point to save minutes on the squall, the wreck-ribs sliding past a hand's breadth off the planks, the boat's luck stretched thin as a held thread over black iron'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_reckless_1",
+          "label": "Shave the last rib and trust the boat.",
+          "target": "e_ci_risk"
+        },
+        {
+          "id": "c_ci_reckless_2",
+          "label": "Sheer off into the clean water while there is time.",
+          "target": "ci_safe"
+        }
+      ]
+    },
+    {
+      "id": "ci_risk",
+      "body": "<<FILL role=rising words=132 beats='Running Kestrel through the wreck-fangs to beat the squall ashore: an old iron rib takes a long strip off the garboard and the sea starts in; the hull holed and taking water, ashore fast but hurt, Fen already at the bail'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_risk_1",
+          "label": "Get her into the lee and take stock.",
+          "target": "ci_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ci_safe",
+      "body": "<<FILL role=rising words=128 beats='Pulling the long clean gut Mabe sounded, the safe slow way in, the squall gaining behind but the hull whole and the crew unhurried, the boat set down gentle in the lee'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_safe_1",
+          "label": "Bring her into the lee under the tower.",
+          "target": "ci_conv"
+        }
+      ]
+    },
+    {
+      "id": "ci_conv",
+      "body": "<<FILL role=choice words=134 beats='Ashore on Cinder Isle under the dead lighthouse, the squall near now, the cold lamp waiting at the top of the keeper's stair, the burnt island holding its breath for the weather'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_conv_1",
+          "label": "Go to the foot of the keeper's stair.",
+          "target": "ci_read"
+        },
+        {
+          "id": "c_ci_conv_2",
+          "label": "Let the crew make the boat fast first.",
+          "target": "ci_extra1"
+        }
+      ]
+    },
+    {
+      "id": "ci_extra1",
+      "body": "<<FILL role=rising words=128 beats='Fen makes the boat fast in the lee of the old boathouse while Mabe looks up the stair with something close to grief, an old charter who knew the last keeper and rowed out to this light when it still burned'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_extra1_1",
+          "label": "Go to the foot of the keeper's stair.",
+          "target": "ci_read"
+        }
+      ]
+    },
+    {
+      "id": "ci_read",
+      "body": "<<FILL role=choice words=145 beats='The foot of the keeper's stair, the dead lamp at its head, the silent squall about to break over the isle; whether you climb up into it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_read_1",
+          "label": "Decide whether to climb into the storm.",
+          "target": "ci_gate"
+        },
+        {
+          "id": "c_ci_read_2",
+          "label": "Ask Mabe about the keeper first.",
+          "target": "ci_extra2"
+        }
+      ]
+    },
+    {
+      "id": "ci_extra2",
+      "body": "<<FILL role=rising words=128 beats='Mabe signs that the keeper tended a light no ship could ever see the use of, in a sea where a foghorn dies in ten yards and a bell in twenty, and tended it forty years anyway out of a pure stubborn care that outlived every reason for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_extra2_1",
+          "label": "Decide whether to climb into the storm.",
+          "target": "ci_gate"
+        }
+      ]
+    },
+    {
+      "id": "ci_gate",
+      "body": "<<FILL role=choice words=140 beats='The choice at the stair: climb into the breaking squall to set a flame in the cold lamp, or shelter in the boathouse and read the keeper's records; the climb wants a sound boat riding safe below, for a holed one will not wait out a storm on that shore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_gate_1",
+          "label": "Climb the stair and light the dead lamp.",
+          "target": "ci_deep1",
+          "condition": {
+            "==": [
+              {
+                "var": "hull"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_ci_gate_2",
+          "label": "Shelter and read the keeper's left-behind log.",
+          "target": "ci_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ci_deep1",
+      "body": "<<FILL role=rising words=155 beats='Climbing the keeper's stair into the breaking squall with a whole boat safe in the lee below, the silent lightning stuttering white around the tower, and setting a flame at last in the cold lamp, forty years dark, the wick catching and the light standing up strong'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_deep1_1",
+          "label": "Stand with the flame in the stilled storm.",
+          "target": "ci_deep2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ci_deep2",
+      "body": "<<FILL role=choice words=148 beats='The lamp lit and throwing its beam out over a sea that swallows every other signal a keeper could send, the squall raging without a sound around the tower, Wren and the flame and the huge soundless weather, the awe of a light that no one will see and that matters anyway; how long you stand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_deep2_1",
+          "label": "Bank the flame, log it, and go down.",
+          "target": "ci_done"
+        },
+        {
+          "id": "c_ci_deep2_2",
+          "label": "Keep the light through the whole silent storm.",
+          "target": "e_ci_deep"
+        }
+      ]
+    },
+    {
+      "id": "ci_shallow",
+      "body": "<<FILL role=rising words=132 beats='Sheltering in the old boathouse as the silent squall passes over, reading the keeper's left-behind log by lamplight, the island's whole story set down in a careful dead hand, weather and ships and forty years of a solitary faith'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_shallow_1",
+          "label": "Close the log and wait the weather out.",
+          "target": "ci_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "ci_shallowb",
+      "body": "<<FILL role=choice words=134 beats='The squall gone through, the boathouse yielding up the keeper's records whole, the isle charted from cover without the climb; a sound survey and a dry crew and the keeper's story saved from the damp'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_shallowb_1",
+          "label": "Take the boat off as the sky clears.",
+          "target": "ci_done"
+        },
+        {
+          "id": "c_ci_shallowb_2",
+          "label": "Sit with the keeper's log until the weather lifts.",
+          "target": "e_ci_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ci_done",
+      "body": "<<FILL role=choice words=148 beats='Kestrel stands off Cinder Isle as the weather clears astern, the dead light dropping behind, the wreck-fangs sinking back into the grey; write arrival-neutral to whatever passed ashore, the reading taken and logged either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_done_1",
+          "label": "Bear away for Cradle Cove to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_ci_done_2",
+          "label": "Answer the muster if the Stilling has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ci_done_3",
+          "label": "Lie off the isle and chart the whole wreck-ground.",
+          "target": "e_ci_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_ci_awe",
+      "body": "<<FILL role=ending words=136 beats='The silent storm watched to its full height, white fire without thunder walking the whole windward sky, and Wren learns the deepest thing Cinder Isle has to teach, that in the Hollow terror comes without a voice and so must be met with the eyes and the nerve alone; awe over fear, and the log left with a truer note on the isle's weather than any figure'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Silent Lightning"
+      }
+    },
+    {
+      "id": "e_ci_risk",
+      "body": "<<FILL role=failure words=132 beats='The last wreck-rib takes the boat and Kestrel drives up hard on the iron with a plank gone, and the crew fights her off into the lee with the pump laboring and the squall on their backs; no one lost and the boat saved, but the light unlit and the isle unread, and Kestrel limping cove-ward with the pump still going; the wrecks do not forgive a shaved margin, and Wren will not forget it; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Through the Wreck-Fangs"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_ci_deep",
+      "body": "<<FILL role=ending words=142 beats='The lamp kept through the whole silent storm, a flame standing up in a sea that swallows every signal, seen by no ship and needed by none and burning anyway; Wren comes down the stair changed, understanding the keeper at last, that some care is worth keeping for its own sake and not for its use, and logs a light where the chart has said dark for forty years'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "A Light No One Will See"
+      }
+    },
+    {
+      "id": "e_ci_shallow",
+      "body": "<<FILL role=ending words=134 beats='The keeper's whole log read and saved, forty years of solitary weather set down in a careful hand and carried off before the damp could take it; Mabe reads it after and is quiet a long time, then signs only the keeper's name, which had gone unspoken so long it had nearly followed the light into the dark; a life kept from being lost twice'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Keeper's Log"
+      }
+    },
+    {
+      "id": "e_ci_linger",
+      "body": "<<FILL role=ending words=138 beats='Lying off Cinder Isle until the light goes, Wren charts the whole wreck-ground by lead and eye, every drowned hull named and set on the wax, a graveyard given at last an honest map so no boat need join it unwarned; Mabe watches and signs that the isle has waited forty years for hands that careful, and that they have come'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Under the Dead Light"
+      }
+    },
+    {
+      "id": "gf_shore",
+      "body": "<<FILL role=choice words=152 beats='Kestrel ghosts onto the Glass Flats at slack: a mile of mirror-shallow water that should ring like struck glass when the wind combs it and here lies dead mute, the bottom a hand's breadth down, the whole sky doubled and perfect under the keel; write arrival-neutral, the flats the same mirror whatever crossing brings Wren here; three ways across'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_shore_1",
+          "label": "Pole the flats with Fen and find the deep gutters.",
+          "target": "gf_help"
+        },
+        {
+          "id": "c_gf_shore_2",
+          "label": "Rest the pole and stand in the stillness.",
+          "target": "gf_watch"
+        },
+        {
+          "id": "c_gf_shore_3",
+          "label": "Strike out for the bright perfect center.",
+          "target": "gf_near"
+        }
+      ]
+    },
+    {
+      "id": "gf_help",
+      "body": "<<FILL role=rising words=130 beats='Poling the flats beside Fen, reading the mirror for the deeper gutter channels that thread the shallows, a strange craft of walking a boat across a sheet of doubled sky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_help_1",
+          "label": "Let Mabe teach the false bottom.",
+          "target": "gf_helpb"
+        }
+      ]
+    },
+    {
+      "id": "gf_helpb",
+      "body": "<<FILL role=rising words=132 beats='Mabe shows how the doubled sky hides the true bottom, how the eye lies on the flats and only the lead tells the truth, so you sound every length rather than trust the beautiful useless mirror'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_helpb_1",
+          "label": "Bring the boat toward the flats' center.",
+          "target": "gf_conv"
+        }
+      ]
+    },
+    {
+      "id": "gf_watch",
+      "body": "<<FILL role=rising words=132 beats='Resting the pole to stand in the stillness, the flats so utterly quiet that the blood is loud in Wren's own ears, the loudest thing for a mile in every direction a single heartbeat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_watch_1",
+          "label": "Watch the fish jump and fall.",
+          "target": "gf_watchb"
+        }
+      ]
+    },
+    {
+      "id": "gf_watchb",
+      "body": "<<FILL role=choice words=134 beats='A fish jumps and falls back and the splash throws two clean rings across the mirror and makes not one whisper of sound, and the muteness of a sea that ought to sing lands on Wren as pure eerie wonder, beautiful and wrong at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_watchb_1",
+          "label": "Bring the boat toward the flats' center.",
+          "target": "gf_conv"
+        },
+        {
+          "id": "c_gf_watchb_2",
+          "label": "Stay in the mute stillness a while longer.",
+          "target": "e_gf_awe"
+        }
+      ]
+    },
+    {
+      "id": "gf_near",
+      "body": "<<FILL role=choice words=132 beats='Striking straight out toward the flats' bright center where the mirror is flawless, the bottom uncertain under the doubled sky, the stores the only real question out on the bar; how you make the crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_near_1",
+          "label": "Drag her bodily across the bared bar to the deep gutter.",
+          "target": "gf_risk",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "supplies",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_gf_near_2",
+          "label": "Float the long gutter channel to the center.",
+          "target": "gf_safe"
+        },
+        {
+          "id": "c_gf_near_3",
+          "label": "Pole hard and heedless for the bright center.",
+          "target": "gf_reckless"
+        }
+      ]
+    },
+    {
+      "id": "gf_reckless",
+      "body": "<<FILL role=choice words=130 beats='Poling hard and heedless straight for the bright center, driving Kestrel until her forefoot grounds on the hidden bar and sticks fast, the boat wedged on a mirror with the tide already dropping away beneath her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_reckless_1",
+          "label": "Drive her on and trust she will float free.",
+          "target": "e_gf_risk"
+        },
+        {
+          "id": "c_gf_reckless_2",
+          "label": "Back off the bar before the water leaves you.",
+          "target": "gf_safe"
+        }
+      ]
+    },
+    {
+      "id": "gf_risk",
+      "body": "<<FILL role=rising words=132 beats='Dragging Kestrel bodily across the bared bar to the deep gutter beyond, hauling on the painter through shin-deep water for an hour, the water-breakers drained over the side to lighten her enough to move; across, but the stores spent for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_risk_1",
+          "label": "Come to the flats' still center.",
+          "target": "gf_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "gf_safe",
+      "body": "<<FILL role=rising words=128 beats='Floating the long gutter channel that curls all the way to the center, the slow honest way, poling gently along the deeper thread, the stores untouched and the boat never once aground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_safe_1",
+          "label": "Come to the flats' still center.",
+          "target": "gf_conv"
+        }
+      ]
+    },
+    {
+      "id": "gf_conv",
+      "body": "<<FILL role=choice words=134 beats='Near the flats' center now, the mirror flawless in every direction, the doubled world perfect above and below the hull, the stillest surface Wren has ever seen or imagined'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_conv_1",
+          "label": "Bring the boat to the very center.",
+          "target": "gf_read"
+        },
+        {
+          "id": "c_gf_conv_2",
+          "label": "Let the boat glide to rest first.",
+          "target": "gf_extra1"
+        }
+      ]
+    },
+    {
+      "id": "gf_extra1",
+      "body": "<<FILL role=rising words=128 beats='Fen lays the pole down and lets the boat glide on its own last way and stop, dead centered in the mirror, and the three of them hold themselves still so as not to break the perfect sheet of it with so much as a shifted weight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_extra1_1",
+          "label": "Bring the boat to the very center.",
+          "target": "gf_read"
+        }
+      ]
+    },
+    {
+      "id": "gf_read",
+      "body": "<<FILL role=choice words=145 beats='The exact center of the Glass Flats, sky and doubled sky meeting seamless at the waterline, the sea a single sheet of held light; how far out you take the reading'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_read_1",
+          "label": "Decide how to read the mute mirror.",
+          "target": "gf_gate"
+        },
+        {
+          "id": "c_gf_read_2",
+          "label": "Ask Mabe about the flats first.",
+          "target": "gf_extra2"
+        }
+      ]
+    },
+    {
+      "id": "gf_extra2",
+      "body": "<<FILL role=rising words=128 beats='Mabe signs that the old charts called this the Singing Flat, that a grandmother of his once heard it ring across a whole calm morning, and that the Hollow took even that, the last song left in the sea, sometime before Mabe was born'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_extra2_1",
+          "label": "Decide how to read the mute mirror.",
+          "target": "gf_gate"
+        }
+      ]
+    },
+    {
+      "id": "gf_gate",
+      "body": "<<FILL role=choice words=140 beats='The choice on the mirror: pole out to the true optical center where the reading is purest, or take it honestly from the gutter's edge; the center is a wide crossing of bared flat and back, and only a boat with stores enough should try to leave it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_gate_1",
+          "label": "Pole out to the true center of the mirror.",
+          "target": "gf_deep1",
+          "condition": {
+            ">=": [
+              {
+                "var": "supplies"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_gf_gate_2",
+          "label": "Read the flats from the gutter's edge.",
+          "target": "gf_shallow"
+        }
+      ]
+    },
+    {
+      "id": "gf_deep1",
+      "body": "<<FILL role=rising words=155 beats='Poling out to the true optical center of the flats, stores enough aboard to cross the wide bright mirror and return, the boat seeming to hang in clear air with sky above and sky below, the reading taken in a place that is nothing at all but light and silence'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_deep1_1",
+          "label": "Take the reading where the sea is only light.",
+          "target": "gf_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "gf_deep2",
+      "body": "<<FILL role=choice words=148 beats='At the mirror's very heart the lead barely wets before it grounds, the flat so shallow and so still it reads back like glass, and Wren logs the muted note of the Singing Flat that sings no more, a silence with a memory of music in it; how you carry the moment'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_deep2_1",
+          "label": "Log the center reading and pole clear.",
+          "target": "gf_done"
+        },
+        {
+          "id": "c_gf_deep2_2",
+          "label": "Rest in the doubled light before turning back.",
+          "target": "e_gf_deep"
+        }
+      ]
+    },
+    {
+      "id": "gf_shallow",
+      "body": "<<FILL role=rising words=132 beats='Reading the flats from the gutter's edge, the lead cast out across the mute shallows, an honest sounding of the mirror got without the long dry drag to its center and without spending the stores that crossing would cost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_shallow_1",
+          "label": "Log the gutter reading and pole clear.",
+          "target": "gf_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "gf_shallowb",
+      "body": "<<FILL role=choice words=134 beats='The gutter reading logged, the center left unbroken and perfect, the water-breakers kept whole; the careful survey done, the mirror uncrossed and gleaming, and the boat sound for the road home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_shallowb_1",
+          "label": "Find the deep water off the far edge.",
+          "target": "gf_done"
+        },
+        {
+          "id": "c_gf_shallowb_2",
+          "label": "Hold at the gutter and take the mirror in.",
+          "target": "e_gf_shallow"
+        }
+      ]
+    },
+    {
+      "id": "gf_done",
+      "body": "<<FILL role=choice words=148 beats='Kestrel finds the deep water off the flats' far edge, the mirror closing seamless behind her as though no keel had ever touched it, the doubled sky letting her go; write arrival-neutral, the reading taken and logged either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_done_1",
+          "label": "Bear away for Cradle Cove to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_gf_done_2",
+          "label": "Answer the muster if the Stilling has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_gf_done_3",
+          "label": "Drift the flats and chart every gutter before leaving.",
+          "target": "e_gf_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_gf_awe",
+      "body": "<<FILL role=ending words=136 beats='A long hour spent in the mute perfect stillness, splash after soundless splash rippling the doubled sky, until Wren understands the Glass Flats need no crossing to be read, only witnessing; the reading that counts is that the Hollow took the last song in the sea and left the beauty, which is the cruelest and most wondrous thing it does; awe over unease, and the log truer for the hour'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Splash Without Sound"
+      }
+    },
+    {
+      "id": "e_gf_risk",
+      "body": "<<FILL role=failure words=132 beats='Grounded fast on the hidden bar with the tide running out from under her, Kestrel settles onto the bared mirror and the crew waits out the whole dropping tide to float her, a day and the stores gone; they win her off at the next flood empty-handed, the center unread, the Singing Flat keeping its mute peace; the flats do not trap on purpose, they merely tell no lies about the bottom, and Wren failed to ask; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Grounded on the Bar"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_gf_deep",
+      "body": "<<FILL role=ending words=142 beats='Resting a moment in the doubled light at the mirror's heart, boat and crew suspended between two skies, Wren logs the flat that sang once and hears, or half-hears, the ghost of that ringing in the very completeness of the hush; the purest reading on the chart, and beneath the figures a truth the Hollow keeps teaching, that silence can hold a music the way a shut shell holds the sea'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Flat That Sang"
+      }
+    },
+    {
+      "id": "e_gf_shallow",
+      "body": "<<FILL role=ending words=134 beats='The flats sounded honestly from the gutter, the center left whole and perfect, the stores kept for the pull home; Mabe reads the edge figures and nods, because a charter who will not break a thing to measure it is the kind the Hollow eventually trusts; the Glass Flats are on the chart and the mirror is unmarred and the boat is sound, three quiet wins in a row'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Read from the Gutter"
+      }
+    },
+    {
+      "id": "e_gf_linger",
+      "body": "<<FILL role=ending words=138 beats='Drifting the mute flats until the light goes long and gold, Wren charts every gutter and bar of the Glass Flats, a maze of deep threads drawn clear across the doubled sky for the charters to come; Fen signs that no one will ever ground here again who carries this map, and Mabe keeps a proud and total silence, which on these flats is the only fitting kind'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_linger",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Walking on Light"
+      }
+    },
+    {
+      "id": "ds_shore",
+      "body": "<<FILL role=choice words=152 beats='Kestrel drifts over the Drowned Stair at slack noon, and below the clear green water a whole town lies unbroken: Kirktown-under, roof-ridges and a market cross and a stone stair going down street by street into the deep, a submerged bell-tower leaning at its heart; write arrival-neutral, the drowned town the same whatever crossing brings Wren here; three ways to read it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_shore_1",
+          "label": "Sound down the stair tread by tread with the lead.",
+          "target": "ds_help"
+        },
+        {
+          "id": "c_ds_shore_2",
+          "label": "Lie over the gunwale and look down the stair.",
+          "target": "ds_watch"
+        },
+        {
+          "id": "c_ds_shore_3",
+          "label": "Work the boat over the leaning bell-tower.",
+          "target": "ds_near"
+        }
+      ]
+    },
+    {
+      "id": "ds_help",
+      "body": "<<FILL role=rising words=130 beats='Sounding down the drowned stair tread by tread with the lead, Mabe calling the depths in a low sign, a sunken street mapped by the honest numbers where the eye can only wonder'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_help_1",
+          "label": "Chart the town room by room from above.",
+          "target": "ds_helpb"
+        }
+      ]
+    },
+    {
+      "id": "ds_helpb",
+      "body": "<<FILL role=rising words=132 beats='The lead comes up green with the weed of a sunken doorway, and the town is charted room by room from above, a survey of a place no living foot will walk, drawn careful as if people still waited in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_helpb_1",
+          "label": "Bring the boat over the tower.",
+          "target": "ds_conv"
+        }
+      ]
+    },
+    {
+      "id": "ds_watch",
+      "body": "<<FILL role=rising words=132 beats='Lying over the gunwale to look straight down the stair into the clear deep, the town going down street by street into blue-green dark, so still and whole it might be sleeping and not drowned at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_watch_1",
+          "label": "Watch the fish pour from the tower window.",
+          "target": "ds_watchb"
+        }
+      ]
+    },
+    {
+      "id": "ds_watchb",
+      "body": "<<FILL role=choice words=134 beats='A shoal of silver fish pours out of the drowned bell-tower's window like the town taking a breath, silent, bright, turning all at once, and the awe of a whole living hush closes over Wren, a place emptied of people and full of quiet life'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_watchb_1",
+          "label": "Bring the boat over the tower.",
+          "target": "ds_conv"
+        },
+        {
+          "id": "c_ds_watchb_2",
+          "label": "Stay and watch the drowned town a while.",
+          "target": "e_ds_awe"
+        }
+      ]
+    },
+    {
+      "id": "ds_near",
+      "body": "<<FILL role=choice words=132 beats='Working the boat over the leaning bell-tower to lower the full lead-line down its shaft to the deepest point in the whole Hollow, the marked line and the daylight the question; how you go at the deep'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_near_1",
+          "label": "Pay out the entire marked line down the tower shaft.",
+          "target": "ds_risk",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "supplies",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_ds_near_2",
+          "label": "Sound only the shallow drowned roofs.",
+          "target": "ds_safe"
+        },
+        {
+          "id": "c_ds_near_3",
+          "label": "Force the lead down into the black tower window.",
+          "target": "ds_reckless"
+        }
+      ]
+    },
+    {
+      "id": "ds_reckless",
+      "body": "<<FILL role=choice words=130 beats='Forcing the heavy lead down into the tower's black window where it fouls hard on the drowned bell, and rather than cut and lose the marked line Wren leans out too far after it, the deep green water rising to meet an outstretched hand, Fen's grip the one thing holding'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_reckless_1",
+          "label": "Lean out the last inch to free the line yourself.",
+          "target": "e_ds_risk"
+        },
+        {
+          "id": "c_ds_reckless_2",
+          "label": "Let the line go and let Fen pull you back inboard.",
+          "target": "ds_safe"
+        }
+      ]
+    },
+    {
+      "id": "ds_risk",
+      "body": "<<FILL role=rising words=132 beats='Paying out the entire marked lead-line down the bell-tower shaft, the deepest sounding in the Hollow, burning the spare line and the whole afternoon to do it true; the reading got, and the stores and the light spent to the bone for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_risk_1",
+          "label": "Bring the reading up over the tower.",
+          "target": "ds_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ds_safe",
+      "body": "<<FILL role=rising words=128 beats='Sounding only the shallow drowned roofs, an easy honest reading of the town's high ground, the deep tower left for another, braver day, the line and the stores kept whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_safe_1",
+          "label": "Hold the boat over the town's heart.",
+          "target": "ds_conv"
+        }
+      ]
+    },
+    {
+      "id": "ds_conv",
+      "body": "<<FILL role=choice words=134 beats='The boat holding over the leaning bell-tower, the town clear and whole below, the stair drawing the eye down and down until the depth of it turns the stomach a little'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_conv_1",
+          "label": "Ready the lead over the town's heart.",
+          "target": "ds_read"
+        },
+        {
+          "id": "c_ds_conv_2",
+          "label": "Let Fen make you fast first.",
+          "target": "ds_extra1"
+        }
+      ]
+    },
+    {
+      "id": "ds_extra1",
+      "body": "<<FILL role=rising words=128 beats='Fen ties Wren off to the mast out of plain care before there is any more leaning over deep water, and Mabe watches the tower the way a person watches a grave whose filling they remember, an old grief held steady'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_extra1_1",
+          "label": "Ready the lead over the town's heart.",
+          "target": "ds_read"
+        }
+      ]
+    },
+    {
+      "id": "ds_read",
+      "body": "<<FILL role=choice words=145 beats='Over the heart of Kirktown-under, the deep tower below and the whole town hung in green light; the reading to be taken, and something in the shape of the drowned bell you feel you half-know'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_read_1",
+          "label": "Decide how to read the drowned town.",
+          "target": "ds_gate"
+        },
+        {
+          "id": "c_ds_read_2",
+          "label": "Ask Mabe about the town first.",
+          "target": "ds_extra2"
+        },
+        {
+          "id": "c_ds_read_3",
+          "label": "Match the drowned bell's shape to a note you have already sounded.",
+          "target": "e_ds_bonus",
+          "condition": {
+            ">=": [
+              {
+                "var": "soundings"
+              },
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ds_extra2",
+      "body": "<<FILL role=rising words=128 beats='Mabe signs the town's name and that the sea took it whole in a single night a hundred years gone, in total silence, the bells never once heard to ring though every rope was pulled; the Hollow's oldest grief, and the reason charters bare their heads over it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_extra2_1",
+          "label": "Decide how to read the drowned town.",
+          "target": "ds_gate"
+        }
+      ]
+    },
+    {
+      "id": "ds_gate",
+      "body": "<<FILL role=choice words=140 beats='The choice over Kirktown: pay the full lead down the tower to the true floor of the Hollow, or read the drowned roofs and leave the deep unplumbed; the deepest sounding wants line and stores and daylight enough to do it right and no charter should start it who cannot finish it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_gate_1",
+          "label": "Pay the full lead down to the floor of the Hollow.",
+          "target": "ds_deep1",
+          "condition": {
+            ">=": [
+              {
+                "var": "supplies"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_ds_gate_2",
+          "label": "Read the drowned roofs and leave the deep.",
+          "target": "ds_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ds_deep1",
+      "body": "<<FILL role=rising words=155 beats='The full lead-line paid down the tower shaft to the floor of the Hollow, stores and daylight enough to see it through, the marked line singing tight fathom after fathom past any figure logged in a lifetime, the deepest place in the sea coming up as a number on a wet rope'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_deep1_1",
+          "label": "Read the true floor of the Hollow.",
+          "target": "ds_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "ds_deep2",
+      "body": "<<FILL role=choice words=148 beats='The lead at last on the deepest bottom there is, the whole drowned town hung in green above it, Wren logging a figure that is the true floor of the Hollow, and awe and grief riding together in the one plain number; how you carry it up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_deep2_1",
+          "label": "Log the deep sounding and bare your head.",
+          "target": "ds_done"
+        },
+        {
+          "id": "c_ds_deep2_2",
+          "label": "Hold the line on the floor a long grieving moment.",
+          "target": "e_ds_deep"
+        }
+      ]
+    },
+    {
+      "id": "ds_shallow",
+      "body": "<<FILL role=rising words=132 beats='Reading the drowned roofs and the market cross, an honest sounding of Kirktown's high streets, the tower and the deep beneath it left unplumbed and holy, the survey kept to the town's shallow bones'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_shallow_1",
+          "label": "Log the roof reading and bare your head.",
+          "target": "ds_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "ds_shallowb",
+      "body": "<<FILL role=choice words=134 beats='The roof survey logged, the town charted to its eaves, the deep left unread and undisturbed; craft with a bowed head, the high streets measured and the grave beneath them left in its peace'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_shallowb_1",
+          "label": "Take the boat off over the sinking stair.",
+          "target": "ds_done"
+        },
+        {
+          "id": "c_ds_shallowb_2",
+          "label": "Hold over the town a while before you go.",
+          "target": "e_ds_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ds_done",
+      "body": "<<FILL role=choice words=148 beats='Kestrel drifts off the Drowned Stair, the town sinking back into green below, the stair going down alone into the dark it came out of; write arrival-neutral, the reading taken and the head bared either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_done_1",
+          "label": "Bear away for Cradle Cove to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_ds_done_2",
+          "label": "Answer the muster if the Stilling has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ds_done_3",
+          "label": "Hold over Kirktown and chart every drowned street.",
+          "target": "e_ds_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_ds_awe",
+      "body": "<<FILL role=ending words=136 beats='A long slack hour spent over the drowned town, watching the fish breathe through its windows and the light move down its stair, until Wren understands Kirktown-under needs no sounding to be read, only honoring; the reading that matters is that the Hollow keeps its dead whole and quiet and full of gentle life, a grief turned somehow tender by a hundred years of green light; awe over dread, the log the richer for the hour'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Town Breathing Fish"
+      }
+    },
+    {
+      "id": "e_ds_risk",
+      "body": "<<FILL role=failure words=132 beats='Leaning the last inch after the fouled line, Wren goes off balance over the deep, and only Fen's fist in the collar drags them back inboard hard onto the bottom-boards, both of them shaking, the line cut and lost to the tower; no one drowned and the lesson enormous, that the Hollow's deepest grave will take a careless charter the way it took the town, in one silent instant; they turn for the cove with nothing logged and everything learned; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Nearly Over the Side"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_ds_deep",
+      "body": "<<FILL role=ending words=142 beats='Holding the lead on the true floor of the Hollow a long grieving moment, the whole town hung in green between Wren and the deepest dark there is, the awe and the sorrow of it settling into the log alongside the plain enormous number; the deepest reading any living charter holds, and under it the oldest lesson the sea keeps, that to measure a grave honestly is a way of keeping faith with it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Floor of the Hollow"
+      }
+    },
+    {
+      "id": "e_ds_shallow",
+      "body": "<<FILL role=ending words=134 beats='The town charted to its eaves and the grave beneath left in peace, the high streets of Kirktown-under drawn clean and the deep tower unplumbed and honored; Mabe reads the roof survey and bares an old grey head over the log, and signs only that the town has waited a hundred years for a hand that would measure it kindly, and that the hand has come'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Kirktown's High Streets"
+      }
+    },
+    {
+      "id": "e_ds_linger",
+      "body": "<<FILL role=ending words=138 beats='Holding over Kirktown until the light fails, Wren charts every drowned street and lane of it, the fullest map of the sunken town anyone has kept, drawn as tenderly as if the people might read it; Mabe watches the careful work and keeps a silence that is grief and pride at once, the two of them charters over a grave, doing the one thing charters can, which is to see it truly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Over the Drowned Stair"
+      }
+    },
+    {
+      "id": "e_ds_bonus",
+      "body": "<<FILL role=ending words=136 beats='Because Wren has already taken a true sounding elsewhere in the Hollow, the drowned bell's shape in the green water is one the hand and eye now know by its kin, and Wren reads Kirktown's silenced bell as sister to another the sea has swallowed, a recognition only a charter who has begun to read the whole Hollow could ever have; the deepest kind of chart is the one carried between the reaches, and Wren has started to carry it; awe and quiet mastery, the town's grief joined to the sea's larger one and understood'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_bonus",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Note You Knew"
+      }
+    },
+    {
+      "id": "bc_shore",
+      "body": "<<FILL role=choice words=152 beats='Kestrel comes under the far cliff at the ebb, to the Breathing Cave: a great sea-throat in the rock that draws the tide in and lets it out in a slow swell like a sleeper's breath, and the most total silence in all the Hollow lives back in its dark; write arrival-neutral, the cave the same slow breath whatever crossing brings Wren here; three ways to it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_shore_1",
+          "label": "Sound the cave-mouth and time the sea's breath.",
+          "target": "bc_help"
+        },
+        {
+          "id": "c_bc_shore_2",
+          "label": "Hold off the mouth and feel the cave inhale.",
+          "target": "bc_watch"
+        },
+        {
+          "id": "c_bc_shore_3",
+          "label": "Work the boat in toward the throat itself.",
+          "target": "bc_near"
+        }
+      ]
+    },
+    {
+      "id": "bc_help",
+      "body": "<<FILL role=rising words=130 beats='Sounding the cave-mouth with the lead, timing the boat to the sea's slow breath, reading how deep the throat must run by the long steady pull of the water going in and coming out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_help_1",
+          "label": "Let Mabe teach the breath's rhythm.",
+          "target": "bc_helpb"
+        }
+      ]
+    },
+    {
+      "id": "bc_helpb",
+      "body": "<<FILL role=rising words=132 beats='Mabe teaches the breath's rhythm, in on the slow count and out on the slow count, a tide you ride and never fight, the cave keeping its own time and a boat living or dying by whether it keeps that time too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_helpb_1",
+          "label": "Take the boat into the throat.",
+          "target": "bc_conv"
+        }
+      ]
+    },
+    {
+      "id": "bc_watch",
+      "body": "<<FILL role=rising words=132 beats='Holding the boat off the mouth and feeling the cave inhale, the whole nearby sea leaning gently into the dark, and no sound to any of it at all, a breath a mile wide drawn in perfect silence'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_watch_1",
+          "label": "Ride the cave's exhale.",
+          "target": "bc_watchb"
+        }
+      ]
+    },
+    {
+      "id": "bc_watchb",
+      "body": "<<FILL role=choice words=134 beats='The cave exhales and the swell lifts Kestrel and sets her down again as gently as a hand, and Wren understands all at once that the Hollow is not dead but only sleeping, and the awe of that is almost too large a thing to hold in one chest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_watchb_1",
+          "label": "Take the boat into the throat.",
+          "target": "bc_conv"
+        },
+        {
+          "id": "c_bc_watchb_2",
+          "label": "Rock on the cave's slow breath a while longer.",
+          "target": "e_bc_awe"
+        }
+      ]
+    },
+    {
+      "id": "bc_near",
+      "body": "<<FILL role=choice words=132 beats='Working the boat in toward the throat itself, to row the long dark passage on the inbreath to where the sea comes nearest to answering, the lamp-oil and the stores the question in the dark; how you take the throat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_near_1",
+          "label": "Fight in against a bad outbreath to hold your ground.",
+          "target": "bc_risk",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "supplies",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_bc_near_2",
+          "label": "Wait and ride the cave's own inbreath in.",
+          "target": "bc_safe"
+        },
+        {
+          "id": "c_bc_near_3",
+          "label": "Row hard against the breath on your own timing.",
+          "target": "bc_reckless"
+        }
+      ]
+    },
+    {
+      "id": "bc_reckless",
+      "body": "<<FILL role=choice words=130 beats='Rowing hard against the cave's outbreath to force the passage on your own timing, the boat driven back a length for every two won, the oars laboring and the stores burning for nothing at all against a sea that simply will not be hurried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_reckless_1",
+          "label": "Row on against the breath and spend whatever it costs.",
+          "target": "e_bc_risk"
+        },
+        {
+          "id": "c_bc_reckless_2",
+          "label": "Ship the oars and wait for the breath to turn.",
+          "target": "bc_safe"
+        }
+      ]
+    },
+    {
+      "id": "bc_risk",
+      "body": "<<FILL role=rising words=132 beats='Fighting in against a bad breath, burning the lamp-oil and the water to hold the boat's ground in the dark throat until the tide relents, the stores spent to make a way the sea had not yet offered; in at last, but at a price paid in the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_risk_1",
+          "label": "Come to the turning of the breath.",
+          "target": "bc_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "bc_safe",
+      "body": "<<FILL role=rising words=128 beats='Waiting and riding the cave's own inbreath, letting the slow pull of the sea carry Kestrel into the throat on its own timing, the oars only steering, the stores untouched and the dark taken gently'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_safe_1",
+          "label": "Come to the turning of the breath.",
+          "target": "bc_conv"
+        }
+      ]
+    },
+    {
+      "id": "bc_conv",
+      "body": "<<FILL role=choice words=134 beats='Inside the throat now, the daylight astern shrunk to a coin, the dark ahead where the breath is born and where the Hollow's silence goes from deep to absolute'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_conv_1",
+          "label": "Go on toward the turning of the breath.",
+          "target": "bc_read"
+        },
+        {
+          "id": "c_bc_conv_2",
+          "label": "Let Fen light the stern lamp first.",
+          "target": "bc_extra1"
+        }
+      ]
+    },
+    {
+      "id": "bc_extra1",
+      "body": "<<FILL role=rising words=128 beats='Fen lights the stern lamp and its small flame throws no echo at all, the light pushing out into a silence so complete it feels like a substance the boat is pressing through, and the crew works by touch and trust and the memory of each other's hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_extra1_1",
+          "label": "Go on toward the turning of the breath.",
+          "target": "bc_read"
+        }
+      ]
+    },
+    {
+      "id": "bc_read",
+      "body": "<<FILL role=choice words=145 beats='Deep in the Breathing Cave where the sea's slow breath turns from in to out, the darkest and stillest water in the whole Hollow; how far into the dark you carry the reading, and a sound at the edge of hearing you feel you half-know'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_read_1",
+          "label": "Decide how far to read into the dark.",
+          "target": "bc_gate"
+        },
+        {
+          "id": "c_bc_read_2",
+          "label": "Ask Mabe about the cave first.",
+          "target": "bc_extra2"
+        },
+        {
+          "id": "c_bc_read_3",
+          "label": "Complete the near-answer with a note you have already sounded.",
+          "target": "e_bc_bonus",
+          "condition": {
+            ">=": [
+              {
+                "var": "soundings"
+              },
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bc_extra2",
+      "body": "<<FILL role=rising words=128 beats='Mabe signs that this is as near the Hollow's own voice as any place a boat can reach, that here on a still day a charter can almost hear the sea think, and that no one wise ever claims a single word more about it than that'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_extra2_1",
+          "label": "Decide how far to read into the dark.",
+          "target": "bc_gate"
+        }
+      ]
+    },
+    {
+      "id": "bc_gate",
+      "body": "<<FILL role=choice words=140 beats='The choice in the throat: row the full length of it to the turning-place where the sea comes nearest to answering, or read the throat honestly from nearer the lit mouth; the deep row wants oil and stores enough to reach the turning and win back out, and the dark keeps no boat that runs dry in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_gate_1",
+          "label": "Row the full dark throat to the turning-place.",
+          "target": "bc_deep1",
+          "condition": {
+            ">=": [
+              {
+                "var": "supplies"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_bc_gate_2",
+          "label": "Read the throat from nearer the lit mouth.",
+          "target": "bc_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bc_deep1",
+      "body": "<<FILL role=rising words=155 beats='Rowing the full length of the dark throat on the failing lamp, oil and stores enough aboard to reach the turning-place and pull safe out again, the silence going total, the slow breath the only motion in a dark so complete the boat seems to hang in nothing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_deep1_1",
+          "label": "Take the reading where the sea almost answers.",
+          "target": "bc_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "bc_deep2",
+      "body": "<<FILL role=choice words=148 beats='At the throat's turning-place in absolute dark and absolute quiet, the sea's slow breath all around and the lead going down into water that has never once seen light, and for one long held moment the Hollow seems on the very edge of answering, of giving back a sound of its own; how you meet the moment'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_deep2_1",
+          "label": "Log the deep reading and ride the breath out.",
+          "target": "bc_done"
+        },
+        {
+          "id": "c_bc_deep2_2",
+          "label": "Hold in the dark for the answer that almost comes.",
+          "target": "e_bc_deep"
+        }
+      ]
+    },
+    {
+      "id": "bc_shallow",
+      "body": "<<FILL role=rising words=132 beats='Reading the cave from nearer its lit mouth, the lead cast into the near dark, an honest sounding of the throat's beginning got without the long blind row to the turning and without spending the oil that row would burn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_shallow_1",
+          "label": "Log the mouth reading and ride the breath out.",
+          "target": "bc_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "bc_shallowb",
+      "body": "<<FILL role=choice words=134 beats='The mouth reading logged, the deep throat left to its slow breathing, the lamp-oil kept for the pull home; the careful survey done, the cave's threshold measured and its dark heart left unentered and whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_shallowb_1",
+          "label": "Ride the outbreath back to the daylight.",
+          "target": "bc_done"
+        },
+        {
+          "id": "c_bc_shallowb_2",
+          "label": "Rest at the mouth and feel the cave breathe.",
+          "target": "e_bc_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bc_done",
+      "body": "<<FILL role=choice words=148 beats='Kestrel rides the cave's slow outbreath back into daylight, the throat releasing her gently to the grey afternoon, the sea's breathing going on behind in the dark as it has since before the town drowned; write arrival-neutral, the reading taken and logged either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_done_1",
+          "label": "Bear away for Cradle Cove to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_bc_done_2",
+          "label": "Answer the muster if the Stilling has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_bc_done_3",
+          "label": "Lie in the cave-mouth and chart the whole breath.",
+          "target": "e_bc_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_bc_awe",
+      "body": "<<FILL role=ending words=136 beats='A long while spent rocking on the cave's slow breath at the mouth, lifted and set down and lifted again by a sea that is only sleeping, until Wren stops needing the dark throat to understand the Breathing Cave; the reading that counts is that the Hollow lives and breathes and merely holds its voice, and that its silence is rest and not death; awe over fear, and the log left with the truest note anyone has kept on the far cliff'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Sea Breathing"
+      }
+    },
+    {
+      "id": "e_bc_risk",
+      "body": "<<FILL role=failure words=132 beats='Rowing on against the breath until the oil is gone and the water with it, Kestrel wins to the turning spent and dark and has barely the strength left to let the outbreath carry her home; they reach the daylight empty, the deep unread, the crew hollow-eyed, having learned the throat's one lesson the hard way, that the cave gives itself only to a boat that keeps its time; the Hollow does not punish, it only refuses to be hurried, and refusing was enough; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Against the Breath"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_bc_deep",
+      "body": "<<FILL role=ending words=142 beats='Holding in the absolute dark for the answer that almost comes, the sea's breath turning slow all around and the lead down in lightless water, Wren waits at the very edge of the Hollow's voice, and the sea does not quite speak, and somehow that is the whole enormous gift of it; the deepest reading on the far cliff logged, and beneath it the truth the cave keeps, that to come this near a silence and hold steady is its own answer, needing no other'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Where the Sea Almost Answers"
+      }
+    },
+    {
+      "id": "e_bc_shallow",
+      "body": "<<FILL role=ending words=134 beats='The cave sounded honestly from its lit mouth, the dark throat left to breathe unentered, the oil kept for the road home; Mabe reads the threshold figures and signs approval, because a charter who will stand at the edge of a mystery and not force it is a charter the Hollow will one day let all the way in; the Breathing Cave is on the chart and the crew is safe and the dark is left its dignity, which are three good things'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Read from the Cave-Mouth"
+      }
+    },
+    {
+      "id": "e_bc_linger",
+      "body": "<<FILL role=ending words=138 beats='Lying in the cave-mouth until the ebb turns, Wren charts the whole slow architecture of the breath, its timing and its reach and its turning, the fullest reading of the Breathing Cave anyone has kept; Fen signs that no boat will ever be caught by the breath again who carries this, and Mabe, rocking gently in the dark, keeps the deep contented silence that on the far cliff is the only right reply'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_linger",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Throat of the Hollow"
+      }
+    },
+    {
+      "id": "e_bc_bonus",
+      "body": "<<FILL role=ending words=136 beats='Because Wren has already read a reach of the Hollow, the near-answer trembling at the turning of the breath is a sound the hand and heart can almost finish, one known in its kin from another silence the sea keeps, and Wren meets the cave's half-voice with a knowing that only a begun charter could carry into the dark; the reaches speak to one another for those who have listened to more than one, and Wren has begun to hear the whole sea at once; awe and quiet mastery, the cave's near-voice answered by the memory of every reach already read'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_bonus",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Voice You Half-Know"
+      }
+    },
+    {
+      "id": "fin_muster",
+      "body": "<<FILL role=choice words=150 beats='Back at Cradle Cove on the eve of the Stilling: Mabe gathers the crew in the chart-shed and says the dark of the moon comes tomorrow, and once in a life the whole Hollow falls to a dead flat calm, and Kestrel will go to the sea's center to read it one last time before Mabe grows too old to go; the near-shore sounders are being called in; write arrival-neutral, entered from any reach or from none, in whatever state Kestrel came home; there is work, and it needs every hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_muster_1",
+          "label": "Sit at the table and hear the plan.",
+          "target": "fin_brief"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "supplies",
+          "value": 3
+        },
+        {
+          "op": "set",
+          "var": "hull",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "fin_brief",
+      "body": "<<FILL role=choice words=148 beats='The plan on the chart-shed table, three tasks deep: ready the deep sounding-gear for the center reading; make the anchorage ready and careen Kestrel for the crossing; and row the near shore to rouse the old sounders in; every task real and none of them small; pick where your hands go first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_brief_1",
+          "label": "Ready the deep sounding-gear.",
+          "target": "fin_line"
+        },
+        {
+          "id": "c_fin_brief_2",
+          "label": "Careen Kestrel and ready the anchorage.",
+          "target": "fin_shore"
+        },
+        {
+          "id": "c_fin_brief_3",
+          "label": "Row the shore and rouse the sounders.",
+          "target": "fin_crew"
+        }
+      ]
+    },
+    {
+      "id": "fin_line",
+      "body": "<<FILL role=choice words=132 beats='The sounding-gear bench in the shed: the deep lead, the great coil of marked line, the tallow cup; two hands' worth of careful work before the still water comes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_1",
+          "label": "Tallow and re-mark the deep lead.",
+          "target": "fin_line_a"
+        },
+        {
+          "id": "c_fin_line_2",
+          "label": "Splice the spare line for the full depth.",
+          "target": "fin_line_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_a",
+      "body": "<<FILL role=choice words=130 beats='Tallowing and re-marking the deep lead fathom by fathom, the leather markers set true down the whole length so the center reading can be called clean off the wet line in the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_a_1",
+          "label": "Set the last markers and test the lead.",
+          "target": "fin_line_a2"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_a2",
+      "body": "<<FILL role=rising words=130 beats='The lead marked to Mabe's exact satisfaction, the tallow cup filled and warm, the gear that will read the sea's own heart made ready by Wren's own hands, every fathom-mark checked twice against the shed rule'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_a2_1",
+          "label": "Lay the gear ready in the stern.",
+          "target": "fin_line_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_b",
+      "body": "<<FILL role=choice words=130 beats='Splicing the spare line onto the main so the deep lead can reach the Hollow's true floor at the center, the splice rolled long and even under the palm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_b_1",
+          "label": "Serve the splice and test it on the beam.",
+          "target": "fin_line_b2"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_b2",
+      "body": "<<FILL role=rising words=130 beats='The splice served and tested against the shed beam until it holds a full strong pull without a shiver, the line long enough now for the deepest water there is, coiled down clean and ready to run'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_b2_1",
+          "label": "Lay the gear ready in the stern.",
+          "target": "fin_line_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_j",
+      "body": "<<FILL role=rising words=126 beats='The sounding-gear laid ready in Kestrel's stern, coiled and clean and stopped off, the deep lead lashed where a cold hand can find it blind, everything waiting now only for the still water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_j_1",
+          "label": "Report the gear ready to Mabe.",
+          "target": "fin_line_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_r",
+      "body": "<<FILL role=rising words=126 beats='Mabe checks the gear over once by hand and says nothing at all, which from Mabe is the whole of praise; one task done for the morning, and the most important one made sure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_r_1",
+          "label": "The dark of the moon comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore",
+      "body": "<<FILL role=choice words=132 beats='The anchorage at low water, Kestrel hauled out on the hard: the hull to see to and the cove to make ready for a fleet that has not gathered here in thirty years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_1",
+          "label": "Careen Kestrel and pay her seams.",
+          "target": "fin_shore_a"
+        },
+        {
+          "id": "c_fin_shore_2",
+          "label": "Set the leading lights for the gathering.",
+          "target": "fin_shore_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_a",
+      "body": "<<FILL role=choice words=130 beats='Careening Kestrel over on the hard and paying her seams with hot pitch, working the iron along every seam so she swims tight and dry for the long crossing to the center'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_a_1",
+          "label": "Pay the garboard and let her cool.",
+          "target": "fin_shore_a2"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_a2",
+      "body": "<<FILL role=rising words=130 beats='The seams payed and the garboard sound, the boat that will carry three to the center made whole for it, the smell of hot pitch and the tide creeping back up the hard to float her clean and tight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_a2_1",
+          "label": "Float her and moor her ready.",
+          "target": "fin_shore_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_b",
+      "body": "<<FILL role=choice words=130 beats='Setting the two shore-marks and the leading lights that will guide the gathered boats into Cradle Cove through the dark of the moon, the one safe lane into the notch marked out at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_b_1",
+          "label": "Line the lights up true and light them.",
+          "target": "fin_shore_b2"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_b2",
+      "body": "<<FILL role=rising words=130 beats='The leading lights set and lit and lined up dead true, the single safe lane into the cove marked for a fleet that has not come home together in a generation, the near shore made ready to receive its own'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_b2_1",
+          "label": "Walk the cove once more, then report.",
+          "target": "fin_shore_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_j",
+      "body": "<<FILL role=rising words=126 beats='The anchorage ready, Kestrel afloat and tight at her mooring, the cove set to receive the sounders, the near shore made ready for a thing it has not done since before Wren was born'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_j_1",
+          "label": "Report the anchorage ready to Mabe.",
+          "target": "fin_shore_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_r",
+      "body": "<<FILL role=rising words=126 beats='Mabe walks the hard once at dusk, lays a hand on Kestrel's stem, and gives the small nod that means go on; one task done, and the boat and the cove both fit for the morning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_r_1",
+          "label": "The dark of the moon comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew",
+      "body": "<<FILL role=choice words=132 beats='The near shore's scattered coves and the old sounders in them, charters who swallowed the anchor years ago and have not put to sea since; word to carry down a silent coast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_1",
+          "label": "Row cove to cove carrying Mabe's word.",
+          "target": "fin_crew_a"
+        },
+        {
+          "id": "c_fin_crew_2",
+          "label": "Row out to old Sounder Halloran and ask him plainly.",
+          "target": "fin_crew_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_a",
+      "body": "<<FILL role=choice words=130 beats='Rowing cove to cove with Mabe's word, that the Stilling comes and Kestrel goes to the center and the Hollow's charters should be there to see the last of the old reading'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_a_1",
+          "label": "Carry the word down the whole near shore.",
+          "target": "fin_crew_a2"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_a2",
+      "body": "<<FILL role=rising words=130 beats='The word carried down a shore that answers in the Hollow's own way, a hand lifted from a doorway, a boat already being uncovered, a lamp set in a window, the near coast turning quietly toward the morning like heads toward a bell'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_a2_1",
+          "label": "Bring the tally back to Mabe.",
+          "target": "fin_crew_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_b",
+      "body": "<<FILL role=choice words=130 beats='Rowing out to old Sounder Halloran, who has not put to sea since the last charter he trained was lost to a squall, and asking him plainly, at his own door, to come'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_b_1",
+          "label": "Wait at his door while he decides.",
+          "target": "fin_crew_b2"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_b2",
+      "body": "<<FILL role=rising words=132 beats='Halloran hears Wren out at his door, looks a long time at the flat evening sea he has not crossed in years, and then takes his old lead down off its nail without one word; the hardest yes on the whole shore, given at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_b2_1",
+          "label": "Bring the tally back to Mabe.",
+          "target": "fin_crew_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_j",
+      "body": "<<FILL role=rising words=126 beats='The sounders gathering along the near shore now, lamps coming out in the dusk, boats uncovered and bailed, a scattered old craft assembling itself out of retirement for one last morning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_j_1",
+          "label": "Report the gathering to Mabe.",
+          "target": "fin_crew_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_r",
+      "body": "<<FILL role=rising words=126 beats='Mabe reads the tally of who is coming, folds it away, and signs only, then it is a proper gathering; one task done, and the shore roused that has slept through thirty years of quiet mornings'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_r_1",
+          "label": "The dark of the moon comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "fin_tide",
+      "body": "<<FILL role=rising words=165 beats='The dark of the moon, and the Stilling comes exactly as Mabe swore it would: the whole Hollow going to dead flat glass from shore to shore, the swell dying to nothing, the sea a single held breath under a starless sky; write this arrival-neutral to whichever tasks were done, all three were seen to by many hands and the morning shows it, the gear ready and the boat tight and the sounders' lamps strung along the near shore; the gathered boats wait at the cove mouth for Kestrel to lead them out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_tide_1",
+          "label": "Take the lead of the little fleet.",
+          "target": "fin_dark"
+        }
+      ]
+    },
+    {
+      "id": "fin_dark",
+      "body": "<<FILL role=rising words=145 beats='The sounders' boats fall in behind Kestrel in the grey before dawn, a small silent fleet pulling out onto a sea with no horizon at all, the stilled water and the stilled sky run together into one seamless grey with the boats hung in the middle of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_dark_1",
+          "label": "Pull on for the Hollow's center.",
+          "target": "fin_row"
+        }
+      ]
+    },
+    {
+      "id": "fin_row",
+      "body": "<<FILL role=rising words=160 beats='Kestrel pulls for the Hollow's center where no charter goes but at a Stilling, the near shore gone behind, the silence growing with every length until even the oars turning in the tholes make nothing at all, the world emptying itself of sound around the boat; write awe over terror, the crew steady and small in a hush the size of the sky, doing the oldest work of their craft'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_row_1",
+          "label": "Draw near the exact center.",
+          "target": "fin_gather"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "fin_gather",
+      "body": "<<FILL role=rising words=150 beats='The fleet lies off and Kestrel alone goes on to the exact center with Mabe and Fen and Wren, the sea a sheet of grey glass in every direction, the deepest quiet the whole Hollow holds closing over the boat like water over a dropped stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gather_1",
+          "label": "Ready the deep lead at the center.",
+          "target": "fin_still"
+        }
+      ]
+    },
+    {
+      "id": "fin_still",
+      "body": "<<FILL role=choice words=155 beats='Dead center in the Stilling, the sea perfectly still and perfectly silent, the deep lead ready in Wren's hands and a life of charting narrowed to this one reading; how it is taken, and whose hands take it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_still_1",
+          "label": "Lower the lead yourself, and let the Hollow answer.",
+          "target": "fin_read",
+          "condition": {
+            ">=": [
+              {
+                "var": "soundings"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_fin_still_2",
+          "label": "Take the honest partial reading Mabe guides your hands through.",
+          "target": "fin_partial"
+        },
+        {
+          "id": "c_fin_still_3",
+          "label": "Give the lead to Mabe and keep the log and the watch.",
+          "target": "fin_keepn"
+        }
+      ]
+    },
+    {
+      "id": "fin_read",
+      "body": "<<FILL role=rising words=175 beats='The lead goes down from Wren's own hands into the Hollow's still heart, and because Wren has read its reaches, has learned the bell and the weed and the drowned town and the breathing dark, the sea takes the wet line and gives something back up it, a sounding of its own rising through the rope into Wren's palms that is not only depth but a kind of answer; Mabe's face is wet in the grey light; the craft passes whole into young hands in the one silent moment it takes; write awe over terror, the largest quiet the sea ever keeps'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_read_1",
+          "label": "Hold the answer, and log it.",
+          "target": "fin_rise"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "fin_rise",
+      "body": "<<FILL role=rising words=140 beats='The answer held a moment in the still dark air, then written into the log in a hand that only shakes a little, the fullest sounding any living charter has ever taken rising off the page as plain figures with something enormous folded inside them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_rise_1",
+          "label": "Look to Mabe as the sea begins, faintly, to breathe.",
+          "target": "fin_answered"
+        }
+      ]
+    },
+    {
+      "id": "fin_answered",
+      "body": "<<FILL role=choice words=150 beats='The answer logged, the Stilling holding one moment more before the first far swell stirs at the rim of the world; what Mabe says, at the center of a sea that answered, decides how the morning is carried home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_answered_1",
+          "label": "Take the name Mabe offers: the next charter of the Hollow.",
+          "target": "e_fin_charter"
+        },
+        {
+          "id": "c_fin_answered_2",
+          "label": "Say the sea's own sounding will take a life to understand, and mean it.",
+          "target": "e_fin_answer"
+        },
+        {
+          "id": "c_fin_answered_3",
+          "label": "Let the craft be simply passed, whole, in the quiet.",
+          "target": "e_fin_pass"
+        }
+      ]
+    },
+    {
+      "id": "fin_partial",
+      "body": "<<FILL role=rising words=150 beats='The honest reading taken, Mabe's old hands guiding Wren's on the line, a true figure won from a first Stilling, not the sea's whole answer but no small thing at all, and the crew holding the great silence together at the still center of the world'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_partial_1",
+          "label": "Log the reading and hold the silence.",
+          "target": "fin_settle"
+        }
+      ]
+    },
+    {
+      "id": "fin_settle",
+      "body": "<<FILL role=rising words=138 beats='The partial reading settled into the log, a real sounding got and set down plain, the Stilling beginning to ease as the far swell wakes, the crew breathing again in a sea that is, very slowly, beginning to breathe with them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_settle_1",
+          "label": "Let the morning end at the center.",
+          "target": "fin_afterp"
+        }
+      ]
+    },
+    {
+      "id": "fin_afterp",
+      "body": "<<FILL role=choice words=145 beats='The partial reading logged, the Stilling turning back toward motion, a real thing won honestly from the sea's one still morning; how the reading is carried home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_afterp_1",
+          "label": "Call it a true figure, honestly got, and enough.",
+          "target": "e_fin_true"
+        },
+        {
+          "id": "c_fin_afterp_2",
+          "label": "Turn for home on the waking swell with the fleet.",
+          "target": "e_fin_home"
+        }
+      ]
+    },
+    {
+      "id": "fin_keepn",
+      "body": "<<FILL role=rising words=150 beats='Mabe takes the deep lead and reads the Hollow one last time while Wren keeps the log in a steady hand, the succession plain in the sharing of it, the master's final sounding called low and sure and written down clean at the center of the stilled sea'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_keepn_1",
+          "label": "Enter the master's last reading in the log.",
+          "target": "fin_hush"
+        }
+      ]
+    },
+    {
+      "id": "fin_hush",
+      "body": "<<FILL role=rising words=138 beats='Mabe's last reading entered whole in Wren's log, the two of them working the old way one final time, the Stilling holding just long enough for the ink to dry, the watch kept and the record made and the craft witnessed at its close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_hush_1",
+          "label": "Let the morning end at the center.",
+          "target": "fin_afterk"
+        }
+      ]
+    },
+    {
+      "id": "fin_afterk",
+      "body": "<<FILL role=choice words=145 beats='The master's last sounding closed in the log, the Stilling easing toward motion, the succession quiet and sure between the old hands and the young; how the morning is carried home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_afterk_1",
+          "label": "Say the log kept true is the charter's other half, and mean it.",
+          "target": "e_fin_watch"
+        },
+        {
+          "id": "c_fin_afterk_2",
+          "label": "Enter the last sounding, close the book, and turn for home.",
+          "target": "e_fin_log"
+        }
+      ]
+    },
+    {
+      "id": "e_fin_charter",
+      "body": "<<FILL role=success words=152 beats='Mabe names Wren the charter of the Hollow at the center of the answered sea, the craft passed to hands the sea itself has spoken to; rowing home on the waking swell at the head of the little fleet, the log full and the sea's own sounding folded into it, Wren carries the whole silent inheritance of the Hollow, the bell and the weed and the drowned town and the breathing dark all read and kept; some mornings are a whole life's beginning, and this one signs its name at the bottom of the log, complete'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_charter",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Next Charter"
+      }
+    },
+    {
+      "id": "e_fin_answer",
+      "body": "<<FILL role=ending words=142 beats='The reading that no chart holds, entered and closed, a sounding the sea gave back to a boat that had learned it; Wren will spend a life understanding what the Hollow returned in that one silence, and knows already that the spending will be the whole of the craft; the fleet turns for home behind Kestrel and the sea breathes again, and the answer rides in the log like a coal that will warm a lifetime of charting'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_answer",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Sea's Own Sounding"
+      }
+    },
+    {
+      "id": "e_fin_pass",
+      "body": "<<FILL role=ending words=140 beats='The craft handed on entire in one still moment, no ceremony and no word needed, Mabe easy at last for the first time in years and the Hollow read to its very heart by the hands that will keep reading it; Kestrel leads the fleet home over a sea just beginning to swell, and the succession is done, quiet and whole and sure, the way the best of the Hollow's things are always done'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_pass",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Passed Whole"
+      }
+    },
+    {
+      "id": "e_fin_true",
+      "body": "<<FILL role=ending words=142 beats='A true figure honestly won, the Stilling met and held, no more claimed than was really got; a first charter's honest morning at the center of the world, and enough, more than enough, for a beginning; Wren rows home in the waking light with a real reading in the log and the whole Hollow still ahead to learn, and Mabe's hand on the young shoulder says the rest'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_true",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "A True Figure"
+      }
+    },
+    {
+      "id": "e_fin_home",
+      "body": "<<FILL role=ending words=142 beats='The fleet turning for home as the sea breathes again, the reading taken, the season closed, Kestrel among the old boats going back on the first long swell of the returning tide; enough for one life's beginning, a Stilling seen and a center reached and a figure got, and the near shore rising ahead with its lamps still lit to welcome its own home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_home",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Rowing Home on the Breath"
+      }
+    },
+    {
+      "id": "e_fin_watch",
+      "body": "<<FILL role=ending words=140 beats='The watch kept true while the master read, the record made clean in a steady hand, the craft witnessed and written at its very height; a charter, Wren learns at the center of the stilled sea, is also the one who keeps the log, who makes the reading last past the hands that took it; the succession rides home in the ink as surely as in the lead, and both will hold'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_watch",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Log Kept True"
+      }
+    },
+    {
+      "id": "e_fin_log",
+      "body": "<<FILL role=ending words=140 beats='Mabe's final sounding closed in Wren's log, the succession quiet and sure, the Hollow measured one more time by the old hands before they stopped; the book holds what the sea gave, plain and true, and Wren rows it home through the waking swell knowing the craft did not die at the center this morning, it changed hands, which is the only way a craft ever lives'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_log",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Last Sounding Entered"
+      }
+    }
+  ]
+}

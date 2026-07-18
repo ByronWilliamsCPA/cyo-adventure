@@ -1,0 +1,527 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_snow_day_expedition",
+  "version": 1,
+  "title": "The Snow Day Expedition",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "imagination",
+      "adventure",
+      "siblings",
+      "winter"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=85 beats='the radio says every school is closed for the snow day; June presses her nose to the cold window while her little brother Max drums on the glass beside her; overnight the backyard has vanished under deep white and the swing set wears tall snow hats; June announces that this is not a backyard anymore, it is the Arctic, and they are the explorers who will map it; they race each other to the mudroom, thrilled'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_gear",
+          "label": "Suit up for the expedition.",
+          "target": "n_gear"
+        }
+      ]
+    },
+    {
+      "id": "n_gear",
+      "body": "<<FILL role=setup words=72 beats='in the mudroom the explorers gear up; puffy coats become polar parkas, mittens are rated for the coldest cold, and the red sled becomes the supply sledge, loaded with the cocoa thermos, the flat shovel, the expedition notebook, and a snack bag of baby carrots; Mom runs mission control, which looks exactly like the kitchen, zips Max to the chin, and waves the team out the door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gear_basecamp",
+          "label": "March out to Base Camp One.",
+          "target": "n_basecamp"
+        }
+      ]
+    },
+    {
+      "id": "n_basecamp",
+      "body": "<<FILL role=choice words=82 beats='the back porch is Base Camp One and the whole white Arctic spreads out below it; on one side the plow pile at the driveway corner looms like Mount Snowpile, with a line of mysterious paw prints stitched along the fence beneath it; on the other side the untouched drifts of the Frozen Flats lie smooth and perfect, with the birdbath poking up out of them like a lonely iceberg; the explorers must pick a direction to trek'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_base_east",
+          "label": "Trek toward Mount Snowpile.",
+          "target": "n_east"
+        },
+        {
+          "id": "c_base_west",
+          "label": "Trek across the Frozen Flats.",
+          "target": "n_west"
+        }
+      ]
+    },
+    {
+      "id": "n_east",
+      "body": "<<FILL role=choice words=78 beats='the eastward trek is squeaky boot work through knee-deep powder; Mount Snowpile rises huge and crusty ahead, really just the pile the plow left, but with eyes half shut it is a true peak with icy cliffs; right across the trail runs a fresh line of small round paw prints heading for the fence, and Max gasps that a mysterious Arctic creature has passed this way; two expeditions call at once and the team can only pick one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_east_climb",
+          "label": "Climb Mount Snowpile.",
+          "target": "m_1"
+        },
+        {
+          "id": "c_east_tracks",
+          "label": "Follow the mysterious paw prints.",
+          "target": "t_1"
+        }
+      ]
+    },
+    {
+      "id": "n_west",
+      "body": "<<FILL role=choice words=78 beats='out on the Frozen Flats the snow is deep, smooth, perfect packing snow, exactly right for cutting igloo bricks; farther on, the birdbath iceberg rises from the drifts, and frozen fast in its icy top stand the three toy penguins Max left there before the big freeze, upright and waiting bravely for rescue; the explorers must choose today's mission on the Flats'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_west_igloo",
+          "label": "Build the Great Igloo fort.",
+          "target": "i_1"
+        },
+        {
+          "id": "c_west_penguins",
+          "label": "Rescue the bird bath penguins.",
+          "target": "p_1"
+        }
+      ]
+    },
+    {
+      "id": "m_1",
+      "body": "<<FILL role=rising words=68 beats='at the foot of Mount Snowpile the explorers rope up with the jump rope from the sledge; up close the mountain is a crusty plow pile taller than the car, but to the roped-up team it is all icy ledges and secret handholds; June spots the first good foothold and the ascent begins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_up",
+          "label": "Start up the lower slopes.",
+          "target": "m_2"
+        }
+      ]
+    },
+    {
+      "id": "m_2",
+      "body": "<<FILL role=choice words=80 beats='at the halfway ledge, really a buried lawn chair making a fine flat shelf, a sudden mountain storm whirls in; the wind kicks loose snow-dust off the crest and the neighbor's snowblower adds a roaring white plume; sparkles sting their cheeks and Max's nose has gone pink; real explorers must decide, brave the swirl on to the top, or head down to base camp for cocoa and try again later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_push",
+          "label": "Push on through the snow-swirl.",
+          "target": "m_3"
+        },
+        {
+          "id": "c_m2_cocoa",
+          "label": "Head back down for cocoa.",
+          "target": "m_r1"
+        }
+      ]
+    },
+    {
+      "id": "m_r1",
+      "body": "<<FILL role=rising words=60 beats='they climb down ledge by ledge, careful as real mountaineers, and the swirl dies away behind them just as the kitchen window glows gold ahead; June says this is not quitting, explorers call it regrouping, and Max agrees because his toes agree'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mr1_in",
+          "label": "Tromp inside to warm up.",
+          "target": "e_m_retreat"
+        }
+      ]
+    },
+    {
+      "id": "e_m_retreat",
+      "body": "<<FILL role=ending words=72 beats='mittens steam on the radiator while the explorers sip cocoa with extra marshmallows at mission control; they draw tomorrow's summit route on a napkin map with arrows and a big X on the peak; the mountain is not going anywhere, and next time, they agree with a clink of mugs, the top is theirs'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m_retreat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cocoa Retreat"
+      }
+    },
+    {
+      "id": "m_3",
+      "body": "<<FILL role=rising words=66 beats='above the swirl the wind quiets and the snow crust firms underfoot; they kick toe-steps the way real mountaineers do, June first and Max counting every step out loud; the white top of Mount Snowpile is suddenly close against the bright blue sky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_top",
+          "label": "Scramble up the last stretch.",
+          "target": "m_4"
+        }
+      ]
+    },
+    {
+      "id": "m_4",
+      "body": "<<FILL role=choice words=78 beats='the summit! from the top of the plow pile the explorers can see their whole Arctic at once, the fence line, the Frozen Flats, the birdbath iceberg, even their own boot trail winding back to base camp; two glorious ways to finish the climb: plant a flag on the very peak using the old broom handle and June's spare red mitten, or line up the sled for the first-ever ride down the smooth wind-packed far slope'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m4_flag",
+          "label": "Plant the flag on the peak.",
+          "target": "m_f1"
+        },
+        {
+          "id": "c_m4_sled",
+          "label": "Ride the sled down the far slope.",
+          "target": "m_s1"
+        }
+      ]
+    },
+    {
+      "id": "m_f1",
+      "body": "<<FILL role=rising words=62 beats='they pack snow tight around the broom-handle flagpole and tie the spare red mitten at the top, where it flaps like a true expedition flag; June and Max stand at attention beside it, puffed up with pride, and June declares that a brand-new mountain needs a name'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mf1_name",
+          "label": "Name the mountain out loud.",
+          "target": "e_m_flag"
+        }
+      ]
+    },
+    {
+      "id": "e_m_flag",
+      "body": "<<FILL role=completion words=78 beats='they shout the mountain's new name across the yard, the first explorers ever to stand on top of Mount Snowpile; the red mitten flag flaps proudly above them; Mom appears at the mission-control window and waves both arms, and the explorers salute back, then stamp their initials into the summit crust so the whole Arctic knows who climbed it first'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m_flag",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Flag on the Summit"
+      }
+    },
+    {
+      "id": "m_s1",
+      "body": "<<FILL role=rising words=62 beats='they line the sled up at the top of the smooth far slope, June steering in front, Max wrapped around her middle like a backpack; below them the run flattens out into a big soft drift, a perfect landing zone; June counts down from three in her best expedition voice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ms1_go",
+          "label": "Push off down the slope.",
+          "target": "e_m_sled"
+        }
+      ]
+    },
+    {
+      "id": "e_m_sled",
+      "body": "<<FILL role=completion words=78 beats='whoosh, the sled flies down the mountain trailing a rooster tail of snow, both explorers whooping the whole way, and lands them in the deep soft drift at the bottom in a laughing tangle; the first-ever descent of Mount Snowpile is complete; they flop onto their backs and stamp two snow angels into the drift as official victory marks'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m_sled",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Summit Sled Run"
+      }
+    },
+    {
+      "id": "t_1",
+      "body": "<<FILL role=rising words=68 beats='June kneels beside the prints like a wildlife scientist and studies them closely; small, round, and neat, dotting away along the fence like a row of buttons; too big for a squirrel, too small for a polar bear, so Max decides it is either an Arctic fox or a very small yeti; the tracking team moves out with eyes on the trail'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_track",
+          "label": "Track the prints along the fence.",
+          "target": "t_2"
+        }
+      ]
+    },
+    {
+      "id": "t_2",
+      "body": "<<FILL role=choice words=80 beats='the trail runs straight to the old holly bush in the corner and dives underneath it into the shadows; the tracking team huddles up in the snow to plan; there are two ways to keep the trail: wriggle straight through the low snow tunnel under the holly branches where the prints go, or hurry around behind the shed to cut the creature off on the far side'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_tunnel",
+          "label": "Crawl through the tunnel under the holly.",
+          "target": "t_3"
+        },
+        {
+          "id": "c_t2_shed",
+          "label": "Circle around behind the shed.",
+          "target": "t_4"
+        }
+      ]
+    },
+    {
+      "id": "t_3",
+      "body": "<<FILL role=rising words=72 beats='under the holly is a secret green cave with no snow at all, hushed and dim like a ranger's hideout; the prints stitch straight through it and out the far side toward the woodpile; up ahead something rustles softly, and a flick of thick gray fur shows between two logs; the trackers hold their breath and creep closer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_peek",
+          "label": "Peek around the woodpile.",
+          "target": "e_t_cat"
+        }
+      ]
+    },
+    {
+      "id": "e_t_cat",
+      "body": "<<FILL role=completion words=80 beats='curled in a snug gap between the logs is Duchess, the neighbor's enormous fluffy gray cat, blinking slow warm blinks at her visitors, and the explorers know a rare snow leopard in her secret mountain den when they see one; they crouch like wildlife scientists, whisper their field notes into the expedition notebook, and promise Duchess her den will stay secret; she answers with a purr they can feel through the logs'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_t_cat",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Snow Leopard's Den"
+      }
+    },
+    {
+      "id": "t_4",
+      "body": "<<FILL role=rising words=72 beats='behind the shed the snow is a crisscross of prints, big ones and tiny ones circling everywhere, and every trail leads back to one dark little gap under the shed step; the trackers crouch low behind the supply sledge to watch; Max whispers that he can see whiskers, actual whiskers, twitching just inside the shadow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_watch",
+          "label": "Hold still and watch the gap.",
+          "target": "e_t_rabbits"
+        }
+      ]
+    },
+    {
+      "id": "e_t_rabbits",
+      "body": "<<FILL role=completion words=80 beats='a plump brown rabbit hops halfway out of the gap, and behind her two round kits peek over her back, a whole secret expedition team living under the shed step; the explorers set one baby carrot from the supply sledge at a polite distance and back away slow and quiet; the rabbit takes it, and June marks the hidden rabbit base on the expedition map with a big star'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_t_rabbits",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Hidden Rabbit Base"
+      }
+    },
+    {
+      "id": "i_1",
+      "body": "<<FILL role=rising words=66 beats='the Frozen Flats snow squeaks and packs like magic; June stamps out a big circle for the floor of the Great Igloo while Max hauls the sledge alongside as the official brick wagon; the flat shovel becomes a snow saw, and the very first brick comes out crisp and square as a slice of cake'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_i1_bricks",
+          "label": "Cut the first row of snow bricks.",
+          "target": "i_2"
+        }
+      ]
+    },
+    {
+      "id": "i_2",
+      "body": "<<FILL role=rising words=68 beats='row by row the spiral wall rises, each brick lifted off the sled and patted snug into place with mitten thumps; the wall climbs past Max's shoulders and leans inward the way real igloos do; they leave a door gap just their size, and now only the tricky top of the dome is left'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_i2_dome",
+          "label": "Fit the last bricks of the dome.",
+          "target": "i_3"
+        }
+      ]
+    },
+    {
+      "id": "i_3",
+      "body": "<<FILL role=choice words=80 beats='the dome closes with one careful final brick and the builders cheer; inside, the light glows soft and blue like the inside of an ice palace, even though from the porch it is still a snow fort in the backyard; two dreams remain for finishing the Great Igloo: carve a round ice window and move the supplies in to make it a true Arctic base, or dig a grand entrance tunnel long enough to crawl through like real polar explorers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_i3_window",
+          "label": "Carve a window and move in supplies.",
+          "target": "i_f1"
+        },
+        {
+          "id": "c_i3_tunnel",
+          "label": "Dig the grand entrance tunnel.",
+          "target": "i_f2"
+        }
+      ]
+    },
+    {
+      "id": "i_f1",
+      "body": "<<FILL role=rising words=62 beats='June carves a round window with the snow saw and cold sunshine pours through it; Max ferries the supplies in from the sledge, thermos, carrot bag, and notebook lined up neatly on a carved snow shelf; the Great Igloo begins to feel like a real base at the bottom of the world'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_if1_settle",
+          "label": "Settle into the new base.",
+          "target": "e_i_base"
+        }
+      ]
+    },
+    {
+      "id": "e_i_base",
+      "body": "<<FILL role=completion words=80 beats='the explorers sit shoulder to shoulder inside their glowing blue fort, sipping cocoa while their breath makes little clouds, watching their whole Arctic through the round ice window; it is officially the finest base the backyard has ever had; they shout the good news toward mission control, and Mom's laugh floats back to them across the snow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_i_base",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Base Camp Igloo"
+      }
+    },
+    {
+      "id": "i_f2",
+      "body": "<<FILL role=rising words=62 beats='they dig from both ends at once, June from outside the wall and Max from inside the glowing dome, until two mittens meet in the middle of the snow with a muffled high five; they pat the tunnel walls smooth and round, long enough to crawl through like true polar explorers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_if2_crawl",
+          "label": "Crawl through the finished tunnel.",
+          "target": "e_i_tunnel"
+        }
+      ]
+    },
+    {
+      "id": "e_i_tunnel",
+      "body": "<<FILL role=completion words=76 beats='June crawls the whole tunnel first and pops up inside the glowing dome with a shout, then Max, then both of them again just because; the Great Igloo now has an official secret entrance, and from the porch Mom applauds the two snowy heads popping in and out; the explorers agree it is the greatest fort ever built in the backyard Arctic'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_i_tunnel",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Grand Snow Tunnel"
+      }
+    },
+    {
+      "id": "p_1",
+      "body": "<<FILL role=rising words=68 beats='the birdbath rises from the drifts like a lonely iceberg, and frozen fast in the ice on top stand all three toy penguins, upright and brave, exactly where Max left them before the big freeze; June declares Operation Penguin Rescue open and the sledge becomes the official rescue ambulance; the team crunches closer to study the ice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_look",
+          "label": "Look closely at the icy situation.",
+          "target": "p_2"
+        }
+      ]
+    },
+    {
+      "id": "p_2",
+      "body": "<<FILL role=choice words=80 beats='up close the ice sheet holds each penguin tight by the feet, shiny and stubborn; the rescue team weighs two plans: tap and wiggle the ice loose bit by bit with mitten thumps and the ice scraper, slow but steady work, or pour warm cocoa from the thermos over the ice to melt the penguins free fast, even though the cocoa is the expedition's emergency fuel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_tap",
+          "label": "Tap the ice loose, slow and steady.",
+          "target": "p_3"
+        },
+        {
+          "id": "c_p2_cocoa",
+          "label": "Pour warm cocoa over the ice.",
+          "target": "p_r1"
+        }
+      ]
+    },
+    {
+      "id": "p_r1",
+      "body": "<<FILL role=rising words=60 beats='the last of the warm cocoa glugs out and steams very grandly, but it only makes a shiny brown puddle that freezes again slicker than before; the penguins have not budged a single feather and the emergency fuel is gone; June says real rescue teams know when to regroup'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr1_retreat",
+          "label": "Call a retreat to mission control.",
+          "target": "e_p_retreat"
+        }
+      ]
+    },
+    {
+      "id": "e_p_retreat",
+      "body": "<<FILL role=ending words=74 beats='back at mission control the explorers thaw their mittens while Mom refills the thermos and does not even laugh at the cocoa-flavored iceberg; they plan Rescue Mission Two on the back of a napkin, with a proper ice tool this time; out on the birdbath the three penguins hold their post bravely until after lunch'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_p_retreat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Regroup and Refuel"
+      }
+    },
+    {
+      "id": "p_3",
+      "body": "<<FILL role=rising words=66 beats='tap, tap, tap, little cracks spider out around each penguin's feet while Max holds his breath beside the sled; one by one the penguins pop free into June's mitten, first one, then two, then all three; the team wraps them snug in June's spare scarf like tiny rescued explorers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_load",
+          "label": "Load the penguins for transport.",
+          "target": "p_4"
+        }
+      ]
+    },
+    {
+      "id": "p_4",
+      "body": "<<FILL role=choice words=78 beats='three rescued penguins peek out of the scarf in the sled ambulance, safe but very cold, or so the rescue team solemnly agrees; now the mission needs a proper finish: rush them to the porch railing and set up a penguin hospital with snow-pillow beds and feather-by-feather checkups, or lead one triumphant rescue parade around the whole Arctic first so every snowdrift can cheer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p4_hospital",
+          "label": "Set up the penguin hospital.",
+          "target": "p_f1"
+        },
+        {
+          "id": "c_p4_parade",
+          "label": "Lead the rescue parade.",
+          "target": "p_f2"
+        }
+      ]
+    },
+    {
+      "id": "p_f1",
+      "body": "<<FILL role=rising words=62 beats='the porch railing becomes hospital row with three snow-pillow beds patted smooth; Doctor June checks each penguin from beak to feet while Nurse Max records everything in the expedition notebook with very serious nods; all three patients are pronounced brave and perfectly healthy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf1_tuck",
+          "label": "Tuck the patients into their beds.",
+          "target": "e_p_hospital"
+        }
+      ]
+    },
+    {
+      "id": "e_p_hospital",
+      "body": "<<FILL role=completion words=76 beats='three penguins lie tucked in their snow beds on the porch railing, each with a certificate of bravery scratched into the frost beside it; Operation Penguin Rescue is complete and the doctors shake mittens over their sleeping patients; when Mom calls the team in for lunch, the penguins come too, riding warm and proud in June's coat pocket'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_p_hospital",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Penguin Hospital Heroes"
+      }
+    },
+    {
+      "id": "p_f2",
+      "body": "<<FILL role=rising words=62 beats='the sled ambulance becomes a parade float with the three penguins riding high on the folded scarf; June pulls the rope out front while Max marches behind, announcing the heroes to the whole Arctic in his loudest voice; the parade sets off across the Frozen Flats'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf2_lap",
+          "label": "March the full victory lap.",
+          "target": "e_p_parade"
+        }
+      ]
+    },
+    {
+      "id": "e_p_parade",
+      "body": "<<FILL role=completion words=76 beats='the parade rounds the whole backyard Arctic, past Mount Snowpile, along the fence line, and home to Base Camp One, the explorers cheering for their penguin heroes loud enough for every snowdrift to hear; Mom waves from the window like a whole crowd at once; the penguins ride home tall and proud in the greatest rescue parade the Arctic has ever seen'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_p_parade",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Rescue Parade"
+      }
+    }
+  ]
+}

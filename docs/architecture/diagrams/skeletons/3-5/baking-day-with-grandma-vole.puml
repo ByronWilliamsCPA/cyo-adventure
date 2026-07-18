@@ -1,0 +1,125 @@
+@startuml baking-day-with-grandma-vole
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 42w
+state n_kitchen #BBDEFB
+n_kitchen : setup · 40w
+state n_bowls #FFF9C4
+n_bowls : choice · 42w
+state n_bowl_oops #D1C4E9
+n_bowl_oops : rising · 40w
+state n_bowl_ok #D1C4E9
+n_bowl_ok : rising · 36w
+state n_flour #FFF9C4
+n_flour : choice · 42w
+state n_flour_oops #D1C4E9
+n_flour_oops : rising · 40w
+state n_flour_ok #D1C4E9
+n_flour_ok : rising · 36w
+state n_seeds #FFF9C4
+n_seeds : choice · 44w
+state n_acorn_chase #D1C4E9
+n_acorn_chase : rising · 40w
+state n_acorn_back #D1C4E9
+n_acorn_back : rising · 38w
+state n_seeds_ok #D1C4E9
+n_seeds_ok : rising · 36w
+state n_honey #D1C4E9
+n_honey : rising · 38w
+state n_mix #D1C4E9
+n_mix : rising · 38w
+state n_rest #D1C4E9
+n_rest : rising · 40w
+state n_shape #FFF9C4
+n_shape : choice · 42w
+state n_tray_neat #D1C4E9
+n_tray_neat : rising · 38w
+state n_tray_funny #D1C4E9
+n_tray_funny : rising · 38w
+state n_oven #FFF9C4
+n_oven : choice · 40w
+state n_peek_oops #D1C4E9
+n_peek_oops : rising · 38w
+state n_golden #FFF9C4
+n_golden : choice · 42w
+state n_oven_funny #FFF9C4
+n_oven_funny : choice · 40w
+state n_funny_peek #D1C4E9
+n_funny_peek : rising · 38w
+state n_funny_out #FFF9C4
+n_funny_out : choice · 42w
+state e_teatime #C8E6C9
+e_teatime : completion (positive)
+e_teatime : "A Teatime Picnic for Two"
+state e_neighbors #C8E6C9
+e_neighbors : success (positive)
+e_neighbors : "Warm Buns for the Whole Burrow"
+state e_perfect #C8E6C9
+e_perfect : success (positive)
+e_perfect : "The Perfect Golden Batch"
+state e_funny #C8E6C9
+e_funny : completion (positive)
+e_funny : "Funny Shapes, Yummy Buns"
+state e_recipe #C8E6C9
+e_recipe : discovery (positive)
+e_recipe : "A Brand-New Family Recipe"
+state e_silly #C8E6C9
+e_silly : success (positive)
+e_silly : "Silly Buns Make Everyone Smile"
+n_start --> n_kitchen : Scamper to the burrow kitchen.
+n_kitchen --> n_bowls : Go get the big brown bowl.
+n_bowls --> n_bowl_ok : Lift the top bowls off one at a time.
+n_bowls --> n_bowl_oops : Slide the bottom bowl out fast.
+n_bowl_oops --> n_bowls : Try the bowl shelf again.
+n_bowl_ok --> n_flour : Fetch the flour crock.
+n_flour --> n_flour_ok : Scoop small scoops, nice and slow.
+n_flour --> n_flour_oops : Tip the whole crock over at once.
+n_flour_oops --> n_flour : Dust off and scoop again.
+n_flour_ok --> n_seeds : Open the seed jar.
+n_seeds --> n_seeds_ok : Pour the seeds in a gentle stream.
+n_seeds --> n_acorn_chase : Shake the jar hard upside down.
+n_acorn_chase --> n_acorn_back : Catch that rolling acorn!
+n_acorn_back --> n_seeds : Pour the seeds again, gently.
+n_seeds_ok --> n_honey : Bring the honey pot.
+n_honey --> n_mix : Stir it all together.
+n_mix --> n_rest : Let the dough have a little nap.
+n_rest --> n_shape : Shape the buns with Grandma.
+n_shape --> n_tray_neat : Roll neat round buns like Grandma’s.
+n_shape --> n_tray_funny : Squish fun shapes, stars and snails.
+n_tray_neat --> n_oven : Watch and wait by the warm oven.
+n_tray_funny --> n_oven_funny : Watch and wait by the warm oven.
+n_oven --> n_golden : Wait for the little bell.
+n_oven --> n_peek_oops : Open the door for a tiny peek.
+n_peek_oops --> n_oven : Wait by the warm oven again.
+n_golden --> e_teatime : Have a teatime picnic with Grandma.
+n_golden --> e_neighbors : Take warm buns to the neighbors.
+n_golden --> e_perfect : Line up the batch on the windowsill.
+n_oven_funny --> n_funny_out : Wait for the little bell.
+n_oven_funny --> n_funny_peek : Open the door for a tiny peek.
+n_funny_peek --> n_oven_funny : Wait by the warm oven again.
+n_funny_out --> e_funny : Taste the wiggly star bun first.
+n_funny_out --> e_recipe : Draw the new buns on the recipe card.
+n_funny_out --> e_silly : Show the silly buns to the neighbors.
+e_teatime --> [*]
+e_neighbors --> [*]
+e_perfect --> [*]
+e_funny --> [*]
+e_recipe --> [*]
+e_silly --> [*]
+
+legend right
+  Baking Day with Grandma Vole
+  Band 3-5 · Tier 1 · ~4 min
+  Topology: loop_and_grow
+  30 nodes · 6 endings (6+ / 0n / 0-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

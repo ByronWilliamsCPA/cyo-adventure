@@ -1,0 +1,836 @@
+@startuml the-skyrail-heist
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 118w
+state n_rules #D1C4E9
+n_rules : rising · 112w
+state n_plan #D1C4E9
+n_plan : rising · 104w
+state n_sort #FFF9C4
+n_sort : choice · 132w
+state pl001 #D1C4E9
+pl001 : rising · 100w
+state pl002 #D1C4E9
+pl002 : rising · 92w
+state pl003 #FFF9C4
+pl003 : choice · 122w
+state pl004 #D1C4E9
+pl004 : rising · 108w
+state pl005 #FFF9C4
+pl005 : choice · 128w
+state pl006 #D1C4E9
+pl006 : rising · 96w
+state pl007 #FFF9C4
+pl007 : choice · 118w
+state pl008 #D1C4E9
+pl008 : rising · 112w
+state pl009 #D1C4E9
+pl009 : rising · 88w
+state pl010 #D1C4E9
+pl010 : rising · 104w
+state pl011 #FFF9C4
+pl011 : choice · 132w
+state pl012 #D1C4E9
+pl012 : rising · 118w
+state pl013 #D1C4E9
+pl013 : rising · 84w
+state pl014 #FFF9C4
+pl014 : choice · 122w
+state pl015 #D1C4E9
+pl015 : rising · 98w
+state pl016 #D1C4E9
+pl016 : rising · 100w
+state pl017 #C8E6C9
+pl017 : success (positive)
+pl017 : "The Ninth Car"
+state pl018 #D1C4E9
+pl018 : rising · 92w
+state pl019 #D1C4E9
+pl019 : rising · 108w
+state pl020 #C8E6C9
+pl020 : completion (positive)
+pl020 : "The Orphan Ledger Comes Home"
+state pl021 #D1C4E9
+pl021 : rising · 96w
+state pl022 #FFF9C4
+pl022 : choice · 128w
+state pl023 #D1C4E9
+pl023 : rising · 112w
+state pl024 #D1C4E9
+pl024 : rising · 88w
+state pl025 #C8E6C9
+pl025 : success (positive)
+pl025 : "The Purser's Arithmetic"
+state pl026 #D1C4E9
+pl026 : rising · 104w
+state pl027 #D1C4E9
+pl027 : rising · 118w
+state pl028 #C8E6C9
+pl028 : completion (positive)
+pl028 : "By the Book"
+state pl029 #D1C4E9
+pl029 : rising · 84w
+state pl030 #D1C4E9
+pl030 : rising · 98w
+state pl031 #FFF9C4
+pl031 : choice · 118w
+state pl032 #D1C4E9
+pl032 : rising · 100w
+state pl033 #D1C4E9
+pl033 : rising · 92w
+state pl034 #C8E6C9
+pl034 : success (positive)
+pl034 : "The Two Lamps"
+state pl035 #D1C4E9
+pl035 : rising · 108w
+state pl036 #FFF9C4
+pl036 : choice · 132w
+state pl037 #D1C4E9
+pl037 : rising · 96w
+state pl038 #D1C4E9
+pl038 : rising · 112w
+state pl039 #FFCDD2
+pl039 : setback (negative)
+pl039 : "One Flash Short"
+state pl040 #D1C4E9
+pl040 : rising · 88w
+state pl041 #D1C4E9
+pl041 : rising · 104w
+state pl042 #E0E0E0
+pl042 : discovery (neutral)
+pl042 : "The Border Ledger"
+state pl043 #D1C4E9
+pl043 : rising · 118w
+state pl044 #D1C4E9
+pl044 : rising · 84w
+state pl045 #FFF9C4
+pl045 : choice · 122w
+state pl046 #D1C4E9
+pl046 : rising · 98w
+state pl047 #D1C4E9
+pl047 : rising · 100w
+state pl048 #D1C4E9
+pl048 : rising · 92w
+state pl049 #D1C4E9
+pl049 : rising · 108w
+state pl050 #C8E6C9
+pl050 : completion (positive)
+pl050 : "Checked Twice at Midnight"
+state pl051 #D1C4E9
+pl051 : rising · 96w
+state pl052 #D1C4E9
+pl052 : rising · 112w
+state pl053 #FFCDD2
+pl053 : setback (negative)
+pl053 : "The Seventh Car"
+state pl054 #D1C4E9
+pl054 : rising · 88w
+state pl055 #D1C4E9
+pl055 : rising · 104w
+state pl056 #FFF9C4
+pl056 : choice · 128w
+state pl057 #D1C4E9
+pl057 : rising · 118w
+state pl058 #D1C4E9
+pl058 : rising · 84w
+state pl059 #FFF9C4
+pl059 : choice · 118w
+state pl060 #D1C4E9
+pl060 : rising · 98w
+state pl061 #D1C4E9
+pl061 : rising · 100w
+state pl062 #D1C4E9
+pl062 : rising · 92w
+state pl063 #C8E6C9
+pl063 : completion (positive)
+pl063 : "The Standing Order"
+state pl064 #D1C4E9
+pl064 : rising · 108w
+state pl065 #D1C4E9
+pl065 : rising · 96w
+state pl066 #D1C4E9
+pl066 : rising · 112w
+state pl067 #C8E6C9
+pl067 : success (positive)
+pl067 : "Paper and Steam"
+state pl068 #D1C4E9
+pl068 : rising · 88w
+state pl069 #D1C4E9
+pl069 : rising · 104w
+state pl070 #FFF9C4
+pl070 : choice · 132w
+state pl071 #D1C4E9
+pl071 : rising · 118w
+state pl072 #D1C4E9
+pl072 : rising · 84w
+state pl073 #E0E0E0
+pl073 : discovery (neutral)
+pl073 : "The Blank Line"
+state pl074 #D1C4E9
+pl074 : rising · 98w
+state pl075 #D1C4E9
+pl075 : rising · 100w
+state pl076 #D1C4E9
+pl076 : rising · 92w
+state pl077 #C8E6C9
+pl077 : completion (positive)
+pl077 : "Three Crews, One Car"
+state cl001 #D1C4E9
+cl001 : rising · 108w
+state cl002 #D1C4E9
+cl002 : rising · 96w
+state cl003 #D1C4E9
+cl003 : rising · 112w
+state cl004 #D1C4E9
+cl004 : rising · 88w
+state cl005 #D1C4E9
+cl005 : rising · 104w
+state cl006 #FFF9C4
+cl006 : choice · 122w
+state cl007 #D1C4E9
+cl007 : rising · 118w
+state cl008 #D1C4E9
+cl008 : rising · 84w
+state cl009 #D1C4E9
+cl009 : rising · 98w
+state cl010 #FFF9C4
+cl010 : choice · 128w
+state cl011 #D1C4E9
+cl011 : rising · 100w
+state cl012 #D1C4E9
+cl012 : rising · 92w
+state cl013 #D1C4E9
+cl013 : rising · 108w
+state cl014 #FFF9C4
+cl014 : choice · 118w
+state cl015 #D1C4E9
+cl015 : rising · 96w
+state cl016 #D1C4E9
+cl016 : rising · 112w
+state cl017 #FFF9C4
+cl017 : choice · 132w
+state cl018 #D1C4E9
+cl018 : rising · 88w
+state cl019 #D1C4E9
+cl019 : rising · 104w
+state cl020 #D1C4E9
+cl020 : rising · 118w
+state cl021 #C8E6C9
+cl021 : success (positive)
+cl021 : "The View From Above"
+state cl022 #D1C4E9
+cl022 : rising · 84w
+state cl023 #D1C4E9
+cl023 : rising · 98w
+state cl024 #C8E6C9
+cl024 : completion (positive)
+cl024 : "Cause From the Gantry"
+state cl025 #D1C4E9
+cl025 : rising · 100w
+state cl026 #FFF9C4
+cl026 : choice · 122w
+state cl027 #D1C4E9
+cl027 : rising · 92w
+state cl028 #D1C4E9
+cl028 : rising · 108w
+state cl029 #C8E6C9
+cl029 : success (positive)
+cl029 : "The Boy on the Stairs"
+state cl030 #D1C4E9
+cl030 : rising · 96w
+state cl031 #D1C4E9
+cl031 : rising · 112w
+state cl032 #C8E6C9
+cl032 : completion (positive)
+cl032 : "Steady Hands"
+state cl033 #D1C4E9
+cl033 : rising · 88w
+state cl034 #D1C4E9
+cl034 : rising · 104w
+state cl035 #FFF9C4
+cl035 : choice · 128w
+state cl036 #D1C4E9
+cl036 : rising · 118w
+state cl037 #D1C4E9
+cl037 : rising · 84w
+state cl038 #FFF9C4
+cl038 : choice · 118w
+state cl039 #D1C4E9
+cl039 : rising · 98w
+state cl040 #D1C4E9
+cl040 : rising · 100w
+state cl041 #C8E6C9
+cl041 : success (positive)
+cl041 : "Three Minutes of Lamplight"
+state cl042 #D1C4E9
+cl042 : rising · 92w
+state cl043 #D1C4E9
+cl043 : rising · 108w
+state cl044 #FFF9C4
+cl044 : choice · 132w
+state cl045 #D1C4E9
+cl045 : rising · 96w
+state cl046 #D1C4E9
+cl046 : rising · 112w
+state cl047 #C8E6C9
+cl047 : success (positive)
+cl047 : "Held for Water"
+state cl048 #D1C4E9
+cl048 : rising · 88w
+state cl049 #D1C4E9
+cl049 : rising · 104w
+state cl050 #FFF9C4
+cl050 : choice · 122w
+state cl051 #D1C4E9
+cl051 : rising · 118w
+state cl052 #D1C4E9
+cl052 : rising · 84w
+state cl053 #C8E6C9
+cl053 : success (positive)
+cl053 : "The Dawn Terminus"
+state cl054 #D1C4E9
+cl054 : rising · 98w
+state cl055 #D1C4E9
+cl055 : rising · 100w
+state cl056 #E0E0E0
+cl056 : discovery (neutral)
+cl056 : "What the Wire Carried"
+state cl057 #D1C4E9
+cl057 : rising · 92w
+state cl058 #D1C4E9
+cl058 : rising · 108w
+state cl059 #E0E0E0
+cl059 : discovery (neutral)
+cl059 : "Springs Ride Heavy"
+state cl060 #D1C4E9
+cl060 : rising · 96w
+state cl061 #D1C4E9
+cl061 : rising · 112w
+state cl062 #D1C4E9
+cl062 : rising · 88w
+state cl063 #FFF9C4
+cl063 : choice · 128w
+state cl064 #D1C4E9
+cl064 : rising · 104w
+state cl065 #D1C4E9
+cl065 : rising · 118w
+state cl066 #FFF9C4
+cl066 : choice · 118w
+state cl067 #D1C4E9
+cl067 : rising · 84w
+state cl068 #D1C4E9
+cl068 : rising · 98w
+state cl069 #D1C4E9
+cl069 : rising · 100w
+state cl070 #C8E6C9
+cl070 : success (positive)
+cl070 : "Paint and Patience"
+state cl071 #D1C4E9
+cl071 : rising · 92w
+state cl072 #D1C4E9
+cl072 : rising · 108w
+state cl073 #D1C4E9
+cl073 : rising · 96w
+state cl074 #C8E6C9
+cl074 : completion (positive)
+cl074 : "Rivet Grey"
+state cl075 #D1C4E9
+cl075 : rising · 112w
+state cl076 #D1C4E9
+cl076 : rising · 88w
+state cl077 #FFF9C4
+cl077 : choice · 132w
+state cl078 #D1C4E9
+cl078 : rising · 104w
+state cl079 #D1C4E9
+cl079 : rising · 118w
+state cl080 #FFCDD2
+cl080 : setback (negative)
+cl080 : "Two Anchors"
+state cl081 #D1C4E9
+cl081 : rising · 84w
+state cl082 #D1C4E9
+cl082 : rising · 98w
+state cl083 #FFCDD2
+cl083 : setback (negative)
+cl083 : "The Second Secret"
+state tk001 #D1C4E9
+tk001 : rising · 100w
+state tk002 #D1C4E9
+tk002 : rising · 92w
+state tk003 #FFF9C4
+tk003 : choice · 122w
+state tk004 #D1C4E9
+tk004 : rising · 108w
+state tk005 #FFF9C4
+tk005 : choice · 128w
+state tk006 #D1C4E9
+tk006 : rising · 96w
+state tk007 #D1C4E9
+tk007 : rising · 112w
+state tk008 #FFF9C4
+tk008 : choice · 118w
+state tk009 #D1C4E9
+tk009 : rising · 88w
+state tk010 #FFF9C4
+tk010 : choice · 132w
+state tk011 #D1C4E9
+tk011 : rising · 104w
+state tk012 #D1C4E9
+tk012 : rising · 118w
+state tk013 #FFF9C4
+tk013 : choice · 122w
+state tk014 #D1C4E9
+tk014 : rising · 84w
+state tk015 #D1C4E9
+tk015 : rising · 98w
+state tk016 #C8E6C9
+tk016 : success (positive)
+tk016 : "The Keeper of Doors"
+state tk017 #D1C4E9
+tk017 : rising · 100w
+state tk018 #D1C4E9
+tk018 : rising · 92w
+state tk019 #C8E6C9
+tk019 : completion (positive)
+tk019 : "Formalities"
+state tk020 #D1C4E9
+tk020 : rising · 108w
+state tk021 #FFF9C4
+tk021 : choice · 128w
+state tk022 #D1C4E9
+tk022 : rising · 96w
+state tk023 #FFF9C4
+tk023 : choice · 118w
+state tk024 #D1C4E9
+tk024 : rising · 112w
+state tk025 #D1C4E9
+tk025 : rising · 88w
+state tk026 #C8E6C9
+tk026 : success (positive)
+tk026 : "Seen Kindly"
+state tk027 #D1C4E9
+tk027 : rising · 104w
+state tk028 #D1C4E9
+tk028 : rising · 118w
+state tk029 #FFCDD2
+tk029 : setback (negative)
+tk029 : "The Startled Hare"
+state tk030 #D1C4E9
+tk030 : rising · 84w
+state tk031 #D1C4E9
+tk031 : rising · 98w
+state tk032 #C8E6C9
+tk032 : completion (positive)
+tk032 : "The Watch Kept"
+state tk033 #D1C4E9
+tk033 : rising · 100w
+state tk034 #FFF9C4
+tk034 : choice · 132w
+state tk035 #D1C4E9
+tk035 : rising · 92w
+state tk036 #D1C4E9
+tk036 : rising · 108w
+state tk037 #D1C4E9
+tk037 : rising · 96w
+state tk038 #C8E6C9
+tk038 : success (positive)
+tk038 : "The Waiting Cart"
+state tk039 #D1C4E9
+tk039 : rising · 112w
+state tk040 #D1C4E9
+tk040 : rising · 88w
+state tk041 #E0E0E0
+tk041 : discovery (neutral)
+tk041 : "The Siding Order"
+state tk042 #D1C4E9
+tk042 : rising · 104w
+state tk043 #D1C4E9
+tk043 : rising · 118w
+state tk044 #D1C4E9
+tk044 : rising · 84w
+state tk045 #FFF9C4
+tk045 : choice · 122w
+state tk046 #D1C4E9
+tk046 : rising · 98w
+state tk047 #D1C4E9
+tk047 : rising · 100w
+state tk048 #D1C4E9
+tk048 : rising · 92w
+state tk049 #C8E6C9
+tk049 : completion (positive)
+tk049 : "The Corridor Count"
+state tk050 #D1C4E9
+tk050 : rising · 108w
+state tk051 #D1C4E9
+tk051 : rising · 96w
+state tk052 #D1C4E9
+tk052 : rising · 112w
+state tk053 #E0E0E0
+tk053 : discovery (neutral)
+tk053 : "Patterns in the Aisle"
+state tk054 #D1C4E9
+tk054 : rising · 88w
+state tk055 #D1C4E9
+tk055 : rising · 104w
+state tk056 #FFF9C4
+tk056 : choice · 128w
+state tk057 #D1C4E9
+tk057 : rising · 118w
+state tk058 #D1C4E9
+tk058 : rising · 84w
+state tk059 #FFF9C4
+tk059 : choice · 118w
+state tk060 #D1C4E9
+tk060 : rising · 98w
+state tk061 #D1C4E9
+tk061 : rising · 100w
+state tk062 #D1C4E9
+tk062 : rising · 92w
+state tk063 #C8E6C9
+tk063 : success (positive)
+tk063 : "The Corridor Parley"
+state tk064 #D1C4E9
+tk064 : rising · 108w
+state tk065 #FFF9C4
+tk065 : choice · 132w
+state tk066 #D1C4E9
+tk066 : rising · 96w
+state tk067 #D1C4E9
+tk067 : rising · 112w
+state tk068 #C8E6C9
+tk068 : success (positive)
+tk068 : "The Rehearsed Question"
+state tk069 #D1C4E9
+tk069 : rising · 88w
+state tk070 #D1C4E9
+tk070 : rising · 104w
+state tk071 #C8E6C9
+tk071 : completion (positive)
+tk071 : "Signed and Timed"
+state tk072 #D1C4E9
+tk072 : rising · 118w
+state tk073 #D1C4E9
+tk073 : rising · 84w
+state tk074 #FFF9C4
+tk074 : choice · 122w
+state tk075 #D1C4E9
+tk075 : rising · 98w
+state tk076 #D1C4E9
+tk076 : rising · 100w
+state tk077 #D1C4E9
+tk077 : rising · 92w
+state tk078 #C8E6C9
+tk078 : completion (positive)
+tk078 : "The Duplicate Book"
+state tk079 #D1C4E9
+tk079 : rising · 108w
+state tk080 #D1C4E9
+tk080 : rising · 96w
+state tk081 #D1C4E9
+tk081 : rising · 112w
+state tk082 #C8E6C9
+tk082 : success (positive)
+tk082 : "The Clerk's Book"
+n_start --> n_rules : Climb to the hall and hear the plan.
+n_rules --> n_plan : Gather at the map table.
+n_plan --> n_sort : Step up for the sorting.
+n_sort --> pl001 : Join the Planners under Route-Warden Cas...
+n_sort --> cl001 : Join the Climbers under Rigger Bel Toma.
+n_sort --> tk001 : Join the Talkers under Advocate Imma Rhe...
+pl001 --> pl002 : Look over the night board.
+pl002 --> pl003 : Pick your thread.
+pl003 --> pl004 : Start with the weight ledger.
+pl003 --> pl054 : Start with the wagon manifest.
+pl004 --> pl005 : Weigh the number's worth.
+pl005 --> pl006 : Verify with a second reading.
+pl005 --> pl043 : Run with the single reading.
+pl006 --> pl007 : Choose how the cause travels.
+pl007 --> pl008 : Ride the Circle Tram to the junction.
+pl007 --> pl029 : Send it by lamp-code relay.
+pl008 --> pl009 : Watch for Saltglass below.
+pl009 --> pl010 : Come into Aqueduct Junction.
+pl010 --> pl011 : Lay the cause before Odal.
+pl011 --> pl012 : Let Odal lead with the writ.
+pl011 --> pl021 : Show Venn the arithmetic first.
+pl012 --> pl013 : Search the freight car.
+pl013 --> pl014 : Open the false panel.
+pl014 --> pl015 : Ask Odal to hear him out.
+pl014 --> pl018 : Let the constable proceed.
+pl015 --> pl016 : Stand by while the crates open.
+pl016 --> pl017 : See the archive onto the barrow.
+pl018 --> pl019 : Help tally the crates.
+pl019 --> pl020 : Ride home with the ledger.
+pl021 --> pl022 : Watch the pencil stop.
+pl022 --> pl023 : Appeal to his forty years.
+pl022 --> pl026 : Step back for the writ.
+pl023 --> pl024 : Walk with him to car nine.
+pl024 --> pl025 : Stand by as the panel falls.
+pl026 --> pl027 : Follow the porters in.
+pl027 --> pl028 : Sign the recovery log.
+pl029 --> pl030 : Code the message out.
+pl030 --> pl031 : Read the repeat-back.
+pl031 --> pl032 : Repeat the message in full.
+pl031 --> pl035 : Trust the acknowledge.
+pl032 --> pl033 : Follow on the milk train.
+pl033 --> pl034 : Find Odal at car nine.
+pl035 --> pl036 : Hear Casse own the mistake.
+pl036 --> pl037 : Wire Palegate and re-form.
+pl036 --> pl040 : Board and ride for the border.
+pl037 --> pl038 : Make the two-minute try.
+pl038 --> pl039 : Stand on the empty platform.
+pl040 --> pl041 : Prove it again by lamplight.
+pl041 --> pl042 : Reach Termino Gate at dawn.
+pl043 --> pl044 : Re-derive it on the ride.
+pl044 --> pl045 : Answer Odal's question.
+pl045 --> pl046 : Admit it and re-check now.
+pl045 --> pl051 : Stand on the figure.
+pl046 --> pl047 : Race the columns.
+pl047 --> pl048 : Second it with the tape.
+pl048 --> pl049 : Present the writ once, rightly.
+pl049 --> pl050 : See it done at 12:19.
+pl051 --> pl052 : Watch the window close.
+pl052 --> pl053 : Ride the tram home.
+pl054 --> pl055 : Read car nine's line again.
+pl055 --> pl056 : Follow the blank line.
+pl056 --> pl057 : Trace it at the telegraph office.
+pl056 --> pl068 : Take the blank line to Odal.
+pl057 --> pl058 : Read the duplicate flimsies.
+pl058 --> pl059 : Choose the finding's road.
+pl059 --> pl060 : Wire the border warden.
+pl059 --> pl064 : Carry it by tram.
+pl060 --> pl061 : Ride the milk train after it.
+pl061 --> pl062 : Stand by the man-door.
+pl062 --> pl063 : Pin the reply to the board.
+pl064 --> pl065 : Bring it to Odal's desk.
+pl065 --> pl066 : Watch Venn read it.
+pl066 --> pl067 : Count the pages home.
+pl068 --> pl069 : Find Odal on the platform.
+pl069 --> pl070 : Hear Odal weigh it.
+pl070 --> pl071 : Stake the writ on it now.
+pl070 --> pl074 : Hold for the crews to converge.
+pl071 --> pl072 : Open the panel fast.
+pl072 --> pl073 : Weigh what was won.
+pl074 --> pl075 : Present the writ on three threads.
+pl075 --> pl076 : Tally under the tower.
+pl076 --> pl077 : Hear Odal name the night.
+cl001 --> cl002 : Take your harness and line.
+cl002 --> cl003 : Follow Toma up the gantry stair.
+cl003 --> cl004 : Walk the aqueduct service way east.
+cl004 --> cl005 : Come in above Aqueduct Junction.
+cl005 --> cl006 : Report to the cradle head.
+cl006 --> cl007 : Rig the cradle by the law.
+cl006 --> cl060 : Scout the roofline first.
+cl007 --> cl008 : Test the belay brake.
+cl008 --> cl009 : Lower away on Toma's signal.
+cl009 --> cl010 : Hold the cradle at the roofline.
+cl010 --> cl011 : Signal for the ventilator.
+cl010 --> cl033 : Signal for the side hatch.
+cl011 --> cl012 : Relay the lantern light.
+cl012 --> cl013 : Ask for one more pass.
+cl013 --> cl014 : Bring the cause down.
+cl014 --> cl015 : Lamp-code it to Odal.
+cl014 --> cl025 : Send runners with the sketch.
+cl015 --> cl016 : Watch the platform answer.
+cl016 --> cl017 : Wait on Toma's word.
+cl017 --> cl018 : Answer him straight.
+cl017 --> cl022 : Let Odal answer with the writ.
+cl018 --> cl019 : Stand by the truth.
+cl019 --> cl020 : Follow the writ inside.
+cl020 --> cl021 : See the crates onto the barrow.
+cl022 --> cl023 : Keep the cradle steady.
+cl023 --> cl024 : Bring Toma up and stand down.
+cl025 --> cl026 : Stand still on the landing.
+cl026 --> cl027 : Speak to him gently.
+cl026 --> cl030 : Step back and flash for help.
+cl027 --> cl028 : Walk down behind him.
+cl028 --> cl029 : Stand by while he tells it.
+cl030 --> cl031 : Wait with him kindly.
+cl031 --> cl032 : Follow the lanterns down.
+cl033 --> cl034 : Feed the slack slowly.
+cl034 --> cl035 : Hold and read the platform.
+cl035 --> cl036 : Wait, then try the vent late.
+cl035 --> cl057 : Drop it and carry the springs.
+cl036 --> cl037 : Lower to the cowl again.
+cl037 --> cl038 : Answer with what you have.
+cl038 --> cl039 : Lamp-code the cause down.
+cl038 --> cl042 : Ride down and speak it.
+cl039 --> cl040 : Hold the light on the last word.
+cl040 --> cl041 : Watch the door open.
+cl042 --> cl043 : Brake by the count.
+cl043 --> cl044 : Stand with the crew.
+cl044 --> cl045 : Say the cause is sound.
+cl044 --> cl048 : Admit the look was thin.
+cl045 --> cl046 : Stand by the held train.
+cl046 --> cl047 : See it tallied.
+cl048 --> cl049 : Ride the pilot engine after.
+cl049 --> cl050 : Take stock at Palegate.
+cl050 --> cl051 : Press on to the border.
+cl050 --> cl054 : Wire Termino and turn home.
+cl051 --> cl052 : Stand at the gate at dawn.
+cl052 --> cl053 : See the panel come down.
+cl054 --> cl055 : Sleep on the ride home.
+cl055 --> cl056 : Read the wire twice.
+cl057 --> cl058 : Lay the springs before Odal.
+cl058 --> cl059 : Stand down with the crew.
+cl060 --> cl061 : Read the yard from above.
+cl061 --> cl062 : Watch the express come in.
+cl062 --> cl063 : Come off the footbridge.
+cl063 --> cl064 : Rig both anchors, arrive late.
+cl063 --> cl075 : Rig one anchor to save time.
+cl064 --> cl065 : Pay out on the count.
+cl065 --> cl066 : Signal your findings down.
+cl066 --> cl067 : Code the doubled cause down.
+cl066 --> cl071 : Send Toma with the sketchbook.
+cl067 --> cl068 : Hold position for the writ.
+cl068 --> cl069 : Rope home and descend.
+cl069 --> cl070 : Sign the rigger's book.
+cl071 --> cl072 : Hold the gantry watch.
+cl072 --> cl073 : Watch the parley land.
+cl073 --> cl074 : Come down for the tally.
+cl075 --> cl076 : Pay out fast and quiet.
+cl076 --> cl077 : Bring everything to a stop.
+cl077 --> cl078 : Own it to Odal now.
+cl077 --> cl081 : Re-rig quietly and retry.
+cl078 --> cl079 : Stand down as lantern crew.
+cl079 --> cl080 : Hold the light steady.
+cl081 --> cl082 : Walk down and tell it.
+cl082 --> cl083 : Watch the tail lamps go.
+tk001 --> tk002 : Find your seats before the whistle.
+tk002 --> tk003 : Choose where to listen first.
+tk003 --> tk004 : Take a table in the dining car.
+tk003 --> tk054 : Work the mail vestibule.
+tk004 --> tk005 : Trade a look with the crew.
+tk005 --> tk006 : Draw the brakeman out.
+tk005 --> tk042 : Send word to Rhee.
+tk006 --> tk007 : Let him talk it through.
+tk007 --> tk008 : Carry it back to Rhee.
+tk008 --> tk009 : Open with the brakeman's story.
+tk008 --> tk033 : Open with the siding listing.
+tk009 --> tk010 : Wait for Rhee's glance.
+tk010 --> tk011 : Ask about the blank consignee.
+tk010 --> tk020 : Fold and wait for the writ.
+tk011 --> tk012 : Let the silence work.
+tk012 --> tk013 : Hear his question.
+tk013 --> tk014 : Answer him honestly yourselves.
+tk013 --> tk017 : Fetch Rhee to set formal terms.
+tk014 --> tk015 : Stand by what you said.
+tk015 --> tk016 : Follow him to car nine.
+tk017 --> tk018 : Witness the signatures.
+tk018 --> tk019 : Stand in the lamplight tally.
+tk020 --> tk021 : Report the lantern light.
+tk021 --> tk022 : Go forward and witness it.
+tk021 --> tk030 : Hold post and send for Rhee.
+tk022 --> tk023 : Decide at the door.
+tk023 --> tk024 : Slip back and send for Rhee.
+tk023 --> tk027 : Open the door and speak first.
+tk024 --> tk025 : Let the adults take the door.
+tk025 --> tk026 : Keep your distance and watch.
+tk027 --> tk028 : Hold still and try to calm him.
+tk028 --> tk029 : Tell Rhee everything.
+tk030 --> tk031 : Give your report at the door.
+tk031 --> tk032 : Stand on the platform tally.
+tk033 --> tk034 : Confer in the corridor.
+tk034 --> tk035 : Wire Odal the warning now.
+tk034 --> tk039 : Verify the siding order first.
+tk035 --> tk036 : Watch the junction rise ahead.
+tk036 --> tk037 : Follow Rhee onto the platform.
+tk037 --> tk038 : Watch the threads meet.
+tk039 --> tk040 : Match the hands line by line.
+tk040 --> tk041 : Hand the order to Rhee.
+tk042 --> tk043 : Watch her work the grumble.
+tk043 --> tk044 : Hold the table and log the room.
+tk044 --> tk045 : Take her next assignment.
+tk045 --> tk046 : Count the seals on the cars.
+tk045 --> tk050 : Map who moves before midnight.
+tk046 --> tk047 : Check car nine twice.
+tk047 --> tk048 : Time it and write it down.
+tk048 --> tk049 : Present the count at the junction.
+tk050 --> tk051 : Mark the clerk's circuit.
+tk051 --> tk052 : Give the pattern to Rhee.
+tk052 --> tk053 : Watch the quarter hour prove you right.
+tk054 --> tk055 : Read the hook, hands off.
+tk055 --> tk056 : Weigh the waybill.
+tk056 --> tk057 : Take it straight to Rhee.
+tk056 --> tk072 : Ask to check the duplicate book.
+tk057 --> tk058 : Lay it under the lamp.
+tk058 --> tk059 : Give your counsel.
+tk059 --> tk060 : Counsel the early parley.
+tk059 --> tk064 : Counsel holding for the junction.
+tk060 --> tk061 : Note the careful door.
+tk061 --> tk062 : Listen from the seats.
+tk062 --> tk063 : Ride the last hour together.
+tk064 --> tk065 : Pick the preparation.
+tk065 --> tk066 : Rehearse the parley.
+tk065 --> tk069 : Draft the witness sheet.
+tk066 --> tk067 : Run it once more, faster.
+tk067 --> tk068 : Walk with him to car nine.
+tk069 --> tk070 : Sign every line twice.
+tk070 --> tk071 : File the sheet with the writ.
+tk072 --> tk073 : Find the carbon shadow.
+tk073 --> tk074 : Settle the evidence.
+tk074 --> tk075 : Copy the page by hand.
+tk074 --> tk079 : Ask him to come testify.
+tk075 --> tk076 : Have him initial each line.
+tk076 --> tk077 : Deliver it to the platform.
+tk077 --> tk078 : See the tally through.
+tk079 --> tk080 : Walk him through what to expect.
+tk080 --> tk081 : Stand with him at the desk.
+tk081 --> tk082 : Watch the keeper testify.
+pl017 --> [*]
+pl020 --> [*]
+pl025 --> [*]
+pl028 --> [*]
+pl034 --> [*]
+pl039 --> [*]
+pl042 --> [*]
+pl050 --> [*]
+pl053 --> [*]
+pl063 --> [*]
+pl067 --> [*]
+pl073 --> [*]
+pl077 --> [*]
+cl021 --> [*]
+cl024 --> [*]
+cl029 --> [*]
+cl032 --> [*]
+cl041 --> [*]
+cl047 --> [*]
+cl053 --> [*]
+cl056 --> [*]
+cl059 --> [*]
+cl070 --> [*]
+cl074 --> [*]
+cl080 --> [*]
+cl083 --> [*]
+tk016 --> [*]
+tk019 --> [*]
+tk026 --> [*]
+tk029 --> [*]
+tk032 --> [*]
+tk038 --> [*]
+tk041 --> [*]
+tk049 --> [*]
+tk053 --> [*]
+tk063 --> [*]
+tk068 --> [*]
+tk071 --> [*]
+tk078 --> [*]
+tk082 --> [*]
+
+legend right
+  The Skyrail Heist
+  Band 10-13 · Tier 1 · ~11 min
+  Topology: sorting_hat
+  246 nodes · 40 endings (29+ / 6n / 5-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml
