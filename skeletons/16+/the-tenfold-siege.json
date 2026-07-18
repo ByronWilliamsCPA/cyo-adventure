@@ -19,7 +19,7 @@
       "what holding costs"
     ],
     "estimated_minutes": 55,
-    "ending_count": 208,
+    "ending_count": 209,
     "content_flags": {
       "violence": "moderate",
       "scariness": "intense",
@@ -87,6 +87,18 @@
       "choices": [
         {
           "id": "c_s2",
+          "label": "Take your post on the gatehouse.",
+          "target": "s3"
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "body": "<<FILL role=setup words=74 beats='you climb to the gatehouse and look down the line one last time before it begins: the thin watch on the curtains, the counted barrels in the magazine, the faces that will hold or not; then, from the enemy camp, the first horns; the siege is upon you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s3",
           "label": "Stand to. The horns are sounding.",
           "target": "a01_ap"
         }
@@ -10455,28 +10467,6 @@
       "choices": []
     },
     {
-      "id": "fin_gamble",
-      "body": "<<FILL role=choice words=72 beats='you gamble the last of it on a single throw at the muster; there is a hard quiet way through and two that are not; only the steady road keeps what you have held'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fin_gamble_ok",
-          "label": "Hold steady and take the muster in hand.",
-          "target": "fin0"
-        },
-        {
-          "id": "c_fin_gamble_loud",
-          "label": "Throw everything into one loud stand.",
-          "target": "fin_gl"
-        },
-        {
-          "id": "c_fin_gamble_cap",
-          "label": "Sound terms and end it.",
-          "target": "fin_gcap"
-        }
-      ]
-    },
-    {
       "id": "fin_gl_c0",
       "body": "<<FILL role=rising words=58 beats='second person, grave and terse; at the muster at the tenth dawn the error takes hold: you spend the whole spent garrison in a single answer; the line cannot be recalled'>>",
       "is_ending": false,
@@ -10511,6 +10501,28 @@
         "title": "The One Loud Stand"
       },
       "choices": []
+    },
+    {
+      "id": "fin_gamble",
+      "body": "<<FILL role=choice words=72 beats='you gamble the last of it on a single throw at the muster; there is a hard quiet way through and two that are not; only the steady road keeps what you have held'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gamble_ok",
+          "label": "Hold steady and let the throw settle in your favor.",
+          "target": "win_nearthing"
+        },
+        {
+          "id": "c_fin_gamble_loud",
+          "label": "Throw everything into one loud stand.",
+          "target": "fin_gl_c0"
+        },
+        {
+          "id": "c_fin_gamble_cap",
+          "label": "Sound terms and end it.",
+          "target": "fin_gcap"
+        }
+      ]
     },
     {
       "id": "fin_gcap",
@@ -10738,6 +10750,18 @@
         "valence": "negative",
         "kind": "completion",
         "title": "The Breach Held Because the Storm Tired First"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_nearthing",
+      "body": "<<FILL role=resolution words=78 beats='the last gamble settles your way by the barest margin; the fortress is held, though by chance as much as by the garrisons hand, and no one on the wall pretends otherwise; a holding kept by a near thing, and known to be one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_nearthing",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Held by a Near Thing at the Muster"
       },
       "choices": []
     }
