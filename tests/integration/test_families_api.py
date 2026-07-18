@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
-from cyo_adventure.db.models import Family, User
+from cyo_adventure.db.models import CATALOG_FAMILY_ID, Family, User
 
 from .conftest import Seed, auth
 
@@ -91,6 +91,21 @@ async def test_list_reports_seed_family_member_counts(
     # Seed family A: admin-a, guardian-a, dual-a (3 guardian/admin rows) + 1 kid.
     assert row["guardian_count"] == 3
     assert row["kid_count"] == 1
+
+
+async def test_list_excludes_system_catalog_family(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The system catalog family (#173) never appears in the admin list.
+
+    It is an infrastructure row that owns catalog-origin content, not a real
+    household; surfacing it would also break the name-ordering assumption (it
+    sorts ahead of real families).
+    """
+    resp = await client.get(_FAMILIES, headers=auth(seed.admin_token))
+    assert resp.status_code == 200
+    ids = {r["id"] for r in resp.json()["families"]}
+    assert str(CATALOG_FAMILY_ID) not in ids
 
 
 async def test_rename_family(client: AsyncClient, seed: Seed) -> None:
