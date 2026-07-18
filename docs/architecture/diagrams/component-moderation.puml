@@ -27,6 +27,10 @@
 '                                                     not from pipeline.py)
 '   src/cyo_adventure/moderation/insights.py         (WS-F: aggregate override
 '                                                     evidence + threshold suggestions)
+'   src/cyo_adventure/moderation/rescreen.py         (rescreen_published_books:
+'                                                     admin re-screen sweep, re-runs
+'                                                     gate + Stage 0 + threshold re-eval)
+'   src/cyo_adventure/api/rescreen.py                (admin: POST /admin/rescreen)
 '   src/cyo_adventure/api/moderation_thresholds.py   (admin CRUD: per-band/category
 '                                                     overrides + noise-floor scalar)
 '   src/cyo_adventure/api/moderation_dashboard.py    (admin read-only dashboard +
@@ -75,7 +79,7 @@ package "Moderation Pipeline" #E8F5E9 {
 
   component "ModerationReport\nmoderation/report.py\nFinding, Verdict\nhas_hard_block / has_soft_flag" as report #B2DFDB
 
-  component "Auto-Repair\nmoderation/repair.py\nattempt_repair()\none bounded re-prompt of the\ngeneration provider; re-moderated\nand adopted only if schema-valid" as repair #FFE0B2
+  component "Auto-Repair\nmoderation/repair.py\nattempt_repair()\none bounded re-prompt of the generation\nprovider; re-moderated AND re-validated\nthrough the full validator gate (run_gate);\nadopted only if schema-valid AND the gate\ndoes not block" as repair #FFE0B2
 
 }
 
@@ -100,6 +104,8 @@ component "Publishing State Machine\npublishing/service.py\nsubmit() / auto_reje
 
 component "Pipeline Event Log\nevents/writer.py [WS-D]\n[see component-events.puml]" as events_log #FFF8E1
 
+component "Admin Re-Screen\napi/rescreen.py [admin]\nmoderation/rescreen.py\nPOST /admin/rescreen: sweep published\nbooks, re-run gate + Stage 0 + threshold\nre-eval after a policy change; never\nauto-unpublishes (ADR-005)" as rescreen #E1BEE7
+
 ' --- Primary moderation flow ---
 worker ==> entry : "run_moderation_pipeline(\nstory_id, version, ...)"
 entry --> review_provider : "resolve + guard\n(forbidden=pii)"
@@ -119,7 +125,7 @@ stage4 --> report
 report --> entry : "has_hard_block /\nhas_soft_flag"
 entry --> repair : "soft flag AND\nno hard block\n(one bounded attempt)"
 repair --> review_provider : "re-moderate\nrevised blob"
-repair --> entry : "revised blob\n(adopted only if\nschema-valid;\notherwise discarded)"
+repair --> entry : "revised blob\n(adopted only if schema-valid\nAND run_gate does not block;\notherwise discarded)"
 
 entry --> version_row : "persist\nmoderation_report"
 entry ==> publishing : "clean or repaired ->\nsubmit() [draft/needs_revision\n-> in_review]"
@@ -138,6 +144,9 @@ mod_dash_router --> insights : "aggregate_insights()\nsuggest_thresholds()"
 insights --> version_row : "read persisted\nmoderation_report history"
 mod_dash_router --> events_log : "read recent\nTHRESHOLD_CHANGED /\nNOISE_FLOOR_CHANGED rows"
 
+rescreen --> version_row : "re-run gate + Stage 0;\nrecompute surfacing (read-only\nre-eval, no auto-unpublish)"
+rescreen --> events_log : "MODERATION_COMPLETED\n(one per swept book)"
+
 note right of entry
   Routing decision (pipeline.py):
   1. Stage 0 classifiers always run first.
@@ -151,8 +160,10 @@ note right of entry
      (draft -> needs_revision, no human review).
   6. has_soft_flag and NOT has_hard_block ->
      one bounded auto-repair attempt, then
-     re-moderate; a schema-invalid revision is
-     discarded and the original report stands.
+     re-moderate AND re-run the full deterministic
+     gate (run_gate); a revision that is schema-
+     invalid OR that the gate blocks is discarded
+     and the original report stands.
   7. Otherwise (clean, or repair adopted) ->
      submit() (-> in_review) for the admin
      to approve or send back (ADR-005: the

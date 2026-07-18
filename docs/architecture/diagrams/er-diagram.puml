@@ -1,6 +1,6 @@
 @startuml er-diagram
 ' ============================================================
-' Entity-Relationship Diagram: all 21 ORM Tables
+' Entity-Relationship Diagram: all 22 ORM Tables
 ' CYO Adventure
 '
 ' Source file:
@@ -11,7 +11,7 @@
 ' backed by a CHECK constraint (plain Supabase CLI SQL migrations; the closed
 ' vocabulary is enforced at rest as well as at the application boundary).
 '
-' This diagram draws every table in models.py (21 total). See
+' This diagram draws every table in models.py (22 total). See
 ' docs/architecture/data-model.md for the full, authoritative column
 ' dictionary.
 ' ============================================================
@@ -24,6 +24,7 @@ entity "family" as family #E8F5E9 {
   * id : UUID <<PK>>
   --
   name : VARCHAR(200)
+  monthly_story_quota : INT NULL [ADR-015 cost gate; NULL = platform default]
   created_at : TIMESTAMPTZ
   deactivated_at : TIMESTAMPTZ NULL [soft-deactivate; cascades to members]
 }
@@ -63,9 +64,12 @@ entity "child_profile" as child_profile #FFF3E0 {
   age_band : VARCHAR(16) [3-5 | 5-8 | 8-11 | 10-13 | 13-16 | 16+]
   reading_level_cap : FLOAT [default 99.0]
   allowed_content_flags : JSONB
+  banned_themes : JSONB NULL [G2 guardian theme exclusions]
   tts_enabled : BOOLEAN
   avatar : VARCHAR(255) NULL
   pin_hash : TEXT NULL [write-only PIN; never serialized]
+  request_auto_approve : BOOLEAN [ADR-015 G3; default false]
+  monthly_request_envelope : INT NULL [ADR-015 G3 auto-approve cap]
   created_at : TIMESTAMPTZ
   deactivated_at : TIMESTAMPTZ NULL [soft-remove; history preserved]
 }
@@ -77,9 +81,15 @@ entity "family_connection" as family_connection #E8F5E9 {
   * connected_family_id : UUID <<FK family.id>> [recommendation source]
   created_by : UUID <<FK user.id, NULL>>
   created_at : TIMESTAMPTZ
+  consented_by_viewer_user_id : UUID <<FK user.id, NULL>> [ADR-016 G17]
+  consented_by_viewer_at : TIMESTAMPTZ NULL
+  consented_by_sharer_user_id : UUID <<FK user.id, NULL>>
+  consented_by_sharer_at : TIMESTAMPTZ NULL
   --
   UNIQUE (family_id, connected_family_id)
   CHECK (family_id <> connected_family_id)
+  CHECK (viewer consent id/at both NULL or both set)
+  CHECK (sharer consent id/at both NULL or both set)
 }
 
 entity "storybook" as storybook #F3E5F5 {
@@ -181,6 +191,7 @@ entity "story_request" as story_request #FFE0B2 {
   moderation_flags : JSONB NULL [redacted screening findings]
   reviewed_by : UUID <<FK user.id, NULL>>
   reviewed_at : TIMESTAMPTZ NULL
+  approved_at : TIMESTAMPTZ NULL [ADR-015; set once on approve]
   concept_id : UUID <<FK concept.id, NULL>> [set on approval]
   series_id : UUID <<FK series.id, NULL>>
   anchor_storybook_id : VARCHAR(120) <<FK storybook.id, NULL>>
@@ -233,7 +244,7 @@ entity "pipeline_event" as pipeline_event #ECEFF1 {
   actor_role : VARCHAR(16) [system|guardian|child|admin|device]
   entity_type : VARCHAR(32) [story_request|generation_job|storybook|...]
   entity_id : VARCHAR(255)
-  event_type : VARCHAR(48) [17 values, see EventType]
+  event_type : VARCHAR(48) [20 values, see EventType]
   from_state : VARCHAR(32) NULL
   to_state : VARCHAR(32) NULL
   payload : JSONB [PII-free, allowlisted fields only]
@@ -298,6 +309,25 @@ entity "generation_job" as generation_job #FFEBEE {
   updated_at : TIMESTAMPTZ
 }
 
+entity "kid_flag" as kid_flag #FCE4EC {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK family.id>> [denormalized from profile]
+  * profile_id : UUID <<FK child_profile.id>>
+  * storybook_id : VARCHAR(120) <<FK storybook.id>>
+  version : INT [composite FK (storybook_id, version) -> storybook_version]
+  reason : VARCHAR(16) [did_not_like|scared_me|confusing]
+  node_id : VARCHAR(120) NULL [story-graph node id, never prose (ADR-016)]
+  created_at : TIMESTAMPTZ
+  resolved_by : UUID <<FK user.id, NULL>>
+  resolved_at : TIMESTAMPTZ NULL
+  resolution : VARCHAR(16) NULL [dismissed|archived_book|noted]
+  --
+  CHECK (reason in did_not_like|scared_me|confusing)
+  CHECK (resolution NULL or in dismissed|archived_book|noted)
+  CHECK (resolved_by/resolved_at both NULL or both set)
+}
+
 ' --- Relationships (structural / cardinality-meaningful only; pure
 ' attribution FKs to user.id are annotated inline on the column above and
 ' not drawn here -- see the note bottom of user_t) ---
@@ -328,6 +358,10 @@ child_profile ||--o{ story_request : "1 profile\nmany requests\n(NULL = profile-
 concept ||--o{ generation_job : "1 concept\nmany job attempts"
 concept |o--o| story_request : "created on approval\n(concept_id)"
 user_t ||--o{ device_grant : "authorized_by\n1 guardian mints\nmany device grants"
+family ||--o{ kid_flag : "1 family\nhas many kid flags\n(K15)"
+child_profile ||--o{ kid_flag : "1 profile\nmany flags"
+storybook ||--o{ kid_flag : "storybook_id\n(flagged book)"
+storybook_version ||--o{ kid_flag : "(storybook_id, version)\ncomposite FK"
 
 note bottom of generation_job
   storybook_id is NOT a foreign key.
@@ -361,6 +395,9 @@ note bottom of user_t
   provider_model_allowlist.created_by/updated_by,
   provider_model_allowlist_audit.changed_by (NOT NULL),
   family_connection.created_by,
+  family_connection.consented_by_viewer_user_id,
+  family_connection.consented_by_sharer_user_id,
+  kid_flag.resolved_by,
   pipeline_event.actor_id (NULL iff actor_role='system').
 end note
 

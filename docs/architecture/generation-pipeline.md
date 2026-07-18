@@ -10,7 +10,8 @@ tags:
 ---
 
 CYO Adventure generates stories through a three-stage pipeline that turns a
-guardian-authored `ConceptBrief` into a validated `Storybook` JSON document.
+`ConceptBrief` (built at the guardian cost gate from a child wish, a guardian brief, or
+an admin catalog seed) into a validated `Storybook` JSON document.
 The pipeline runs asynchronously in an RQ worker process so long-running LLM
 calls do not block the API.
 
@@ -112,10 +113,19 @@ can never be retried or failed over.
 
 ## Guardian-Only Authoring Endpoints
 
-All five generation endpoints (`POST /concepts`, `POST /concepts/{id}/generate`,
-`GET /generation-jobs`, `GET /generation-jobs/{id}`,
-`POST /storybooks/{id}/versions/{v}/validate`) require the guardian role. Child tokens
-receive 403 immediately before any DB access.
+The generation router exposes six endpoints. Five require the guardian role
+(`POST /concepts`, `POST /concepts/{id}/generate`, `GET /generation-jobs`,
+`GET /generation-jobs/{id}`, `POST /storybooks/{id}/versions/{v}/validate`); a sixth,
+`POST /admin/generation-jobs/{id}/force-fail`, requires the admin capability. On
+`GET /generation-jobs/{id}` the raw validator report is returned only to admins (a plain
+guardian sees `report=null`). Child tokens receive 403 before any DB access.
+
+**Family cost gate (ADR-015).** Before any spend, `enqueue_concept_generation` calls
+`enforce_family_quota`: the family's monthly count of `approved` story requests is checked
+against `family.monthly_story_quota` (platform default when NULL) and a 409 is returned
+when it is exceeded; admins bypass the gate (platform budget). A
+`MAX_ACTIVE_JOBS_PER_FAMILY = 2` throttle bounds concurrent jobs. The same gate guards the
+`approve_story_request` and authored-request paths.
 
 `POST /concepts` screens the brief text for real child display names (fetched from
 `child_profile.display_name` for the family) before persisting the `Concept` row.

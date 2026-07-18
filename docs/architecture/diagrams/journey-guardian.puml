@@ -122,10 +122,13 @@ legend bottom
   |= Node |= Meaning |
   |<back:#FFFDF8>  white  </back>| Shipped in the guardian console today |
   |<back:#F3D9D4>  rose   </back>| Planned, not yet built |
-  Columns: <b>Guardian</b> (request + assign + monitor), <b>Admin</b> (the ADR-005
-  approval gate; the admin console also holds user management, the authoring
-  queue, the moderation dashboard/thresholds, and the provider allowlist --
-  see sitemap-and-flows), <b>System</b> (generation + safety, behind the scenes).
+  Columns: <b>Guardian</b> (request + assign + monitor; the console also has a
+  notification bell, a family reading-visibility page (/guardian/reading), and
+  cross-family connection consent (/guardian/connections, ADR-016)), <b>Admin</b>
+  (the ADR-005 approval gate; the admin console also holds the master library
+  (#277), user management, the authoring queue, the moderation dashboard/
+  thresholds, the provider allowlist, and the audit log -- see sitemap-and-flows),
+  <b>System</b> (generation + safety, behind the scenes).
   ADR-014: one AdultGate at the root of the whole adult subtree (not a per-page
   gate) is the single kid-to-adult boundary; step-up fires only crossing UP from
   kid mode, never guardian<->guardian, guardian<->admin, or admin<->guardian.

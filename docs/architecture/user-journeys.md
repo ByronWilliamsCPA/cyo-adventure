@@ -129,12 +129,21 @@ the whole review-and-approve sequence in the Admin lane to keep that gate
 visually unambiguous.
 
 Beyond this approval gate, the admin console also holds cross-family and
-operational surfaces this journey does not draw: user management
-(`/admin/users`: guardians/admins, child profiles, families, and directional
-family connections; WS-J #267), the authoring queue
-(`/admin/authoring-queue`), the moderation dashboard and thresholds, and the
-provider allowlist (`/admin/provider-allowlist`). See
-[sitemap-and-flows](diagrams/sitemap-and-flows.svg) for the full admin map.
+operational surfaces this journey does not draw: the master library
+(`/admin/library`: every storybook in any status, cross-family, #277), user
+management (`/admin/users`: guardians/admins, child profiles, families, and
+directional family connections; WS-J #267), the authoring queue
+(`/admin/authoring-queue`), the moderation dashboard and thresholds, the
+provider allowlist (`/admin/provider-allowlist`), and the audit log
+(`/admin/audit`). See [sitemap-and-flows](diagrams/sitemap-and-flows.svg) for
+the full admin map.
+
+Newer family-facing surfaces (ADR-015/016/017, #270) that the acts above do not
+yet trace: a guardian notification bell and a `/guardian/reading` visibility
+page, cross-family connection consent (`/guardian/connections`), recommendation
+chips on the kid library, kid passage flagging in the reader (which files a
+`kid_flag` for admin review), and a prose-only passage editor on the admin
+review surface that re-runs the validation gate and moderation on every edit.
 
 ### Act 5: Assignment
 

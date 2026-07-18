@@ -24,9 +24,9 @@ From `docs/planning/validator-rules.md`:
 1. **Layer 1 (L1-1..L1-7): graph structure and schema** (always runs first)
 2. **Early exit on any L1 ERROR**: the graph must be structurally sound before a
    state-space walk is meaningful; an L1 error means the document may not even parse.
-3. **Policy (PL-15..PL-21): age-safety and story-scale invariants** (ADR-011; forbidden
-   ending kinds, content-flag ceilings, breadth/depth floors, scale coverage). ERROR-severity
-   PL findings block.
+3. **Policy (PL-15..PL-22): age-safety and story-scale invariants** (ADR-011; forbidden
+   ending kinds, content-flag ceilings, breadth/depth floors, scale coverage, plus PL-22
+   which fails closed when no band profile is configured). ERROR-severity PL findings block.
 4. **Layer 2 (L2-9..L2-12): state-space walk** (Tier-2 stories only; Tier-1 short-circuits)
 5. **RL-13: advisory reading-level check** (WARNING severity, never blocks)
 6. **SAFE-14: safety content check** (Phase 2 stub, always empty)
@@ -149,7 +149,7 @@ yields a 409, the client presents a conflict resolution UI per `docs/design/offl
 |------|---------|
 | `src/cyo_adventure/validator/gate.py` | `run_gate()`, `GateResult` |
 | `src/cyo_adventure/validator/layer1.py` | L1-1..L1-7 graph rules (networkx) |
-| `src/cyo_adventure/validator/policy.py` | PL-15..PL-21 age/scale policy (ADR-011) |
+| `src/cyo_adventure/validator/policy.py` | PL-15..PL-22 age/scale policy (ADR-011; PL-22 fails closed on an unconfigured band) |
 | `src/cyo_adventure/validator/band_profile.py` | Per-age-band budgets, content ceilings, ending/decision floors |
 | `src/cyo_adventure/validator/layer2.py` | L2-9..L2-12 state-space walk |
 | `src/cyo_adventure/validator/reading_level.py` | RL-13 advisory check (textstat) |

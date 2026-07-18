@@ -43,7 +43,7 @@ rectangle "PWA Container\n[React 19, TypeScript, Vite]\nServed as static assets"
 
 ' --- Backend ---
 rectangle "FastAPI Backend\n[Python 3.12, FastAPI, Pydantic v2]\nsrc/cyo_adventure/" as backend #E8F5E9 {
-  rectangle "API Routers (21)\nhealth, library, reading, generation,\nprofiles, families, ratings, assignments,\napproval [global admin], covers,\nmoderation_thresholds [admin],\nmoderation_dashboard [admin],\nprovider_allowlist [admin], me,\nstory_requests, child_sessions,\ndevice_grants, onboarding,\nadmin_users [admin], admin_profiles [admin],\nfamily_connections [admin]" as routers #CCEECC
+  rectangle "API Routers (28)\n-- public / identity --\nhealth, me, onboarding\n-- kid / profile-scoped --\nlibrary, reading, reading_history, ratings,\nrecommendations, flags (+admin queue)\n-- guardian --\ngeneration (+admin force-fail), profiles,\nassignments, story_requests (+admin queue),\nnotifications, child_sessions, device_grants\n-- admin [global] --\napproval, covers, families, audit, rescreen,\nmoderation_thresholds, moderation_dashboard,\nprovider_allowlist, admin_users, admin_profiles,\nfamily_connections (+guardian consent)\n-- admin or guardian-own-family --\nnode_edit" as routers #CCEECC
   rectangle "Auth Seam\napi/deps.py\nPrincipal / family / role + is_admin\n(guardian, child, admin, device)" as auth #CCEECC
   rectangle "Storybook Domain\nstorybook/models.py\nstorybook/evaluator.py\nstorybook/condition.py" as storybook_dom #CCEECC
   rectangle "Player Engine\nplayer/engine.py\nRuntime Semantics v1 (pure)" as player_eng #CCEECC
@@ -59,11 +59,13 @@ rectangle "FastAPI Backend\n[Python 3.12, FastAPI, Pydantic v2]\nsrc/cyo_adventu
 rectangle "Generation Worker\n[RQ worker process]\ngeneration/worker.py" as worker #FFF3E0
 
 ' --- Data stores ---
-database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler :5432 (session mode)\n21 ORM tables:\nFamily, FamilyConnection, Series, User,\nChildProfile, Storybook, StorybookVersion,\nReadingState, Completion, Rating,\nStorybookAssignment, Concept,\nStoryRequest, ModerationThreshold(+Audit),\nModerationSetting, PipelineEvent,\nProviderModelAllowlist(+Audit),\nGenerationJob, DeviceGrant" as postgres #E0F7FA
+database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler :5432 (session mode)\n22 ORM tables:\nFamily, FamilyConnection, Series, User,\nChildProfile, Storybook, StorybookVersion,\nReadingState, Completion, Rating,\nStorybookAssignment, Concept,\nStoryRequest, ModerationThreshold(+Audit),\nModerationSetting, PipelineEvent,\nProviderModelAllowlist(+Audit),\nGenerationJob, DeviceGrant, KidFlag" as postgres #E0F7FA
 
 database "Redis\n[Job broker]\nRQ queue for generation jobs" as redis #E0E0E0
 
 rectangle "MinIO\n[Object storage, deferred Phase 5]\nStorybook blobs via S3 API" as minio #E0E0E0
+
+rectangle "Cloudflare R2\n[Object storage, S3 API, ADR-017]\nAI cover art WebP; written by\ncovers/worker.py RQ job (shipped)" as r2 #E0E0E0
 
 ' --- External LLMs ---
 rectangle "OpenRouter\n[Primary LLM, default cascade]" as openrouter #F3E5F5
@@ -97,6 +99,7 @@ worker ..> extra_providers : "provider.complete()\n(admin-selected job override)
 worker ..> ollama : "fallback"
 worker --> postgres : "update GenerationJob\nsession pooler :5432"
 worker ..> minio : "[planned Phase 5]\nblob_ref store"
+backend ..> r2 : "cover art WebP\n(covers/worker.py RQ job, ADR-017)"
 backend --> supabase_auth : "OIDC validation\n[local: token-as-subject seam;\nnon-local: verified Supabase JWT]"
 
 note bottom of gen_client

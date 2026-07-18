@@ -3,13 +3,13 @@ title: "Data Model"
 schema_type: common
 status: published
 owner: core-maintainer
-purpose: "ER diagram and description of the 21 ORM tables backing CYO Adventure."
+purpose: "ER diagram and description of the 22 ORM tables backing CYO Adventure."
 tags:
   - architecture
   - reference
 ---
 
-CYO Adventure has twenty-one PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+CYO Adventure has twenty-two PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (`supabase/migrations/`,
 ADR-012; Alembic retired). All timestamps are `TIMESTAMP WITH TIME ZONE`. Enum-like
 columns (`role`, `status`, `age_band`) are stored as strings and validated at the
@@ -31,6 +31,7 @@ data.
 |--------|------|-------|
 | id | UUID PK | |
 | name | VARCHAR(200) | Display name |
+| monthly_story_quota | INT NULL | ADR-015 cost gate: per-family monthly spend ceiling; NULL uses the platform default (`settings.default_monthly_story_quota`), never unlimited. CHECK `ck_family_monthly_story_quota_non_negative` |
 | created_at | TIMESTAMPTZ | Server default |
 | deactivated_at | TIMESTAMPTZ NULL | Soft-deactivate; cascades to member users/profiles in the same transaction (reactivation is manual, not cascaded) |
 
@@ -65,18 +66,22 @@ Per-child reading profile. Age band and content caps filter which stories are vi
 | age_band | VARCHAR(16) | one of `3-5`, `5-8`, `8-11`, `10-13`, `13-16`, `16+` |
 | reading_level_cap | FLOAT | Flesch-Kincaid cap; default 99.0 |
 | allowed_content_flags | JSONB | Per-flag content permissions |
+| banned_themes | JSONB NULL | G2 guardian-set theme exclusions; NULL means none (not `[]`) |
 | tts_enabled | BOOLEAN | TTS feature flag |
 | avatar | VARCHAR(255) NULL | |
 | pin_hash | TEXT NULL | Write-only PIN credential (`pbkdf2_sha256`); never serialized (views expose a `has_pin` bool) |
+| request_auto_approve | BOOLEAN | ADR-015 G3 per-child pre-authorization; default false |
+| monthly_request_envelope | INT NULL | ADR-015 G3 monthly auto-approve cap; NULL blocks auto-approval (never unlimited). CHECK `ck_child_profile_monthly_request_envelope_non_negative` |
 | created_at | TIMESTAMPTZ | |
 | deactivated_at | TIMESTAMPTZ NULL | Soft-remove (WS-J); excluded from pickers/listings and session mint, history preserved |
 
 ### `family_connection`
 
-A directional cross-family opt-in for story recommendations (WS-J). `family_id` is the
-"viewer" family that opted in to seeing stories sourced from `connected_family_id`; the
-relationship is deliberately one-way, so mutual visibility is two rows, not one. No
-recommendation engine reads this table yet: WS-J only builds the admin-managed allowlist.
+A directional cross-family opt-in for story recommendations (WS-J, ADR-016). `family_id`
+is the "viewer" family that opted in to seeing stories sourced from `connected_family_id`;
+the relationship is deliberately one-way, so mutual visibility is two rows, not one.
+`api/recommendations.py` (K17) is the reader: a connection contributes recommendations
+only when both guardians have consented (see the consent columns below).
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -85,9 +90,18 @@ recommendation engine reads this table yet: WS-J only builds the admin-managed a
 | connected_family_id | UUID FK | family.id; the source family whose stories may be recommended |
 | created_by | UUID FK NULL | user.id of the admin who created the connection |
 | created_at | TIMESTAMPTZ | Server default |
+| consented_by_viewer_user_id | UUID FK NULL | user.id of the viewer-side guardian who consented (ADR-016 G17); NULL if not (or no longer) consented |
+| consented_by_viewer_at | TIMESTAMPTZ NULL | When viewer consent was recorded; paired with the id column (both NULL or both set) |
+| consented_by_sharer_user_id | UUID FK NULL | user.id of the sharer-side guardian who consented |
+| consented_by_sharer_at | TIMESTAMPTZ NULL | When sharer consent was recorded; paired with the id column |
 
 A unique constraint on `(family_id, connected_family_id)` and a check constraint
-`family_id <> connected_family_id` prevent duplicate rows and self-connections.
+`family_id <> connected_family_id` prevent duplicate rows and self-connections. A
+connection is active (and contributes to K17 recommendations) only when both consent
+id/at pairs are set; either guardian may revoke by clearing their own pair. Two CHECKs
+(`ck_family_connection_viewer_consent_pairing`, `ck_family_connection_sharer_consent_pairing`)
+enforce the null-pairing, and a partial index `ix_family_connection_active_viewer` backs
+the active-viewer lookup.
 
 ### `series`
 
@@ -294,6 +308,7 @@ family-scope authz check stay single-table.
 | moderation_flags | JSONB NULL | Redacted screening findings; never raw classifier score/source |
 | reviewed_by | UUID FK NULL | user.id of guardian/admin who decided |
 | reviewed_at | TIMESTAMPTZ NULL | |
+| approved_at | TIMESTAMPTZ NULL | When the request entered `approved` specifically (ADR-015 spend derivation); distinct from `reviewed_at`; NULL unless approved |
 | concept_id | UUID FK NULL | concept.id created on approval |
 | series_id | UUID FK NULL | series.id this request continues (WS-B PR 3) |
 | anchor_storybook_id | VARCHAR(120) FK NULL | storybook.id this soft continuation follows on from |
@@ -403,9 +418,9 @@ trigger created in the migration; the ORM never updates or deletes them.
 | occurred_at | TIMESTAMPTZ | Server default |
 | actor_id | UUID FK NULL | user.id; NULL iff actor_role is `system` |
 | actor_role | VARCHAR(16) | `system`, `guardian`, `child`, `admin`, or `device` (ADR-014; the CHECK constraint's vocabulary is a superset of every valid `Role`, though no event is written with `actor_role='device'` yet, since the device principal is not wired into any event-emitting endpoint) |
-| entity_type | VARCHAR(32) | `story_request`, `generation_job`, `storybook`, `storybook_version`, `series`, `storybook_assignment`, `rating`, `moderation_threshold`, `moderation_setting`, `user`, `family`, or `family_connection` |
+| entity_type | VARCHAR(32) | `story_request`, `generation_job`, `storybook`, `storybook_version`, `series`, `storybook_assignment`, `rating`, `moderation_threshold`, `moderation_setting`, `kid_flag`, `user`, `family`, or `family_connection` |
 | entity_id | VARCHAR(255) | The affected row's id; composite ids (e.g. `f"{profile_id}:{storybook_id}"`) can reach ~157 chars |
-| event_type | VARCHAR(48) | One of 17 lifecycle event types (`request_created`, `request_approved`, `request_declined`, `plan_assigned`, `generation_started`, `generation_finished`, `moderation_completed`, `repair_applied`, `sent_back`, `released`, `threshold_changed`, `noise_floor_changed`, `book_assigned`, `rated`, `user_managed`, `family_managed`, `family_connection_changed`) |
+| event_type | VARCHAR(48) | One of 20 lifecycle event types (`request_created`, `request_approved`, `request_declined`, `plan_assigned`, `generation_started`, `generation_finished`, `moderation_completed`, `repair_applied`, `sent_back`, `released`, `threshold_changed`, `noise_floor_changed`, `book_assigned`, `rated`, `user_managed`, `family_managed`, `family_connection_changed`, `kid_flagged`, `flag_resolved`, `node_edited`) |
 | from_state | VARCHAR(32) NULL | |
 | to_state | VARCHAR(32) NULL | |
 | payload | JSONB | PII-free event payload; defaults to `{}` |
@@ -447,6 +462,37 @@ mirroring `moderation_threshold_audit`.
 | new_enabled | BOOLEAN NULL | `enabled` value after the edit; NULL on delete |
 | changed_by | UUID FK | user.id of admin who made the edit; NOT NULL |
 | changed_at | TIMESTAMPTZ | Server default |
+
+### `kid_flag`
+
+A child's structured "I didn't like this / this scared me" signal (K15). Feeds the
+admin moderation queue (A1) directly and, downstream, a guardian alert feed (G10) as a
+`pipeline_event` projection built separately (this table does not itself notify a
+guardian). `family_id` is denormalized from the flagging profile (mirrors
+`story_request.family_id`) so the admin queue stays single-table. Per ADR-016's
+no-free-text principle a flag carries no child-authored prose: `reason` is a closed
+vocabulary and `node_id` is a story-graph node id, so there is nothing to moderate
+before an adult sees it.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | UUID PK | |
+| family_id | UUID FK | family.id; denormalized from the flagging profile |
+| profile_id | UUID FK | child_profile.id; the flagging child |
+| storybook_id | VARCHAR(120) FK | storybook.id; also half of the composite FK below |
+| version | INT | Storybook version read; composite FK `(storybook_id, version)` -> storybook_version |
+| reason | VARCHAR(16) | `did_not_like`, `scared_me`, or `confusing` (`ck_kid_flag_reason`) |
+| node_id | VARCHAR(120) NULL | Story-graph node id being read when flagged; never prose |
+| created_at | TIMESTAMPTZ | Server default |
+| resolved_by | UUID FK NULL | user.id of admin who resolved; NULL while open |
+| resolved_at | TIMESTAMPTZ NULL | NULL while open |
+| resolution | VARCHAR(16) NULL | `dismissed`, `archived_book`, or `noted` (`ck_kid_flag_resolution`); NULL while open |
+
+A composite foreign key `(storybook_id, version)` references `storybook_version`. Check
+constraints enforce the closed `reason`/`resolution` vocabularies and pair
+`resolved_by`/`resolved_at` (`ck_kid_flag_resolved_pairing`, both NULL or both set). An
+index `ix_kid_flag_resolved_created (resolved_at, created_at)` backs the admin
+"open flags" queue.
 
 ## Authorization Pattern
 
