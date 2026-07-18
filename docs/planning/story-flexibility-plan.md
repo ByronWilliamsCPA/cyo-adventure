@@ -214,10 +214,19 @@ the gains. WS-5 and WS-6 are larger, independent bets for structural novelty.
   theme can introduce a death), a 73-slot theme contract, three worked bindings
   (sea caves / derelict space station / fossil-canyon dig), and the reproducible
   neutralize transform.
-- **Next:** the end-to-end proof, fill the parameterized skeleton for two distinct
-  themes and run both through `run_story_gate.py` to demonstrate one structure ->
-  multiple gate-passing stories. This exercises a manual stand-in for WS-1's
-  theme binding.
+- **End-to-end proof done** (`out/pilot/RESULTS.md`): the parameterized skeleton
+  was filled for two new themes (derelict space station; fossil-canyon dino dig),
+  and both passed the gate (`blocked=False safety_flagged=False`, no death
+  endings). One structure produced two distinct, gate-passing stories, the core
+  WS-2 claim.
+- **Refinement found:** the pilot neutralized beats and ending titles but not
+  `choices[].label` strings, so labels retained the original theme's nouns
+  ("orange starfish", "brass compass") and the fills had to bridge them in prose.
+  WS-2 must extend parameterization to choice labels, slotting the *object* while
+  preserving the *action* the label encodes (e.g. "Look closely at
+  {ROUTE_B1_PRIZE_OBJECT}").
+- **Next:** WS-1 (wire `theme_brief` into the fill) is the natural first
+  production step; the pilot's manual theme binding is the stand-in it replaces.
 
 ## 9. Open questions / ADR candidates
 
