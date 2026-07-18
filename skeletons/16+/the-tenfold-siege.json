@@ -148,7 +148,7 @@
         "id": "a01_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Wall Kept the Cost"
+        "title": "Stand square at the Main Gate"
       },
       "choices": []
     },
@@ -184,7 +184,7 @@
         "id": "a01_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Paid at the Parapet"
+        "title": "Throw the gate wide at the Main Gate"
       },
       "choices": []
     },
@@ -220,7 +220,7 @@
         "id": "a01_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Siege's Arithmetic"
+        "title": "Wait for the ram at the Main Gate"
       },
       "choices": []
     },
@@ -256,7 +256,7 @@
         "id": "a01_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "No Undoing It"
+        "title": "Send men out to fire at the Main Gate"
       },
       "choices": []
     },
@@ -292,7 +292,7 @@
         "id": "a01_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Line That Broke"
+        "title": "Pile the whole reserve at the Main Gate"
       },
       "choices": []
     },
@@ -370,7 +370,7 @@
         "id": "a01_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Spent in the Open"
+        "title": "Answer the ram at the Main Gate"
       },
       "choices": []
     },
@@ -406,7 +406,7 @@
         "id": "a01_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Gap It Left"
+        "title": "Pull the props to lure at the Main Gate"
       },
       "choices": []
     },
@@ -442,7 +442,7 @@
         "id": "a01_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Answered in Iron"
+        "title": "Hold the men back at the Main Gate"
       },
       "choices": []
     },
@@ -478,7 +478,7 @@
         "id": "a01_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Stone Remembered"
+        "title": "Order a countercharge through at the Main Gate"
       },
       "choices": []
     },
@@ -514,7 +514,7 @@
         "id": "a01_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Closed Over"
+        "title": "Sound the retreat at the Main Gate"
       },
       "choices": []
     },
@@ -640,7 +640,7 @@
         "id": "a01_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Breath Ran Out"
+        "title": "The Wall Given Up at the Main Gate"
       },
       "choices": []
     },
@@ -743,7 +743,7 @@
         "id": "a01_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Course Ran"
+        "title": "Answered Loud at the Main Gate, the Opening Rush"
       },
       "choices": []
     },
@@ -755,7 +755,7 @@
         "id": "a01_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Taken at the Wall"
+        "title": "Taken Alive at the Main Gate, the Opening Rush"
       },
       "choices": []
     },
@@ -820,7 +820,7 @@
         "id": "a01_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Given to the Storm"
+        "title": "Answered Loud at the Main Gate, the Second Line"
       },
       "choices": []
     },
@@ -832,7 +832,7 @@
         "id": "a01_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Fight Laid Down"
+        "title": "Taken Alive at the Main Gate, the Second Line"
       },
       "choices": []
     },
@@ -897,7 +897,7 @@
         "id": "a01_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Watch That Failed"
+        "title": "Answered Loud at the Main Gate, the Last Resolution"
       },
       "choices": []
     },
@@ -909,7 +909,7 @@
         "id": "a01_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Quarter at the Breach"
+        "title": "Taken Alive at the Main Gate, the Last Resolution"
       },
       "choices": []
     },
@@ -1039,7 +1039,7 @@
         "id": "a02_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Under the Fall"
+        "title": "Let the ladders fill at the East Curtain"
       },
       "choices": []
     },
@@ -1075,7 +1075,7 @@
         "id": "a02_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Ramp Took Them"
+        "title": "Meet the ladder-heads at the East Curtain"
       },
       "choices": []
     },
@@ -1111,7 +1111,7 @@
         "id": "a02_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Lit by Its Own Fire"
+        "title": "Pull men to one tower at the East Curtain"
       },
       "choices": []
     },
@@ -1147,7 +1147,7 @@
         "id": "a02_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bar That Opened"
+        "title": "Wait to see which ladder at the East Curtain"
       },
       "choices": []
     },
@@ -1183,7 +1183,7 @@
         "id": "a02_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Reserve Ran Dry"
+        "title": "Lean out past the merlon at the East Curtain"
       },
       "choices": []
     },
@@ -1261,7 +1261,7 @@
         "id": "a02_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Throat Gave"
+        "title": "Fork the last ladders at the East Curtain"
       },
       "choices": []
     },
@@ -1297,7 +1297,7 @@
         "id": "a02_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Feint That Won"
+        "title": "Fire the hoarding to burn at the East Curtain"
       },
       "choices": []
     },
@@ -1333,7 +1333,7 @@
         "id": "a02_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Fog Kept Them"
+        "title": "Rush every man at the East Curtain"
       },
       "choices": []
     },
@@ -1369,7 +1369,7 @@
         "id": "a02_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Sap Spoke First"
+        "title": "Cut the merlon loose at the East Curtain"
       },
       "choices": []
     },
@@ -1405,7 +1405,7 @@
         "id": "a02_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bridge Came Down"
+        "title": "Stand at the East Curtain"
       },
       "choices": []
     },
@@ -1531,7 +1531,7 @@
         "id": "a02_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Recoil Missed"
+        "title": "The Wall Given Up at the East Curtain"
       },
       "choices": []
     },
@@ -1634,7 +1634,7 @@
         "id": "a02_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Wall Kept the Cost"
+        "title": "Answered Loud at the East Curtain, the Opening Rush"
       },
       "choices": []
     },
@@ -1646,7 +1646,7 @@
         "id": "a02_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Long Captivity"
+        "title": "Taken Alive at the East Curtain, the Opening Rush"
       },
       "choices": []
     },
@@ -1711,7 +1711,7 @@
         "id": "a02_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Paid at the Parapet"
+        "title": "Answered Loud at the East Curtain, the Second Line"
       },
       "choices": []
     },
@@ -1723,7 +1723,7 @@
         "id": "a02_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Given Up Alive"
+        "title": "Taken Alive at the East Curtain, the Second Line"
       },
       "choices": []
     },
@@ -1788,7 +1788,7 @@
         "id": "a02_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Siege's Arithmetic"
+        "title": "Answered Loud at the East Curtain, the Last Resolution"
       },
       "choices": []
     },
@@ -1800,7 +1800,7 @@
         "id": "a02_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Gate Opened Inward"
+        "title": "Taken Alive at the East Curtain, the Last Resolution"
       },
       "choices": []
     },
@@ -1930,7 +1930,7 @@
         "id": "a03_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "No Undoing It"
+        "title": "Wait for the ground at the Northwest Tower"
       },
       "choices": []
     },
@@ -1966,7 +1966,7 @@
         "id": "a03_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Line That Broke"
+        "title": "Flood the sap at the Northwest Tower"
       },
       "choices": []
     },
@@ -2002,7 +2002,7 @@
         "id": "a03_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Spent in the Open"
+        "title": "Load the tower with men at the Northwest Tower"
       },
       "choices": []
     },
@@ -2038,7 +2038,7 @@
         "id": "a03_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Gap It Left"
+        "title": "Sink your own shaft straight at the Northwest Tower"
       },
       "choices": []
     },
@@ -2074,7 +2074,7 @@
         "id": "a03_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Answered in Iron"
+        "title": "Abandon the tower at the Northwest Tower"
       },
       "choices": []
     },
@@ -2152,7 +2152,7 @@
         "id": "a03_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Stone Remembered"
+        "title": "Fire their props at the Northwest Tower"
       },
       "choices": []
     },
@@ -2188,7 +2188,7 @@
         "id": "a03_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Closed Over"
+        "title": "Charge into their gallery at the Northwest Tower"
       },
       "choices": []
     },
@@ -2224,7 +2224,7 @@
         "id": "a03_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Breath Ran Out"
+        "title": "Hold at the Northwest Tower"
       },
       "choices": []
     },
@@ -2260,7 +2260,7 @@
         "id": "a03_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Course Ran"
+        "title": "Pull the props yourself by at the Northwest Tower"
       },
       "choices": []
     },
@@ -2296,7 +2296,7 @@
         "id": "a03_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Given to the Storm"
+        "title": "Vent the smoke back through at the Northwest Tower"
       },
       "choices": []
     },
@@ -2374,7 +2374,7 @@
         "id": "a03_g3_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Watch That Failed"
+        "title": "Spend the powder to blow at the Northwest Tower"
       },
       "choices": []
     },
@@ -2410,7 +2410,7 @@
         "id": "a03_g3_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Under the Fall"
+        "title": "Save the powder at the Northwest Tower"
       },
       "choices": []
     },
@@ -2446,7 +2446,7 @@
         "id": "a03_g3_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Ramp Took Them"
+        "title": "Wait a watch to be at the Northwest Tower"
       },
       "choices": []
     },
@@ -2482,7 +2482,7 @@
         "id": "a03_g3_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Lit by Its Own Fire"
+        "title": "Split the powder between two at the Northwest Tower"
       },
       "choices": []
     },
@@ -2610,7 +2610,7 @@
         "id": "a03_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bar That Opened"
+        "title": "The Wall Given Up at the Northwest Tower"
       },
       "choices": []
     },
@@ -2738,7 +2738,7 @@
         "id": "a03_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Reserve Ran Dry"
+        "title": "Answered Loud at the Northwest Tower, the Opening Rush"
       },
       "choices": []
     },
@@ -2750,7 +2750,7 @@
         "id": "a03_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Hands Raised on the Rampart"
+        "title": "Taken Alive at the Northwest Tower, the Opening Rush"
       },
       "choices": []
     },
@@ -2815,7 +2815,7 @@
         "id": "a03_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Throat Gave"
+        "title": "Answered Loud at the Northwest Tower, the Second Line"
       },
       "choices": []
     },
@@ -2827,7 +2827,7 @@
         "id": "a03_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Column Marched Them Out"
+        "title": "Taken Alive at the Northwest Tower, the Second Line"
       },
       "choices": []
     },
@@ -2892,7 +2892,7 @@
         "id": "a03_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Feint That Won"
+        "title": "Answered Loud at the Northwest Tower, the Last Resolution"
       },
       "choices": []
     },
@@ -2904,7 +2904,7 @@
         "id": "a03_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Surrendered on the Ramp"
+        "title": "Taken Alive at the Northwest Tower, the Last Resolution"
       },
       "choices": []
     },
@@ -2969,7 +2969,7 @@
         "id": "a03_s4_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Fog Kept Them"
+        "title": "Answered Loud at the Northwest Tower, the Stores' Stand"
       },
       "choices": []
     },
@@ -2981,7 +2981,7 @@
         "id": "a03_s4_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Terms Accepted"
+        "title": "Taken Alive at the Northwest Tower, the Stores' Stand"
       },
       "choices": []
     },
@@ -3111,7 +3111,7 @@
         "id": "a04_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Sap Spoke First"
+        "title": "Wait for the first roof at the Burning Roofs"
       },
       "choices": []
     },
@@ -3147,7 +3147,7 @@
         "id": "a04_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bridge Came Down"
+        "title": "Send the water-line up onto at the Burning Roofs"
       },
       "choices": []
     },
@@ -3183,7 +3183,7 @@
         "id": "a04_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Recoil Missed"
+        "title": "Fire your own outbuildings at the Burning Roofs"
       },
       "choices": []
     },
@@ -3219,7 +3219,7 @@
         "id": "a04_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Wall Kept the Cost"
+        "title": "Crowd the men under at the Burning Roofs"
       },
       "choices": []
     },
@@ -3255,7 +3255,7 @@
         "id": "a04_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Paid at the Parapet"
+        "title": "Answer fire-arrows with your own at the Burning Roofs"
       },
       "choices": []
     },
@@ -3333,7 +3333,7 @@
         "id": "a04_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Siege's Arithmetic"
+        "title": "Wet the hoardings at the Burning Roofs"
       },
       "choices": []
     },
@@ -3369,7 +3369,7 @@
         "id": "a04_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "No Undoing It"
+        "title": "Pull the whole watch at the Burning Roofs"
       },
       "choices": []
     },
@@ -3405,7 +3405,7 @@
         "id": "a04_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Line That Broke"
+        "title": "Cut the burning roof loose at the Burning Roofs"
       },
       "choices": []
     },
@@ -3441,7 +3441,7 @@
         "id": "a04_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Spent in the Open"
+        "title": "Hold the buckets at the Burning Roofs"
       },
       "choices": []
     },
@@ -3477,7 +3477,7 @@
         "id": "a04_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Gap It Left"
+        "title": "Climb out to smother at the Burning Roofs"
       },
       "choices": []
     },
@@ -3603,7 +3603,7 @@
         "id": "a04_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Answered in Iron"
+        "title": "The Wall Given Up at the Burning Roofs"
       },
       "choices": []
     },
@@ -3706,7 +3706,7 @@
         "id": "a04_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Stone Remembered"
+        "title": "Answered Loud at the Burning Roofs, the Opening Rush"
       },
       "choices": []
     },
@@ -3718,7 +3718,7 @@
         "id": "a04_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Led Off the Wall"
+        "title": "Taken Alive at the Burning Roofs, the Opening Rush"
       },
       "choices": []
     },
@@ -3783,7 +3783,7 @@
         "id": "a04_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Closed Over"
+        "title": "Answered Loud at the Burning Roofs, the Second Line"
       },
       "choices": []
     },
@@ -3795,7 +3795,7 @@
         "id": "a04_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Standard Struck"
+        "title": "Taken Alive at the Burning Roofs, the Second Line"
       },
       "choices": []
     },
@@ -3860,7 +3860,7 @@
         "id": "a04_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Breath Ran Out"
+        "title": "Answered Loud at the Burning Roofs, the Last Resolution"
       },
       "choices": []
     },
@@ -3872,7 +3872,7 @@
         "id": "a04_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Taken at the Wall"
+        "title": "Taken Alive at the Burning Roofs, the Last Resolution"
       },
       "choices": []
     },
@@ -4002,7 +4002,7 @@
         "id": "a05_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Course Ran"
+        "title": "Light the whole wall at the Fogged Wall"
       },
       "choices": []
     },
@@ -4038,7 +4038,7 @@
         "id": "a05_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Given to the Storm"
+        "title": "Loose blind into the fog at the Fogged Wall"
       },
       "choices": []
     },
@@ -4074,7 +4074,7 @@
         "id": "a05_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Watch That Failed"
+        "title": "Wait to be certain at the Fogged Wall"
       },
       "choices": []
     },
@@ -4110,7 +4110,7 @@
         "id": "a05_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Under the Fall"
+        "title": "Pull back off the fogged at the Fogged Wall"
       },
       "choices": []
     },
@@ -4146,7 +4146,7 @@
         "id": "a05_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Ramp Took Them"
+        "title": "Send a party at the Fogged Wall"
       },
       "choices": []
     },
@@ -4224,7 +4224,7 @@
         "id": "a05_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Lit by Its Own Fire"
+        "title": "Fire low on the first at the Fogged Wall"
       },
       "choices": []
     },
@@ -4260,7 +4260,7 @@
         "id": "a05_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bar That Opened"
+        "title": "Empty the last arrows at the Fogged Wall"
       },
       "choices": []
     },
@@ -4296,7 +4296,7 @@
         "id": "a05_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Reserve Ran Dry"
+        "title": "Set fire to the fog at the Fogged Wall"
       },
       "choices": []
     },
@@ -4332,7 +4332,7 @@
         "id": "a05_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Throat Gave"
+        "title": "Hold every shot at the Fogged Wall"
       },
       "choices": []
     },
@@ -4368,7 +4368,7 @@
         "id": "a05_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Feint That Won"
+        "title": "Lean into the fog at the Fogged Wall"
       },
       "choices": []
     },
@@ -4446,7 +4446,7 @@
         "id": "a05_g3_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Fog Kept Them"
+        "title": "Spend the oil to light at the Fogged Wall"
       },
       "choices": []
     },
@@ -4482,7 +4482,7 @@
         "id": "a05_g3_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Sap Spoke First"
+        "title": "Save the oil at the Fogged Wall"
       },
       "choices": []
     },
@@ -4518,7 +4518,7 @@
         "id": "a05_g3_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bridge Came Down"
+        "title": "Pour the oil straight at the Fogged Wall"
       },
       "choices": []
     },
@@ -4554,7 +4554,7 @@
         "id": "a05_g3_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Recoil Missed"
+        "title": "Ration the oil at the Fogged Wall"
       },
       "choices": []
     },
@@ -4682,7 +4682,7 @@
         "id": "a05_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Wall Kept the Cost"
+        "title": "The Wall Given Up at the Fogged Wall"
       },
       "choices": []
     },
@@ -4810,7 +4810,7 @@
         "id": "a05_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Paid at the Parapet"
+        "title": "Answered Loud at the Fogged Wall, the Opening Rush"
       },
       "choices": []
     },
@@ -4822,7 +4822,7 @@
         "id": "a05_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Fight Laid Down"
+        "title": "Taken Alive at the Fogged Wall, the Opening Rush"
       },
       "choices": []
     },
@@ -4887,7 +4887,7 @@
         "id": "a05_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Siege's Arithmetic"
+        "title": "Answered Loud at the Fogged Wall, the Second Line"
       },
       "choices": []
     },
@@ -4899,7 +4899,7 @@
         "id": "a05_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Quarter at the Breach"
+        "title": "Taken Alive at the Fogged Wall, the Second Line"
       },
       "choices": []
     },
@@ -4964,7 +4964,7 @@
         "id": "a05_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "No Undoing It"
+        "title": "Answered Loud at the Fogged Wall, the Last Resolution"
       },
       "choices": []
     },
@@ -4976,7 +4976,7 @@
         "id": "a05_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Long Captivity"
+        "title": "Taken Alive at the Fogged Wall, the Last Resolution"
       },
       "choices": []
     },
@@ -5041,7 +5041,7 @@
         "id": "a05_s4_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Line That Broke"
+        "title": "Answered Loud at the Fogged Wall, the Stores' Stand"
       },
       "choices": []
     },
@@ -5053,7 +5053,7 @@
         "id": "a05_s4_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Given Up Alive"
+        "title": "Taken Alive at the Fogged Wall, the Stores' Stand"
       },
       "choices": []
     },
@@ -5183,7 +5183,7 @@
         "id": "a06_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Spent in the Open"
+        "title": "Wait to see if at the West Curtain"
       },
       "choices": []
     },
@@ -5219,7 +5219,7 @@
         "id": "a06_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Gap It Left"
+        "title": "Answer the great ram at the West Curtain"
       },
       "choices": []
     },
@@ -5255,7 +5255,7 @@
         "id": "a06_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Answered in Iron"
+        "title": "Load the parapet over at the West Curtain"
       },
       "choices": []
     },
@@ -5291,7 +5291,7 @@
         "id": "a06_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Stone Remembered"
+        "title": "Undercut the ram's ramp at the West Curtain"
       },
       "choices": []
     },
@@ -5327,7 +5327,7 @@
         "id": "a06_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Closed Over"
+        "title": "Fire the ram-tower at the West Curtain"
       },
       "choices": []
     },
@@ -5405,7 +5405,7 @@
         "id": "a06_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Breath Ran Out"
+        "title": "Drop the murder-stones at the West Curtain"
       },
       "choices": []
     },
@@ -5441,7 +5441,7 @@
         "id": "a06_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Course Ran"
+        "title": "Hold the stones at the West Curtain"
       },
       "choices": []
     },
@@ -5477,7 +5477,7 @@
         "id": "a06_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Given to the Storm"
+        "title": "Pull the keystone to drop at the West Curtain"
       },
       "choices": []
     },
@@ -5513,7 +5513,7 @@
         "id": "a06_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Watch That Failed"
+        "title": "Mass the garrison behind at the West Curtain"
       },
       "choices": []
     },
@@ -5549,7 +5549,7 @@
         "id": "a06_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Under the Fall"
+        "title": "Sound recall from the west at the West Curtain"
       },
       "choices": []
     },
@@ -5627,7 +5627,7 @@
         "id": "a06_g3_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Ramp Took Them"
+        "title": "Spend the powder to bring at the West Curtain"
       },
       "choices": []
     },
@@ -5663,7 +5663,7 @@
         "id": "a06_g3_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Lit by Its Own Fire"
+        "title": "Save the powder at the West Curtain"
       },
       "choices": []
     },
@@ -5699,7 +5699,7 @@
         "id": "a06_g3_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bar That Opened"
+        "title": "Throw the powder onto at the West Curtain"
       },
       "choices": []
     },
@@ -5735,7 +5735,7 @@
         "id": "a06_g3_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Reserve Ran Dry"
+        "title": "Halve the charge to keep at the West Curtain"
       },
       "choices": []
     },
@@ -5863,7 +5863,7 @@
         "id": "a06_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Throat Gave"
+        "title": "The Wall Given Up at the West Curtain"
       },
       "choices": []
     },
@@ -5998,7 +5998,7 @@
         "id": "a06_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Feint That Won"
+        "title": "Answered Loud at the West Curtain, the Opening Rush"
       },
       "choices": []
     },
@@ -6010,7 +6010,7 @@
         "id": "a06_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Gate Opened Inward"
+        "title": "Taken Alive at the West Curtain, the Opening Rush"
       },
       "choices": []
     },
@@ -6075,7 +6075,7 @@
         "id": "a06_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Fog Kept Them"
+        "title": "Answered Loud at the West Curtain, the Second Line"
       },
       "choices": []
     },
@@ -6087,7 +6087,7 @@
         "id": "a06_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Hands Raised on the Rampart"
+        "title": "Taken Alive at the West Curtain, the Second Line"
       },
       "choices": []
     },
@@ -6152,7 +6152,7 @@
         "id": "a06_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Sap Spoke First"
+        "title": "Answered Loud at the West Curtain, the Last Resolution"
       },
       "choices": []
     },
@@ -6164,7 +6164,7 @@
         "id": "a06_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Column Marched Them Out"
+        "title": "Taken Alive at the West Curtain, the Last Resolution"
       },
       "choices": []
     },
@@ -6229,7 +6229,7 @@
         "id": "a06_s4_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bridge Came Down"
+        "title": "Answered Loud at the West Curtain, the Stores' Stand"
       },
       "choices": []
     },
@@ -6241,7 +6241,7 @@
         "id": "a06_s4_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Surrendered on the Ramp"
+        "title": "Taken Alive at the West Curtain, the Stores' Stand"
       },
       "choices": []
     },
@@ -6371,7 +6371,7 @@
         "id": "a07_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Recoil Missed"
+        "title": "Open the port to receive at the Sally-Port"
       },
       "choices": []
     },
@@ -6407,7 +6407,7 @@
         "id": "a07_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Wall Kept the Cost"
+        "title": "March out to parley at the Sally-Port"
       },
       "choices": []
     },
@@ -6443,7 +6443,7 @@
         "id": "a07_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Paid at the Parapet"
+        "title": "Wait on their good faith at the Sally-Port"
       },
       "choices": []
     },
@@ -6479,7 +6479,7 @@
         "id": "a07_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Siege's Arithmetic"
+        "title": "Empty the wall to hear at the Sally-Port"
       },
       "choices": []
     },
@@ -6515,7 +6515,7 @@
         "id": "a07_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "No Undoing It"
+        "title": "Fire on the flag at the Sally-Port"
       },
       "choices": []
     },
@@ -6593,7 +6593,7 @@
         "id": "a07_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Line That Broke"
+        "title": "Hold the port barred until at the Sally-Port"
       },
       "choices": []
     },
@@ -6629,7 +6629,7 @@
         "id": "a07_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Spent in the Open"
+        "title": "Let a few inside as at the Sally-Port"
       },
       "choices": []
     },
@@ -6665,7 +6665,7 @@
         "id": "a07_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Gap It Left"
+        "title": "Send hostages of your own at the Sally-Port"
       },
       "choices": []
     },
@@ -6701,7 +6701,7 @@
         "id": "a07_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Answered in Iron"
+        "title": "Stand the whole garrison at the Sally-Port"
       },
       "choices": []
     },
@@ -6737,7 +6737,7 @@
         "id": "a07_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Stone Remembered"
+        "title": "Delay the answer to buy at the Sally-Port"
       },
       "choices": []
     },
@@ -6863,7 +6863,7 @@
         "id": "a07_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Closed Over"
+        "title": "The Wall Given Up at the Sally-Port"
       },
       "choices": []
     },
@@ -6966,7 +6966,7 @@
         "id": "a07_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Breath Ran Out"
+        "title": "Answered Loud at the Sally-Port, the Opening Rush"
       },
       "choices": []
     },
@@ -6978,7 +6978,7 @@
         "id": "a07_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Terms Accepted"
+        "title": "Taken Alive at the Sally-Port, the Opening Rush"
       },
       "choices": []
     },
@@ -7043,7 +7043,7 @@
         "id": "a07_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Course Ran"
+        "title": "Answered Loud at the Sally-Port, the Second Line"
       },
       "choices": []
     },
@@ -7055,7 +7055,7 @@
         "id": "a07_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Led Off the Wall"
+        "title": "Taken Alive at the Sally-Port, the Second Line"
       },
       "choices": []
     },
@@ -7120,7 +7120,7 @@
         "id": "a07_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Given to the Storm"
+        "title": "Answered Loud at the Sally-Port, the Last Resolution"
       },
       "choices": []
     },
@@ -7132,7 +7132,7 @@
         "id": "a07_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Standard Struck"
+        "title": "Taken Alive at the Sally-Port, the Last Resolution"
       },
       "choices": []
     },
@@ -7262,7 +7262,7 @@
         "id": "a08_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Watch That Failed"
+        "title": "Wait for the bridge at the North Face"
       },
       "choices": []
     },
@@ -7298,7 +7298,7 @@
         "id": "a08_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Under the Fall"
+        "title": "Ram the tower with your at the North Face"
       },
       "choices": []
     },
@@ -7334,7 +7334,7 @@
         "id": "a08_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Ramp Took Them"
+        "title": "Crowd the wall-head under at the North Face"
       },
       "choices": []
     },
@@ -7370,7 +7370,7 @@
         "id": "a08_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Lit by Its Own Fire"
+        "title": "Fire the wall-walk to deny at the North Face"
       },
       "choices": []
     },
@@ -7406,7 +7406,7 @@
         "id": "a08_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bar That Opened"
+        "title": "Loose fire-pots at the tower's at the North Face"
       },
       "choices": []
     },
@@ -7484,7 +7484,7 @@
         "id": "a08_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Reserve Ran Dry"
+        "title": "Cut the drawbridge chains before at the North Face"
       },
       "choices": []
     },
@@ -7520,7 +7520,7 @@
         "id": "a08_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Throat Gave"
+        "title": "Hold your fire at the North Face"
       },
       "choices": []
     },
@@ -7556,7 +7556,7 @@
         "id": "a08_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Feint That Won"
+        "title": "Pull the parapet out under at the North Face"
       },
       "choices": []
     },
@@ -7592,7 +7592,7 @@
         "id": "a08_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Fog Kept Them"
+        "title": "Charge across onto the tower at the North Face"
       },
       "choices": []
     },
@@ -7628,7 +7628,7 @@
         "id": "a08_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Sap Spoke First"
+        "title": "Mass every archer at the North Face"
       },
       "choices": []
     },
@@ -7706,7 +7706,7 @@
         "id": "a08_g3_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bridge Came Down"
+        "title": "Fire the tower at the North Face"
       },
       "choices": []
     },
@@ -7742,7 +7742,7 @@
         "id": "a08_g3_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Recoil Missed"
+        "title": "Wait until the tower is at the North Face"
       },
       "choices": []
     },
@@ -7778,7 +7778,7 @@
         "id": "a08_g3_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Wall Kept the Cost"
+        "title": "Throw the pitch across at the North Face"
       },
       "choices": []
     },
@@ -7814,7 +7814,7 @@
         "id": "a08_g3_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Paid at the Parapet"
+        "title": "Split the pitch between tower at the North Face"
       },
       "choices": []
     },
@@ -7942,7 +7942,7 @@
         "id": "a08_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Siege's Arithmetic"
+        "title": "The Wall Given Up at the North Face"
       },
       "choices": []
     },
@@ -8045,7 +8045,7 @@
         "id": "a08_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "No Undoing It"
+        "title": "Answered Loud at the North Face, the Opening Rush"
       },
       "choices": []
     },
@@ -8057,7 +8057,7 @@
         "id": "a08_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Taken at the Wall"
+        "title": "Taken Alive at the North Face, the Opening Rush"
       },
       "choices": []
     },
@@ -8122,7 +8122,7 @@
         "id": "a08_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Line That Broke"
+        "title": "Answered Loud at the North Face, the Second Line"
       },
       "choices": []
     },
@@ -8134,7 +8134,7 @@
         "id": "a08_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Fight Laid Down"
+        "title": "Taken Alive at the North Face, the Second Line"
       },
       "choices": []
     },
@@ -8199,7 +8199,7 @@
         "id": "a08_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Spent in the Open"
+        "title": "Answered Loud at the North Face, the Last Resolution"
       },
       "choices": []
     },
@@ -8211,7 +8211,7 @@
         "id": "a08_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Quarter at the Breach"
+        "title": "Taken Alive at the North Face, the Last Resolution"
       },
       "choices": []
     },
@@ -8276,7 +8276,7 @@
         "id": "a08_s4_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Gap It Left"
+        "title": "Answered Loud at the North Face, the Stores' Stand"
       },
       "choices": []
     },
@@ -8288,7 +8288,7 @@
         "id": "a08_s4_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Long Captivity"
+        "title": "Taken Alive at the North Face, the Stores' Stand"
       },
       "choices": []
     },
@@ -8418,7 +8418,7 @@
         "id": "a09_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Answered in Iron"
+        "title": "Meet the storm at the Breach"
       },
       "choices": []
     },
@@ -8454,7 +8454,7 @@
         "id": "a09_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Stone Remembered"
+        "title": "Wait to judge the weight at the Breach"
       },
       "choices": []
     },
@@ -8490,7 +8490,7 @@
         "id": "a09_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Closed Over"
+        "title": "Fall back to the keep at the Breach"
       },
       "choices": []
     },
@@ -8526,7 +8526,7 @@
         "id": "a09_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Breath Ran Out"
+        "title": "Fire the rubble ramp at the Breach"
       },
       "choices": []
     },
@@ -8562,7 +8562,7 @@
         "id": "a09_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Course Ran"
+        "title": "Throw every reserve at the Breach"
       },
       "choices": []
     },
@@ -8640,7 +8640,7 @@
         "id": "a09_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Given to the Storm"
+        "title": "Spend the caltrops across at the Breach"
       },
       "choices": []
     },
@@ -8676,7 +8676,7 @@
         "id": "a09_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Watch That Failed"
+        "title": "Save the caltrops at the Breach"
       },
       "choices": []
     },
@@ -8712,7 +8712,7 @@
         "id": "a09_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Under the Fall"
+        "title": "Scatter the caltrops behind your at the Breach"
       },
       "choices": []
     },
@@ -8748,7 +8748,7 @@
         "id": "a09_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Ramp Took Them"
+        "title": "Charge down the ramp at the Breach"
       },
       "choices": []
     },
@@ -8784,7 +8784,7 @@
         "id": "a09_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Lit by Its Own Fire"
+        "title": "Mass the reserve one pace at the Breach"
       },
       "choices": []
     },
@@ -8862,7 +8862,7 @@
         "id": "a09_g3_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bar That Opened"
+        "title": "Spend the last powder at the Breach"
       },
       "choices": []
     },
@@ -8898,7 +8898,7 @@
         "id": "a09_g3_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Reserve Ran Dry"
+        "title": "Hold the powder at the Breach"
       },
       "choices": []
     },
@@ -8934,7 +8934,7 @@
         "id": "a09_g3_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Throat Gave"
+        "title": "Fire the powder at the Breach"
       },
       "choices": []
     },
@@ -8970,7 +8970,7 @@
         "id": "a09_g3_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Feint That Won"
+        "title": "Lay a short charge at the Breach"
       },
       "choices": []
     },
@@ -9098,7 +9098,7 @@
         "id": "a09_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Fog Kept Them"
+        "title": "The Wall Given Up at the Breach"
       },
       "choices": []
     },
@@ -9226,7 +9226,7 @@
         "id": "a09_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Sap Spoke First"
+        "title": "Answered Loud at the Breach, the Opening Rush"
       },
       "choices": []
     },
@@ -9238,7 +9238,7 @@
         "id": "a09_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Given Up Alive"
+        "title": "Taken Alive at the Breach, the Opening Rush"
       },
       "choices": []
     },
@@ -9303,7 +9303,7 @@
         "id": "a09_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Bridge Came Down"
+        "title": "Answered Loud at the Breach, the Second Line"
       },
       "choices": []
     },
@@ -9315,7 +9315,7 @@
         "id": "a09_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Gate Opened Inward"
+        "title": "Taken Alive at the Breach, the Second Line"
       },
       "choices": []
     },
@@ -9380,7 +9380,7 @@
         "id": "a09_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Recoil Missed"
+        "title": "Answered Loud at the Breach, the Last Resolution"
       },
       "choices": []
     },
@@ -9392,7 +9392,7 @@
         "id": "a09_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Hands Raised on the Rampart"
+        "title": "Taken Alive at the Breach, the Last Resolution"
       },
       "choices": []
     },
@@ -9457,7 +9457,7 @@
         "id": "a09_s4_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Wall Kept the Cost"
+        "title": "Answered Loud at the Breach, the Stores' Stand"
       },
       "choices": []
     },
@@ -9469,7 +9469,7 @@
         "id": "a09_s4_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Column Marched Them Out"
+        "title": "Taken Alive at the Breach, the Stores' Stand"
       },
       "choices": []
     },
@@ -9599,7 +9599,7 @@
         "id": "a10_g1_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Paid at the Parapet"
+        "title": "Chase the first wing at the Dawn Wall"
       },
       "choices": []
     },
@@ -9635,7 +9635,7 @@
         "id": "a10_g1_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Siege's Arithmetic"
+        "title": "Wait for the main effort at the Dawn Wall"
       },
       "choices": []
     },
@@ -9671,7 +9671,7 @@
         "id": "a10_g1_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "No Undoing It"
+        "title": "Thin the center to hold at the Dawn Wall"
       },
       "choices": []
     },
@@ -9707,7 +9707,7 @@
         "id": "a10_g1_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Line That Broke"
+        "title": "Order a sortie to break at the Dawn Wall"
       },
       "choices": []
     },
@@ -9743,7 +9743,7 @@
         "id": "a10_g1_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Spent in the Open"
+        "title": "Pull all to the keep at the Dawn Wall"
       },
       "choices": []
     },
@@ -9821,7 +9821,7 @@
         "id": "a10_g2_f0_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Gap It Left"
+        "title": "Commit the last reserve at the Dawn Wall"
       },
       "choices": []
     },
@@ -9857,7 +9857,7 @@
         "id": "a10_g2_f1_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Answered in Iron"
+        "title": "Hold the last reserve back at the Dawn Wall"
       },
       "choices": []
     },
@@ -9893,7 +9893,7 @@
         "id": "a10_g2_f2_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Stone Remembered"
+        "title": "Split the reserve across at the Dawn Wall"
       },
       "choices": []
     },
@@ -9929,7 +9929,7 @@
         "id": "a10_g2_f3_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Closed Over"
+        "title": "Send the reserve out through at the Dawn Wall"
       },
       "choices": []
     },
@@ -9965,7 +9965,7 @@
         "id": "a10_g2_f4_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Breath Ran Out"
+        "title": "Mass the reserve at the Dawn Wall"
       },
       "choices": []
     },
@@ -10091,7 +10091,7 @@
         "id": "a10_res_f_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Course Ran"
+        "title": "The Wall Given Up at the Dawn Wall"
       },
       "choices": []
     },
@@ -10219,7 +10219,7 @@
         "id": "a10_s1_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Given to the Storm"
+        "title": "Answered Loud at the Dawn Wall, the Opening Rush"
       },
       "choices": []
     },
@@ -10231,7 +10231,7 @@
         "id": "a10_s1_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Surrendered on the Ramp"
+        "title": "Taken Alive at the Dawn Wall, the Opening Rush"
       },
       "choices": []
     },
@@ -10296,7 +10296,7 @@
         "id": "a10_s2_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "The Watch That Failed"
+        "title": "Answered Loud at the Dawn Wall, the Second Line"
       },
       "choices": []
     },
@@ -10308,7 +10308,7 @@
         "id": "a10_s2_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "The Terms Accepted"
+        "title": "Taken Alive at the Dawn Wall, the Second Line"
       },
       "choices": []
     },
@@ -10373,7 +10373,7 @@
         "id": "a10_s3_loud_e",
         "valence": "negative",
         "kind": "death",
-        "title": "Under the Fall"
+        "title": "Answered Loud at the Dawn Wall, the Last Resolution"
       },
       "choices": []
     },
@@ -10385,7 +10385,7 @@
         "id": "a10_s3_cap",
         "valence": "negative",
         "kind": "capture",
-        "title": "Led Off the Wall"
+        "title": "Taken Alive at the Dawn Wall, the Last Resolution"
       },
       "choices": []
     },
