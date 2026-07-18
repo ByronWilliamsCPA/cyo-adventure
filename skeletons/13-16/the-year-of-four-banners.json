@@ -176,6 +176,10 @@
           "label": "Refuse, and warn the Steward what it will drown.",
           "target": "g_xb1"
         }
+      ],
+      "safety_scope": [
+        "peril",
+        "sad_moment"
       ]
     },
     {
@@ -223,7 +227,11 @@
         "valence": "negative",
         "kind": "setback",
         "title": "The Gate That Held the City"
-      }
+      },
+      "safety_scope": [
+        "sad_moment",
+        "peril"
+      ]
     },
     {
       "id": "g_xb1",
@@ -1108,7 +1116,10 @@
         "valence": "negative",
         "kind": "death",
         "title": "The Crown He Would Not Set Down"
-      }
+      },
+      "safety_scope": [
+        "sad_moment"
+      ]
     },
     {
       "id": "r_s1",
@@ -1204,6 +1215,10 @@
           "label": "Overhear what must never be spoken.",
           "target": "r_s9"
         }
+      ],
+      "safety_scope": [
+        "conflict",
+        "scary_imagery"
       ]
     },
     {
@@ -1216,6 +1231,10 @@
           "label": "Sit through the poisoned feast.",
           "target": "r_s10"
         }
+      ],
+      "safety_scope": [
+        "scary_imagery",
+        "sad_moment"
       ]
     },
     {
@@ -1453,6 +1472,10 @@
           "label": "Refuse, and hide the boy away.",
           "target": "r_c6"
         }
+      ],
+      "safety_scope": [
+        "peril",
+        "conflict"
       ]
     },
     {
@@ -1488,7 +1511,11 @@
         "valence": "negative",
         "kind": "capture",
         "title": "The Child on the Battlements"
-      }
+      },
+      "safety_scope": [
+        "peril",
+        "sad_moment"
+      ]
     },
     {
       "id": "r_c6",
@@ -1505,6 +1532,9 @@
           "label": "Keep faith with the walls.",
           "target": "r_c7"
         }
+      ],
+      "safety_scope": [
+        "conflict"
       ]
     },
     {
@@ -1916,6 +1946,10 @@
           "label": "Wake to the news from the fords.",
           "target": "gr_bridge"
         }
+      ],
+      "safety_scope": [
+        "sad_moment",
+        "peril"
       ]
     },
     {
@@ -1933,6 +1967,9 @@
           "label": "Set it aside and hold the river-towns together.",
           "target": "gr_h1"
         }
+      ],
+      "safety_scope": [
+        "sad_moment"
       ]
     },
     {
@@ -2009,7 +2046,11 @@
         "valence": "negative",
         "kind": "setback",
         "title": "The Proof That Became a Riot"
-      }
+      },
+      "safety_scope": [
+        "peril",
+        "conflict"
+      ]
     },
     {
       "id": "gnE2_t1",
@@ -2532,7 +2573,11 @@
         "valence": "negative",
         "kind": "setback",
         "title": "The Truth That Lit the War"
-      }
+      },
+      "safety_scope": [
+        "conflict",
+        "peril"
+      ]
     },
     {
       "id": "gnE8_t1",
