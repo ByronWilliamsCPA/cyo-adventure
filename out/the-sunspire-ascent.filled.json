@@ -1,0 +1,3461 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_sunspire_ascent",
+  "version": 1,
+  "title": "The Sunspire Ascent",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "adventure",
+      "courage",
+      "perseverance",
+      "mystery"
+    ],
+    "estimated_minutes": 15,
+    "ending_count": 74,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You are Rowan, and the Sunspire throws its shadow over you as the night begins to fall; for a hundred years the beacon at its summit has stood cold and dark, and the old curse has turned back every climber who tried to light it. Tonight you mean to be the one who does not. Four ways lead to the tower base. The crumbled causeway crosses the old moat, and thick ivy climbs the north face. A servants' tunnel gapes low in the wall, and the wide front stair waits, grand and open, straight ahead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Cross the crumbled moat causeway.",
+          "target": "a_ap1"
+        },
+        {
+          "id": "c_n_start_2",
+          "label": "Climb the ivy on the north face.",
+          "target": "a_ap2"
+        },
+        {
+          "id": "c_n_start_3",
+          "label": "Slip into the servants tunnel.",
+          "target": "a_ap3"
+        },
+        {
+          "id": "c_n_start_4",
+          "label": "Take the wide front stair.",
+          "target": "a_ap4"
+        }
+      ]
+    },
+    {
+      "id": "a_ap1",
+      "body": "You start across the crumbled causeway. The old stones shift and grind underfoot, and black moat water shows through every gap, but each slab holds your weight long enough to reach the next. Halfway over you find your balance and keep moving. Ahead the great tower gate looms out of the dark, its iron doors half open on a deeper darkness within.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a_ap1_1",
+          "label": "Reach the tower gate.",
+          "target": "b_towergate"
+        }
+      ]
+    },
+    {
+      "id": "a_ap2",
+      "body": "You catch the thick ivy and begin to climb the north face; the stems creak, then tear loose in your fists, and for a sick moment you swing out over nothing. Your boot finds a lower window ledge and you haul yourself in. The room beyond opens onto the entry hall, and there, just within reach across the flagstones, the tower gate stands waiting in the gloom.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a_ap2_1",
+          "label": "Drop down to the tower gate.",
+          "target": "b_towergate"
+        }
+      ]
+    },
+    {
+      "id": "a_ap3",
+      "body": "You slip into the servants' tunnel and the dark closes around you; a few steps in, the passage forks. One branch slopes upward, dry and cool, toward what sounds like the open gate hall above. The other drops away downward, and from it comes the wet slap of water on stone and the smell of rot rising from a flooded dead end. You must choose which branch to follow before the tunnel swallows the last of the light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a_ap3_1",
+          "label": "Climb toward the gate hall.",
+          "target": "b_towergate"
+        },
+        {
+          "id": "c_a_ap3_2",
+          "label": "Follow the downward branch.",
+          "target": "a_ap3_bad"
+        }
+      ]
+    },
+    {
+      "id": "a_ap3_bad",
+      "body": "You take the downward branch, and the floor grows slick beneath you; the slope steepens, the walls weep, and the way ends in a collapsed sump brimming with black water that has nowhere left to drain. There is no path through and no ledge around it. You wade back the way you came, soaked and cold, and leave the climb for a safer night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_ap3_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Flooded Dead End"
+      }
+    },
+    {
+      "id": "a_ap4",
+      "body": "You set your foot on the wide front stair and start up, and the whole flight tilts beneath you. The steps are hinged, balanced over a black pit meant to swallow the bold. You throw yourself backward and land hard on solid ground as the stair swings down into nothing behind you. The night thickens around the tower, and you are driven off before the climb has even begun.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_ap4",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Hinged Stair"
+      }
+    },
+    {
+      "id": "b_towergate",
+      "body": "Inside the tower gate the air is cold and old, thick with dust that has not been stirred in a lifetime; two ways lead deeper; a worn stair descends to your left, and up it comes the steady sound of water lapping on stone. To your right a side arch breathes a warmer draught, dry and faintly sweet. Somewhere far above, past every locked tier, the dead beacon waits for you. You can go down toward the water, or follow the warm draught aside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_towergate_1",
+          "label": "Descend toward the water.",
+          "target": "c_descent"
+        },
+        {
+          "id": "c_b_towergate_2",
+          "label": "Follow the warm draught aside.",
+          "target": "b_gate_pod"
+        }
+      ]
+    },
+    {
+      "id": "b_gate_pod",
+      "body": "You follow the warm draught through the side arch into a bricked-up furnace room, its old fires long dead; the walls are solid on every side, and the draught only leaks through cracks in the mortar. It is a dead end. But in the far corner a maintenance ladder bolts down into the dark, rejoining the descending stair below. You swing onto the rungs and start down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_gate_pod_1",
+          "label": "Take the ladder down.",
+          "target": "c_descent"
+        }
+      ]
+    },
+    {
+      "id": "c_descent",
+      "body": "The stair spirals down, each step worn hollow and slick with green damp; the lapping of water grows louder with every turn, echoing up the shaft toward you; at the bottom the stone simply ends at a black waterline. Before you lies the flooded undercroft, the first tier of the long climb. You take a breath and step down toward the water's edge.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_descent_1",
+          "label": "Enter the undercroft.",
+          "target": "h_u"
+        }
+      ]
+    },
+    {
+      "id": "h_u",
+      "body": "You wade into the flooded undercroft, and black water climbs to your knees. A drowned stair sinks away beneath the surface, and three low archways breathe cold air across the flood. The first key-shard, they say, rests somewhere under the old sluice. Many ways open from here. You can take the direct route through the water, try the flanking passage, search the side chamber, force the near door, follow the low path, chance the far gallery, or explore the outer galleries branching into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_u_1",
+          "label": "Take the direct route.",
+          "target": "s_u1"
+        },
+        {
+          "id": "c_h_u_2",
+          "label": "Try the flanking passage.",
+          "target": "u_pa1"
+        },
+        {
+          "id": "c_h_u_3",
+          "label": "Search the side chamber.",
+          "target": "u_pb1"
+        },
+        {
+          "id": "c_h_u_4",
+          "label": "Force the near door.",
+          "target": "u_pc1"
+        },
+        {
+          "id": "c_h_u_5",
+          "label": "Follow the low path.",
+          "target": "u_pd_p1"
+        },
+        {
+          "id": "c_h_u_6",
+          "label": "Chance the far gallery.",
+          "target": "u_pe1"
+        },
+        {
+          "id": "c_h_u_7",
+          "label": "Explore the outer galleries.",
+          "target": "u_gal"
+        }
+      ]
+    },
+    {
+      "id": "s_u1",
+      "body": "You take the direct route, pushing straight into the flood; the water rises to your waist and drags at your legs, cold enough to steal your breath; broken lantern-glass drifts past, catching what little light there is. A slow current tugs you forward, toward a rusted sluice gate that bars the flooded hall ahead. You brace yourself and push toward the barrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_u1_1",
+          "label": "Push toward the barrier.",
+          "target": "g_u"
+        }
+      ]
+    },
+    {
+      "id": "g_u",
+      "body": "The rusted sluice gate bars the way, and it will not simply be pushed aside. Its great wheel is seized solid with rust and knotted weed, and the whole frame is slick and treacherous. Beyond the bars the drowned shard glints on a submerged plinth, close enough to see and too far to reach. You can try to win straight through the barrier, attempt a risky bypass along the outside, probe the mechanism for a release, or look for another handhold around it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_u_1",
+          "label": "Win through the barrier.",
+          "target": "s_u2"
+        },
+        {
+          "id": "c_g_u_2",
+          "label": "Attempt the risky bypass.",
+          "target": "u_ga1"
+        },
+        {
+          "id": "c_g_u_3",
+          "label": "Probe the mechanism.",
+          "target": "u_gb1"
+        },
+        {
+          "id": "c_g_u_4",
+          "label": "Look for another handhold.",
+          "target": "u_gc_p1"
+        }
+      ]
+    },
+    {
+      "id": "s_u2",
+      "body": "You throw your weight on the wheel and the sluice grinds open at last, spilling water in a rush; you duck through and haul the drowned shard free of its plinth, cold and heavy in your fist: one of three. Past the cleared gate a spiral stair climbs out of the flood toward warmer, drier stone. You start up toward the next tier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_u2_1",
+          "label": "Climb to the next tier.",
+          "target": "h_c"
+        }
+      ]
+    },
+    {
+      "id": "u_pa1",
+      "body": "You take the flanking passage, and it swings wide around the drowned hall on a shelf of higher stone; the water only laps at your boots here, and for a while the going is easy. The passage curves back on itself, patient and slow, and rejoins the main route just short of the sluice barrier. You step down and rejoin the way at the barrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pa1_1",
+          "label": "Rejoin the barrier.",
+          "target": "g_u"
+        }
+      ]
+    },
+    {
+      "id": "u_pb1",
+      "body": "You wade into the side chamber, and at once the way is blocked; a whole cave of wreckage fills it: rotten beams, a sunken cart, drift and rope tangled by old floods. Nothing here will move on its own. If you want through, you will have to haul the wreckage aside by hand, piece by piece, and dig deeper in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pb1_1",
+          "label": "Dig deeper in.",
+          "target": "u_pb2"
+        }
+      ]
+    },
+    {
+      "id": "u_pb2",
+      "body": "Past the cleared wreckage the chamber opens, and two ways lead on. To one side a narrow crawl bends back toward the sluice barrier, low but solid underfoot. To the other, a sagging floor stretches over open dark, its boards bowed and soft with rot, groaning at the very sight of you. You can crawl back to the barrier, or chance your weight on the sagging floor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pb2_1",
+          "label": "Crawl back to the barrier.",
+          "target": "g_u"
+        },
+        {
+          "id": "c_u_pb2_2",
+          "label": "Cross the sagging floor.",
+          "target": "u_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "u_pb_bad",
+      "body": "You step out onto the sagging floor, and the rotten boards hold for one step, then two; on the third they give way with a crack; you drop into a sealed vault beneath the undercroft, and the trapdoor slams shut above you. No handhold reaches the ceiling. There is nothing to do but wait for rescue and climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed Under the Undercroft"
+      }
+    },
+    {
+      "id": "u_pc1",
+      "body": "You put your shoulder to the near door and it grinds inward; beyond it a corridor of the undercroft runs long and lightless, straight into the heart of the tier. The ceiling drips a steady cold rhythm onto your neck, and the walls are too far apart to touch on both sides at once. You feel along one wall and go on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pc1_1",
+          "label": "Feel along the wall.",
+          "target": "u_pc2"
+        }
+      ]
+    },
+    {
+      "id": "u_pc2",
+      "body": "The corridor ends at two low arches, and you cannot see past either one; the left arch breathes cold air up from somewhere deep, a hollow, empty cold; the right arch is warm and close, and it carries a faint sour smell you cannot place. Both feel wrong in different ways. You must choose: the cold arch to the left, or the warm arch to the right.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pc2_1",
+          "label": "Take the cold arch.",
+          "target": "u_pc_bad1"
+        },
+        {
+          "id": "c_u_pc2_2",
+          "label": "Take the warm arch.",
+          "target": "u_pc_bad2"
+        }
+      ]
+    },
+    {
+      "id": "u_pc_bad1",
+      "body": "You step through the cold arch, and your lead boot finds no floor; the arch opens straight onto a sheer shaft that falls away into blackness below; you throw your weight backward just in time and catch the stone lip, heart hammering. There is no crossing this. The near fall drives you back down a tier, and the whole ascent must begin again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pc_bad1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Floorless Shaft"
+      }
+    },
+    {
+      "id": "u_pc_bad2",
+      "body": "You step through the warm arch, and the smell hits you first; the chamber beyond is a nest of pale tower vermin, and they boil up at the light in a swarming, chittering tide across the walls and floor. You cannot pass through that. Coughing, you retreat into the dark corridor, and by the time you catch your breath the way is lost for tonight.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pc_bad2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warm Nest"
+      }
+    },
+    {
+      "id": "u_pd_p1",
+      "body": "You follow the low path, and it slopes downward under your feet; the water deepens with each step, and the air turns colder and heavier around you until your breath shows pale. The dark ahead gives nothing back. Some stubborn part of you wants to see where it ends, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pd_p1_1",
+          "label": "Press on.",
+          "target": "u_pd_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_pd_p2",
+      "body": "The passage narrows fast; soon the walls press in on either side and you must turn sideways to fit, dragging yourself between slabs of wet, streaming stone. The water is at your chest now. Every scrape tells you this is no climber's route, but the way behind is as bad as the way ahead, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pd_p2_1",
+          "label": "Press on.",
+          "target": "u_pd_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_pd_p3",
+      "body": "The ceiling drops lower and lower until you are bent almost double, and the way ahead pinches down to a crack barely wider than your shoulders. Cold water pours through it from the far side. You are certain now that nothing good waits beyond, but you have come too far to turn back easily, so you press on into the gap.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pd_p3_1",
+          "label": "Press on.",
+          "target": "u_pd_end"
+        }
+      ]
+    },
+    {
+      "id": "u_pd_end",
+      "body": "You force yourself through the crack and out the other side, and the low path simply ends; a wall of caved-in stone blocks the way completely, packed tight, with no gap to squeeze through and no strength that will shift it. There is nothing here but drowned rock. Turned back from the undercroft, you retreat to the water's edge, the climb halted before it truly began.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Undercroft"
+      }
+    },
+    {
+      "id": "u_pe1",
+      "body": "You chance the far gallery, and it lies quiet and dry above the flood; in a shallow alcove you find an old climber's cache: a coil of good rope and a bag of chalk, left by someone who came before you. It is a small piece of luck. You can take the cache and press on, or rest a moment in the dry alcove first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pe1_1",
+          "label": "Take the cache and press on.",
+          "target": "u_pe2"
+        },
+        {
+          "id": "c_u_pe1_2",
+          "label": "Rest a moment in the alcove.",
+          "target": "u_pe_rest"
+        }
+      ]
+    },
+    {
+      "id": "u_pe_rest",
+      "body": "You sink down in the warm, dry alcove, and for a moment it is enough simply to breathe; the cache is a small mercy, and you tell yourself you will move again soon; but the quiet is heavy, and the hour slips past unnoticed. When you finally stir, the night has deepened too far. The undercroft must wait for a stronger attempt.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pe_rest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Climber Cache"
+      }
+    },
+    {
+      "id": "u_pe2",
+      "body": "You sling the rope over your shoulder and work the chalk into your palms, and at once your hands feel surer; the gallery bends away and then curves back toward the main hall, following a hidden fault split through the wall. It carries you neatly around to the sluice barrier. You follow the fault back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pe2_1",
+          "label": "Follow the fault back.",
+          "target": "g_u"
+        }
+      ]
+    },
+    {
+      "id": "u_ga1",
+      "body": "You attempt the risky bypass, climbing out past the sluice along a crumbling ledge that skirts the outside of the barrier; the stone is wet and rotten, shedding grit under every touch, and the flood turns slowly far below. It is a bad line and you know it. Still, it might just reach the far side, so you edge out along the ledge.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_ga1_1",
+          "label": "Edge along the ledge.",
+          "target": "u_ga2"
+        }
+      ]
+    },
+    {
+      "id": "u_ga2",
+      "body": "You edge along the crumbling ledge, testing each hold before you trust it; halfway across, the stone simply shears away beneath your boot. You drop, and only a lucky, snatching handhold stops the fall, leaving you swinging over the flood. The bypass is gone, the barrier still uncrossed. Shaking, you haul back to safe stone, and the tier has turned you back.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_ga2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sheared Ledge"
+      }
+    },
+    {
+      "id": "u_gb1",
+      "body": "You probe the sluice mechanism, feeling through the weed and rust for how it works; your fingers find a release lever seized halfway, and behind it a tangle of counterweights that could swing the gate either way. Trip the lever cleanly and the gate should lift. Cut the counterweights and it might drop instead. You can trip the release lever, or cut the counterweights.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gb1_1",
+          "label": "Trip the release lever.",
+          "target": "s_u2"
+        },
+        {
+          "id": "c_u_gb1_2",
+          "label": "Cut the counterweights.",
+          "target": "u_gb_bad"
+        }
+      ]
+    },
+    {
+      "id": "u_gb_bad",
+      "body": "You saw through the counterweights, and for a heartbeat nothing moves; then the freed weight rushes down and the whole sluice slams into a locked position with a boom that shakes the flood; the gate is jammed solid now, sealed for good tonight, the shard walled off behind it. There is nothing left to try. You climb back down to attempt the tier again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Barrier"
+      }
+    },
+    {
+      "id": "u_gc_p1",
+      "body": "You look for another handhold, and the search leads you out of the flooded hall onto the raw face of the undercroft wall; old mortar has washed away between the stones, leaving cracks a climber can use. For a while the holds come easily and you gain height above the water. You press on along the wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gc_p1_1",
+          "label": "Press on.",
+          "target": "u_gc_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gc_p2",
+      "body": "Higher up, the dependable holds disappear entirely; the cracks narrow to hairlines, the stone turns smooth and streaming with damp, and the cold draught off the flood drags hard at every finger you manage to set. Your forearms begin to burn with the strain. You know you should retreat while you still can, but the top of the barrier looks close, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gc_p2_1",
+          "label": "Press on.",
+          "target": "u_gc_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gc_end",
+      "body": "You stretch for the next hold, and there is nothing there; the wall goes blank and smooth above you, with no crack, no ledge, no way past the barrier from here. Your grip is failing and the drop below is real. Clinging on any longer is too dangerous, so you down-climb, boot by careful boot, and retreat a tier to find a safer night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gc_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Undercroft Barrier"
+      }
+    },
+    {
+      "id": "u_gal",
+      "body": "You explore the outer galleries, and the undercroft opens into a maze of flooded side passages; each one promises a way up, a glimmer of higher stone or a breath of air, and most of them, you suspect, lead nowhere good. Eight dark mouths wait in a row. You can try passage one, two, three, four, five, six, seven, or eight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_1",
+          "label": "Try passage 1.",
+          "target": "u_gal_c1_p1"
+        },
+        {
+          "id": "c_u_gal_2",
+          "label": "Try passage 2.",
+          "target": "u_gal_c2_p1"
+        },
+        {
+          "id": "c_u_gal_3",
+          "label": "Try passage 3.",
+          "target": "u_gal_c3_p1"
+        },
+        {
+          "id": "c_u_gal_4",
+          "label": "Try passage 4.",
+          "target": "u_gal_c4_p1"
+        },
+        {
+          "id": "c_u_gal_5",
+          "label": "Try passage 5.",
+          "target": "u_gal_c5_p1"
+        },
+        {
+          "id": "c_u_gal_6",
+          "label": "Try passage 6.",
+          "target": "u_gal_c6_p1"
+        },
+        {
+          "id": "c_u_gal_7",
+          "label": "Try passage 7.",
+          "target": "u_gal_c7_p1"
+        },
+        {
+          "id": "c_u_gal_8",
+          "label": "Try passage 8.",
+          "target": "u_gal_c8_p1"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c1_p1",
+      "body": "You try passage 1, past a leaning doorway of swollen wood, and it draws you into the flooded undercroft; loose grit showers down from the low ceiling with every careful footstep. You scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c1_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c1_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c1_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; you can no longer measure how far you have travelled or how much remains ahead; the sagging ceiling forces you to bend beneath it before you can continue. A cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c1_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c1_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c1_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of wet stone; you empty your lungs to make yourself thinner and gain another handspan forward; the rough stone drags painfully at your back through the fabric of your coat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c1_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c1_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c1_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage doubles back on itself, blind, and ends flat against bare tower stone. There is no turning that leads on, only the way you came. You lift your light to the ceiling and the corners, and nothing gives. You back out of the flooded undercroft and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c1_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Turning"
+      }
+    },
+    {
+      "id": "u_gal_c2_p1",
+      "body": "You try passage 2, past a stone vent clogged and choked, and it draws you into the flooded undercroft; you scrape a chalk marker across the wall so the way back is not forgotten. The uneven floor drops away in shallow, slippery steps that offer no certain footing. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c2_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c2_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c2_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the sagging ceiling forces you to bend beneath it before you can continue; a cold breath of air slides past you, moving the wrong direction to be any exit. The slippery wet stone sweats beneath your palms and offers you nothing solid to grip. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c2_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c2_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c2_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of wet stone; the rough stone drags painfully at your back through the fabric of your coat; your fingers scrabble at shallow seams too faint to be considered proper holds. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c2_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c2_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c2_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends at a choked vent in the wall, its slot far too narrow for any climber to follow. Blank stone hems it on every side. You back out of the flooded undercroft and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c2_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Choked Vent"
+      }
+    },
+    {
+      "id": "u_gal_c3_p1",
+      "body": "You try passage 3, past a barred old cell, and it draws you into the flooded undercroft. The uneven floor drops away in shallow, slippery steps that offer no certain footing. Somewhere in the darkness ahead, water drips somewhere close and the smell of drowned weed thickens. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c3_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c3_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c3_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; a cold breath of air slides past you, moving the wrong direction to be any exit; the slippery wet stone sweats beneath your palms and offers you nothing solid to grip. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c3_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c3_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c3_end",
+      "body": "You crawl the last cramped stretch and the passage finally opens enough to stand; the passage ends at the door of a drowned cell, its floor under cold water and its far wall solid stone. Nothing leads on from here. You knock at the stone, listening for a hollow, and hear only solid rock. You back out of the flooded undercroft and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c3_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Cell"
+      }
+    },
+    {
+      "id": "u_gal_c4_p1",
+      "body": "You try passage 4, past a broken winch trailing its chain, and it draws you into the flooded undercroft. Somewhere in the darkness ahead, water drips somewhere close and the smell of drowned weed thickens. The darkness leans inward until your outstretched fingers brush against both walls at once. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c4_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c4_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c4_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the slippery wet stone sweats beneath your palms and offers you nothing solid to grip; the narrow passage twists back upon itself, and water drips somewhere close and the smell of drowned weed thickens. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c4_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c4_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c4_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of wet stone; every ragged breath comes short, and every inch of progress becomes a struggle. Your ribs press against the stone on both sides at the very same moment. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c4_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c4_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c4_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage ends where a broken winch once hauled loads up the shaft, its chain snapped and the way above walled shut. There is no climbing it. You back out of the flooded undercroft and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c4_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Winch"
+      }
+    },
+    {
+      "id": "u_gal_c5_p1",
+      "body": "You try passage 5, past an empty larder hung with iron hooks, and it draws you into the flooded undercroft. The darkness leans inward until your outstretched fingers brush against both walls at once. The turning tightens immediately, and cold wet stone presses close against either hand. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c5_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c5_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c5_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the narrow passage twists back upon itself, and water drips somewhere close and the smell of drowned weed thickens. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c5_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c5_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c5_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of wet stone; your ribs press against the stone on both sides at the very same moment. Behind you water drips somewhere close and the smell of drowned weed thickens, gradually closing off any comfortable retreat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c5_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c5_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c5_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends in a cold larder, its shelves bare and its back wall blank tower stone. No door, no crack, no way on. You feel along every wall for a hidden seam or a draught and find none. You back out of the flooded undercroft and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c5_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Larder"
+      }
+    },
+    {
+      "id": "u_gal_c6_p1",
+      "body": "You try passage 6, past a half-fallen archway, and it draws you into the flooded undercroft; the turning tightens immediately, and cold wet stone presses close against either hand. Loose grit showers down from the low ceiling with every careful footstep. You scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c6_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c6_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c6_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; your shoulders scrape against the walls now, and powdery dust sifts down in a dry whisper; you can no longer measure how far you have travelled or how much remains ahead. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c6_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c6_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c6_end",
+      "body": "You crawl the last cramped stretch and the passage finally opens enough to stand; the passage ends beneath a fallen arch, its keystone down and the rubble packed too tight to shift. The way beyond is sealed. You knock at the stone, listening for a hollow, and hear only solid rock. You back out of the flooded undercroft and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c6_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Fallen Arch"
+      }
+    },
+    {
+      "id": "u_gal_c7_p1",
+      "body": "You try passage 7, past the black mouth of a round well shaft, and it draws you into the flooded undercroft; loose grit showers down from the low ceiling with every careful footstep. You scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c7_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c7_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c7_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; you can no longer measure how far you have travelled or how much remains ahead; the sagging ceiling forces you to bend beneath it before you can continue. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c7_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c7_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c7_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of wet stone; you empty your lungs to make yourself thinner and gain another handspan forward; the rough stone drags painfully at your back through the fabric of your coat. Your fingers scrabble at shallow seams too faint to be considered proper holds. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c7_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c7_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c7_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage ends at the lip of a silent well, a round black drop with sheer sides and no ledge across. Nothing carries you over it. You lift your light to the ceiling and the corners, and nothing gives. You back out of the flooded undercroft and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c7_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silent Well"
+      }
+    },
+    {
+      "id": "u_gal_c8_p1",
+      "body": "You try passage 8, past a rusted iron grate, and it draws you into the flooded undercroft; you scrape a chalk marker across the wall so the way back is not forgotten. The uneven floor drops away in shallow, slippery steps that offer no certain footing. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c8_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c8_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c8_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the sagging ceiling forces you to bend beneath it before you can continue; a cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c8_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c8_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c8_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends at a locked grate of old iron, its bars set deep and rusted fast in the stone. It will not give, however you pull. You back out of the flooded undercroft and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c8_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Grate"
+      }
+    },
+    {
+      "id": "h_c",
+      "body": "You climb into the clockwork galleries, and the whole tier ticks and turns around you. Brass automata stand frozen mid-stride, and great gears grind slowly overhead, throwing bars of shadow across the floor. The gear-shard sits locked in a stalled mechanism somewhere ahead. Many ways open here. You can take the direct route, try the flanking passage, search the side chamber, force the near door, follow the low path, chance the far gallery, or explore the outer galleries.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_c_1",
+          "label": "Take the direct route.",
+          "target": "s_c1"
+        },
+        {
+          "id": "c_h_c_2",
+          "label": "Try the flanking passage.",
+          "target": "c_pa1"
+        },
+        {
+          "id": "c_h_c_3",
+          "label": "Search the side chamber.",
+          "target": "c_pb1"
+        },
+        {
+          "id": "c_h_c_4",
+          "label": "Force the near door.",
+          "target": "c_pc1"
+        },
+        {
+          "id": "c_h_c_5",
+          "label": "Follow the low path.",
+          "target": "c_pd_p1"
+        },
+        {
+          "id": "c_h_c_6",
+          "label": "Chance the far gallery.",
+          "target": "c_pe1"
+        },
+        {
+          "id": "c_h_c_7",
+          "label": "Explore the outer galleries.",
+          "target": "c_gal"
+        }
+      ]
+    },
+    {
+      "id": "s_c1",
+      "body": "You take the direct route, and at once great pendulums sweep the floor ahead in slow, bright arcs, each one heavy enough to break a leg; you wait, count the ticking of the tower's heart, and step through the gaps between swings, one careful stride at a time. Beyond them the way narrows toward the barrier. You push toward the barrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_c1_1",
+          "label": "Push toward the barrier.",
+          "target": "g_c"
+        }
+      ]
+    },
+    {
+      "id": "g_c",
+      "body": "A jammed master-gear blocks the gallery, taller than you are, its brass teeth locked hard on a snapped key wedged between them. Nothing turns while it is stuck. The gear-shard rides the hub of the great wheel, spinning slowly just out of reach. You can try to win straight through the barrier, attempt a risky bypass, probe the mechanism for a release, or look for another handhold around the wheel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_c_1",
+          "label": "Win through the barrier.",
+          "target": "s_c2"
+        },
+        {
+          "id": "c_g_c_2",
+          "label": "Attempt the risky bypass.",
+          "target": "c_ga1"
+        },
+        {
+          "id": "c_g_c_3",
+          "label": "Probe the mechanism.",
+          "target": "c_gb1"
+        },
+        {
+          "id": "c_g_c_4",
+          "label": "Look for another handhold.",
+          "target": "c_gc_p1"
+        }
+      ]
+    },
+    {
+      "id": "s_c2",
+      "body": "You clear the snapped key, and the freed gear turns with a shudder that runs through the whole tier; the gear-shard drops from the hub into your open palm: two of three. As the mechanism resets, a folding brass stair unfolds step by step toward the next tier. You climb toward it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_c2_1",
+          "label": "Climb to the next tier.",
+          "target": "h_l"
+        }
+      ]
+    },
+    {
+      "id": "c_pa1",
+      "body": "You take the flanking passage, and it skirts wide around the ticking galleries on a still, gear-free shelf of stone; here the great wheels cannot reach you, and for a while the going is quiet and easy. The passage curves back on itself and rejoins the main route just short of the jammed gear. You rejoin the way at the barrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pa1_1",
+          "label": "Rejoin the barrier.",
+          "target": "g_c"
+        }
+      ]
+    },
+    {
+      "id": "c_pb1",
+      "body": "You force your way into the side chamber, and the way is choked at once; broken automata lie heaped there, brass limbs and toothed wheels and snapped springs tangled into a wall of wreckage. Nothing will shift on its own. If you want through, you must haul the wreckage aside by hand, piece by piece, and dig deeper in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pb1_1",
+          "label": "Dig deeper in.",
+          "target": "c_pb2"
+        }
+      ]
+    },
+    {
+      "id": "c_pb2",
+      "body": "Past the cleared wreckage the chamber opens, and two ways lead on; to one side a narrow crawl bends back toward the jammed gear, low but solid. To the other, a sagging floor of old boards stretches over open dark, bowed and soft with rot, groaning at the sight of you. You can crawl back to the barrier, or chance your weight on the sagging floor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pb2_1",
+          "label": "Crawl back to the barrier.",
+          "target": "g_c"
+        },
+        {
+          "id": "c_c_pb2_2",
+          "label": "Cross the sagging floor.",
+          "target": "c_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "c_pb_bad",
+      "body": "You step out onto the sagging floor, and the rotten boards hold for one step, then two; on the third they give way with a crack, and you drop into a sealed vault beneath the clockwork galleries. The trapdoor slams shut above you, and no handhold reaches the ceiling. There is nothing to do but wait for rescue and climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed Under the Clockwork Galleries"
+      }
+    },
+    {
+      "id": "c_pc1",
+      "body": "You put your shoulder to the near door and it grinds inward on dry hinges; beyond it a corridor of the galleries runs long and lightless, straight into the heart of the tier. Somewhere the ceiling drips a steady cold rhythm onto your neck, and the walls stand too far apart to touch on both sides. You feel along one wall and go on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pc1_1",
+          "label": "Feel along the wall.",
+          "target": "c_pc2"
+        }
+      ]
+    },
+    {
+      "id": "c_pc2",
+      "body": "The corridor ends at two low arches, and you cannot see past either one; the left arch breathes cold air up from somewhere deep, a hollow, empty cold; the right arch is warm and close and carries a faint sour smell you cannot place. Both feel wrong in different ways. You must choose: the cold arch to the left, or the warm arch to the right.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pc2_1",
+          "label": "Take the cold arch.",
+          "target": "c_pc_bad1"
+        },
+        {
+          "id": "c_c_pc2_2",
+          "label": "Take the warm arch.",
+          "target": "c_pc_bad2"
+        }
+      ]
+    },
+    {
+      "id": "c_pc_bad1",
+      "body": "You step through the cold arch, and your lead boot finds no floor; the arch opens straight onto a sheer shaft that drops away into blackness below; you throw your weight backward just in time and catch the stone lip, heart hammering. There is no crossing this. The near fall drives you back down a tier, and the whole ascent must begin again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pc_bad1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Floorless Shaft"
+      }
+    },
+    {
+      "id": "c_pc_bad2",
+      "body": "You step through the warm arch, and the smell hits you first; the chamber beyond is a nest of pale tower vermin, and they boil up at the light in a chittering tide across the walls and floor. You cannot pass through that. Coughing, you back away into the dark corridor, and by the time your breath steadies the way is lost for tonight.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pc_bad2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warm Nest"
+      }
+    },
+    {
+      "id": "c_pd_p1",
+      "body": "You follow the low path, and it slopes downward under your feet, away from the ticking gears. Water begins to stand on the stone, and the air turns colder and heavier with every step until your breath shows pale. The dark ahead gives nothing back, but you want to see where it ends, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pd_p1_1",
+          "label": "Press on.",
+          "target": "c_pd_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_pd_p2",
+      "body": "The passage narrows fast; soon the walls press in on either side and you must turn sideways to fit, dragging yourself between slabs of wet, streaming stone. Every scrape tells you this is no climber's route. But the way behind is as bad as the way ahead, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pd_p2_1",
+          "label": "Press on.",
+          "target": "c_pd_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_pd_p3",
+      "body": "The ceiling drops lower and lower until you are bent almost double, and the way ahead pinches down to a crack barely wider than your shoulders. Cold air whistles through it from the far side. You are certain now that nothing good waits beyond, but you have come too far to turn back easily, so you press on into the gap.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pd_p3_1",
+          "label": "Press on.",
+          "target": "c_pd_end"
+        }
+      ]
+    },
+    {
+      "id": "c_pd_end",
+      "body": "You force yourself through the crack and out the other side, and the low path simply ends; a wall of caved-in stone blocks the way completely, packed tight, with no gap to squeeze through and no strength that will shift it. There is nothing here but dead rock. Turned back from the clockwork galleries, you retreat, the climb halted before it truly began.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Clockwork Galleries"
+      }
+    },
+    {
+      "id": "c_pe1",
+      "body": "You chance the far gallery, and it lies quiet, the gears here long stopped; in a dry alcove you find an old climber's cache: a coil of good rope and a bag of chalk, left by someone who came before you. It is a small piece of luck. You can take the cache and press on, or rest a moment in the quiet alcove first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pe1_1",
+          "label": "Take the cache and press on.",
+          "target": "c_pe2"
+        },
+        {
+          "id": "c_c_pe1_2",
+          "label": "Rest a moment in the alcove.",
+          "target": "c_pe_rest"
+        }
+      ]
+    },
+    {
+      "id": "c_pe_rest",
+      "body": "You sink down in the quiet alcove, out of reach of the grinding wheels, and for a moment it is enough simply to breathe; the cache is a small mercy; you tell yourself you will move again soon, but the stillness is heavy and the hour slips past. When you stir, the night has deepened too far. The galleries must wait for a stronger attempt.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pe_rest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Climber Cache"
+      }
+    },
+    {
+      "id": "c_pe2",
+      "body": "You sling the rope over your shoulder and work the chalk into your palms, and at once your hands feel surer; the gallery bends away and then curves back toward the jammed gear, following a hidden fault split through the wall. It carries you neatly around to the barrier. You follow the fault back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pe2_1",
+          "label": "Follow the fault back.",
+          "target": "g_c"
+        }
+      ]
+    },
+    {
+      "id": "c_ga1",
+      "body": "You attempt the risky bypass, climbing out past the master-gear along a crumbling ledge that skirts the outside of the barrier; the stone is worn and oil-slick, shedding grit under every touch, and the great wheels turn slowly far below. It is a bad line and you know it. Still, it might reach the far side, so you edge out along the ledge.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_ga1_1",
+          "label": "Edge along the ledge.",
+          "target": "c_ga2"
+        }
+      ]
+    },
+    {
+      "id": "c_ga2",
+      "body": "You edge along the crumbling ledge, testing each hold before you trust it; halfway across, the stone shears away beneath your boot. You drop, and only a lucky, snatching handhold stops the fall, leaving you swinging over the turning gears. The bypass is gone, the barrier uncrossed. Shaking, you haul back to safe stone, and the tier has turned you back.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_ga2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sheared Ledge"
+      }
+    },
+    {
+      "id": "c_gb1",
+      "body": "You probe the gear mechanism, feeling along the brass for how it works; your fingers find a release lever seized halfway, and behind it a tangle of counterweights that could swing the gear either way. Trip the lever cleanly and the wheel should turn. Cut the counterweights and it might lock instead. You can trip the release lever, or cut the counterweights.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gb1_1",
+          "label": "Trip the release lever.",
+          "target": "s_c2"
+        },
+        {
+          "id": "c_c_gb1_2",
+          "label": "Cut the counterweights.",
+          "target": "c_gb_bad"
+        }
+      ]
+    },
+    {
+      "id": "c_gb_bad",
+      "body": "You saw through the counterweights, and for a heartbeat nothing moves; then the freed weight drops and the whole gear slams into a locked position with a boom that rings through the brass; the wheel is jammed solid now, sealed for good tonight, the shard walled off behind it. There is nothing left to try. You climb back down to attempt the tier again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Barrier"
+      }
+    },
+    {
+      "id": "c_gc_p1",
+      "body": "You look for another handhold, and the search leads you out of the galleries onto the raw face of the tower wall; old mortar has crumbled between the stones, leaving cracks a climber can use. For a while the holds come easily and you gain height above the turning wheels. You press on along the wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gc_p1_1",
+          "label": "Press on.",
+          "target": "c_gc_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gc_p2",
+      "body": "Higher up, the dependable holds disappear entirely; the cracks narrow to hairlines, the stone turns smooth and polished, and a hard draught from the gears drags at every finger you manage to set. Your forearms begin to burn with the strain. You know you should retreat while you still can, but the top of the barrier looks close, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gc_p2_1",
+          "label": "Press on.",
+          "target": "c_gc_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gc_end",
+      "body": "You stretch for the next hold, and there is nothing there; the wall goes blank and smooth above you, with no crack, no ledge, no way past the barrier from here. Your grip is failing and the drop below is real. Clinging on any longer is too dangerous, so you down-climb, boot by careful boot, and retreat a tier to find a safer night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gc_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Clockwork Galleries Barrier"
+      }
+    },
+    {
+      "id": "c_gal",
+      "body": "You explore the outer galleries, and the clockwork tier opens into a maze of narrow side passages; each one promises a way up, a glint of a ladder or a breath of higher air, and most of them, you suspect, lead nowhere good. Eight dark mouths wait in a row. You can try passage one, two, three, four, five, six, seven, or eight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_1",
+          "label": "Try passage 1.",
+          "target": "c_gal_c1_p1"
+        },
+        {
+          "id": "c_c_gal_2",
+          "label": "Try passage 2.",
+          "target": "c_gal_c2_p1"
+        },
+        {
+          "id": "c_c_gal_3",
+          "label": "Try passage 3.",
+          "target": "c_gal_c3_p1"
+        },
+        {
+          "id": "c_c_gal_4",
+          "label": "Try passage 4.",
+          "target": "c_gal_c4_p1"
+        },
+        {
+          "id": "c_c_gal_5",
+          "label": "Try passage 5.",
+          "target": "c_gal_c5_p1"
+        },
+        {
+          "id": "c_c_gal_6",
+          "label": "Try passage 6.",
+          "target": "c_gal_c6_p1"
+        },
+        {
+          "id": "c_c_gal_7",
+          "label": "Try passage 7.",
+          "target": "c_gal_c7_p1"
+        },
+        {
+          "id": "c_c_gal_8",
+          "label": "Try passage 8.",
+          "target": "c_gal_c8_p1"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c1_p1",
+      "body": "You try passage 1, past a leaning doorway of swollen wood, and it draws you into the clockwork galleries; loose grit showers down from the low ceiling with every careful footstep. You scrape a chalk marker across the wall so the way back is not forgotten. The uneven floor drops away in shallow, slippery steps that offer no certain footing. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c1_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c1_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c1_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; you can no longer measure how far you have travelled or how much remains ahead; the sagging ceiling forces you to bend beneath it before you can continue. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c1_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c1_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c1_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of cold brass and stone; you empty your lungs to make yourself thinner and gain another handspan forward; the rough stone drags painfully at your back through the fabric of your coat. Your fingers scrabble at shallow seams too faint to be considered proper holds. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c1_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c1_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c1_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage doubles back on itself, blind, and ends flat against bare tower stone. There is no turning that leads on, only the way you came. You lift your light to the ceiling and the corners, and nothing gives. You back out of the clockwork galleries and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c1_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Turning"
+      }
+    },
+    {
+      "id": "c_gal_c2_p1",
+      "body": "You try passage 2, past a stone vent clogged and choked, and it draws you into the clockwork galleries; you scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c2_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c2_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c2_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the sagging ceiling forces you to bend beneath it before you can continue; a cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c2_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c2_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c2_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of cold brass and stone; the rough stone drags painfully at your back through the fabric of your coat. Your fingers scrabble at shallow seams too faint to be considered proper holds. Every ragged breath comes short, and every inch of progress becomes a struggle. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c2_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c2_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c2_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends at a choked vent in the wall, its slot far too narrow for any climber to follow. Blank stone hems it on every side. You back out of the clockwork galleries and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c2_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Choked Vent"
+      }
+    },
+    {
+      "id": "c_gal_c3_p1",
+      "body": "You try passage 3, past a barred old cell, and it draws you into the clockwork galleries; the uneven floor drops away in shallow, slippery steps that offer no certain footing. Somewhere in the darkness ahead, a last cog ticks somewhere behind and the smell of old oil hangs close. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c3_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c3_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c3_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; a cold breath of air slides past you, moving the wrong direction to be any exit; the slippery cold brass and stone sweats beneath your palms and offers you nothing solid to grip. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c3_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c3_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c3_end",
+      "body": "You crawl the last cramped stretch and the passage finally opens enough to stand; the passage ends at the door of a drowned cell, its floor under cold water and its far wall solid stone. Nothing leads on from here. You knock at the stone, listening for a hollow, and hear only solid rock. You back out of the clockwork galleries and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c3_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Cell"
+      }
+    },
+    {
+      "id": "c_gal_c4_p1",
+      "body": "You try passage 4, past a broken winch trailing its chain, and it draws you into the clockwork galleries; somewhere in the darkness ahead, a last cog ticks somewhere behind and the smell of old oil hangs close. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c4_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c4_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c4_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the slippery cold brass and stone sweats beneath your palms and offers you nothing solid to grip. The narrow passage twists back upon itself, and a last cog ticks somewhere behind and the smell of old oil hangs close. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c4_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c4_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c4_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of cold brass and stone. Every ragged breath comes short, and every inch of progress becomes a struggle. Your ribs press against the stone on both sides at the very same moment. Behind you a last cog ticks somewhere behind and the smell of old oil hangs close, gradually closing off any comfortable retreat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c4_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c4_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c4_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage ends where a broken winch once hauled loads up the shaft, its chain snapped and the way above walled shut. There is no climbing it. You back out of the clockwork galleries and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c4_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Winch"
+      }
+    },
+    {
+      "id": "c_gal_c5_p1",
+      "body": "You try passage 5, past an empty larder hung with iron hooks, and it draws you into the clockwork galleries; the darkness leans inward until your outstretched fingers brush against both walls at once. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c5_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c5_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c5_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the narrow passage twists back upon itself, and a last cog ticks somewhere behind and the smell of old oil hangs close; your shoulders scrape against the walls now, and powdery dust sifts down in a dry whisper. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c5_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c5_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c5_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of cold brass and stone; your ribs press against the stone on both sides at the very same moment. Behind you a last cog ticks somewhere behind and the smell of old oil hangs close, gradually closing off any comfortable retreat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c5_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c5_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c5_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends in a cold larder, its shelves bare and its back wall blank tower stone. No door, no crack, no way on. You feel along every wall for a hidden seam or a draught and find none. You back out of the clockwork galleries and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c5_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Larder"
+      }
+    },
+    {
+      "id": "c_gal_c6_p1",
+      "body": "You try passage 6, past a half-fallen archway, and it draws you into the clockwork galleries. The turning tightens immediately, and cold cold brass and stone presses close against either hand. Loose grit showers down from the low ceiling with every careful footstep. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c6_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c6_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c6_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; your shoulders scrape against the walls now, and powdery dust sifts down in a dry whisper; you can no longer measure how far you have travelled or how much remains ahead. The sagging ceiling forces you to bend beneath it before you can continue. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c6_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c6_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c6_end",
+      "body": "You crawl the last cramped stretch and the passage finally opens enough to stand; the passage ends beneath a fallen arch, its keystone down and the rubble packed too tight to shift. The way beyond is sealed. You knock at the stone, listening for a hollow, and hear only solid rock. You back out of the clockwork galleries and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c6_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Fallen Arch"
+      }
+    },
+    {
+      "id": "c_gal_c7_p1",
+      "body": "You try passage 7, past the black mouth of a round well shaft, and it draws you into the clockwork galleries; loose grit showers down from the low ceiling with every careful footstep. You scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c7_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c7_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c7_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; you can no longer measure how far you have travelled or how much remains ahead; the sagging ceiling forces you to bend beneath it before you can continue. A cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c7_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c7_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c7_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of cold brass and stone; you empty your lungs to make yourself thinner and gain another handspan forward; the rough stone drags painfully at your back through the fabric of your coat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c7_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c7_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c7_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage ends at the lip of a silent well, a round black drop with sheer sides and no ledge across. Nothing carries you over it. You lift your light to the ceiling and the corners, and nothing gives. You back out of the clockwork galleries and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c7_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silent Well"
+      }
+    },
+    {
+      "id": "c_gal_c8_p1",
+      "body": "You try passage 8, past a rusted iron grate, and it draws you into the clockwork galleries; you scrape a chalk marker across the wall so the way back is not forgotten. The uneven floor drops away in shallow, slippery steps that offer no certain footing. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c8_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c8_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c8_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the sagging ceiling forces you to bend beneath it before you can continue; a cold breath of air slides past you, moving the wrong direction to be any exit. The slippery cold brass and stone sweats beneath your palms and offers you nothing solid to grip. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c8_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c8_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c8_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends at a locked grate of old iron, its bars set deep and rusted fast in the stone. It will not give, however you pull. You back out of the clockwork galleries and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c8_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Grate"
+      }
+    },
+    {
+      "id": "h_l",
+      "body": "You climb into the whispering library, and it rises into darkness on every side. Shelf upon shelf murmurs in dead languages, and loose pages drift down through the still air like slow moths. The ink-shard is bound somewhere inside a locked ledger. Many ways open here. You can take the direct route, try the flanking passage, search the side chamber, force the near door, follow the low path, chance the far gallery, or explore the outer galleries.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_l_1",
+          "label": "Take the direct route.",
+          "target": "s_l1"
+        },
+        {
+          "id": "c_h_l_2",
+          "label": "Try the flanking passage.",
+          "target": "l_pa1"
+        },
+        {
+          "id": "c_h_l_3",
+          "label": "Search the side chamber.",
+          "target": "l_pb1"
+        },
+        {
+          "id": "c_h_l_4",
+          "label": "Force the near door.",
+          "target": "l_pc1"
+        },
+        {
+          "id": "c_h_l_5",
+          "label": "Follow the low path.",
+          "target": "l_pd_p1"
+        },
+        {
+          "id": "c_h_l_6",
+          "label": "Chance the far gallery.",
+          "target": "l_pe1"
+        },
+        {
+          "id": "c_h_l_7",
+          "label": "Explore the outer galleries.",
+          "target": "l_gal"
+        }
+      ]
+    },
+    {
+      "id": "s_l1",
+      "body": "You take the direct route between the tall stacks, and the whispering sharpens into half-heard warnings that seem to know your name. A folded paper sentinel unfolds itself from the shelves and rises before you, watching with flat inkblot eyes. It does not attack, only bars your path. You steady your nerve and push toward the barrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_l1_1",
+          "label": "Push toward the barrier.",
+          "target": "g_l"
+        }
+      ]
+    },
+    {
+      "id": "g_l",
+      "body": "The paper guardian blocks the ladder to the upper stacks. It will not let a climber pass without an answer. A riddle is carved into the old reading-desk in front of it, and the folded sentinel waits, patient as paper, for you to solve it. You can try to win straight through the barrier, attempt a risky bypass around it, feel the desk for a hidden catch, or look for another handhold up the stacks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_l_1",
+          "label": "Win through the barrier.",
+          "target": "s_l2"
+        },
+        {
+          "id": "c_g_l_2",
+          "label": "Attempt the risky bypass.",
+          "target": "l_ga1"
+        },
+        {
+          "id": "c_g_l_3",
+          "label": "Probe the mechanism.",
+          "target": "l_gb1"
+        },
+        {
+          "id": "c_g_l_4",
+          "label": "Look for another handhold.",
+          "target": "l_gc_p1"
+        }
+      ]
+    },
+    {
+      "id": "s_l2",
+      "body": "You speak the answer, and the riddle is right; the paper sentinel bows and folds itself flat, and the locked ledger falls open on the desk; from its page the ink-shard lifts free into your hand: three of three. Behind the desk a hidden stair spirals up toward a thin, cold wind. You climb toward it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_l2_1",
+          "label": "Climb to the next tier.",
+          "target": "h_r"
+        }
+      ]
+    },
+    {
+      "id": "l_pa1",
+      "body": "You take the flanking passage, and it skirts wide around the whispering stacks along a quiet outer aisle; the murmuring fades to a hush here, and for a while the going is easy between blank shelves. The aisle curves back on itself and rejoins the main route just short of the paper guardian. You rejoin the way at the barrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pa1_1",
+          "label": "Rejoin the barrier.",
+          "target": "g_l"
+        }
+      ]
+    },
+    {
+      "id": "l_pb1",
+      "body": "You force your way into the side chamber, and the way is choked at once; toppled shelves lie heaped there, a slope of rotten books, split bindings and drifts of loose pages packed into a wall of wreckage. Nothing will shift on its own. If you want through, you must haul it aside by hand and dig deeper in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pb1_1",
+          "label": "Dig deeper in.",
+          "target": "l_pb2"
+        }
+      ]
+    },
+    {
+      "id": "l_pb2",
+      "body": "Past the cleared shelves the chamber opens, and two ways lead on; to one side a narrow crawl bends back toward the paper guardian, low but solid. To the other, a sagging floor of old boards stretches over open dark, bowed and soft with rot, groaning at the sight of you. You can crawl back to the barrier, or chance your weight on the sagging floor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pb2_1",
+          "label": "Crawl back to the barrier.",
+          "target": "g_l"
+        },
+        {
+          "id": "c_l_pb2_2",
+          "label": "Cross the sagging floor.",
+          "target": "l_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "l_pb_bad",
+      "body": "You step out onto the sagging floor, and the rotten boards hold for one step, then two; on the third they give way with a crack, and you drop into a sealed vault beneath the whispering library. The trapdoor slams shut above you, and no handhold reaches the ceiling. There is nothing to do but wait for rescue and climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed Under the Whispering Library"
+      }
+    },
+    {
+      "id": "l_pc1",
+      "body": "You put your shoulder to the near door and it grinds inward; beyond it a corridor of the library runs long and lightless, straight into the heart of the tier, shelved on both sides with books gone soft and dark. The ceiling drips a slow cold rhythm onto your neck. You feel along one wall of spines and go on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pc1_1",
+          "label": "Feel along the wall.",
+          "target": "l_pc2"
+        }
+      ]
+    },
+    {
+      "id": "l_pc2",
+      "body": "The corridor ends at two low arches, and you cannot see past either one; the left arch breathes cold air up from somewhere deep, a hollow, empty cold; the right arch is warm and close and carries a faint sour smell you cannot place. Both feel wrong in different ways. You must choose: the cold arch to the left, or the warm arch to the right.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pc2_1",
+          "label": "Take the cold arch.",
+          "target": "l_pc_bad1"
+        },
+        {
+          "id": "c_l_pc2_2",
+          "label": "Take the warm arch.",
+          "target": "l_pc_bad2"
+        }
+      ]
+    },
+    {
+      "id": "l_pc_bad1",
+      "body": "You step through the cold arch, and your lead boot finds no floor; the arch opens straight onto a sheer shaft that drops away into blackness below; you throw your weight backward just in time and catch the stone lip, heart hammering. There is no crossing this. The near fall drives you back down a tier, and the whole ascent must begin again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pc_bad1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Floorless Shaft"
+      }
+    },
+    {
+      "id": "l_pc_bad2",
+      "body": "You step through the warm arch, and the smell hits you first; the chamber beyond is a nest of pale tower vermin, feeding on the rotten books, and they boil up at the light in a chittering tide. You cannot pass through that. Coughing, you back into the dark corridor, and by the time your breath steadies the way is lost for tonight.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pc_bad2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warm Nest"
+      }
+    },
+    {
+      "id": "l_pd_p1",
+      "body": "You follow the low path, and it slopes downward under your feet, away from the whispering shelves. Water begins to stand on the stone, and the air turns colder and heavier with every step until your breath shows pale. The dark ahead gives nothing back, but you want to see where it ends, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pd_p1_1",
+          "label": "Press on.",
+          "target": "l_pd_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_pd_p2",
+      "body": "The passage narrows fast; soon the walls press in on either side and you must turn sideways to fit, dragging yourself between slabs of wet, streaming stone. Every scrape tells you this is no climber's route. But the way behind is as bad as the way ahead, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pd_p2_1",
+          "label": "Press on.",
+          "target": "l_pd_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_pd_p3",
+      "body": "The ceiling drops lower and lower until you are bent almost double, and the way ahead pinches down to a crack barely wider than your shoulders. Cold, damp air seeps through it from the far side. You are certain now that nothing good waits beyond, but you have come too far to turn back easily, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pd_p3_1",
+          "label": "Press on.",
+          "target": "l_pd_end"
+        }
+      ]
+    },
+    {
+      "id": "l_pd_end",
+      "body": "You force yourself through the crack and out the other side, and the low path simply ends; a wall of caved-in stone blocks the way completely, packed tight, with no gap to squeeze through and no strength that will shift it. There is nothing here but dead rock. Turned back from the whispering library, you retreat, the climb halted before it truly began.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Whispering Library"
+      }
+    },
+    {
+      "id": "l_pe1",
+      "body": "You chance the far gallery, and it lies quiet, the whispers here worn down to nothing; in a dry alcove you find an old climber's cache: a coil of good rope and a bag of chalk, left by someone who came before you. It is a small piece of luck. You can take the cache and press on, or rest a moment in the quiet alcove.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pe1_1",
+          "label": "Take the cache and press on.",
+          "target": "l_pe2"
+        },
+        {
+          "id": "c_l_pe1_2",
+          "label": "Rest a moment in the alcove.",
+          "target": "l_pe_rest"
+        }
+      ]
+    },
+    {
+      "id": "l_pe_rest",
+      "body": "You sink down in the quiet alcove, away from the murmuring shelves, and for a moment it is enough simply to breathe; the cache is a small mercy. You tell yourself you will move again soon, but the hush is heavy and the hour slips past unnoticed. When you stir, the night has deepened too far. The library must wait for a stronger attempt.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pe_rest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Climber Cache"
+      }
+    },
+    {
+      "id": "l_pe2",
+      "body": "You sling the rope over your shoulder and work the chalk into your palms, and at once your hands feel surer; the gallery bends away and then curves back toward the paper guardian, following a hidden fault split through the wall. It carries you neatly around to the barrier. You follow the fault back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pe2_1",
+          "label": "Follow the fault back.",
+          "target": "g_l"
+        }
+      ]
+    },
+    {
+      "id": "l_ga1",
+      "body": "You attempt the risky bypass, climbing out past the guardian along a crumbling ledge that skirts the outside of the barrier; the stone is dry and rotten, shedding grit under every touch, and the library floor falls away far below. It is a bad line and you know it. Still, it might reach the far side, so you edge out along the ledge.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_ga1_1",
+          "label": "Edge along the ledge.",
+          "target": "l_ga2"
+        }
+      ]
+    },
+    {
+      "id": "l_ga2",
+      "body": "You edge along the crumbling ledge, testing each hold before you trust it; halfway across, the stone shears away beneath your boot; you drop, and only a lucky, snatching handhold stops the fall, leaving you swinging over the dark stacks. The bypass is gone, the barrier uncrossed. Shaking, you haul back to safe stone, and the tier has turned you back.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_ga2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sheared Ledge"
+      }
+    },
+    {
+      "id": "l_gb1",
+      "body": "You probe the reading-desk mechanism, feeling under its edge for how it works; your fingers find a release lever seized halfway, and behind it a tangle of counterweights that could swing the guardian either way. Trip the lever cleanly and the ladder should clear. Cut the counterweights and it might lock instead. You can trip the release lever, or cut the counterweights.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gb1_1",
+          "label": "Trip the release lever.",
+          "target": "s_l2"
+        },
+        {
+          "id": "c_l_gb1_2",
+          "label": "Cut the counterweights.",
+          "target": "l_gb_bad"
+        }
+      ]
+    },
+    {
+      "id": "l_gb_bad",
+      "body": "You saw through the counterweights, and for a heartbeat nothing moves; then the freed weight drops and the whole barrier slams into a locked position with a boom that shakes dust from the shelves; the ladder is sealed for good tonight, the shard walled off behind it. There is nothing left to try. You climb back down to attempt the tier again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Barrier"
+      }
+    },
+    {
+      "id": "l_gc_p1",
+      "body": "You look for another handhold, and the search leads you out of the stacks onto the raw face of the tower wall; old mortar has crumbled between the stones, leaving cracks a climber can use. For a while the holds come easily and you gain height above the dark shelves. You press on along the wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gc_p1_1",
+          "label": "Press on.",
+          "target": "l_gc_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gc_p2",
+      "body": "Higher up, the dependable holds disappear entirely; the cracks narrow to hairlines, the stone turns smooth and polished, and a cold draught from the stacks drags at every finger you manage to set. Your forearms begin to burn with the strain. You know you should retreat while you still can, but the top of the barrier looks close, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gc_p2_1",
+          "label": "Press on.",
+          "target": "l_gc_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gc_end",
+      "body": "You stretch for the next hold, and there is nothing there; the wall goes blank and smooth above you, with no crack, no ledge, no way past the barrier from here. Your grip is failing and the drop below is real. Clinging on any longer is too dangerous, so you down-climb, boot by careful boot, and retreat a tier to find a safer night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gc_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Whispering Library Barrier"
+      }
+    },
+    {
+      "id": "l_gal",
+      "body": "You explore the outer galleries, and the library opens into a maze of narrow reading-aisles. Each one promises a way up, a hint of a stair or a draught of higher air, and most of them, you suspect, lead nowhere good. Eight dark mouths wait in a row between the shelves. You can try passage one, two, three, four, five, six, seven, or eight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_1",
+          "label": "Try passage 1.",
+          "target": "l_gal_c1_p1"
+        },
+        {
+          "id": "c_l_gal_2",
+          "label": "Try passage 2.",
+          "target": "l_gal_c2_p1"
+        },
+        {
+          "id": "c_l_gal_3",
+          "label": "Try passage 3.",
+          "target": "l_gal_c3_p1"
+        },
+        {
+          "id": "c_l_gal_4",
+          "label": "Try passage 4.",
+          "target": "l_gal_c4_p1"
+        },
+        {
+          "id": "c_l_gal_5",
+          "label": "Try passage 5.",
+          "target": "l_gal_c5_p1"
+        },
+        {
+          "id": "c_l_gal_6",
+          "label": "Try passage 6.",
+          "target": "l_gal_c6_p1"
+        },
+        {
+          "id": "c_l_gal_7",
+          "label": "Try passage 7.",
+          "target": "l_gal_c7_p1"
+        },
+        {
+          "id": "c_l_gal_8",
+          "label": "Try passage 8.",
+          "target": "l_gal_c8_p1"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c1_p1",
+      "body": "You try passage 1, past a leaning doorway of swollen wood, and it draws you into the whispering library; loose grit showers down from the low ceiling with every careful footstep. You scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c1_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c1_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c1_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; you can no longer measure how far you have travelled or how much remains ahead; the sagging ceiling forces you to bend beneath it before you can continue. A cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c1_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c1_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c1_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of shelved stone; you empty your lungs to make yourself thinner and gain another handspan forward; the rough stone drags painfully at your back through the fabric of your coat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c1_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c1_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c1_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage doubles back on itself, blind, and ends flat against bare tower stone. There is no turning that leads on, only the way you came. You lift your light to the ceiling and the corners, and nothing gives. You back out of the whispering library and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c1_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Turning"
+      }
+    },
+    {
+      "id": "l_gal_c2_p1",
+      "body": "You try passage 2, past a stone vent clogged and choked, and it draws you into the whispering library; you scrape a chalk marker across the wall so the way back is not forgotten. The uneven floor drops away in shallow, slippery steps that offer no certain footing. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c2_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c2_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c2_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the sagging ceiling forces you to bend beneath it before you can continue; a cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c2_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c2_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c2_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of shelved stone; the rough stone drags painfully at your back through the fabric of your coat; your fingers scrabble at shallow seams too faint to be considered proper holds. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c2_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c2_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c2_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends at a choked vent in the wall, its slot far too narrow for any climber to follow. Blank stone hems it on every side. You back out of the whispering library and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c2_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Choked Vent"
+      }
+    },
+    {
+      "id": "l_gal_c3_p1",
+      "body": "You try passage 3, past a barred old cell, and it draws you into the whispering library. The uneven floor drops away in shallow, slippery steps that offer no certain footing. Somewhere in the darkness ahead, loose pages rustle somewhere behind and the smell of mould thickens. The darkness leans inward until your outstretched fingers brush against both walls at once. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c3_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c3_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c3_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; a cold breath of air slides past you, moving the wrong direction to be any exit; the slippery shelved stone sweats beneath your palms and offers you nothing solid to grip. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c3_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c3_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c3_end",
+      "body": "You crawl the last cramped stretch and the passage finally opens enough to stand; the passage ends at the door of a drowned cell, its floor under cold water and its far wall solid stone. Nothing leads on from here. You knock at the stone, listening for a hollow, and hear only solid rock. You back out of the whispering library and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c3_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Cell"
+      }
+    },
+    {
+      "id": "l_gal_c4_p1",
+      "body": "You try passage 4, past a broken winch trailing its chain, and it draws you into the whispering library. Somewhere in the darkness ahead, loose pages rustle somewhere behind and the smell of mould thickens. The darkness leans inward until your outstretched fingers brush against both walls at once. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c4_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c4_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c4_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the slippery shelved stone sweats beneath your palms and offers you nothing solid to grip. The narrow passage twists back upon itself, and loose pages rustle somewhere behind and the smell of mould thickens. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c4_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c4_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c4_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of shelved stone. Every ragged breath comes short, and every inch of progress becomes a struggle. Your ribs press against the stone on both sides at the very same moment. Behind you loose pages rustle somewhere behind and the smell of mould thickens, gradually closing off any comfortable retreat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c4_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c4_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c4_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage ends where a broken winch once hauled loads up the shaft, its chain snapped and the way above walled shut. There is no climbing it. You back out of the whispering library and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c4_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Winch"
+      }
+    },
+    {
+      "id": "l_gal_c5_p1",
+      "body": "You try passage 5, past an empty larder hung with iron hooks, and it draws you into the whispering library. The darkness leans inward until your outstretched fingers brush against both walls at once. The turning tightens immediately, and cold shelved stone presses close against either hand. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c5_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c5_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c5_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the narrow passage twists back upon itself, and loose pages rustle somewhere behind and the smell of mould thickens; your shoulders scrape against the walls now, and powdery dust sifts down in a dry whisper. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c5_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c5_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c5_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of shelved stone; your ribs press against the stone on both sides at the very same moment. Behind you loose pages rustle somewhere behind and the smell of mould thickens, gradually closing off any comfortable retreat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c5_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c5_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c5_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends in a cold larder, its shelves bare and its back wall blank tower stone. No door, no crack, no way on. You feel along every wall for a hidden seam or a draught and find none. You back out of the whispering library and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c5_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Larder"
+      }
+    },
+    {
+      "id": "l_gal_c6_p1",
+      "body": "You try passage 6, past a half-fallen archway, and it draws you into the whispering library. The turning tightens immediately, and cold shelved stone presses close against either hand. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c6_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c6_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c6_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; your shoulders scrape against the walls now, and powdery dust sifts down in a dry whisper; you can no longer measure how far you have travelled or how much remains ahead. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c6_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c6_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c6_end",
+      "body": "You crawl the last cramped stretch and the passage finally opens enough to stand; the passage ends beneath a fallen arch, its keystone down and the rubble packed too tight to shift. The way beyond is sealed. You knock at the stone, listening for a hollow, and hear only solid rock. You back out of the whispering library and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c6_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Fallen Arch"
+      }
+    },
+    {
+      "id": "l_gal_c7_p1",
+      "body": "You try passage 7, past the black mouth of a round well shaft, and it draws you into the whispering library; loose grit showers down from the low ceiling with every careful footstep. You scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c7_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c7_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c7_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; you can no longer measure how far you have travelled or how much remains ahead; the sagging ceiling forces you to bend beneath it before you can continue. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c7_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c7_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c7_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of shelved stone; you empty your lungs to make yourself thinner and gain another handspan forward; the rough stone drags painfully at your back through the fabric of your coat. Your fingers scrabble at shallow seams too faint to be considered proper holds. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c7_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c7_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c7_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage ends at the lip of a silent well, a round black drop with sheer sides and no ledge across. Nothing carries you over it. You lift your light to the ceiling and the corners, and nothing gives. You back out of the whispering library and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c7_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silent Well"
+      }
+    },
+    {
+      "id": "l_gal_c8_p1",
+      "body": "You try passage 8, past a rusted iron grate, and it draws you into the whispering library; you scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c8_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c8_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c8_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the sagging ceiling forces you to bend beneath it before you can continue; a cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c8_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c8_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c8_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends at a locked grate of old iron, its bars set deep and rusted fast in the stone. It will not give, however you pull. You back out of the whispering library and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c8_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Grate"
+      }
+    },
+    {
+      "id": "h_r",
+      "body": "You climb out onto the wind-scoured ramparts, and the gale nearly takes you off your feet. Narrow ledges ring the tower, slick with spray, and stone gargoyles crouch along a bridge that has half fallen away into cloud. The last stair lies somewhere past it. Many ways open here. You can take the direct route, try the flanking passage, search the side chamber, force the near door, follow the low path, chance the far gallery, or explore the outer galleries.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_r_1",
+          "label": "Take the direct route.",
+          "target": "s_r1"
+        },
+        {
+          "id": "c_h_r_2",
+          "label": "Try the flanking passage.",
+          "target": "r_pa1"
+        },
+        {
+          "id": "c_h_r_3",
+          "label": "Search the side chamber.",
+          "target": "r_pb1"
+        },
+        {
+          "id": "c_h_r_4",
+          "label": "Force the near door.",
+          "target": "r_pc1"
+        },
+        {
+          "id": "c_h_r_5",
+          "label": "Follow the low path.",
+          "target": "r_pd_p1"
+        },
+        {
+          "id": "c_h_r_6",
+          "label": "Chance the far gallery.",
+          "target": "r_pe1"
+        },
+        {
+          "id": "c_h_r_7",
+          "label": "Explore the outer galleries.",
+          "target": "r_gal"
+        }
+      ]
+    },
+    {
+      "id": "s_r1",
+      "body": "You take the direct route along the open rampart, and the wind shoves you hard against the parapet; ahead the broken bridge groans on its last standing span, a single arch of stone over a long dark drop to the clouds below. You wait for a lull, then start across toward the far side. You push toward the barrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_r1_1",
+          "label": "Push toward the barrier.",
+          "target": "g_r"
+        }
+      ]
+    },
+    {
+      "id": "g_r",
+      "body": "The tower guardian wakes. A great stone sentinel steps from the rampart wall itself, grinding upright to bar the last stair, its eyes lit with the old curse. It lifts a fist of granite and waits. You can try to win straight through the barrier, attempt a risky bypass along the outer ledge, probe the sentinel for a weakness, or look for another handhold up the wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_r_1",
+          "label": "Win through the barrier.",
+          "target": "s_r2"
+        },
+        {
+          "id": "c_g_r_2",
+          "label": "Attempt the risky bypass.",
+          "target": "r_ga1"
+        },
+        {
+          "id": "c_g_r_3",
+          "label": "Probe the mechanism.",
+          "target": "r_gb1"
+        },
+        {
+          "id": "c_g_r_4",
+          "label": "Look for another handhold.",
+          "target": "r_gc_p1"
+        }
+      ]
+    },
+    {
+      "id": "s_r2",
+      "body": "You feint left, then dart under the sentinel's slow granite swing, and it cannot turn fast enough to catch you; outwitted, it grinds back into the wall it came from and goes still. The final stair stands open beyond it, and at the top of the world the beacon chamber glows faintly. You climb toward it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_r2_1",
+          "label": "Climb to the next tier.",
+          "target": "h_b"
+        }
+      ]
+    },
+    {
+      "id": "r_pa1",
+      "body": "You take the flanking passage, and it skirts wide around the broken bridge along a lower, sheltered ledge; here the parapet breaks the worst of the gale, and for a while the going is steadier. The ledge curves back on itself and rejoins the main route just short of the stone sentinel. You rejoin the way at the barrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pa1_1",
+          "label": "Rejoin the barrier.",
+          "target": "g_r"
+        }
+      ]
+    },
+    {
+      "id": "r_pb1",
+      "body": "You duck into the side chamber, out of the wind, and the way is choked at once; fallen masonry fills it, broken parapet stone and a toppled gargoyle wedged into a wall of wreckage. Nothing will shift on its own. If you want through, you must haul the rubble aside by hand and dig deeper in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pb1_1",
+          "label": "Dig deeper in.",
+          "target": "r_pb2"
+        }
+      ]
+    },
+    {
+      "id": "r_pb2",
+      "body": "Past the cleared rubble the chamber opens, and two ways lead on; to one side a narrow crawl bends back toward the stone sentinel, low but solid. To the other, a sagging floor of old planks stretches over open dark, bowed and soft with rot, groaning at the sight of you. You can crawl back to the barrier, or chance your weight on the sagging floor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pb2_1",
+          "label": "Crawl back to the barrier.",
+          "target": "g_r"
+        },
+        {
+          "id": "c_r_pb2_2",
+          "label": "Cross the sagging floor.",
+          "target": "r_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "r_pb_bad",
+      "body": "You step out onto the sagging floor, and the rotten planks hold for one step, then two; on the third they give way with a crack, and you drop into a sealed vault beneath the ramparts. The trapdoor slams shut above you, and no handhold reaches the ceiling. There is nothing to do but wait for rescue and climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed Under the Wind-Scoured Ramparts"
+      }
+    },
+    {
+      "id": "r_pc1",
+      "body": "You put your shoulder to the near door and it grinds inward, out of the wind; beyond it a corridor runs long and lightless through the thickness of the wall, straight into the heart of the tier. The ceiling drips a slow cold rhythm onto your neck, and the walls stand too far apart to touch. You feel along one wall and go on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pc1_1",
+          "label": "Feel along the wall.",
+          "target": "r_pc2"
+        }
+      ]
+    },
+    {
+      "id": "r_pc2",
+      "body": "The corridor ends at two low arches, and you cannot see past either one; the left arch breathes cold air up from somewhere deep, a hollow, empty cold; the right arch is warm and close and carries a faint sour smell you cannot place. Both feel wrong in different ways. You must choose: the cold arch to the left, or the warm arch to the right.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pc2_1",
+          "label": "Take the cold arch.",
+          "target": "r_pc_bad1"
+        },
+        {
+          "id": "c_r_pc2_2",
+          "label": "Take the warm arch.",
+          "target": "r_pc_bad2"
+        }
+      ]
+    },
+    {
+      "id": "r_pc_bad1",
+      "body": "You step through the cold arch, and your lead boot finds no floor; the arch opens straight onto a sheer shaft that drops away into blackness below; you throw your weight backward just in time and catch the stone lip, heart hammering. There is no crossing this. The near fall drives you back down a tier, and the whole ascent must begin again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pc_bad1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Floorless Shaft"
+      }
+    },
+    {
+      "id": "r_pc_bad2",
+      "body": "You step through the warm arch, and the smell hits you first; the chamber beyond is a nest of pale tower vermin, sheltering from the wind, and they boil up at the light in a chittering tide. You cannot pass through that. Coughing, you back into the dark corridor, and by the time your breath steadies the way is lost for tonight.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pc_bad2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warm Nest"
+      }
+    },
+    {
+      "id": "r_pd_p1",
+      "body": "You follow the low path, and it slopes downward under your feet, back inside the wall and out of the wind. Water begins to stand on the stone, and the air turns colder and heavier with every step until your breath shows pale. The dark ahead gives nothing back, but you want to see where it ends, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pd_p1_1",
+          "label": "Press on.",
+          "target": "r_pd_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_pd_p2",
+      "body": "The passage narrows fast; soon the walls press in on either side and you must turn sideways to fit, dragging yourself between slabs of wet, streaming stone. Every scrape tells you this is no climber's route. But the way behind is as bad as the way ahead, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pd_p2_1",
+          "label": "Press on.",
+          "target": "r_pd_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_pd_p3",
+      "body": "The ceiling drops lower and lower until you are bent almost double, and the way ahead pinches down to a crack barely wider than your shoulders. A thin, cold wind moans through it from the far side. You are certain now that nothing good waits beyond, but you have come too far to turn back easily, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pd_p3_1",
+          "label": "Press on.",
+          "target": "r_pd_end"
+        }
+      ]
+    },
+    {
+      "id": "r_pd_end",
+      "body": "You force yourself through the crack and out the other side, and the low path simply ends; a wall of caved-in stone blocks the way completely, packed tight, with no gap to squeeze through and no strength that will shift it. There is nothing here but dead rock. Turned back from the ramparts, you retreat, the climb halted before it truly began.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Wind-Scoured Ramparts"
+      }
+    },
+    {
+      "id": "r_pe1",
+      "body": "You chance the far gallery, and it lies quiet in the lee of the wall, out of the gale; in a dry alcove you find an old climber's cache: a coil of good rope and a bag of chalk, left by someone who came before you. It is a small piece of luck. You can take the cache and press on, or rest a moment in the sheltered alcove.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pe1_1",
+          "label": "Take the cache and press on.",
+          "target": "r_pe2"
+        },
+        {
+          "id": "c_r_pe1_2",
+          "label": "Rest a moment in the alcove.",
+          "target": "r_pe_rest"
+        }
+      ]
+    },
+    {
+      "id": "r_pe_rest",
+      "body": "You sink down in the sheltered alcove, out of the wind at last, and for a moment it is enough simply to breathe; the cache is a small mercy; you tell yourself you will move again soon, but the warmth is heavy and the hour slips past unnoticed. When you stir, the night has deepened too far. The ramparts must wait for a stronger attempt.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pe_rest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Climber Cache"
+      }
+    },
+    {
+      "id": "r_pe2",
+      "body": "You sling the rope over your shoulder and work the chalk into your palms, and at once your hands feel surer; the gallery bends away and then curves back toward the stone sentinel, following a hidden fault split through the wall. It carries you neatly around to the barrier. You follow the fault back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pe2_1",
+          "label": "Follow the fault back.",
+          "target": "g_r"
+        }
+      ]
+    },
+    {
+      "id": "r_ga1",
+      "body": "You attempt the risky bypass, climbing out past the sentinel along a crumbling ledge on the tower's windward face; the stone is spray-slick and rotten, shedding grit under every touch, and the clouds churn far below. It is a bad line and you know it. Still, it might reach the far side, so you edge out along the ledge.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_ga1_1",
+          "label": "Edge along the ledge.",
+          "target": "r_ga2"
+        }
+      ]
+    },
+    {
+      "id": "r_ga2",
+      "body": "You edge along the crumbling ledge, testing each hold before you trust it; halfway across, the stone shears away beneath your boot; you drop, and only a lucky, snatching handhold stops the fall, leaving you swinging over the clouds. The bypass is gone, the barrier uncrossed. Shaking, you haul back to safe stone, and the tier has turned you back.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_ga2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sheared Ledge"
+      }
+    },
+    {
+      "id": "r_gb1",
+      "body": "You probe the sentinel for a weakness, feeling along the seam where it meets the wall; your fingers find a release lever seized halfway, and behind it a tangle of counterweights that could swing the sentinel either way. Trip the lever cleanly and it should stand down. Cut the counterweights and it might lock the stair. You can trip the release lever, or cut the counterweights.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gb1_1",
+          "label": "Trip the release lever.",
+          "target": "s_r2"
+        },
+        {
+          "id": "c_r_gb1_2",
+          "label": "Cut the counterweights.",
+          "target": "r_gb_bad"
+        }
+      ]
+    },
+    {
+      "id": "r_gb_bad",
+      "body": "You saw through the counterweights, and for a heartbeat nothing moves; then the freed weight drops and the whole sentinel slams into a locked position with a boom that shakes the parapet; the stair is sealed for good tonight, the way walled off behind it. There is nothing left to try. You climb back down to attempt the tier again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Barrier"
+      }
+    },
+    {
+      "id": "r_gc_p1",
+      "body": "You look for another handhold, and the search leads you out onto the raw windward face of the tower; old mortar has scoured away between the stones, leaving cracks a climber can use. For a while the holds come easily and you gain height above the ramparts. You press on along the wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gc_p1_1",
+          "label": "Press on.",
+          "target": "r_gc_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gc_p2",
+      "body": "Higher up, the dependable holds disappear entirely; the cracks narrow to hairlines, the stone turns smooth and streaming, and the wind drags hard at every finger you manage to set. Your forearms begin to burn with the strain. You know you should retreat while you still can, but the top of the barrier looks close, so you press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gc_p2_1",
+          "label": "Press on.",
+          "target": "r_gc_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gc_end",
+      "body": "You stretch for the next hold, and there is nothing there; the wall goes blank and smooth above you, with no crack, no ledge, no way past the barrier from here. Your grip is failing and the drop below is real. Clinging on any longer is too dangerous, so you down-climb, boot by careful boot, and retreat a tier to find a safer night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gc_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Wind-Scoured Ramparts Barrier"
+      }
+    },
+    {
+      "id": "r_gal",
+      "body": "You explore the outer galleries, where the rampart breaks into a maze of narrow wall-passages and turret stairs; each one promises a way up, a glimpse of the summit or a break in the wind, and most of them, you suspect, lead nowhere good. Eight dark mouths wait in a row. You can try passage one, two, three, four, five, six, seven, or eight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_1",
+          "label": "Try passage 1.",
+          "target": "r_gal_c1_p1"
+        },
+        {
+          "id": "c_r_gal_2",
+          "label": "Try passage 2.",
+          "target": "r_gal_c2_p1"
+        },
+        {
+          "id": "c_r_gal_3",
+          "label": "Try passage 3.",
+          "target": "r_gal_c3_p1"
+        },
+        {
+          "id": "c_r_gal_4",
+          "label": "Try passage 4.",
+          "target": "r_gal_c4_p1"
+        },
+        {
+          "id": "c_r_gal_5",
+          "label": "Try passage 5.",
+          "target": "r_gal_c5_p1"
+        },
+        {
+          "id": "c_r_gal_6",
+          "label": "Try passage 6.",
+          "target": "r_gal_c6_p1"
+        },
+        {
+          "id": "c_r_gal_7",
+          "label": "Try passage 7.",
+          "target": "r_gal_c7_p1"
+        },
+        {
+          "id": "c_r_gal_8",
+          "label": "Try passage 8.",
+          "target": "r_gal_c8_p1"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c1_p1",
+      "body": "You try passage 1, past a leaning doorway of swollen wood, and it draws you into the wind-scoured ramparts; loose grit showers down from the low ceiling with every careful footstep. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c1_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c1_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c1_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; you can no longer measure how far you have travelled or how much remains ahead; the sagging ceiling forces you to bend beneath it before you can continue. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c1_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c1_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c1_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of spray-slick stone; you empty your lungs to make yourself thinner and gain another handspan forward; the rough stone drags painfully at your back through the fabric of your coat. Your fingers scrabble at shallow seams too faint to be considered proper holds. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c1_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c1_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c1_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage doubles back on itself, blind, and ends flat against bare tower stone. There is no turning that leads on, only the way you came. You lift your light to the ceiling and the corners, and nothing gives. You back out of the wind-scoured ramparts and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c1_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Turning"
+      }
+    },
+    {
+      "id": "r_gal_c2_p1",
+      "body": "You try passage 2, past a stone vent clogged and choked, and it draws you into the wind-scoured ramparts; you scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c2_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c2_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c2_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the sagging ceiling forces you to bend beneath it before you can continue; a cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c2_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c2_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c2_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of spray-slick stone; the rough stone drags painfully at your back through the fabric of your coat; your fingers scrabble at shallow seams too faint to be considered proper holds. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c2_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c2_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c2_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends at a choked vent in the wall, its slot far too narrow for any climber to follow. Blank stone hems it on every side. You back out of the wind-scoured ramparts and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c2_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Choked Vent"
+      }
+    },
+    {
+      "id": "r_gal_c3_p1",
+      "body": "You try passage 3, past a barred old cell, and it draws you into the wind-scoured ramparts. The uneven floor drops away in shallow, slippery steps that offer no certain footing. Somewhere in the darkness ahead, the wind moans somewhere ahead and the salt cold bites deeper. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c3_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c3_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c3_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; a cold breath of air slides past you, moving the wrong direction to be any exit. The slippery spray-slick stone sweats beneath your palms and offers you nothing solid to grip. The narrow passage twists back upon itself, and the wind moans somewhere ahead and the salt cold bites deeper. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c3_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c3_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c3_end",
+      "body": "You crawl the last cramped stretch and the passage finally opens enough to stand; the passage ends at the door of a drowned cell, its floor under cold water and its far wall solid stone. Nothing leads on from here. You knock at the stone, listening for a hollow, and hear only solid rock. You back out of the wind-scoured ramparts and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c3_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Cell"
+      }
+    },
+    {
+      "id": "r_gal_c4_p1",
+      "body": "You try passage 4, past a broken winch trailing its chain, and it draws you into the wind-scoured ramparts; somewhere in the darkness ahead, the wind moans somewhere ahead and the salt cold bites deeper. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c4_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c4_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c4_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the slippery spray-slick stone sweats beneath your palms and offers you nothing solid to grip. The narrow passage twists back upon itself, and the wind moans somewhere ahead and the salt cold bites deeper. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c4_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c4_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c4_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of spray-slick stone; every ragged breath comes short, and every inch of progress becomes a struggle. Your ribs press against the stone on both sides at the very same moment. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c4_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c4_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c4_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage ends where a broken winch once hauled loads up the shaft, its chain snapped and the way above walled shut. There is no climbing it. You back out of the wind-scoured ramparts and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c4_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Winch"
+      }
+    },
+    {
+      "id": "r_gal_c5_p1",
+      "body": "You try passage 5, past an empty larder hung with iron hooks, and it draws you into the wind-scoured ramparts. The darkness leans inward until your outstretched fingers brush against both walls at once. The turning tightens immediately, and cold spray-slick stone presses close against either hand. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c5_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c5_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c5_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the narrow passage twists back upon itself, and the wind moans somewhere ahead and the salt cold bites deeper; your shoulders scrape against the walls now, and powdery dust sifts down in a dry whisper. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c5_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c5_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c5_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of spray-slick stone; your ribs press against the stone on both sides at the very same moment. Behind you the wind moans somewhere ahead and the salt cold bites deeper, gradually closing off any comfortable retreat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c5_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c5_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c5_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends in a cold larder, its shelves bare and its back wall blank tower stone. No door, no crack, no way on. You feel along every wall for a hidden seam or a draught and find none. You back out of the wind-scoured ramparts and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c5_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Larder"
+      }
+    },
+    {
+      "id": "r_gal_c6_p1",
+      "body": "You try passage 6, past a half-fallen archway, and it draws you into the wind-scoured ramparts. The turning tightens immediately, and cold spray-slick stone presses close against either hand. Loose grit showers down from the low ceiling with every careful footstep. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c6_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c6_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c6_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; your shoulders scrape against the walls now, and powdery dust sifts down in a dry whisper; you can no longer measure how far you have travelled or how much remains ahead. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c6_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c6_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c6_end",
+      "body": "You crawl the last cramped stretch and the passage finally opens enough to stand; the passage ends beneath a fallen arch, its keystone down and the rubble packed too tight to shift. The way beyond is sealed. You knock at the stone, listening for a hollow, and hear only solid rock. You back out of the wind-scoured ramparts and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c6_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Fallen Arch"
+      }
+    },
+    {
+      "id": "r_gal_c7_p1",
+      "body": "You try passage 7, past the black mouth of a round well shaft, and it draws you into the wind-scoured ramparts; loose grit showers down from the low ceiling with every careful footstep. You scrape a chalk marker across the wall so the way back is not forgotten. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c7_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c7_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c7_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; you can no longer measure how far you have travelled or how much remains ahead; the sagging ceiling forces you to bend beneath it before you can continue. A cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c7_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c7_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c7_p3",
+      "body": "The way pinches down until you can barely squeeze ahead, wedged between walls of spray-slick stone; you empty your lungs to make yourself thinner and gain another handspan forward; the rough stone drags painfully at your back through the fabric of your coat. You are almost sure this leads nowhere, but the far side must be close now. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c7_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c7_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c7_end",
+      "body": "You drag yourself through the last squeeze and the walls fall back at last; the passage ends at the lip of a silent well, a round black drop with sheer sides and no ledge across. Nothing carries you over it. You lift your light to the ceiling and the corners, and nothing gives. You back out of the wind-scoured ramparts and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c7_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silent Well"
+      }
+    },
+    {
+      "id": "r_gal_c8_p1",
+      "body": "You try passage 8, past a rusted iron grate, and it draws you into the wind-scoured ramparts; you scrape a chalk marker across the wall so the way back is not forgotten. The uneven floor drops away in shallow, slippery steps that offer no certain footing. The way narrows and turns until the light behind you fails and you climb by touch alone. You press on into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c8_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c8_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c8_p2",
+      "body": "Deeper in, loose stone shifts under your hands and the air grows close and stale; the sagging ceiling forces you to bend beneath it before you can continue; a cold breath of air slides past you, moving the wrong direction to be any exit. There is no room to turn around now, and going back would cost as much as going on. You press on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c8_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c8_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c8_end",
+      "body": "You push through the final bend, certain now that the air ahead is dead; the passage ends at a locked grate of old iron, its bars set deep and rusted fast in the stone. It will not give, however you pull. You back out of the wind-scoured ramparts and give it up for tonight, to climb again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c8_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Grate"
+      }
+    },
+    {
+      "id": "h_b",
+      "body": "The beacon chamber crowns the Sunspire. Its great lantern stands cold and black at the center of the room, and the long night presses against the glass on every side, hungry to get in. In your hands the three shards hum faintly, drawn toward the dark crown. Where do you begin. You can approach the lantern crown at once, circle the chamber first, study the curse-shadow gathering at the glass, search for the old keeper's remains, or brace the great doors against the rising night.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_b_1",
+          "label": "Approach the lantern crown.",
+          "target": "s_b1"
+        },
+        {
+          "id": "c_h_b_2",
+          "label": "Circle the chamber first.",
+          "target": "b_pa1"
+        },
+        {
+          "id": "c_h_b_3",
+          "label": "Study the curse-shadow.",
+          "target": "b_pb1"
+        },
+        {
+          "id": "c_h_b_4",
+          "label": "Search for the keeper remains.",
+          "target": "b_pc1"
+        },
+        {
+          "id": "c_h_b_5",
+          "label": "Brace the doors against the night.",
+          "target": "b_pd1"
+        }
+      ]
+    },
+    {
+      "id": "s_b1",
+      "body": "You approach the lantern crown; three empty housings ring its base, and you understand at once that the shards must be set in the right order or the curse will smother the spark before it can catch; get it wrong and the light dies. The old mechanism waits beneath your hands, patient and dark, offering no hint of its own. You steady yourself to read the crown order.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b1_1",
+          "label": "Read the crown order.",
+          "target": "g_b"
+        }
+      ]
+    },
+    {
+      "id": "g_b",
+      "body": "As you reach for the housings, the curse itself rises: a shadow spreading across the lantern glass, cold pouring off it. It whispers that the night is kinder than the climb, that you are tired, that you have done enough. Set the shards down, it says, and rest. You can refuse the shadow and set the shards true, try to bargain with it for passage, or set the shards blind while it clouds your sight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_b_1",
+          "label": "Refuse the shadow and set the shards.",
+          "target": "s_b2"
+        },
+        {
+          "id": "c_g_b_2",
+          "label": "Bargain with the shadow.",
+          "target": "b_ga1"
+        },
+        {
+          "id": "c_g_b_3",
+          "label": "Try to set the shards blind.",
+          "target": "b_gb1"
+        }
+      ]
+    },
+    {
+      "id": "s_b2",
+      "body": "You refuse the shadow; you will not set the shards down, not after the whole cursed climb; ignoring the cold at your back, you fit the three shards to the crown one by one, in the order the housings ask for. Each one clicks home. The old mechanism drinks their glow and begins, slowly, to warm beneath both your hands. Now you can speak the old keeper words, or force the spark at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b2_1",
+          "label": "Speak the old keeper words.",
+          "target": "s_b3"
+        },
+        {
+          "id": "c_s_b2_2",
+          "label": "Force the spark at once.",
+          "target": "b_force"
+        }
+      ]
+    },
+    {
+      "id": "s_b3",
+      "body": "You speak the old keeper words, and the crown warms further under your palms. The first true light in a hundred years begins to gather inside the glass, pale gold and growing. But the curse-shadow claws at the lantern one last time, desperate now, and the final turn is yours. You can turn the crown sunwise, the way the keeper's log described, or turn it widdershins to spite the curse.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b3_1",
+          "label": "Turn the crown sunwise, as the log said.",
+          "target": "e_relight"
+        },
+        {
+          "id": "c_s_b3_2",
+          "label": "Turn the crown widdershins, to spite the curse.",
+          "target": "b_widder"
+        }
+      ]
+    },
+    {
+      "id": "e_relight",
+      "body": "You turn the crown sunwise, exactly as the log said, and the gathered light leaps free; the beacon blazes up in a great wheel of gold, throwing day across the whole coast for the first time in a hundred years. The long night tears apart at the edges. The curse unspools into thin morning air and is gone, and the shadow with it. The Sunspire stands lit and free beneath you. You are Rowan, keeper of the beacon, the climber who went up the whole cursed tower and brought the light back to the coast.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_relight",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Beacon Relit"
+      }
+    },
+    {
+      "id": "b_widder",
+      "body": "You turn the crown widdershins, to spite the curse, and the crown fights you; the gathered light shudders, then guts out in a cold rush, sucked back into the dark. Somewhere in the shadow you hear a low laugh as it fades. You have reached the very top of the Sunspire and failed only the last turn of all. You rest against the cold crown, gathering yourself to try the final ritual again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_widder",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Last Turn Wrong"
+      }
+    },
+    {
+      "id": "b_force",
+      "body": "You force the spark before the crown is ready, and it answers wildly; a whip of light cracks out of the mechanism and throws you back from the crown, and the shards spill from their housings and scatter across the floor; the glow dies. The beacon stays dark and the long night holds fast outside. You gather the loose shards, steady your hands, and prepare to try once more.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_force",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wild Spark"
+      }
+    },
+    {
+      "id": "b_pa1",
+      "body": "You circle the beacon chamber first, and your eye catches an old lectern by the wall; the keeper's log lies open on it, its ink faded but still readable. The last page describes the lighting: the crown, it says, must be turned sunwise on the final ritual, never against the sun. You fix the word in your mind, then read on and approach the crown.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_pa1_1",
+          "label": "Read on, then approach the crown.",
+          "target": "s_b1"
+        }
+      ]
+    },
+    {
+      "id": "b_pb1",
+      "body": "You study the curse-shadow where it pools against the glass; as it gathers, you notice it flinches from the light of the shards in your hands, drawing back wherever they shine. There is an opening in that: a moment to push straight past it to the crown while it recoils. But the longer you watch, the more it holds your eye. You can slip past to the crown now, or keep watching, transfixed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_pb1_1",
+          "label": "Slip past to the crown.",
+          "target": "s_b1"
+        },
+        {
+          "id": "c_b_pb1_2",
+          "label": "Keep watching, transfixed.",
+          "target": "b_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "b_pb_bad",
+      "body": "You keep watching, and the shadow watches back; its slow, curling depths are strangely beautiful, and you cannot look away; the cold pours in around you, and the night seeps through the glass to fill the chamber. By the time you break the spell, the moment is long gone. The climb must be given up to the dark, to be attempted again another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Held by the Shadow"
+      }
+    },
+    {
+      "id": "b_pc1",
+      "body": "You search for the last keeper and find him in a cold alcove: only bones now, wrapped in rotted cloth, one hand still closed around a ring of iron keys; you work the ring free; among the keys, one is shaped to fit the crown housing itself. It is exactly what you need. You take the key and carry it to the crown.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_pc1_1",
+          "label": "Take the key to the crown.",
+          "target": "s_b1"
+        }
+      ]
+    },
+    {
+      "id": "b_pd1",
+      "body": "You throw your shoulder against the great doors and brace them shut, holding the rising night out of the chamber; for one long hour you stand your ground, and the curse cannot pass you here. Below, the coast wins a thin edge of dawn it would not have had. But the beacon stays dark behind you, and the true climb is left unfinished for a braver night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_pd1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Braced Doors"
+      }
+    },
+    {
+      "id": "b_ga1",
+      "body": "You try to bargain with the shadow; you offer it a single shard, just one, in exchange for clear passage to the crown; the cold thing considers, then reaches out a hand of smoke toward your open palm to seal the trade. In that moment you can still change your mind. You can snatch the shard back and run for the crown, or let the shadow take the shard as promised.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_ga1_1",
+          "label": "Snatch the shard back and run for the crown.",
+          "target": "s_b2b"
+        },
+        {
+          "id": "c_b_ga1_2",
+          "label": "Let the shadow take the shard.",
+          "target": "b_ga_bad"
+        }
+      ]
+    },
+    {
+      "id": "b_ga_bad",
+      "body": "You let the shadow close its smoke-cold hand around the shard, and it swallows the light whole; the glow winks out inside it, and the shard with it; two shards remain in your grasp now, and two are not enough to wake the crown. The bargain has cost you the climb. You retreat down the tower to hunt for the lost shard another night.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_ga_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Bargained Shard"
+      }
+    },
+    {
+      "id": "b_gb1",
+      "body": "You decide to set the shards blind, working by touch while the shadow clouds your sight; your fingers find the housings in the dark and you seat the first shard, then the second, each clicking true; but the third will not go. It catches against something in its housing and resists every push. You can force the third shard home by feel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_gb1_1",
+          "label": "Force the third by feel.",
+          "target": "b_gb2"
+        }
+      ]
+    },
+    {
+      "id": "b_gb2",
+      "body": "You force the third shard by feel, throwing your weight behind it; it grinds halfway into the housing and jams there, wedged crooked, and the crown locks hard against it. Now it will neither seat nor come free, and no light will rise while it fouls the mechanism. You must climb down, rest, and come back to seat the shards in the light.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_gb2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Jammed Housing"
+      }
+    },
+    {
+      "id": "s_b2b",
+      "body": "You snatch the shard back before the smoke-cold hand can close, and run; the shadow howls and pours after you, but you are already sprinting the last curve of the chamber, shards clutched tight to your chest. You reach the crown from the far side, breath ragged and burning, and the three housings lie open and waiting under your hands. You can set the shards from the far side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b2b_1",
+          "label": "Set the shards from the far side.",
+          "target": "e_clever"
+        }
+      ]
+    },
+    {
+      "id": "e_clever",
+      "body": "From the far side you drive all three shards home at once, slamming them into their housings before the shadow can reach you; the crown catches with a roar, and gold light explodes outward, tearing the shadow to rags and blazing across the whole coast. It is not the keeper's careful way; it is nerve and a clever line taken under pressure. But the tower stands lit, the curse is broken, and the long night is ended. You did it your own way, and the light holds.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_clever",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Clever Summit"
+      }
+    }
+  ]
+}
