@@ -90,6 +90,15 @@ multi-parent beat entry-agnostic + carrying state-reflection instructions; (6) <
 decision-clicks per real playthrough at 10-13; (7) leave 1-2 nodes of depth headroom
 under the cell cap (do NOT ship at the cap like the pattern-setter did).
 
+TIER-2 OPEN_MAP PATTERN RULES (from the approved pattern-setter, the-flooded-quarter;
+apply to stateful open_map briefs #26, #34 and inform gamebooks #23/#28/#32/#36):
+(1) base-plus-adds relaxes exact-partition ONLY while every gated node keeps a
+verified unconditional companion choice; (2) best outcome behind one monotone
+once-per-spoke progress variable, config-verified exact; (3) auto-reset inventory
+on_enter at hub AND finale muster, with author guidance wherever cross-spoke hops
+can arrive laden; (4) arrival-neutral directives on every reconvergence/cross-entry
+node; recaps cite only path-universal (offstage upstream) causes.
+
 Ending-count targets follow the ADR-011 master table for the cell; gamebook cells
 are "few wins + many fails" with ~25-35% of nodes as terminals. Every brief also
 carries the constants: decisions per path ~4-8, choices per decision 2-3, ~2-3 setup

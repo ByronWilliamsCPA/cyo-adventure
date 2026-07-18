@@ -1047,7 +1047,7 @@
     },
     {
       "id": "ph_cross",
-      "body": "<<FILL role=choice words=105 beats='Chandler's Cross, four streets of water meeting under the pharmacy's swinging pestle sign; Salma stands at her lit first-floor window with a storm lantern, and below her the dispensary drowns by inches; her voice is level as a counter-top: the zinc cold-chest must reach the shelter before the insulin warms, and there is a right way and a fast way to everything'>>",
+      "body": "<<FILL role=choice words=105 beats='Chandler's Cross, four streets of water meeting under the pharmacy's swinging pestle sign; Salma stands at her lit first-floor window with a storm lantern, and below her the dispensary drowns by inches; her voice is level as a counter-top: the zinc cold-chest must reach the shelter before the insulin warms, and there is a right way and a fast way to everything; note for the author: reached by a cross-spoke hop the skiff may still carry a prior errand's load, so write any cargo aboard deliberately rather than by omission'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1820,7 +1820,7 @@
     },
     {
       "id": "os_done",
-      "body": "<<FILL role=choice words=110 beats='Leaving Weaver's Stair settled behind you, write it neutral to how: aboard and navigating, or safe in brigade hands, or provisioned under signal, the lane's business is finished and the flood has climbed another remembering mark on the doorposts while it happened'>>",
+      "body": "<<FILL role=choice words=110 beats='Leaving Weaver's Stair settled behind you, write it neutral to how: aboard and navigating, or safe in brigade hands, or provisioned under signal, the lane's business is finished and the flood has climbed another remembering mark on the doorposts while it happened; note for the author: reached by a cross-spoke hop the skiff may still carry a prior errand's load, so write any cargo aboard deliberately rather than by omission'>>",
       "is_ending": false,
       "choices": [
         {
