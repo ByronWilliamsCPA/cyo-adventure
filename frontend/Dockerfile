@@ -11,7 +11,7 @@
 # Docker's actual builder variant (shell + npm); only this build-only stage
 # needs it, the shipped image below still comes from dhi-nginx.
 # #VERIFY the production stage never FROMs the -dev tag.
-FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:4253663c9342a83ec8d24e4218ad3cade3acbc45627aa9b19b126b752595d492 AS deps
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:d79d09abf199ae85fbcf730e64c5eb251b3591bc925fea3c5d3d0d74b3ed06e8 AS deps
 
 WORKDIR /app
 
@@ -28,7 +28,7 @@ RUN npm ci --only=production=false
 # Stage 2: Builder
 # =============================================================================
 # Same -dev rationale as the deps stage above: `npm run build` needs a shell.
-FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:4253663c9342a83ec8d24e4218ad3cade3acbc45627aa9b19b126b752595d492 AS builder
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:d79d09abf199ae85fbcf730e64c5eb251b3591bc925fea3c5d3d0d74b3ed06e8 AS builder
 
 WORKDIR /app
 
@@ -72,7 +72,7 @@ RUN mkdir -p /empty-owned
 # Stage 3: Production (nginx)
 # =============================================================================
 # Hardened nginx image from the org GHCR mirror of Docker Hardened Images (DHI).
-FROM ghcr.io/byronwilliamscpa/dhi-nginx:1.26-debian13@sha256:6b0137dc31dcff3c86854e3d9bbafb33201a6b0b83c44ecb0f4f6f092d68a7f4 AS production
+FROM ghcr.io/byronwilliamscpa/dhi-nginx:1.26-debian13@sha256:e1ba0ac678080344c90418af1982d8b55d2c9c96275d8a7b0d5f0df65856b014 AS production
 
 # Metadata labels
 LABEL org.opencontainers.image.title="CYO Adventure Frontend"
@@ -131,7 +131,7 @@ CMD ["-g", "daemon off;"]
 # Same -dev rationale as the deps stage above: `npm ci` / `npm run dev` need a
 # shell, and this stage runs interactively in docker-compose dev, not just at
 # build time, so the shell also has to be there at container runtime.
-FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:4253663c9342a83ec8d24e4218ad3cade3acbc45627aa9b19b126b752595d492 AS development
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:d79d09abf199ae85fbcf730e64c5eb251b3591bc925fea3c5d3d0d74b3ed06e8 AS development
 
 WORKDIR /app
 
