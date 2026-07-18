@@ -3220,9 +3220,9 @@ decoded Storybook JSON document. It orchestrates four layers in a fixed order.</
 <li><strong>Layer 1 (L1-1..L1-7): graph structure and schema</strong> (always runs first)</li>
 <li><strong>Early exit on any L1 ERROR</strong>: the graph must be structurally sound before a
    state-space walk is meaningful; an L1 error means the document may not even parse.</li>
-<li><strong>Policy (PL-15..PL-21): age-safety and story-scale invariants</strong> (ADR-011; forbidden
-   ending kinds, content-flag ceilings, breadth/depth floors, scale coverage). ERROR-severity
-   PL findings block.</li>
+<li><strong>Policy (PL-15..PL-22): age-safety and story-scale invariants</strong> (ADR-011; forbidden
+   ending kinds, content-flag ceilings, breadth/depth floors, scale coverage, plus PL-22
+   which fails closed when no band profile is configured). ERROR-severity PL findings block.</li>
 <li><strong>Layer 2 (L2-9..L2-12): state-space walk</strong> (Tier-2 stories only; Tier-1 short-circuits)</li>
 <li><strong>RL-13: advisory reading-level check</strong> (WARNING severity, never blocks)</li>
 <li><strong>SAFE-14: safety content check</strong> (Phase 2 stub, always empty)</li>
@@ -3246,27 +3246,27 @@ never block. SAFE-14 findings route to human review via <code>safety_flagged</co
 </tr>
 <tr>
 <td>L1-2</td>
-<td><code>start_node</code> exists in the node list</td>
+<td>Id uniqueness, <code>start_node</code> exists, and every choice target resolves (no dangling edges)</td>
 </tr>
 <tr>
 <td>L1-3</td>
-<td>All nodes are reachable from <code>start_node</code> (networkx)</td>
+<td>All nodes are reachable from <code>start_node</code> (BFS)</td>
 </tr>
 <tr>
 <td>L1-4</td>
-<td>At least one ending node exists</td>
+<td>Termination well-formedness: ending nodes are childless with an ending block; non-ending nodes have &gt;=1 choice and a path to an ending</td>
 </tr>
 <tr>
 <td>L1-5</td>
-<td>No choice targets a non-existent node (no dangling edges)</td>
+<td>Trap-loop detection: every non-trivial cycle (strongly connected component) can still reach an ending</td>
 </tr>
 <tr>
 <td>L1-6</td>
-<td>Variable usage is consistent (inc/dec on declared int vars only)</td>
+<td>Variable/condition/effect whitelist: declared int vars only, whitelisted operators, tier rule</td>
 </tr>
 <tr>
 <td>L1-7</td>
-<td>Story depth budget not exceeded</td>
+<td>Budget: <code>ending_count</code> matches the distinct-ending count, node-count band, and max branch depth</td>
 </tr>
 </tbody>
 </table>
@@ -3282,11 +3282,19 @@ never block. SAFE-14 findings route to human review via <code>safety_flagged</co
 <tbody>
 <tr>
 <td>L2-9</td>
-<td>Every reachable path eventually reaches an ending</td>
+<td>Stateful dead-end: a reachable non-ending configuration with zero visible choices</td>
 </tr>
 <tr>
-<td>L2-10..L2-12</td>
-<td>Reachability properties under variable conditions (BFS over state space)</td>
+<td>L2-10</td>
+<td>Loop escape: an ending stays reachable from every reachable configuration</td>
+</tr>
+<tr>
+<td>L2-11</td>
+<td>Dead branch: a conditional choice that is never visible in any reachable configuration</td>
+</tr>
+<tr>
+<td>L2-12</td>
+<td>Walk-cap ceiling: the reachable-configuration set stayed within the complexity bound</td>
 </tr>
 </tbody>
 </table>
@@ -3369,6 +3377,14 @@ yields a 409, the client presents a conflict resolution UI per <code>docs/design
 <td>L1-1..L1-7 graph rules (networkx)</td>
 </tr>
 <tr>
+<td><code>src/cyo_adventure/validator/policy.py</code></td>
+<td>PL-15..PL-22 age/scale policy (ADR-011; PL-22 fails closed on an unconfigured band)</td>
+</tr>
+<tr>
+<td><code>src/cyo_adventure/validator/band_profile.py</code></td>
+<td>Per-age-band budgets, content ceilings, ending/decision floors</td>
+</tr>
+<tr>
 <td><code>src/cyo_adventure/validator/layer2.py</code></td>
 <td>L2-9..L2-12 state-space walk</td>
 </tr>
@@ -3382,7 +3398,7 @@ yields a 409, the client presents a conflict resolution UI per <code>docs/design
 </tr>
 <tr>
 <td><code>src/cyo_adventure/validator/walk.py</code></td>
-<td>BFS/DFS state-space walker</td>
+<td><code>walk_configurations()</code> BFS state-space walker</td>
 </tr>
 <tr>
 <td><code>src/cyo_adventure/validator/report.py</code></td>
@@ -3395,6 +3411,10 @@ yields a 409, the client presents a conflict resolution UI per <code>docs/design
 <tr>
 <td><code>src/cyo_adventure/player/state.py</code></td>
 <td><code>ReadingState</code> dataclass</td>
+</tr>
+<tr>
+<td><code>src/cyo_adventure/player/replay.py</code></td>
+<td><code>validate_reading_state()</code> server-side save gate</td>
 </tr>
 <tr>
 <td><code>src/cyo_adventure/storybook/models.py</code></td>
@@ -3462,7 +3482,7 @@ yields a 409, the client presents a conflict resolution UI per <code>docs/design
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 18, 2026 00:28:02 UTC">July 18, 2026</span>
   </span>
 
     

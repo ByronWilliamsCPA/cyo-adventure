@@ -3364,14 +3364,14 @@ a more mechanical altitude.</p>
   <code>frontend/src/router.tsx</code>), the <strong>Admin</strong> holds the mandatory
   approval gate, and <strong>System</strong> collapses the behind-the-scenes generation and
   safety work into user-facing waits.</li>
-<li><strong>Node fill marks maturity.</strong> White nodes are shipped in the app today.
-  Rose nodes are planned target-state steps that are not yet built, so the
-  diagram doubles as a gap map. The unbuilt steps line up with the gaps tracked
-  in the R1 deployment review.</li>
-<li><strong>Primary path is child-initiated.</strong> The diagram shows the intended future
-  where a child asks for a story and the guardian approves the request. Today
-  the entry point is reversed: a guardian starts requests from the Intake page.
-  See the note under Act 2.</li>
+<li><strong>Node fill marks maturity.</strong> White nodes are shipped in the app today; rose
+  is the key for a planned, not-yet-built step. Every step in the current
+  end-to-end loop is shipped, so the diagram carries no rose nodes now; the key
+  is retained for future additions.</li>
+<li><strong>Primary path is child-initiated.</strong> A child asks for a story from their
+  library and a guardian (or an admin) approves the request; this path is
+  shipped (WS-B). A guardian can also start a request directly from the Intake
+  page. See Act 2.</li>
 </ul>
 <h2 id="the-journey-act-by-act">The journey, act by act<a class="headerlink" href="#the-journey-act-by-act" title="Permanent link">&para;</a></h2>
 <p>Each act below names the real screen or route it maps to and whether it is
@@ -3403,14 +3403,15 @@ the adult subtree from kid mode, or on a cold session. See
 mechanics and <a href="../diagrams/sitemap-and-flows.svg">sitemap-and-flows</a> for the full
 route map and the two boundary crossings (<code>DeviceAuthorizedRoute</code>, <code>AdultGate</code>).</p>
 <h3 id="act-2-requesting-a-story">Act 2: Requesting a story<a class="headerlink" href="#act-2-requesting-a-story" title="Permanent link">&para;</a></h3>
-<p><strong>Target state (primary path, planned):</strong> a child opens the kid app, taps their
-avatar on the Profile Picker (<code>/</code>), taps "I want a new story," and says what it
-is about. That request surfaces to the guardian, who approves or tweaks it.</p>
-<p><strong>Shipped today:</strong> the request is guardian-initiated. A guardian uses the Intake
-page (<code>/guardian/intake</code>) with "Who's it for?" first, then a topic and tone,
-then "Request Story." The child-tap entry point and the guardian
-request-approval step (the two rose nodes in Act 2) are the not-yet-built delta
-between these two flows.</p>
+<p><strong>Child-initiated (primary path, shipped):</strong> a child opens the kid app, picks
+their avatar (<code>/kids</code>), opens their Library (<code>/library/:profileId</code>), taps
+"Request a story," and says what it is about. That request surfaces to a
+guardian (or an admin), who approves or declines it at <code>/guardian/requests</code>
+(guardian-own-family) or <code>/admin/requests</code> (admin, cross-family). Approval
+builds a <code>Concept</code> and enqueues generation (WS-B).</p>
+<p><strong>Guardian-initiated (also shipped):</strong> a guardian can instead author a request
+directly from the Intake page (<code>/guardian/intake</code>) with "Who's it for?" first,
+then a topic and tone, then "Request Story." Both entry points are live.</p>
 <h3 id="act-3-behind-the-scenes">Act 3: Behind the scenes<a class="headerlink" href="#act-3-behind-the-scenes" title="Permanent link">&para;</a></h3>
 <p>The system writes the story through a staged pipeline with a provider fallback
 cascade, then runs a deterministic safety check that flags risky passages. To
@@ -3422,8 +3423,8 @@ For the engineering detail behind this lane, see the
 <p>This is the single mandatory checkpoint before any story reaches a child. In the
 Admin Console (<code>/admin</code>, the parallel adult surface for the admin capability),
 the review queue is ordered Flagged, then Ready to review, then Still
-processing. Opening a story (<code>/admin/review/:id</code>) surfaces its flagged passages
-first, then the full text. The reviewer either <strong>approves</strong> or <strong>sends it
+processing. Opening a story (<code>/admin/review/:storybookId</code>) surfaces its flagged
+passages first, then the full text. The reviewer either <strong>approves</strong> or <strong>sends it
 back</strong> with a note; a sent-back story is rewritten and re-enters the queue (the
 inner loop in the diagram).</p>
 <p>The approve action is the recorded human gate required by
@@ -3433,6 +3434,21 @@ One adult may hold both roles (guardian plus the <code>is_admin</code> capabilit
 switches between <code>/guardian</code> and <code>/admin</code> via the shell nav. The diagram places
 the whole review-and-approve sequence in the Admin lane to keep that gate
 visually unambiguous.</p>
+<p>Beyond this approval gate, the admin console also holds cross-family and
+operational surfaces this journey does not draw: the master library
+(<code>/admin/library</code>: every storybook in any status, cross-family, #277), user
+management (<code>/admin/users</code>: guardians/admins, child profiles, families, and
+directional family connections; WS-J #267), the authoring queue
+(<code>/admin/authoring-queue</code>), the moderation dashboard and thresholds, the
+provider allowlist (<code>/admin/provider-allowlist</code>), and the audit log
+(<code>/admin/audit</code>). See <a href="../diagrams/sitemap-and-flows.svg">sitemap-and-flows</a> for
+the full admin map.</p>
+<p>Newer family-facing surfaces (ADR-015/016/017, #270) that the acts above do not
+yet trace: a guardian notification bell and a <code>/guardian/reading</code> visibility
+page, cross-family connection consent (<code>/guardian/connections</code>), recommendation
+chips on the kid library, kid passage flagging in the reader (which files a
+<code>kid_flag</code> for admin review), and a prose-only passage editor on the admin
+review surface that re-runs the validation gate and moderation on every edit.</p>
 <h3 id="act-5-assignment">Act 5: Assignment<a class="headerlink" href="#act-5-assignment" title="Permanent link">&para;</a></h3>
 <p>An approved story is assigned to the child it was written for; "Assign more"
 widens it to siblings without re-requesting. On the kid surface, the child's
@@ -3473,14 +3489,14 @@ onboarding in Act 1 is not repeated.</p>
 <td>Shipped</td>
 </tr>
 <tr>
-<td>Child taps "I want a new story"</td>
-<td>Profile Picker (<code>/</code>)</td>
-<td>Planned</td>
+<td>Child requests a story</td>
+<td>Library (<code>/library/:profileId</code>)</td>
+<td>Shipped</td>
 </tr>
 <tr>
-<td>Guardian approves the child's request</td>
-<td>(new)</td>
-<td>Planned</td>
+<td>Guardian/admin approves the child's request</td>
+<td><code>/guardian/requests</code>, <code>/admin/requests</code></td>
+<td>Shipped</td>
 </tr>
 <tr>
 <td>Generation + safety validation</td>
@@ -3581,12 +3597,14 @@ arrows are the only edges that cost a credential check.</p>
 the journey doubles as a Playwright/e2e gap map. It is the diagram to consult
 when deciding what e2e tests to write next.</p>
 <blockquote>
-<p><strong>Deferred (2026-07-13):</strong> this diagram derives its backbone from
-<code>journey-end-to-end.puml</code> and has not been re-synced for the ADR-014 device-
-authorization and single-AdultGate changes above. Its coverage coloring is
-still accurate for the steps it shows; only the not-yet-recolored device-grant
-and step-up-boundary steps are the gap. Refresh it alongside the next e2e
-coverage pass rather than as part of this diagram update.</p>
+<p><strong>Interim (updated 2026-07-17):</strong> this diagram derives its backbone from
+<code>journey-end-to-end.puml</code>. Its coverage coloring is accurate for the
+request -&gt; approve -&gt; read loop it shows, but the backbone has not been
+re-drawn to add the ADR-014 device-grant / AdultGate steps or the WS-J admin
+surfaces (user management #267, authoring queue #268, moderation
+dashboard/thresholds, provider allowlist). Those surfaces now have their own
+e2e specs (see the diagram's coverage-sources note); refresh the backbone
+alongside the next e2e coverage pass rather than as part of this update.</p>
 </blockquote>
 <ul>
 <li><strong>Green</strong> steps are exercised end-to-end by a Playwright spec under
@@ -3613,9 +3631,12 @@ coverage pass rather than as part of this diagram update.</p>
   <code>npm run test:e2e:real</code> (runbook: <code>frontend/README.md</code>).</li>
 <li>The reader <strong>409-conflict reconciliation</strong> path, once amber, now has a
   dedicated spec covering both reconciliation outcomes.</li>
-<li>One residual gap: the offline-queue <strong>reconnect flush</strong> is untested because
-  it is unimplemented, <code>replayQueue</code> is never invoked by app code. See
-  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/110">issue #110</a>.</li>
+<li>The offline-queue <strong>reconnect flush</strong> is implemented and tested:
+  <code>replayQueue()</code> is invoked by <code>hooks/useReplayOnReconnect.ts</code> (mounted in
+  <code>reader/ReaderRoute.tsx</code>) on reconnect, with unit coverage in
+  <code>useReplayOnReconnect.test.ts</code> and the reconciliation path in
+  <code>e2e/reader-conflict.spec.ts</code>. This supersedes an earlier note that called it
+  unimplemented (issue #110).</li>
 </ul>
 <table>
 <thead>
@@ -3692,7 +3713,7 @@ coverage pass rather than as part of this diagram update.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 14, 2026 15:01:05 UTC">July 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 18, 2026 00:28:02 UTC">July 18, 2026</span>
   </span>
 
     

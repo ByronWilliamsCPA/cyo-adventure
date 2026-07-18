@@ -110,10 +110,10 @@ repeat :take the top item;
   :Open the review queue
   (Flagged, then Ready,
   then Still processing);
-  note right: /guardian  (Console)  •  shipped
+  note right: /admin  (Review queue)  •  shipped\n(moved from the guardian console to /admin)
   :Read the flagged passages,
   then the full story;
-  note right: /guardian/review/:id  •  shipped
+  note right: /admin/review/:storybookId  •  shipped
 backward:Send back with a note
 -> the story is rewritten;
 repeat while (Safe for a child?) is (no) not (yes -> approve)

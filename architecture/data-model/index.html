@@ -1343,6 +1343,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#family_connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        family_connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#series" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1523,6 +1534,17 @@
     <span class="md-ellipsis">
       
         provider_model_allowlist_audit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kid_flag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kid_flag
       
     </span>
   </a>
@@ -3137,6 +3159,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#family_connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        family_connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#series" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3323,6 +3356,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#kid_flag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kid_flag
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3361,22 +3405,11 @@
 
   <h1>Data Model</h1>
 
-<p>CYO Adventure has twenty PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+<p>CYO Adventure has twenty-two PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (<code>supabase/migrations/</code>,
 ADR-012; Alembic retired). All timestamps are <code>TIMESTAMP WITH TIME ZONE</code>. Enum-like
 columns (<code>role</code>, <code>status</code>, <code>age_band</code>) are stored as strings and validated at the
 application boundary, which keeps schema migrations simple and avoids enum-type churn.</p>
-<blockquote>
-<p><strong>Note (2026-07-13, further behind since 2026-07-10):</strong> the ER diagram
-(<code>docs/architecture/diagrams/er-diagram.puml</code>) has been regenerated to add
-<code>device_grant</code> (ADR-014, the newest table, added 2026-07-13), but the ten tables
-called out in the 2026-07-10 pass are still missing from it: <code>series</code>, <code>rating</code>,
-<code>storybook_assignment</code>, <code>story_request</code>, <code>moderation_threshold</code>,
-<code>moderation_threshold_audit</code>, <code>moderation_setting</code>, <code>pipeline_event</code>,
-<code>provider_model_allowlist</code>, <code>provider_model_allowlist_audit</code>. It also still needs
-the new columns on <code>storybook</code>, <code>storybook_version</code>, and <code>generation_job</code>. The
-table reference below is authoritative in the meantime.</p>
-</blockquote>
 <h2 id="entity-relationship-diagram">Entity-Relationship Diagram<a class="headerlink" href="#entity-relationship-diagram" title="Permanent link">&para;</a></h2>
 <p><img alt="ER Diagram" src="../diagrams/er-diagram.svg" /></p>
 <h2 id="table-reference">Table Reference<a class="headerlink" href="#table-reference" title="Permanent link">&para;</a></h2>
@@ -3404,14 +3437,26 @@ data.</p>
 <td>Display name</td>
 </tr>
 <tr>
+<td>monthly_story_quota</td>
+<td>INT NULL</td>
+<td>ADR-015 cost gate: per-family monthly spend ceiling; NULL uses the platform default (<code>settings.default_monthly_story_quota</code>), never unlimited. CHECK <code>ck_family_monthly_story_quota_non_negative</code></td>
+</tr>
+<tr>
 <td>created_at</td>
 <td>TIMESTAMPTZ</td>
 <td>Server default</td>
 </tr>
+<tr>
+<td>deactivated_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>Soft-deactivate; cascades to member users/profiles in the same transaction (reactivation is manual, not cascaded)</td>
+</tr>
 </tbody>
 </table>
 <h3 id="user"><code>user</code><a class="headerlink" href="#user" title="Permanent link">&para;</a></h3>
-<p>An authenticated user within a family. Role is <code>guardian</code>, <code>child</code>, or <code>admin</code>.</p>
+<p>An authenticated user within a family. <code>role</code> is the single base persona
+(<code>guardian</code>, <code>child</code>, or <code>admin</code>); the orthogonal <code>is_admin</code> flag is a capability, so
+one adult can be a guardian, an admin, or both.</p>
 <table>
 <thead>
 <tr>
@@ -3437,9 +3482,19 @@ data.</p>
 <td><code>guardian</code>, <code>child</code>, or <code>admin</code></td>
 </tr>
 <tr>
+<td>is_admin</td>
+<td>BOOLEAN</td>
+<td>Global admin capability, orthogonal to role; default false. CHECKs keep it off child rows and force it true for the admin role</td>
+</tr>
+<tr>
 <td>authn_subject</td>
 <td>VARCHAR(255) UNIQUE</td>
-<td>OIDC <code>sub</code> claim</td>
+<td>OIDC <code>sub</code> claim; the sole identity key</td>
+</tr>
+<tr>
+<td>email</td>
+<td>VARCHAR(320) NULL</td>
+<td>Contact only (Supabase email claim); never an identity key, nullable</td>
 </tr>
 <tr>
 <td>child_profile_id</td>
@@ -3450,6 +3505,11 @@ data.</p>
 <td>created_at</td>
 <td>TIMESTAMPTZ</td>
 <td></td>
+</tr>
+<tr>
+<td>status</td>
+<td>VARCHAR(16)</td>
+<td><code>pending</code> (admin-created invite), <code>active</code> (default), or <code>deactivated</code> (blocks auth; row and history preserved)</td>
 </tr>
 </tbody>
 </table>
@@ -3496,6 +3556,11 @@ data.</p>
 <td>Per-flag content permissions</td>
 </tr>
 <tr>
+<td>banned_themes</td>
+<td>JSONB NULL</td>
+<td>G2 guardian-set theme exclusions; NULL means none (not <code>[]</code>)</td>
+</tr>
+<tr>
 <td>tts_enabled</td>
 <td>BOOLEAN</td>
 <td>TTS feature flag</td>
@@ -3506,12 +3571,101 @@ data.</p>
 <td></td>
 </tr>
 <tr>
+<td>pin_hash</td>
+<td>TEXT NULL</td>
+<td>Write-only PIN credential (<code>pbkdf2_sha256</code>); never serialized (views expose a <code>has_pin</code> bool)</td>
+</tr>
+<tr>
+<td>request_auto_approve</td>
+<td>BOOLEAN</td>
+<td>ADR-015 G3 per-child pre-authorization; default false</td>
+</tr>
+<tr>
+<td>monthly_request_envelope</td>
+<td>INT NULL</td>
+<td>ADR-015 G3 monthly auto-approve cap; NULL blocks auto-approval (never unlimited). CHECK <code>ck_child_profile_monthly_request_envelope_non_negative</code></td>
+</tr>
+<tr>
 <td>created_at</td>
 <td>TIMESTAMPTZ</td>
 <td></td>
 </tr>
+<tr>
+<td>deactivated_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>Soft-remove (WS-J); excluded from pickers/listings and session mint, history preserved</td>
+</tr>
 </tbody>
 </table>
+<h3 id="family_connection"><code>family_connection</code><a class="headerlink" href="#family_connection" title="Permanent link">&para;</a></h3>
+<p>A directional cross-family opt-in for story recommendations (WS-J, ADR-016). <code>family_id</code>
+is the "viewer" family that opted in to seeing stories sourced from <code>connected_family_id</code>;
+the relationship is deliberately one-way, so mutual visibility is two rows, not one.
+<code>api/recommendations.py</code> (K17) is the reader: a connection contributes recommendations
+only when both guardians have consented (see the consent columns below).</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID PK</td>
+<td></td>
+</tr>
+<tr>
+<td>family_id</td>
+<td>UUID FK</td>
+<td>family.id; the viewer family that opted in</td>
+</tr>
+<tr>
+<td>connected_family_id</td>
+<td>UUID FK</td>
+<td>family.id; the source family whose stories may be recommended</td>
+</tr>
+<tr>
+<td>created_by</td>
+<td>UUID FK NULL</td>
+<td>user.id of the admin who created the connection</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMPTZ</td>
+<td>Server default</td>
+</tr>
+<tr>
+<td>consented_by_viewer_user_id</td>
+<td>UUID FK NULL</td>
+<td>user.id of the viewer-side guardian who consented (ADR-016 G17); NULL if not (or no longer) consented</td>
+</tr>
+<tr>
+<td>consented_by_viewer_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>When viewer consent was recorded; paired with the id column (both NULL or both set)</td>
+</tr>
+<tr>
+<td>consented_by_sharer_user_id</td>
+<td>UUID FK NULL</td>
+<td>user.id of the sharer-side guardian who consented</td>
+</tr>
+<tr>
+<td>consented_by_sharer_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>When sharer consent was recorded; paired with the id column</td>
+</tr>
+</tbody>
+</table>
+<p>A unique constraint on <code>(family_id, connected_family_id)</code> and a check constraint
+<code>family_id &lt;&gt; connected_family_id</code> prevent duplicate rows and self-connections. A
+connection is active (and contributes to K17 recommendations) only when both consent
+id/at pairs are set; either guardian may revoke by clearing their own pair. Two CHECKs
+(<code>ck_family_connection_viewer_consent_pairing</code>, <code>ck_family_connection_sharer_consent_pairing</code>)
+enforce the null-pairing, and a partial index <code>ix_family_connection_active_viewer</code> backs
+the active-viewer lookup.</p>
 <h3 id="series"><code>series</code><a class="headerlink" href="#series" title="Permanent link">&para;</a></h3>
 <p>A named, family-owned chain of storybooks (WS-B PR 3, decision B2). DB-level linkage
 only: books reference a series via <code>storybook.series_id</code>/<code>book_index</code>; the embedded
@@ -4105,6 +4259,11 @@ family-scope authz check stay single-table.</p>
 <td></td>
 </tr>
 <tr>
+<td>approved_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>When the request entered <code>approved</code> specifically (ADR-015 spend derivation); distinct from <code>reviewed_at</code>; NULL unless approved</td>
+</tr>
+<tr>
 <td>concept_id</td>
 <td>UUID FK NULL</td>
 <td>concept.id created on approval</td>
@@ -4414,7 +4573,7 @@ trigger created in the migration; the ORM never updates or deletes them.
 <tr>
 <td>entity_type</td>
 <td>VARCHAR(32)</td>
-<td><code>story_request</code>, <code>generation_job</code>, <code>storybook</code>, <code>storybook_version</code>, <code>series</code>, <code>storybook_assignment</code>, <code>rating</code>, <code>moderation_threshold</code>, or <code>moderation_setting</code></td>
+<td><code>story_request</code>, <code>generation_job</code>, <code>storybook</code>, <code>storybook_version</code>, <code>series</code>, <code>storybook_assignment</code>, <code>rating</code>, <code>moderation_threshold</code>, <code>moderation_setting</code>, <code>kid_flag</code>, <code>user</code>, <code>family</code>, or <code>family_connection</code></td>
 </tr>
 <tr>
 <td>entity_id</td>
@@ -4424,7 +4583,7 @@ trigger created in the migration; the ORM never updates or deletes them.
 <tr>
 <td>event_type</td>
 <td>VARCHAR(48)</td>
-<td>One of 14 lifecycle event types (<code>request_created</code>, <code>request_approved</code>, <code>request_declined</code>, <code>plan_assigned</code>, <code>generation_started</code>, <code>generation_finished</code>, <code>moderation_completed</code>, <code>repair_applied</code>, <code>sent_back</code>, <code>released</code>, <code>threshold_changed</code>, <code>noise_floor_changed</code>, <code>book_assigned</code>, <code>rated</code>)</td>
+<td>One of 20 lifecycle event types (<code>request_created</code>, <code>request_approved</code>, <code>request_declined</code>, <code>plan_assigned</code>, <code>generation_started</code>, <code>generation_finished</code>, <code>moderation_completed</code>, <code>repair_applied</code>, <code>sent_back</code>, <code>released</code>, <code>threshold_changed</code>, <code>noise_floor_changed</code>, <code>book_assigned</code>, <code>rated</code>, <code>user_managed</code>, <code>family_managed</code>, <code>family_connection_changed</code>, <code>kid_flagged</code>, <code>flag_resolved</code>, <code>node_edited</code>)</td>
 </tr>
 <tr>
 <td>from_state</td>
@@ -4560,6 +4719,86 @@ mirroring <code>moderation_threshold_audit</code>.</p>
 </tr>
 </tbody>
 </table>
+<h3 id="kid_flag"><code>kid_flag</code><a class="headerlink" href="#kid_flag" title="Permanent link">&para;</a></h3>
+<p>A child's structured "I didn't like this / this scared me" signal (K15). Feeds the
+admin moderation queue (A1) directly and, downstream, a guardian alert feed (G10) as a
+<code>pipeline_event</code> projection built separately (this table does not itself notify a
+guardian). <code>family_id</code> is denormalized from the flagging profile (mirrors
+<code>story_request.family_id</code>) so the admin queue stays single-table. Per ADR-016's
+no-free-text principle a flag carries no child-authored prose: <code>reason</code> is a closed
+vocabulary and <code>node_id</code> is a story-graph node id, so there is nothing to moderate
+before an adult sees it.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID PK</td>
+<td></td>
+</tr>
+<tr>
+<td>family_id</td>
+<td>UUID FK</td>
+<td>family.id; denormalized from the flagging profile</td>
+</tr>
+<tr>
+<td>profile_id</td>
+<td>UUID FK</td>
+<td>child_profile.id; the flagging child</td>
+</tr>
+<tr>
+<td>storybook_id</td>
+<td>VARCHAR(120) FK</td>
+<td>storybook.id; also half of the composite FK below</td>
+</tr>
+<tr>
+<td>version</td>
+<td>INT</td>
+<td>Storybook version read; composite FK <code>(storybook_id, version)</code> -&gt; storybook_version</td>
+</tr>
+<tr>
+<td>reason</td>
+<td>VARCHAR(16)</td>
+<td><code>did_not_like</code>, <code>scared_me</code>, or <code>confusing</code> (<code>ck_kid_flag_reason</code>)</td>
+</tr>
+<tr>
+<td>node_id</td>
+<td>VARCHAR(120) NULL</td>
+<td>Story-graph node id being read when flagged; never prose</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMPTZ</td>
+<td>Server default</td>
+</tr>
+<tr>
+<td>resolved_by</td>
+<td>UUID FK NULL</td>
+<td>user.id of admin who resolved; NULL while open</td>
+</tr>
+<tr>
+<td>resolved_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>NULL while open</td>
+</tr>
+<tr>
+<td>resolution</td>
+<td>VARCHAR(16) NULL</td>
+<td><code>dismissed</code>, <code>archived_book</code>, or <code>noted</code> (<code>ck_kid_flag_resolution</code>); NULL while open</td>
+</tr>
+</tbody>
+</table>
+<p>A composite foreign key <code>(storybook_id, version)</code> references <code>storybook_version</code>. Check
+constraints enforce the closed <code>reason</code>/<code>resolution</code> vocabularies and pair
+<code>resolved_by</code>/<code>resolved_at</code> (<code>ck_kid_flag_resolved_pairing</code>, both NULL or both set). An
+index <code>ix_kid_flag_resolved_created (resolved_at, created_at)</code> backs the admin
+"open flags" queue.</p>
 <h2 id="authorization-pattern">Authorization Pattern<a class="headerlink" href="#authorization-pattern" title="Permanent link">&para;</a></h2>
 <p>Family ownership is checked on every resource. The <code>Principal</code> in <code>api/deps.py</code> carries
 <code>family_id</code> and <code>profile_ids</code>. Every endpoint calls <code>authorize_family()</code> and/or
@@ -4587,7 +4826,7 @@ mirroring <code>moderation_threshold_audit</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 14, 2026 15:01:05 UTC">July 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 18, 2026 00:28:02 UTC">July 18, 2026</span>
   </span>
 
     

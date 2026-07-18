@@ -43,14 +43,14 @@ participant "Ollama\n[leg 3: local fallback]" as ol_provider
 participant "Validator Gate\ngate.py" as gate
 database "PostgreSQL\nGenerationJob" as pg
 
-guardian -> api : "POST /concepts/{id}/generate\n(bearer token)"
+guardian -> api : "POST /api/v1/concepts/{id}/generate\n(bearer token)"
 api -> pg : "INSERT GenerationJob\nstatus='queued'"
 api -> api : "BackgroundTask:\n_enqueue_safely(job_id)"
 api --> guardian : "202 Accepted\n{job_id, status:'queued'}"
 api -> worker : "[RQ] enqueue job_id"
 
 worker -> pg : "UPDATE status='running'"
-worker -> orch : "generate_story(brief,\nprovider=PiiGuardedProvider(fallback),\npii)"
+worker -> orch : "generate_story(brief, provider=fallback, pii)\n(orch wraps it in PiiGuardedProvider internally)"
 
 ' --- Stage A ---
 orch -> prompts : "build_structure_prompt(brief)"
@@ -136,7 +136,15 @@ else failed: blocked, no parseable doc produced
   worker -> pg : "UPDATE status='failed', error=..."
 end
 
-guardian -> api : "GET /generation-jobs/{job_id}"
+note over worker,pg
+  Post-outcome (persist-eligible passed / needs_review): the worker also runs
+  persist_storybook() (INSERT Storybook + StorybookVersion),
+  run_moderation_pipeline() (post-persist review, ADR-005),
+  embed_series_block() for continuations, and record_event(GENERATION_STARTED /
+  GENERATION_FINISHED). See component-generation.puml + component-events.puml.
+end note
+
+guardian -> api : "GET /api/v1/generation-jobs/{job_id}"
 api -> pg : "SELECT GenerationJob"
 api --> guardian : "{status, report, storybook_id}"
 

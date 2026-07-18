@@ -1300,6 +1300,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#skeleton-fill-alternate-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skeleton Fill (alternate method)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#provider-fallback-cascade" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3032,6 +3043,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#skeleton-fill-alternate-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skeleton Fill (alternate method)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#provider-fallback-cascade" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3098,7 +3120,8 @@
   <h1>Generation Pipeline</h1>
 
 <p>CYO Adventure generates stories through a three-stage pipeline that turns a
-guardian-authored <code>ConceptBrief</code> into a validated <code>Storybook</code> JSON document.
+<code>ConceptBrief</code> (built at the guardian cost gate from a child wish, a guardian brief, or
+an admin catalog seed) into a validated <code>Storybook</code> JSON document.
 The pipeline runs asynchronously in an RQ worker process so long-running LLM
 calls do not block the API.</p>
 <h2 id="component-view">Component View<a class="headerlink" href="#component-view" title="Permanent link">&para;</a></h2>
@@ -3170,12 +3193,24 @@ with full narrative prose without restructuring the graph.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="skeleton-fill-alternate-method">Skeleton Fill (alternate method)<a class="headerlink" href="#skeleton-fill-alternate-method" title="Permanent link">&para;</a></h2>
+<p>Fresh three-stage generation (<code>generate_story()</code>) is one of two methods. The other,
+<code>fill_skeleton()</code> (<code>orchestrator.py</code>, driven by <code>worker.py::_run_skeleton_fill</code>), fills a
+pre-authored skeleton library file's <code>&lt;&lt;FILL ...&gt;&gt;</code> directives instead of building a
+story graph from scratch. It runs its own bounded Stage-1 fidelity gate and repair loop
+(a fidelity violation downgrades the outcome), then hands off to the same validator gate
+and the same outcome mapping above. The worker selects the method per job; the cell-aware
+skeleton <em>selection</em> happens earlier, at plan time in
+<code>story_requests/authoring_plan.py</code>. A <code>mechanism="skill"</code> skeleton-fill job is parked at
+<code>awaiting_manual_fill</code> for an offline human/skill fill and resumed later via
+<code>generation/import_story.py</code>. See
+<a href="../diagrams/component-generation.svg">component-generation</a> for both methods.</p>
 <h2 id="provider-fallback-cascade">Provider Fallback Cascade<a class="headerlink" href="#provider-fallback-cascade" title="Permanent link">&para;</a></h2>
 <p>The provider is a three-layer failure model:</p>
 <p><strong>Layer 1 (per adapter):</strong> Each <code>OpenRouterProvider</code> or <code>OllamaProvider</code> retries
 transient failures (connection errors, HTTP 429, HTTP 5xx) against the <strong>same</strong> model
-with exponential backoff. Leg-fatal errors (HTTP 401/400/402 for OpenRouter) are not
-retried.</p>
+with exponential backoff. Leg-fatal errors (HTTP 400/401/402/403/404 for OpenRouter, where
+404 is a churned/unavailable model, the case the fallback leg exists for) are not retried.</p>
 <p><strong>Layer 2 (<code>FallbackProvider</code>):</strong> The cascade holds an ordered list of legs. On a
 <code>ProviderError</code> from one leg, it fails over to the next. Leg-fatal errors mark the
 leg dead for the rest of the run (circuit breaker). A global per-run attempt cap
@@ -3183,14 +3218,25 @@ leg dead for the rest of the run (circuit breaker). A global per-run attempt cap
 <p><strong>Layer 3 (orchestrator repair loop):</strong> A gate-blocked but valid response is a
 <strong>content</strong> failure, not a provider failure. The repair loop handles it; <code>FallbackProvider</code>
 never sees it as an error.</p>
-<p><strong>PII invariant:</strong> The orchestrator runs <code>assert_prompt_pii_safe()</code> before every
-<code>provider.complete()</code> call. A <code>ValidationError</code> from the PII guard propagates straight
-through <code>FallbackProvider</code> uncaught (only <code>ProviderError</code> is caught). This means a PII
-violation can never be retried or failed over.</p>
+<p><strong>PII invariant:</strong> The orchestrator wraps the resolved provider in a
+<code>PiiGuardedProvider</code> (<code>generation/guarded.py</code>), so <code>assert_prompt_pii_safe()</code> runs on the
+prompt blocks of every <code>complete()</code> call structurally, not as a separate orchestrator
+step. A <code>ValidationError</code> from the PII guard propagates straight through
+<code>FallbackProvider</code> uncaught (only <code>ProviderError</code> is caught). This means a PII violation
+can never be retried or failed over.</p>
 <h2 id="guardian-only-authoring-endpoints">Guardian-Only Authoring Endpoints<a class="headerlink" href="#guardian-only-authoring-endpoints" title="Permanent link">&para;</a></h2>
-<p>All four generation endpoints (<code>POST /concepts</code>, <code>POST /concepts/{id}/generate</code>,
-<code>GET /generation-jobs/{id}</code>, <code>POST /storybooks/{id}/versions/{v}/validate</code>) require the
-guardian role. Child tokens receive 403 immediately before any DB access.</p>
+<p>The generation router exposes six endpoints. Five require the guardian role
+(<code>POST /concepts</code>, <code>POST /concepts/{id}/generate</code>, <code>GET /generation-jobs</code>,
+<code>GET /generation-jobs/{id}</code>, <code>POST /storybooks/{id}/versions/{v}/validate</code>); a sixth,
+<code>POST /admin/generation-jobs/{id}/force-fail</code>, requires the admin capability. On
+<code>GET /generation-jobs/{id}</code> the raw validator report is returned only to admins (a plain
+guardian sees <code>report=null</code>). Child tokens receive 403 before any DB access.</p>
+<p><strong>Family cost gate (ADR-015).</strong> Before any spend, <code>enqueue_concept_generation</code> calls
+<code>enforce_family_quota</code>: the family's monthly count of <code>approved</code> story requests is checked
+against <code>family.monthly_story_quota</code> (platform default when NULL) and a 409 is returned
+when it is exceeded; admins bypass the gate (platform budget). A
+<code>MAX_ACTIVE_JOBS_PER_FAMILY = 2</code> throttle bounds concurrent jobs. The same gate guards the
+<code>approve_story_request</code> and authored-request paths.</p>
 <p><code>POST /concepts</code> screens the brief text for real child display names (fetched from
 <code>child_profile.display_name</code> for the family) before persisting the <code>Concept</code> row.</p>
 <p><code>POST /concepts/{id}/generate</code> creates a <code>GenerationJob</code> row (<code>status='queued'</code>) and
@@ -3208,7 +3254,7 @@ the row is still created and a 202 is returned (the job can be recovered by a sw
 <tbody>
 <tr>
 <td><code>src/cyo_adventure/generation/orchestrator.py</code></td>
-<td><code>generate_story()</code>: the three-stage pipeline</td>
+<td><code>generate_story()</code> (three-stage) + <code>fill_skeleton()</code> (skeleton method)</td>
 </tr>
 <tr>
 <td><code>src/cyo_adventure/generation/prompts.py</code></td>
@@ -3217,6 +3263,10 @@ the row is still created and a 202 is returned (the job can be recovered by a sw
 <tr>
 <td><code>src/cyo_adventure/generation/pii.py</code></td>
 <td><code>assert_prompt_pii_safe()</code>, <code>PiiContext</code></td>
+</tr>
+<tr>
+<td><code>src/cyo_adventure/generation/guarded.py</code></td>
+<td><code>PiiGuardedProvider</code> (structural PII wrapper)</td>
 </tr>
 <tr>
 <td><code>src/cyo_adventure/generation/providers/fallback.py</code></td>
@@ -3276,7 +3326,7 @@ the row is still created and a 202 is returned (the job can be recovered by a sw
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 23, 2026 15:53:50 UTC">June 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 18, 2026 00:28:02 UTC">July 18, 2026</span>
   </span>
 
     

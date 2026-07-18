@@ -6,6 +6,8 @@
 ' Source files:
 '   src/cyo_adventure/player/engine.py        (StoryEngine, Runtime Semantics v1)
 '   src/cyo_adventure/player/state.py         (ReadingState dataclass)
+'   src/cyo_adventure/player/replay.py        (validate_reading_state: server-side
+'                                              save gate; replays the choice path)
 '   src/cyo_adventure/storybook/models.py     (Storybook, Node, Choice, Effect)
 '   src/cyo_adventure/storybook/evaluator.py  (evaluate(), VarState, whitelisted ops)
 '   src/cyo_adventure/storybook/condition.py  (condition DSL validator)
@@ -38,6 +40,8 @@ package "Backend Player (Python)" #E3F2FD {
   component "Story Engine\nplayer/engine.py\nStoryEngine: start(), choose(),\nvisible_choices(), is_ending()\nPure: no I/O, no async" as engine #1565C0
 
   component "ReadingState\nplayer/state.py\ncurrent_node, var_state,\npath, visit_set, version,\nstate_revision, save_slots" as reading_state #BBDEFB
+
+  component "Save Validator\nplayer/replay.py\nvalidate_reading_state(): structural\nfloor + replays the saved choice path\nthrough StoryEngine (server-side\nreading-state save gate)" as replay #BBDEFB
 
 }
 
@@ -78,6 +82,7 @@ engine --> evaluator : "evaluate(choice.condition,\nvar_state)"
 evaluator --> engine : "bool"
 engine --> reading_state : "produces / consumes\n(immutable: clone on each choose)"
 reading_state --> engine : "current state"
+replay --> engine : "replay saved choice path\n(server-side save validation)"
 
 ts_evaluator --> ts_engine : "evaluate()"
 ts_engine --> xstate : "step result"
