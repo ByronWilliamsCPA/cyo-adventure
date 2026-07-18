@@ -181,19 +181,55 @@ Ranked by impact x tractability. Each names the capability IDs it serves.
 - **Effort:** moderate-high (mostly gating/moderation tuning). **Serves:**
   [K11](capability-register.md); gated by [K13](capability-register.md).
 
+### WS-7: Request interpretation and expectation-setting (UX-facing)
+
+- **Goal:** reflect the free-form request back to the requester *before*
+  generation, so they understand how their idea will shape the story and what
+  will be set aside (and why). Sets expectations and closes the loop on a
+  free-form ask.
+- **Why now:** today the intake runs a safety screen (`screen_request_text`) and
+  captures the child's text as the brief's `premise`, but nothing interprets it
+  back to the requester, and (per the problem statement) the fill ignores
+  `premise` entirely. So a requester's idea currently vanishes silently. WS-7 is
+  the user-facing surface of WS-1's theme binding: the same interpretation that
+  binds the request to the story also tells the requester what was used and what
+  was dropped.
+- **Approach:** an interpretation stage turns the free-form `premise` into
+  structured intent (theme, protagonist, setting, tone, special asks) and gives
+  each element a disposition: **incorporated**, or **set aside** with a plain
+  reason, unsupported by the chosen story structure, outside the age band, safety
+  screened, or not yet supported. Persist the interpretation on the request and
+  return it to the requester in their own terms (kid language for kids, fuller
+  detail for guardians). Optionally a confirm-and-adjust step before it proceeds.
+- **Dependency:** precise "used vs dropped against the actual story structure"
+  comes from WS-1's binding / WS-2's theme contract. A submission-time version
+  can interpret against general capability + band/safety without a skeleton, then
+  add structure-specific drops once a skeleton is bound.
+- **Safety:** the interpretation is derived from untrusted requester input
+  (OWASP LLM01). It must never echo unsafe content back; it explains *why*
+  something was set aside without repeating disallowed detail, and reuses the
+  screening flags. **Serves:** [K11](capability-register.md),
+  [K12](capability-register.md); gated by [K13](capability-register.md).
+- **Open product decisions:** (a) placement, at submission (pre-skeleton,
+  general) vs after skeleton pick (precise but currently an admin stage);
+  (b) informational vs a confirm-and-adjust gate; (c) surfaced to the kid, the
+  guardian, or both, and in what language.
+
 ## 6. Sequencing
 
 ```
 WS-1 (theme_brief wiring)  ->  WS-2 (parameterize catalog)  ->  WS-3 (packs)
         |                              |
         +--> WS-4 (diversity-aware selection) can start in parallel after WS-1
+        +--> WS-7 (request interpretation / expectation-setting) surfaces WS-1's binding
         +--> WS-5 (structural modules) is an independent, larger bet
         +--> WS-6 (fresh-generation tier) is independent; useful as a novelty escape hatch
 ```
 
 WS-1 is the unlock: it is cheap, it independently raises perceived variety on
 today's fixed catalog, and WS-2/3 have little payoff without it. WS-4 protects
-the gains. WS-5 and WS-6 are larger, independent bets for structural novelty.
+the gains. WS-7 makes the whole thing legible to the requester. WS-5 and WS-6 are
+larger, independent bets for structural novelty.
 
 ## 7. Safety invariants (hold across all workstreams)
 
