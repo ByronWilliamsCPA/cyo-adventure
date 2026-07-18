@@ -157,3 +157,144 @@ async def test_semantic_check_fails_open_on_non_string_response() -> None:
     result = await run_semantic_fidelity_check(original, filled, provider)
 
     assert result is None
+
+
+def _node_with_choices(
+    node_id: str, body: str, choices: list[dict[str, object]]
+) -> dict[str, object]:
+    return {"id": node_id, "body": body, "choices": choices}
+
+
+async def test_rewritten_choice_label_pair_reaches_the_reviewer() -> None:
+    """Both the original and the final choice label are sent to the reviewer, so
+    it can judge whether the reskin preserved the decision's meaning."""
+    original: dict[str, object] = {
+        "nodes": [
+            _node_with_choices(
+                "n1",
+                "<<FILL role=choice words=10 beats='pick a path at the fork'>>",
+                [{"id": "c1", "label": "Go left at the fork.", "target": "n2"}],
+            )
+        ]
+    }
+    filled: dict[str, object] = {
+        "nodes": [
+            _node_with_choices(
+                "n1",
+                "You reach a fork in the glowing caves.",
+                [
+                    {
+                        "id": "c1",
+                        "label": "Drift left along the humming duct.",
+                        "target": "n2",
+                    }
+                ],
+            )
+        ]
+    }
+    provider = _ScriptedReviewProvider(json.dumps({"verdict": "pass", "notes": ""}))
+
+    result = await run_semantic_fidelity_check(original, filled, provider)
+
+    assert result is None
+    prompt = provider.calls[0][1]
+    assert "Go left at the fork." in prompt
+    assert "Drift left along the humming duct." in prompt
+
+
+async def test_inverted_choice_label_intent_is_flagged() -> None:
+    """When the reviewer flags a label whose meaning changed, the note surfaces."""
+    original: dict[str, object] = {
+        "nodes": [
+            _node_with_choices(
+                "n1",
+                "<<FILL role=choice words=10 beats='decide about the stranger'>>",
+                [{"id": "c1", "label": "Trust the stranger.", "target": "n2"}],
+            )
+        ]
+    }
+    filled: dict[str, object] = {
+        "nodes": [
+            _node_with_choices(
+                "n1",
+                "A hooded figure offers to guide you.",
+                [{"id": "c1", "label": "Attack the stranger.", "target": "n2"}],
+            )
+        ]
+    }
+    provider = _ScriptedReviewProvider(
+        json.dumps({"verdict": "flag", "notes": "c1 inverts the decision"})
+    )
+
+    result = await run_semantic_fidelity_check(original, filled, provider)
+
+    assert result == "c1 inverts the decision"
+
+
+async def test_label_only_node_without_fill_body_still_calls_reviewer() -> None:
+    """A node whose body is not a FILL directive but whose choice label was
+    rewritten is still reviewed (label intent alone is enough to check)."""
+    original: dict[str, object] = {
+        "nodes": [
+            _node_with_choices(
+                "n1",
+                "plain prose, not a directive",
+                [{"id": "c1", "label": "Open the gate.", "target": "n2"}],
+            )
+        ]
+    }
+    filled: dict[str, object] = {
+        "nodes": [
+            _node_with_choices(
+                "n1",
+                "plain prose, not a directive",
+                [{"id": "c1", "label": "Lift the portcullis.", "target": "n2"}],
+            )
+        ]
+    }
+    provider = _ScriptedReviewProvider(json.dumps({"verdict": "pass", "notes": ""}))
+
+    result = await run_semantic_fidelity_check(original, filled, provider)
+
+    assert result is None
+    assert len(provider.calls) == 1
+    prompt = provider.calls[0][1]
+    assert "Open the gate." in prompt
+    assert "Lift the portcullis." in prompt
+
+
+async def test_malformed_and_unmatched_choices_are_skipped() -> None:
+    """Choices without a string id/label, and skeleton choices absent from the
+    fill, never reach the reviewer prompt; only matched, well-formed pairs do."""
+    original: dict[str, object] = {
+        "nodes": [
+            _node_with_choices(
+                "n1",
+                "<<FILL role=choice words=10 beats='a choice'>>",
+                [
+                    {"id": "c1", "label": "Go north.", "target": "n2"},
+                    {"label": "no id", "target": "n3"},
+                    {"id": "c2", "label": 123, "target": "n4"},
+                    {"id": "c3", "label": "Only in skeleton.", "target": "n5"},
+                ],
+            )
+        ]
+    }
+    filled: dict[str, object] = {
+        "nodes": [
+            _node_with_choices(
+                "n1",
+                "You stand at a crossroads.",
+                [{"id": "c1", "label": "Head up the hill path.", "target": "n2"}],
+            )
+        ]
+    }
+    provider = _ScriptedReviewProvider(json.dumps({"verdict": "pass", "notes": ""}))
+
+    result = await run_semantic_fidelity_check(original, filled, provider)
+
+    assert result is None
+    prompt = provider.calls[0][1]
+    assert "Go north." in prompt
+    assert "Head up the hill path." in prompt
+    assert "Only in skeleton." not in prompt

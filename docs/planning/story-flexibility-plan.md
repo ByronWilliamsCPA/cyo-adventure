@@ -213,10 +213,19 @@ in WS-0 must detect and fail it.
   not change what a choice *means*; per-choice label-intent fidelity (does the
   rewritten label still match the frozen action-semantic of the original
   choice?) is a Stage 1 fidelity-reviewer extension, not a fingerprint concern.
-  Per the evaluation's supervisor sign-off (section 8), that extension is a
-  **hard prerequisite** on wiring the ATG into the production pipeline, not an
-  optional follow-up: WS-1 must not treat the ATG as production-ready until the
-  Stage 1 reviewer covers per-choice label intent.
+  Per the evaluation's supervisor sign-off (section 8), that extension was a
+  **hard prerequisite** on wiring the ATG into the production pipeline.
+- **Delivered (2026-07-18): the label-intent prerequisite.**
+  `run_semantic_fidelity_check` (`moderation/fidelity_review.py`) now sends each
+  choice's original and final label alongside the beat/prose pairs in the same
+  aggregate review call, and the reviewer flags a fill when a rewritten label
+  changes what the decision means (an inverted "go left" -> "go right", or
+  "trust the stranger" -> "attack the stranger"). It runs even for a node whose
+  body was not a FILL directive but whose choice label was reskinned. This
+  restores, on exactly the artifacts production creates, the semantic guarantee
+  the removed byte-level label check only nominally provided; it stays advisory
+  (fails open), one signal among several, consistent with the reviewer's
+  existing design. The sign-off prerequisite is satisfied.
 
 ### WS-4: Similarity-driven, escalating selection (consumes WS-0)
 
