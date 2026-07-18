@@ -22,28 +22,47 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def test_candidates_for_cell_matches_real_library_singleton_cell() -> None:
-    """10-13/medium/prose has exactly one production skeleton on disk today."""
-    assert candidates_for_cell("10-13", "medium", "prose") == ["the-hollow-lighthouse"]
+def test_candidates_for_cell_matches_real_library_cell() -> None:
+    """10-13/medium/prose returns every in-cell production skeleton, sorted."""
+    assert candidates_for_cell("10-13", "medium", "prose") == [
+        "the-envoy-of-three-courts",
+        "the-flooded-quarter",
+        "the-hollow-lighthouse",
+    ]
 
 
 def test_candidates_for_cell_excludes_non_eligible_and_length_mismatch() -> None:
     """10-13/short/prose excludes the non-eligible clocktower-cipher (which has no
     length/style at all) and every other length in the band."""
-    assert candidates_for_cell("10-13", "short", "prose") == ["the-midnight-museum"]
+    assert candidates_for_cell("10-13", "short", "prose") == [
+        "the-glass-comet",
+        "the-midnight-frequency",
+        "the-midnight-museum",
+    ]
 
 
 def test_candidates_for_cell_matches_style_for_teen_band() -> None:
     """13-16/medium: prose and gamebook are different cells (style-aware band)."""
     assert candidates_for_cell("13-16", "medium", "prose") == [
-        "the-signal-in-the-static"
+        "the-conservatory-wars",
+        "the-signal-in-the-static",
+        "the-undertow-season",
     ]
-    assert candidates_for_cell("13-16", "medium", "gamebook") == ["the-sunspire-ascent"]
+    assert candidates_for_cell("13-16", "medium", "gamebook") == [
+        "the-iron-spire-trial",
+        "the-smugglers-cut",
+        "the-sunspire-ascent",
+    ]
 
 
 def test_candidates_for_cell_ignores_style_below_teen_band() -> None:
-    """8-11 is not style-aware: a "gamebook" request still matches the prose skeleton."""
-    assert candidates_for_cell("8-11", "short", "gamebook") == ["the-cave-of-echoes"]
+    """8-11 is not style-aware: a "gamebook" request still matches the prose
+    skeletons in the cell."""
+    assert candidates_for_cell("8-11", "short", "gamebook") == [
+        "the-cave-of-echoes",
+        "the-locked-carousel",
+        "the-robot-fair-sabotage",
+    ]
 
 
 def test_candidates_for_cell_returns_empty_for_unknown_band() -> None:
