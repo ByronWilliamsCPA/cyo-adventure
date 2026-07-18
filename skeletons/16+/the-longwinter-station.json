@@ -1,0 +1,3870 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_longwinter_station",
+  "version": 1,
+  "title": "The Longwinter Station",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 8.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "isolation",
+      "the polar dark",
+      "trust and paranoia",
+      "the signal under the ice"
+    ],
+    "estimated_minutes": 34,
+    "ending_count": 44,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "open_map",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "deepcold",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "How deep into the overwinter dark the crew has pressed: how many of the station's modules have been worked through to a reading. It climbs one mark (once per module) each time a module is seen through at that module's departure, caps at 2 below the six-module count, and never falls. It is the clock the station degrades under; the fullest midwinter reading is given only to a crew that has pressed at least two modules to depth (deepcold at max) and held together doing it."
+    },
+    {
+      "name": "fuel",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "The station's rationed heat in quarter-marks, the fuel that buys warmth for the modules off the core. The forced or powered way into a heat-bound module burns it; the warm core and the midwinter muster count it back to full ration on arrival. A heated deep excursion to a far module needs fuel of 2 or more; a crew run low can still complete the module by the honest cold survey."
+    },
+    {
+      "name": "trust",
+      "type": "int",
+      "initial": 1,
+      "min": 0,
+      "max": 2,
+      "description": "The crew's cohesion across the whole winter, its running ledger and not a per-room resource: it does not reset. It rises one mark (cap 2) when a finding is shared back to the whole crew and falls one mark (floor 0) when a finding is withheld or a module is pushed into unilaterally against the buddy rule. It gates whether the crew backs the deep listen in the crew-bound modules (trust of 1 or more) and, with the winter pressed to its depth, the fullest midwinter reading (trust of 2). Every trust-gated node keeps an unconditional companion, so a spent trust never leaves a node choiceless."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=180 beats='Deep midwinter on the Sable Ice Shelf, the sun months gone: establish Kerr, the station's power-and-comms engineer, first winter-over, waking into another clock-kept dark; the heated core of Longwinter Station warm and humming around the mess table; establish the crew by name and hand, Halvard the winter-master and old glaciologist, Ivo the mechanic, Marta the geophysicist gone quiet these last weeks, Sunny the doctor; establish as plain fact the one strange thing the winter has turned up, a slow low beat that Marta logged rising from far under the shelf, about one pulse every few minutes, a shade stronger every week'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Pull on your boots and go through to the mess.",
+          "target": "n_intro"
+        }
+      ]
+    },
+    {
+      "id": "n_intro",
+      "body": "<<FILL role=setup words=180 beats='At the mess table over the long dark breakfast: Halvard lays out the winter as it stands, the station sound, the fuel counted and rationed, the crew holding; Marta plays the array recording low on the speaker, the patient beat filling the warm room, and the table goes quiet listening to it; establish the disagreement plainly and without melodrama, Halvard calling it some resonance of the shelf, Marta unsure and unwilling to say what she fears, Ivo hoping aloud it is only a fault in the gear, Sunny watching how little any of them have slept'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_intro_1",
+          "label": "Ask Halvard what the winter needs of you.",
+          "target": "n_rules"
+        }
+      ]
+    },
+    {
+      "id": "n_rules",
+      "body": "<<FILL role=setup words=180 beats='Halvard teaches the standing rules of the dark the way another man would teach weather, without fear and without drama: no one crosses to a cold module or steps onto the surface alone, ever, and the radio check is kept on the clock; heat is life, and every room off the warm core must be warmed on rationed fuel before real work is done in it; the dark itself turns the mind strange, and the cure for that is company and routine and honest talk; Kerr takes the rules in as the law of the place'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_rules_1",
+          "label": "Learn the station's shape and its modules.",
+          "target": "n_settle"
+        }
+      ]
+    },
+    {
+      "id": "n_settle",
+      "body": "<<FILL role=setup words=180 beats='Halvard walks Kerr through the station's shape at the command desk: the warm core at the heart, and hung off it the powerhouse where the generators beat, the fuel cache out across the dark shelf, the met mast on the surface under the aurora, the deep borehole shaft sunk toward the shelf's floor, Marta's seismic vault under its dome, and the buried old hut of the first winter's crew; the plan for the deep winter is simple, work the modules one by one and keep the signal's measure, and come back to the warm core between to re-ration and to stay a crew; write this arrival-neutral to the reader's ignorance, the map laid out fresh'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_settle_1",
+          "label": "Take up the winter's work at the core.",
+          "target": "n_mess"
+        }
+      ]
+    },
+    {
+      "id": "n_mess",
+      "body": "<<FILL role=shore words=184 beats='The heated core of Longwinter Station, the mess and the command desk, the one warm heart of the winter and the standing hub of it: write this arrival-neutral, the same steady warm room however often and in whatever state Kerr comes back to it, the kettle on, the fuel-board chalked up, the array beat murmuring low from the command speaker; the modules hang off the core in the dark to be worked in any order, and the fuel is counted back up to full ration here and the crew made whole between the crossings; no route-specific recap, only the room and the choices out of it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "fuel",
+          "value": 3
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_n_mess_1",
+          "label": "Cross the walkway to the powerhouse and the generators.",
+          "target": "ph_shore"
+        },
+        {
+          "id": "c_n_mess_2",
+          "label": "Suit up for the traverse out to the fuel cache.",
+          "target": "ca_shore"
+        },
+        {
+          "id": "c_n_mess_3",
+          "label": "Go up to the met mast under the aurora.",
+          "target": "ma_shore"
+        },
+        {
+          "id": "c_n_mess_4",
+          "label": "Go down to the borehole shaft at the shelf's floor.",
+          "target": "bh_shore"
+        },
+        {
+          "id": "c_n_mess_5",
+          "label": "Cross to Marta's seismic vault under the dome.",
+          "target": "vt_shore"
+        },
+        {
+          "id": "c_n_mess_6",
+          "label": "Go out to the buried hut of the first winter's crew.",
+          "target": "hu_shore"
+        },
+        {
+          "id": "c_n_mess_7",
+          "label": "Sit a while in the warm core with the crew.",
+          "target": "n_quiet"
+        }
+      ]
+    },
+    {
+      "id": "n_quiet",
+      "body": "<<FILL role=conv words=180 beats='The crew's own hour at the core between crossings, the one time the dark lets its grip off a little: Sunny dealing cards, Ivo with an engine part and a rag, Marta half-listening to the beat she cannot stop hearing, Halvard easy at the head of the table; a breath is allowed here, and the next module can wait for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_quiet_1",
+          "label": "Warm through and get back to the winter's work.",
+          "target": "n_mess"
+        },
+        {
+          "id": "c_n_quiet_2",
+          "label": "Tell Halvard the dark has grown too heavy to keep pressing into.",
+          "target": "e_quit"
+        }
+      ]
+    },
+    {
+      "id": "e_quit",
+      "body": "<<FILL role=quit words=162 beats='Saying it plainly is its own kind of courage: Kerr tells Halvard the dark has grown too heavy to keep crossing into, and Halvard, without one word of blame, takes Kerr onto the core watch and the fuel-board and the radio clock while the season's harder work goes on with Ivo and Marta; some first winters are too big, and naming that is the grown thing to do, not the small one; write it dignified, a limit honestly met, the crew unbroken'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_quit",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Winter Owned"
+      }
+    },
+    {
+      "id": "ph_shore",
+      "body": "<<FILL role=shore words=184 beats='Kerr comes into the powerhouse: the generator hall, the two big diesels beating out the station's heat and light, the fuel lines running warm along the wall, Ivo's tools laid out; the signal shows itself here as a beat riding under the machine's own hum, a second slower pulse the generators should not have; write this arrival-neutral, the same module in the same dark whatever crossing brought Kerr here and in whatever state, no route-specific recap; three ways to take it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_shore_1",
+          "label": "Work it shoulder to shoulder with Ivo, the mechanic.",
+          "target": "ph_help"
+        },
+        {
+          "id": "c_ph_shore_2",
+          "label": "Hang back a moment and take the module in.",
+          "target": "ph_watch"
+        },
+        {
+          "id": "c_ph_shore_3",
+          "label": "Go straight at the work on your own line.",
+          "target": "ph_near"
+        }
+      ]
+    },
+    {
+      "id": "ph_help",
+      "body": "<<FILL role=help words=162 beats='Falling in beside Ivo, the mechanic to work the powerhouse together, the two of you reading the slow beat that rides under the generators' hum by turns and calling it low between you, the buddy rule kept and the dark a little smaller for the company'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_help_1",
+          "label": "Let the work settle into its rhythm.",
+          "target": "ph_helpb"
+        }
+      ]
+    },
+    {
+      "id": "ph_helpb",
+      "body": "<<FILL role=helpb words=162 beats='The work of the powerhouse finding its rhythm between the two of you, Ivo, the mechanic steady at your shoulder, the signal steady under the hands, the winter narrowed to the small sure tasks that keep two people alive out here in the cold and the routine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_helpb_1",
+          "label": "Talk over what the beat is doing today.",
+          "target": "ph_helpc"
+        }
+      ]
+    },
+    {
+      "id": "ph_helpc",
+      "body": "<<FILL role=helpc words=162 beats='Between tasks Ivo, the mechanic says quietly what the whole crew has been circling, that the slow beat that rides under the generators' hum is stronger this week than last, and that whatever it is it is not stopping and not slowing; the two of you sit a moment with that in the cold before the work takes you back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_helpc_1",
+          "label": "Get back to it before the cold settles in.",
+          "target": "ph_helpd"
+        }
+      ]
+    },
+    {
+      "id": "ph_helpd",
+      "body": "<<FILL role=helpd words=162 beats='The last of the shoulder-work in the powerhouse done well and done together, the module squared away to the standing rules, Ivo, the mechanic knocking off the rime and calling the two of you square; a good crossing so far, and the harder part of the reading still ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_helpd_1",
+          "label": "Turn to the reading itself.",
+          "target": "ph_conv"
+        }
+      ]
+    },
+    {
+      "id": "ph_watch",
+      "body": "<<FILL role=watch words=170 beats='Hanging back a moment on the threshold of the powerhouse to take it in before the work starts, letting the module and its dark and its cold settle into you, the beat there under everything the way it is everywhere now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_watch_1",
+          "label": "Watch, and let the module show itself.",
+          "target": "ph_watchb"
+        }
+      ]
+    },
+    {
+      "id": "ph_watchb",
+      "body": "<<FILL role=watchb words=180 beats='And the powerhouse shows Kerr its face: the whole warm hall breathing in time with the thing under the ice, machine and shelf on one slow pulse, and the doubled weight of it lands, the awe and the dread of it together, a thing too regular and too patient to be the dead shelf and too strange to name; how long you stand with it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_watchb_1",
+          "label": "Take the weight of it, then turn to the work.",
+          "target": "ph_watchc"
+        },
+        {
+          "id": "c_ph_watchb_2",
+          "label": "Stay with it, and let it be enough.",
+          "target": "e_ph_awe"
+        }
+      ]
+    },
+    {
+      "id": "ph_watchc",
+      "body": "<<FILL role=watchc words=162 beats='Carrying the weight of what the powerhouse showed you back to the work in hand, steadier for having met it square instead of flinching; the reading still to take, and the dark no less large for being looked at, only better known'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_watchc_1",
+          "label": "Turn to the reading itself.",
+          "target": "ph_conv"
+        }
+      ]
+    },
+    {
+      "id": "ph_near",
+      "body": "<<FILL role=near words=180 beats='Going straight at the powerhouse on your own line, no one at your shoulder yet, the quickest way into the work and the way the rules like least; how hard you push it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_near_1",
+          "label": "Force the cold reserve burner alight fast on a heavy prime.",
+          "target": "ph_hard",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "fuel",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_ph_near_2",
+          "label": "Take the careful, slower line that keeps to the rules.",
+          "target": "ph_care"
+        },
+        {
+          "id": "c_ph_near_3",
+          "label": "Push in harder and faster than the dark allows.",
+          "target": "ph_reckless"
+        }
+      ]
+    },
+    {
+      "id": "ph_reckless",
+      "body": "<<FILL role=reckless words=162 beats='Pushing into the powerhouse harder and faster than the standing rules of the dark allow, the cold and the module both against you, the sensible line already behind; one more step commits it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_reckless_1",
+          "label": "Commit, and drive it past the safe mark.",
+          "target": "ph_recklessb"
+        },
+        {
+          "id": "c_ph_reckless_2",
+          "label": "Catch yourself, and fall back to the careful line.",
+          "target": "ph_care"
+        }
+      ]
+    },
+    {
+      "id": "ph_recklessb",
+      "body": "<<FILL role=recklessb words=172 beats='Past the safe mark now in the powerhouse and no easy way back, the dark holding all the cards: the two ways this goes are staying on alone to nurse the failing reserve burner as the hall goes to killing cold and no one knows where you are, or the cold and the module simply stopping you before it kills you; write the peril real and close, dread not gore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_recklessb_1",
+          "label": "Go on alone into it whatever it costs.",
+          "target": "e_ph_cold"
+        },
+        {
+          "id": "c_ph_recklessb_2",
+          "label": "Force the work through and pay for it.",
+          "target": "e_ph_risk"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ph_hard",
+      "body": "<<FILL role=hard words=177 beats='Taking the hard fast way into the powerhouse: forcing the cold reserve burner alight on a heavy fuel prime, the fastest way to heat and the most wasteful, a quarter of the ration gone in the priming; the work bought quick and dear, the module opening to you at a price the ration or the crew will feel later; done, and no one hurt'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_hard_1",
+          "label": "Get to the reading now the way is forced.",
+          "target": "ph_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ph_care",
+      "body": "<<FILL role=care words=167 beats='Taking the careful, slower line into the powerhouse that keeps to the standing rules, costing time and no more, the module reached with the ration whole and the crew's faith whole and the cold kept honestly at bay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_care_1",
+          "label": "Come to the reading with everything intact.",
+          "target": "ph_conv"
+        }
+      ]
+    },
+    {
+      "id": "ph_conv",
+      "body": "<<FILL role=conv words=180 beats='At the heart of the powerhouse now with the way in behind you, the module warm enough and the gear to hand and the slow beat that rides under the generators' hum waiting to be read properly; write this arrival-neutral, the reading ahead the same however the way in was taken'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_conv_1",
+          "label": "Square the gear and decide how to carry this.",
+          "target": "ph_call"
+        },
+        {
+          "id": "c_ph_conv_2",
+          "label": "Steady yourself and the module first.",
+          "target": "ph_convb"
+        }
+      ]
+    },
+    {
+      "id": "ph_convb",
+      "body": "<<FILL role=convb words=162 beats='Taking a moment in the powerhouse to steady the gear and your own nerve, the beat filling the quiet, the dark pressing at the module's thin walls; then the real question of how this reading is carried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_convb_1",
+          "label": "Decide how to carry what the module gives.",
+          "target": "ph_call"
+        }
+      ]
+    },
+    {
+      "id": "ph_call",
+      "body": "<<FILL role=call words=190 beats='The winter's quiet question rises here in the powerhouse, the one the dark keeps asking: whatever the slow beat that rides under the generators' hum turns out to be, do you call it back to the whole crew on the radio and carry it together, or does the long dark tell you to keep it close and say nothing yet, trusting no one quite the way you did in the light; how you carry it decides how much of the crew is still at your back by midwinter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_call_1",
+          "label": "Radio it back to the crew and share the watch.",
+          "target": "ph_read",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_ph_call_2",
+          "label": "Keep it close and tell no one yet.",
+          "target": "ph_read",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ph_read",
+      "body": "<<FILL role=read words=180 beats='The reading itself in front of you in the powerhouse, the slow beat that rides under the generators' hum there for the taking; how deep you go after it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_read_1",
+          "label": "Decide how far to take the reading.",
+          "target": "ph_gate"
+        },
+        {
+          "id": "c_ph_read_2",
+          "label": "Ask Ivo about it first.",
+          "target": "ph_extra2"
+        }
+      ]
+    },
+    {
+      "id": "ph_extra2",
+      "body": "<<FILL role=extra2 words=164 beats='A word first about the powerhouse: the plain sense of it is that bring the idle reserve burner online to push heat to the far modules and read the signal where it beats loudest in the running machine is the true reading and the honest short way is read the fuel gauges and the load logs from the warm control desk without spending the reserve, and the dark gives no allowance and no second try to a crew that overreaches out here; the choice stands where it stood'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_extra2_1",
+          "label": "Decide how far to take the reading.",
+          "target": "ph_gate"
+        }
+      ]
+    },
+    {
+      "id": "ph_gate",
+      "body": "<<FILL role=gate words=184 beats='The choice at the heart of the powerhouse: bring the idle reserve burner online to push heat to the far modules and read the signal where it beats loudest in the running machine, or read the fuel gauges and the load logs from the warm control desk without spending the reserve; the deep reading is the fuller answer and it asks more than the module always has to give, and the short reading is honest and always open; decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_gate_1",
+          "label": "Fire the reserve burner and run the hall hot.",
+          "target": "ph_deep0",
+          "condition": {
+            ">=": [
+              {
+                "var": "fuel"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_ph_gate_2",
+          "label": "Read the gauges and logs from the control desk.",
+          "target": "ph_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ph_deep0",
+      "body": "<<FILL role=deep0 words=172 beats='Committing to the deep reading in the powerhouse, the module standing ready for it and the crew's faith or the ration standing good behind you, the way to the true answer opening at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_deep0_1",
+          "label": "Take it all the way down.",
+          "target": "ph_deep1"
+        }
+      ]
+    },
+    {
+      "id": "ph_deep1",
+      "body": "<<FILL role=deep1 words=202 beats='Into the true deep reading of the powerhouse now: bring the idle reserve burner online to push heat to the far modules and read the signal where it beats loudest in the running machine, carried through with everything it asked in hand, the module giving up the slow beat that rides under the generators' hum at last in its fullest voice; and it is not less strange for being heard clearly, it is more, the patient beat close and huge and utterly regular; write awe over terror, the largest quiet the winter holds, and hold the dread in it too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_deep1_1",
+          "label": "Stay with the full reading as it comes.",
+          "target": "ph_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "ph_deep2",
+      "body": "<<FILL role=deep2 words=190 beats='The full reading of the powerhouse coming up clean and complete, the slow beat that rides under the generators' hum logged in its true depth, the figures rising off the gear with something enormous folded inside them that no number quite holds; the deepest anyone has read this module all winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_deep2_1",
+          "label": "Hold the reading and log it true.",
+          "target": "ph_deep2b"
+        }
+      ]
+    },
+    {
+      "id": "ph_deep2b",
+      "body": "<<FILL role=deep2b words=177 beats='The reading held and set down straight in the log in a hand that only shakes a little, the powerhouse charted deep and the signal's face in it named as plainly as an honest hand can name a thing it does not understand; the module has given all it has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_deep2b_1",
+          "label": "Take stock, and think about coming away.",
+          "target": "ph_deep3"
+        }
+      ]
+    },
+    {
+      "id": "ph_deep3",
+      "body": "<<FILL role=deep3 words=194 beats='The deep reading of the powerhouse done and logged, the beat still going in the dark all around, the pull of it real, that old wish to stay one reading too long with a thing this large; how you leave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_deep3_1",
+          "label": "Log it, gather the crew, and come away clean.",
+          "target": "ph_done"
+        },
+        {
+          "id": "c_ph_deep3_2",
+          "label": "Stay a while longer with what you have found.",
+          "target": "e_ph_deep"
+        }
+      ]
+    },
+    {
+      "id": "ph_shallow",
+      "body": "<<FILL role=shallow words=172 beats='Taking the honest short reading of the powerhouse: read the fuel gauges and the load logs from the warm control desk without spending the reserve, the craft doing what the deep reading would do and keeping the crew and the ration safe to do it, the slow beat that rides under the generators' hum got true if not got whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_shallow_1",
+          "label": "Log the short reading and stand down.",
+          "target": "ph_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "ph_shallowb",
+      "body": "<<FILL role=shallowb words=184 beats='The short reading of the powerhouse logged plain, the module charted from safe ground, the fuller depth left unread and the crew whole and the cold kept honestly out; an honest survey and no shame in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_shallowb_1",
+          "label": "Square the module away and come home.",
+          "target": "ph_done"
+        },
+        {
+          "id": "c_ph_shallowb_2",
+          "label": "Sit a moment with the short reading before you go.",
+          "target": "e_ph_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ph_done",
+      "body": "<<FILL role=done words=184 beats='Kerr comes away from the powerhouse, the module squared to the rules behind and the reading, deep or short, safe in the log; write this arrival-neutral to whatever passed inside, the module worked through and the winter one module deeper either way; the dark a shade heavier, the core's warm light waiting across it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "deepcold",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_ph_done_1",
+          "label": "Cross back to the warm core to re-ration.",
+          "target": "n_mess"
+        },
+        {
+          "id": "c_ph_done_2",
+          "label": "Answer the muster if midwinter has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ph_done_3",
+          "label": "Work the module over once more and chart it whole before you leave.",
+          "target": "e_ph_linger"
+        }
+      ]
+    },
+    {
+      "id": "e_ph_awe",
+      "body": "<<FILL role=awe words=170 beats='Standing with what the powerhouse showed until it is enough: the whole warm hall breathing in time with the thing under the ice, machine and shelf on one slow pulse, and Kerr stops needing to force a reading to know the winter's true shape, that the thing under the ice is patient and regular and real and that meeting it with open eyes is its own kind of knowing; write awe over terror, the log the richer for the watching, the crew told true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Machine's Second Heart"
+      }
+    },
+    {
+      "id": "e_ph_risk",
+      "body": "<<FILL role=risk words=167 beats='The overreach in the powerhouse is answered the way the dark answers everything, without mercy and without malice: a fuel-line flashback of heat and vapor that drives the crew coughing out of the hall, no one lost and the module saved but the reading beaten back and the crew driven home short and shaken; the dark does not bluff, and Kerr will not forget that it did not; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Flashback in the Hall"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_ph_cold",
+      "body": "<<FILL role=cold words=170 beats='The buddy rule is a rule because of nights exactly like this one: staying on alone to nurse the failing reserve burner as the hall goes to killing cold and no one knows where you are, and out past where a voice or a light can reach, alone in the module's frozen dark, the cold does the quiet patient work it always does; the crew finds the place too late and keeps the winter for the one who broke the one rule that matters; write it grave and cold and without gore, a life the dark took'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_cold",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Alone at the Dying Burner"
+      }
+    },
+    {
+      "id": "e_ph_deep",
+      "body": "<<FILL role=deepend words=172 beats='Staying a while longer with the deep reading of the powerhouse, Kerr lets the full weight of the slow beat that rides under the generators' hum settle in, and comes away changed and whole, understanding the winter's one large question a little better than before, that the signal's beauty and its dread are the same thing wearing one face under the same ice; the crew is told, the log stands deep and true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Beat in the Diesels"
+      }
+    },
+    {
+      "id": "e_ph_shallow",
+      "body": "<<FILL role=shallowend words=164 beats='The short reading of the powerhouse sat with and honored, the module charted honestly from safe ground and the crew whole to chart another; Halvard reads the log after and gives the small nod that is the whole of his praise, because a crew that knows when not to overreach is a crew that lives to read the shelf again; a win, and a plain one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Gauges Read Warm"
+      }
+    },
+    {
+      "id": "e_ph_linger",
+      "body": "<<FILL role=linger words=168 beats='Working the powerhouse over once more before leaving, Kerr charts the whole module clean, every gauge and trace and corner of it set down for the crews who come after, the fullest map this module has had in years; the crew stands the watch with you and Halvard, reading it later, keeps a silence that is plainly pride; the dark is a shade smaller for the honest work'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Powerhouse Charted"
+      }
+    },
+    {
+      "id": "ca_shore",
+      "body": "<<FILL role=shore words=184 beats='Kerr comes into the fuel cache: the edge of the heated core where the traverse to the fuel cache begins, a flagged line of cane running out into total dark across the shelf toward the drum store a kilometre off; the signal shows itself here in the open, felt up through the boots off the ice as a beat in the shelf itself; write this arrival-neutral, the same module in the same dark whatever crossing brought Kerr here and in whatever state, no route-specific recap; three ways to take it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_shore_1",
+          "label": "Work it shoulder to shoulder with Ivo on the sled line.",
+          "target": "ca_help"
+        },
+        {
+          "id": "c_ca_shore_2",
+          "label": "Hang back a moment and take the module in.",
+          "target": "ca_watch"
+        },
+        {
+          "id": "c_ca_shore_3",
+          "label": "Go straight at the work on your own line.",
+          "target": "ca_near"
+        }
+      ]
+    },
+    {
+      "id": "ca_help",
+      "body": "<<FILL role=help words=162 beats='Falling in beside Ivo on the sled line to work the fuel cache together, the two of you reading the beat felt up through the boot soles off the open ice by turns and calling it low between you, the buddy rule kept and the dark a little smaller for the company'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_help_1",
+          "label": "Let the work settle into its rhythm.",
+          "target": "ca_helpb"
+        }
+      ]
+    },
+    {
+      "id": "ca_helpb",
+      "body": "<<FILL role=helpb words=162 beats='The work of the fuel cache finding its rhythm between the two of you, Ivo on the sled line steady at your shoulder, the signal steady under the hands, the winter narrowed to the small sure tasks that keep two people alive out here in the cold and the routine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_helpb_1",
+          "label": "Talk over what the beat is doing today.",
+          "target": "ca_helpc"
+        }
+      ]
+    },
+    {
+      "id": "ca_helpc",
+      "body": "<<FILL role=helpc words=162 beats='Between tasks Ivo on the sled line says quietly what the whole crew has been circling, that the beat felt up through the boot soles off the open ice is stronger this week than last, and that whatever it is it is not stopping and not slowing; the two of you sit a moment with that in the cold before the work takes you back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_helpc_1",
+          "label": "Get back to it before the cold settles in.",
+          "target": "ca_helpd"
+        }
+      ]
+    },
+    {
+      "id": "ca_helpd",
+      "body": "<<FILL role=helpd words=162 beats='The last of the shoulder-work in the fuel cache done well and done together, the module squared away to the standing rules, Ivo on the sled line knocking off the rime and calling the two of you square; a good crossing so far, and the harder part of the reading still ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_helpd_1",
+          "label": "Turn to the reading itself.",
+          "target": "ca_conv"
+        }
+      ]
+    },
+    {
+      "id": "ca_watch",
+      "body": "<<FILL role=watch words=170 beats='Hanging back a moment on the threshold of the fuel cache to take it in before the work starts, letting the module and its dark and its cold settle into you, the beat there under everything the way it is everywhere now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_watch_1",
+          "label": "Watch, and let the module show itself.",
+          "target": "ca_watchb"
+        }
+      ]
+    },
+    {
+      "id": "ca_watchb",
+      "body": "<<FILL role=watchb words=180 beats='And the fuel cache shows Kerr its face: the aurora standing over the whole open shelf in silence while the beat comes up through the ice into your boots, and the doubled weight of it lands, the awe and the dread of it together, a thing too regular and too patient to be the dead shelf and too strange to name; how long you stand with it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_watchb_1",
+          "label": "Take the weight of it, then turn to the work.",
+          "target": "ca_watchc"
+        },
+        {
+          "id": "c_ca_watchb_2",
+          "label": "Stay with it, and let it be enough.",
+          "target": "e_ca_awe"
+        }
+      ]
+    },
+    {
+      "id": "ca_watchc",
+      "body": "<<FILL role=watchc words=162 beats='Carrying the weight of what the fuel cache showed you back to the work in hand, steadier for having met it square instead of flinching; the reading still to take, and the dark no less large for being looked at, only better known'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_watchc_1",
+          "label": "Turn to the reading itself.",
+          "target": "ca_conv"
+        }
+      ]
+    },
+    {
+      "id": "ca_near",
+      "body": "<<FILL role=near words=180 beats='Going straight at the fuel cache on your own line, no one at your shoulder yet, the quickest way into the work and the way the rules like least; how hard you push it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_near_1",
+          "label": "Run the sled heater wide open to beat the cold out and back.",
+          "target": "ca_hard",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "fuel",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_ca_near_2",
+          "label": "Take the careful, slower line that keeps to the rules.",
+          "target": "ca_care"
+        },
+        {
+          "id": "c_ca_near_3",
+          "label": "Push in harder and faster than the dark allows.",
+          "target": "ca_reckless"
+        }
+      ]
+    },
+    {
+      "id": "ca_reckless",
+      "body": "<<FILL role=reckless words=162 beats='Pushing into the fuel cache harder and faster than the standing rules of the dark allow, the cold and the module both against you, the sensible line already behind; one more step commits it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_reckless_1",
+          "label": "Commit, and drive it past the safe mark.",
+          "target": "ca_recklessb"
+        },
+        {
+          "id": "c_ca_reckless_2",
+          "label": "Catch yourself, and fall back to the careful line.",
+          "target": "ca_care"
+        }
+      ]
+    },
+    {
+      "id": "ca_recklessb",
+      "body": "<<FILL role=recklessb words=172 beats='Past the safe mark now in the fuel cache and no easy way back, the dark holding all the cards: the two ways this goes are casting off the flag line to push for the drums alone in the dark when the drift comes down, or the cold and the module simply stopping you before it kills you; write the peril real and close, dread not gore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_recklessb_1",
+          "label": "Go on alone into it whatever it costs.",
+          "target": "e_ca_cold"
+        },
+        {
+          "id": "c_ca_recklessb_2",
+          "label": "Force the work through and pay for it.",
+          "target": "e_ca_risk"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ca_hard",
+      "body": "<<FILL role=hard words=177 beats='Taking the hard fast way into the fuel cache: running the sled heater wide open against the killing cold of the open crossing, the fastest safe traverse and the thirstiest, a heavy bite out of the ration; the work bought quick and dear, the module opening to you at a price the ration or the crew will feel later; done, and no one hurt'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_hard_1",
+          "label": "Get to the reading now the way is forced.",
+          "target": "ca_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ca_care",
+      "body": "<<FILL role=care words=167 beats='Taking the careful, slower line into the fuel cache that keeps to the standing rules, costing time and no more, the module reached with the ration whole and the crew's faith whole and the cold kept honestly at bay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_care_1",
+          "label": "Come to the reading with everything intact.",
+          "target": "ca_conv"
+        }
+      ]
+    },
+    {
+      "id": "ca_conv",
+      "body": "<<FILL role=conv words=180 beats='At the heart of the fuel cache now with the way in behind you, the module warm enough and the gear to hand and the beat felt up through the boot soles off the open ice waiting to be read properly; write this arrival-neutral, the reading ahead the same however the way in was taken'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_conv_1",
+          "label": "Square the gear and decide how to carry this.",
+          "target": "ca_call"
+        },
+        {
+          "id": "c_ca_conv_2",
+          "label": "Steady yourself and the module first.",
+          "target": "ca_convb"
+        }
+      ]
+    },
+    {
+      "id": "ca_convb",
+      "body": "<<FILL role=convb words=162 beats='Taking a moment in the fuel cache to steady the gear and your own nerve, the beat filling the quiet, the dark pressing at the module's thin walls; then the real question of how this reading is carried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_convb_1",
+          "label": "Decide how to carry what the module gives.",
+          "target": "ca_call"
+        }
+      ]
+    },
+    {
+      "id": "ca_call",
+      "body": "<<FILL role=call words=190 beats='The winter's quiet question rises here in the fuel cache, the one the dark keeps asking: whatever the beat felt up through the boot soles off the open ice turns out to be, do you call it back to the whole crew on the radio and carry it together, or does the long dark tell you to keep it close and say nothing yet, trusting no one quite the way you did in the light; how you carry it decides how much of the crew is still at your back by midwinter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_call_1",
+          "label": "Radio it back to the crew and share the watch.",
+          "target": "ca_read",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_ca_call_2",
+          "label": "Keep it close and tell no one yet.",
+          "target": "ca_read",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ca_read",
+      "body": "<<FILL role=read words=180 beats='The reading itself in front of you in the fuel cache, the beat felt up through the boot soles off the open ice there for the taking; how deep you go after it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_read_1",
+          "label": "Decide how far to take the reading.",
+          "target": "ca_gate"
+        },
+        {
+          "id": "c_ca_read_2",
+          "label": "Ask Ivo on the sled line about it first.",
+          "target": "ca_extra2"
+        }
+      ]
+    },
+    {
+      "id": "ca_extra2",
+      "body": "<<FILL role=extra2 words=164 beats='A word first about the fuel cache: the plain sense of it is that make the full heated traverse out to the drum store and back, sledging fresh fuel home and reading the signal in the open shelf on the way is the true reading and the honest short way is go only as far as the flagged halfway cairn and read the shelf from there, the ration kept for the core, and the dark gives no allowance and no second try to a crew that overreaches out here; the choice stands where it stood'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_extra2_1",
+          "label": "Decide how far to take the reading.",
+          "target": "ca_gate"
+        }
+      ]
+    },
+    {
+      "id": "ca_gate",
+      "body": "<<FILL role=gate words=184 beats='The choice at the heart of the fuel cache: make the full heated traverse out to the drum store and back, sledging fresh fuel home and reading the signal in the open shelf on the way, or go only as far as the flagged halfway cairn and read the shelf from there, the ration kept for the core; the deep reading is the fuller answer and it asks more than the module always has to give, and the short reading is honest and always open; decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_gate_1",
+          "label": "Run the full heated traverse to the drum store.",
+          "target": "ca_deep0",
+          "condition": {
+            ">=": [
+              {
+                "var": "fuel"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_ca_gate_2",
+          "label": "Read from the halfway cairn and turn back.",
+          "target": "ca_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ca_deep0",
+      "body": "<<FILL role=deep0 words=172 beats='Committing to the deep reading in the fuel cache, the module standing ready for it and the crew's faith or the ration standing good behind you, the way to the true answer opening at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_deep0_1",
+          "label": "Take it all the way down.",
+          "target": "ca_deep1"
+        }
+      ]
+    },
+    {
+      "id": "ca_deep1",
+      "body": "<<FILL role=deep1 words=202 beats='Into the true deep reading of the fuel cache now: make the full heated traverse out to the drum store and back, sledging fresh fuel home and reading the signal in the open shelf on the way, carried through with everything it asked in hand, the module giving up the beat felt up through the boot soles off the open ice at last in its fullest voice; and it is not less strange for being heard clearly, it is more, the patient beat close and huge and utterly regular; write awe over terror, the largest quiet the winter holds, and hold the dread in it too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_deep1_1",
+          "label": "Stay with the full reading as it comes.",
+          "target": "ca_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "ca_deep2",
+      "body": "<<FILL role=deep2 words=190 beats='The full reading of the fuel cache coming up clean and complete, the beat felt up through the boot soles off the open ice logged in its true depth, the figures rising off the gear with something enormous folded inside them that no number quite holds; the deepest anyone has read this module all winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_deep2_1",
+          "label": "Hold the reading and log it true.",
+          "target": "ca_deep2b"
+        }
+      ]
+    },
+    {
+      "id": "ca_deep2b",
+      "body": "<<FILL role=deep2b words=177 beats='The reading held and set down straight in the log in a hand that only shakes a little, the fuel cache charted deep and the signal's face in it named as plainly as an honest hand can name a thing it does not understand; the module has given all it has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_deep2b_1",
+          "label": "Take stock, and think about coming away.",
+          "target": "ca_deep3"
+        }
+      ]
+    },
+    {
+      "id": "ca_deep3",
+      "body": "<<FILL role=deep3 words=194 beats='The deep reading of the fuel cache done and logged, the beat still going in the dark all around, the pull of it real, that old wish to stay one reading too long with a thing this large; how you leave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_deep3_1",
+          "label": "Log it, gather the crew, and come away clean.",
+          "target": "ca_done"
+        },
+        {
+          "id": "c_ca_deep3_2",
+          "label": "Stay a while longer with what you have found.",
+          "target": "e_ca_deep"
+        }
+      ]
+    },
+    {
+      "id": "ca_shallow",
+      "body": "<<FILL role=shallow words=172 beats='Taking the honest short reading of the fuel cache: go only as far as the flagged halfway cairn and read the shelf from there, the ration kept for the core, the craft doing what the deep reading would do and keeping the crew and the ration safe to do it, the beat felt up through the boot soles off the open ice got true if not got whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_shallow_1",
+          "label": "Log the short reading and stand down.",
+          "target": "ca_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "ca_shallowb",
+      "body": "<<FILL role=shallowb words=184 beats='The short reading of the fuel cache logged plain, the module charted from safe ground, the fuller depth left unread and the crew whole and the cold kept honestly out; an honest survey and no shame in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ca_shallowb_1",
+          "label": "Square the module away and come home.",
+          "target": "ca_done"
+        },
+        {
+          "id": "c_ca_shallowb_2",
+          "label": "Sit a moment with the short reading before you go.",
+          "target": "e_ca_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ca_done",
+      "body": "<<FILL role=done words=184 beats='Kerr comes away from the fuel cache, the module squared to the rules behind and the reading, deep or short, safe in the log; write this arrival-neutral to whatever passed inside, the module worked through and the winter one module deeper either way; the dark a shade heavier, the core's warm light waiting across it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "deepcold",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_ca_done_1",
+          "label": "Cross back to the warm core to re-ration.",
+          "target": "n_mess"
+        },
+        {
+          "id": "c_ca_done_2",
+          "label": "Answer the muster if midwinter has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ca_done_3",
+          "label": "Work the module over once more and chart it whole before you leave.",
+          "target": "e_ca_linger"
+        }
+      ]
+    },
+    {
+      "id": "e_ca_awe",
+      "body": "<<FILL role=awe words=170 beats='Standing with what the fuel cache showed until it is enough: the aurora standing over the whole open shelf in silence while the beat comes up through the ice into your boots, and Kerr stops needing to force a reading to know the winter's true shape, that the thing under the ice is patient and regular and real and that meeting it with open eyes is its own kind of knowing; write awe over terror, the log the richer for the watching, the crew told true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ca_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Shelf's Own Pulse"
+      }
+    },
+    {
+      "id": "e_ca_risk",
+      "body": "<<FILL role=risk words=167 beats='The overreach in the fuel cache is answered the way the dark answers everything, without mercy and without malice: a ground-drift whiteout that swallows the flag line and drives the party back to the core empty-handed, no one lost and the module saved but the reading beaten back and the crew driven home short and shaken; the dark does not bluff, and Kerr will not forget that it did not; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ca_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Whiteout on the Flag Line"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_ca_cold",
+      "body": "<<FILL role=cold words=170 beats='The buddy rule is a rule because of nights exactly like this one: casting off the flag line to push for the drums alone in the dark when the drift comes down, and out past where a voice or a light can reach, alone in the module's frozen dark, the cold does the quiet patient work it always does; the crew finds the place too late and keeps the winter for the one who broke the one rule that matters; write it grave and cold and without gore, a life the dark took'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ca_cold",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Line in the Dark"
+      }
+    },
+    {
+      "id": "e_ca_deep",
+      "body": "<<FILL role=deepend words=172 beats='Staying a while longer with the deep reading of the fuel cache, Kerr lets the full weight of the beat felt up through the boot soles off the open ice settle in, and comes away changed and whole, understanding the winter's one large question a little better than before, that the signal's beauty and its dread are the same thing wearing one face under the same ice; the crew is told, the log stands deep and true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ca_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Beat Through the Ice"
+      }
+    },
+    {
+      "id": "e_ca_shallow",
+      "body": "<<FILL role=shallowend words=164 beats='The short reading of the fuel cache sat with and honored, the module charted honestly from safe ground and the crew whole to chart another; Halvard reads the log after and gives the small nod that is the whole of his praise, because a crew that knows when not to overreach is a crew that lives to read the shelf again; a win, and a plain one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ca_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Cairn Reading"
+      }
+    },
+    {
+      "id": "e_ca_linger",
+      "body": "<<FILL role=linger words=168 beats='Working the fuel cache over once more before leaving, Kerr charts the whole module clean, every gauge and trace and corner of it set down for the crews who come after, the fullest map this module has had in years; the crew stands the watch with you and Halvard, reading it later, keeps a silence that is plainly pride; the dark is a shade smaller for the honest work'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ca_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Traverse Charted"
+      }
+    },
+    {
+      "id": "ma_shore",
+      "body": "<<FILL role=shore words=184 beats='Kerr comes into the met mast: the foot of the met mast out on the surface, the iron lattice climbing thirty metres into the dark toward the aurora sensor and the long wire, rime feathered thick on every rung; the signal shows itself here in the sky's own electric field, a beat laid over the aurora's slow breathing on the sensor trace; write this arrival-neutral, the same module in the same dark whatever crossing brought Kerr here and in whatever state, no route-specific recap; three ways to take it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_shore_1",
+          "label": "Work it shoulder to shoulder with Sunny at the mast foot.",
+          "target": "ma_help"
+        },
+        {
+          "id": "c_ma_shore_2",
+          "label": "Hang back a moment and take the module in.",
+          "target": "ma_watch"
+        },
+        {
+          "id": "c_ma_shore_3",
+          "label": "Go straight at the work on your own line.",
+          "target": "ma_near"
+        }
+      ]
+    },
+    {
+      "id": "ma_help",
+      "body": "<<FILL role=help words=162 beats='Falling in beside Sunny at the mast foot to work the met mast together, the two of you reading the beat laid over the aurora's breathing on the sensor by turns and calling it low between you, the buddy rule kept and the dark a little smaller for the company'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_help_1",
+          "label": "Let the work settle into its rhythm.",
+          "target": "ma_helpb"
+        }
+      ]
+    },
+    {
+      "id": "ma_helpb",
+      "body": "<<FILL role=helpb words=162 beats='The work of the met mast finding its rhythm between the two of you, Sunny at the mast foot steady at your shoulder, the signal steady under the hands, the winter narrowed to the small sure tasks that keep two people alive out here in the cold and the routine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_helpb_1",
+          "label": "Talk over what the beat is doing today.",
+          "target": "ma_helpc"
+        }
+      ]
+    },
+    {
+      "id": "ma_helpc",
+      "body": "<<FILL role=helpc words=162 beats='Between tasks Sunny at the mast foot says quietly what the whole crew has been circling, that the beat laid over the aurora's breathing on the sensor is stronger this week than last, and that whatever it is it is not stopping and not slowing; the two of you sit a moment with that in the cold before the work takes you back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_helpc_1",
+          "label": "Get back to it before the cold settles in.",
+          "target": "ma_helpd"
+        }
+      ]
+    },
+    {
+      "id": "ma_helpd",
+      "body": "<<FILL role=helpd words=162 beats='The last of the shoulder-work in the met mast done well and done together, the module squared away to the standing rules, Sunny at the mast foot knocking off the rime and calling the two of you square; a good crossing so far, and the harder part of the reading still ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_helpd_1",
+          "label": "Turn to the reading itself.",
+          "target": "ma_conv"
+        }
+      ]
+    },
+    {
+      "id": "ma_watch",
+      "body": "<<FILL role=watch words=170 beats='Hanging back a moment on the threshold of the met mast to take it in before the work starts, letting the module and its dark and its cold settle into you, the beat there under everything the way it is everywhere now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_watch_1",
+          "label": "Watch, and let the module show itself.",
+          "target": "ma_watchb"
+        }
+      ]
+    },
+    {
+      "id": "ma_watchb",
+      "body": "<<FILL role=watchb words=180 beats='And the met mast shows Kerr its face: the aurora unrolling silent and enormous over the whole shelf while the beat pulses steady under it, and the doubled weight of it lands, the awe and the dread of it together, a thing too regular and too patient to be the dead shelf and too strange to name; how long you stand with it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_watchb_1",
+          "label": "Take the weight of it, then turn to the work.",
+          "target": "ma_watchc"
+        },
+        {
+          "id": "c_ma_watchb_2",
+          "label": "Stay with it, and let it be enough.",
+          "target": "e_ma_awe"
+        }
+      ]
+    },
+    {
+      "id": "ma_watchc",
+      "body": "<<FILL role=watchc words=162 beats='Carrying the weight of what the met mast showed you back to the work in hand, steadier for having met it square instead of flinching; the reading still to take, and the dark no less large for being looked at, only better known'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_watchc_1",
+          "label": "Turn to the reading itself.",
+          "target": "ma_conv"
+        }
+      ]
+    },
+    {
+      "id": "ma_near",
+      "body": "<<FILL role=near words=180 beats='Going straight at the met mast on your own line, no one at your shoulder yet, the quickest way into the work and the way the rules like least; how hard you push it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_near_1",
+          "label": "Run the heater hot and force the frozen winch to lift the gear.",
+          "target": "ma_hard",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "fuel",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_ma_near_2",
+          "label": "Take the careful, slower line that keeps to the rules.",
+          "target": "ma_care"
+        },
+        {
+          "id": "c_ma_near_3",
+          "label": "Push in harder and faster than the dark allows.",
+          "target": "ma_reckless"
+        }
+      ]
+    },
+    {
+      "id": "ma_reckless",
+      "body": "<<FILL role=reckless words=162 beats='Pushing into the met mast harder and faster than the standing rules of the dark allow, the cold and the module both against you, the sensible line already behind; one more step commits it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_reckless_1",
+          "label": "Commit, and drive it past the safe mark.",
+          "target": "ma_recklessb"
+        },
+        {
+          "id": "c_ma_reckless_2",
+          "label": "Catch yourself, and fall back to the careful line.",
+          "target": "ma_care"
+        }
+      ]
+    },
+    {
+      "id": "ma_recklessb",
+      "body": "<<FILL role=recklessb words=172 beats='Past the safe mark now in the met mast and no easy way back, the dark holding all the cards: the two ways this goes are climbing on past the safe mark alone into the wind with bare hands to free the frozen sensor, or the cold and the module simply stopping you before it kills you; write the peril real and close, dread not gore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_recklessb_1",
+          "label": "Go on alone into it whatever it costs.",
+          "target": "e_ma_cold"
+        },
+        {
+          "id": "c_ma_recklessb_2",
+          "label": "Force the work through and pay for it.",
+          "target": "e_ma_risk"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ma_hard",
+      "body": "<<FILL role=hard words=177 beats='Taking the hard fast way into the met mast: running the portable heater hot to thaw the frozen mast winch and lift the sensor gear fast, the surest way up and the greediest, a hard pull on the ration; the work bought quick and dear, the module opening to you at a price the ration or the crew will feel later; done, and no one hurt'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_hard_1",
+          "label": "Get to the reading now the way is forced.",
+          "target": "ma_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ma_care",
+      "body": "<<FILL role=care words=167 beats='Taking the careful, slower line into the met mast that keeps to the standing rules, costing time and no more, the module reached with the ration whole and the crew's faith whole and the cold kept honestly at bay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_care_1",
+          "label": "Come to the reading with everything intact.",
+          "target": "ma_conv"
+        }
+      ]
+    },
+    {
+      "id": "ma_conv",
+      "body": "<<FILL role=conv words=180 beats='At the heart of the met mast now with the way in behind you, the module warm enough and the gear to hand and the beat laid over the aurora's breathing on the sensor waiting to be read properly; write this arrival-neutral, the reading ahead the same however the way in was taken'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_conv_1",
+          "label": "Square the gear and decide how to carry this.",
+          "target": "ma_call"
+        },
+        {
+          "id": "c_ma_conv_2",
+          "label": "Steady yourself and the module first.",
+          "target": "ma_convb"
+        }
+      ]
+    },
+    {
+      "id": "ma_convb",
+      "body": "<<FILL role=convb words=162 beats='Taking a moment in the met mast to steady the gear and your own nerve, the beat filling the quiet, the dark pressing at the module's thin walls; then the real question of how this reading is carried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_convb_1",
+          "label": "Decide how to carry what the module gives.",
+          "target": "ma_call"
+        }
+      ]
+    },
+    {
+      "id": "ma_call",
+      "body": "<<FILL role=call words=190 beats='The winter's quiet question rises here in the met mast, the one the dark keeps asking: whatever the beat laid over the aurora's breathing on the sensor turns out to be, do you call it back to the whole crew on the radio and carry it together, or does the long dark tell you to keep it close and say nothing yet, trusting no one quite the way you did in the light; how you carry it decides how much of the crew is still at your back by midwinter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_call_1",
+          "label": "Radio it back to the crew and share the watch.",
+          "target": "ma_read",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_ma_call_2",
+          "label": "Keep it close and tell no one yet.",
+          "target": "ma_read",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ma_read",
+      "body": "<<FILL role=read words=180 beats='The reading itself in front of you in the met mast, the beat laid over the aurora's breathing on the sensor there for the taking; how deep you go after it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_read_1",
+          "label": "Decide how far to take the reading.",
+          "target": "ma_gate"
+        },
+        {
+          "id": "c_ma_read_2",
+          "label": "Ask Sunny at the mast foot about it first.",
+          "target": "ma_extra2"
+        }
+      ]
+    },
+    {
+      "id": "ma_extra2",
+      "body": "<<FILL role=extra2 words=164 beats='A word first about the met mast: the plain sense of it is that climb the iced mast to the aurora sensor at its head with a portable heater lashed on and read the signal in the sky's field where it is cleanest is the true reading and the honest short way is read the base instruments from the warm hut at the mast foot without the climb, and the dark gives no allowance and no second try to a crew that overreaches out here; the choice stands where it stood'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_extra2_1",
+          "label": "Decide how far to take the reading.",
+          "target": "ma_gate"
+        }
+      ]
+    },
+    {
+      "id": "ma_gate",
+      "body": "<<FILL role=gate words=184 beats='The choice at the heart of the met mast: climb the iced mast to the aurora sensor at its head with a portable heater lashed on and read the signal in the sky's field where it is cleanest, or read the base instruments from the warm hut at the mast foot without the climb; the deep reading is the fuller answer and it asks more than the module always has to give, and the short reading is honest and always open; decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_gate_1",
+          "label": "Climb the iced mast to the sensor with the heater.",
+          "target": "ma_deep0",
+          "condition": {
+            ">=": [
+              {
+                "var": "fuel"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_ma_gate_2",
+          "label": "Read the base instruments from the mast-foot hut.",
+          "target": "ma_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ma_deep0",
+      "body": "<<FILL role=deep0 words=172 beats='Committing to the deep reading in the met mast, the module standing ready for it and the crew's faith or the ration standing good behind you, the way to the true answer opening at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_deep0_1",
+          "label": "Take it all the way down.",
+          "target": "ma_deep1"
+        }
+      ]
+    },
+    {
+      "id": "ma_deep1",
+      "body": "<<FILL role=deep1 words=202 beats='Into the true deep reading of the met mast now: climb the iced mast to the aurora sensor at its head with a portable heater lashed on and read the signal in the sky's field where it is cleanest, carried through with everything it asked in hand, the module giving up the beat laid over the aurora's breathing on the sensor at last in its fullest voice; and it is not less strange for being heard clearly, it is more, the patient beat close and huge and utterly regular; write awe over terror, the largest quiet the winter holds, and hold the dread in it too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_deep1_1",
+          "label": "Stay with the full reading as it comes.",
+          "target": "ma_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "ma_deep2",
+      "body": "<<FILL role=deep2 words=190 beats='The full reading of the met mast coming up clean and complete, the beat laid over the aurora's breathing on the sensor logged in its true depth, the figures rising off the gear with something enormous folded inside them that no number quite holds; the deepest anyone has read this module all winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_deep2_1",
+          "label": "Hold the reading and log it true.",
+          "target": "ma_deep2b"
+        }
+      ]
+    },
+    {
+      "id": "ma_deep2b",
+      "body": "<<FILL role=deep2b words=177 beats='The reading held and set down straight in the log in a hand that only shakes a little, the met mast charted deep and the signal's face in it named as plainly as an honest hand can name a thing it does not understand; the module has given all it has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_deep2b_1",
+          "label": "Take stock, and think about coming away.",
+          "target": "ma_deep3"
+        }
+      ]
+    },
+    {
+      "id": "ma_deep3",
+      "body": "<<FILL role=deep3 words=194 beats='The deep reading of the met mast done and logged, the beat still going in the dark all around, the pull of it real, that old wish to stay one reading too long with a thing this large; how you leave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_deep3_1",
+          "label": "Log it, gather the crew, and come away clean.",
+          "target": "ma_done"
+        },
+        {
+          "id": "c_ma_deep3_2",
+          "label": "Stay a while longer with what you have found.",
+          "target": "e_ma_deep"
+        }
+      ]
+    },
+    {
+      "id": "ma_shallow",
+      "body": "<<FILL role=shallow words=172 beats='Taking the honest short reading of the met mast: read the base instruments from the warm hut at the mast foot without the climb, the craft doing what the deep reading would do and keeping the crew and the ration safe to do it, the beat laid over the aurora's breathing on the sensor got true if not got whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_shallow_1",
+          "label": "Log the short reading and stand down.",
+          "target": "ma_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "ma_shallowb",
+      "body": "<<FILL role=shallowb words=184 beats='The short reading of the met mast logged plain, the module charted from safe ground, the fuller depth left unread and the crew whole and the cold kept honestly out; an honest survey and no shame in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ma_shallowb_1",
+          "label": "Square the module away and come home.",
+          "target": "ma_done"
+        },
+        {
+          "id": "c_ma_shallowb_2",
+          "label": "Sit a moment with the short reading before you go.",
+          "target": "e_ma_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ma_done",
+      "body": "<<FILL role=done words=184 beats='Kerr comes away from the met mast, the module squared to the rules behind and the reading, deep or short, safe in the log; write this arrival-neutral to whatever passed inside, the module worked through and the winter one module deeper either way; the dark a shade heavier, the core's warm light waiting across it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "deepcold",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_ma_done_1",
+          "label": "Cross back to the warm core to re-ration.",
+          "target": "n_mess"
+        },
+        {
+          "id": "c_ma_done_2",
+          "label": "Answer the muster if midwinter has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ma_done_3",
+          "label": "Work the module over once more and chart it whole before you leave.",
+          "target": "e_ma_linger"
+        }
+      ]
+    },
+    {
+      "id": "e_ma_awe",
+      "body": "<<FILL role=awe words=170 beats='Standing with what the met mast showed until it is enough: the aurora unrolling silent and enormous over the whole shelf while the beat pulses steady under it, and Kerr stops needing to force a reading to know the winter's true shape, that the thing under the ice is patient and regular and real and that meeting it with open eyes is its own kind of knowing; write awe over terror, the log the richer for the watching, the crew told true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ma_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Beat Under the Aurora"
+      }
+    },
+    {
+      "id": "e_ma_risk",
+      "body": "<<FILL role=risk words=167 beats='The overreach in the met mast is answered the way the dark answers everything, without mercy and without malice: a rime-load and a rising wind that ice the rungs and drive the climb back down half-done, no one lost and the module saved but the reading beaten back and the crew driven home short and shaken; the dark does not bluff, and Kerr will not forget that it did not; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ma_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Iced Off the Mast"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_ma_cold",
+      "body": "<<FILL role=cold words=170 beats='The buddy rule is a rule because of nights exactly like this one: climbing on past the safe mark alone into the wind with bare hands to free the frozen sensor, and out past where a voice or a light can reach, alone in the module's frozen dark, the cold does the quiet patient work it always does; the crew finds the place too late and keeps the winter for the one who broke the one rule that matters; write it grave and cold and without gore, a life the dark took'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ma_cold",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Bare Hands at the Masthead"
+      }
+    },
+    {
+      "id": "e_ma_deep",
+      "body": "<<FILL role=deepend words=172 beats='Staying a while longer with the deep reading of the met mast, Kerr lets the full weight of the beat laid over the aurora's breathing on the sensor settle in, and comes away changed and whole, understanding the winter's one large question a little better than before, that the signal's beauty and its dread are the same thing wearing one face under the same ice; the crew is told, the log stands deep and true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ma_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Sky's Slow Pulse"
+      }
+    },
+    {
+      "id": "e_ma_shallow",
+      "body": "<<FILL role=shallowend words=164 beats='The short reading of the met mast sat with and honored, the module charted honestly from safe ground and the crew whole to chart another; Halvard reads the log after and gives the small nod that is the whole of his praise, because a crew that knows when not to overreach is a crew that lives to read the shelf again; a win, and a plain one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ma_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Base Instruments Read"
+      }
+    },
+    {
+      "id": "e_ma_linger",
+      "body": "<<FILL role=linger words=168 beats='Working the met mast over once more before leaving, Kerr charts the whole module clean, every gauge and trace and corner of it set down for the crews who come after, the fullest map this module has had in years; the crew stands the watch with you and Halvard, reading it later, keeps a silence that is plainly pride; the dark is a shade smaller for the honest work'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ma_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Mast Charted"
+      }
+    },
+    {
+      "id": "bh_shore",
+      "body": "<<FILL role=shore words=184 beats='Kerr comes into the borehole: the borehole shaft house, the ice-core hole sunk hundreds of metres toward the shelf's floor, the winch and the warmed sonde over its black mouth, cold breathing up out of it; the signal shows itself here nearest its source, the beat coming up the shaft through the ice loud enough to feel in the wellhead casing; write this arrival-neutral, the same module in the same dark whatever crossing brought Kerr here and in whatever state, no route-specific recap; three ways to take it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_shore_1",
+          "label": "Work it shoulder to shoulder with Marta at the wellhead.",
+          "target": "bh_help"
+        },
+        {
+          "id": "c_bh_shore_2",
+          "label": "Hang back a moment and take the module in.",
+          "target": "bh_watch"
+        },
+        {
+          "id": "c_bh_shore_3",
+          "label": "Go straight at the work on your own line.",
+          "target": "bh_near"
+        }
+      ]
+    },
+    {
+      "id": "bh_help",
+      "body": "<<FILL role=help words=162 beats='Falling in beside Marta at the wellhead to work the borehole together, the two of you reading the beat coming up the shaft loud enough to feel in the casing by turns and calling it low between you, the buddy rule kept and the dark a little smaller for the company'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_help_1",
+          "label": "Let the work settle into its rhythm.",
+          "target": "bh_helpb"
+        }
+      ]
+    },
+    {
+      "id": "bh_helpb",
+      "body": "<<FILL role=helpb words=162 beats='The work of the borehole finding its rhythm between the two of you, Marta at the wellhead steady at your shoulder, the signal steady under the hands, the winter narrowed to the small sure tasks that keep two people alive out here in the cold and the routine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_helpb_1",
+          "label": "Talk over what the beat is doing today.",
+          "target": "bh_helpc"
+        }
+      ]
+    },
+    {
+      "id": "bh_helpc",
+      "body": "<<FILL role=helpc words=162 beats='Between tasks Marta at the wellhead says quietly what the whole crew has been circling, that the beat coming up the shaft loud enough to feel in the casing is stronger this week than last, and that whatever it is it is not stopping and not slowing; the two of you sit a moment with that in the cold before the work takes you back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_helpc_1",
+          "label": "Get back to it before the cold settles in.",
+          "target": "bh_helpd"
+        }
+      ]
+    },
+    {
+      "id": "bh_helpd",
+      "body": "<<FILL role=helpd words=162 beats='The last of the shoulder-work in the borehole done well and done together, the module squared away to the standing rules, Marta at the wellhead knocking off the rime and calling the two of you square; a good crossing so far, and the harder part of the reading still ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_helpd_1",
+          "label": "Turn to the reading itself.",
+          "target": "bh_conv"
+        }
+      ]
+    },
+    {
+      "id": "bh_watch",
+      "body": "<<FILL role=watch words=170 beats='Hanging back a moment on the threshold of the borehole to take it in before the work starts, letting the module and its dark and its cold settle into you, the beat there under everything the way it is everywhere now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_watch_1",
+          "label": "Watch, and let the module show itself.",
+          "target": "bh_watchb"
+        }
+      ]
+    },
+    {
+      "id": "bh_watchb",
+      "body": "<<FILL role=watchb words=180 beats='And the borehole shows Kerr its face: the beat rising up the black shaft through hundreds of metres of ice, patient and enormous and close, and the doubled weight of it lands, the awe and the dread of it together, a thing too regular and too patient to be the dead shelf and too strange to name; how long you stand with it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_watchb_1",
+          "label": "Take the weight of it, then turn to the work.",
+          "target": "bh_watchc"
+        },
+        {
+          "id": "c_bh_watchb_2",
+          "label": "Stay with it, and let it be enough.",
+          "target": "e_bh_awe"
+        }
+      ]
+    },
+    {
+      "id": "bh_watchc",
+      "body": "<<FILL role=watchc words=162 beats='Carrying the weight of what the borehole showed you back to the work in hand, steadier for having met it square instead of flinching; the reading still to take, and the dark no less large for being looked at, only better known'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_watchc_1",
+          "label": "Turn to the reading itself.",
+          "target": "bh_conv"
+        }
+      ]
+    },
+    {
+      "id": "bh_near",
+      "body": "<<FILL role=near words=180 beats='Going straight at the borehole on your own line, no one at your shoulder yet, the quickest way into the work and the way the rules like least; how hard you push it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_near_1",
+          "label": "Run the winch heater full to thaw the iced cage fast.",
+          "target": "bh_hard",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "fuel",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_bh_near_2",
+          "label": "Take the careful, slower line that keeps to the rules.",
+          "target": "bh_care"
+        },
+        {
+          "id": "c_bh_near_3",
+          "label": "Push in harder and faster than the dark allows.",
+          "target": "bh_reckless"
+        }
+      ]
+    },
+    {
+      "id": "bh_reckless",
+      "body": "<<FILL role=reckless words=162 beats='Pushing into the borehole harder and faster than the standing rules of the dark allow, the cold and the module both against you, the sensible line already behind; one more step commits it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_reckless_1",
+          "label": "Commit, and drive it past the safe mark.",
+          "target": "bh_recklessb"
+        },
+        {
+          "id": "c_bh_reckless_2",
+          "label": "Catch yourself, and fall back to the careful line.",
+          "target": "bh_care"
+        }
+      ]
+    },
+    {
+      "id": "bh_recklessb",
+      "body": "<<FILL role=recklessb words=172 beats='Past the safe mark now in the borehole and no easy way back, the dark holding all the cards: the two ways this goes are riding the cage on down alone past the deep mark into the shaft's throat where no line reaches, or the cold and the module simply stopping you before it kills you; write the peril real and close, dread not gore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_recklessb_1",
+          "label": "Go on alone into it whatever it costs.",
+          "target": "e_bh_cold"
+        },
+        {
+          "id": "c_bh_recklessb_2",
+          "label": "Force the work through and pay for it.",
+          "target": "e_bh_risk"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "bh_hard",
+      "body": "<<FILL role=hard words=177 beats='Taking the hard fast way into the borehole: running the winch heater at its full to thaw the iced sonde cage fast enough to descend before the window closes, quick and very thirsty, a deep bite of the ration; the work bought quick and dear, the module opening to you at a price the ration or the crew will feel later; done, and no one hurt'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_hard_1",
+          "label": "Get to the reading now the way is forced.",
+          "target": "bh_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "bh_care",
+      "body": "<<FILL role=care words=167 beats='Taking the careful, slower line into the borehole that keeps to the standing rules, costing time and no more, the module reached with the ration whole and the crew's faith whole and the cold kept honestly at bay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_care_1",
+          "label": "Come to the reading with everything intact.",
+          "target": "bh_conv"
+        }
+      ]
+    },
+    {
+      "id": "bh_conv",
+      "body": "<<FILL role=conv words=180 beats='At the heart of the borehole now with the way in behind you, the module warm enough and the gear to hand and the beat coming up the shaft loud enough to feel in the casing waiting to be read properly; write this arrival-neutral, the reading ahead the same however the way in was taken'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_conv_1",
+          "label": "Square the gear and decide how to carry this.",
+          "target": "bh_call"
+        },
+        {
+          "id": "c_bh_conv_2",
+          "label": "Steady yourself and the module first.",
+          "target": "bh_convb"
+        }
+      ]
+    },
+    {
+      "id": "bh_convb",
+      "body": "<<FILL role=convb words=162 beats='Taking a moment in the borehole to steady the gear and your own nerve, the beat filling the quiet, the dark pressing at the module's thin walls; then the real question of how this reading is carried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_convb_1",
+          "label": "Decide how to carry what the module gives.",
+          "target": "bh_call"
+        }
+      ]
+    },
+    {
+      "id": "bh_call",
+      "body": "<<FILL role=call words=190 beats='The winter's quiet question rises here in the borehole, the one the dark keeps asking: whatever the beat coming up the shaft loud enough to feel in the casing turns out to be, do you call it back to the whole crew on the radio and carry it together, or does the long dark tell you to keep it close and say nothing yet, trusting no one quite the way you did in the light; how you carry it decides how much of the crew is still at your back by midwinter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_call_1",
+          "label": "Radio it back to the crew and share the watch.",
+          "target": "bh_read",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_bh_call_2",
+          "label": "Keep it close and tell no one yet.",
+          "target": "bh_read",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bh_read",
+      "body": "<<FILL role=read words=180 beats='The reading itself in front of you in the borehole, the beat coming up the shaft loud enough to feel in the casing there for the taking; how deep you go after it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_read_1",
+          "label": "Decide how far to take the reading.",
+          "target": "bh_gate"
+        },
+        {
+          "id": "c_bh_read_2",
+          "label": "Ask Marta at the wellhead about it first.",
+          "target": "bh_extra2"
+        }
+      ]
+    },
+    {
+      "id": "bh_extra2",
+      "body": "<<FILL role=extra2 words=164 beats='A word first about the borehole: the plain sense of it is that run the winch heater and ride the warmed sonde cage down to the deep mark to hear the signal close to where it is born is the true reading and the honest short way is lower the sonde on the line and read the signal from the wellhead without going down, and the dark gives no allowance and no second try to a crew that overreaches out here; the choice stands where it stood'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_extra2_1",
+          "label": "Decide how far to take the reading.",
+          "target": "bh_gate"
+        }
+      ]
+    },
+    {
+      "id": "bh_gate",
+      "body": "<<FILL role=gate words=184 beats='The choice at the heart of the borehole: run the winch heater and ride the warmed sonde cage down to the deep mark to hear the signal close to where it is born, or lower the sonde on the line and read the signal from the wellhead without going down; the deep reading is the fuller answer and it asks more than the module always has to give, and the short reading is honest and always open; decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_gate_1",
+          "label": "Ride the warmed cage down to the deep mark.",
+          "target": "bh_deep0",
+          "condition": {
+            ">=": [
+              {
+                "var": "fuel"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_bh_gate_2",
+          "label": "Read from the wellhead with the sonde alone.",
+          "target": "bh_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bh_deep0",
+      "body": "<<FILL role=deep0 words=172 beats='Committing to the deep reading in the borehole, the module standing ready for it and the crew's faith or the ration standing good behind you, the way to the true answer opening at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_deep0_1",
+          "label": "Take it all the way down.",
+          "target": "bh_deep1"
+        }
+      ]
+    },
+    {
+      "id": "bh_deep1",
+      "body": "<<FILL role=deep1 words=202 beats='Into the true deep reading of the borehole now: run the winch heater and ride the warmed sonde cage down to the deep mark to hear the signal close to where it is born, carried through with everything it asked in hand, the module giving up the beat coming up the shaft loud enough to feel in the casing at last in its fullest voice; and it is not less strange for being heard clearly, it is more, the patient beat close and huge and utterly regular; write awe over terror, the largest quiet the winter holds, and hold the dread in it too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_deep1_1",
+          "label": "Stay with the full reading as it comes.",
+          "target": "bh_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "bh_deep2",
+      "body": "<<FILL role=deep2 words=190 beats='The full reading of the borehole coming up clean and complete, the beat coming up the shaft loud enough to feel in the casing logged in its true depth, the figures rising off the gear with something enormous folded inside them that no number quite holds; the deepest anyone has read this module all winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_deep2_1",
+          "label": "Hold the reading and log it true.",
+          "target": "bh_deep2b"
+        }
+      ]
+    },
+    {
+      "id": "bh_deep2b",
+      "body": "<<FILL role=deep2b words=177 beats='The reading held and set down straight in the log in a hand that only shakes a little, the borehole charted deep and the signal's face in it named as plainly as an honest hand can name a thing it does not understand; the module has given all it has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_deep2b_1",
+          "label": "Take stock, and think about coming away.",
+          "target": "bh_deep3"
+        }
+      ]
+    },
+    {
+      "id": "bh_deep3",
+      "body": "<<FILL role=deep3 words=194 beats='The deep reading of the borehole done and logged, the beat still going in the dark all around, the pull of it real, that old wish to stay one reading too long with a thing this large; how you leave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_deep3_1",
+          "label": "Log it, gather the crew, and come away clean.",
+          "target": "bh_done"
+        },
+        {
+          "id": "c_bh_deep3_2",
+          "label": "Stay a while longer with what you have found.",
+          "target": "e_bh_deep"
+        }
+      ]
+    },
+    {
+      "id": "bh_shallow",
+      "body": "<<FILL role=shallow words=172 beats='Taking the honest short reading of the borehole: lower the sonde on the line and read the signal from the wellhead without going down, the craft doing what the deep reading would do and keeping the crew and the ration safe to do it, the beat coming up the shaft loud enough to feel in the casing got true if not got whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_shallow_1",
+          "label": "Log the short reading and stand down.",
+          "target": "bh_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "bh_shallowb",
+      "body": "<<FILL role=shallowb words=184 beats='The short reading of the borehole logged plain, the module charted from safe ground, the fuller depth left unread and the crew whole and the cold kept honestly out; an honest survey and no shame in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bh_shallowb_1",
+          "label": "Square the module away and come home.",
+          "target": "bh_done"
+        },
+        {
+          "id": "c_bh_shallowb_2",
+          "label": "Sit a moment with the short reading before you go.",
+          "target": "e_bh_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bh_done",
+      "body": "<<FILL role=done words=184 beats='Kerr comes away from the borehole, the module squared to the rules behind and the reading, deep or short, safe in the log; write this arrival-neutral to whatever passed inside, the module worked through and the winter one module deeper either way; the dark a shade heavier, the core's warm light waiting across it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "deepcold",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_bh_done_1",
+          "label": "Cross back to the warm core to re-ration.",
+          "target": "n_mess"
+        },
+        {
+          "id": "c_bh_done_2",
+          "label": "Answer the muster if midwinter has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_bh_done_3",
+          "label": "Work the module over once more and chart it whole before you leave.",
+          "target": "e_bh_linger"
+        }
+      ]
+    },
+    {
+      "id": "e_bh_awe",
+      "body": "<<FILL role=awe words=170 beats='Standing with what the borehole showed until it is enough: the beat rising up the black shaft through hundreds of metres of ice, patient and enormous and close, and Kerr stops needing to force a reading to know the winter's true shape, that the thing under the ice is patient and regular and real and that meeting it with open eyes is its own kind of knowing; write awe over terror, the log the richer for the watching, the crew told true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bh_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Close to the Source"
+      }
+    },
+    {
+      "id": "e_bh_risk",
+      "body": "<<FILL role=risk words=167 beats='The overreach in the borehole is answered the way the dark answers everything, without mercy and without malice: the shaft rime-choking and the cage jamming, the party hauled up short of the mark, no one lost and the module saved but the reading beaten back and the crew driven home short and shaken; the dark does not bluff, and Kerr will not forget that it did not; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bh_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Jammed in the Shaft"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_bh_cold",
+      "body": "<<FILL role=cold words=170 beats='The buddy rule is a rule because of nights exactly like this one: riding the cage on down alone past the deep mark into the shaft's throat where no line reaches, and out past where a voice or a light can reach, alone in the module's frozen dark, the cold does the quiet patient work it always does; the crew finds the place too late and keeps the winter for the one who broke the one rule that matters; write it grave and cold and without gore, a life the dark took'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bh_cold",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down Past the Deep Mark"
+      }
+    },
+    {
+      "id": "e_bh_deep",
+      "body": "<<FILL role=deepend words=172 beats='Staying a while longer with the deep reading of the borehole, Kerr lets the full weight of the beat coming up the shaft loud enough to feel in the casing settle in, and comes away changed and whole, understanding the winter's one large question a little better than before, that the signal's beauty and its dread are the same thing wearing one face under the same ice; the crew is told, the log stands deep and true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bh_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Beat Up the Shaft"
+      }
+    },
+    {
+      "id": "e_bh_shallow",
+      "body": "<<FILL role=shallowend words=164 beats='The short reading of the borehole sat with and honored, the module charted honestly from safe ground and the crew whole to chart another; Halvard reads the log after and gives the small nod that is the whole of his praise, because a crew that knows when not to overreach is a crew that lives to read the shelf again; a win, and a plain one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bh_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Wellhead Reading"
+      }
+    },
+    {
+      "id": "e_bh_linger",
+      "body": "<<FILL role=linger words=168 beats='Working the borehole over once more before leaving, Kerr charts the whole module clean, every gauge and trace and corner of it set down for the crews who come after, the fullest map this module has had in years; the crew stands the watch with you and Halvard, reading it later, keeps a silence that is plainly pride; the dark is a shade smaller for the honest work'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bh_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Borehole Charted"
+      }
+    },
+    {
+      "id": "vt_shore",
+      "body": "<<FILL role=shore words=184 beats='Kerr comes into the seismic vault: Marta's seismic vault under its low dome, the array screens washing the dark room in pale light, the whole floor of instruments given over to the one beat, Marta more shadow than woman among them these last weeks; the signal shows itself here plainest of all, the array painting its slow pulse across every trace at once; write this arrival-neutral, the same module in the same dark whatever crossing brought Kerr here and in whatever state, no route-specific recap; three ways to take it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_shore_1",
+          "label": "Work it shoulder to shoulder with Marta at the array.",
+          "target": "vt_help"
+        },
+        {
+          "id": "c_vt_shore_2",
+          "label": "Hang back a moment and take the module in.",
+          "target": "vt_watch"
+        },
+        {
+          "id": "c_vt_shore_3",
+          "label": "Go straight at the work on your own line.",
+          "target": "vt_near"
+        }
+      ]
+    },
+    {
+      "id": "vt_help",
+      "body": "<<FILL role=help words=162 beats='Falling in beside Marta at the array to work the seismic vault together, the two of you reading the pulse the array paints across every trace at once by turns and calling it low between you, the buddy rule kept and the dark a little smaller for the company'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_help_1",
+          "label": "Let the work settle into its rhythm.",
+          "target": "vt_helpb"
+        }
+      ]
+    },
+    {
+      "id": "vt_helpb",
+      "body": "<<FILL role=helpb words=162 beats='The work of the seismic vault finding its rhythm between the two of you, Marta at the array steady at your shoulder, the signal steady under the hands, the winter narrowed to the small sure tasks that keep two people alive out here in the cold and the routine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_helpb_1",
+          "label": "Talk over what the beat is doing today.",
+          "target": "vt_helpc"
+        }
+      ]
+    },
+    {
+      "id": "vt_helpc",
+      "body": "<<FILL role=helpc words=162 beats='Between tasks Marta at the array says quietly what the whole crew has been circling, that the pulse the array paints across every trace at once is stronger this week than last, and that whatever it is it is not stopping and not slowing; the two of you sit a moment with that in the cold before the work takes you back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_helpc_1",
+          "label": "Get back to it before the cold settles in.",
+          "target": "vt_helpd"
+        }
+      ]
+    },
+    {
+      "id": "vt_helpd",
+      "body": "<<FILL role=helpd words=162 beats='The last of the shoulder-work in the seismic vault done well and done together, the module squared away to the standing rules, Marta at the array knocking off the rime and calling the two of you square; a good crossing so far, and the harder part of the reading still ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_helpd_1",
+          "label": "Turn to the reading itself.",
+          "target": "vt_conv"
+        }
+      ]
+    },
+    {
+      "id": "vt_watch",
+      "body": "<<FILL role=watch words=170 beats='Hanging back a moment on the threshold of the seismic vault to take it in before the work starts, letting the module and its dark and its cold settle into you, the beat there under everything the way it is everywhere now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_watch_1",
+          "label": "Watch, and let the module show itself.",
+          "target": "vt_watchb"
+        }
+      ]
+    },
+    {
+      "id": "vt_watchb",
+      "body": "<<FILL role=watchb words=180 beats='And the seismic vault shows Kerr its face: the array painting the signal whole across the wall, a shape too regular and too patient to be anything the shelf does by itself, and the doubled weight of it lands, the awe and the dread of it together, a thing too regular and too patient to be the dead shelf and too strange to name; how long you stand with it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_watchb_1",
+          "label": "Take the weight of it, then turn to the work.",
+          "target": "vt_watchc"
+        },
+        {
+          "id": "c_vt_watchb_2",
+          "label": "Stay with it, and let it be enough.",
+          "target": "e_vt_awe"
+        }
+      ]
+    },
+    {
+      "id": "vt_watchc",
+      "body": "<<FILL role=watchc words=162 beats='Carrying the weight of what the seismic vault showed you back to the work in hand, steadier for having met it square instead of flinching; the reading still to take, and the dark no less large for being looked at, only better known'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_watchc_1",
+          "label": "Turn to the reading itself.",
+          "target": "vt_conv"
+        }
+      ]
+    },
+    {
+      "id": "vt_near",
+      "body": "<<FILL role=near words=180 beats='Going straight at the seismic vault on your own line, no one at your shoulder yet, the quickest way into the work and the way the rules like least; how hard you push it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_near_1",
+          "label": "Open the live channel yourself without waiting for the crew.",
+          "target": "vt_hard",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_vt_near_2",
+          "label": "Take the careful, slower line that keeps to the rules.",
+          "target": "vt_care"
+        },
+        {
+          "id": "c_vt_near_3",
+          "label": "Push in harder and faster than the dark allows.",
+          "target": "vt_reckless"
+        }
+      ]
+    },
+    {
+      "id": "vt_reckless",
+      "body": "<<FILL role=reckless words=162 beats='Pushing into the seismic vault harder and faster than the standing rules of the dark allow, the cold and the module both against you, the sensible line already behind; one more step commits it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_reckless_1",
+          "label": "Commit, and drive it past the safe mark.",
+          "target": "vt_recklessb"
+        },
+        {
+          "id": "c_vt_reckless_2",
+          "label": "Catch yourself, and fall back to the careful line.",
+          "target": "vt_care"
+        }
+      ]
+    },
+    {
+      "id": "vt_recklessb",
+      "body": "<<FILL role=recklessb words=172 beats='Past the safe mark now in the seismic vault and no easy way back, the dark holding all the cards: the two ways this goes are sealing yourself alone in the vault with the live signal and the door shut, telling no one, letting the dark and the beat have you, or the cold and the module simply stopping you before it kills you; write the peril real and close, dread not gore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_recklessb_1",
+          "label": "Go on alone into it whatever it costs.",
+          "target": "e_vt_cold"
+        },
+        {
+          "id": "c_vt_recklessb_2",
+          "label": "Force the work through and pay for it.",
+          "target": "e_vt_risk"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "vt_hard",
+      "body": "<<FILL role=hard words=177 beats='Taking the hard fast way into the seismic vault: opening the live deep-listen channel yourself in the dark room without waiting for the crew to stand it with you, a thing the buddy rule plainly forbids; the work bought quick and dear, the module opening to you at a price the ration or the crew will feel later; done, and no one hurt'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_hard_1",
+          "label": "Get to the reading now the way is forced.",
+          "target": "vt_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "vt_care",
+      "body": "<<FILL role=care words=167 beats='Taking the careful, slower line into the seismic vault that keeps to the standing rules, costing time and no more, the module reached with the ration whole and the crew's faith whole and the cold kept honestly at bay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_care_1",
+          "label": "Come to the reading with everything intact.",
+          "target": "vt_conv"
+        }
+      ]
+    },
+    {
+      "id": "vt_conv",
+      "body": "<<FILL role=conv words=180 beats='At the heart of the seismic vault now with the way in behind you, the module warm enough and the gear to hand and the pulse the array paints across every trace at once waiting to be read properly; write this arrival-neutral, the reading ahead the same however the way in was taken'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_conv_1",
+          "label": "Square the gear and decide how to carry this.",
+          "target": "vt_call"
+        },
+        {
+          "id": "c_vt_conv_2",
+          "label": "Steady yourself and the module first.",
+          "target": "vt_convb"
+        }
+      ]
+    },
+    {
+      "id": "vt_convb",
+      "body": "<<FILL role=convb words=162 beats='Taking a moment in the seismic vault to steady the gear and your own nerve, the beat filling the quiet, the dark pressing at the module's thin walls; then the real question of how this reading is carried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_convb_1",
+          "label": "Decide how to carry what the module gives.",
+          "target": "vt_call"
+        }
+      ]
+    },
+    {
+      "id": "vt_call",
+      "body": "<<FILL role=call words=190 beats='The winter's quiet question rises here in the seismic vault, the one the dark keeps asking: whatever the pulse the array paints across every trace at once turns out to be, do you call it back to the whole crew on the radio and carry it together, or does the long dark tell you to keep it close and say nothing yet, trusting no one quite the way you did in the light; how you carry it decides how much of the crew is still at your back by midwinter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_call_1",
+          "label": "Radio it back to the crew and share the watch.",
+          "target": "vt_read",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_vt_call_2",
+          "label": "Keep it close and tell no one yet.",
+          "target": "vt_read",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vt_read",
+      "body": "<<FILL role=read words=180 beats='The reading itself in front of you in the seismic vault, the pulse the array paints across every trace at once there for the taking; how deep you go after it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_read_1",
+          "label": "Decide how far to take the reading.",
+          "target": "vt_gate"
+        },
+        {
+          "id": "c_vt_read_2",
+          "label": "Ask Marta at the array about it first.",
+          "target": "vt_extra2"
+        }
+      ]
+    },
+    {
+      "id": "vt_extra2",
+      "body": "<<FILL role=extra2 words=164 beats='A word first about the seismic vault: the plain sense of it is that run the full live deep-listen on the whole array with the crew watching your back through it, the surest reading there is is the true reading and the honest short way is read the array's recorded traces over alone without opening a live channel, and the dark gives no allowance and no second try to a crew that overreaches out here; the choice stands where it stood'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_extra2_1",
+          "label": "Decide how far to take the reading.",
+          "target": "vt_gate"
+        }
+      ]
+    },
+    {
+      "id": "vt_gate",
+      "body": "<<FILL role=gate words=184 beats='The choice at the heart of the seismic vault: run the full live deep-listen on the whole array with the crew watching your back through it, the surest reading there is, or read the array's recorded traces over alone without opening a live channel; the deep reading is the fuller answer and it asks more than the module always has to give, and the short reading is honest and always open; decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_gate_1",
+          "label": "Run the full live deep-listen, the crew at your back.",
+          "target": "vt_deep0",
+          "condition": {
+            ">=": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_vt_gate_2",
+          "label": "Read the recorded traces over, quietly, alone.",
+          "target": "vt_shallow"
+        }
+      ]
+    },
+    {
+      "id": "vt_deep0",
+      "body": "<<FILL role=deep0 words=172 beats='Committing to the deep reading in the seismic vault, the module standing ready for it and the crew's faith or the ration standing good behind you, the way to the true answer opening at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_deep0_1",
+          "label": "Take it all the way down.",
+          "target": "vt_deep1"
+        }
+      ]
+    },
+    {
+      "id": "vt_deep1",
+      "body": "<<FILL role=deep1 words=202 beats='Into the true deep reading of the seismic vault now: run the full live deep-listen on the whole array with the crew watching your back through it, the surest reading there is, carried through with everything it asked in hand, the module giving up the pulse the array paints across every trace at once at last in its fullest voice; and it is not less strange for being heard clearly, it is more, the patient beat close and huge and utterly regular; write awe over terror, the largest quiet the winter holds, and hold the dread in it too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_deep1_1",
+          "label": "Stay with the full reading as it comes.",
+          "target": "vt_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "vt_deep2",
+      "body": "<<FILL role=deep2 words=190 beats='The full reading of the seismic vault coming up clean and complete, the pulse the array paints across every trace at once logged in its true depth, the figures rising off the gear with something enormous folded inside them that no number quite holds; the deepest anyone has read this module all winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_deep2_1",
+          "label": "Hold the reading and log it true.",
+          "target": "vt_deep2b"
+        }
+      ]
+    },
+    {
+      "id": "vt_deep2b",
+      "body": "<<FILL role=deep2b words=177 beats='The reading held and set down straight in the log in a hand that only shakes a little, the seismic vault charted deep and the signal's face in it named as plainly as an honest hand can name a thing it does not understand; the module has given all it has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_deep2b_1",
+          "label": "Take stock, and think about coming away.",
+          "target": "vt_deep3"
+        }
+      ]
+    },
+    {
+      "id": "vt_deep3",
+      "body": "<<FILL role=deep3 words=194 beats='The deep reading of the seismic vault done and logged, the beat still going in the dark all around, the pull of it real, that old wish to stay one reading too long with a thing this large; how you leave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_deep3_1",
+          "label": "Log it, gather the crew, and come away clean.",
+          "target": "vt_done"
+        },
+        {
+          "id": "c_vt_deep3_2",
+          "label": "Stay a while longer with what you have found.",
+          "target": "e_vt_deep"
+        }
+      ]
+    },
+    {
+      "id": "vt_shallow",
+      "body": "<<FILL role=shallow words=172 beats='Taking the honest short reading of the seismic vault: read the array's recorded traces over alone without opening a live channel, the craft doing what the deep reading would do and keeping the crew and the ration safe to do it, the pulse the array paints across every trace at once got true if not got whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_shallow_1",
+          "label": "Log the short reading and stand down.",
+          "target": "vt_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "vt_shallowb",
+      "body": "<<FILL role=shallowb words=184 beats='The short reading of the seismic vault logged plain, the module charted from safe ground, the fuller depth left unread and the crew whole and the cold kept honestly out; an honest survey and no shame in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vt_shallowb_1",
+          "label": "Square the module away and come home.",
+          "target": "vt_done"
+        },
+        {
+          "id": "c_vt_shallowb_2",
+          "label": "Sit a moment with the short reading before you go.",
+          "target": "e_vt_shallow"
+        }
+      ]
+    },
+    {
+      "id": "vt_done",
+      "body": "<<FILL role=done words=184 beats='Kerr comes away from the seismic vault, the module squared to the rules behind and the reading, deep or short, safe in the log; write this arrival-neutral to whatever passed inside, the module worked through and the winter one module deeper either way; the dark a shade heavier, the core's warm light waiting across it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "deepcold",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_vt_done_1",
+          "label": "Cross back to the warm core to re-ration.",
+          "target": "n_mess"
+        },
+        {
+          "id": "c_vt_done_2",
+          "label": "Answer the muster if midwinter has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_vt_done_3",
+          "label": "Work the module over once more and chart it whole before you leave.",
+          "target": "e_vt_linger"
+        }
+      ]
+    },
+    {
+      "id": "e_vt_awe",
+      "body": "<<FILL role=awe words=170 beats='Standing with what the seismic vault showed until it is enough: the array painting the signal whole across the wall, a shape too regular and too patient to be anything the shelf does by itself, and Kerr stops needing to force a reading to know the winter's true shape, that the thing under the ice is patient and regular and real and that meeting it with open eyes is its own kind of knowing; write awe over terror, the log the richer for the watching, the crew told true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_vt_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Signal Whole"
+      }
+    },
+    {
+      "id": "e_vt_risk",
+      "body": "<<FILL role=risk words=167 beats='The overreach in the seismic vault is answered the way the dark answers everything, without mercy and without malice: a feedback overload that whites out the array and throws the room into the dark and drives you both out, no one lost and the module saved but the reading beaten back and the crew driven home short and shaken; the dark does not bluff, and Kerr will not forget that it did not; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_vt_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Array Whited Out"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_vt_cold",
+      "body": "<<FILL role=cold words=170 beats='The buddy rule is a rule because of nights exactly like this one: sealing yourself alone in the vault with the live signal and the door shut, telling no one, letting the dark and the beat have you, and out past where a voice or a light can reach, alone in the module's frozen dark, the cold does the quiet patient work it always does; the crew finds the place too late and keeps the winter for the one who broke the one rule that matters; write it grave and cold and without gore, a life the dark took'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_vt_cold",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Sealed In With the Beat"
+      }
+    },
+    {
+      "id": "e_vt_deep",
+      "body": "<<FILL role=deepend words=172 beats='Staying a while longer with the deep reading of the seismic vault, Kerr lets the full weight of the pulse the array paints across every trace at once settle in, and comes away changed and whole, understanding the winter's one large question a little better than before, that the signal's beauty and its dread are the same thing wearing one face under the same ice; the crew is told, the log stands deep and true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_vt_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Deep-Listen True"
+      }
+    },
+    {
+      "id": "e_vt_shallow",
+      "body": "<<FILL role=shallowend words=164 beats='The short reading of the seismic vault sat with and honored, the module charted honestly from safe ground and the crew whole to chart another; Halvard reads the log after and gives the small nod that is the whole of his praise, because a crew that knows when not to overreach is a crew that lives to read the shelf again; a win, and a plain one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_vt_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Traces Read Over"
+      }
+    },
+    {
+      "id": "e_vt_linger",
+      "body": "<<FILL role=linger words=168 beats='Working the seismic vault over once more before leaving, Kerr charts the whole module clean, every gauge and trace and corner of it set down for the crews who come after, the fullest map this module has had in years; the crew stands the watch with you and Halvard, reading it later, keeps a silence that is plainly pride; the dark is a shade smaller for the honest work'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_vt_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Vault Charted"
+      }
+    },
+    {
+      "id": "hu_shore",
+      "body": "<<FILL role=shore words=184 beats='Kerr comes into the old hut: the drift-buried old hut of the first winter's crew, thirty years gone, its roof a low hump under the snow with a tunnel dug part way to its door; the signal shows itself here in the past tense, for the first crew's papers, half-salvaged already, are full of the same slow beat logged in an older hand that grows less steady down the page; write this arrival-neutral, the same module in the same dark whatever crossing brought Kerr here and in whatever state, no route-specific recap; three ways to take it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_shore_1",
+          "label": "Work it shoulder to shoulder with Halvard with the shovels.",
+          "target": "hu_help"
+        },
+        {
+          "id": "c_hu_shore_2",
+          "label": "Hang back a moment and take the module in.",
+          "target": "hu_watch"
+        },
+        {
+          "id": "c_hu_shore_3",
+          "label": "Go straight at the work on your own line.",
+          "target": "hu_near"
+        }
+      ]
+    },
+    {
+      "id": "hu_help",
+      "body": "<<FILL role=help words=162 beats='Falling in beside Halvard with the shovels to work the old hut together, the two of you reading the same beat logged in the first crew's failing hand by turns and calling it low between you, the buddy rule kept and the dark a little smaller for the company'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_help_1",
+          "label": "Let the work settle into its rhythm.",
+          "target": "hu_helpb"
+        }
+      ]
+    },
+    {
+      "id": "hu_helpb",
+      "body": "<<FILL role=helpb words=162 beats='The work of the old hut finding its rhythm between the two of you, Halvard with the shovels steady at your shoulder, the signal steady under the hands, the winter narrowed to the small sure tasks that keep two people alive out here in the cold and the routine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_helpb_1",
+          "label": "Talk over what the beat is doing today.",
+          "target": "hu_helpc"
+        }
+      ]
+    },
+    {
+      "id": "hu_helpc",
+      "body": "<<FILL role=helpc words=162 beats='Between tasks Halvard with the shovels says quietly what the whole crew has been circling, that the same beat logged in the first crew's failing hand is stronger this week than last, and that whatever it is it is not stopping and not slowing; the two of you sit a moment with that in the cold before the work takes you back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_helpc_1",
+          "label": "Get back to it before the cold settles in.",
+          "target": "hu_helpd"
+        }
+      ]
+    },
+    {
+      "id": "hu_helpd",
+      "body": "<<FILL role=helpd words=162 beats='The last of the shoulder-work in the old hut done well and done together, the module squared away to the standing rules, Halvard with the shovels knocking off the rime and calling the two of you square; a good crossing so far, and the harder part of the reading still ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_helpd_1",
+          "label": "Turn to the reading itself.",
+          "target": "hu_conv"
+        }
+      ]
+    },
+    {
+      "id": "hu_watch",
+      "body": "<<FILL role=watch words=170 beats='Hanging back a moment on the threshold of the old hut to take it in before the work starts, letting the module and its dark and its cold settle into you, the beat there under everything the way it is everywhere now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_watch_1",
+          "label": "Watch, and let the module show itself.",
+          "target": "hu_watchb"
+        }
+      ]
+    },
+    {
+      "id": "hu_watchb",
+      "body": "<<FILL role=watchb words=180 beats='And the old hut shows Kerr its face: the plain fact rising off the old pages that the first crew heard it too, all that time ago, the same patient beat under the same ice, and the doubled weight of it lands, the awe and the dread of it together, a thing too regular and too patient to be the dead shelf and too strange to name; how long you stand with it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_watchb_1",
+          "label": "Take the weight of it, then turn to the work.",
+          "target": "hu_watchc"
+        },
+        {
+          "id": "c_hu_watchb_2",
+          "label": "Stay with it, and let it be enough.",
+          "target": "e_hu_awe"
+        }
+      ]
+    },
+    {
+      "id": "hu_watchc",
+      "body": "<<FILL role=watchc words=162 beats='Carrying the weight of what the old hut showed you back to the work in hand, steadier for having met it square instead of flinching; the reading still to take, and the dark no less large for being looked at, only better known'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_watchc_1",
+          "label": "Turn to the reading itself.",
+          "target": "hu_conv"
+        }
+      ]
+    },
+    {
+      "id": "hu_near",
+      "body": "<<FILL role=near words=180 beats='Going straight at the old hut on your own line, no one at your shoulder yet, the quickest way into the work and the way the rules like least; how hard you push it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_near_1",
+          "label": "Break into the iced hut door yourself and go in ahead.",
+          "target": "hu_hard",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_hu_near_2",
+          "label": "Take the careful, slower line that keeps to the rules.",
+          "target": "hu_care"
+        },
+        {
+          "id": "c_hu_near_3",
+          "label": "Push in harder and faster than the dark allows.",
+          "target": "hu_reckless"
+        }
+      ]
+    },
+    {
+      "id": "hu_reckless",
+      "body": "<<FILL role=reckless words=162 beats='Pushing into the old hut harder and faster than the standing rules of the dark allow, the cold and the module both against you, the sensible line already behind; one more step commits it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_reckless_1",
+          "label": "Commit, and drive it past the safe mark.",
+          "target": "hu_recklessb"
+        },
+        {
+          "id": "c_hu_reckless_2",
+          "label": "Catch yourself, and fall back to the careful line.",
+          "target": "hu_care"
+        }
+      ]
+    },
+    {
+      "id": "hu_recklessb",
+      "body": "<<FILL role=recklessb words=172 beats='Past the safe mark now in the old hut and no easy way back, the dark holding all the cards: the two ways this goes are crawling on alone deeper into the buried hut's frozen dark after the last pages, past where a voice can carry back, or the cold and the module simply stopping you before it kills you; write the peril real and close, dread not gore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_recklessb_1",
+          "label": "Go on alone into it whatever it costs.",
+          "target": "e_hu_cold"
+        },
+        {
+          "id": "c_hu_recklessb_2",
+          "label": "Force the work through and pay for it.",
+          "target": "e_hu_risk"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "hu_hard",
+      "body": "<<FILL role=hard words=177 beats='Taking the hard fast way into the old hut: breaking the iced hut door open yourself and pushing in ahead of the others into the buried dark, not waiting for the hands that came out to help you; the work bought quick and dear, the module opening to you at a price the ration or the crew will feel later; done, and no one hurt'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_hard_1",
+          "label": "Get to the reading now the way is forced.",
+          "target": "hu_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "hu_care",
+      "body": "<<FILL role=care words=167 beats='Taking the careful, slower line into the old hut that keeps to the standing rules, costing time and no more, the module reached with the ration whole and the crew's faith whole and the cold kept honestly at bay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_care_1",
+          "label": "Come to the reading with everything intact.",
+          "target": "hu_conv"
+        }
+      ]
+    },
+    {
+      "id": "hu_conv",
+      "body": "<<FILL role=conv words=180 beats='At the heart of the old hut now with the way in behind you, the module warm enough and the gear to hand and the same beat logged in the first crew's failing hand waiting to be read properly; write this arrival-neutral, the reading ahead the same however the way in was taken'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_conv_1",
+          "label": "Square the gear and decide how to carry this.",
+          "target": "hu_call"
+        },
+        {
+          "id": "c_hu_conv_2",
+          "label": "Steady yourself and the module first.",
+          "target": "hu_convb"
+        }
+      ]
+    },
+    {
+      "id": "hu_convb",
+      "body": "<<FILL role=convb words=162 beats='Taking a moment in the old hut to steady the gear and your own nerve, the beat filling the quiet, the dark pressing at the module's thin walls; then the real question of how this reading is carried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_convb_1",
+          "label": "Decide how to carry what the module gives.",
+          "target": "hu_call"
+        }
+      ]
+    },
+    {
+      "id": "hu_call",
+      "body": "<<FILL role=call words=190 beats='The winter's quiet question rises here in the old hut, the one the dark keeps asking: whatever the same beat logged in the first crew's failing hand turns out to be, do you call it back to the whole crew on the radio and carry it together, or does the long dark tell you to keep it close and say nothing yet, trusting no one quite the way you did in the light; how you carry it decides how much of the crew is still at your back by midwinter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_call_1",
+          "label": "Radio it back to the crew and share the watch.",
+          "target": "hu_read",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_hu_call_2",
+          "label": "Keep it close and tell no one yet.",
+          "target": "hu_read",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "trust",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hu_read",
+      "body": "<<FILL role=read words=180 beats='The reading itself in front of you in the old hut, the same beat logged in the first crew's failing hand there for the taking; how deep you go after it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_read_1",
+          "label": "Decide how far to take the reading.",
+          "target": "hu_gate"
+        },
+        {
+          "id": "c_hu_read_2",
+          "label": "Ask Halvard with the shovels about it first.",
+          "target": "hu_extra2"
+        }
+      ]
+    },
+    {
+      "id": "hu_extra2",
+      "body": "<<FILL role=extra2 words=164 beats='A word first about the old hut: the plain sense of it is that dig the tunnel through to the hut door with the crew and go inside to read the last winter's log to its very end is the true reading and the honest short way is read the salvaged loose pages at the tunnel mouth without opening the hut, and the dark gives no allowance and no second try to a crew that overreaches out here; the choice stands where it stood'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_extra2_1",
+          "label": "Decide how far to take the reading.",
+          "target": "hu_gate"
+        }
+      ]
+    },
+    {
+      "id": "hu_gate",
+      "body": "<<FILL role=gate words=184 beats='The choice at the heart of the old hut: dig the tunnel through to the hut door with the crew and go inside to read the last winter's log to its very end, or read the salvaged loose pages at the tunnel mouth without opening the hut; the deep reading is the fuller answer and it asks more than the module always has to give, and the short reading is honest and always open; decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_gate_1",
+          "label": "Dig through with the crew and read the log to its end.",
+          "target": "hu_deep0",
+          "condition": {
+            ">=": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_hu_gate_2",
+          "label": "Read the salvaged pages at the tunnel mouth.",
+          "target": "hu_shallow"
+        }
+      ]
+    },
+    {
+      "id": "hu_deep0",
+      "body": "<<FILL role=deep0 words=172 beats='Committing to the deep reading in the old hut, the module standing ready for it and the crew's faith or the ration standing good behind you, the way to the true answer opening at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_deep0_1",
+          "label": "Take it all the way down.",
+          "target": "hu_deep1"
+        }
+      ]
+    },
+    {
+      "id": "hu_deep1",
+      "body": "<<FILL role=deep1 words=202 beats='Into the true deep reading of the old hut now: dig the tunnel through to the hut door with the crew and go inside to read the last winter's log to its very end, carried through with everything it asked in hand, the module giving up the same beat logged in the first crew's failing hand at last in its fullest voice; and it is not less strange for being heard clearly, it is more, the patient beat close and huge and utterly regular; write awe over terror, the largest quiet the winter holds, and hold the dread in it too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_deep1_1",
+          "label": "Stay with the full reading as it comes.",
+          "target": "hu_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "hu_deep2",
+      "body": "<<FILL role=deep2 words=190 beats='The full reading of the old hut coming up clean and complete, the same beat logged in the first crew's failing hand logged in its true depth, the figures rising off the gear with something enormous folded inside them that no number quite holds; the deepest anyone has read this module all winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_deep2_1",
+          "label": "Hold the reading and log it true.",
+          "target": "hu_deep2b"
+        }
+      ]
+    },
+    {
+      "id": "hu_deep2b",
+      "body": "<<FILL role=deep2b words=177 beats='The reading held and set down straight in the log in a hand that only shakes a little, the old hut charted deep and the signal's face in it named as plainly as an honest hand can name a thing it does not understand; the module has given all it has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_deep2b_1",
+          "label": "Take stock, and think about coming away.",
+          "target": "hu_deep3"
+        }
+      ]
+    },
+    {
+      "id": "hu_deep3",
+      "body": "<<FILL role=deep3 words=194 beats='The deep reading of the old hut done and logged, the beat still going in the dark all around, the pull of it real, that old wish to stay one reading too long with a thing this large; how you leave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_deep3_1",
+          "label": "Log it, gather the crew, and come away clean.",
+          "target": "hu_done"
+        },
+        {
+          "id": "c_hu_deep3_2",
+          "label": "Stay a while longer with what you have found.",
+          "target": "e_hu_deep"
+        }
+      ]
+    },
+    {
+      "id": "hu_shallow",
+      "body": "<<FILL role=shallow words=172 beats='Taking the honest short reading of the old hut: read the salvaged loose pages at the tunnel mouth without opening the hut, the craft doing what the deep reading would do and keeping the crew and the ration safe to do it, the same beat logged in the first crew's failing hand got true if not got whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_shallow_1",
+          "label": "Log the short reading and stand down.",
+          "target": "hu_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "hu_shallowb",
+      "body": "<<FILL role=shallowb words=184 beats='The short reading of the old hut logged plain, the module charted from safe ground, the fuller depth left unread and the crew whole and the cold kept honestly out; an honest survey and no shame in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hu_shallowb_1",
+          "label": "Square the module away and come home.",
+          "target": "hu_done"
+        },
+        {
+          "id": "c_hu_shallowb_2",
+          "label": "Sit a moment with the short reading before you go.",
+          "target": "e_hu_shallow"
+        }
+      ]
+    },
+    {
+      "id": "hu_done",
+      "body": "<<FILL role=done words=184 beats='Kerr comes away from the old hut, the module squared to the rules behind and the reading, deep or short, safe in the log; write this arrival-neutral to whatever passed inside, the module worked through and the winter one module deeper either way; the dark a shade heavier, the core's warm light waiting across it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "deepcold",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_hu_done_1",
+          "label": "Cross back to the warm core to re-ration.",
+          "target": "n_mess"
+        },
+        {
+          "id": "c_hu_done_2",
+          "label": "Answer the muster if midwinter has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_hu_done_3",
+          "label": "Work the module over once more and chart it whole before you leave.",
+          "target": "e_hu_linger"
+        }
+      ]
+    },
+    {
+      "id": "e_hu_awe",
+      "body": "<<FILL role=awe words=170 beats='Standing with what the old hut showed until it is enough: the plain fact rising off the old pages that the first crew heard it too, all that time ago, the same patient beat under the same ice, and Kerr stops needing to force a reading to know the winter's true shape, that the thing under the ice is patient and regular and real and that meeting it with open eyes is its own kind of knowing; write awe over terror, the log the richer for the watching, the crew told true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hu_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The First Crew Heard It"
+      }
+    },
+    {
+      "id": "e_hu_risk",
+      "body": "<<FILL role=risk words=167 beats='The overreach in the old hut is answered the way the dark answers everything, without mercy and without malice: the drift-tunnel slumping and the roof-snow shifting, the dig abandoned and the party backed out fast, no one lost and the module saved but the reading beaten back and the crew driven home short and shaken; the dark does not bluff, and Kerr will not forget that it did not; write it grave, not gory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hu_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Tunnel Slumped"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_hu_cold",
+      "body": "<<FILL role=cold words=170 beats='The buddy rule is a rule because of nights exactly like this one: crawling on alone deeper into the buried hut's frozen dark after the last pages, past where a voice can carry back, and out past where a voice or a light can reach, alone in the module's frozen dark, the cold does the quiet patient work it always does; the crew finds the place too late and keeps the winter for the one who broke the one rule that matters; write it grave and cold and without gore, a life the dark took'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hu_cold",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Deeper Into the Buried Dark"
+      }
+    },
+    {
+      "id": "e_hu_deep",
+      "body": "<<FILL role=deepend words=172 beats='Staying a while longer with the deep reading of the old hut, Kerr lets the full weight of the same beat logged in the first crew's failing hand settle in, and comes away changed and whole, understanding the winter's one large question a little better than before, that the signal's beauty and its dread are the same thing wearing one face under the same ice; the crew is told, the log stands deep and true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hu_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Last Winter's Log"
+      }
+    },
+    {
+      "id": "e_hu_shallow",
+      "body": "<<FILL role=shallowend words=164 beats='The short reading of the old hut sat with and honored, the module charted honestly from safe ground and the crew whole to chart another; Halvard reads the log after and gives the small nod that is the whole of his praise, because a crew that knows when not to overreach is a crew that lives to read the shelf again; a win, and a plain one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hu_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Salvaged Pages"
+      }
+    },
+    {
+      "id": "e_hu_linger",
+      "body": "<<FILL role=linger words=168 beats='Working the old hut over once more before leaving, Kerr charts the whole module clean, every gauge and trace and corner of it set down for the crews who come after, the fullest map this module has had in years; the crew stands the watch with you and Halvard, reading it later, keeps a silence that is plainly pride; the dark is a shade smaller for the honest work'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hu_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Old Hut Charted"
+      }
+    },
+    {
+      "id": "fin_muster",
+      "body": "<<FILL role=finlong words=197 beats='Midwinter, the dark at its very deepest and the beat under the shelf at its strongest of the whole season: Halvard gathers the crew at the core and says it plainly, the one night of the winter to make the true coordinated reading of the signal, every module turned to it at once and the whole crew on it together, before the dark turns the mind any stranger; write this arrival-neutral, entered from any module and in whatever state Kerr came in, the fuel counted back to full ration for the night's work; there is work, and it needs every hand'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "fuel",
+          "value": 3
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_fin_muster_1",
+          "label": "Sit at the table and hear the plan.",
+          "target": "fin_brief"
+        }
+      ]
+    },
+    {
+      "id": "fin_brief",
+      "body": "<<FILL role=fin words=184 beats='The plan on the command desk, three tasks deep and none of them small: ready the deep-listen gear so the reading can be called clean in the dark; warm the borehole and the array through so the whole station hears the beat at once; and steady the crew for a long night at the edge of the signal, everyone rested and squared and willing; pick where your hands go first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_brief_1",
+          "label": "Ready the deep-listen gear.",
+          "target": "fin_gear"
+        },
+        {
+          "id": "c_fin_brief_2",
+          "label": "Warm the borehole and the array through.",
+          "target": "fin_warm"
+        },
+        {
+          "id": "c_fin_brief_3",
+          "label": "Steady the crew for the long night.",
+          "target": "fin_rouse"
+        }
+      ]
+    },
+    {
+      "id": "fin_gear",
+      "body": "<<FILL role=fin words=184 beats='The deep-listen gear bench at the command desk: the recorders, the marked channels, the cold-proofed headsets, two hands' careful work before the reading can be called clean in the dark of the night'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gear_1",
+          "label": "Cold-proof and mark the recorder channels.",
+          "target": "fin_gear_a"
+        },
+        {
+          "id": "c_fin_gear_2",
+          "label": "Splice the long signal line to the deep post.",
+          "target": "fin_gear_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_gear_a",
+      "body": "<<FILL role=fin words=184 beats='Cold-proofing and marking the recorder channels one by one so the midwinter reading can be called and logged clean however cold the hands get out at the deep station'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gear_a_1",
+          "label": "See it through.",
+          "target": "fin_gear_a2"
+        }
+      ]
+    },
+    {
+      "id": "fin_gear_a2",
+      "body": "<<FILL role=fin words=184 beats='The channels marked to Halvard's exact satisfaction, every one checked twice against the desk log, the gear that will catch the sea's whole voice made ready by Kerr's own hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gear_a2_1",
+          "label": "Report it ready.",
+          "target": "fin_gear_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_gear_b",
+      "body": "<<FILL role=fin words=184 beats='Splicing the long signal line out to the deep listening post so the beat reaches the recorders at full strength from the shelf's own floor, the splice rolled long and even under the palm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gear_b_1",
+          "label": "See it through.",
+          "target": "fin_gear_b2"
+        }
+      ]
+    },
+    {
+      "id": "fin_gear_b2",
+      "body": "<<FILL role=fin words=184 beats='The line served and tested until it holds a clean strong signal without a waver, long enough now to reach the deepest gear there is, coiled down ready to run'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gear_b2_1",
+          "label": "Report it ready.",
+          "target": "fin_gear_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_gear_r",
+      "body": "<<FILL role=fin words=184 beats='Halvard checks the work over once and says little, which from him is the whole of his approval; one of the three tasks seen to, and the night's great reading one part readier for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gear_r_1",
+          "label": "One task done; the midwinter reading nears.",
+          "target": "fin_ready"
+        }
+      ]
+    },
+    {
+      "id": "fin_warm",
+      "body": "<<FILL role=fin words=184 beats='The heat plan for the night, the whole station to be brought warm and steady at once: the borehole shaft and the seismic vault both to be warmed through so the beat can be heard clean everywhere the night it peaks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_warm_1",
+          "label": "Warm the borehole shaft and free the sonde.",
+          "target": "fin_warm_a"
+        },
+        {
+          "id": "c_fin_warm_2",
+          "label": "Warm the seismic vault and its array.",
+          "target": "fin_warm_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_warm_a",
+      "body": "<<FILL role=fin words=184 beats='Warming the borehole shaft through on the winch heater so the deep sonde rides free and the reading can be taken from the shelf's own floor without the cage icing at the worst moment'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_warm_a_1",
+          "label": "See it through.",
+          "target": "fin_warm_a2"
+        }
+      ]
+    },
+    {
+      "id": "fin_warm_a2",
+      "body": "<<FILL role=fin words=184 beats='The shaft warmed and the sonde riding clear, the borehole made ready to carry the crew's ears down to where the beat is nearly born, the ration spent well and counted'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_warm_a2_1",
+          "label": "Report it ready.",
+          "target": "fin_warm_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_warm_b",
+      "body": "<<FILL role=fin words=184 beats='Warming the seismic vault and its array through so every trace runs live and clean at once when the beat comes up at its strongest in the deep of the night'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_warm_b_1",
+          "label": "See it through.",
+          "target": "fin_warm_b2"
+        }
+      ]
+    },
+    {
+      "id": "fin_warm_b2",
+      "body": "<<FILL role=fin words=184 beats='The vault warm and the whole array live and steady, Marta easier than she has been in weeks with her instruments ready and the crew around her, the signal's plainest window opened wide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_warm_b2_1",
+          "label": "Report it ready.",
+          "target": "fin_warm_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_warm_r",
+      "body": "<<FILL role=fin words=184 beats='Halvard checks the work over once and says little, which from him is the whole of his approval; one of the three tasks seen to, and the night's great reading one part readier for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_warm_r_1",
+          "label": "One task done; the midwinter reading nears.",
+          "target": "fin_ready"
+        }
+      ]
+    },
+    {
+      "id": "fin_rouse",
+      "body": "<<FILL role=fin words=184 beats='The crew themselves, to be readied for a long night at the very edge of the signal: Sunny counting who has slept and who has not, the nerves of the winter to be steadied before the dark's strangest hours'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_rouse_1",
+          "label": "See the crew rested and squared with Sunny.",
+          "target": "fin_rouse_a"
+        },
+        {
+          "id": "c_fin_rouse_2",
+          "label": "Hear Marta out on what she fears.",
+          "target": "fin_rouse_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_rouse_a",
+      "body": "<<FILL role=fin words=184 beats='Going cabin to cabin with Sunny to see the crew rested and fed and squared for the night, the small human work of keeping five minds steady at the edge of a thing none of them understands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_rouse_a_1",
+          "label": "See it through.",
+          "target": "fin_rouse_a2"
+        }
+      ]
+    },
+    {
+      "id": "fin_rouse_a2",
+      "body": "<<FILL role=fin words=184 beats='The crew rested and willing and gathered, the winter's frayed nerves drawn back into one steady company for the night, the dark met with people instead of alone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_rouse_a2_1",
+          "label": "Report it ready.",
+          "target": "fin_rouse_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_rouse_b",
+      "body": "<<FILL role=fin words=184 beats='Sitting a while with Marta, who has carried the signal longest and hardest, and hearing her out plainly on what she fears it is, so she goes into the night's reading with the crew behind her and not shut alone with it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_rouse_b_1",
+          "label": "See it through.",
+          "target": "fin_rouse_b2"
+        }
+      ]
+    },
+    {
+      "id": "fin_rouse_b2",
+      "body": "<<FILL role=fin words=184 beats='Marta steadier for being heard at last, the fear named aloud and shared out among five instead of festering in one, the crew closer for the honest hour than it has been all the long dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_rouse_b2_1",
+          "label": "Report it ready.",
+          "target": "fin_rouse_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_rouse_r",
+      "body": "<<FILL role=fin words=184 beats='Halvard checks the work over once and says little, which from him is the whole of his approval; one of the three tasks seen to, and the night's great reading one part readier for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_rouse_r_1",
+          "label": "One task done; the midwinter reading nears.",
+          "target": "fin_ready"
+        }
+      ]
+    },
+    {
+      "id": "fin_ready",
+      "body": "<<FILL role=fin words=184 beats='The night's preparations done: write this arrival-neutral to whichever task Kerr took a hand in, all three were seen to by the whole crew together and the station shows it, the gear ready and the borehole and vault warm and live and the crew rested and drawn into one company; cite only the common fact of a station made ready by many hands, no route-specific recap; the dark of midnight nears'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_ready_1",
+          "label": "Take your place for the midwinter reading.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "fin_tide",
+      "body": "<<FILL role=fin words=184 beats='The dark of midwinter comes on exactly as Halvard swore it would, the beat under the shelf swelling to its strongest of the whole season, patient and huge and utterly regular, filling the warmed vault and the borehole and the command speaker all at once until the station itself seems to keep its time; the crew gathers at the deep listening post over the borehole, every hand in from the modules'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_tide_1",
+          "label": "Gather with the crew at the deep post.",
+          "target": "fin_dark"
+        }
+      ]
+    },
+    {
+      "id": "fin_dark",
+      "body": "<<FILL role=fin words=184 beats='The whole crew at the deep listening post in the deepest dark of the year, the warmed borehole open at their feet toward the shelf's floor where the beat is nearly born, the array live on the wall painting the signal whole; five souls together at the edge of the one thing the winter has asked of them, doing the oldest work there is, listening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_dark_1",
+          "label": "Ready to take the reading down.",
+          "target": "fin_gather"
+        }
+      ]
+    },
+    {
+      "id": "fin_gather",
+      "body": "<<FILL role=finlong words=197 beats='Marta calls the array live and clean, Ivo holds the winch heater steady, Sunny keeps the watch and the clock, Halvard stands at Kerr's shoulder; the beat comes up the warmed shaft at its full midwinter strength, close and enormous and patient; write awe over terror, the crew small and steady in a sound the size of the shelf, the dread in it held and not fled from'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gather_1",
+          "label": "Take the deep-listen line in your own hands.",
+          "target": "fin_descent"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "fin_descent",
+      "body": "<<FILL role=fin words=184 beats='The deep-listen line runs from Kerr's own hands down the warmed shaft toward the shelf's floor, the signal climbing it into the palms not as sound alone now but as a slow pressure, a beat you feel before you hear; the cold breathing up out of the black mouth, the crew's lamps steady around it, the whole winter narrowed to this one reading'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_descent_1",
+          "label": "Steady the line and take the measure.",
+          "target": "fin_deep"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fin_deep",
+      "body": "<<FILL role=fin words=184 beats='Dead in the deep midwinter dark, the signal at its very strongest coming up the line into Kerr's hands, a life of the winter's work and worry narrowed to this one reading of the thing under the ice; how it is taken, and whose hands take it, and with how much of the crew still truly at the back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_deep_1",
+          "label": "Ready the measure.",
+          "target": "fin_still"
+        }
+      ]
+    },
+    {
+      "id": "fin_still",
+      "body": "<<FILL role=finlong words=197 beats='The measure ready, the beat huge and patient up the line: how the midwinter reading is taken now, and how whole the crew is to take it, decides what the winter becomes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_still_1",
+          "label": "Take the full reading yourself, the whole crew steady at your back.",
+          "target": "fin_read",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "deepcold"
+                  },
+                  2
+                ]
+              },
+              {
+                ">=": [
+                  {
+                    "var": "trust"
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_fin_still_2",
+          "label": "Take the honest partial reading Halvard guides your hands through.",
+          "target": "fin_partial"
+        },
+        {
+          "id": "c_fin_still_3",
+          "label": "Give the line to Halvard and keep the log and the watch.",
+          "target": "fin_keepn"
+        }
+      ]
+    },
+    {
+      "id": "fin_read",
+      "body": "<<FILL role=finlong words=197 beats='The full reading comes up the line into Kerr's own hands, and because the winter's modules were pressed to their depth and because the whole crew stands steady and whole at Kerr's back, the signal gives up its true midwinter measure, not an answer to what it is but the truest reading of it any crew has taken, a shape logged clean and complete with the enormous patience of it folded plain inside the figures; Halvard's hand is steady on Kerr's shoulder; write awe over terror, the largest quiet the winter holds, the crew unbroken in it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_read_1",
+          "label": "Hold the true reading, and log it whole.",
+          "target": "fin_rise"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "fin_rise",
+      "body": "<<FILL role=fin words=184 beats='The reading held a long moment in the deep dark, then written whole into the log in a steady hand, the fullest true measure of the signal any winter crew has ever taken, rising off the page as plain figures with something enormous and still unnamed folded quiet inside them, the crew close around it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_rise_1",
+          "label": "Look to the crew as the reading closes.",
+          "target": "fin_answered"
+        }
+      ]
+    },
+    {
+      "id": "fin_answered",
+      "body": "<<FILL role=fin words=184 beats='The true reading logged whole and the crew unbroken around it in the deepest dark of the year, the beat going on patient under the shelf; what is said now, at the end of a winter met together and read to its depth, carries the whole thing home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_answered_1",
+          "label": "Say the crew read it whole because they read it together.",
+          "target": "e_fin_whole"
+        },
+        {
+          "id": "c_fin_answered_2",
+          "label": "Say the signal will take more than one winter to understand, and mean it.",
+          "target": "e_fin_understood"
+        },
+        {
+          "id": "c_fin_answered_3",
+          "label": "Let it be enough that the crew came through the dark whole.",
+          "target": "e_fin_pass"
+        }
+      ]
+    },
+    {
+      "id": "fin_partial",
+      "body": "<<FILL role=fin words=184 beats='The honest partial reading taken, Halvard's old hands guiding Kerr's on the line, a true measure of the midwinter signal won if not the whole of it, no small thing at all, and the crew holding the great dark together at the edge of the borehole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_partial_1",
+          "label": "Log the reading and hold the watch.",
+          "target": "fin_settle"
+        }
+      ]
+    },
+    {
+      "id": "fin_settle",
+      "body": "<<FILL role=fin words=184 beats='The partial reading settled into the log, a real measure got and set down plain, the beat going on under the shelf and the crew breathing again in a station that held through its darkest night, the worst of the dark behind them now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_settle_1",
+          "label": "Let the long night end at the post.",
+          "target": "fin_afterp"
+        }
+      ]
+    },
+    {
+      "id": "fin_afterp",
+      "body": "<<FILL role=fin words=184 beats='The partial reading logged, the midwinter turned and the light, weeks off yet, now on its slow way back; a real thing won honestly from the winter's one great night; how the reading is carried home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_afterp_1",
+          "label": "Call it a true measure, honestly got, and enough.",
+          "target": "e_fin_true"
+        },
+        {
+          "id": "c_fin_afterp_2",
+          "label": "Turn in for the night with the crew, the worst behind.",
+          "target": "e_fin_home"
+        }
+      ]
+    },
+    {
+      "id": "fin_keepn",
+      "body": "<<FILL role=fin words=184 beats='Kerr gives the deep-listen line to Halvard and takes up the log and the watch instead, the winter-master reading the midwinter signal one last time with the young crew keeping the record steady beside him, the work shared out the old sure way at the edge of the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_keepn_1",
+          "label": "Keep the record true as Halvard reads.",
+          "target": "fin_hush"
+        }
+      ]
+    },
+    {
+      "id": "fin_hush",
+      "body": "<<FILL role=fin words=184 beats='Halvard's reading entered whole in Kerr's steady log, the two of them working the old careful way through the darkest hour, the crew close and quiet around them, the record made and the night held and the signal witnessed at its strongest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_hush_1",
+          "label": "Let the long night end at the post.",
+          "target": "fin_afterk"
+        }
+      ]
+    },
+    {
+      "id": "fin_afterk",
+      "body": "<<FILL role=fin words=184 beats='The reading closed in the log, the midwinter turned toward the far-off light, the crew come whole through the year's worst dark together; how the night is carried home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_afterk_1",
+          "label": "Say the log kept true is half the winter's work, and mean it.",
+          "target": "e_fin_watch"
+        },
+        {
+          "id": "c_fin_afterk_2",
+          "label": "Close the book on the reading and turn in with the crew.",
+          "target": "e_fin_log"
+        }
+      ]
+    },
+    {
+      "id": "e_fin_whole",
+      "body": "<<FILL role=finend words=170 beats='The winter read whole because it was read together: Kerr closes the log on the truest midwinter measure any crew has taken of the thing under the ice, and the five of them come up out of the deep dark into the warm core unbroken, a crew the long night could not take apart; the signal is not explained and does not need to be, it is met, honestly and wholly, by people who kept faith with each other in the dark; some winters are a whole life's proving, and this one signs its name in the log, complete'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_whole",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Crew Whole"
+      }
+    },
+    {
+      "id": "e_fin_understood",
+      "body": "<<FILL role=finend words=170 beats='The reading that will take more than one winter to understand, entered and closed: Kerr knows already that a life of the work lies inside the figures logged tonight, and that the spending of it will be the whole of the craft; the crew turns from the deep post toward the far-off returning light, and the beat goes on patient under the shelf, and the true measure of it rides in the log like a coal that will warm a lifetime of listening'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_understood",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Signal for a Lifetime"
+      }
+    },
+    {
+      "id": "e_fin_pass",
+      "body": "<<FILL role=finend words=170 beats='Enough, in the end, that the crew came whole through the dark: the true reading taken and the five of them still a crew, Halvard easy for the first time in a hard season and the winter read to its depth by hands that will go on reading it; the light is weeks off yet, but it is coming, and the station holds, quiet and whole and sure, the way the best of the winter's things are always held'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_pass",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Through the Dark Whole"
+      }
+    },
+    {
+      "id": "e_fin_true",
+      "body": "<<FILL role=finend words=170 beats='A true measure honestly won, the midwinter met and held, no more claimed than was really got: a crew's honest night at the edge of the signal, and enough, more than enough, for a winter's proving; Kerr closes the log with a real reading in it and the whole strange question of the shelf still ahead to learn, and Halvard's hand on the young shoulder says the rest'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_true",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "A True Measure"
+      }
+    },
+    {
+      "id": "e_fin_home",
+      "body": "<<FILL role=finend words=170 beats='The crew turning in as the darkest night turns toward the light, the reading taken, the worst of the winter behind, Kerr among them going back to the warm core on the first slow easing of the dark; enough for one winter's proving, a midwinter seen through and a reading got and a crew kept, and the far light on its patient way back to the shelf'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_home",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Dark Turns"
+      }
+    },
+    {
+      "id": "e_fin_watch",
+      "body": "<<FILL role=finend words=170 beats='The watch kept true while the master read, the record made clean in a steady hand, the winter's signal witnessed and written at its very height; a crew, Kerr learns at the edge of the deep dark, is also the one who keeps the log, who makes the reading last past the hands that took it; the winter rides home in the ink as surely as in the line, and both will hold'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_watch",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Log Kept True"
+      }
+    },
+    {
+      "id": "e_fin_log",
+      "body": "<<FILL role=finend words=170 beats='Halvard's last midwinter reading closed in Kerr's log, the work shared and the record whole, the winter measured one more time by the old sure hands before the young ones take it on; the book holds what the shelf gave, plain and true, and Kerr closes it knowing the winter's craft did not break in the dark tonight, it changed hands, which is the only way a craft ever lives'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_log",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Last Reading Entered"
+      }
+    }
+  ]
+}
