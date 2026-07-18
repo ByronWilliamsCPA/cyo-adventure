@@ -573,6 +573,11 @@ advisory.
 - **Priority**: Medium
 - **Category**: Documentation
 - **Discovered**: 2026-06-30
+- **Status**: Resolved (2026-07-18). The reference doc's "Ending types" section was
+  rewritten to the two-axis model: `ending.kind` (full `EndingKind` closed set) plus
+  `ending.valence` (`Valence`), with a migration note mapping the old free-string
+  values. Kept in the feedback log because the underlying template should ship the
+  corrected reference.
 
 **Issue**: `.claude/skills/cyo-author/reference/skeleton-format.md` documents ending
 conventions under an `ending.type` field with values `{completion, good, neutral,
