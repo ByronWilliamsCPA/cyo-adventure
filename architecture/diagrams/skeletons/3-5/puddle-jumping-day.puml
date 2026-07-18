@@ -1,0 +1,83 @@
+@startuml puddle-jumping-day
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_window
+state n_window #BBDEFB
+n_window : setup · 42w
+state n_door #BBDEFB
+n_door : setup · 40w
+state n_gate #BBDEFB
+n_gate : setup · 38w
+state n_corner #FFF9C4
+n_corner : choice · 44w
+state n_lane #D1C4E9
+n_lane : rising · 40w
+state n_wiggle #FFF9C4
+n_wiggle : choice · 44w
+state n_worm_carry #D1C4E9
+n_worm_carry : rising · 38w
+state n_worm_end #C8E6C9
+n_worm_end : completion (positive)
+n_worm_end : "A Home for the Worm"
+state n_mirror #D1C4E9
+n_mirror : rising · 38w
+state n_mirror_climax #D1C4E9
+n_mirror_climax : rising · 36w
+state n_splash_end #C8E6C9
+n_splash_end : success (positive)
+n_splash_end : "The Biggest Splash"
+state n_hill #D1C4E9
+n_hill : rising · 40w
+state n_stream_fork #FFF9C4
+n_stream_fork : choice · 44w
+state n_race #D1C4E9
+n_race : rising · 38w
+state n_race_finish #D1C4E9
+n_race_finish : rising · 36w
+state n_race_end #C8E6C9
+n_race_end : success (positive)
+n_race_end : "Champion Leaf Boat"
+state n_downhill #D1C4E9
+n_downhill : rising · 38w
+state n_sky #D1C4E9
+n_sky : rising · 34w
+state n_rainbow_end #C8E6C9
+n_rainbow_end : discovery (positive)
+n_rainbow_end : "The Rainbow Surprise"
+n_window --> n_door : Put on boots and raincoat.
+n_door --> n_gate : Step outside with Grandma.
+n_gate --> n_corner : Walk to the corner.
+n_corner --> n_lane : Take the drippy tree lane.
+n_corner --> n_hill : Take the hill with the stream.
+n_lane --> n_wiggle : Look closer at the wiggle.
+n_wiggle --> n_worm_carry : Help the worm home.
+n_wiggle --> n_mirror : Tiptoe to the mirror puddle.
+n_worm_carry --> n_worm_end : Set the worm down gently.
+n_mirror --> n_mirror_climax : Count one, two, three!
+n_mirror_climax --> n_splash_end : Come down with a great big splash.
+n_hill --> n_stream_fork : Follow the busy stream.
+n_stream_fork --> n_race : Race a leaf boat.
+n_stream_fork --> n_downhill : Follow the sunbeam down.
+n_race --> n_race_finish : Run to the finish line.
+n_race_finish --> n_race_end : Catch the leaf boat.
+n_downhill --> n_sky : Look up at the sky.
+n_sky --> n_rainbow_end : See what the sky made.
+n_worm_end --> [*]
+n_splash_end --> [*]
+n_race_end --> [*]
+n_rainbow_end --> [*]
+
+legend right
+  Puddle Jumping Day
+  Band 3-5 · Tier 1 · ~3 min
+  Topology: time_cave
+  19 nodes · 4 endings (4+ / 0n / 0-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

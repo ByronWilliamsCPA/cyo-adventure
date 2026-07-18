@@ -1,0 +1,1989 @@
+@startuml the-serpent-vaults
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> s0
+state s0 #BBDEFB
+s0 : setup · 82w
+state c01_bars_a #D1C4E9
+c01_bars_a : rising · 50w
+state c01_bars_b #D1C4E9
+c01_bars_b : rising · 48w
+state c01_bars_e #FFCDD2
+c01_bars_e : death (negative)
+c01_bars_e : "Pinned on the Grate"
+state c01_wide_a #D1C4E9
+c01_wide_a : rising · 50w
+state c01_wide_b #D1C4E9
+c01_wide_b : rising · 48w
+state c01_wide_e #FFCDD2
+c01_wide_e : death (negative)
+c01_wide_e : "Lost in the Dead Pocket"
+state c01_fast_a #D1C4E9
+c01_fast_a : rising · 50w
+state c01_fast_b #D1C4E9
+c01_fast_b : rising · 48w
+state c01_fast_e #FFCDD2
+c01_fast_e : death (negative)
+c01_fast_e : "Driven Into the Throat"
+state c01_hold_a #D1C4E9
+c01_hold_a : rising · 50w
+state c01_hold_b #D1C4E9
+c01_hold_b : rising · 48w
+state c01_hold_e #FFCDD2
+c01_hold_e : death (negative)
+c01_hold_e : "Waited Out at the Mouth"
+state c01_cap #E0E0E0
+c01_cap : setback (neutral)
+c01_cap : "Turned Back at the Cistern Mouth"
+state c01_gate #D1C4E9
+c01_gate : rising · 86w
+state c01_slip #D1C4E9
+c01_slip : rising · 56w
+state c01_pass #D1C4E9
+c01_pass : rising · 52w
+state c02_kick_a #D1C4E9
+c02_kick_a : rising · 50w
+state c02_kick_b #D1C4E9
+c02_kick_b : rising · 48w
+state c02_kick_e #FFCDD2
+c02_kick_e : death (negative)
+c02_kick_e : "Blind on the Silt Stair"
+state c02_rail_a #D1C4E9
+c02_rail_a : rising · 50w
+state c02_rail_b #D1C4E9
+c02_rail_b : rising · 48w
+state c02_rail_e #FFCDD2
+c02_rail_e : death (negative)
+c02_rail_e : "Down Into the Cloud"
+state c02_light_a #D1C4E9
+c02_light_a : rising · 50w
+state c02_light_b #D1C4E9
+c02_light_b : rising · 48w
+state c02_light_e #FFCDD2
+c02_light_e : death (negative)
+c02_light_e : "Lost in the Grey Water"
+state c02_wait_a #D1C4E9
+c02_wait_a : rising · 50w
+state c02_wait_b #D1C4E9
+c02_wait_b : rising · 48w
+state c02_wait_e #FFCDD2
+c02_wait_e : death (negative)
+c02_wait_e : "Settled Into the Dark"
+state c02_cap #E0E0E0
+c02_cap : setback (neutral)
+c02_cap : "Turned Back at the Silt Stair"
+state c02_gate #D1C4E9
+c02_gate : rising · 86w
+state c02_slip #D1C4E9
+c02_slip : rising · 56w
+state c02_pass #D1C4E9
+c02_pass : rising · 52w
+state c03_slot_a #D1C4E9
+c03_slot_a : rising · 50w
+state c03_slot_b #D1C4E9
+c03_slot_b : rising · 48w
+state c03_slot_e #FFCDD2
+c03_slot_e : death (negative)
+c03_slot_e : "On the Weir Grille"
+state c03_over_a #D1C4E9
+c03_over_a : rising · 50w
+state c03_over_b #D1C4E9
+c03_over_b : rising · 48w
+state c03_over_e #FFCDD2
+c03_over_e : death (negative)
+c03_over_e : "Bled Out on the Crest"
+state c03_under_a #D1C4E9
+c03_under_a : rising · 50w
+state c03_under_b #D1C4E9
+c03_under_b : rising · 48w
+state c03_under_e #FFCDD2
+c03_under_e : death (negative)
+c03_under_e : "In the Weir Sump"
+state c03_wait_a #D1C4E9
+c03_wait_a : rising · 50w
+state c03_wait_b #D1C4E9
+c03_wait_b : rising · 48w
+state c03_wait_e #FFCDD2
+c03_wait_e : death (negative)
+c03_wait_e : "Timed the Weir Wrong"
+state c03_cap #E0E0E0
+c03_cap : setback (neutral)
+c03_cap : "Turned Back at the Weir Gate"
+state c03_gate #D1C4E9
+c03_gate : rising · 86w
+state c03_slip #D1C4E9
+c03_slip : rising · 56w
+state c03_pass #D1C4E9
+c03_pass : rising · 52w
+state c04_stones_a #D1C4E9
+c04_stones_a : rising · 50w
+state c04_stones_b #D1C4E9
+c04_stones_b : rising · 48w
+state c04_stones_e #FFCDD2
+c04_stones_e : death (negative)
+c04_stones_e : "Through the Undercut Floor"
+state c04_prise_a #D1C4E9
+c04_prise_a : rising · 50w
+state c04_prise_b #D1C4E9
+c04_prise_b : rising · 48w
+state c04_prise_e #FFCDD2
+c04_prise_e : death (negative)
+c04_prise_e : "Crushed at the Sealed Door"
+state c04_pit_a #D1C4E9
+c04_pit_a : rising · 50w
+state c04_pit_b #D1C4E9
+c04_pit_b : rising · 48w
+state c04_pit_e #FFCDD2
+c04_pit_e : death (negative)
+c04_pit_e : "Snared in the Pit"
+state c04_wait_a #D1C4E9
+c04_wait_a : rising · 50w
+state c04_wait_b #D1C4E9
+c04_wait_b : rising · 48w
+state c04_wait_e #FFCDD2
+c04_wait_e : death (negative)
+c04_wait_e : "Still-Watered"
+state c04_cap #E0E0E0
+c04_cap : setback (neutral)
+c04_cap : "Turned Back at the First Seal"
+state c04_gate #D1C4E9
+c04_gate : rising · 86w
+state c04_slip #D1C4E9
+c04_slip : rising · 56w
+state c04_pass #D1C4E9
+c04_pass : rising · 58w
+state c05_rim_a #D1C4E9
+c05_rim_a : rising · 50w
+state c05_rim_b #D1C4E9
+c05_rim_b : rising · 48w
+state c05_rim_e #FFCDD2
+c05_rim_e : death (negative)
+c05_rim_e : "Fouled at the Rim"
+state c05_burst_a #D1C4E9
+c05_burst_a : rising · 50w
+state c05_burst_b #D1C4E9
+c05_burst_b : rising · 48w
+state c05_burst_e #FFCDD2
+c05_burst_e : death (negative)
+c05_burst_e : "Stunned Under the Dome"
+state c05_crack_a #D1C4E9
+c05_crack_a : rising · 50w
+state c05_crack_b #D1C4E9
+c05_crack_b : rising · 48w
+state c05_crack_e #FFCDD2
+c05_crack_e : death (negative)
+c05_crack_e : "Down With the Broken Bell"
+state c05_wait_a #D1C4E9
+c05_wait_a : rising · 50w
+state c05_wait_b #D1C4E9
+c05_wait_b : rising · 48w
+state c05_wait_e #FFCDD2
+c05_wait_e : death (negative)
+c05_wait_e : "Rested Too Long"
+state c05_cap #E0E0E0
+c05_cap : setback (neutral)
+c05_cap : "Turned Back at the First Air Bell"
+state c05_gate #D1C4E9
+c05_gate : rising · 86w
+state c05_slip #D1C4E9
+c05_slip : rising · 56w
+state c05_pass #D1C4E9
+c05_pass : rising · 56w
+state c06_wall_a #D1C4E9
+c06_wall_a : rising · 50w
+state c06_wall_e #FFCDD2
+c06_wall_e : death (negative)
+c06_wall_e : "Short of the Far Side"
+state c06_look_a #D1C4E9
+c06_look_a : rising · 50w
+state c06_look_e #FFCDD2
+c06_look_e : death (negative)
+c06_look_e : "Between the Mouths"
+state c06_panic_a #D1C4E9
+c06_panic_a : rising · 48w
+state c06_panic_e #FFCDD2
+c06_panic_e : death (negative)
+c06_panic_e : "Panicked in the Narrow Lock"
+state c06_gate #D1C4E9
+c06_gate : rising · 82w
+state c06_pass #D1C4E9
+c06_pass : rising · 52w
+state c07_niche_a #D1C4E9
+c07_niche_a : rising · 50w
+state c07_niche_b #D1C4E9
+c07_niche_b : rising · 48w
+state c07_niche_e #FFCDD2
+c07_niche_e : death (negative)
+c07_niche_e : "Held in the Niche"
+state c07_false_a #D1C4E9
+c07_false_a : rising · 50w
+state c07_false_b #D1C4E9
+c07_false_b : rising · 48w
+state c07_false_e #FFCDD2
+c07_false_e : death (negative)
+c07_false_e : "At the False Door"
+state c07_wire_a #D1C4E9
+c07_wire_a : rising · 50w
+state c07_wire_b #D1C4E9
+c07_wire_b : rising · 48w
+state c07_wire_e #FFCDD2
+c07_wire_e : death (negative)
+c07_wire_e : "Caught on the Ceiling Wire"
+state c07_wait_a #D1C4E9
+c07_wait_a : rising · 50w
+state c07_wait_b #D1C4E9
+c07_wait_b : rising · 48w
+state c07_wait_e #FFCDD2
+c07_wait_e : death (negative)
+c07_wait_e : "Read Too Long in the Hall"
+state c07_cap #E0E0E0
+c07_cap : setback (neutral)
+c07_cap : "Turned Back at the Drowned Gallery"
+state c07_gate #D1C4E9
+c07_gate : rising · 86w
+state c07_slip #D1C4E9
+c07_slip : rising · 56w
+state c07_pass #D1C4E9
+c07_pass : rising · 52w
+state c08_deep_a #D1C4E9
+c08_deep_a : rising · 50w
+state c08_deep_b #D1C4E9
+c08_deep_b : rising · 48w
+state c08_deep_e #FFCDD2
+c08_deep_e : death (negative)
+c08_deep_e : "Cramped in the Cold Bowl"
+state c08_edge_a #D1C4E9
+c08_edge_a : rising · 50w
+state c08_edge_b #D1C4E9
+c08_edge_b : rising · 48w
+state c08_edge_e #FFCDD2
+c08_edge_e : death (negative)
+c08_edge_e : "Off the Frozen Rim"
+state c08_fast_a #D1C4E9
+c08_fast_a : rising · 50w
+state c08_fast_b #D1C4E9
+c08_fast_b : rising · 48w
+state c08_fast_e #FFCDD2
+c08_fast_e : death (negative)
+c08_fast_e : "Stalled in the Bowl"
+state c08_wait_a #D1C4E9
+c08_wait_a : rising · 50w
+state c08_wait_b #D1C4E9
+c08_wait_b : rising · 48w
+state c08_wait_e #FFCDD2
+c08_wait_e : death (negative)
+c08_wait_e : "Stilled by the Cold"
+state c08_cap #E0E0E0
+c08_cap : setback (neutral)
+c08_cap : "Turned Back at the Cold Sump"
+state c08_gate #D1C4E9
+c08_gate : rising · 86w
+state c08_slip #D1C4E9
+c08_slip : rising · 56w
+state c08_pass #D1C4E9
+c08_pass : rising · 52w
+state c09_lids_a #D1C4E9
+c09_lids_a : rising · 50w
+state c09_lids_b #D1C4E9
+c09_lids_b : rising · 48w
+state c09_lids_e #FFCDD2
+c09_lids_e : death (negative)
+c09_lids_e : "Shut in the Coffer"
+state c09_hook_a #D1C4E9
+c09_hook_a : rising · 50w
+state c09_hook_b #D1C4E9
+c09_hook_b : rising · 48w
+state c09_hook_e #FFCDD2
+c09_hook_e : death (negative)
+c09_hook_e : "Down Among the Iron"
+state c09_lever_a #D1C4E9
+c09_lever_a : rising · 50w
+state c09_lever_b #D1C4E9
+c09_lever_b : rising · 48w
+state c09_lever_e #FFCDD2
+c09_lever_e : death (negative)
+c09_lever_e : "Between the Ribs"
+state c09_wait_a #D1C4E9
+c09_wait_a : rising · 50w
+state c09_wait_b #D1C4E9
+c09_wait_b : rising · 48w
+state c09_wait_e #FFCDD2
+c09_wait_e : death (negative)
+c09_wait_e : "Tilted Into the Dark"
+state c09_cap #E0E0E0
+c09_cap : setback (neutral)
+c09_cap : "Turned Back at the Second Seal"
+state c09_gate #D1C4E9
+c09_gate : rising · 86w
+state c09_slip #D1C4E9
+c09_slip : rising · 56w
+state c09_pass #D1C4E9
+c09_pass : rising · 58w
+state c10_sheet_a #D1C4E9
+c10_sheet_a : rising · 50w
+state c10_sheet_b #D1C4E9
+c10_sheet_b : rising · 48w
+state c10_sheet_e #FFCDD2
+c10_sheet_e : death (negative)
+c10_sheet_e : "Held Under the Fall"
+state c10_low_a #D1C4E9
+c10_low_a : rising · 50w
+state c10_low_b #D1C4E9
+c10_low_b : rising · 48w
+state c10_low_e #FFCDD2
+c10_low_e : death (negative)
+c10_low_e : "Into the Curtain Sump"
+state c10_right_a #D1C4E9
+c10_right_a : rising · 50w
+state c10_right_b #D1C4E9
+c10_right_b : rising · 48w
+state c10_right_e #FFCDD2
+c10_right_e : death (negative)
+c10_right_e : "Snagged in the Fall"
+state c10_wait_a #D1C4E9
+c10_wait_a : rising · 50w
+state c10_wait_b #D1C4E9
+c10_wait_b : rising · 48w
+state c10_wait_e #FFCDD2
+c10_wait_e : death (negative)
+c10_wait_e : "Waited on the Fall"
+state c10_cap #E0E0E0
+c10_cap : setback (neutral)
+c10_cap : "Turned Back at the Second Air Bell"
+state c10_gate #D1C4E9
+c10_gate : rising · 86w
+state c10_slip #D1C4E9
+c10_slip : rising · 56w
+state c10_pass #D1C4E9
+c10_pass : rising · 56w
+state c11_sprint_a #D1C4E9
+c11_sprint_a : rising · 50w
+state c11_sprint_e #FFCDD2
+c11_sprint_e : death (negative)
+c11_sprint_e : "Emptied in the Coil"
+state c11_cut_a #D1C4E9
+c11_cut_a : rising · 50w
+state c11_cut_e #FFCDD2
+c11_cut_e : death (negative)
+c11_cut_e : "Turned in the Coil"
+state c11_panic_a #D1C4E9
+c11_panic_a : rising · 48w
+state c11_panic_e #FFCDD2
+c11_panic_e : death (negative)
+c11_panic_e : "Panicked in the Serpent Lock"
+state c11_gate #D1C4E9
+c11_gate : rising · 82w
+state c11_pass #D1C4E9
+c11_pass : rising · 52w
+state c12_climb_a #D1C4E9
+c12_climb_a : rising · 50w
+state c12_climb_b #D1C4E9
+c12_climb_b : rising · 48w
+state c12_climb_e #FFCDD2
+c12_climb_e : death (negative)
+c12_climb_e : "On the Sluice Spokes"
+state c12_dive_a #D1C4E9
+c12_dive_a : rising · 50w
+state c12_dive_b #D1C4E9
+c12_dive_b : rising · 48w
+state c12_dive_e #FFCDD2
+c12_dive_e : death (negative)
+c12_dive_e : "Under the Gate"
+state c12_wedge_a #D1C4E9
+c12_wedge_a : rising · 50w
+state c12_wedge_b #D1C4E9
+c12_wedge_b : rising · 48w
+state c12_wedge_e #FFCDD2
+c12_wedge_e : death (negative)
+c12_wedge_e : "Caught in the Sluice"
+state c12_wait_a #D1C4E9
+c12_wait_a : rising · 50w
+state c12_wait_b #D1C4E9
+c12_wait_b : rising · 48w
+state c12_wait_e #FFCDD2
+c12_wait_e : death (negative)
+c12_wait_e : "Weighed Too Long"
+state c12_cap #E0E0E0
+c12_cap : setback (neutral)
+c12_cap : "Turned Back at the Sluice Fork"
+state c12_gate #D1C4E9
+c12_gate : rising · 86w
+state c12_slip #D1C4E9
+c12_slip : rising · 56w
+state c12_pass #D1C4E9
+c12_pass : rising · 52w
+state c13_bay_a #D1C4E9
+c13_bay_a : rising · 50w
+state c13_bay_b #D1C4E9
+c13_bay_b : rising · 48w
+state c13_bay_e #FFCDD2
+c13_bay_e : death (negative)
+c13_bay_e : "Through the Nave Floor"
+state c13_pillar_a #D1C4E9
+c13_pillar_a : rising · 50w
+state c13_pillar_b #D1C4E9
+c13_pillar_b : rising · 48w
+state c13_pillar_e #FFCDD2
+c13_pillar_e : death (negative)
+c13_pillar_e : "Under the Leaning Pillar"
+state c13_vault_a #D1C4E9
+c13_vault_a : rising · 50w
+state c13_vault_b #D1C4E9
+c13_vault_b : rising · 48w
+state c13_vault_e #FFCDD2
+c13_vault_e : death (negative)
+c13_vault_e : "Hung in the Vault"
+state c13_wait_a #D1C4E9
+c13_wait_a : rising · 50w
+state c13_wait_b #D1C4E9
+c13_wait_b : rising · 48w
+state c13_wait_e #FFCDD2
+c13_wait_e : death (negative)
+c13_wait_e : "Counting in the Nave"
+state c13_cap #E0E0E0
+c13_cap : setback (neutral)
+c13_cap : "Turned Back at the Sunken Nave"
+state c13_gate #D1C4E9
+c13_gate : rising · 86w
+state c13_slip #D1C4E9
+c13_slip : rising · 56w
+state c13_pass #D1C4E9
+c13_pass : rising · 52w
+state c14_leave_a #D1C4E9
+c14_leave_a : rising · 50w
+state c14_leave_b #D1C4E9
+c14_leave_b : rising · 48w
+state c14_leave_e #FFCDD2
+c14_leave_e : death (negative)
+c14_leave_e : "Lost Among the Pillars"
+state c14_cut_a #D1C4E9
+c14_cut_a : rising · 50w
+state c14_cut_b #D1C4E9
+c14_cut_b : rising · 48w
+state c14_cut_e #FFCDD2
+c14_cut_e : death (negative)
+c14_cut_e : "Wedged Off the Rope"
+state c14_fast_a #D1C4E9
+c14_fast_a : rising · 50w
+state c14_fast_b #D1C4E9
+c14_fast_b : rising · 48w
+state c14_fast_e #FFCDD2
+c14_fast_e : death (negative)
+c14_fast_e : "A Skipped Knot"
+state c14_wait_a #D1C4E9
+c14_wait_a : rising · 50w
+state c14_wait_b #D1C4E9
+c14_wait_b : rising · 48w
+state c14_wait_e #FFCDD2
+c14_wait_e : death (negative)
+c14_wait_e : "Bearingless in the Dark"
+state c14_cap #E0E0E0
+c14_cap : setback (neutral)
+c14_cap : "Turned Back at the Pillared Dark"
+state c14_gate #D1C4E9
+c14_gate : rising · 86w
+state c14_slip #D1C4E9
+c14_slip : rising · 56w
+state c14_pass #D1C4E9
+c14_pass : rising · 52w
+state c15_jag_a #D1C4E9
+c15_jag_a : rising · 50w
+state c15_jag_b #D1C4E9
+c15_jag_b : rising · 48w
+state c15_jag_e #FFCDD2
+c15_jag_e : death (negative)
+c15_jag_e : "Torn on the Broken Roof"
+state c15_rubble_a #D1C4E9
+c15_rubble_a : rising · 50w
+state c15_rubble_b #D1C4E9
+c15_rubble_b : rising · 48w
+state c15_rubble_e #FFCDD2
+c15_rubble_e : death (negative)
+c15_rubble_e : "Hooked in the Rubble"
+state c15_edge_a #D1C4E9
+c15_edge_a : rising · 50w
+state c15_edge_b #D1C4E9
+c15_edge_b : rising · 48w
+state c15_edge_e #FFCDD2
+c15_edge_e : death (negative)
+c15_edge_e : "Half Air at the Edge"
+state c15_wait_a #D1C4E9
+c15_wait_a : rising · 50w
+state c15_wait_b #D1C4E9
+c15_wait_b : rising · 48w
+state c15_wait_e #FFCDD2
+c15_wait_e : death (negative)
+c15_wait_e : "Studied Too Long Below"
+state c15_cap #E0E0E0
+c15_cap : setback (neutral)
+c15_cap : "Turned Back at the Third Air Bell"
+state c15_gate #D1C4E9
+c15_gate : rising · 86w
+state c15_slip #D1C4E9
+c15_slip : rising · 56w
+state c15_pass #D1C4E9
+c15_pass : rising · 56w
+state c16_stop_a #D1C4E9
+c16_stop_a : rising · 50w
+state c16_stop_e #FFCDD2
+c16_stop_e : death (negative)
+c16_stop_e : "Paused at the Coffer"
+state c16_low_a #D1C4E9
+c16_low_a : rising · 50w
+state c16_low_e #FFCDD2
+c16_low_e : death (negative)
+c16_low_e : "Against the Sill"
+state c16_panic_a #D1C4E9
+c16_panic_a : rising · 48w
+state c16_panic_e #FFCDD2
+c16_panic_e : death (negative)
+c16_panic_e : "Panicked in the Coffer Lock"
+state c16_gate #D1C4E9
+c16_gate : rising · 82w
+state c16_pass #D1C4E9
+c16_pass : rising · 52w
+state c17_box_a #D1C4E9
+c17_box_a : rising · 50w
+state c17_box_b #D1C4E9
+c17_box_b : rising · 48w
+state c17_box_e #FFCDD2
+c17_box_e : death (negative)
+c17_box_e : "Under the Fallen Stacks"
+state c17_over_a #D1C4E9
+c17_over_a : rising · 50w
+state c17_over_b #D1C4E9
+c17_over_b : rising · 48w
+state c17_over_e #FFCDD2
+c17_over_e : death (negative)
+c17_over_e : "Down Between the Runs"
+state c17_shove_a #D1C4E9
+c17_shove_a : rising · 50w
+state c17_shove_b #D1C4E9
+c17_shove_b : rising · 48w
+state c17_shove_e #FFCDD2
+c17_shove_e : death (negative)
+c17_shove_e : "Boxed In"
+state c17_wait_a #D1C4E9
+c17_wait_a : rising · 50w
+state c17_wait_b #D1C4E9
+c17_wait_b : rising · 48w
+state c17_wait_e #FFCDD2
+c17_wait_e : death (negative)
+c17_wait_e : "Paused Among the Coffers"
+state c17_cap #E0E0E0
+c17_cap : setback (neutral)
+c17_cap : "Turned Back at the Gallery of Coffers"
+state c17_gate #D1C4E9
+c17_gate : rising · 86w
+state c17_slip #D1C4E9
+c17_slip : rising · 56w
+state c17_pass #D1C4E9
+c17_pass : rising · 52w
+state c18_shelf_a #D1C4E9
+c18_shelf_a : rising · 50w
+state c18_shelf_b #D1C4E9
+c18_shelf_b : rising · 48w
+state c18_shelf_e #FFCDD2
+c18_shelf_e : death (negative)
+c18_shelf_e : "Off the Calving Shelf"
+state c18_pry_a #D1C4E9
+c18_pry_a : rising · 50w
+state c18_pry_b #D1C4E9
+c18_pry_b : rising · 48w
+state c18_pry_e #FFCDD2
+c18_pry_e : death (negative)
+c18_pry_e : "Adrift From the Seal"
+state c18_deep_a #D1C4E9
+c18_deep_a : rising · 50w
+state c18_deep_b #D1C4E9
+c18_deep_b : rising · 48w
+state c18_deep_e #FFCDD2
+c18_deep_e : death (negative)
+c18_deep_e : "Too Deep, Too Cold"
+state c18_wait_a #D1C4E9
+c18_wait_a : rising · 50w
+state c18_wait_b #D1C4E9
+c18_wait_b : rising · 48w
+state c18_wait_e #FFCDD2
+c18_wait_e : death (negative)
+c18_wait_e : "Steadied Too Long"
+state c18_cap #E0E0E0
+c18_cap : setback (neutral)
+c18_cap : "Turned Back at the Third Seal"
+state c18_gate #D1C4E9
+c18_gate : rising · 86w
+state c18_slip #D1C4E9
+c18_slip : rising · 56w
+state c18_pass #D1C4E9
+c18_pass : rising · 58w
+state c19_letgo_a #D1C4E9
+c19_letgo_a : rising · 50w
+state c19_letgo_b #D1C4E9
+c19_letgo_b : rising · 48w
+state c19_letgo_e #FFCDD2
+c19_letgo_e : death (negative)
+c19_letgo_e : "Adrift in the Black"
+state c19_down_a #D1C4E9
+c19_down_a : rising · 50w
+state c19_down_b #D1C4E9
+c19_down_b : rising · 48w
+state c19_down_e #FFCDD2
+c19_down_e : death (negative)
+c19_down_e : "Into the Black Pipe"
+state c19_fast_a #D1C4E9
+c19_fast_a : rising · 50w
+state c19_fast_b #D1C4E9
+c19_fast_b : rising · 48w
+state c19_fast_e #FFCDD2
+c19_fast_e : death (negative)
+c19_fast_e : "A Skipped Link"
+state c19_wait_a #D1C4E9
+c19_wait_a : rising · 50w
+state c19_wait_b #D1C4E9
+c19_wait_b : rising · 48w
+state c19_wait_e #FFCDD2
+c19_wait_e : death (negative)
+c19_wait_e : "Bearingless"
+state c19_cap #E0E0E0
+c19_cap : setback (neutral)
+c19_cap : "Turned Back at the Black Cistern"
+state c19_gate #D1C4E9
+c19_gate : rising · 86w
+state c19_slip #D1C4E9
+c19_slip : rising · 56w
+state c19_pass #D1C4E9
+c19_pass : rising · 52w
+state c20_weed_a #D1C4E9
+c20_weed_a : rising · 50w
+state c20_weed_b #D1C4E9
+c20_weed_b : rising · 48w
+state c20_weed_e #FFCDD2
+c20_weed_e : death (negative)
+c20_weed_e : "Wrapped in the Cables"
+state c20_edge_a #D1C4E9
+c20_edge_a : rising · 50w
+state c20_edge_b #D1C4E9
+c20_edge_b : rising · 48w
+state c20_edge_e #FFCDD2
+c20_edge_e : death (negative)
+c20_edge_e : "Snarled on the Wall"
+state c20_cut_a #D1C4E9
+c20_cut_a : rising · 50w
+state c20_cut_b #D1C4E9
+c20_cut_b : rising · 48w
+state c20_cut_e #FFCDD2
+c20_cut_e : death (negative)
+c20_cut_e : "Fouled in the Cutting"
+state c20_wait_a #D1C4E9
+c20_wait_a : rising · 50w
+state c20_wait_b #D1C4E9
+c20_wait_b : rising · 48w
+state c20_wait_e #FFCDD2
+c20_wait_e : death (negative)
+c20_wait_e : "Read the Run Too Long"
+state c20_cap #E0E0E0
+c20_cap : setback (neutral)
+c20_cap : "Turned Back at the Eel Run"
+state c20_gate #D1C4E9
+c20_gate : rising · 86w
+state c20_slip #D1C4E9
+c20_slip : rising · 56w
+state c20_pass #D1C4E9
+c20_pass : rising · 52w
+state c21_jamc_a #D1C4E9
+c21_jamc_a : rising · 50w
+state c21_jamc_b #D1C4E9
+c21_jamc_b : rising · 48w
+state c21_jamc_e #FFCDD2
+c21_jamc_e : death (negative)
+c21_jamc_e : "Jammed in the Chimney"
+state c21_slick_a #D1C4E9
+c21_slick_a : rising · 50w
+state c21_slick_b #D1C4E9
+c21_slick_b : rising · 48w
+state c21_slick_e #FFCDD2
+c21_slick_e : death (negative)
+c21_slick_e : "Down the Chimney Throat"
+state c21_kick_a #D1C4E9
+c21_kick_a : rising · 50w
+state c21_kick_b #D1C4E9
+c21_kick_b : rising · 48w
+state c21_kick_e #FFCDD2
+c21_kick_e : death (negative)
+c21_kick_e : "Stunned in the Chimney"
+state c21_wait_a #D1C4E9
+c21_wait_a : rising · 50w
+state c21_wait_b #D1C4E9
+c21_wait_b : rising · 48w
+state c21_wait_e #FFCDD2
+c21_wait_e : death (negative)
+c21_wait_e : "Rested in the Throat"
+state c21_cap #E0E0E0
+c21_cap : setback (neutral)
+c21_cap : "Turned Back at the Fourth Air Bell"
+state c21_gate #D1C4E9
+c21_gate : rising · 86w
+state c21_slip #D1C4E9
+c21_slip : rising · 56w
+state c21_pass #D1C4E9
+c21_pass : rising · 56w
+state c22_drown_a #D1C4E9
+c22_drown_a : rising · 50w
+state c22_drown_e #FFCDD2
+c22_drown_e : death (negative)
+c22_drown_e : "No Breath for the Deep Run"
+state c22_charge_a #D1C4E9
+c22_charge_a : rising · 50w
+state c22_charge_e #FFCDD2
+c22_charge_e : death (negative)
+c22_charge_e : "Lost in the Deep Run"
+state c22_feel_a #D1C4E9
+c22_feel_a : rising · 50w
+state c22_feel_e #FFCDD2
+c22_feel_e : death (negative)
+c22_feel_e : "Sure and Short of Breath"
+state c22_panic_a #D1C4E9
+c22_panic_a : rising · 48w
+state c22_panic_e #FFCDD2
+c22_panic_e : death (negative)
+c22_panic_e : "Panicked in the Deep Lock"
+state c22_gate #D1C4E9
+c22_gate : rising · 82w
+state c22_pass #D1C4E9
+c22_pass : rising · 52w
+state c23_crack_a #D1C4E9
+c23_crack_a : rising · 50w
+state c23_crack_b #D1C4E9
+c23_crack_b : rising · 48w
+state c23_crack_e #FFCDD2
+c23_crack_e : death (negative)
+c23_crack_e : "Under the Cracked Slab"
+state c23_long_a #D1C4E9
+c23_long_a : rising · 50w
+state c23_long_b #D1C4E9
+c23_long_b : rising · 48w
+state c23_long_e #FFCDD2
+c23_long_e : death (negative)
+c23_long_e : "One Breath Too Many"
+state c23_prop_a #D1C4E9
+c23_prop_a : rising · 50w
+state c23_prop_b #D1C4E9
+c23_prop_b : rising · 48w
+state c23_prop_e #FFCDD2
+c23_prop_e : death (negative)
+c23_prop_e : "The Slab Came Down"
+state c23_wait_a #D1C4E9
+c23_wait_a : rising · 50w
+state c23_wait_b #D1C4E9
+c23_wait_b : rising · 48w
+state c23_wait_e #FFCDD2
+c23_wait_e : death (negative)
+c23_wait_e : "Steadied Under the Slab"
+state c23_cap #E0E0E0
+c23_cap : setback (neutral)
+c23_cap : "Turned Back at the Last Air Bell"
+state c23_gate #D1C4E9
+c23_gate : rising · 86w
+state c23_slip #D1C4E9
+c23_slip : rising · 56w
+state c23_pass #D1C4E9
+c23_pass : rising · 56w
+state c24_drag_a #D1C4E9
+c24_drag_a : rising · 50w
+state c24_drag_b #D1C4E9
+c24_drag_b : rising · 48w
+state c24_drag_e #FFCDD2
+c24_drag_e : death (negative)
+c24_drag_e : "Under the Serpent Roof"
+state c24_sweep_a #D1C4E9
+c24_sweep_a : rising · 50w
+state c24_sweep_b #D1C4E9
+c24_sweep_b : rising · 48w
+state c24_sweep_e #FFCDD2
+c24_sweep_e : death (negative)
+c24_sweep_e : "Buried With the Hoard"
+state c24_under_a #D1C4E9
+c24_under_a : rising · 50w
+state c24_under_b #D1C4E9
+c24_under_b : rising · 48w
+state c24_under_e #FFCDD2
+c24_under_e : death (negative)
+c24_under_e : "What Lay Beneath"
+state c24_wait_a #D1C4E9
+c24_wait_a : rising · 50w
+state c24_wait_b #D1C4E9
+c24_wait_b : rising · 48w
+state c24_wait_e #FFCDD2
+c24_wait_e : death (negative)
+c24_wait_e : "Sure Too Long"
+state c24_cap #E0E0E0
+c24_cap : setback (neutral)
+c24_cap : "Turned Back at the Vault of the Serpent"
+state c24_gate #D1C4E9
+c24_gate : rising · 86w
+state c24_slip #D1C4E9
+c24_slip : rising · 56w
+state c24_pass #D1C4E9
+c24_pass : rising · 52w
+state c25_crown_a #D1C4E9
+c25_crown_a : rising · 50w
+state c25_crown_b #D1C4E9
+c25_crown_b : rising · 48w
+state c25_crown_e #FFCDD2
+c25_crown_e : death (negative)
+c25_crown_e : "Under the Keystone"
+state c25_prop_a #D1C4E9
+c25_prop_a : rising · 50w
+state c25_prop_b #D1C4E9
+c25_prop_b : rising · 48w
+state c25_prop_e #FFCDD2
+c25_prop_e : death (negative)
+c25_prop_e : "The Arch Came Down"
+state c25_climb_a #D1C4E9
+c25_climb_a : rising · 50w
+state c25_climb_b #D1C4E9
+c25_climb_b : rising · 48w
+state c25_climb_e #FFCDD2
+c25_climb_e : death (negative)
+c25_climb_e : "Up Into the Foul Gap"
+state c25_wait_a #D1C4E9
+c25_wait_a : rising · 50w
+state c25_wait_b #D1C4E9
+c25_wait_b : rising · 48w
+state c25_wait_e #FFCDD2
+c25_wait_e : death (negative)
+c25_wait_e : "Waited Under the Groan"
+state c25_cap #E0E0E0
+c25_cap : setback (neutral)
+c25_cap : "Turned Back at the Groaning Arch"
+state c25_gate #D1C4E9
+c25_gate : rising · 86w
+state c25_slip #D1C4E9
+c25_slip : rising · 56w
+state c25_pass #D1C4E9
+c25_pass : rising · 52w
+state c26_inner_a #D1C4E9
+c26_inner_a : rising · 50w
+state c26_inner_b #D1C4E9
+c26_inner_b : rising · 48w
+state c26_inner_e #FFCDD2
+c26_inner_e : death (negative)
+c26_inner_e : "Down the Stair Well"
+state c26_jump_a #D1C4E9
+c26_jump_a : rising · 50w
+state c26_jump_b #D1C4E9
+c26_jump_b : rising · 48w
+state c26_jump_e #FFCDD2
+c26_jump_e : death (negative)
+c26_jump_e : "Short of the Landing"
+state c26_shaft_a #D1C4E9
+c26_shaft_a : rising · 50w
+state c26_shaft_b #D1C4E9
+c26_shaft_b : rising · 48w
+state c26_shaft_e #FFCDD2
+c26_shaft_e : death (negative)
+c26_shaft_e : "Choked in the Shaft"
+state c26_wait_a #D1C4E9
+c26_wait_a : rising · 50w
+state c26_wait_b #D1C4E9
+c26_wait_b : rising · 48w
+state c26_wait_e #FFCDD2
+c26_wait_e : death (negative)
+c26_wait_e : "Overtaken on the Stair"
+state c26_cap #E0E0E0
+c26_cap : setback (neutral)
+c26_cap : "Turned Back at the Drowned Stair"
+state c26_gate #D1C4E9
+c26_gate : rising · 86w
+state c26_slip #D1C4E9
+c26_slip : rising · 56w
+state c26_pass #D1C4E9
+c26_pass : rising · 52w
+state c27_low_a #D1C4E9
+c27_low_a : rising · 50w
+state c27_low_b #D1C4E9
+c27_low_b : rising · 48w
+state c27_low_e #FFCDD2
+c27_low_e : death (negative)
+c27_low_e : "The Wrong Door Down"
+state c27_drain_a #D1C4E9
+c27_drain_a : rising · 50w
+state c27_drain_b #D1C4E9
+c27_drain_b : rising · 48w
+state c27_drain_e #FFCDD2
+c27_drain_e : death (negative)
+c27_drain_e : "Taken by the Drain"
+state c27_gap_a #D1C4E9
+c27_gap_a : rising · 50w
+state c27_gap_b #D1C4E9
+c27_gap_b : rising · 48w
+state c27_gap_e #FFCDD2
+c27_gap_e : death (negative)
+c27_gap_e : "Into the Filled Gap"
+state c27_wait_a #D1C4E9
+c27_wait_a : rising · 50w
+state c27_wait_b #D1C4E9
+c27_wait_b : rising · 48w
+state c27_wait_e #FFCDD2
+c27_wait_e : death (negative)
+c27_wait_e : "Waited on the Rise"
+state c27_cap #E0E0E0
+c27_cap : setback (neutral)
+c27_cap : "Turned Back at the Rising Water"
+state c27_gate #D1C4E9
+c27_gate : rising · 86w
+state c27_slip #D1C4E9
+c27_slip : rising · 56w
+state c27_pass #D1C4E9
+c27_pass : rising · 52w
+state c28_force_a #D1C4E9
+c28_force_a : rising · 50w
+state c28_force_b #D1C4E9
+c28_force_b : rising · 48w
+state c28_force_e #FFCDD2
+c28_force_e : death (negative)
+c28_force_e : "Netted in the Weed"
+state c28_knife_a #D1C4E9
+c28_knife_a : rising · 50w
+state c28_knife_b #D1C4E9
+c28_knife_b : rising · 48w
+state c28_knife_e #FFCDD2
+c28_knife_e : death (negative)
+c28_knife_e : "Fouled on the Blade"
+state c28_over_a #D1C4E9
+c28_over_a : rising · 50w
+state c28_over_b #D1C4E9
+c28_over_b : rising · 48w
+state c28_over_e #FFCDD2
+c28_over_e : death (negative)
+c28_over_e : "Held at the Curtain Top"
+state c28_wait_a #D1C4E9
+c28_wait_a : rising · 50w
+state c28_wait_b #D1C4E9
+c28_wait_b : rising · 48w
+state c28_wait_e #FFCDD2
+c28_wait_e : death (negative)
+c28_wait_e : "Searched the Weed Too Long"
+state c28_cap #E0E0E0
+c28_cap : setback (neutral)
+c28_cap : "Turned Back at the Weed Curtain"
+state c28_gate #D1C4E9
+c28_gate : rising · 86w
+state c28_slip #D1C4E9
+c28_slip : rising · 56w
+state c28_pass #D1C4E9
+c28_pass : rising · 52w
+state c29_full_a #D1C4E9
+c29_full_a : rising · 50w
+state c29_full_b #D1C4E9
+c29_full_b : rising · 48w
+state c29_full_e #FFCDD2
+c29_full_e : death (negative)
+c29_full_e : "Wedged in the Choke"
+state c29_thrash_a #D1C4E9
+c29_thrash_a : rising · 50w
+state c29_thrash_b #D1C4E9
+c29_thrash_b : rising · 48w
+state c29_thrash_e #FFCDD2
+c29_thrash_e : death (negative)
+c29_thrash_e : "Pinned in the Gap"
+state c29_gear_a #D1C4E9
+c29_gear_a : rising · 50w
+state c29_gear_b #D1C4E9
+c29_gear_b : rising · 48w
+state c29_gear_e #FFCDD2
+c29_gear_e : death (negative)
+c29_gear_e : "Half Through the Choke"
+state c29_wait_a #D1C4E9
+c29_wait_a : rising · 50w
+state c29_wait_b #D1C4E9
+c29_wait_b : rising · 48w
+state c29_wait_e #FFCDD2
+c29_wait_e : death (negative)
+c29_wait_e : "Waited at the Choke"
+state c29_cap #E0E0E0
+c29_cap : setback (neutral)
+c29_cap : "Turned Back at the Choke"
+state c29_gate #D1C4E9
+c29_gate : rising · 86w
+state c29_slip #D1C4E9
+c29_slip : rising · 56w
+state c29_pass #D1C4E9
+c29_pass : rising · 52w
+state c30_straight_a #D1C4E9
+c30_straight_a : rising · 50w
+state c30_straight_b #D1C4E9
+c30_straight_b : rising · 48w
+state c30_straight_e #FFCDD2
+c30_straight_e : death (negative)
+c30_straight_e : "Swept Down the Overflow"
+state c30_fight_a #D1C4E9
+c30_fight_a : rising · 50w
+state c30_fight_b #D1C4E9
+c30_fight_b : rising · 48w
+state c30_fight_e #FFCDD2
+c30_fight_e : death (negative)
+c30_fight_e : "Spent Against the Flow"
+state c30_low_a #D1C4E9
+c30_low_a : rising · 50w
+state c30_low_b #D1C4E9
+c30_low_b : rising · 48w
+state c30_low_e #FFCDD2
+c30_low_e : death (negative)
+c30_low_e : "Under and Away"
+state c30_wait_a #D1C4E9
+c30_wait_a : rising · 50w
+state c30_wait_b #D1C4E9
+c30_wait_b : rising · 48w
+state c30_wait_e #FFCDD2
+c30_wait_e : death (negative)
+c30_wait_e : "Read the Current Too Long"
+state c30_cap #E0E0E0
+c30_cap : setback (neutral)
+c30_cap : "Turned Back at the Sluice Return"
+state c30_gate #D1C4E9
+c30_gate : rising · 86w
+state c30_slip #D1C4E9
+c30_slip : rising · 56w
+state c30_pass #D1C4E9
+c30_pass : rising · 52w
+state c31_floor_a #D1C4E9
+c31_floor_a : rising · 50w
+state c31_floor_b #D1C4E9
+c31_floor_b : rising · 48w
+state c31_floor_e #FFCDD2
+c31_floor_e : death (negative)
+c31_floor_e : "Opened on the Rail"
+state c31_rust_a #D1C4E9
+c31_rust_a : rising · 50w
+state c31_rust_b #D1C4E9
+c31_rust_b : rising · 48w
+state c31_rust_e #FFCDD2
+c31_rust_e : death (negative)
+c31_rust_e : "Blind Into the Rust"
+state c31_side_a #D1C4E9
+c31_side_a : rising · 50w
+state c31_side_b #D1C4E9
+c31_side_b : rising · 48w
+state c31_side_e #FFCDD2
+c31_side_e : death (negative)
+c31_side_e : "Into the Dead Spur"
+state c31_wait_a #D1C4E9
+c31_wait_a : rising · 50w
+state c31_wait_b #D1C4E9
+c31_wait_b : rising · 48w
+state c31_wait_e #FFCDD2
+c31_wait_e : death (negative)
+c31_wait_e : "Rusted In"
+state c31_cap #E0E0E0
+c31_cap : setback (neutral)
+c31_cap : "Turned Back at the Last Gallery"
+state c31_gate #D1C4E9
+c31_gate : rising · 86w
+state c31_slip #D1C4E9
+c31_slip : rising · 56w
+state c31_pass #D1C4E9
+c31_pass : rising · 52w
+state c32_through_a #D1C4E9
+c32_through_a : rising · 50w
+state c32_through_b #D1C4E9
+c32_through_b : rising · 48w
+state c32_through_e #FFCDD2
+c32_through_e : death (negative)
+c32_through_e : "Pinned by the Car"
+state c32_under_a #D1C4E9
+c32_under_a : rising · 50w
+state c32_under_b #D1C4E9
+c32_under_b : rising · 48w
+state c32_under_e #FFCDD2
+c32_under_e : death (negative)
+c32_under_e : "Under the Fallen Car"
+state c32_cable_a #D1C4E9
+c32_cable_a : rising · 50w
+state c32_cable_b #D1C4E9
+c32_cable_b : rising · 48w
+state c32_cable_e #FFCDD2
+c32_cable_e : death (negative)
+c32_cable_e : "Down the Lift Shaft"
+state c32_wait_a #D1C4E9
+c32_wait_a : rising · 50w
+state c32_wait_b #D1C4E9
+c32_wait_b : rising · 48w
+state c32_wait_e #FFCDD2
+c32_wait_e : death (negative)
+c32_wait_e : "Waited by the Car"
+state c32_cap #E0E0E0
+c32_cap : setback (neutral)
+c32_cap : "Turned Back at the Broken Lift"
+state c32_gate #D1C4E9
+c32_gate : rising · 86w
+state c32_slip #D1C4E9
+c32_slip : rising · 56w
+state c32_pass #D1C4E9
+c32_pass : rising · 52w
+state c33_blow_a #D1C4E9
+c33_blow_a : rising · 50w
+state c33_blow_b #D1C4E9
+c33_blow_b : rising · 48w
+state c33_blow_e #FFCDD2
+c33_blow_e : death (negative)
+c33_blow_e : "Too Fast to the Top"
+state c33_skip_a #D1C4E9
+c33_skip_a : rising · 50w
+state c33_skip_b #D1C4E9
+c33_skip_b : rising · 48w
+state c33_skip_e #FFCDD2
+c33_skip_e : death (negative)
+c33_skip_e : "The Stop Not Kept"
+state c33_side_a #D1C4E9
+c33_side_a : rising · 50w
+state c33_side_b #D1C4E9
+c33_side_b : rising · 48w
+state c33_side_e #FFCDD2
+c33_side_e : death (negative)
+c33_side_e : "In the Blind Vent"
+state c33_wait_a #D1C4E9
+c33_wait_a : rising · 50w
+state c33_wait_b #D1C4E9
+c33_wait_b : rising · 48w
+state c33_wait_e #FFCDD2
+c33_wait_e : death (negative)
+c33_wait_e : "Caught in the Shaft"
+state c33_cap #E0E0E0
+c33_cap : setback (neutral)
+c33_cap : "Turned Back at the Ascent Shaft"
+state c33_gate #D1C4E9
+c33_gate : rising · 86w
+state c33_slip #D1C4E9
+c33_slip : rising · 56w
+state c33_pass #D1C4E9
+c33_pass : rising · 52w
+state fin_muster #D1C4E9
+fin_muster : rising · 66w
+state fin_door #FFF9C4
+fin_door : choice · 82w
+state door_force_a #D1C4E9
+door_force_a : rising · 50w
+state door_force_e #FFCDD2
+door_force_e : death (negative)
+door_force_e : "Forced the Last Door"
+state door_hoard #D1C4E9
+door_hoard : rising · 56w
+state hoard_flood #FFF9C4
+hoard_flood : choice · 74w
+state hoard_gamble_a #D1C4E9
+hoard_gamble_a : rising · 50w
+state hoard_gamble_e #FFCDD2
+hoard_gamble_e : death (negative)
+hoard_gamble_e : "Down With the Hoard"
+state hoard_lost #E0E0E0
+hoard_lost : completion (neutral)
+hoard_lost : "Out With Your Life, Not the Hoard"
+state hoard_ascent #FFF9C4
+hoard_ascent : choice · 74w
+state asc_gamble_a #D1C4E9
+asc_gamble_a : rising · 50w
+state asc_gamble_e #FFCDD2
+asc_gamble_e : death (negative)
+asc_gamble_e : "Blind on the Last Port"
+state win_best #C8E6C9
+win_best : success (positive)
+win_best : "The Serpent Vaults"
+state win_winded #C8E6C9
+win_winded : success (positive)
+win_winded : "Up the Dry Port, Lungs Burning"
+state door_some #D1C4E9
+door_some : rising · 56w
+state some_flood #FFF9C4
+some_flood : choice · 72w
+state some_gamble_a #D1C4E9
+some_gamble_a : rising · 50w
+state some_gamble_e #FFCDD2
+some_gamble_e : death (negative)
+some_gamble_e : "Under the Half Door"
+state some_dry #C8E6C9
+some_dry : completion (positive)
+some_dry : "Two Seals and the Long Climb Out"
+state some_wet #E0E0E0
+some_wet : setback (neutral)
+some_wet : "Trapped on the Mid Landing"
+state door_bare #D1C4E9
+door_bare : rising · 56w
+state bare_flood #FFF9C4
+bare_flood : choice · 72w
+state bare_gamble_a #D1C4E9
+bare_gamble_a : rising · 50w
+state bare_gamble_e #FFCDD2
+bare_gamble_e : death (negative)
+bare_gamble_e : "Wedged in the Hand-Width"
+state bare_dry #C8E6C9
+bare_dry : completion (positive)
+bare_dry : "Out With One Seal"
+state bare_wet #E0E0E0
+bare_wet : setback (neutral)
+bare_wet : "The Cord Pulls on Drowned Water"
+state door_shut #FFF9C4
+door_shut : choice · 70w
+state shut_dive #D1C4E9
+shut_dive : rising · 56w
+state shut_out #E0E0E0
+shut_out : completion (neutral)
+shut_out : "Out Through the Drain, Empty-Handed"
+state shut_batter_a #D1C4E9
+shut_batter_a : rising · 50w
+state shut_batter_e #FFCDD2
+shut_batter_e : death (negative)
+shut_batter_e : "Sealed in the Dark"
+s0 --> c01_gate : Slip under the surface and go down.
+c01_bars_a --> c01_bars_b : Go on.
+c01_bars_b --> c01_bars_e : Go on.
+c01_wide_a --> c01_wide_b : Go on.
+c01_wide_b --> c01_wide_e : Go on.
+c01_fast_a --> c01_fast_b : Go on.
+c01_fast_b --> c01_fast_e : Go on.
+c01_hold_a --> c01_hold_b : Go on.
+c01_hold_b --> c01_hold_e : Go on.
+c01_gate --> c01_pass : Slide through the clear gap on the stead...
+c01_gate --> c01_bars_a : Grab the grate bars to slow yourself.
+c01_gate --> c01_wide_a : Push wide into the still corner.
+c01_gate --> c01_fast_a : Kick down hard to beat the funnel.
+c01_gate --> c01_hold_a : Hold at the mouth until the pull eases.
+c01_gate --> c01_slip : Gamble it and take the harder line.
+c01_gate --> c01_cap : Give it up and turn back for the surface...
+c01_slip --> c02_gate : Go on, deeper down.
+c01_pass --> c02_gate : Go on.
+c02_kick_a --> c02_kick_b : Go on.
+c02_kick_b --> c02_kick_e : Go on.
+c02_rail_a --> c02_rail_b : Go on.
+c02_rail_b --> c02_rail_e : Go on.
+c02_light_a --> c02_light_b : Go on.
+c02_light_b --> c02_light_e : Go on.
+c02_wait_a --> c02_wait_b : Go on.
+c02_wait_b --> c02_wait_e : Go on.
+c02_gate --> c02_pass : Feel down the wall and keep the silt sti...
+c02_gate --> c02_kick_a : Kick down the stairwell to save time.
+c02_gate --> c02_rail_a : Pull down by the old handrail.
+c02_gate --> c02_light_a : Wave the lamp to cut the murk.
+c02_gate --> c02_wait_a : Settle and wait for the silt to clear.
+c02_gate --> c02_slip : Gamble it and take the harder line.
+c02_gate --> c02_cap : Give it up and turn back for the surface...
+c02_slip --> c03_gate : Go on, deeper down.
+c02_pass --> c03_gate : Go on.
+c03_slot_a --> c03_slot_b : Go on.
+c03_slot_b --> c03_slot_e : Go on.
+c03_over_a --> c03_over_b : Go on.
+c03_over_b --> c03_over_e : Go on.
+c03_under_a --> c03_under_b : Go on.
+c03_under_b --> c03_under_e : Go on.
+c03_wait_a --> c03_wait_b : Go on.
+c03_wait_b --> c03_wait_e : Go on.
+c03_gate --> c03_pass : Cross in the slack eddy beside the pour.
+c03_gate --> c03_slot_a : Ride the fast pour straight through the ...
+c03_gate --> c03_over_a : Climb over the top of the weir.
+c03_gate --> c03_under_a : Dive the sump under the weir.
+c03_gate --> c03_wait_a : Hold at the weir to time the pour.
+c03_gate --> c03_slip : Gamble it and take the harder line.
+c03_gate --> c03_cap : Give it up and turn back for the surface...
+c03_slip --> c04_gate : Go on, deeper down.
+c03_pass --> c04_gate : Go on.
+c04_stones_a --> c04_stones_b : Go on.
+c04_stones_b --> c04_stones_e : Go on.
+c04_prise_a --> c04_prise_b : Go on.
+c04_prise_b --> c04_prise_e : Go on.
+c04_pit_a --> c04_pit_b : Go on.
+c04_pit_b --> c04_pit_e : Go on.
+c04_wait_a --> c04_wait_b : Go on.
+c04_wait_b --> c04_wait_e : Go on.
+c04_gate --> c04_pass : Keep to the sound wall to the seal.
+c04_gate --> c04_stones_a : Cross straight over the flagstones.
+c04_gate --> c04_prise_a : Force the door with your bar.
+c04_gate --> c04_pit_a : Dive the flooded pit to look under.
+c04_gate --> c04_wait_a : Hold in the chamber to study the lock.
+c04_gate --> c04_slip : Gamble it and take the harder line.
+c04_gate --> c04_cap : Give it up and turn back for the surface...
+c04_slip --> c05_gate : Go on, deeper down.
+c04_pass --> c05_gate : Prise the serpent seal free and carry it...
+c04_pass --> c05_gate : Leave the seal; the water is rising.
+c05_rim_a --> c05_rim_b : Go on.
+c05_rim_b --> c05_rim_e : Go on.
+c05_burst_a --> c05_burst_b : Go on.
+c05_burst_b --> c05_burst_e : Go on.
+c05_crack_a --> c05_crack_b : Go on.
+c05_crack_b --> c05_crack_e : Go on.
+c05_wait_a --> c05_wait_b : Go on.
+c05_wait_b --> c05_wait_e : Go on.
+c05_gate --> c05_pass : Rise slow and breathe the clean center.
+c05_gate --> c05_rim_a : Gulp the nearest air at the rim.
+c05_gate --> c05_burst_a : Punch up fast through the surface.
+c05_gate --> c05_crack_a : Break the rot to widen the pocket.
+c05_gate --> c05_wait_a : Linger in the pocket to rest.
+c05_gate --> c05_slip : Gamble it and take the harder line.
+c05_gate --> c05_cap : Give it up and turn back for the surface...
+c05_slip --> c06_gate : Go on, deeper down.
+c05_pass --> c06_gate : Breathe the bell to the full.
+c05_pass --> c06_gate : Press on with the breath you have.
+c06_wall_a --> c06_wall_e : Go on.
+c06_look_a --> c06_look_e : Go on.
+c06_panic_a --> c06_panic_e : Go on.
+c06_gate --> c06_pass : Take the long submerged push through.
+c06_gate --> c06_wall_a : Feel along the throat wall as you go.
+c06_gate --> c06_look_a : Rise partway to look for a bubble.
+c06_gate --> c06_panic_a : Force it in a thrash of panic.
+c06_pass --> c07_gate : Go on.
+c07_niche_a --> c07_niche_b : Go on.
+c07_niche_b --> c07_niche_e : Go on.
+c07_false_a --> c07_false_b : Go on.
+c07_false_b --> c07_false_e : Go on.
+c07_wire_a --> c07_wire_b : Go on.
+c07_wire_b --> c07_wire_e : Go on.
+c07_wait_a --> c07_wait_b : Go on.
+c07_wait_b --> c07_wait_e : Go on.
+c07_gate --> c07_pass : Ride the centerline to the open door.
+c07_gate --> c07_niche_a : Cut through the niches to shorten the ha...
+c07_gate --> c07_false_a : Make for the second door on the side.
+c07_gate --> c07_wire_a : Rise to the ceiling to skim the hall.
+c07_gate --> c07_wait_a : Hang in the current and read the hall.
+c07_gate --> c07_slip : Gamble it and take the harder line.
+c07_gate --> c07_cap : Give it up and turn back for the surface...
+c07_slip --> c08_gate : Go on, deeper down.
+c07_pass --> c08_gate : Go on.
+c08_deep_a --> c08_deep_b : Go on.
+c08_deep_b --> c08_deep_e : Go on.
+c08_edge_a --> c08_edge_b : Go on.
+c08_edge_b --> c08_edge_e : Go on.
+c08_fast_a --> c08_fast_b : Go on.
+c08_fast_b --> c08_fast_e : Go on.
+c08_wait_a --> c08_wait_b : Go on.
+c08_wait_b --> c08_wait_e : Go on.
+c08_gate --> c08_pass : Follow the warmer seam to the far lip.
+c08_gate --> c08_deep_a : Drop into the cold to cross straight.
+c08_gate --> c08_edge_a : Work the frozen rim of the sump.
+c08_gate --> c08_fast_a : Sprint across to beat the chill.
+c08_gate --> c08_wait_a : Tread the sump to gather nerve.
+c08_gate --> c08_slip : Gamble it and take the harder line.
+c08_gate --> c08_cap : Give it up and turn back for the surface...
+c08_slip --> c09_gate : Go on, deeper down.
+c08_pass --> c09_gate : Go on.
+c09_lids_a --> c09_lids_b : Go on.
+c09_lids_b --> c09_lids_e : Go on.
+c09_hook_a --> c09_hook_b : Go on.
+c09_hook_b --> c09_hook_e : Go on.
+c09_lever_a --> c09_lever_b : Go on.
+c09_lever_b --> c09_lever_e : Go on.
+c09_wait_a --> c09_wait_b : Go on.
+c09_wait_b --> c09_wait_e : Go on.
+c09_gate --> c09_pass : Walk the iron ribs to the door.
+c09_gate --> c09_lids_a : Cross straight over the coffer lids.
+c09_gate --> c09_hook_a : Swing across by the ceiling hooks.
+c09_gate --> c09_lever_a : Lever the seal before you reach it.
+c09_gate --> c09_wait_a : Stand on a lid and plan the crossing.
+c09_gate --> c09_slip : Gamble it and take the harder line.
+c09_gate --> c09_cap : Give it up and turn back for the surface...
+c09_slip --> c10_gate : Go on, deeper down.
+c09_pass --> c10_gate : Prise the serpent seal free and carry it...
+c09_pass --> c10_gate : Leave the seal; the water is rising.
+c10_sheet_a --> c10_sheet_b : Go on.
+c10_sheet_b --> c10_sheet_e : Go on.
+c10_low_a --> c10_low_b : Go on.
+c10_low_b --> c10_low_e : Go on.
+c10_right_a --> c10_right_b : Go on.
+c10_right_b --> c10_right_e : Go on.
+c10_wait_a --> c10_wait_b : Go on.
+c10_wait_b --> c10_wait_e : Go on.
+c10_gate --> c10_pass : Slip the thin left edge of the curtain.
+c10_gate --> c10_sheet_a : Push straight through the main sheet.
+c10_gate --> c10_low_a : Duck low under the curtain.
+c10_gate --> c10_right_a : Take the curtain at the near right edge.
+c10_gate --> c10_wait_a : Wait for the curtain to slacken.
+c10_gate --> c10_slip : Gamble it and take the harder line.
+c10_gate --> c10_cap : Give it up and turn back for the surface...
+c10_slip --> c11_gate : Go on, deeper down.
+c10_pass --> c11_gate : Breathe the bell to the full.
+c10_pass --> c11_gate : Press on with the breath you have.
+c11_sprint_a --> c11_sprint_e : Go on.
+c11_cut_a --> c11_cut_e : Go on.
+c11_panic_a --> c11_panic_e : Go on.
+c11_gate --> c11_pass : Take the long submerged push through.
+c11_gate --> c11_sprint_a : Sprint the coil to beat your breath.
+c11_gate --> c11_cut_a : Cut straight across the coil.
+c11_gate --> c11_panic_a : Force it in a thrash of panic.
+c11_pass --> c12_gate : Go on.
+c12_climb_a --> c12_climb_b : Go on.
+c12_climb_b --> c12_climb_e : Go on.
+c12_dive_a --> c12_dive_b : Go on.
+c12_dive_b --> c12_dive_e : Go on.
+c12_wedge_a --> c12_wedge_b : Go on.
+c12_wedge_b --> c12_wedge_e : Go on.
+c12_wait_a --> c12_wait_b : Go on.
+c12_wait_b --> c12_wait_e : Go on.
+c12_gate --> c12_pass : Take the long way and leave the sluice s...
+c12_gate --> c12_climb_a : Climb over the sluice housing.
+c12_gate --> c12_dive_a : Dive under the sluice gate.
+c12_gate --> c12_wedge_a : Wedge the wheel to hold the gap open.
+c12_gate --> c12_wait_a : Stop at the fork to weigh the two ways.
+c12_gate --> c12_slip : Gamble it and take the harder line.
+c12_gate --> c12_cap : Give it up and turn back for the surface...
+c12_slip --> c13_gate : Go on, deeper down.
+c12_pass --> c13_gate : Go on.
+c13_bay_a --> c13_bay_b : Go on.
+c13_bay_b --> c13_bay_e : Go on.
+c13_pillar_a --> c13_pillar_b : Go on.
+c13_pillar_b --> c13_pillar_e : Go on.
+c13_vault_a --> c13_vault_b : Go on.
+c13_vault_b --> c13_vault_e : Go on.
+c13_wait_a --> c13_wait_b : Go on.
+c13_wait_b --> c13_wait_e : Go on.
+c13_gate --> c13_pass : Keep to the true aisle between the rows.
+c13_gate --> c13_bay_a : Cut across the side bays to save length.
+c13_gate --> c13_pillar_a : Pull along the pillars hand over hand.
+c13_gate --> c13_vault_a : Rise into the vault to cross above.
+c13_gate --> c13_wait_a : Hold at the nave door and count the rows...
+c13_gate --> c13_slip : Gamble it and take the harder line.
+c13_gate --> c13_cap : Give it up and turn back for the surface...
+c13_slip --> c14_gate : Go on, deeper down.
+c13_pass --> c14_gate : Go on.
+c14_leave_a --> c14_leave_b : Go on.
+c14_leave_b --> c14_leave_e : Go on.
+c14_cut_a --> c14_cut_b : Go on.
+c14_cut_b --> c14_cut_e : Go on.
+c14_fast_a --> c14_fast_b : Go on.
+c14_fast_b --> c14_fast_e : Go on.
+c14_wait_a --> c14_wait_b : Go on.
+c14_wait_b --> c14_wait_e : Go on.
+c14_gate --> c14_pass : Follow the knotted guide-rope post to po...
+c14_gate --> c14_leave_a : Let the rope go and swim straight.
+c14_gate --> c14_cut_a : Cut between the columns to shortcut the ...
+c14_gate --> c14_fast_a : Race the rope hand over hand.
+c14_gate --> c14_wait_a : Stop on the rope to get bearings.
+c14_gate --> c14_slip : Gamble it and take the harder line.
+c14_gate --> c14_cap : Give it up and turn back for the surface...
+c14_slip --> c15_gate : Go on, deeper down.
+c14_pass --> c15_gate : Go on.
+c15_jag_a --> c15_jag_b : Go on.
+c15_jag_b --> c15_jag_e : Go on.
+c15_rubble_a --> c15_rubble_b : Go on.
+c15_rubble_b --> c15_rubble_e : Go on.
+c15_edge_a --> c15_edge_b : Go on.
+c15_edge_b --> c15_edge_e : Go on.
+c15_wait_a --> c15_wait_b : Go on.
+c15_wait_b --> c15_wait_e : Go on.
+c15_gate --> c15_pass : Take the clear channel to the high point...
+c15_gate --> c15_jag_a : Cross the broken field straight to the a...
+c15_gate --> c15_rubble_a : Drag yourself low across the rubble.
+c15_gate --> c15_edge_a : Breathe at the near edge of the dome.
+c15_gate --> c15_wait_a : Hold below and study the safe channel.
+c15_gate --> c15_slip : Gamble it and take the harder line.
+c15_gate --> c15_cap : Give it up and turn back for the surface...
+c15_slip --> c16_gate : Go on, deeper down.
+c15_pass --> c16_gate : Breathe the bell to the full.
+c15_pass --> c16_gate : Press on with the breath you have.
+c16_stop_a --> c16_stop_e : Go on.
+c16_low_a --> c16_low_e : Go on.
+c16_panic_a --> c16_panic_e : Go on.
+c16_gate --> c16_pass : Take the long submerged push through.
+c16_gate --> c16_stop_a : Stop to try a coffer on the way.
+c16_gate --> c16_low_a : Drop low to shorten the run.
+c16_gate --> c16_panic_a : Force it in a thrash of panic.
+c16_pass --> c17_gate : Go on.
+c17_box_a --> c17_box_b : Go on.
+c17_box_b --> c17_box_e : Go on.
+c17_over_a --> c17_over_b : Go on.
+c17_over_b --> c17_over_e : Go on.
+c17_shove_a --> c17_shove_b : Go on.
+c17_shove_b --> c17_shove_e : Go on.
+c17_wait_a --> c17_wait_b : Go on.
+c17_wait_b --> c17_wait_e : Go on.
+c17_gate --> c17_pass : Thread the clear lane and touch nothing.
+c17_gate --> c17_box_a : Pull a strongbox aside to widen the way.
+c17_gate --> c17_over_a : Climb over the top of the stacks.
+c17_gate --> c17_shove_a : Shove through the tightest stack.
+c17_gate --> c17_wait_a : Pause to pick the safest line.
+c17_gate --> c17_slip : Gamble it and take the harder line.
+c17_gate --> c17_cap : Give it up and turn back for the surface...
+c17_slip --> c18_gate : Go on, deeper down.
+c17_pass --> c18_gate : Go on.
+c18_shelf_a --> c18_shelf_b : Go on.
+c18_shelf_b --> c18_shelf_e : Go on.
+c18_pry_a --> c18_pry_b : Go on.
+c18_pry_b --> c18_pry_e : Go on.
+c18_deep_a --> c18_deep_b : Go on.
+c18_deep_b --> c18_deep_e : Go on.
+c18_wait_a --> c18_wait_b : Go on.
+c18_wait_b --> c18_wait_e : Go on.
+c18_gate --> c18_pass : Go down the whole center to the seal.
+c18_gate --> c18_shelf_a : Steady yourself on the wall shelves.
+c18_gate --> c18_pry_a : Pry the seal loose with both hands.
+c18_gate --> c18_deep_a : Dive the deep to look for a lower door.
+c18_gate --> c18_wait_a : Hold before the seal to steady your nerv...
+c18_gate --> c18_slip : Gamble it and take the harder line.
+c18_gate --> c18_cap : Give it up and turn back for the surface...
+c18_slip --> c19_gate : Go on, deeper down.
+c18_pass --> c19_gate : Prise the serpent seal free and carry it...
+c18_pass --> c19_gate : Leave the seal; the water is rising.
+c19_letgo_a --> c19_letgo_b : Go on.
+c19_letgo_b --> c19_letgo_e : Go on.
+c19_down_a --> c19_down_b : Go on.
+c19_down_b --> c19_down_e : Go on.
+c19_fast_a --> c19_fast_b : Go on.
+c19_fast_b --> c19_fast_e : Go on.
+c19_wait_a --> c19_wait_b : Go on.
+c19_wait_b --> c19_wait_e : Go on.
+c19_gate --> c19_pass : Follow the guide-chain to the outflow.
+c19_gate --> c19_letgo_a : Let the chain go and swim across.
+c19_gate --> c19_down_a : Dive below the chain for the outflow.
+c19_gate --> c19_fast_a : Race the chain at speed.
+c19_gate --> c19_wait_a : Stop mid-chain to get bearings.
+c19_gate --> c19_slip : Gamble it and take the harder line.
+c19_gate --> c19_cap : Give it up and turn back for the surface...
+c19_slip --> c20_gate : Go on, deeper down.
+c19_pass --> c20_gate : Go on.
+c20_weed_a --> c20_weed_b : Go on.
+c20_weed_b --> c20_weed_e : Go on.
+c20_edge_a --> c20_edge_b : Go on.
+c20_edge_b --> c20_edge_e : Go on.
+c20_cut_a --> c20_cut_b : Go on.
+c20_cut_b --> c20_cut_e : Go on.
+c20_wait_a --> c20_wait_b : Go on.
+c20_wait_b --> c20_wait_e : Go on.
+c20_gate --> c20_pass : Hold the clear bore through the middle.
+c20_gate --> c20_weed_a : Push through the swaying cables direct.
+c20_gate --> c20_edge_a : Skirt the run along the wall.
+c20_gate --> c20_cut_a : Stop to cut a fouled cable clear.
+c20_gate --> c20_wait_a : Hold at the mouth to read the cables.
+c20_gate --> c20_slip : Gamble it and take the harder line.
+c20_gate --> c20_cap : Give it up and turn back for the surface...
+c20_slip --> c21_gate : Go on, deeper down.
+c20_pass --> c21_gate : Go on.
+c21_jamc_a --> c21_jamc_b : Go on.
+c21_jamc_b --> c21_jamc_e : Go on.
+c21_slick_a --> c21_slick_b : Go on.
+c21_slick_b --> c21_slick_e : Go on.
+c21_kick_a --> c21_kick_b : Go on.
+c21_kick_b --> c21_kick_e : Go on.
+c21_wait_a --> c21_wait_b : Go on.
+c21_wait_b --> c21_wait_e : Go on.
+c21_gate --> c21_pass : Climb the chimney square and slow to the...
+c21_gate --> c21_jamc_a : Climb the chimney fast to reach air.
+c21_gate --> c21_slick_a : Chimney up with your back on the slick w...
+c21_gate --> c21_kick_a : Kick off the walls to shoot up the chimn...
+c21_gate --> c21_wait_a : Rest partway up the chimney to gather st...
+c21_gate --> c21_slip : Gamble it and take the harder line.
+c21_gate --> c21_cap : Give it up and turn back for the surface...
+c21_slip --> c22_gate : Go on, deeper down.
+c21_pass --> c22_gate : Breathe the bell to the full.
+c21_pass --> c22_gate : Press on with the breath you have.
+c22_drown_a --> c22_drown_e : Go on.
+c22_charge_a --> c22_charge_e : Go on.
+c22_feel_a --> c22_feel_e : Go on.
+c22_panic_a --> c22_panic_e : Go on.
+c22_gate --> c22_pass : Take the long submerged push through.
+c22_gate --> c22_drown_a : You have no breath left; there is nothin...
+c22_gate --> c22_charge_a : Charge the throat and hope to clear it.
+c22_gate --> c22_feel_a : Feel your way slow to be sure of the lin...
+c22_gate --> c22_panic_a : Force it in a thrash of panic.
+c22_pass --> c23_gate : Go on.
+c23_crack_a --> c23_crack_b : Go on.
+c23_crack_b --> c23_crack_e : Go on.
+c23_long_a --> c23_long_b : Go on.
+c23_long_b --> c23_long_e : Go on.
+c23_prop_a --> c23_prop_b : Go on.
+c23_prop_b --> c23_prop_e : Go on.
+c23_wait_a --> c23_wait_b : Go on.
+c23_wait_b --> c23_wait_e : Go on.
+c23_gate --> c23_pass : Breathe quick at the sound end and go.
+c23_gate --> c23_crack_a : Breathe under the cracked middle of the ...
+c23_gate --> c23_long_a : Take a long slow breath to fill complete...
+c23_gate --> c23_prop_a : Prop the slab before you breathe.
+c23_gate --> c23_wait_a : Wait under the slab to steady before the...
+c23_gate --> c23_slip : Gamble it and take the harder line.
+c23_gate --> c23_cap : Give it up and turn back for the surface...
+c23_slip --> c24_gate : Go on, deeper down.
+c23_pass --> c24_gate : Breathe the bell to the full.
+c23_pass --> c24_gate : Press on with the breath you have.
+c24_drag_a --> c24_drag_b : Go on.
+c24_drag_b --> c24_drag_e : Go on.
+c24_sweep_a --> c24_sweep_b : Go on.
+c24_sweep_b --> c24_sweep_e : Go on.
+c24_under_a --> c24_under_b : Go on.
+c24_under_b --> c24_under_e : Go on.
+c24_wait_a --> c24_wait_b : Go on.
+c24_wait_b --> c24_wait_e : Go on.
+c24_gate --> c24_pass : Lift the hoard straight up off the plint...
+c24_gate --> c24_drag_a : Slide the hoard off the side.
+c24_gate --> c24_sweep_a : Sweep the whole plinth clear at once.
+c24_gate --> c24_under_a : Pry the plinth for what lies beneath.
+c24_gate --> c24_wait_a : Linger to be sure of the take.
+c24_gate --> c24_slip : Gamble it and take the harder line.
+c24_gate --> c24_cap : Give it up and turn back for the surface...
+c24_slip --> c25_gate : Go on, deeper down.
+c24_pass --> c25_gate : Go on.
+c25_crown_a --> c25_crown_b : Go on.
+c25_crown_b --> c25_crown_e : Go on.
+c25_prop_a --> c25_prop_b : Go on.
+c25_prop_b --> c25_prop_e : Go on.
+c25_climb_a --> c25_climb_b : Go on.
+c25_climb_b --> c25_climb_e : Go on.
+c25_wait_a --> c25_wait_b : Go on.
+c25_wait_b --> c25_wait_e : Go on.
+c25_gate --> c25_pass : Pass quick under the sound springing of ...
+c25_gate --> c25_crown_a : Pass under the cracked crown for the sho...
+c25_gate --> c25_prop_a : Prop the shifting stone before you pass.
+c25_gate --> c25_climb_a : Climb the arch to cross above it.
+c25_gate --> c25_wait_a : Wait for the groaning to settle.
+c25_gate --> c25_slip : Gamble it and take the harder line.
+c25_gate --> c25_cap : Give it up and turn back for the surface...
+c25_slip --> c26_gate : Go on, deeper down.
+c25_pass --> c26_gate : Go on.
+c26_inner_a --> c26_inner_b : Go on.
+c26_inner_b --> c26_inner_e : Go on.
+c26_jump_a --> c26_jump_b : Go on.
+c26_jump_b --> c26_jump_e : Go on.
+c26_shaft_a --> c26_shaft_b : Go on.
+c26_shaft_b --> c26_shaft_e : Go on.
+c26_wait_a --> c26_wait_b : Go on.
+c26_wait_b --> c26_wait_e : Go on.
+c26_gate --> c26_pass : Climb the whole outer edge of the spiral...
+c26_gate --> c26_inner_a : Cut up the inside of the spiral.
+c26_gate --> c26_jump_a : Jump the broken flight to the landing.
+c26_gate --> c26_shaft_a : Push straight up the flooded shaft.
+c26_gate --> c26_wait_a : Rest on a step and let the burn ease.
+c26_gate --> c26_slip : Gamble it and take the harder line.
+c26_gate --> c26_cap : Give it up and turn back for the surface...
+c26_slip --> c27_gate : Go on, deeper down.
+c26_pass --> c27_gate : Go on.
+c27_low_a --> c27_low_b : Go on.
+c27_low_b --> c27_low_e : Go on.
+c27_drain_a --> c27_drain_b : Go on.
+c27_drain_b --> c27_drain_e : Go on.
+c27_gap_a --> c27_gap_b : Go on.
+c27_gap_b --> c27_gap_e : Go on.
+c27_wait_a --> c27_wait_b : Go on.
+c27_wait_b --> c27_wait_e : Go on.
+c27_gate --> c27_pass : Make for the high overflow arch.
+c27_gate --> c27_low_a : Take the nearest low door out.
+c27_gate --> c27_drain_a : Dive down to find the drain plug.
+c27_gate --> c27_gap_a : Slip a side gap under the rising line.
+c27_gate --> c27_wait_a : Tread water and wait for the level to st...
+c27_gate --> c27_slip : Gamble it and take the harder line.
+c27_gate --> c27_cap : Give it up and turn back for the surface...
+c27_slip --> c28_gate : Go on, deeper down.
+c27_pass --> c28_gate : Go on.
+c28_force_a --> c28_force_b : Go on.
+c28_force_b --> c28_force_e : Go on.
+c28_knife_a --> c28_knife_b : Go on.
+c28_knife_b --> c28_knife_e : Go on.
+c28_over_a --> c28_over_b : Go on.
+c28_over_b --> c28_over_e : Go on.
+c28_wait_a --> c28_wait_b : Go on.
+c28_wait_b --> c28_wait_e : Go on.
+c28_gate --> c28_pass : Part the dead growth at the thin place.
+c28_gate --> c28_force_a : Force straight through the living weed.
+c28_gate --> c28_knife_a : Knife a new gap through the curtain.
+c28_gate --> c28_over_a : Rise over the top of the curtain.
+c28_gate --> c28_wait_a : Hold at the curtain to find a way.
+c28_gate --> c28_slip : Gamble it and take the harder line.
+c28_gate --> c28_cap : Give it up and turn back for the surface...
+c28_slip --> c29_gate : Go on, deeper down.
+c28_pass --> c29_gate : Go on.
+c29_full_a --> c29_full_b : Go on.
+c29_full_b --> c29_full_e : Go on.
+c29_thrash_a --> c29_thrash_b : Go on.
+c29_thrash_b --> c29_thrash_e : Go on.
+c29_gear_a --> c29_gear_b : Go on.
+c29_gear_b --> c29_gear_e : Go on.
+c29_wait_a --> c29_wait_b : Go on.
+c29_wait_b --> c29_wait_e : Go on.
+c29_gate --> c29_pass : Go flat and slip the gap on the surge.
+c29_gate --> c29_full_a : Push the gap full-chested and strong.
+c29_gate --> c29_thrash_a : Thrash hard to force straight through.
+c29_gate --> c29_gear_a : Keep the gear on and squeeze anyway.
+c29_gate --> c29_wait_a : Wait at the choke for a wider surge.
+c29_gate --> c29_slip : Gamble it and take the harder line.
+c29_gate --> c29_cap : Give it up and turn back for the surface...
+c29_slip --> c30_gate : Go on, deeper down.
+c29_pass --> c30_gate : Go on.
+c30_straight_a --> c30_straight_b : Go on.
+c30_straight_b --> c30_straight_e : Go on.
+c30_fight_a --> c30_fight_b : Go on.
+c30_fight_b --> c30_fight_e : Go on.
+c30_low_a --> c30_low_b : Go on.
+c30_low_b --> c30_low_e : Go on.
+c30_wait_a --> c30_wait_b : Go on.
+c30_wait_b --> c30_wait_e : Go on.
+c30_gate --> c30_pass : Ferry into the up-running back-eddy.
+c30_gate --> c30_straight_a : Swim straight across the cross-current.
+c30_gate --> c30_fight_a : Fight the current head-on.
+c30_gate --> c30_low_a : Duck low under the cross-current.
+c30_gate --> c30_wait_a : Hold at the channel to read the flow.
+c30_gate --> c30_slip : Gamble it and take the harder line.
+c30_gate --> c30_cap : Give it up and turn back for the surface...
+c30_slip --> c31_gate : Go on, deeper down.
+c30_pass --> c31_gate : Go on.
+c31_floor_a --> c31_floor_b : Go on.
+c31_floor_b --> c31_floor_e : Go on.
+c31_rust_a --> c31_rust_b : Go on.
+c31_rust_b --> c31_rust_e : Go on.
+c31_side_a --> c31_side_b : Go on.
+c31_side_b --> c31_side_e : Go on.
+c31_wait_a --> c31_wait_b : Go on.
+c31_wait_b --> c31_wait_e : Go on.
+c31_gate --> c31_pass : Swim the clear upper water the length of...
+c31_gate --> c31_floor_a : Follow the floor to keep your bearings.
+c31_gate --> c31_rust_a : Push through the thickest rust for the s...
+c31_gate --> c31_side_a : Try a side passage out of the rust.
+c31_gate --> c31_wait_a : Hold in the gallery to let the rust sett...
+c31_gate --> c31_slip : Gamble it and take the harder line.
+c31_gate --> c31_cap : Give it up and turn back for the surface...
+c31_slip --> c32_gate : Go on, deeper down.
+c31_pass --> c32_gate : Go on.
+c32_through_a --> c32_through_b : Go on.
+c32_through_b --> c32_through_e : Go on.
+c32_under_a --> c32_under_b : Go on.
+c32_under_b --> c32_under_e : Go on.
+c32_cable_a --> c32_cable_b : Go on.
+c32_cable_b --> c32_cable_e : Go on.
+c32_wait_a --> c32_wait_b : Go on.
+c32_wait_b --> c32_wait_e : Go on.
+c32_gate --> c32_pass : Rise beside the jammed car in the clear.
+c32_gate --> c32_through_a : Go up through the open car.
+c32_gate --> c32_under_a : Squeeze under the jammed car.
+c32_gate --> c32_cable_a : Climb the old lift cable to the top.
+c32_gate --> c32_wait_a : Wait beside the car to plan the rise.
+c32_gate --> c32_slip : Gamble it and take the harder line.
+c32_gate --> c32_cap : Give it up and turn back for the surface...
+c32_slip --> c33_gate : Go on, deeper down.
+c32_pass --> c33_gate : Go on.
+c33_blow_a --> c33_blow_b : Go on.
+c33_blow_b --> c33_blow_e : Go on.
+c33_skip_a --> c33_skip_b : Go on.
+c33_skip_b --> c33_skip_e : Go on.
+c33_side_a --> c33_side_b : Go on.
+c33_side_b --> c33_side_e : Go on.
+c33_wait_a --> c33_wait_b : Go on.
+c33_wait_b --> c33_wait_e : Go on.
+c33_gate --> c33_pass : Rise steady and hold the stop partway.
+c33_gate --> c33_blow_a : Blow straight to the top for the air.
+c33_gate --> c33_skip_a : Skip the stop to beat the flood.
+c33_gate --> c33_side_a : Try a side vent to shortcut the shaft.
+c33_gate --> c33_wait_a : Hang in the shaft to gather for the top.
+c33_gate --> c33_slip : Gamble it and take the harder line.
+c33_gate --> c33_cap : Give it up and turn back for the surface...
+c33_slip --> fin_muster : Go on, deeper down.
+c33_pass --> fin_muster : Go on.
+fin_muster --> fin_door : Face the last serpent door.
+fin_door --> door_hoard : Three seals turn: the door swings full w...
+fin_door --> door_some : Two seals turn: the door grinds half ope...
+fin_door --> door_bare : One seal bites: the door gives a hand-wi...
+fin_door --> door_shut : No seal turns: the door holds against yo...
+fin_door --> door_force_a : Set your shoulder and force the mechanis...
+door_force_a --> door_force_e : Go on.
+door_hoard --> hoard_flood : Read the way out.
+hoard_flood --> hoard_ascent : The low port still runs dry: carry the h...
+hoard_flood --> hoard_lost : The surge drowned the low port: only the...
+hoard_flood --> hoard_gamble_a : Chance the drowned port with the hoard a...
+hoard_gamble_a --> hoard_gamble_e : Go on.
+hoard_ascent --> win_best : Breath to spare: rise easy with the hoar...
+hoard_ascent --> win_winded : Little breath left: haul up gasping but ...
+hoard_ascent --> asc_gamble_a : Empty your rig and swim it blind and fas...
+asc_gamble_a --> asc_gamble_e : Go on.
+door_some --> some_flood : Take what the half door allows.
+some_flood --> some_dry : The low way is dry: slip out through it.
+some_flood --> some_wet : The low way is drowned: the flood has cl...
+some_flood --> some_gamble_a : Wedge the half door wider by main force.
+some_gamble_a --> some_gamble_e : Go on.
+door_bare --> bare_flood : Reach the sally-cord through the gap.
+bare_flood --> bare_dry : The sally-way runs dry: haul yourself ou...
+bare_flood --> bare_wet : The sally-way is drowned: the flood took...
+bare_flood --> bare_gamble_a : Force your shoulder through the hand-wid...
+bare_gamble_a --> bare_gamble_e : Go on.
+door_shut --> shut_dive : Dive for the flood-drain with the last o...
+door_shut --> shut_batter_a : Batter the sealed door as the water clim...
+shut_dive --> shut_out : Take the drain up.
+shut_batter_a --> shut_batter_e : Go on.
+c01_bars_e --> [*]
+c01_wide_e --> [*]
+c01_fast_e --> [*]
+c01_hold_e --> [*]
+c01_cap --> [*]
+c02_kick_e --> [*]
+c02_rail_e --> [*]
+c02_light_e --> [*]
+c02_wait_e --> [*]
+c02_cap --> [*]
+c03_slot_e --> [*]
+c03_over_e --> [*]
+c03_under_e --> [*]
+c03_wait_e --> [*]
+c03_cap --> [*]
+c04_stones_e --> [*]
+c04_prise_e --> [*]
+c04_pit_e --> [*]
+c04_wait_e --> [*]
+c04_cap --> [*]
+c05_rim_e --> [*]
+c05_burst_e --> [*]
+c05_crack_e --> [*]
+c05_wait_e --> [*]
+c05_cap --> [*]
+c06_wall_e --> [*]
+c06_look_e --> [*]
+c06_panic_e --> [*]
+c07_niche_e --> [*]
+c07_false_e --> [*]
+c07_wire_e --> [*]
+c07_wait_e --> [*]
+c07_cap --> [*]
+c08_deep_e --> [*]
+c08_edge_e --> [*]
+c08_fast_e --> [*]
+c08_wait_e --> [*]
+c08_cap --> [*]
+c09_lids_e --> [*]
+c09_hook_e --> [*]
+c09_lever_e --> [*]
+c09_wait_e --> [*]
+c09_cap --> [*]
+c10_sheet_e --> [*]
+c10_low_e --> [*]
+c10_right_e --> [*]
+c10_wait_e --> [*]
+c10_cap --> [*]
+c11_sprint_e --> [*]
+c11_cut_e --> [*]
+c11_panic_e --> [*]
+c12_climb_e --> [*]
+c12_dive_e --> [*]
+c12_wedge_e --> [*]
+c12_wait_e --> [*]
+c12_cap --> [*]
+c13_bay_e --> [*]
+c13_pillar_e --> [*]
+c13_vault_e --> [*]
+c13_wait_e --> [*]
+c13_cap --> [*]
+c14_leave_e --> [*]
+c14_cut_e --> [*]
+c14_fast_e --> [*]
+c14_wait_e --> [*]
+c14_cap --> [*]
+c15_jag_e --> [*]
+c15_rubble_e --> [*]
+c15_edge_e --> [*]
+c15_wait_e --> [*]
+c15_cap --> [*]
+c16_stop_e --> [*]
+c16_low_e --> [*]
+c16_panic_e --> [*]
+c17_box_e --> [*]
+c17_over_e --> [*]
+c17_shove_e --> [*]
+c17_wait_e --> [*]
+c17_cap --> [*]
+c18_shelf_e --> [*]
+c18_pry_e --> [*]
+c18_deep_e --> [*]
+c18_wait_e --> [*]
+c18_cap --> [*]
+c19_letgo_e --> [*]
+c19_down_e --> [*]
+c19_fast_e --> [*]
+c19_wait_e --> [*]
+c19_cap --> [*]
+c20_weed_e --> [*]
+c20_edge_e --> [*]
+c20_cut_e --> [*]
+c20_wait_e --> [*]
+c20_cap --> [*]
+c21_jamc_e --> [*]
+c21_slick_e --> [*]
+c21_kick_e --> [*]
+c21_wait_e --> [*]
+c21_cap --> [*]
+c22_drown_e --> [*]
+c22_charge_e --> [*]
+c22_feel_e --> [*]
+c22_panic_e --> [*]
+c23_crack_e --> [*]
+c23_long_e --> [*]
+c23_prop_e --> [*]
+c23_wait_e --> [*]
+c23_cap --> [*]
+c24_drag_e --> [*]
+c24_sweep_e --> [*]
+c24_under_e --> [*]
+c24_wait_e --> [*]
+c24_cap --> [*]
+c25_crown_e --> [*]
+c25_prop_e --> [*]
+c25_climb_e --> [*]
+c25_wait_e --> [*]
+c25_cap --> [*]
+c26_inner_e --> [*]
+c26_jump_e --> [*]
+c26_shaft_e --> [*]
+c26_wait_e --> [*]
+c26_cap --> [*]
+c27_low_e --> [*]
+c27_drain_e --> [*]
+c27_gap_e --> [*]
+c27_wait_e --> [*]
+c27_cap --> [*]
+c28_force_e --> [*]
+c28_knife_e --> [*]
+c28_over_e --> [*]
+c28_wait_e --> [*]
+c28_cap --> [*]
+c29_full_e --> [*]
+c29_thrash_e --> [*]
+c29_gear_e --> [*]
+c29_wait_e --> [*]
+c29_cap --> [*]
+c30_straight_e --> [*]
+c30_fight_e --> [*]
+c30_low_e --> [*]
+c30_wait_e --> [*]
+c30_cap --> [*]
+c31_floor_e --> [*]
+c31_rust_e --> [*]
+c31_side_e --> [*]
+c31_wait_e --> [*]
+c31_cap --> [*]
+c32_through_e --> [*]
+c32_under_e --> [*]
+c32_cable_e --> [*]
+c32_wait_e --> [*]
+c32_cap --> [*]
+c33_blow_e --> [*]
+c33_skip_e --> [*]
+c33_side_e --> [*]
+c33_wait_e --> [*]
+c33_cap --> [*]
+door_force_e --> [*]
+hoard_gamble_e --> [*]
+hoard_lost --> [*]
+asc_gamble_e --> [*]
+win_best --> [*]
+win_winded --> [*]
+some_gamble_e --> [*]
+some_dry --> [*]
+some_wet --> [*]
+bare_gamble_e --> [*]
+bare_dry --> [*]
+bare_wet --> [*]
+shut_out --> [*]
+shut_batter_e --> [*]
+
+legend right
+  The Serpent Vaults
+  Band 13-16 · Tier 2 · ~35 min
+  Topology: gauntlet
+  530 nodes · 172 endings (4+ / 33n / 135-)
+  Production-eligible
+  Scale: long · gamebook
+endlegend
+@enduml

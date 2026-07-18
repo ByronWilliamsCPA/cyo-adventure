@@ -1,0 +1,1722 @@
+@startuml the-cinder-bazaar
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 100w
+state n_walls #BBDEFB
+n_walls : setup · 96w
+state n_brand #FFF9C4
+n_brand : choice · 90w
+state n_turnback #D1C4E9
+n_turnback : rising · 72w
+state e_turnback #E0E0E0
+e_turnback : setback (neutral)
+e_turnback : "The Wall at Your Back"
+state a1_enter #BBDEFB
+a1_enter : setup · 98w
+state a1_ap0_enter #D1C4E9
+a1_ap0_enter : rising · 76w
+state a1_ap0_corr #D1C4E9
+a1_ap0_corr : rising · 62w
+state a1_ap0_t1_p0 #D1C4E9
+a1_ap0_t1_p0 : rising · 68w
+state a1_ap0_t1_x0 #FFCDD2
+a1_ap0_t1_x0 : death (negative)
+a1_ap0_t1_x0 : "Under the Arch"
+state a1_ap0_t1_p1 #D1C4E9
+a1_ap0_t1_p1 : rising · 68w
+state a1_ap0_t1_x1 #FFCDD2
+a1_ap0_t1_x1 : capture (negative)
+a1_ap0_t1_x1 : "The Warden Line"
+state a1_ap0_t1_p2 #D1C4E9
+a1_ap0_t1_p2 : rising · 68w
+state a1_ap0_t1_x2 #FFCDD2
+a1_ap0_t1_x2 : death (negative)
+a1_ap0_t1_x2 : "Down the Flame-Canal"
+state a1_ap0_t1_c #ECEFF1
+a1_ap0_t1_c : setback · 66w
+state a1_ap0_t1 #FFF9C4
+a1_ap0_t1 : choice · 82w
+state a1_ap0_t2_p0 #D1C4E9
+a1_ap0_t2_p0 : rising · 68w
+state a1_ap0_t2_x0 #FFCDD2
+a1_ap0_t2_x0 : death (negative)
+a1_ap0_t2_x0 : "Trampled in the Press"
+state a1_ap0_t2_p1 #D1C4E9
+a1_ap0_t2_p1 : rising · 68w
+state a1_ap0_t2_x1 #FFCDD2
+a1_ap0_t2_x1 : capture (negative)
+a1_ap0_t2_x1 : "The Whistle at the Toll"
+state a1_ap0_t2_p2 #D1C4E9
+a1_ap0_t2_p2 : rising · 68w
+state a1_ap0_t2_x2 #FFCDD2
+a1_ap0_t2_x2 : death (negative)
+a1_ap0_t2_x2 : "Off the Cinder Wall"
+state a1_ap0_t2_c #ECEFF1
+a1_ap0_t2_c : setback · 66w
+state a1_ap0_t2 #FFF9C4
+a1_ap0_t2 : choice · 80w
+state a1_ap0_exit #D1C4E9
+a1_ap0_exit : rising · 64w
+state a1_ap1_enter #D1C4E9
+a1_ap1_enter : rising · 76w
+state a1_ap1_corr #D1C4E9
+a1_ap1_corr : rising · 62w
+state a1_ap1_t1_p0 #D1C4E9
+a1_ap1_t1_p0 : rising · 68w
+state a1_ap1_t1_x0 #FFCDD2
+a1_ap1_t1_x0 : capture (negative)
+a1_ap1_t1_x0 : "The Branding Room"
+state a1_ap1_t1_p1 #D1C4E9
+a1_ap1_t1_p1 : rising · 68w
+state a1_ap1_t1_x1 #FFCDD2
+a1_ap1_t1_x1 : capture (negative)
+a1_ap1_t1_x1 : "Named the Fire-Setter"
+state a1_ap1_t1_p2 #D1C4E9
+a1_ap1_t1_p2 : rising · 68w
+state a1_ap1_t1_x2 #FFCDD2
+a1_ap1_t1_x2 : death (negative)
+a1_ap1_t1_x2 : "The Lane with No Door"
+state a1_ap1_t1_c #ECEFF1
+a1_ap1_t1_c : setback · 66w
+state a1_ap1_t1 #FFF9C4
+a1_ap1_t1 : choice · 82w
+state a1_ap1_t2_p0 #D1C4E9
+a1_ap1_t2_p0 : rising · 68w
+state a1_ap1_t2_x0 #FFCDD2
+a1_ap1_t2_x0 : death (negative)
+a1_ap1_t2_x0 : "The Second Cornice"
+state a1_ap1_t2_p1 #D1C4E9
+a1_ap1_t2_p1 : rising · 68w
+state a1_ap1_t2_x1 #FFCDD2
+a1_ap1_t2_x1 : capture (negative)
+a1_ap1_t2_x1 : "Caught at the Belt"
+state a1_ap1_t2_p2 #D1C4E9
+a1_ap1_t2_p2 : rising · 68w
+state a1_ap1_t2_x2 #FFCDD2
+a1_ap1_t2_x2 : death (negative)
+a1_ap1_t2_x2 : "The Pyre-Cart's Road"
+state a1_ap1_t2_c #ECEFF1
+a1_ap1_t2_c : setback · 66w
+state a1_ap1_t2 #FFF9C4
+a1_ap1_t2 : choice · 80w
+state a1_ap1_exit #D1C4E9
+a1_ap1_exit : rising · 64w
+state a1_ap2_enter #D1C4E9
+a1_ap2_enter : rising · 76w
+state a1_ap2_corr #D1C4E9
+a1_ap2_corr : rising · 62w
+state a1_ap2_t1_p0 #D1C4E9
+a1_ap2_t1_p0 : rising · 68w
+state a1_ap2_t1_x0 #FFCDD2
+a1_ap2_t1_x0 : death (negative)
+a1_ap2_t1_x0 : "The Coals You Spilled"
+state a1_ap2_t1_p1 #D1C4E9
+a1_ap2_t1_p1 : rising · 68w
+state a1_ap2_t1_x1 #FFCDD2
+a1_ap2_t1_x1 : death (negative)
+a1_ap2_t1_x1 : "The Scalding Channel"
+state a1_ap2_t1_p2 #D1C4E9
+a1_ap2_t1_p2 : rising · 68w
+state a1_ap2_t1_x2 #FFCDD2
+a1_ap2_t1_x2 : death (negative)
+a1_ap2_t1_x2 : "Ash in the Lungs"
+state a1_ap2_t1_c #ECEFF1
+a1_ap2_t1_c : setback · 66w
+state a1_ap2_t1 #FFF9C4
+a1_ap2_t1 : choice · 82w
+state a1_ap2_t2_p0 #D1C4E9
+a1_ap2_t2_p0 : rising · 68w
+state a1_ap2_t2_x0 #FFCDD2
+a1_ap2_t2_x0 : death (negative)
+a1_ap2_t2_x0 : "The Lintel Fell"
+state a1_ap2_t2_p1 #D1C4E9
+a1_ap2_t2_p1 : rising · 68w
+state a1_ap2_t2_x1 #FFCDD2
+a1_ap2_t2_x1 : capture (negative)
+a1_ap2_t2_x1 : "Lost in the Smoke-Stair"
+state a1_ap2_t2_p2 #D1C4E9
+a1_ap2_t2_p2 : rising · 68w
+state a1_ap2_t2_x2 #FFCDD2
+a1_ap2_t2_x2 : death (negative)
+a1_ap2_t2_x2 : "The Cordon Closed"
+state a1_ap2_t2_c #ECEFF1
+a1_ap2_t2_c : setback · 66w
+state a1_ap2_t2 #FFF9C4
+a1_ap2_t2 : choice · 80w
+state a1_ap2_exit #D1C4E9
+a1_ap2_exit : rising · 64w
+state a1_ap3_enter #D1C4E9
+a1_ap3_enter : rising · 76w
+state a1_ap3_corr #D1C4E9
+a1_ap3_corr : rising · 62w
+state a1_ap3_t1_p0 #D1C4E9
+a1_ap3_t1_p0 : rising · 68w
+state a1_ap3_t1_x0 #E0E0E0
+a1_ap3_t1_x0 : setback (neutral)
+a1_ap3_t1_x0 : "Buried in the Ash-Drift"
+state a1_ap3_t1_p1 #D1C4E9
+a1_ap3_t1_p1 : rising · 68w
+state a1_ap3_t1_x1 #FFCDD2
+a1_ap3_t1_x1 : death (negative)
+a1_ap3_t1_x1 : "Off the Balcony"
+state a1_ap3_t1_p2 #D1C4E9
+a1_ap3_t1_p2 : rising · 68w
+state a1_ap3_t1_x2 #FFCDD2
+a1_ap3_t1_x2 : death (negative)
+a1_ap3_t1_x2 : "The Gutter Took Him"
+state a1_ap3_t1_c #ECEFF1
+a1_ap3_t1_c : setback · 66w
+state a1_ap3_t1 #FFF9C4
+a1_ap3_t1 : choice · 82w
+state a1_ap3_t2_p0 #D1C4E9
+a1_ap3_t2_p0 : rising · 68w
+state a1_ap3_t2_x0 #FFCDD2
+a1_ap3_t2_x0 : capture (negative)
+a1_ap3_t2_x0 : "The Cordage Parted"
+state a1_ap3_t2_p1 #D1C4E9
+a1_ap3_t2_p1 : rising · 68w
+state a1_ap3_t2_x1 #FFCDD2
+a1_ap3_t2_x1 : death (negative)
+a1_ap3_t2_x1 : "Held in the Toll-Cage"
+state a1_ap3_t2_p2 #D1C4E9
+a1_ap3_t2_p2 : rising · 68w
+state a1_ap3_t2_x2 #E0E0E0
+a1_ap3_t2_x2 : setback (neutral)
+a1_ap3_t2_x2 : "Under the Cinder-Fall"
+state a1_ap3_t2_c #ECEFF1
+a1_ap3_t2_c : setback · 66w
+state a1_ap3_t2 #FFF9C4
+a1_ap3_t2 : choice · 80w
+state a1_ap3_exit #D1C4E9
+a1_ap3_exit : rising · 64w
+state a1_ap4_enter #D1C4E9
+a1_ap4_enter : rising · 76w
+state a1_ap4_corr #D1C4E9
+a1_ap4_corr : rising · 62w
+state a1_ap4_t1_p0 #D1C4E9
+a1_ap4_t1_p0 : rising · 68w
+state a1_ap4_t1_x0 #FFCDD2
+a1_ap4_t1_x0 : death (negative)
+a1_ap4_t1_x0 : "The Choke of Embers"
+state a1_ap4_t1_p1 #D1C4E9
+a1_ap4_t1_p1 : rising · 68w
+state a1_ap4_t1_x1 #FFCDD2
+a1_ap4_t1_x1 : death (negative)
+a1_ap4_t1_x1 : "Down the Pyre-Lane"
+state a1_ap4_t1_p2 #D1C4E9
+a1_ap4_t1_p2 : rising · 68w
+state a1_ap4_t1_x2 #FFCDD2
+a1_ap4_t1_x2 : capture (negative)
+a1_ap4_t1_x2 : "The Scaffold Went"
+state a1_ap4_t1_c #ECEFF1
+a1_ap4_t1_c : setback · 66w
+state a1_ap4_t1 #FFF9C4
+a1_ap4_t1 : choice · 82w
+state a1_ap4_t2_p0 #D1C4E9
+a1_ap4_t2_p0 : rising · 68w
+state a1_ap4_t2_x0 #FFCDD2
+a1_ap4_t2_x0 : death (negative)
+a1_ap4_t2_x0 : "No Way Back at the Gate"
+state a1_ap4_t2_p1 #D1C4E9
+a1_ap4_t2_p1 : rising · 68w
+state a1_ap4_t2_x1 #E0E0E0
+a1_ap4_t2_x1 : setback (neutral)
+a1_ap4_t2_x1 : "The Ash Closed Over"
+state a1_ap4_t2_p2 #D1C4E9
+a1_ap4_t2_p2 : rising · 68w
+state a1_ap4_t2_x2 #FFCDD2
+a1_ap4_t2_x2 : death (negative)
+a1_ap4_t2_x2 : "Read the Gate Wrong"
+state a1_ap4_t2_c #ECEFF1
+a1_ap4_t2_c : setback · 66w
+state a1_ap4_t2 #FFF9C4
+a1_ap4_t2 : choice · 80w
+state a1_ap4_exit #D1C4E9
+a1_ap4_exit : rising · 64w
+state a1_ap5_enter #D1C4E9
+a1_ap5_enter : rising · 76w
+state a1_ap5_corr #D1C4E9
+a1_ap5_corr : rising · 62w
+state a1_ap5_t1_p0 #D1C4E9
+a1_ap5_t1_p0 : rising · 68w
+state a1_ap5_t1_x0 #FFCDD2
+a1_ap5_t1_x0 : death (negative)
+a1_ap5_t1_x0 : "The Long Fall Inside"
+state a1_ap5_t1_p1 #D1C4E9
+a1_ap5_t1_p1 : rising · 68w
+state a1_ap5_t1_x1 #FFCDD2
+a1_ap5_t1_x1 : capture (negative)
+a1_ap5_t1_x1 : "Smoke and No Door"
+state a1_ap5_t1_p2 #D1C4E9
+a1_ap5_t1_p2 : rising · 68w
+state a1_ap5_t1_x2 #FFCDD2
+a1_ap5_t1_x2 : death (negative)
+a1_ap5_t1_x2 : "The Warden's Iron"
+state a1_ap5_t1_c #ECEFF1
+a1_ap5_t1_c : setback · 66w
+state a1_ap5_t1 #FFF9C4
+a1_ap5_t1 : choice · 82w
+state a1_ap5_t2_p0 #D1C4E9
+a1_ap5_t2_p0 : rising · 68w
+state a1_ap5_t2_x0 #E0E0E0
+a1_ap5_t2_x0 : setback (neutral)
+a1_ap5_t2_x0 : "A Coward's Mercy Refused"
+state a1_ap5_t2_p1 #D1C4E9
+a1_ap5_t2_p1 : rising · 68w
+state a1_ap5_t2_x1 #FFCDD2
+a1_ap5_t2_x1 : death (negative)
+a1_ap5_t2_x1 : "The Gate Kept Him"
+state a1_ap5_t2_p2 #D1C4E9
+a1_ap5_t2_p2 : rising · 68w
+state a1_ap5_t2_x2 #FFCDD2
+a1_ap5_t2_x2 : death (negative)
+a1_ap5_t2_x2 : "Grey Snow, Grey End"
+state a1_ap5_t2_c #ECEFF1
+a1_ap5_t2_c : setback · 66w
+state a1_ap5_t2 #FFF9C4
+a1_ap5_t2 : choice · 80w
+state a1_ap5_exit #D1C4E9
+a1_ap5_exit : rising · 64w
+state a1_ap6_enter #D1C4E9
+a1_ap6_enter : rising · 76w
+state a1_ap6_corr #D1C4E9
+a1_ap6_corr : rising · 62w
+state a1_ap6_t1_p0 #D1C4E9
+a1_ap6_t1_p0 : rising · 68w
+state a1_ap6_t1_x0 #FFCDD2
+a1_ap6_t1_x0 : capture (negative)
+a1_ap6_t1_x0 : "The Toll Came Due"
+state a1_ap6_t1_p1 #D1C4E9
+a1_ap6_t1_p1 : rising · 68w
+state a1_ap6_t1_x1 #FFCDD2
+a1_ap6_t1_x1 : death (negative)
+a1_ap6_t1_x1 : "Nothing Left to Carry"
+state a1_ap6_t1_p2 #D1C4E9
+a1_ap6_t1_p2 : rising · 68w
+state a1_ap6_t1_x2 #E0E0E0
+a1_ap6_t1_x2 : setback (neutral)
+a1_ap6_t1_x2 : "The Cinder Line Held Him"
+state a1_ap6_t1_c #ECEFF1
+a1_ap6_t1_c : setback · 66w
+state a1_ap6_t1 #FFF9C4
+a1_ap6_t1 : choice · 82w
+state a1_ap6_t2_p0 #D1C4E9
+a1_ap6_t2_p0 : rising · 68w
+state a1_ap6_t2_x0 #FFCDD2
+a1_ap6_t2_x0 : death (negative)
+a1_ap6_t2_x0 : "A Skinful of Smoke"
+state a1_ap6_t2_p1 #D1C4E9
+a1_ap6_t2_p1 : rising · 68w
+state a1_ap6_t2_x1 #FFCDD2
+a1_ap6_t2_x1 : death (negative)
+a1_ap6_t2_x1 : "The Balustrade Broke"
+state a1_ap6_t2_p2 #D1C4E9
+a1_ap6_t2_p2 : rising · 68w
+state a1_ap6_t2_x2 #FFCDD2
+a1_ap6_t2_x2 : capture (negative)
+a1_ap6_t2_x2 : "Ash Underfoot"
+state a1_ap6_t2_c #ECEFF1
+a1_ap6_t2_c : setback · 66w
+state a1_ap6_t2 #FFF9C4
+a1_ap6_t2 : choice · 80w
+state a1_ap6_exit #D1C4E9
+a1_ap6_exit : rising · 64w
+state a1_survey #FFF9C4
+a1_survey : choice · 96w
+state a1_gate #FFF9C4
+a1_gate : choice · 120w
+state a1_clean #D1C4E9
+a1_clean : rising · 70w
+state a1_hunted #D1C4E9
+a1_hunted : rising · 82w
+state a1_hunt_p #D1C4E9
+a1_hunt_p : rising · 62w
+state e_gate_taken #FFCDD2
+e_gate_taken : capture (negative)
+e_gate_taken : "The Face at the Gate"
+state a2_enter #BBDEFB
+a2_enter : setup · 98w
+state a2_ap0_enter #D1C4E9
+a2_ap0_enter : rising · 76w
+state a2_ap0_corr #D1C4E9
+a2_ap0_corr : rising · 62w
+state a2_ap0_t1_p0 #D1C4E9
+a2_ap0_t1_p0 : rising · 68w
+state a2_ap0_t1_x0 #FFCDD2
+a2_ap0_t1_x0 : death (negative)
+a2_ap0_t1_x0 : "When the Vent Fires Early"
+state a2_ap0_t1_p1 #D1C4E9
+a2_ap0_t1_p1 : rising · 68w
+state a2_ap0_t1_x1 #FFCDD2
+a2_ap0_t1_x1 : death (negative)
+a2_ap0_t1_x1 : "The Stair Beneath the Water"
+state a2_ap0_t1_p2 #D1C4E9
+a2_ap0_t1_p2 : rising · 68w
+state a2_ap0_t1_x2 #FFCDD2
+a2_ap0_t1_x2 : capture (negative)
+a2_ap0_t1_x2 : "A Lesson in the Tank"
+state a2_ap0_t1_c #ECEFF1
+a2_ap0_t1_c : setback · 66w
+state a2_ap0_t1 #FFF9C4
+a2_ap0_t1 : choice · 82w
+state a2_ap0_t2_p0 #D1C4E9
+a2_ap0_t2_p0 : rising · 68w
+state a2_ap0_t2_x0 #FFCDD2
+a2_ap0_t2_x0 : death (negative)
+a2_ap0_t2_x0 : "The Green Pool"
+state a2_ap0_t2_p1 #D1C4E9
+a2_ap0_t2_p1 : rising · 68w
+state a2_ap0_t2_x1 #FFCDD2
+a2_ap0_t2_x1 : death (negative)
+a2_ap0_t2_x1 : "Under the Gallery"
+state a2_ap0_t2_p2 #D1C4E9
+a2_ap0_t2_p2 : rising · 68w
+state a2_ap0_t2_x2 #FFCDD2
+a2_ap0_t2_x2 : capture (negative)
+a2_ap0_t2_x2 : "Bonded to the Tanks"
+state a2_ap0_t2_c #ECEFF1
+a2_ap0_t2_c : setback · 66w
+state a2_ap0_t2 #FFF9C4
+a2_ap0_t2 : choice · 80w
+state a2_ap0_exit #D1C4E9
+a2_ap0_exit : rising · 64w
+state a2_ap1_enter #D1C4E9
+a2_ap1_enter : rising · 76w
+state a2_ap1_corr #D1C4E9
+a2_ap1_corr : rising · 62w
+state a2_ap1_t1_p0 #D1C4E9
+a2_ap1_t1_p0 : rising · 68w
+state a2_ap1_t1_x0 #FFCDD2
+a2_ap1_t1_x0 : death (negative)
+a2_ap1_t1_x0 : "Into the Under-Cistern"
+state a2_ap1_t1_p1 #D1C4E9
+a2_ap1_t1_p1 : rising · 68w
+state a2_ap1_t1_x1 #FFCDD2
+a2_ap1_t1_x1 : death (negative)
+a2_ap1_t1_x1 : "The Guide-Rope Cut"
+state a2_ap1_t1_p2 #D1C4E9
+a2_ap1_t1_p2 : rising · 68w
+state a2_ap1_t1_x2 #FFCDD2
+a2_ap1_t1_x2 : death (negative)
+a2_ap1_t1_x2 : "The Sluice Let Go"
+state a2_ap1_t1_c #ECEFF1
+a2_ap1_t1_c : setback · 66w
+state a2_ap1_t1 #FFF9C4
+a2_ap1_t1 : choice · 82w
+state a2_ap1_t2_p0 #D1C4E9
+a2_ap1_t2_p0 : rising · 68w
+state a2_ap1_t2_x0 #FFCDD2
+a2_ap1_t2_x0 : death (negative)
+a2_ap1_t2_x0 : "The Hour They Refill"
+state a2_ap1_t2_p1 #D1C4E9
+a2_ap1_t2_p1 : rising · 68w
+state a2_ap1_t2_x1 #FFCDD2
+a2_ap1_t2_x1 : capture (negative)
+a2_ap1_t2_x1 : "The Diviner's Bounty"
+state a2_ap1_t2_p2 #D1C4E9
+a2_ap1_t2_p2 : rising · 68w
+state a2_ap1_t2_x2 #FFCDD2
+a2_ap1_t2_x2 : death (negative)
+a2_ap1_t2_x2 : "The Crust That Gave"
+state a2_ap1_t2_c #ECEFF1
+a2_ap1_t2_c : setback · 66w
+state a2_ap1_t2 #FFF9C4
+a2_ap1_t2 : choice · 80w
+state a2_ap1_exit #D1C4E9
+a2_ap1_exit : rising · 64w
+state a2_ap2_enter #D1C4E9
+a2_ap2_enter : rising · 76w
+state a2_ap2_corr #D1C4E9
+a2_ap2_corr : rising · 62w
+state a2_ap2_t1_p0 #D1C4E9
+a2_ap2_t1_p0 : rising · 68w
+state a2_ap2_t1_x0 #FFCDD2
+a2_ap2_t1_x0 : death (negative)
+a2_ap2_t1_x0 : "The Arch That Shut"
+state a2_ap2_t1_p1 #D1C4E9
+a2_ap2_t1_p1 : rising · 68w
+state a2_ap2_t1_x1 #FFCDD2
+a2_ap2_t1_x1 : capture (negative)
+a2_ap2_t1_x1 : "The Drowning-Cage"
+state a2_ap2_t1_p2 #D1C4E9
+a2_ap2_t1_p2 : rising · 68w
+state a2_ap2_t1_x2 #FFCDD2
+a2_ap2_t1_x2 : death (negative)
+a2_ap2_t1_x2 : "The Vent Took Him"
+state a2_ap2_t1_c #ECEFF1
+a2_ap2_t1_c : setback · 66w
+state a2_ap2_t1 #FFF9C4
+a2_ap2_t1 : choice · 82w
+state a2_ap2_t2_p0 #D1C4E9
+a2_ap2_t2_p0 : rising · 68w
+state a2_ap2_t2_x0 #FFCDD2
+a2_ap2_t2_x0 : death (negative)
+a2_ap2_t2_x0 : "Under the Black Overflow"
+state a2_ap2_t2_p1 #D1C4E9
+a2_ap2_t2_p1 : rising · 68w
+state a2_ap2_t2_x1 #FFCDD2
+a2_ap2_t2_x1 : capture (negative)
+a2_ap2_t2_x1 : "The Cistern-Wall Gave"
+state a2_ap2_t2_p2 #D1C4E9
+a2_ap2_t2_p2 : rising · 68w
+state a2_ap2_t2_x2 #FFCDD2
+a2_ap2_t2_x2 : death (negative)
+a2_ap2_t2_x2 : "Held by the Keepers"
+state a2_ap2_t2_c #ECEFF1
+a2_ap2_t2_c : setback · 66w
+state a2_ap2_t2 #FFF9C4
+a2_ap2_t2 : choice · 80w
+state a2_ap2_exit #D1C4E9
+a2_ap2_exit : rising · 64w
+state a2_ap3_enter #D1C4E9
+a2_ap3_enter : rising · 76w
+state a2_ap3_corr #D1C4E9
+a2_ap3_corr : rising · 62w
+state a2_ap3_t1_p0 #D1C4E9
+a2_ap3_t1_p0 : rising · 68w
+state a2_ap3_t1_x0 #E0E0E0
+a2_ap3_t1_x0 : setback (neutral)
+a2_ap3_t1_x0 : "Down in the Drowning-Tank"
+state a2_ap3_t1_p1 #D1C4E9
+a2_ap3_t1_p1 : rising · 68w
+state a2_ap3_t1_x1 #FFCDD2
+a2_ap3_t1_x1 : death (negative)
+a2_ap3_t1_x1 : "Lost in the Flooded Gallery"
+state a2_ap3_t1_p2 #D1C4E9
+a2_ap3_t1_p2 : rising · 68w
+state a2_ap3_t1_x2 #FFCDD2
+a2_ap3_t1_x2 : death (negative)
+a2_ap3_t1_x2 : "The Sluice Opened"
+state a2_ap3_t1_c #ECEFF1
+a2_ap3_t1_c : setback · 66w
+state a2_ap3_t1 #FFF9C4
+a2_ap3_t1 : choice · 82w
+state a2_ap3_t2_p0 #D1C4E9
+a2_ap3_t2_p0 : rising · 68w
+state a2_ap3_t2_x0 #FFCDD2
+a2_ap3_t2_x0 : capture (negative)
+a2_ap3_t2_x0 : "The Green Pool Kept Him"
+state a2_ap3_t2_p1 #D1C4E9
+a2_ap3_t2_p1 : rising · 68w
+state a2_ap3_t2_x1 #FFCDD2
+a2_ap3_t2_x1 : death (negative)
+a2_ap3_t2_x1 : "The Guide-Rope Went Slack"
+state a2_ap3_t2_p2 #D1C4E9
+a2_ap3_t2_p2 : rising · 68w
+state a2_ap3_t2_x2 #E0E0E0
+a2_ap3_t2_x2 : setback (neutral)
+a2_ap3_t2_x2 : "Caught in the Steam-Blast"
+state a2_ap3_t2_c #ECEFF1
+a2_ap3_t2_c : setback · 66w
+state a2_ap3_t2 #FFF9C4
+a2_ap3_t2 : choice · 80w
+state a2_ap3_exit #D1C4E9
+a2_ap3_exit : rising · 64w
+state a2_ap4_enter #D1C4E9
+a2_ap4_enter : rising · 76w
+state a2_ap4_corr #D1C4E9
+a2_ap4_corr : rising · 62w
+state a2_ap4_t1_p0 #D1C4E9
+a2_ap4_t1_p0 : rising · 68w
+state a2_ap4_t1_x0 #FFCDD2
+a2_ap4_t1_x0 : death (negative)
+a2_ap4_t1_x0 : "The Refill-Hour"
+state a2_ap4_t1_p1 #D1C4E9
+a2_ap4_t1_p1 : rising · 68w
+state a2_ap4_t1_x1 #FFCDD2
+a2_ap4_t1_x1 : capture (negative)
+a2_ap4_t1_x1 : "Water Over the Head"
+state a2_ap4_t1_p2 #D1C4E9
+a2_ap4_t1_p2 : rising · 68w
+state a2_ap4_t1_x2 #FFCDD2
+a2_ap4_t1_x2 : death (negative)
+a2_ap4_t1_x2 : "The Tank Ran Full"
+state a2_ap4_t1_c #ECEFF1
+a2_ap4_t1_c : setback · 66w
+state a2_ap4_t1 #FFF9C4
+a2_ap4_t1 : choice · 82w
+state a2_ap4_t2_p0 #D1C4E9
+a2_ap4_t2_p0 : rising · 68w
+state a2_ap4_t2_x0 #E0E0E0
+a2_ap4_t2_x0 : setback (neutral)
+a2_ap4_t2_x0 : "The Keepers' Lesson"
+state a2_ap4_t2_p1 #D1C4E9
+a2_ap4_t2_p1 : rising · 68w
+state a2_ap4_t2_x1 #FFCDD2
+a2_ap4_t2_x1 : death (negative)
+a2_ap4_t2_x1 : "No Air in the Gallery"
+state a2_ap4_t2_p2 #D1C4E9
+a2_ap4_t2_p2 : rising · 68w
+state a2_ap4_t2_x2 #FFCDD2
+a2_ap4_t2_x2 : death (negative)
+a2_ap4_t2_x2 : "The Cold Black Water"
+state a2_ap4_t2_c #ECEFF1
+a2_ap4_t2_c : setback · 66w
+state a2_ap4_t2 #FFF9C4
+a2_ap4_t2 : choice · 80w
+state a2_ap4_exit #D1C4E9
+a2_ap4_exit : rising · 64w
+state a2_ap5_enter #D1C4E9
+a2_ap5_enter : rising · 76w
+state a2_ap5_corr #D1C4E9
+a2_ap5_corr : rising · 62w
+state a2_ap5_t1_p0 #D1C4E9
+a2_ap5_t1_p0 : rising · 68w
+state a2_ap5_t1_x0 #FFCDD2
+a2_ap5_t1_x0 : capture (negative)
+a2_ap5_t1_x0 : "Drowned in the Dark"
+state a2_ap5_t1_p1 #D1C4E9
+a2_ap5_t1_p1 : rising · 68w
+state a2_ap5_t1_x1 #FFCDD2
+a2_ap5_t1_x1 : death (negative)
+a2_ap5_t1_x1 : "The Last Dry Breath"
+state a2_ap5_t1_p2 #D1C4E9
+a2_ap5_t1_p2 : rising · 68w
+state a2_ap5_t1_x2 #E0E0E0
+a2_ap5_t1_x2 : setback (neutral)
+a2_ap5_t1_x2 : "Bonded to the Tanks Forever"
+state a2_ap5_t1_c #ECEFF1
+a2_ap5_t1_c : setback · 66w
+state a2_ap5_t1 #FFF9C4
+a2_ap5_t1 : choice · 82w
+state a2_ap5_t2_p0 #D1C4E9
+a2_ap5_t2_p0 : rising · 68w
+state a2_ap5_t2_x0 #FFCDD2
+a2_ap5_t2_x0 : death (negative)
+a2_ap5_t2_x0 : "The Diviner Sold Him"
+state a2_ap5_t2_p1 #D1C4E9
+a2_ap5_t2_p1 : rising · 68w
+state a2_ap5_t2_x1 #FFCDD2
+a2_ap5_t2_x1 : death (negative)
+a2_ap5_t2_x1 : "The Crust Broke Under"
+state a2_ap5_t2_p2 #D1C4E9
+a2_ap5_t2_p2 : rising · 68w
+state a2_ap5_t2_x2 #FFCDD2
+a2_ap5_t2_x2 : capture (negative)
+a2_ap5_t2_x2 : "The Arch Came Down Wet"
+state a2_ap5_t2_c #ECEFF1
+a2_ap5_t2_c : setback · 66w
+state a2_ap5_t2 #FFF9C4
+a2_ap5_t2 : choice · 80w
+state a2_ap5_exit #D1C4E9
+a2_ap5_exit : rising · 64w
+state a2_ap6_enter #D1C4E9
+a2_ap6_enter : rising · 76w
+state a2_ap6_corr #D1C4E9
+a2_ap6_corr : rising · 62w
+state a2_ap6_t1_p0 #D1C4E9
+a2_ap6_t1_p0 : rising · 68w
+state a2_ap6_t1_x0 #FFCDD2
+a2_ap6_t1_x0 : death (negative)
+a2_ap6_t1_x0 : "A Skin Too Late"
+state a2_ap6_t1_p1 #D1C4E9
+a2_ap6_t1_p1 : rising · 68w
+state a2_ap6_t1_x1 #E0E0E0
+a2_ap6_t1_x1 : setback (neutral)
+a2_ap6_t1_x1 : "The Weir Gave Way"
+state a2_ap6_t1_p2 #D1C4E9
+a2_ap6_t1_p2 : rising · 68w
+state a2_ap6_t1_x2 #FFCDD2
+a2_ap6_t1_x2 : death (negative)
+a2_ap6_t1_x2 : "Swallowed by the Tank"
+state a2_ap6_t1_c #ECEFF1
+a2_ap6_t1_c : setback · 66w
+state a2_ap6_t1 #FFF9C4
+a2_ap6_t1 : choice · 82w
+state a2_ap6_t2_p0 #D1C4E9
+a2_ap6_t2_p0 : rising · 68w
+state a2_ap6_t2_x0 #FFCDD2
+a2_ap6_t2_x0 : death (negative)
+a2_ap6_t2_x0 : "The Ladder Snapped"
+state a2_ap6_t2_p1 #D1C4E9
+a2_ap6_t2_p1 : rising · 68w
+state a2_ap6_t2_x1 #FFCDD2
+a2_ap6_t2_x1 : capture (negative)
+a2_ap6_t2_x1 : "Under the Grey Flood"
+state a2_ap6_t2_p2 #D1C4E9
+a2_ap6_t2_p2 : rising · 68w
+state a2_ap6_t2_x2 #FFCDD2
+a2_ap6_t2_x2 : death (negative)
+a2_ap6_t2_x2 : "The Cistern Kept Him"
+state a2_ap6_t2_c #ECEFF1
+a2_ap6_t2_c : setback · 66w
+state a2_ap6_t2 #FFF9C4
+a2_ap6_t2 : choice · 80w
+state a2_ap6_exit #D1C4E9
+a2_ap6_exit : rising · 64w
+state a2_survey #FFF9C4
+a2_survey : choice · 96w
+state a2_gate #FFF9C4
+a2_gate : choice · 122w
+state a2_dry #D1C4E9
+a2_dry : rising · 84w
+state a2_dry_p #D1C4E9
+a2_dry_p : rising · 60w
+state e_dry_tunnel #FFCDD2
+e_dry_tunnel : death (negative)
+e_dry_tunnel : "Dry in the Scald-Tunnel"
+state a2_low #D1C4E9
+a2_low : rising · 68w
+state a2_full #D1C4E9
+a2_full : rising · 66w
+state a3_enter #BBDEFB
+a3_enter : setup · 98w
+state a3_ap0_enter #D1C4E9
+a3_ap0_enter : rising · 76w
+state a3_ap0_corr #D1C4E9
+a3_ap0_corr : rising · 62w
+state a3_ap0_t1_p0 #D1C4E9
+a3_ap0_t1_p0 : rising · 68w
+state a3_ap0_t1_x0 #FFCDD2
+a3_ap0_t1_x0 : death (negative)
+a3_ap0_t1_x0 : "The Auction Floor"
+state a3_ap0_t1_p1 #D1C4E9
+a3_ap0_t1_p1 : rising · 68w
+state a3_ap0_t1_x1 #FFCDD2
+a3_ap0_t1_x1 : death (negative)
+a3_ap0_t1_x1 : "Answered in the Serai"
+state a3_ap0_t1_p2 #D1C4E9
+a3_ap0_t1_p2 : rising · 68w
+state a3_ap0_t1_x2 #FFCDD2
+a3_ap0_t1_x2 : death (negative)
+a3_ap0_t1_x2 : "Beneath the Silk-Fire"
+state a3_ap0_t1_c #ECEFF1
+a3_ap0_t1_c : setback · 66w
+state a3_ap0_t1 #FFF9C4
+a3_ap0_t1 : choice · 82w
+state a3_ap0_t2_p0 #D1C4E9
+a3_ap0_t2_p0 : rising · 68w
+state a3_ap0_t2_x0 #FFCDD2
+a3_ap0_t2_x0 : death (negative)
+a3_ap0_t2_x0 : "The Camel-Line"
+state a3_ap0_t2_p1 #D1C4E9
+a3_ap0_t2_p1 : rising · 68w
+state a3_ap0_t2_x1 #FFCDD2
+a3_ap0_t2_x1 : capture (negative)
+a3_ap0_t2_x1 : "Bound to the Fire-Court"
+state a3_ap0_t2_p2 #D1C4E9
+a3_ap0_t2_p2 : rising · 68w
+state a3_ap0_t2_x2 #FFCDD2
+a3_ap0_t2_x2 : capture (negative)
+a3_ap0_t2_x2 : "The Fire You Set"
+state a3_ap0_t2_c #ECEFF1
+a3_ap0_t2_c : setback · 66w
+state a3_ap0_t2 #FFF9C4
+a3_ap0_t2 : choice · 80w
+state a3_ap0_exit #D1C4E9
+a3_ap0_exit : rising · 64w
+state a3_ap1_enter #D1C4E9
+a3_ap1_enter : rising · 76w
+state a3_ap1_corr #D1C4E9
+a3_ap1_corr : rising · 62w
+state a3_ap1_t1_p0 #D1C4E9
+a3_ap1_t1_p0 : rising · 68w
+state a3_ap1_t1_x0 #FFCDD2
+a3_ap1_t1_x0 : death (negative)
+a3_ap1_t1_x0 : "The Mast Came Down"
+state a3_ap1_t1_p1 #D1C4E9
+a3_ap1_t1_p1 : rising · 68w
+state a3_ap1_t1_x1 #FFCDD2
+a3_ap1_t1_x1 : death (negative)
+a3_ap1_t1_x1 : "No Bargain in the Serai"
+state a3_ap1_t1_p2 #D1C4E9
+a3_ap1_t1_p2 : rising · 68w
+state a3_ap1_t1_x2 #FFCDD2
+a3_ap1_t1_x2 : capture (negative)
+a3_ap1_t1_x2 : "Every Aisle a Wall"
+state a3_ap1_t1_c #ECEFF1
+a3_ap1_t1_c : setback · 66w
+state a3_ap1_t1 #FFF9C4
+a3_ap1_t1 : choice · 82w
+state a3_ap1_t2_p0 #D1C4E9
+a3_ap1_t2_p0 : rising · 68w
+state a3_ap1_t2_x0 #FFCDD2
+a3_ap1_t2_x0 : capture (negative)
+a3_ap1_t2_x0 : "The Coffle at Dawn"
+state a3_ap1_t2_p1 #D1C4E9
+a3_ap1_t2_p1 : rising · 68w
+state a3_ap1_t2_x1 #FFCDD2
+a3_ap1_t2_x1 : death (negative)
+a3_ap1_t2_x1 : "Through the Gallery-Floor"
+state a3_ap1_t2_p2 #D1C4E9
+a3_ap1_t2_p2 : rising · 68w
+state a3_ap1_t2_x2 #FFCDD2
+a3_ap1_t2_x2 : capture (negative)
+a3_ap1_t2_x2 : "The Slaver's Count"
+state a3_ap1_t2_c #ECEFF1
+a3_ap1_t2_c : setback · 66w
+state a3_ap1_t2 #FFF9C4
+a3_ap1_t2 : choice · 80w
+state a3_ap1_exit #D1C4E9
+a3_ap1_exit : rising · 64w
+state a3_ap2_enter #D1C4E9
+a3_ap2_enter : rising · 76w
+state a3_ap2_corr #D1C4E9
+a3_ap2_corr : rising · 62w
+state a3_ap2_t1_p0 #D1C4E9
+a3_ap2_t1_p0 : rising · 68w
+state a3_ap2_t1_x0 #FFCDD2
+a3_ap2_t1_x0 : death (negative)
+a3_ap2_t1_x0 : "The Mob Turned"
+state a3_ap2_t1_p1 #D1C4E9
+a3_ap2_t1_p1 : rising · 68w
+state a3_ap2_t1_x1 #FFCDD2
+a3_ap2_t1_x1 : death (negative)
+a3_ap2_t1_x1 : "Answered by the Steel"
+state a3_ap2_t1_p2 #D1C4E9
+a3_ap2_t1_p2 : rising · 68w
+state a3_ap2_t1_x2 #FFCDD2
+a3_ap2_t1_x2 : capture (negative)
+a3_ap2_t1_x2 : "Under the Silk-Fire"
+state a3_ap2_t1_c #ECEFF1
+a3_ap2_t1_c : setback · 66w
+state a3_ap2_t1 #FFF9C4
+a3_ap2_t1 : choice · 82w
+state a3_ap2_t2_p0 #D1C4E9
+a3_ap2_t2_p0 : rising · 68w
+state a3_ap2_t2_x0 #FFCDD2
+a3_ap2_t2_x0 : death (negative)
+a3_ap2_t2_x0 : "The Camel-Crush"
+state a3_ap2_t2_p1 #D1C4E9
+a3_ap2_t2_p1 : rising · 68w
+state a3_ap2_t2_x1 #E0E0E0
+a3_ap2_t2_x1 : setback (neutral)
+a3_ap2_t2_x1 : "Bound to the Court"
+state a3_ap2_t2_p2 #D1C4E9
+a3_ap2_t2_p2 : rising · 68w
+state a3_ap2_t2_x2 #FFCDD2
+a3_ap2_t2_x2 : death (negative)
+a3_ap2_t2_x2 : "Down the Burning Colonnade"
+state a3_ap2_t2_c #ECEFF1
+a3_ap2_t2_c : setback · 66w
+state a3_ap2_t2 #FFF9C4
+a3_ap2_t2 : choice · 80w
+state a3_ap2_exit #D1C4E9
+a3_ap2_exit : rising · 64w
+state a3_ap3_enter #D1C4E9
+a3_ap3_enter : rising · 76w
+state a3_ap3_corr #D1C4E9
+a3_ap3_corr : rising · 62w
+state a3_ap3_t1_p0 #D1C4E9
+a3_ap3_t1_p0 : rising · 68w
+state a3_ap3_t1_x0 #FFCDD2
+a3_ap3_t1_x0 : death (negative)
+a3_ap3_t1_x0 : "The Mast Fell"
+state a3_ap3_t1_p1 #D1C4E9
+a3_ap3_t1_p1 : rising · 68w
+state a3_ap3_t1_x1 #FFCDD2
+a3_ap3_t1_x1 : capture (negative)
+a3_ap3_t1_x1 : "Run to the Wall"
+state a3_ap3_t1_p2 #D1C4E9
+a3_ap3_t1_p2 : rising · 68w
+state a3_ap3_t1_x2 #FFCDD2
+a3_ap3_t1_x2 : death (negative)
+a3_ap3_t1_x2 : "The Slaver's Cup"
+state a3_ap3_t1_c #ECEFF1
+a3_ap3_t1_c : setback · 66w
+state a3_ap3_t1 #FFF9C4
+a3_ap3_t1 : choice · 82w
+state a3_ap3_t2_p0 #D1C4E9
+a3_ap3_t2_p0 : rising · 68w
+state a3_ap3_t2_x0 #FFCDD2
+a3_ap3_t2_x0 : death (negative)
+a3_ap3_t2_x0 : "Into the Coffle"
+state a3_ap3_t2_p1 #D1C4E9
+a3_ap3_t2_p1 : rising · 68w
+state a3_ap3_t2_x1 #FFCDD2
+a3_ap3_t2_x1 : death (negative)
+a3_ap3_t2_x1 : "The Fire-Line Caught"
+state a3_ap3_t2_p2 #D1C4E9
+a3_ap3_t2_p2 : rising · 68w
+state a3_ap3_t2_x2 #FFCDD2
+a3_ap3_t2_x2 : capture (negative)
+a3_ap3_t2_x2 : "No House Behind Him"
+state a3_ap3_t2_c #ECEFF1
+a3_ap3_t2_c : setback · 66w
+state a3_ap3_t2 #FFF9C4
+a3_ap3_t2 : choice · 80w
+state a3_ap3_exit #D1C4E9
+a3_ap3_exit : rising · 64w
+state a3_ap4_enter #D1C4E9
+a3_ap4_enter : rising · 76w
+state a3_ap4_corr #D1C4E9
+a3_ap4_corr : rising · 62w
+state a3_ap4_t1_p0 #D1C4E9
+a3_ap4_t1_p0 : rising · 68w
+state a3_ap4_t1_x0 #FFCDD2
+a3_ap4_t1_x0 : death (negative)
+a3_ap4_t1_x0 : "Cut Down in the Aisle"
+state a3_ap4_t1_p1 #D1C4E9
+a3_ap4_t1_p1 : rising · 68w
+state a3_ap4_t1_x1 #E0E0E0
+a3_ap4_t1_x1 : setback (neutral)
+a3_ap4_t1_x1 : "The Writ and the Grave"
+state a3_ap4_t1_p2 #D1C4E9
+a3_ap4_t1_p2 : rising · 68w
+state a3_ap4_t1_x2 #FFCDD2
+a3_ap4_t1_x2 : death (negative)
+a3_ap4_t1_x2 : "The Serai Kept Him"
+state a3_ap4_t1_c #ECEFF1
+a3_ap4_t1_c : setback · 66w
+state a3_ap4_t1 #FFF9C4
+a3_ap4_t1 : choice · 82w
+state a3_ap4_t2_p0 #D1C4E9
+a3_ap4_t2_p0 : rising · 68w
+state a3_ap4_t2_x0 #FFCDD2
+a3_ap4_t2_x0 : death (negative)
+a3_ap4_t2_x0 : "The Charter Burned"
+state a3_ap4_t2_p1 #D1C4E9
+a3_ap4_t2_p1 : rising · 68w
+state a3_ap4_t2_x1 #FFCDD2
+a3_ap4_t2_x1 : capture (negative)
+a3_ap4_t2_x1 : "A Stranger's Price"
+state a3_ap4_t2_p2 #D1C4E9
+a3_ap4_t2_p2 : rising · 68w
+state a3_ap4_t2_x2 #FFCDD2
+a3_ap4_t2_x2 : death (negative)
+a3_ap4_t2_x2 : "The Long Coffle-Road"
+state a3_ap4_t2_c #ECEFF1
+a3_ap4_t2_c : setback · 66w
+state a3_ap4_t2 #FFF9C4
+a3_ap4_t2 : choice · 80w
+state a3_ap4_exit #D1C4E9
+a3_ap4_exit : rising · 64w
+state a3_ap5_enter #D1C4E9
+a3_ap5_enter : rising · 76w
+state a3_ap5_corr #D1C4E9
+a3_ap5_corr : rising · 62w
+state a3_ap5_t1_p0 #D1C4E9
+a3_ap5_t1_p0 : rising · 68w
+state a3_ap5_t1_x0 #E0E0E0
+a3_ap5_t1_x0 : setback (neutral)
+a3_ap5_t1_x0 : "The Auctioneer's Debt"
+state a3_ap5_t1_p1 #D1C4E9
+a3_ap5_t1_p1 : rising · 68w
+state a3_ap5_t1_x1 #FFCDD2
+a3_ap5_t1_x1 : death (negative)
+a3_ap5_t1_x1 : "The Smoke Read True"
+state a3_ap5_t1_p2 #D1C4E9
+a3_ap5_t1_p2 : rising · 68w
+state a3_ap5_t1_x2 #FFCDD2
+a3_ap5_t1_x2 : death (negative)
+a3_ap5_t1_x2 : "The Aisle Ended"
+state a3_ap5_t1_c #ECEFF1
+a3_ap5_t1_c : setback · 66w
+state a3_ap5_t1 #FFF9C4
+a3_ap5_t1 : choice · 82w
+state a3_ap5_t2_p0 #D1C4E9
+a3_ap5_t2_p0 : rising · 68w
+state a3_ap5_t2_x0 #FFCDD2
+a3_ap5_t2_x0 : capture (negative)
+a3_ap5_t2_x0 : "Sold at Dawn"
+state a3_ap5_t2_p1 #D1C4E9
+a3_ap5_t2_p1 : rising · 68w
+state a3_ap5_t2_x1 #FFCDD2
+a3_ap5_t2_x1 : death (negative)
+a3_ap5_t2_x1 : "The Last Bid"
+state a3_ap5_t2_p2 #D1C4E9
+a3_ap5_t2_p2 : rising · 68w
+state a3_ap5_t2_x2 #E0E0E0
+a3_ap5_t2_x2 : setback (neutral)
+a3_ap5_t2_x2 : "The Block Guards Ran Him Down"
+state a3_ap5_t2_c #ECEFF1
+a3_ap5_t2_c : setback · 66w
+state a3_ap5_t2 #FFF9C4
+a3_ap5_t2 : choice · 80w
+state a3_ap5_exit #D1C4E9
+a3_ap5_exit : rising · 64w
+state a3_survey #FFF9C4
+a3_survey : choice · 96w
+state a3_gate #FFF9C4
+a3_gate : choice · 124w
+state a3_full #D1C4E9
+a3_full : rising · 66w
+state a3_two #D1C4E9
+a3_two : rising · 66w
+state a3_one #D1C4E9
+a3_one : rising · 66w
+state a3_none #D1C4E9
+a3_none : rising · 66w
+state f_enter #BBDEFB
+f_enter : setup · 116w
+state f_road #D1C4E9
+f_road : rising · 78w
+state f_marked #FFF9C4
+f_marked : choice · 96w
+state cg_goods #FFF9C4
+cg_goods : choice · 104w
+state cg3_scene #FFE0B2
+cg3_scene : climax · 122w
+state cg3_water #FFF9C4
+cg3_water : choice · 88w
+state cg3_dry #FFE0B2
+cg3_dry : climax · 66w
+state e_dry_crossing #FFCDD2
+e_dry_crossing : death (negative)
+e_dry_crossing : "Everything but the Water"
+state cg3_run #FFE0B2
+cg3_run : climax · 118w
+state cg3_crew #FFF9C4
+cg3_crew : choice · 104w
+state cg3_greed_p #FFE0B2
+cg3_greed_p : climax · 60w
+state e_best #C8E6C9
+e_best : completion (positive)
+e_best : "The Water-Writ"
+state e_crew_only #C8E6C9
+e_crew_only : success (positive)
+e_crew_only : "Two Crews and Open Hands"
+state e_greed #FFCDD2
+e_greed : death (negative)
+e_greed : "One Haul Too Many"
+state cg2_scene #FFE0B2
+cg2_scene : climax · 110w
+state cg2_hold_p #FFE0B2
+cg2_hold_p : climax · 60w
+state e_two_out #C8E6C9
+e_two_out : success (positive)
+e_two_out : "Out on a Fair Hand"
+state e_two_stay #E0E0E0
+e_two_stay : setback (neutral)
+e_two_stay : "The Wrong Side of the Wall"
+state cg1_scene #FFE0B2
+cg1_scene : climax · 104w
+state cg1_all_p #FFE0B2
+cg1_all_p : climax · 58w
+state e_one_thread #E0E0E0
+e_one_thread : discovery (neutral)
+e_one_thread : "Who You Could Carry"
+state e_one_lost #FFCDD2
+e_one_lost : setback (negative)
+e_one_lost : "Reached Too Far"
+state cg0_scene #FFE0B2
+cg0_scene : climax · 100w
+state cg0_flee_p #FFE0B2
+cg0_flee_p : climax · 58w
+state e_empty_flee #FFCDD2
+e_empty_flee : setback (negative)
+e_empty_flee : "Scattered into the Fire"
+state e_empty_wait #E0E0E0
+e_empty_wait : setback (neutral)
+e_empty_wait : "Waiting for the Wind"
+state bg_goods #FFF9C4
+bg_goods : choice · 104w
+state bg_hi_scene #FFE0B2
+bg_hi_scene : climax · 108w
+state bg_hi_final #FFE0B2
+bg_hi_final : climax · 100w
+state bg_run_p #FFE0B2
+bg_run_p : climax · 56w
+state bg_hold_p #FFE0B2
+bg_hold_p : climax · 56w
+state e_bg_buy #FFCDD2
+e_bg_buy : capture (negative)
+e_bg_buy : "Paid in Full"
+state e_bg_run #FFCDD2
+e_bg_run : death (negative)
+e_bg_run : "The Road Ran Out"
+state e_bg_hold #FFCDD2
+e_bg_hold : death (negative)
+e_bg_hold : "A Stand at the Pens"
+state bg_mid_scene #FFE0B2
+bg_mid_scene : climax · 96w
+state bg_mid_final #FFE0B2
+bg_mid_final : climax · 92w
+state bg_scatter_p #FFE0B2
+bg_scatter_p : climax · 56w
+state e_bg_scatter #FFCDD2
+e_bg_scatter : setback (negative)
+e_bg_scatter : "A Gap in the Smoke"
+state e_bg_caught #FFCDD2
+e_bg_caught : capture (negative)
+e_bg_caught : "The Decoy's Wage"
+state bg_lo_scene #FFE0B2
+bg_lo_scene : climax · 100w
+state bg_lo_final #FFE0B2
+bg_lo_final : climax · 92w
+state bg_trap_p #FFE0B2
+bg_trap_p : climax · 56w
+state bg_warn_p #FFE0B2
+bg_warn_p : climax · 56w
+state e_bg_trap #FFCDD2
+e_bg_trap : death (negative)
+e_bg_trap : "Into the Ember Trap"
+state e_bg_warn #FFCDD2
+e_bg_warn : death (negative)
+e_bg_warn : "A Shared Grave"
+state e_bg_surrender #FFCDD2
+e_bg_surrender : capture (negative)
+e_bg_surrender : "On Your Own Terms, Barely"
+n_start --> n_walls : Cross the cinder line into the city.
+n_walls --> n_brand : Take the measure of the burning streets.
+n_brand --> a1_enter : Go in. Make for the Cinder Gate.
+n_brand --> n_turnback : Turn back at the wall; this job is a gra...
+n_turnback --> e_turnback : Keep walking. Let Ashmar burn without yo...
+a1_enter --> a1_survey : Read the Ash Gate and pick your way in.
+a1_ap0_enter --> a1_ap0_corr : Step in and read the ground.
+a1_ap0_corr --> a1_ap0_t1 : Read the ground and commit to a move.
+a1_ap0_t1_p0 --> a1_ap0_t1_x0 : Sprint under the sagging stone.
+a1_ap0_t1_p1 --> a1_ap0_t1_x1 : Put your shoulder to them.
+a1_ap0_t1_p2 --> a1_ap0_t1_x2 : Trust the smoking planks.
+a1_ap0_t1_c --> a1_gate : You lose the salvage but keep your skin.
+a1_ap0_t1 --> a1_ap0_t1_p0 : Run the collapsing archway.
+a1_ap0_t1 --> a1_ap0_t1_p1 : Shove through the warden line.
+a1_ap0_t1 --> a1_ap0_t1_p2 : Take the burning rope-bridge.
+a1_ap0_t1 --> a1_ap0_t1_c : Give up the strongbox and slip back.
+a1_ap0_t1 --> a1_ap0_t2 : Pick the disciplined line and press on.
+a1_ap0_t2_p0 --> a1_ap0_t2_x0 : Force a path through the crowd.
+a1_ap0_t2_p1 --> a1_ap0_t2_x1 : Take the strongbox and run.
+a1_ap0_t2_p2 --> a1_ap0_t2_x2 : Go up and over.
+a1_ap0_t2_c --> a1_gate : The bribe stings but the road opens.
+a1_ap0_t2 --> a1_ap0_t2_p0 : Cut through the refugee press.
+a1_ap0_t2 --> a1_ap0_t2_p1 : Loot the toll-clerk openly.
+a1_ap0_t2 --> a1_ap0_t2_p2 : Climb the cinder-slick wall.
+a1_ap0_t2 --> a1_ap0_t2_c : Pay a warden to look away.
+a1_ap0_t2 --> a1_ap0_exit : Take the clean route and secure what you...
+a1_ap0_exit --> a1_gate : Take what you secured and push to the la...
+a1_ap1_enter --> a1_ap1_corr : Step in and read the ground.
+a1_ap1_corr --> a1_ap1_t1 : Read the ground and commit to a move.
+a1_ap1_t1_p0 --> a1_ap1_t1_x0 : Lie straight to his face.
+a1_ap1_t1_p1 --> a1_ap1_t1_x1 : Beat out the flames barehanded.
+a1_ap1_t1_p2 --> a1_ap1_t1_x2 : Feel your way blind.
+a1_ap1_t1_c --> a1_gate : The bribe stings but the road opens.
+a1_ap1_t1 --> a1_ap1_t1_p0 : Bluff the gate-captain cold.
+a1_ap1_t1 --> a1_ap1_t1_p1 : Douse the burning stall yourself.
+a1_ap1_t1 --> a1_ap1_t1_p2 : Duck into the smoke-choked lane.
+a1_ap1_t1 --> a1_ap1_t1_c : Pay a warden to look away.
+a1_ap1_t1 --> a1_ap1_t2 : Pick the disciplined line and press on.
+a1_ap1_t2_p0 --> a1_ap1_t2_x0 : Catch the cornice-struck boy.
+a1_ap1_t2_p1 --> a1_ap1_t2_x1 : Cut the flask from his belt.
+a1_ap1_t2_p2 --> a1_ap1_t2_x2 : Hide under the pyre-cart's load.
+a1_ap1_t2_c --> a1_gate : You lose the salvage but keep your skin.
+a1_ap1_t2 --> a1_ap1_t2_p0 : Grab the falling child and run.
+a1_ap1_t2 --> a1_ap1_t2_p1 : Snatch the warden's water-flask.
+a1_ap1_t2 --> a1_ap1_t2_p2 : Ride the ash-cart through.
+a1_ap1_t2 --> a1_ap1_t2_c : Give up the strongbox and slip back.
+a1_ap1_t2 --> a1_ap1_exit : Take the clean route and secure what you...
+a1_ap1_exit --> a1_gate : Take what you secured and push to the la...
+a1_ap2_enter --> a1_ap2_corr : Step in and read the ground.
+a1_ap2_corr --> a1_ap2_t1 : Read the ground and commit to a move.
+a1_ap2_t1_p0 --> a1_ap2_t1_x0 : Overturn the coals in their faces.
+a1_ap2_t1_p1 --> a1_ap2_t1_x1 : Wade the steaming overflow.
+a1_ap2_t1_p2 --> a1_ap2_t1_x2 : Meet the falling lintel.
+a1_ap2_t1_c --> a1_gate : You lose the salvage but keep your skin.
+a1_ap2_t1 --> a1_ap2_t1_p0 : Kick the brazier at them.
+a1_ap2_t1 --> a1_ap2_t1_p1 : Swim the scalding channel.
+a1_ap2_t1 --> a1_ap2_t1_p2 : Chance the falling lintel.
+a1_ap2_t1 --> a1_ap2_t1_c : Give up the strongbox and slip back.
+a1_ap2_t1 --> a1_ap2_t2 : Pick the disciplined line and press on.
+a1_ap2_t2_p0 --> a1_ap2_t2_x0 : Meet the smoke-blind stair.
+a1_ap2_t2_p1 --> a1_ap2_t2_x1 : Meet the warden's cordon.
+a1_ap2_t2_p2 --> a1_ap2_t2_x2 : Meet the ash-drift.
+a1_ap2_t2_c --> a1_gate : The bribe stings but the road opens.
+a1_ap2_t2 --> a1_ap2_t2_p0 : Force the smoke-blind stair.
+a1_ap2_t2 --> a1_ap2_t2_p1 : Trust the warden's cordon.
+a1_ap2_t2 --> a1_ap2_t2_p2 : Brave the ash-drift.
+a1_ap2_t2 --> a1_ap2_t2_c : Pay a warden to look away.
+a1_ap2_t2 --> a1_ap2_exit : Take the clean route and secure what you...
+a1_ap2_exit --> a1_gate : Take what you secured and push to the la...
+a1_ap3_enter --> a1_ap3_corr : Step in and read the ground.
+a1_ap3_corr --> a1_ap3_t1 : Read the ground and commit to a move.
+a1_ap3_t1_p0 --> a1_ap3_t1_x0 : Meet the collapsing balcony.
+a1_ap3_t1_p1 --> a1_ap3_t1_x1 : Meet the tar-slick gutter.
+a1_ap3_t1_p2 --> a1_ap3_t1_x2 : Meet the burning cordage.
+a1_ap3_t1_c --> a1_gate : The bribe stings but the road opens.
+a1_ap3_t1 --> a1_ap3_t1_p0 : Run the collapsing balcony.
+a1_ap3_t1 --> a1_ap3_t1_p1 : Chance the tar-slick gutter.
+a1_ap3_t1 --> a1_ap3_t1_p2 : Force the burning cordage.
+a1_ap3_t1 --> a1_ap3_t1_c : Pay a warden to look away.
+a1_ap3_t1 --> a1_ap3_t2 : Pick the disciplined line and press on.
+a1_ap3_t2_p0 --> a1_ap3_t2_x0 : Meet the toll-cage.
+a1_ap3_t2_p1 --> a1_ap3_t2_x1 : Meet the cinder-fall.
+a1_ap3_t2_p2 --> a1_ap3_t2_x2 : Meet the choke of embers.
+a1_ap3_t2_c --> a1_gate : You lose the salvage but keep your skin.
+a1_ap3_t2 --> a1_ap3_t2_p0 : Trust the toll-cage.
+a1_ap3_t2 --> a1_ap3_t2_p1 : Brave the cinder-fall.
+a1_ap3_t2 --> a1_ap3_t2_p2 : Run the choke of embers.
+a1_ap3_t2 --> a1_ap3_t2_c : Give up the strongbox and slip back.
+a1_ap3_t2 --> a1_ap3_exit : Take the clean route and secure what you...
+a1_ap3_exit --> a1_gate : Take what you secured and push to the la...
+a1_ap4_enter --> a1_ap4_corr : Step in and read the ground.
+a1_ap4_corr --> a1_ap4_t1 : Read the ground and commit to a move.
+a1_ap4_t1_p0 --> a1_ap4_t1_x0 : Meet the pyre-lane.
+a1_ap4_t1_p1 --> a1_ap4_t1_x1 : Meet the scorched scaffold.
+a1_ap4_t1_p2 --> a1_ap4_t1_x2 : Meet the falling lintel.
+a1_ap4_t1_c --> a1_gate : You lose the salvage but keep your skin.
+a1_ap4_t1 --> a1_ap4_t1_p0 : Chance the pyre-lane.
+a1_ap4_t1 --> a1_ap4_t1_p1 : Force the scorched scaffold.
+a1_ap4_t1 --> a1_ap4_t1_p2 : Trust the falling lintel.
+a1_ap4_t1 --> a1_ap4_t1_c : Give up the strongbox and slip back.
+a1_ap4_t1 --> a1_ap4_t2 : Pick the disciplined line and press on.
+a1_ap4_t2_p0 --> a1_ap4_t2_x0 : Meet the smoke-blind stair.
+a1_ap4_t2_p1 --> a1_ap4_t2_x1 : Meet the warden's cordon.
+a1_ap4_t2_p2 --> a1_ap4_t2_x2 : Meet the ash-drift.
+a1_ap4_t2_c --> a1_gate : The bribe stings but the road opens.
+a1_ap4_t2 --> a1_ap4_t2_p0 : Brave the smoke-blind stair.
+a1_ap4_t2 --> a1_ap4_t2_p1 : Run the warden's cordon.
+a1_ap4_t2 --> a1_ap4_t2_p2 : Chance the ash-drift.
+a1_ap4_t2 --> a1_ap4_t2_c : Pay a warden to look away.
+a1_ap4_t2 --> a1_ap4_exit : Take the clean route and secure what you...
+a1_ap4_exit --> a1_gate : Take what you secured and push to the la...
+a1_ap5_enter --> a1_ap5_corr : Step in and read the ground.
+a1_ap5_corr --> a1_ap5_t1 : Read the ground and commit to a move.
+a1_ap5_t1_p0 --> a1_ap5_t1_x0 : Meet the collapsing balcony.
+a1_ap5_t1_p1 --> a1_ap5_t1_x1 : Meet the tar-slick gutter.
+a1_ap5_t1_p2 --> a1_ap5_t1_x2 : Meet the burning cordage.
+a1_ap5_t1_c --> a1_gate : The bribe stings but the road opens.
+a1_ap5_t1 --> a1_ap5_t1_p0 : Force the collapsing balcony.
+a1_ap5_t1 --> a1_ap5_t1_p1 : Trust the tar-slick gutter.
+a1_ap5_t1 --> a1_ap5_t1_p2 : Brave the burning cordage.
+a1_ap5_t1 --> a1_ap5_t1_c : Pay a warden to look away.
+a1_ap5_t1 --> a1_ap5_t2 : Pick the disciplined line and press on.
+a1_ap5_t2_p0 --> a1_ap5_t2_x0 : Meet the toll-cage.
+a1_ap5_t2_p1 --> a1_ap5_t2_x1 : Meet the cinder-fall.
+a1_ap5_t2_p2 --> a1_ap5_t2_x2 : Meet the choke of embers.
+a1_ap5_t2_c --> a1_gate : You lose the salvage but keep your skin.
+a1_ap5_t2 --> a1_ap5_t2_p0 : Run the toll-cage.
+a1_ap5_t2 --> a1_ap5_t2_p1 : Chance the cinder-fall.
+a1_ap5_t2 --> a1_ap5_t2_p2 : Force the choke of embers.
+a1_ap5_t2 --> a1_ap5_t2_c : Give up the strongbox and slip back.
+a1_ap5_t2 --> a1_ap5_exit : Take the clean route and secure what you...
+a1_ap5_exit --> a1_gate : Take what you secured and push to the la...
+a1_ap6_enter --> a1_ap6_corr : Step in and read the ground.
+a1_ap6_corr --> a1_ap6_t1 : Read the ground and commit to a move.
+a1_ap6_t1_p0 --> a1_ap6_t1_x0 : Meet the pyre-lane.
+a1_ap6_t1_p1 --> a1_ap6_t1_x1 : Meet the scorched scaffold.
+a1_ap6_t1_p2 --> a1_ap6_t1_x2 : Meet the falling lintel.
+a1_ap6_t1_c --> a1_gate : You lose the salvage but keep your skin.
+a1_ap6_t1 --> a1_ap6_t1_p0 : Trust the pyre-lane.
+a1_ap6_t1 --> a1_ap6_t1_p1 : Brave the scorched scaffold.
+a1_ap6_t1 --> a1_ap6_t1_p2 : Run the falling lintel.
+a1_ap6_t1 --> a1_ap6_t1_c : Give up the strongbox and slip back.
+a1_ap6_t1 --> a1_ap6_t2 : Pick the disciplined line and press on.
+a1_ap6_t2_p0 --> a1_ap6_t2_x0 : Meet the smoke-blind stair.
+a1_ap6_t2_p1 --> a1_ap6_t2_x1 : Meet the warden's cordon.
+a1_ap6_t2_p2 --> a1_ap6_t2_x2 : Meet the ash-drift.
+a1_ap6_t2_c --> a1_gate : The bribe stings but the road opens.
+a1_ap6_t2 --> a1_ap6_t2_p0 : Chance the smoke-blind stair.
+a1_ap6_t2 --> a1_ap6_t2_p1 : Force the warden's cordon.
+a1_ap6_t2 --> a1_ap6_t2_p2 : Trust the ash-drift.
+a1_ap6_t2 --> a1_ap6_t2_c : Pay a warden to look away.
+a1_ap6_t2 --> a1_ap6_exit : Take the clean route and secure what you...
+a1_ap6_exit --> a1_gate : Take what you secured and push to the la...
+a1_survey --> a1_ap0_enter : Go straight at the wardens by the main t...
+a1_survey --> a1_ap1_enter : Take the salvagers' run through the burn...
+a1_survey --> a1_ap2_enter : Slip along the flame-canal path.
+a1_survey --> a1_ap3_enter : Climb through the refugee terraces.
+a1_survey --> a1_ap4_enter : Cut through the smoke-choked back lanes.
+a1_survey --> a1_ap5_enter : Follow the pyre-cart road toward the pit...
+a1_survey --> a1_ap6_enter : Work the toll-clerks' side passage.
+a1_gate --> a1_clean : You are unremarked: cross the toll like ...
+a1_gate --> a1_hunted : You are marked: the wardens have your fa...
+a1_clean --> a2_enter : Move on toward the Cistern quarter.
+a1_hunted --> a1_hunt_p : Brazen the crossing under their noses.
+a1_hunted --> a2_enter : Go over the wall in the smoke and move o...
+a1_hunt_p --> e_gate_taken : Nowhere left to run.
+a2_enter --> a2_survey : Read the Cistern quarter and pick your w...
+a2_ap0_enter --> a2_ap0_corr : Step in and read the ground.
+a2_ap0_corr --> a2_ap0_t1 : Read the ground and commit to a move.
+a2_ap0_t1_p0 --> a2_ap0_t1_x0 : Time the gap between blasts.
+a2_ap0_t1_p1 --> a2_ap0_t1_x1 : Take the black water down.
+a2_ap0_t1_p2 --> a2_ap0_t1_x2 : Draw on the water-guards.
+a2_ap0_t1_c --> a2_gate : You keep your water but burn the dayligh...
+a2_ap0_t1 --> a2_ap0_t1_p0 : Cross the boiling steam-vent.
+a2_ap0_t1 --> a2_ap0_t1_p1 : Descend the flooded stair.
+a2_ap0_t1 --> a2_ap0_t1_p2 : Fight the cistern-keepers.
+a2_ap0_t1 --> a2_ap0_t1_c : Backtrack and take the dry high road.
+a2_ap0_t1 --> a2_ap0_t2 : Pick the disciplined line and press on.
+a2_ap0_t2_p0 --> a2_ap0_t2_x0 : Slake it from the still pool.
+a2_ap0_t2_p1 --> a2_ap0_t2_x1 : Squeeze the cracking tunnel.
+a2_ap0_t2_p2 --> a2_ap0_t2_x2 : Promise coin you lack.
+a2_ap0_t2_c --> a2_gate : The keepers wave you through for a skin ...
+a2_ap0_t2 --> a2_ap0_t2_p0 : Drink the standing green water.
+a2_ap0_t2 --> a2_ap0_t2_p1 : Crawl the low collapsing gallery.
+a2_ap0_t2 --> a2_ap0_t2_p2 : Bribe the tank-master empty-handed.
+a2_ap0_t2 --> a2_ap0_t2_c : Spend a skin to buy safe passage.
+a2_ap0_t2 --> a2_ap0_exit : Take the clean route and secure what you...
+a2_ap0_exit --> a2_gate : Take what you secured and push to the la...
+a2_ap1_enter --> a2_ap1_corr : Step in and read the ground.
+a2_ap1_corr --> a2_ap1_t1 : Read the ground and commit to a move.
+a2_ap1_t1_p0 --> a2_ap1_t1_x0 : Jump before it opens more.
+a2_ap1_t1_p1 --> a2_ap1_t1_x1 : Drop the whole gang into the dark.
+a2_ap1_t1_p2 --> a2_ap1_t1_x2 : Break the ancient valve.
+a2_ap1_t1_c --> a2_gate : The keepers wave you through for a skin ...
+a2_ap1_t1 --> a2_ap1_t1_p0 : Leap the widening cistern-crack.
+a2_ap1_t1 --> a2_ap1_t1_p1 : Cut the keeper's guide-rope.
+a2_ap1_t1 --> a2_ap1_t1_p2 : Force the sealed sluice.
+a2_ap1_t1 --> a2_ap1_t1_c : Spend a skin to buy safe passage.
+a2_ap1_t1 --> a2_ap1_t2 : Pick the disciplined line and press on.
+a2_ap1_t2_p0 --> a2_ap1_t2_x0 : Wait it out in the empty cistern.
+a2_ap1_t2_p1 --> a2_ap1_t2_x1 : Follow the blind man's tapping.
+a2_ap1_t2_p2 --> a2_ap1_t2_x2 : Push across the grey flood.
+a2_ap1_t2_c --> a2_gate : You keep your water but burn the dayligh...
+a2_ap1_t2 --> a2_ap1_t2_p0 : Hide inside the drained tank.
+a2_ap1_t2 --> a2_ap1_t2_p1 : Trust the eyeless water-diviner.
+a2_ap1_t2 --> a2_ap1_t2_p2 : Ford the ash-scum overflow.
+a2_ap1_t2 --> a2_ap1_t2_c : Backtrack and take the dry high road.
+a2_ap1_t2 --> a2_ap1_exit : Take the clean route and secure what you...
+a2_ap1_exit --> a2_gate : Take what you secured and push to the la...
+a2_ap2_enter --> a2_ap2_corr : Step in and read the ground.
+a2_ap2_corr --> a2_ap2_t1 : Read the ground and commit to a move.
+a2_ap2_t1_p0 --> a2_ap2_t1_x0 : Beat the water to the arch.
+a2_ap2_t1_p1 --> a2_ap2_t1_x1 : Palm the tank-key.
+a2_ap2_t1_p2 --> a2_ap2_t1_x2 : Meet the scald-vent.
+a2_ap2_t1_c --> a2_gate : You keep your water but burn the dayligh...
+a2_ap2_t1 --> a2_ap2_t1_p0 : Race the rising tank-flood.
+a2_ap2_t1 --> a2_ap2_t1_p1 : Steal the keeper's brass token.
+a2_ap2_t1 --> a2_ap2_t1_p2 : Chance the scald-vent.
+a2_ap2_t1 --> a2_ap2_t1_c : Backtrack and take the dry high road.
+a2_ap2_t1 --> a2_ap2_t2 : Pick the disciplined line and press on.
+a2_ap2_t2_p0 --> a2_ap2_t2_x0 : Meet the black overflow.
+a2_ap2_t2_p1 --> a2_ap2_t2_x1 : Meet the cracking cistern-wall.
+a2_ap2_t2_p2 --> a2_ap2_t2_x2 : Meet the keeper's gang.
+a2_ap2_t2_c --> a2_gate : The keepers wave you through for a skin ...
+a2_ap2_t2 --> a2_ap2_t2_p0 : Force the black overflow.
+a2_ap2_t2 --> a2_ap2_t2_p1 : Ford the cracking cistern-wall.
+a2_ap2_t2 --> a2_ap2_t2_p2 : Trust the keeper's gang.
+a2_ap2_t2 --> a2_ap2_t2_c : Spend a skin to buy safe passage.
+a2_ap2_t2 --> a2_ap2_exit : Take the clean route and secure what you...
+a2_ap2_exit --> a2_gate : Take what you secured and push to the la...
+a2_ap3_enter --> a2_ap3_corr : Step in and read the ground.
+a2_ap3_corr --> a2_ap3_t1 : Read the ground and commit to a move.
+a2_ap3_t1_p0 --> a2_ap3_t1_x0 : Meet the drowning-tank.
+a2_ap3_t1_p1 --> a2_ap3_t1_x1 : Meet the flooded gallery.
+a2_ap3_t1_p2 --> a2_ap3_t1_x2 : Meet the sluice-gate.
+a2_ap3_t1_c --> a2_gate : The keepers wave you through for a skin ...
+a2_ap3_t1 --> a2_ap3_t1_p0 : Take the drowning-tank.
+a2_ap3_t1 --> a2_ap3_t1_p1 : Chance the flooded gallery.
+a2_ap3_t1 --> a2_ap3_t1_p2 : Force the sluice-gate.
+a2_ap3_t1 --> a2_ap3_t1_c : Spend a skin to buy safe passage.
+a2_ap3_t1 --> a2_ap3_t2 : Pick the disciplined line and press on.
+a2_ap3_t2_p0 --> a2_ap3_t2_x0 : Meet the green pool.
+a2_ap3_t2_p1 --> a2_ap3_t2_x1 : Meet the guide-rope.
+a2_ap3_t2_p2 --> a2_ap3_t2_x2 : Meet the steam-blast.
+a2_ap3_t2_c --> a2_gate : You keep your water but burn the dayligh...
+a2_ap3_t2 --> a2_ap3_t2_p0 : Ford the green pool.
+a2_ap3_t2 --> a2_ap3_t2_p1 : Trust the guide-rope.
+a2_ap3_t2 --> a2_ap3_t2_p2 : Take the steam-blast.
+a2_ap3_t2 --> a2_ap3_t2_c : Backtrack and take the dry high road.
+a2_ap3_t2 --> a2_ap3_exit : Take the clean route and secure what you...
+a2_ap3_exit --> a2_gate : Take what you secured and push to the la...
+a2_ap4_enter --> a2_ap4_corr : Step in and read the ground.
+a2_ap4_corr --> a2_ap4_t1 : Read the ground and commit to a move.
+a2_ap4_t1_p0 --> a2_ap4_t1_x0 : Meet the refill-hour.
+a2_ap4_t1_p1 --> a2_ap4_t1_x1 : Meet the scald-vent.
+a2_ap4_t1_p2 --> a2_ap4_t1_x2 : Meet the black overflow.
+a2_ap4_t1_c --> a2_gate : You keep your water but burn the dayligh...
+a2_ap4_t1 --> a2_ap4_t1_p0 : Chance the refill-hour.
+a2_ap4_t1 --> a2_ap4_t1_p1 : Ford the scald-vent.
+a2_ap4_t1 --> a2_ap4_t1_p2 : Trust the black overflow.
+a2_ap4_t1 --> a2_ap4_t1_c : Backtrack and take the dry high road.
+a2_ap4_t1 --> a2_ap4_t2 : Pick the disciplined line and press on.
+a2_ap4_t2_p0 --> a2_ap4_t2_x0 : Meet the cracking cistern-wall.
+a2_ap4_t2_p1 --> a2_ap4_t2_x1 : Meet the keeper's gang.
+a2_ap4_t2_p2 --> a2_ap4_t2_x2 : Meet the drowning-tank.
+a2_ap4_t2_c --> a2_gate : The keepers wave you through for a skin ...
+a2_ap4_t2 --> a2_ap4_t2_p0 : Take the cracking cistern-wall.
+a2_ap4_t2 --> a2_ap4_t2_p1 : Chance the keeper's gang.
+a2_ap4_t2 --> a2_ap4_t2_p2 : Force the drowning-tank.
+a2_ap4_t2 --> a2_ap4_t2_c : Spend a skin to buy safe passage.
+a2_ap4_t2 --> a2_ap4_exit : Take the clean route and secure what you...
+a2_ap4_exit --> a2_gate : Take what you secured and push to the la...
+a2_ap5_enter --> a2_ap5_corr : Step in and read the ground.
+a2_ap5_corr --> a2_ap5_t1 : Read the ground and commit to a move.
+a2_ap5_t1_p0 --> a2_ap5_t1_x0 : Meet the flooded gallery.
+a2_ap5_t1_p1 --> a2_ap5_t1_x1 : Meet the sluice-gate.
+a2_ap5_t1_p2 --> a2_ap5_t1_x2 : Meet the green pool.
+a2_ap5_t1_c --> a2_gate : The keepers wave you through for a skin ...
+a2_ap5_t1 --> a2_ap5_t1_p0 : Ford the flooded gallery.
+a2_ap5_t1 --> a2_ap5_t1_p1 : Trust the sluice-gate.
+a2_ap5_t1 --> a2_ap5_t1_p2 : Take the green pool.
+a2_ap5_t1 --> a2_ap5_t1_c : Spend a skin to buy safe passage.
+a2_ap5_t1 --> a2_ap5_t2 : Pick the disciplined line and press on.
+a2_ap5_t2_p0 --> a2_ap5_t2_x0 : Meet the guide-rope.
+a2_ap5_t2_p1 --> a2_ap5_t2_x1 : Meet the steam-blast.
+a2_ap5_t2_p2 --> a2_ap5_t2_x2 : Meet the refill-hour.
+a2_ap5_t2_c --> a2_gate : You keep your water but burn the dayligh...
+a2_ap5_t2 --> a2_ap5_t2_p0 : Chance the guide-rope.
+a2_ap5_t2 --> a2_ap5_t2_p1 : Force the steam-blast.
+a2_ap5_t2 --> a2_ap5_t2_p2 : Ford the refill-hour.
+a2_ap5_t2 --> a2_ap5_t2_c : Backtrack and take the dry high road.
+a2_ap5_t2 --> a2_ap5_exit : Take the clean route and secure what you...
+a2_ap5_exit --> a2_gate : Take what you secured and push to the la...
+a2_ap6_enter --> a2_ap6_corr : Step in and read the ground.
+a2_ap6_corr --> a2_ap6_t1 : Read the ground and commit to a move.
+a2_ap6_t1_p0 --> a2_ap6_t1_x0 : Meet the under-cistern.
+a2_ap6_t1_p1 --> a2_ap6_t1_x1 : Meet the scald-vent.
+a2_ap6_t1_p2 --> a2_ap6_t1_x2 : Meet the black overflow.
+a2_ap6_t1_c --> a2_gate : You keep your water but burn the dayligh...
+a2_ap6_t1 --> a2_ap6_t1_p0 : Trust the under-cistern.
+a2_ap6_t1 --> a2_ap6_t1_p1 : Take the scald-vent.
+a2_ap6_t1 --> a2_ap6_t1_p2 : Chance the black overflow.
+a2_ap6_t1 --> a2_ap6_t1_c : Backtrack and take the dry high road.
+a2_ap6_t1 --> a2_ap6_t2 : Pick the disciplined line and press on.
+a2_ap6_t2_p0 --> a2_ap6_t2_x0 : Meet the cracking cistern-wall.
+a2_ap6_t2_p1 --> a2_ap6_t2_x1 : Meet the keeper's gang.
+a2_ap6_t2_p2 --> a2_ap6_t2_x2 : Meet the drowning-tank.
+a2_ap6_t2_c --> a2_gate : The keepers wave you through for a skin ...
+a2_ap6_t2 --> a2_ap6_t2_p0 : Force the cracking cistern-wall.
+a2_ap6_t2 --> a2_ap6_t2_p1 : Ford the keeper's gang.
+a2_ap6_t2 --> a2_ap6_t2_p2 : Trust the drowning-tank.
+a2_ap6_t2 --> a2_ap6_t2_c : Spend a skin to buy safe passage.
+a2_ap6_t2 --> a2_ap6_exit : Take the clean route and secure what you...
+a2_ap6_exit --> a2_gate : Take what you secured and push to the la...
+a2_survey --> a2_ap0_enter : Take the main tank-causeway.
+a2_survey --> a2_ap1_enter : Descend the old flooded galleries.
+a2_survey --> a2_ap2_enter : Find the clean seep on the high terrace.
+a2_survey --> a2_ap3_enter : Cross the boiling steam-field.
+a2_survey --> a2_ap4_enter : Follow the keepers' guide-ropes down.
+a2_survey --> a2_ap5_enter : Ford the grey overflow channel.
+a2_survey --> a2_ap6_enter : Work the sluice-gate maintenance run.
+a2_gate --> a2_dry : Your skins are dry: you must cross the h...
+a2_gate --> a2_low : One skin left: enough for a careful cros...
+a2_gate --> a2_full : You carry water still: cross with a marg...
+a2_dry --> a2_dry_p : Chance the scald-tunnel with a dry throa...
+a2_dry --> a3_enter : Beg a mouthful and take the long safe ro...
+a2_dry_p --> e_dry_tunnel : The dark comes down.
+a2_low --> a3_enter : Cross careful and press on to the serai.
+a2_full --> a3_enter : Cross with a margin and press on to the ...
+a3_enter --> a3_survey : Read the Caravanserai and pick your way ...
+a3_ap0_enter --> a3_ap0_corr : Step in and read the ground.
+a3_ap0_corr --> a3_ap0_t1 : Read the ground and commit to a move.
+a3_ap0_t1_p0 --> a3_ap0_t1_x0 : Raise against the room.
+a3_ap0_t1_p1 --> a3_ap0_t1_x1 : Pull steel on Harda's people.
+a3_ap0_t1_p2 --> a3_ap0_t1_x2 : Chance the falling silk-fire.
+a3_ap0_t1_c --> a3_gate : You keep clear of the mob and lose the l...
+a3_ap0_t1 --> a3_ap0_t1_p0 : Outbid the whole auction floor.
+a3_ap0_t1 --> a3_ap0_t1_p1 : Draw on the rival crew's boss.
+a3_ap0_t1 --> a3_ap0_t1_p2 : Run the burning colonnade.
+a3_ap0_t1 --> a3_ap0_t1_c : Walk away from the bidding empty-handed.
+a3_ap0_t1 --> a3_ap0_t2 : Pick the disciplined line and press on.
+a3_ap0_t2_p0 --> a3_ap0_t2_x0 : Slip between the maddened beasts.
+a3_ap0_t2_p1 --> a3_ap0_t2_x1 : Pass a counterfeit charter.
+a3_ap0_t2_p2 --> a3_ap0_t2_x2 : Set their awning alight.
+a3_ap0_t2_c --> a3_gate : You yield the ground and circle wide.
+a3_ap0_t2 --> a3_ap0_t2_p0 : Cross the panicked camel-line.
+a3_ap0_t2 --> a3_ap0_t2_p1 : Forge the writ-seal yourself.
+a3_ap0_t2 --> a3_ap0_t2_p2 : Torch the rival's stall for cover.
+a3_ap0_t2 --> a3_ap0_t2_c : Let the rival crew take the aisle.
+a3_ap0_t2 --> a3_ap0_exit : Take the clean route and secure what you...
+a3_ap0_exit --> a3_gate : Take what you secured and push to the la...
+a3_ap1_enter --> a3_ap1_corr : Step in and read the ground.
+a3_ap1_corr --> a3_ap1_t1 : Read the ground and commit to a move.
+a3_ap1_t1_p0 --> a3_ap1_t1_x0 : Go up the rigging for a view.
+a3_ap1_t1_p1 --> a3_ap1_t1_x1 : Put your knife to his throat.
+a3_ap1_t1_p2 --> a3_ap1_t1_x2 : Grab the charter off the block.
+a3_ap1_t1_c --> a3_gate : You yield the ground and circle wide.
+a3_ap1_t1 --> a3_ap1_t1_p0 : Climb the swaying tent-mast.
+a3_ap1_t1 --> a3_ap1_t1_p1 : Take the seal-master hostage.
+a3_ap1_t1 --> a3_ap1_t1_p2 : Snatch the writ and bolt.
+a3_ap1_t1 --> a3_ap1_t1_c : Let the rival crew take the aisle.
+a3_ap1_t1 --> a3_ap1_t2 : Pick the disciplined line and press on.
+a3_ap1_t2_p0 --> a3_ap1_t2_x0 : Take the trader's hospitality.
+a3_ap1_t2_p1 --> a3_ap1_t2_x1 : Chance the packed upper deck.
+a3_ap1_t2_p2 --> a3_ap1_t2_x2 : Take on the slaver's men.
+a3_ap1_t2_c --> a3_gate : You keep clear of the mob and lose the l...
+a3_ap1_t2 --> a3_ap1_t2_p0 : Drink the auctioneer's offered cup.
+a3_ap1_t2 --> a3_ap1_t2_p1 : Cross the collapsing gallery-floor.
+a3_ap1_t2 --> a3_ap1_t2_p2 : Fight the coffle-guards free.
+a3_ap1_t2 --> a3_ap1_t2_c : Walk away from the bidding empty-handed.
+a3_ap1_t2 --> a3_ap1_exit : Take the clean route and secure what you...
+a3_ap1_exit --> a3_gate : Take what you secured and push to the la...
+a3_ap2_enter --> a3_ap2_corr : Step in and read the ground.
+a3_ap2_corr --> a3_ap2_t1 : Read the ground and commit to a move.
+a3_ap2_t1_p0 --> a3_ap2_t1_x0 : Meet the auction-mob.
+a3_ap2_t1_p1 --> a3_ap2_t1_x1 : Meet the rival's steel.
+a3_ap2_t1_p2 --> a3_ap2_t1_x2 : Meet the silk-fire.
+a3_ap2_t1_c --> a3_gate : You keep clear of the mob and lose the l...
+a3_ap2_t1 --> a3_ap2_t1_p0 : Chance the auction-mob.
+a3_ap2_t1 --> a3_ap2_t1_p1 : Force the rival's steel.
+a3_ap2_t1 --> a3_ap2_t1_p2 : Cross the silk-fire.
+a3_ap2_t1 --> a3_ap2_t1_c : Walk away from the bidding empty-handed.
+a3_ap2_t1 --> a3_ap2_t2 : Pick the disciplined line and press on.
+a3_ap2_t2_p0 --> a3_ap2_t2_x0 : Meet the camel-crush.
+a3_ap2_t2_p1 --> a3_ap2_t2_x1 : Meet the seal-court.
+a3_ap2_t2_p2 --> a3_ap2_t2_x2 : Meet the burning colonnade.
+a3_ap2_t2_c --> a3_gate : You yield the ground and circle wide.
+a3_ap2_t2 --> a3_ap2_t2_p0 : Brave the camel-crush.
+a3_ap2_t2 --> a3_ap2_t2_p1 : Take the seal-court.
+a3_ap2_t2 --> a3_ap2_t2_p2 : Chance the burning colonnade.
+a3_ap2_t2 --> a3_ap2_t2_c : Let the rival crew take the aisle.
+a3_ap2_t2 --> a3_ap2_exit : Take the clean route and secure what you...
+a3_ap2_exit --> a3_gate : Take what you secured and push to the la...
+a3_ap3_enter --> a3_ap3_corr : Step in and read the ground.
+a3_ap3_corr --> a3_ap3_t1 : Read the ground and commit to a move.
+a3_ap3_t1_p0 --> a3_ap3_t1_x0 : Meet the tent-mast.
+a3_ap3_t1_p1 --> a3_ap3_t1_x1 : Meet the block-guards.
+a3_ap3_t1_p2 --> a3_ap3_t1_x2 : Meet the slaver's cup.
+a3_ap3_t1_c --> a3_gate : You yield the ground and circle wide.
+a3_ap3_t1 --> a3_ap3_t1_p0 : Force the tent-mast.
+a3_ap3_t1 --> a3_ap3_t1_p1 : Cross the block-guards.
+a3_ap3_t1 --> a3_ap3_t1_p2 : Brave the slaver's cup.
+a3_ap3_t1 --> a3_ap3_t1_c : Let the rival crew take the aisle.
+a3_ap3_t1 --> a3_ap3_t2 : Pick the disciplined line and press on.
+a3_ap3_t2_p0 --> a3_ap3_t2_x0 : Meet the coffle-line.
+a3_ap3_t2_p1 --> a3_ap3_t2_x1 : Meet the fire-line.
+a3_ap3_t2_p2 --> a3_ap3_t2_x2 : Meet the auction-mob.
+a3_ap3_t2_c --> a3_gate : You keep clear of the mob and lose the l...
+a3_ap3_t2 --> a3_ap3_t2_p0 : Chance the coffle-line.
+a3_ap3_t2 --> a3_ap3_t2_p1 : Force the fire-line.
+a3_ap3_t2 --> a3_ap3_t2_p2 : Cross the auction-mob.
+a3_ap3_t2 --> a3_ap3_t2_c : Walk away from the bidding empty-handed.
+a3_ap3_t2 --> a3_ap3_exit : Take the clean route and secure what you...
+a3_ap3_exit --> a3_gate : Take what you secured and push to the la...
+a3_ap4_enter --> a3_ap4_corr : Step in and read the ground.
+a3_ap4_corr --> a3_ap4_t1 : Read the ground and commit to a move.
+a3_ap4_t1_p0 --> a3_ap4_t1_x0 : Meet the rival's steel.
+a3_ap4_t1_p1 --> a3_ap4_t1_x1 : Meet the silk-fire.
+a3_ap4_t1_p2 --> a3_ap4_t1_x2 : Meet the camel-crush.
+a3_ap4_t1_c --> a3_gate : You keep clear of the mob and lose the l...
+a3_ap4_t1 --> a3_ap4_t1_p0 : Brave the rival's steel.
+a3_ap4_t1 --> a3_ap4_t1_p1 : Take the silk-fire.
+a3_ap4_t1 --> a3_ap4_t1_p2 : Chance the camel-crush.
+a3_ap4_t1 --> a3_ap4_t1_c : Walk away from the bidding empty-handed.
+a3_ap4_t1 --> a3_ap4_t2 : Pick the disciplined line and press on.
+a3_ap4_t2_p0 --> a3_ap4_t2_x0 : Meet the seal-court.
+a3_ap4_t2_p1 --> a3_ap4_t2_x1 : Meet the burning colonnade.
+a3_ap4_t2_p2 --> a3_ap4_t2_x2 : Meet the tent-mast.
+a3_ap4_t2_c --> a3_gate : You yield the ground and circle wide.
+a3_ap4_t2 --> a3_ap4_t2_p0 : Force the seal-court.
+a3_ap4_t2 --> a3_ap4_t2_p1 : Cross the burning colonnade.
+a3_ap4_t2 --> a3_ap4_t2_p2 : Brave the tent-mast.
+a3_ap4_t2 --> a3_ap4_t2_c : Let the rival crew take the aisle.
+a3_ap4_t2 --> a3_ap4_exit : Take the clean route and secure what you...
+a3_ap4_exit --> a3_gate : Take what you secured and push to the la...
+a3_ap5_enter --> a3_ap5_corr : Step in and read the ground.
+a3_ap5_corr --> a3_ap5_t1 : Read the ground and commit to a move.
+a3_ap5_t1_p0 --> a3_ap5_t1_x0 : Meet the block-guards.
+a3_ap5_t1_p1 --> a3_ap5_t1_x1 : Meet the slaver's cup.
+a3_ap5_t1_p2 --> a3_ap5_t1_x2 : Meet the gallery-floor.
+a3_ap5_t1_c --> a3_gate : You yield the ground and circle wide.
+a3_ap5_t1 --> a3_ap5_t1_p0 : Take the block-guards.
+a3_ap5_t1 --> a3_ap5_t1_p1 : Chance the slaver's cup.
+a3_ap5_t1 --> a3_ap5_t1_p2 : Force the gallery-floor.
+a3_ap5_t1 --> a3_ap5_t1_c : Let the rival crew take the aisle.
+a3_ap5_t1 --> a3_ap5_t2 : Pick the disciplined line and press on.
+a3_ap5_t2_p0 --> a3_ap5_t2_x0 : Meet the coffle-line.
+a3_ap5_t2_p1 --> a3_ap5_t2_x1 : Meet the fire-line.
+a3_ap5_t2_p2 --> a3_ap5_t2_x2 : Meet the auction-mob.
+a3_ap5_t2_c --> a3_gate : You keep clear of the mob and lose the l...
+a3_ap5_t2 --> a3_ap5_t2_p0 : Cross the coffle-line.
+a3_ap5_t2 --> a3_ap5_t2_p1 : Brave the fire-line.
+a3_ap5_t2 --> a3_ap5_t2_p2 : Take the auction-mob.
+a3_ap5_t2 --> a3_ap5_t2_c : Walk away from the bidding empty-handed.
+a3_ap5_t2 --> a3_ap5_exit : Take the clean route and secure what you...
+a3_ap5_exit --> a3_gate : Take what you secured and push to the la...
+a3_survey --> a3_ap0_enter : Bid openly on the auction floor.
+a3_survey --> a3_ap1_enter : Deal quietly with the rival crew.
+a3_survey --> a3_ap2_enter : Work the seal-master's back office.
+a3_survey --> a3_ap3_enter : Cross to the writ-block through the colo...
+a3_survey --> a3_ap4_enter : Move with the caravan-masters' train.
+a3_survey --> a3_ap5_enter : Take the coffle-yard shortcut.
+a3_gate --> a3_full : You carry the full haul: enough for the ...
+a3_gate --> a3_two : You carry a fair haul: enough to bargain...
+a3_gate --> a3_one : You carry one thing of worth: a thin han...
+a3_gate --> a3_none : You carry nothing to trade: only nerve.
+a3_full --> f_enter : Come down to the writ-block and see it t...
+a3_two --> f_enter : Come down to the writ-block and see it t...
+a3_one --> f_enter : Come down to the writ-block and see it t...
+a3_none --> f_enter : Come down to the writ-block and see it t...
+f_enter --> f_road : Make for the Ember Road and the crew.
+f_road --> f_marked : Come to the last stretch and read where ...
+f_marked --> cg_goods : You run clean: the wardens do not have y...
+f_marked --> bg_goods : You run hunted: the wardens are on the r...
+cg_goods --> cg3_scene : Full haul: the writ, the prize, and weig...
+cg_goods --> cg2_scene : A fair haul: enough to get the crew out.
+cg_goods --> cg1_scene : One thread of worth and little else.
+cg_goods --> cg0_scene : Empty hands at the last.
+cg3_scene --> cg3_water : Face the last crossing.
+cg3_water --> cg3_run : You kept water back: make the crossing.
+cg3_water --> cg3_dry : You are bone-dry: the last crossing is a...
+cg3_dry --> e_dry_crossing : The heat closes over him.
+cg3_run --> cg3_crew : Face the crew and finish it.
+cg3_crew --> e_best : Free the crew with the writ and get ever...
+cg3_crew --> e_crew_only : Spend the prize to free the straggler cr...
+cg3_crew --> cg3_greed_p : Push for one more haul before the wall c...
+cg3_greed_p --> e_greed : The wall comes down.
+cg2_scene --> e_two_out : Buy the writ fast and run the crew out n...
+cg2_scene --> cg2_hold_p : Hold out for better terms as the wall cl...
+cg2_hold_p --> e_two_stay : The moment slips.
+cg1_scene --> e_one_thread : Buy out who you can and get them clear.
+cg1_scene --> cg1_all_p : Gamble the one thread on the whole crew'...
+cg1_all_p --> e_one_lost : The bluff falls flat.
+cg0_scene --> cg0_flee_p : Try to break the crew out by force and r...
+cg0_scene --> e_empty_wait : Fall back and wait for a chance that may...
+cg0_flee_p --> e_empty_flee : The pen-guards close.
+bg_goods --> bg_hi_scene : Hunted, but you carry weight to bargain ...
+bg_goods --> bg_mid_scene : Hunted, with one thread to spend.
+bg_goods --> bg_lo_scene : Hunted and empty-handed as the trap clos...
+bg_hi_scene --> bg_hi_final : Spend the haul against the closing trap.
+bg_hi_final --> e_bg_buy : Buy the crew free with the writ; let the...
+bg_hi_final --> bg_run_p : Throw it down and run; hope the crew sca...
+bg_hi_final --> bg_hold_p : Hold the haul and force a stand at the p...
+bg_run_p --> e_bg_run : The road ends short.
+bg_hold_p --> e_bg_hold : They close from both ends.
+bg_mid_scene --> bg_mid_final : Play the one thread against the trap.
+bg_mid_final --> bg_scatter_p : Bluff the thread; buy the crew a gap.
+bg_mid_final --> e_bg_caught : Break loud; draw them onto yourself.
+bg_scatter_p --> e_bg_scatter : They come for you.
+bg_lo_scene --> bg_lo_final : Meet the trap with nothing.
+bg_lo_final --> bg_trap_p : Walk out to the pens and meet it.
+bg_lo_final --> bg_warn_p : Warn the crew and run with them.
+bg_lo_final --> e_bg_surrender : Give yourself up first to buy them a bre...
+bg_trap_p --> e_bg_trap : The dark closes.
+bg_warn_p --> e_bg_warn : The pens close on all of them.
+e_turnback --> [*]
+a1_ap0_t1_x0 --> [*]
+a1_ap0_t1_x1 --> [*]
+a1_ap0_t1_x2 --> [*]
+a1_ap0_t2_x0 --> [*]
+a1_ap0_t2_x1 --> [*]
+a1_ap0_t2_x2 --> [*]
+a1_ap1_t1_x0 --> [*]
+a1_ap1_t1_x1 --> [*]
+a1_ap1_t1_x2 --> [*]
+a1_ap1_t2_x0 --> [*]
+a1_ap1_t2_x1 --> [*]
+a1_ap1_t2_x2 --> [*]
+a1_ap2_t1_x0 --> [*]
+a1_ap2_t1_x1 --> [*]
+a1_ap2_t1_x2 --> [*]
+a1_ap2_t2_x0 --> [*]
+a1_ap2_t2_x1 --> [*]
+a1_ap2_t2_x2 --> [*]
+a1_ap3_t1_x0 --> [*]
+a1_ap3_t1_x1 --> [*]
+a1_ap3_t1_x2 --> [*]
+a1_ap3_t2_x0 --> [*]
+a1_ap3_t2_x1 --> [*]
+a1_ap3_t2_x2 --> [*]
+a1_ap4_t1_x0 --> [*]
+a1_ap4_t1_x1 --> [*]
+a1_ap4_t1_x2 --> [*]
+a1_ap4_t2_x0 --> [*]
+a1_ap4_t2_x1 --> [*]
+a1_ap4_t2_x2 --> [*]
+a1_ap5_t1_x0 --> [*]
+a1_ap5_t1_x1 --> [*]
+a1_ap5_t1_x2 --> [*]
+a1_ap5_t2_x0 --> [*]
+a1_ap5_t2_x1 --> [*]
+a1_ap5_t2_x2 --> [*]
+a1_ap6_t1_x0 --> [*]
+a1_ap6_t1_x1 --> [*]
+a1_ap6_t1_x2 --> [*]
+a1_ap6_t2_x0 --> [*]
+a1_ap6_t2_x1 --> [*]
+a1_ap6_t2_x2 --> [*]
+e_gate_taken --> [*]
+a2_ap0_t1_x0 --> [*]
+a2_ap0_t1_x1 --> [*]
+a2_ap0_t1_x2 --> [*]
+a2_ap0_t2_x0 --> [*]
+a2_ap0_t2_x1 --> [*]
+a2_ap0_t2_x2 --> [*]
+a2_ap1_t1_x0 --> [*]
+a2_ap1_t1_x1 --> [*]
+a2_ap1_t1_x2 --> [*]
+a2_ap1_t2_x0 --> [*]
+a2_ap1_t2_x1 --> [*]
+a2_ap1_t2_x2 --> [*]
+a2_ap2_t1_x0 --> [*]
+a2_ap2_t1_x1 --> [*]
+a2_ap2_t1_x2 --> [*]
+a2_ap2_t2_x0 --> [*]
+a2_ap2_t2_x1 --> [*]
+a2_ap2_t2_x2 --> [*]
+a2_ap3_t1_x0 --> [*]
+a2_ap3_t1_x1 --> [*]
+a2_ap3_t1_x2 --> [*]
+a2_ap3_t2_x0 --> [*]
+a2_ap3_t2_x1 --> [*]
+a2_ap3_t2_x2 --> [*]
+a2_ap4_t1_x0 --> [*]
+a2_ap4_t1_x1 --> [*]
+a2_ap4_t1_x2 --> [*]
+a2_ap4_t2_x0 --> [*]
+a2_ap4_t2_x1 --> [*]
+a2_ap4_t2_x2 --> [*]
+a2_ap5_t1_x0 --> [*]
+a2_ap5_t1_x1 --> [*]
+a2_ap5_t1_x2 --> [*]
+a2_ap5_t2_x0 --> [*]
+a2_ap5_t2_x1 --> [*]
+a2_ap5_t2_x2 --> [*]
+a2_ap6_t1_x0 --> [*]
+a2_ap6_t1_x1 --> [*]
+a2_ap6_t1_x2 --> [*]
+a2_ap6_t2_x0 --> [*]
+a2_ap6_t2_x1 --> [*]
+a2_ap6_t2_x2 --> [*]
+e_dry_tunnel --> [*]
+a3_ap0_t1_x0 --> [*]
+a3_ap0_t1_x1 --> [*]
+a3_ap0_t1_x2 --> [*]
+a3_ap0_t2_x0 --> [*]
+a3_ap0_t2_x1 --> [*]
+a3_ap0_t2_x2 --> [*]
+a3_ap1_t1_x0 --> [*]
+a3_ap1_t1_x1 --> [*]
+a3_ap1_t1_x2 --> [*]
+a3_ap1_t2_x0 --> [*]
+a3_ap1_t2_x1 --> [*]
+a3_ap1_t2_x2 --> [*]
+a3_ap2_t1_x0 --> [*]
+a3_ap2_t1_x1 --> [*]
+a3_ap2_t1_x2 --> [*]
+a3_ap2_t2_x0 --> [*]
+a3_ap2_t2_x1 --> [*]
+a3_ap2_t2_x2 --> [*]
+a3_ap3_t1_x0 --> [*]
+a3_ap3_t1_x1 --> [*]
+a3_ap3_t1_x2 --> [*]
+a3_ap3_t2_x0 --> [*]
+a3_ap3_t2_x1 --> [*]
+a3_ap3_t2_x2 --> [*]
+a3_ap4_t1_x0 --> [*]
+a3_ap4_t1_x1 --> [*]
+a3_ap4_t1_x2 --> [*]
+a3_ap4_t2_x0 --> [*]
+a3_ap4_t2_x1 --> [*]
+a3_ap4_t2_x2 --> [*]
+a3_ap5_t1_x0 --> [*]
+a3_ap5_t1_x1 --> [*]
+a3_ap5_t1_x2 --> [*]
+a3_ap5_t2_x0 --> [*]
+a3_ap5_t2_x1 --> [*]
+a3_ap5_t2_x2 --> [*]
+e_dry_crossing --> [*]
+e_best --> [*]
+e_crew_only --> [*]
+e_greed --> [*]
+e_two_out --> [*]
+e_two_stay --> [*]
+e_one_thread --> [*]
+e_one_lost --> [*]
+e_empty_flee --> [*]
+e_empty_wait --> [*]
+e_bg_buy --> [*]
+e_bg_run --> [*]
+e_bg_hold --> [*]
+e_bg_scatter --> [*]
+e_bg_caught --> [*]
+e_bg_trap --> [*]
+e_bg_warn --> [*]
+e_bg_surrender --> [*]
+
+legend right
+  The Cinder Bazaar
+  Band 16+ · Tier 2 · ~40 min
+  Topology: branch_and_bottleneck
+  453 nodes · 141 endings (3+ / 18n / 120-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml

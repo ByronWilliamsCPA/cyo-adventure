@@ -1,0 +1,1024 @@
+@startuml the-smugglers-cut
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 86w
+state n_quay #BBDEFB
+n_quay : setup · 88w
+state n_drop #BBDEFB
+n_drop : setup · 82w
+state n_approach #ECEFF1
+n_approach : hub · 82w
+state ap_cut1 #D1C4E9
+ap_cut1 : rising · 58w
+state ap_cut2 #FFF9C4
+ap_cut2 : choice · 66w
+state ap_cut_caught #FFCDD2
+ap_cut_caught : capture (negative)
+ap_cut_caught : "Taken on the Quay"
+state ap_loft1 #D1C4E9
+ap_loft1 : rising · 60w
+state ap_loft2 #FFF9C4
+ap_loft2 : choice · 72w
+state ap_loft_drown #FFCDD2
+ap_loft_drown : death (negative)
+ap_loft_drown : "The Turning Tide"
+state ap_bridge #FFCDD2
+ap_bridge : capture (negative)
+ap_bridge : "The Watched Bridge"
+state wg_gate #ECEFF1
+wg_gate : bottleneck · 80w
+state wg_under1 #D1C4E9
+wg_under1 : rising · 56w
+state wg_under2 #FFF9C4
+wg_under2 : choice · 66w
+state wg_under_drown #FFCDD2
+wg_under_drown : death (negative)
+wg_under_drown : "Held Under the Bars"
+state wg_wicket1 #D1C4E9
+wg_wicket1 : rising · 58w
+state wg_chain1 #FFF9C4
+wg_chain1 : choice · 66w
+state wg_alarm #D1C4E9
+wg_alarm : rising · 60w
+state yard #ECEFF1
+yard : bottleneck · 82w
+state yd_coal1 #D1C4E9
+yd_coal1 : rising · 56w
+state yd_coal2 #FFF9C4
+yd_coal2 : choice · 68w
+state yd_coal_trap #FFCDD2
+yd_coal_trap : setback (negative)
+yd_coal_trap : "The Blind Chute"
+state yd_stair1 #D1C4E9
+yd_stair1 : rising · 56w
+state yd_stair2 #FFF9C4
+yd_stair2 : choice · 68w
+state yd_stair_caught #FFCDD2
+yd_stair_caught : capture (negative)
+yd_stair_caught : "Behind the Clerk"
+state yd_dog1 #D1C4E9
+yd_dog1 : rising · 54w
+state yd_dog2 #FFF9C4
+yd_dog2 : choice · 70w
+state yd_dog_bite #FFCDD2
+yd_dog_bite : death (negative)
+yd_dog_bite : "The Dog That Does Not Bark"
+state hall #ECEFF1
+hall : bottleneck · 84w
+state hl_floor #FFF9C4
+hl_floor : choice · 72w
+state hl_floor_caught #FFCDD2
+hl_floor_caught : capture (negative)
+hl_floor_caught : "Caught in the Lantern"
+state hl_stack1 #D1C4E9
+hl_stack1 : rising · 56w
+state hl_stack2 #FFF9C4
+hl_stack2 : choice · 66w
+state hl_stack_fall #FFCDD2
+hl_stack_fall : setback (negative)
+hl_stack_fall : "Buried in Ledgers"
+state hl_mezz1 #D1C4E9
+hl_mezz1 : rising · 58w
+state hl_mezz2 #D1C4E9
+hl_mezz2 : rising · 60w
+state vlanding #ECEFF1
+vlanding : bottleneck · 74w
+state land_counter #FFF9C4
+land_counter : choice · 66w
+state land_greed #FFCDD2
+land_greed : capture (negative)
+land_greed : "The Price of the Coin Tray"
+state land_cross #D1C4E9
+land_cross : rising · 56w
+state g_vault #ECEFF1
+g_vault : bottleneck · 84w
+state vk_work1 #D1C4E9
+vk_work1 : rising · 58w
+state vk_work2 #FFF9C4
+vk_work2 : choice · 70w
+state vk_snap #FFCDD2
+vk_snap : setback (negative)
+vk_snap : "The Snapped Ward"
+state vk_force #FFF9C4
+vk_force : choice · 70w
+state vk_force_bell #FFCDD2
+vk_force_bell : capture (negative)
+vk_force_bell : "The Inner Bell"
+state vk_ledger #FFF9C4
+vk_ledger : choice · 68w
+state vk_ledger_lock #FFCDD2
+vk_ledger_lock : setback (negative)
+vk_ledger_lock : "What the Ledger Did Not Say"
+state vk_open #D1C4E9
+vk_open : rising · 78w
+state vk_secure1 #D1C4E9
+vk_secure1 : rising · 58w
+state vk_secure2 #D1C4E9
+vk_secure2 : rising · 58w
+state h_escape #ECEFF1
+h_escape : hub · 82w
+state es_gate1 #D1C4E9
+es_gate1 : rising · 56w
+state es_gate2 #FFF9C4
+es_gate2 : choice · 66w
+state es_gate_drown #FFCDD2
+es_gate_drown : death (negative)
+es_gate_drown : "No Air Beneath the Bars"
+state es_side1 #D1C4E9
+es_side1 : rising · 56w
+state es_side2 #FFF9C4
+es_side2 : choice · 66w
+state es_side_drown #FFCDD2
+es_side_drown : death (negative)
+es_side_drown : "The Sluice-Race"
+state es_roof1 #D1C4E9
+es_roof1 : rising · 56w
+state es_roof2 #FFF9C4
+es_roof2 : choice · 66w
+state es_roof_fall #FFCDD2
+es_roof_fall : death (negative)
+es_roof_fall : "Four Floors of Air"
+state junction #ECEFF1
+junction : bottleneck · 80w
+state jn_reed #D1C4E9
+jn_reed : rising · 56w
+state jn_reed2 #D1C4E9
+jn_reed2 : rising · 54w
+state jn_basin #FFF9C4
+jn_basin : choice · 66w
+state jn_basin_caught #FFCDD2
+jn_basin_caught : capture (negative)
+jn_basin_caught : "Under the Watch-Post"
+state jn_cut #FFF9C4
+jn_cut : choice · 70w
+state jn_cut_drown #FFCDD2
+jn_cut_drown : death (negative)
+jn_cut_drown : "The Cut Fills"
+state boat #ECEFF1
+boat : bottleneck · 82w
+state e_clean #C8E6C9
+e_clean : success (positive)
+e_clean : "A Clean Cut"
+state e_cost #C8E6C9
+e_cost : completion (positive)
+e_cost : "The Cut That Counts"
+state e_walkaway #E0E0E0
+e_walkaway : completion (neutral)
+e_walkaway : "Clean Hands, Empty Hands"
+state m1_p0a #D1C4E9
+m1_p0a : rising · 52w
+state m1_p0b #D1C4E9
+m1_p0b : rising · 52w
+state m1_p0e #FFCDD2
+m1_p0e : setback (negative)
+m1_p0e : "The Saltpetre Vault"
+state m1_p1a #D1C4E9
+m1_p1a : rising · 52w
+state m1_p1b #D1C4E9
+m1_p1b : rising · 52w
+state m1_p1e #FFCDD2
+m1_p1e : setback (negative)
+m1_p1e : "Among the Rotted Rope"
+state m1_h1 #ECEFF1
+m1_h1 : hub · 66w
+state m1_p2a #D1C4E9
+m1_p2a : rising · 52w
+state m1_p2b #D1C4E9
+m1_p2b : rising · 52w
+state m1_p2e #FFCDD2
+m1_p2e : setback (negative)
+m1_p2e : "The Sunken Laundry"
+state m1_p3a #D1C4E9
+m1_p3a : rising · 52w
+state m1_p3b #D1C4E9
+m1_p3b : rising · 52w
+state m1_p3e #FFCDD2
+m1_p3e : setback (negative)
+m1_p3e : "Lost in the Black"
+state m1_h2 #ECEFF1
+m1_h2 : hub · 66w
+state m1_p4a #D1C4E9
+m1_p4a : rising · 52w
+state m1_p4b #D1C4E9
+m1_p4b : rising · 52w
+state m1_p4e #FFCDD2
+m1_p4e : setback (negative)
+m1_p4e : "The Echoing Cistern"
+state m1_p5a #D1C4E9
+m1_p5a : rising · 52w
+state m1_p5b #D1C4E9
+m1_p5b : rising · 52w
+state m1_p5e #FFCDD2
+m1_p5e : setback (negative)
+m1_p5e : "The Emptied Pantries"
+state m1_h3 #ECEFF1
+m1_h3 : hub · 66w
+state m1_p6a #D1C4E9
+m1_p6a : rising · 52w
+state m1_p6b #D1C4E9
+m1_p6b : rising · 52w
+state m1_p6e #FFCDD2
+m1_p6e : setback (negative)
+m1_p6e : "Three Steps to Nothing"
+state m1_p7a #D1C4E9
+m1_p7a : rising · 52w
+state m1_p7b #D1C4E9
+m1_p7b : rising · 52w
+state m1_p7e #FFCDD2
+m1_p7e : setback (negative)
+m1_p7e : "The Drain Gallery"
+state m1_h4 #ECEFF1
+m1_h4 : hub · 66w
+state m1_p8a #D1C4E9
+m1_p8a : rising · 52w
+state m1_p8b #D1C4E9
+m1_p8b : rising · 52w
+state m1_p8e #FFCDD2
+m1_p8e : setback (negative)
+m1_p8e : "The Cold Boiler"
+state m1_p9a #D1C4E9
+m1_p9a : rising · 52w
+state m1_p9b #D1C4E9
+m1_p9b : rising · 52w
+state m1_p9e #FFCDD2
+m1_p9e : setback (negative)
+m1_p9e : "Among the Bunkers"
+state m1_h5 #ECEFF1
+m1_h5 : hub · 66w
+state m1_p10a #D1C4E9
+m1_p10a : rising · 52w
+state m1_p10b #D1C4E9
+m1_p10b : rising · 52w
+state m1_p10e #FFCDD2
+m1_p10e : setback (negative)
+m1_p10e : "The Weeping Wall"
+state m1_p11a #D1C4E9
+m1_p11a : rising · 52w
+state m1_p11b #D1C4E9
+m1_p11b : rising · 52w
+state m1_p11e #FFCDD2
+m1_p11e : setback (negative)
+m1_p11e : "The Stooping Arch"
+state m1_h6 #ECEFF1
+m1_h6 : hub · 66w
+state m1_p12a #D1C4E9
+m1_p12a : rising · 52w
+state m1_p12b #D1C4E9
+m1_p12b : rising · 52w
+state m1_p12e #FFCDD2
+m1_p12e : setback (negative)
+m1_p12e : "The Flooded Well"
+state m1_p13a #D1C4E9
+m1_p13a : rising · 52w
+state m1_p13b #D1C4E9
+m1_p13b : rising · 52w
+state m1_p13e #FFCDD2
+m1_p13e : setback (negative)
+m1_p13e : "The Broken Tide-Gear"
+state m1_h7 #ECEFF1
+m1_h7 : hub · 66w
+state m1_p14a #D1C4E9
+m1_p14a : rising · 52w
+state m1_p14b #D1C4E9
+m1_p14b : rising · 52w
+state m1_p14e #FFCDD2
+m1_p14e : setback (negative)
+m1_p14e : "The Ash Pit"
+state m1_p15a #D1C4E9
+m1_p15a : rising · 52w
+state m1_p15b #D1C4E9
+m1_p15b : rising · 52w
+state m1_p15e #FFCDD2
+m1_p15e : setback (negative)
+m1_p15e : "The Sunken Pantry"
+state m1_h8 #ECEFF1
+m1_h8 : hub · 66w
+state m1_p16a #D1C4E9
+m1_p16a : rising · 52w
+state m1_p16b #D1C4E9
+m1_p16b : rising · 52w
+state m1_p16e #FFCDD2
+m1_p16e : setback (negative)
+m1_p16e : "The Servant's Crawl"
+state m1_p17a #D1C4E9
+m1_p17a : rising · 52w
+state m1_p17b #D1C4E9
+m1_p17b : rising · 52w
+state m1_p17e #FFCDD2
+m1_p17e : setback (negative)
+m1_p17e : "Chasing the Drip"
+state m1_h9 #ECEFF1
+m1_h9 : hub · 66w
+state m1_p18a #D1C4E9
+m1_p18a : rising · 52w
+state m1_p18b #D1C4E9
+m1_p18b : rising · 52w
+state m1_p18e #FFCDD2
+m1_p18e : setback (negative)
+m1_p18e : "The Bricked Door"
+state m1_p19a #D1C4E9
+m1_p19a : rising · 52w
+state m1_p19b #D1C4E9
+m1_p19b : rising · 52w
+state m1_p19e #FFCDD2
+m1_p19e : setback (negative)
+m1_p19e : "The Second Chute"
+state m1_pfin_a #D1C4E9
+m1_pfin_a : rising · 52w
+state m1_pfin_b #D1C4E9
+m1_pfin_b : rising · 52w
+state m1_pfin_e #FFCDD2
+m1_pfin_e : setback (negative)
+m1_pfin_e : "The Cellars Keep You"
+state m1_h10 #ECEFF1
+m1_h10 : hub · 66w
+state m2_p0a #D1C4E9
+m2_p0a : rising · 52w
+state m2_p0b #D1C4E9
+m2_p0b : rising · 52w
+state m2_p0e #FFCDD2
+m2_p0e : setback (negative)
+m2_p0e : "The Corridor of Doors"
+state m2_p1a #D1C4E9
+m2_p1a : rising · 52w
+state m2_p1b #D1C4E9
+m2_p1b : rising · 52w
+state m2_p1e #FFCDD2
+m2_p1e : setback (negative)
+m2_p1e : "A Strongroom of Paper"
+state m2_h1 #ECEFF1
+m2_h1 : hub · 66w
+state m2_p2a #D1C4E9
+m2_p2a : rising · 52w
+state m2_p2b #D1C4E9
+m2_p2b : rising · 52w
+state m2_p2e #FFCDD2
+m2_p2e : setback (negative)
+m2_p2e : "The Wet Pens"
+state m2_p3a #D1C4E9
+m2_p3a : rising · 52w
+state m2_p3b #D1C4E9
+m2_p3b : rising · 52w
+state m2_p3e #FFCDD2
+m2_p3e : setback (negative)
+m2_p3e : "The Stair That Loops"
+state m2_h2 #ECEFF1
+m2_h2 : hub · 66w
+state m2_p4a #D1C4E9
+m2_p4a : rising · 52w
+state m2_p4b #D1C4E9
+m2_p4b : rising · 52w
+state m2_p4e #FFCDD2
+m2_p4e : setback (negative)
+m2_p4e : "Lost in the Archive"
+state m2_p5a #D1C4E9
+m2_p5a : rising · 52w
+state m2_p5b #D1C4E9
+m2_p5b : rising · 52w
+state m2_p5e #FFCDD2
+m2_p5e : setback (negative)
+m2_p5e : "The Bricked Window"
+state m2_h3 #ECEFF1
+m2_h3 : hub · 66w
+state m2_p6a #D1C4E9
+m2_p6a : rising · 52w
+state m2_p6b #D1C4E9
+m2_p6b : rising · 52w
+state m2_p6e #FFCDD2
+m2_p6e : setback (negative)
+m2_p6e : "The Muniment Room"
+state m2_p7a #D1C4E9
+m2_p7a : rising · 52w
+state m2_p7b #D1C4E9
+m2_p7b : rising · 52w
+state m2_p7e #FFCDD2
+m2_p7e : setback (negative)
+m2_p7e : "Two Hundred Years of Ledgers"
+state m2_h4 #ECEFF1
+m2_h4 : hub · 66w
+state m2_p8a #D1C4E9
+m2_p8a : rising · 52w
+state m2_p8b #D1C4E9
+m2_p8b : rising · 52w
+state m2_p8e #FFCDD2
+m2_p8e : setback (negative)
+m2_p8e : "Under the Dust Sheets"
+state m2_p9a #D1C4E9
+m2_p9a : rising · 52w
+state m2_p9b #D1C4E9
+m2_p9b : rising · 52w
+state m2_p9e #FFCDD2
+m2_p9e : setback (negative)
+m2_p9e : "The Clerks' Passage"
+state m2_h5 #ECEFF1
+m2_h5 : hub · 66w
+state m2_p10a #D1C4E9
+m2_p10a : rising · 52w
+state m2_p10b #D1C4E9
+m2_p10b : rising · 52w
+state m2_p10e #FFCDD2
+m2_p10e : setback (negative)
+m2_p10e : "The Sorting Room"
+state m2_p11a #D1C4E9
+m2_p11a : rising · 52w
+state m2_p11b #D1C4E9
+m2_p11b : rising · 52w
+state m2_p11e #FFCDD2
+m2_p11e : setback (negative)
+m2_p11e : "The Cold Flue"
+state m2_h6 #ECEFF1
+m2_h6 : hub · 66w
+state m2_p12a #D1C4E9
+m2_p12a : rising · 52w
+state m2_p12b #D1C4E9
+m2_p12b : rising · 52w
+state m2_p12e #FFCDD2
+m2_p12e : setback (negative)
+m2_p12e : "The Strong Cupboard"
+state m2_p13a #D1C4E9
+m2_p13a : rising · 52w
+state m2_p13b #D1C4E9
+m2_p13b : rising · 52w
+state m2_p13e #FFCDD2
+m2_p13e : setback (negative)
+m2_p13e : "The Auditors' Room"
+state m2_h7 #ECEFF1
+m2_h7 : hub · 66w
+state m2_p14a #D1C4E9
+m2_p14a : rising · 52w
+state m2_p14b #D1C4E9
+m2_p14b : rising · 52w
+state m2_p14e #FFCDD2
+m2_p14e : setback (negative)
+m2_p14e : "The Back Stair"
+state m2_p15a #D1C4E9
+m2_p15a : rising · 52w
+state m2_p15b #D1C4E9
+m2_p15b : rising · 52w
+state m2_p15e #FFCDD2
+m2_p15e : setback (negative)
+m2_p15e : "The False Panelling"
+state m2_h8 #ECEFF1
+m2_h8 : hub · 66w
+state m2_p16a #D1C4E9
+m2_p16a : rising · 52w
+state m2_p16b #D1C4E9
+m2_p16b : rising · 52w
+state m2_p16e #FFCDD2
+m2_p16e : setback (negative)
+m2_p16e : "The Wax Room"
+state m2_p17a #D1C4E9
+m2_p17a : rising · 52w
+state m2_p17b #D1C4E9
+m2_p17b : rising · 52w
+state m2_p17e #FFCDD2
+m2_p17e : setback (negative)
+m2_p17e : "The Record Loft"
+state m2_pfin_a #D1C4E9
+m2_pfin_a : rising · 52w
+state m2_pfin_b #D1C4E9
+m2_pfin_b : rising · 52w
+state m2_pfin_e #FFCDD2
+m2_pfin_e : setback (negative)
+m2_pfin_e : "The Offices Swallow the Hour"
+state m2_h9 #ECEFF1
+m2_h9 : hub · 66w
+state m3_p0a #D1C4E9
+m3_p0a : rising · 52w
+state m3_p0b #D1C4E9
+m3_p0b : rising · 52w
+state m3_p0e #FFCDD2
+m3_p0e : setback (negative)
+m3_p0e : "The Choked Backwater"
+state m3_p1a #D1C4E9
+m3_p1a : rising · 52w
+state m3_p1b #D1C4E9
+m3_p1b : rising · 52w
+state m3_p1e #FFCDD2
+m3_p1e : setback (negative)
+m3_p1e : "The Walled Cut"
+state m3_h1 #ECEFF1
+m3_h1 : hub · 66w
+state m3_p2a #D1C4E9
+m3_p2a : rising · 52w
+state m3_p2b #D1C4E9
+m3_p2b : rising · 52w
+state m3_p2e #FFCDD2
+m3_p2e : setback (negative)
+m3_p2e : "Under the Same Bridge Twice"
+state m3_p3a #D1C4E9
+m3_p3a : rising · 52w
+state m3_p3b #D1C4E9
+m3_p3b : rising · 52w
+state m3_p3e #FFCDD2
+m3_p3e : setback (negative)
+m3_p3e : "The Wall of Reed"
+state m3_h2 #ECEFF1
+m3_h2 : hub · 66w
+state m3_p4a #D1C4E9
+m3_p4a : rising · 52w
+state m3_p4b #D1C4E9
+m3_p4b : rising · 52w
+state m3_p4e #FFCDD2
+m3_p4e : setback (negative)
+m3_p4e : "The Drowned Yard"
+state m3_p5a #D1C4E9
+m3_p5a : rising · 52w
+state m3_p5b #D1C4E9
+m3_p5b : rising · 52w
+state m3_p5e #FFCDD2
+m3_p5e : setback (negative)
+m3_p5e : "The Tangle of Rios"
+state m3_h3 #ECEFF1
+m3_h3 : hub · 66w
+state m3_p6a #D1C4E9
+m3_p6a : rising · 52w
+state m3_p6b #D1C4E9
+m3_p6b : rising · 52w
+state m3_p6e #FFCDD2
+m3_p6e : setback (negative)
+m3_p6e : "The Wrong Water"
+state m3_p7a #D1C4E9
+m3_p7a : rising · 52w
+state m3_p7b #D1C4E9
+m3_p7b : rising · 52w
+state m3_p7e #FFCDD2
+m3_p7e : setback (negative)
+m3_p7e : "The Shuttered Boathouses"
+state m3_h4 #ECEFF1
+m3_h4 : hub · 66w
+state m3_p8a #D1C4E9
+m3_p8a : rising · 52w
+state m3_p8b #D1C4E9
+m3_p8b : rising · 52w
+state m3_p8e #FFCDD2
+m3_p8e : setback (negative)
+m3_p8e : "The Emptying Flat"
+state m3_p9a #D1C4E9
+m3_p9a : rising · 52w
+state m3_p9b #D1C4E9
+m3_p9b : rising · 52w
+state m3_p9e #FFCDD2
+m3_p9e : setback (negative)
+m3_p9e : "The Blind Culvert"
+state m3_h5 #ECEFF1
+m3_h5 : hub · 66w
+state m3_p10a #D1C4E9
+m3_p10a : rising · 52w
+state m3_p10b #D1C4E9
+m3_p10b : rising · 52w
+state m3_p10e #FFCDD2
+m3_p10e : setback (negative)
+m3_p10e : "The Silent Mill-Race"
+state m3_p11a #D1C4E9
+m3_p11a : rising · 52w
+state m3_p11b #D1C4E9
+m3_p11b : rising · 52w
+state m3_p11e #FFCDD2
+m3_p11e : setback (negative)
+m3_p11e : "The Fishermen's Slip"
+state m3_h6 #ECEFF1
+m3_h6 : hub · 66w
+state m3_p12a #D1C4E9
+m3_p12a : rising · 52w
+state m3_p12b #D1C4E9
+m3_p12b : rising · 52w
+state m3_p12e #FFCDD2
+m3_p12e : setback (negative)
+m3_p12e : "Beneath the Wharf"
+state m3_p13a #D1C4E9
+m3_p13a : rising · 52w
+state m3_p13b #D1C4E9
+m3_p13b : rising · 52w
+state m3_p13e #FFCDD2
+m3_p13e : setback (negative)
+m3_p13e : "The Nameless Eyot"
+state m3_h7 #ECEFF1
+m3_h7 : hub · 66w
+state m3_p14a #D1C4E9
+m3_p14a : rising · 52w
+state m3_p14b #D1C4E9
+m3_p14b : rising · 52w
+state m3_p14e #FFCDD2
+m3_p14e : setback (negative)
+m3_p14e : "The Drainage Cut"
+state m3_p15a #D1C4E9
+m3_p15a : rising · 52w
+state m3_p15b #D1C4E9
+m3_p15b : rising · 52w
+state m3_p15e #FFCDD2
+m3_p15e : setback (negative)
+m3_p15e : "The Empty Moorings"
+state m3_h8 #ECEFF1
+m3_h8 : hub · 66w
+state m3_p16a #D1C4E9
+m3_p16a : rising · 52w
+state m3_p16b #D1C4E9
+m3_p16b : rising · 52w
+state m3_p16e #FFCDD2
+m3_p16e : setback (negative)
+m3_p16e : "The Timber Pond"
+state m3_p17a #D1C4E9
+m3_p17a : rising · 52w
+state m3_p17b #D1C4E9
+m3_p17b : rising · 52w
+state m3_p17e #FFCDD2
+m3_p17e : setback (negative)
+m3_p17e : "The Shut Sea-Gate"
+state m3_pfin_a #D1C4E9
+m3_pfin_a : rising · 52w
+state m3_pfin_b #D1C4E9
+m3_pfin_b : rising · 52w
+state m3_pfin_e #FFCDD2
+m3_pfin_e : setback (negative)
+m3_pfin_e : "The Warren and the Bell"
+state m3_h9 #ECEFF1
+m3_h9 : hub · 66w
+n_start --> n_quay : Climb down to Coll and the skiff.
+n_quay --> n_drop : Slip into the water at the drop.
+n_drop --> n_approach : Start toward the counting-house.
+n_approach --> ap_cut1 : Run the open main cut, low and fast.
+n_approach --> ap_loft1 : Wade through the flooded sail-loft.
+n_approach --> ap_bridge : Cross over the watched third bridge.
+ap_cut1 --> ap_cut2 : Reach the moored lighter.
+ap_cut2 --> wg_gate : Duck under the lighter's hull.
+ap_cut2 --> ap_cut_caught : Go around it into the open lane.
+ap_loft1 --> ap_loft2 : Look for the way across.
+ap_loft2 --> wg_gate : Take the high beam walk.
+ap_loft2 --> ap_loft_drown : Chance the low sluice as the bell tolls.
+wg_gate --> wg_under1 : Slip under the drowned bars.
+wg_gate --> wg_wicket1 : Work the wicket's crooked latch.
+wg_gate --> wg_chain1 : Force the rusted winch chain.
+wg_under1 --> wg_under2 : Deal with the snagged net.
+wg_under2 --> yard : Cut yourself free and glide up calm.
+wg_under2 --> wg_under_drown : Thrash hard for the surface.
+wg_wicket1 --> yard : Ease into the yard.
+wg_chain1 --> yard : Ease the chain link by link.
+wg_chain1 --> wg_alarm : Haul the chain fast and hard.
+wg_alarm --> yard : Press into the yard, wary.
+yard --> yd_coal1 : Go down the coal hatch.
+yard --> yd_stair1 : Climb the clerks' stair.
+yard --> yd_dog1 : Cross past the silent hound to the main ...
+yard --> m1_h1 : Search the outbuildings for another way.
+yd_coal1 --> yd_coal2 : Choose your way up.
+yd_coal2 --> hall : Pick the old iron grate.
+yd_coal2 --> yd_coal_trap : Ride the blind coal-chute down.
+yd_stair1 --> yd_stair2 : Study the lit landing.
+yd_stair2 --> hall : Wait for the clerk to move off.
+yd_stair2 --> yd_stair_caught : Slip past behind the writing clerk.
+yd_dog1 --> yd_dog2 : Judge the hound's chain.
+yd_dog2 --> hall : Hug the wall past the hound's chain.
+yd_dog2 --> yd_dog_bite : Cross straight for the door.
+hall --> hl_floor : Cross the open counting-floor.
+hall --> hl_stack1 : Work along the ledger-stacks.
+hall --> hl_mezz1 : Climb to the mezzanine hatch.
+hall --> m2_h1 : Lose yourself among the record offices.
+hl_floor --> vlanding : Time the dark and cross on his turn.
+hl_floor --> hl_floor_caught : Hurry across now, in his light.
+hl_stack1 --> hl_stack2 : Get past the leaning stack.
+hl_stack2 --> vlanding : Squeeze low under the stack.
+hl_stack2 --> hl_stack_fall : Climb over the top of the stack.
+hl_mezz1 --> hl_mezz2 : Cross toward the upper hatch.
+hl_mezz2 --> g_vault : Drop to the vault door.
+vlanding --> land_cross : Pick the cage gate's chain.
+vlanding --> land_counter : Go around by the counter.
+land_counter --> land_cross : Leave the coin and move on.
+land_counter --> land_greed : Sweep the counted coin tray.
+land_cross --> g_vault : Face the vault door.
+g_vault --> vk_work1 : Read the tide-lock and work the wards in...
+g_vault --> vk_force : Force the door with your pry-bar.
+g_vault --> vk_ledger : Try the counting-ledger for the door's c...
+vk_work1 --> vk_work2 : Set the second ward.
+vk_work2 --> vk_open : Set the false gate gently.
+vk_work2 --> vk_snap : Turn the ward hard.
+vk_force --> vk_work2 : Ease off and pick the wards instead.
+vk_force --> vk_force_bell : Throw your weight on the bar.
+vk_ledger --> vk_open : Trust the lock's true turn.
+vk_ledger --> vk_ledger_lock : Turn it the plain way the ledger reads.
+vk_open --> vk_secure1 : Turn for the water with the cut.
+vk_secure1 --> vk_secure2 : Move for the way out.
+vk_secure2 --> h_escape : Choose the way back to the water.
+h_escape --> es_gate1 : Retrace to the water-gate.
+h_escape --> es_side1 : Out the coal hatch to the side canal.
+h_escape --> es_roof1 : Over the roof leads.
+h_escape --> m3_h1 : Cut through the canal warren below.
+es_gate1 --> es_gate2 : Judge the flooded gate.
+es_gate2 --> junction : Take the high wicket out.
+es_gate2 --> es_gate_drown : Duck the drowned bars as before.
+es_side1 --> es_side2 : Look for the crossing.
+es_side2 --> junction : Cross by the footbridge.
+es_side2 --> es_side_drown : Ride the sluice-race down.
+es_roof1 --> es_roof2 : Reach the roof's edge.
+es_roof2 --> junction : Climb down the drainpipe.
+es_roof2 --> es_roof_fall : Jump the gap to the next roof.
+junction --> jn_reed : Slip along the reed channel.
+junction --> jn_basin : Sprint the open basin.
+junction --> jn_cut : Take the smuggler's cut under the road.
+jn_reed --> jn_reed2 : Follow the reeds around.
+jn_reed2 --> boat : Come out by the Drowned Oak.
+jn_basin --> boat : Keep to the basin's shadowed rim.
+jn_basin --> jn_basin_caught : Cut straight across the open basin.
+jn_cut --> boat : Run the pipe now, ahead of the tide.
+jn_cut --> jn_cut_drown : Wait for the patrol, then run it.
+boat --> e_clean : Board and push off with the whole cut.
+boat --> e_cost : Ditch the heavy strongbox, keep the ledg...
+boat --> e_walkaway : Sink the whole take and go clean before ...
+m1_p0a --> m1_p0b : Follow it further.
+m1_p0b --> m1_p0e : Press to the end of it.
+m1_p1a --> m1_p1b : Follow it further.
+m1_p1b --> m1_p1e : Press to the end of it.
+m1_h1 --> m1_p0a : Try the saltpetre vault.
+m1_h1 --> m1_p1a : Search the rope store.
+m1_h1 --> m1_h2 : Push on deeper.
+m1_p2a --> m1_p2b : Follow it further.
+m1_p2b --> m1_p2e : Press to the end of it.
+m1_p3a --> m1_p3b : Follow it further.
+m1_p3b --> m1_p3e : Press to the end of it.
+m1_h2 --> m1_p2a : Wade the sunken laundry.
+m1_h2 --> m1_p3a : Feel down the black passage.
+m1_h2 --> m1_h3 : Push on deeper.
+m1_p4a --> m1_p4b : Follow it further.
+m1_p4b --> m1_p4e : Press to the end of it.
+m1_p5a --> m1_p5b : Follow it further.
+m1_p5b --> m1_p5e : Press to the end of it.
+m1_h3 --> m1_p4a : Enter the cistern room.
+m1_h3 --> m1_p5a : Move through the pantries.
+m1_h3 --> m1_h4 : Push on deeper.
+m1_p6a --> m1_p6b : Follow it further.
+m1_p6b --> m1_p6e : Press to the end of it.
+m1_p7a --> m1_p7b : Follow it further.
+m1_p7b --> m1_p7e : Press to the end of it.
+m1_h4 --> m1_p6a : Climb the short stair.
+m1_h4 --> m1_p7a : Follow the drain gallery.
+m1_h4 --> m1_h5 : Push on deeper.
+m1_p8a --> m1_p8b : Follow it further.
+m1_p8b --> m1_p8e : Press to the end of it.
+m1_p9a --> m1_p9b : Follow it further.
+m1_p9b --> m1_p9e : Press to the end of it.
+m1_h5 --> m1_p8a : Search the cold boiler cellar.
+m1_h5 --> m1_p9a : Try the coal bunkers.
+m1_h5 --> m1_h6 : Push on deeper.
+m1_p10a --> m1_p10b : Follow it further.
+m1_p10b --> m1_p10e : Press to the end of it.
+m1_p11a --> m1_p11b : Follow it further.
+m1_p11b --> m1_p11e : Press to the end of it.
+m1_h6 --> m1_p10a : Feel along the weeping wall.
+m1_h6 --> m1_p11a : Push through the low arch.
+m1_h6 --> m1_h7 : Push on deeper.
+m1_p12a --> m1_p12b : Follow it further.
+m1_p12b --> m1_p12e : Press to the end of it.
+m1_p13a --> m1_p13b : Follow it further.
+m1_p13b --> m1_p13e : Press to the end of it.
+m1_h7 --> m1_p12a : Sound the flooded well.
+m1_h7 --> m1_p13a : Try the store of tide-gear.
+m1_h7 --> m1_h8 : Push on deeper.
+m1_p14a --> m1_p14b : Follow it further.
+m1_p14b --> m1_p14e : Press to the end of it.
+m1_p15a --> m1_p15b : Follow it further.
+m1_p15b --> m1_p15e : Press to the end of it.
+m1_h8 --> m1_p14a : Cross the ash pit.
+m1_h8 --> m1_p15a : Search the sunken pantry.
+m1_h8 --> m1_h9 : Push on deeper.
+m1_p16a --> m1_p16b : Follow it further.
+m1_p16b --> m1_p16e : Press to the end of it.
+m1_p17a --> m1_p17b : Follow it further.
+m1_p17b --> m1_p17e : Press to the end of it.
+m1_h9 --> m1_p16a : Take the servant's crawl.
+m1_h9 --> m1_p17a : Follow the drip.
+m1_h9 --> m1_h10 : Push on deeper.
+m1_p18a --> m1_p18b : Follow it further.
+m1_p18b --> m1_p18e : Press to the end of it.
+m1_p19a --> m1_p19b : Follow it further.
+m1_p19b --> m1_p19e : Press to the end of it.
+m1_pfin_a --> m1_pfin_b : Take it to the end.
+m1_pfin_b --> m1_pfin_e : Follow it to whatever waits.
+m1_h10 --> m1_p18a : Try the bricked door.
+m1_h10 --> m1_p19a : Feel down the coal chute.
+m1_h10 --> m1_pfin_a : Chance the last way on.
+m2_p0a --> m2_p0b : Follow it further.
+m2_p0b --> m2_p0e : Press to the end of it.
+m2_p1a --> m2_p1b : Follow it further.
+m2_p1b --> m2_p1e : Press to the end of it.
+m2_h1 --> m2_p0a : Try the locked corridor.
+m2_h1 --> m2_p1a : Search the paper strongroom.
+m2_h1 --> m2_h2 : Push on deeper.
+m2_p2a --> m2_p2b : Follow it further.
+m2_p2b --> m2_p2e : Press to the end of it.
+m2_p3a --> m2_p3b : Follow it further.
+m2_p3b --> m2_p3e : Press to the end of it.
+m2_h2 --> m2_p2a : Enter the copying room.
+m2_h2 --> m2_p3a : Climb the looping stair.
+m2_h2 --> m2_h3 : Push on deeper.
+m2_p4a --> m2_p4b : Follow it further.
+m2_p4b --> m2_p4e : Press to the end of it.
+m2_p5a --> m2_p5b : Follow it further.
+m2_p5b --> m2_p5e : Press to the end of it.
+m2_h3 --> m2_p4a : Feel through the dark archive.
+m2_h3 --> m2_p5a : Cross the bricked office.
+m2_h3 --> m2_h4 : Push on deeper.
+m2_p6a --> m2_p6b : Follow it further.
+m2_p6b --> m2_p6e : Press to the end of it.
+m2_p7a --> m2_p7b : Follow it further.
+m2_p7b --> m2_p7e : Press to the end of it.
+m2_h4 --> m2_p6a : Search the muniment room.
+m2_h4 --> m2_p7a : Try the ledger gallery.
+m2_h4 --> m2_h5 : Push on deeper.
+m2_p8a --> m2_p8b : Follow it further.
+m2_p8b --> m2_p8e : Press to the end of it.
+m2_p9a --> m2_p9b : Follow it further.
+m2_p9b --> m2_p9e : Press to the end of it.
+m2_h5 --> m2_p8a : Cross the sheeted desks.
+m2_h5 --> m2_p9a : Take the clerks' passage.
+m2_h5 --> m2_h6 : Push on deeper.
+m2_p10a --> m2_p10b : Follow it further.
+m2_p10b --> m2_p10e : Press to the end of it.
+m2_p11a --> m2_p11b : Follow it further.
+m2_p11b --> m2_p11e : Press to the end of it.
+m2_h6 --> m2_p10a : Try the sorting room.
+m2_h6 --> m2_p11a : Follow the cold flue.
+m2_h6 --> m2_h7 : Push on deeper.
+m2_p12a --> m2_p12b : Follow it further.
+m2_p12b --> m2_p12e : Press to the end of it.
+m2_p13a --> m2_p13b : Follow it further.
+m2_p13b --> m2_p13e : Press to the end of it.
+m2_h7 --> m2_p12a : Search the strong cupboard.
+m2_h7 --> m2_p13a : Cross the auditors' room.
+m2_h7 --> m2_h8 : Push on deeper.
+m2_p14a --> m2_p14b : Follow it further.
+m2_p14b --> m2_p14e : Press to the end of it.
+m2_p15a --> m2_p15b : Follow it further.
+m2_p15b --> m2_p15e : Press to the end of it.
+m2_h8 --> m2_p14a : Try the back stair.
+m2_h8 --> m2_p15a : Feel along the panelling.
+m2_h8 --> m2_h9 : Push on deeper.
+m2_p16a --> m2_p16b : Follow it further.
+m2_p16b --> m2_p16e : Press to the end of it.
+m2_p17a --> m2_p17b : Follow it further.
+m2_p17b --> m2_p17e : Press to the end of it.
+m2_pfin_a --> m2_pfin_b : Take it to the end.
+m2_pfin_b --> m2_pfin_e : Follow it to whatever waits.
+m2_h9 --> m2_p16a : Enter the wax room.
+m2_h9 --> m2_p17a : Take the record loft.
+m2_h9 --> m2_pfin_a : Chance the last way on.
+m3_p0a --> m3_p0b : Follow it further.
+m3_p0b --> m3_p0e : Press to the end of it.
+m3_p1a --> m3_p1b : Follow it further.
+m3_p1b --> m3_p1e : Press to the end of it.
+m3_h1 --> m3_p0a : Try the moored backwater.
+m3_h1 --> m3_p1a : Follow the dead cut.
+m3_h1 --> m3_h2 : Push on deeper.
+m3_p2a --> m3_p2b : Follow it further.
+m3_p2b --> m3_p2e : Press to the end of it.
+m3_p3a --> m3_p3b : Follow it further.
+m3_p3b --> m3_p3e : Press to the end of it.
+m3_h2 --> m3_p2a : Thread the low bridges.
+m3_h2 --> m3_p3a : Push into the reeds.
+m3_h2 --> m3_h3 : Push on deeper.
+m3_p4a --> m3_p4b : Follow it further.
+m3_p4b --> m3_p4e : Press to the end of it.
+m3_p5a --> m3_p5b : Follow it further.
+m3_p5b --> m3_p5e : Press to the end of it.
+m3_h3 --> m3_p4a : Cross the drowned yard.
+m3_h3 --> m3_p5a : Take the narrow rios.
+m3_h3 --> m3_h4 : Push on deeper.
+m3_p6a --> m3_p6b : Follow it further.
+m3_p6b --> m3_p6e : Press to the end of it.
+m3_p7a --> m3_p7b : Follow it further.
+m3_p7b --> m3_p7e : Press to the end of it.
+m3_h4 --> m3_p6a : Row for the open lagoon.
+m3_h4 --> m3_p7a : Try the shuttered boathouses.
+m3_h4 --> m3_h5 : Push on deeper.
+m3_p8a --> m3_p8b : Follow it further.
+m3_p8b --> m3_p8e : Press to the end of it.
+m3_p9a --> m3_p9b : Follow it further.
+m3_p9b --> m3_p9e : Press to the end of it.
+m3_h5 --> m3_p8a : Cross the tide-flat.
+m3_h5 --> m3_p9a : Follow the culvert.
+m3_h5 --> m3_h6 : Push on deeper.
+m3_p10a --> m3_p10b : Follow it further.
+m3_p10b --> m3_p10e : Press to the end of it.
+m3_p11a --> m3_p11b : Follow it further.
+m3_p11b --> m3_p11e : Press to the end of it.
+m3_h6 --> m3_p10a : Take the mill-race.
+m3_h6 --> m3_p11a : Try the fishermen's slip.
+m3_h6 --> m3_h7 : Push on deeper.
+m3_p12a --> m3_p12b : Follow it further.
+m3_p12b --> m3_p12e : Press to the end of it.
+m3_p13a --> m3_p13b : Follow it further.
+m3_p13b --> m3_p13e : Press to the end of it.
+m3_h7 --> m3_p12a : Push under the wharf.
+m3_h7 --> m3_p13a : Cross to the eyot.
+m3_h7 --> m3_h8 : Push on deeper.
+m3_p14a --> m3_p14b : Follow it further.
+m3_p14b --> m3_p14e : Press to the end of it.
+m3_p15a --> m3_p15b : Follow it further.
+m3_p15b --> m3_p15e : Press to the end of it.
+m3_h8 --> m3_p14a : Take the drainage cut.
+m3_h8 --> m3_p15a : Follow the moorings.
+m3_h8 --> m3_h9 : Push on deeper.
+m3_p16a --> m3_p16b : Follow it further.
+m3_p16b --> m3_p16e : Press to the end of it.
+m3_p17a --> m3_p17b : Follow it further.
+m3_p17b --> m3_p17e : Press to the end of it.
+m3_pfin_a --> m3_pfin_b : Take it to the end.
+m3_pfin_b --> m3_pfin_e : Follow it to whatever waits.
+m3_h9 --> m3_p16a : Try the timber pond.
+m3_h9 --> m3_p17a : Row for the sea-gate.
+m3_h9 --> m3_pfin_a : Chance the last way on.
+ap_cut_caught --> [*]
+ap_loft_drown --> [*]
+ap_bridge --> [*]
+wg_under_drown --> [*]
+yd_coal_trap --> [*]
+yd_stair_caught --> [*]
+yd_dog_bite --> [*]
+hl_floor_caught --> [*]
+hl_stack_fall --> [*]
+land_greed --> [*]
+vk_snap --> [*]
+vk_force_bell --> [*]
+vk_ledger_lock --> [*]
+es_gate_drown --> [*]
+es_side_drown --> [*]
+es_roof_fall --> [*]
+jn_basin_caught --> [*]
+jn_cut_drown --> [*]
+e_clean --> [*]
+e_cost --> [*]
+e_walkaway --> [*]
+m1_p0e --> [*]
+m1_p1e --> [*]
+m1_p2e --> [*]
+m1_p3e --> [*]
+m1_p4e --> [*]
+m1_p5e --> [*]
+m1_p6e --> [*]
+m1_p7e --> [*]
+m1_p8e --> [*]
+m1_p9e --> [*]
+m1_p10e --> [*]
+m1_p11e --> [*]
+m1_p12e --> [*]
+m1_p13e --> [*]
+m1_p14e --> [*]
+m1_p15e --> [*]
+m1_p16e --> [*]
+m1_p17e --> [*]
+m1_p18e --> [*]
+m1_p19e --> [*]
+m1_pfin_e --> [*]
+m2_p0e --> [*]
+m2_p1e --> [*]
+m2_p2e --> [*]
+m2_p3e --> [*]
+m2_p4e --> [*]
+m2_p5e --> [*]
+m2_p6e --> [*]
+m2_p7e --> [*]
+m2_p8e --> [*]
+m2_p9e --> [*]
+m2_p10e --> [*]
+m2_p11e --> [*]
+m2_p12e --> [*]
+m2_p13e --> [*]
+m2_p14e --> [*]
+m2_p15e --> [*]
+m2_p16e --> [*]
+m2_p17e --> [*]
+m2_pfin_e --> [*]
+m3_p0e --> [*]
+m3_p1e --> [*]
+m3_p2e --> [*]
+m3_p3e --> [*]
+m3_p4e --> [*]
+m3_p5e --> [*]
+m3_p6e --> [*]
+m3_p7e --> [*]
+m3_p8e --> [*]
+m3_p9e --> [*]
+m3_p10e --> [*]
+m3_p11e --> [*]
+m3_p12e --> [*]
+m3_p13e --> [*]
+m3_p14e --> [*]
+m3_p15e --> [*]
+m3_p16e --> [*]
+m3_p17e --> [*]
+m3_pfin_e --> [*]
+
+legend right
+  The Smuggler's Cut
+  Band 13-16 · Tier 1 · ~16 min
+  Topology: branch_and_bottleneck
+  277 nodes · 80 endings (2+ / 1n / 77-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml

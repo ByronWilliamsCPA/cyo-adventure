@@ -1,0 +1,1024 @@
+@startuml the-iron-spire-trial
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> setup0
+state setup0 #BBDEFB
+setup0 : setup · 86w
+state setup1 #BBDEFB
+setup1 : setup · 80w
+state muster_ap0 #D1C4E9
+muster_ap0 : rising · 74w
+state muster_pass #D1C4E9
+muster_pass : rising · 60w
+state muster_degrade #D1C4E9
+muster_degrade : rising · 62w
+state muster_f0_c0 #D1C4E9
+muster_f0_c0 : rising · 57w
+state muster_f0_c1 #D1C4E9
+muster_f0_c1 : rising · 55w
+state muster_f0_end #FFCDD2
+muster_f0_end : death (negative)
+muster_f0_end : "Over the Moat Lip"
+state muster_f1_c0 #D1C4E9
+muster_f1_c0 : rising · 57w
+state muster_f1_c1 #D1C4E9
+muster_f1_c1 : rising · 55w
+state muster_f1_end #FFCDD2
+muster_f1_end : death (negative)
+muster_f1_end : "Struck at the Muster"
+state muster_f2_c0 #D1C4E9
+muster_f2_c0 : rising · 57w
+state muster_f2_c1 #D1C4E9
+muster_f2_c1 : rising · 55w
+state muster_f2_end #FFCDD2
+muster_f2_end : death (negative)
+muster_f2_end : "Backed Off the Edge"
+state muster_fd_c0 #D1C4E9
+muster_fd_c0 : rising · 57w
+state muster_fd_c1 #D1C4E9
+muster_fd_c1 : rising · 55w
+state muster_fd_end #FFCDD2
+muster_fd_end : death (negative)
+muster_fd_end : "Argued Off the Wall"
+state muster_slip #D1C4E9
+muster_slip : rising · 64w
+state muster_cap #FFCDD2
+muster_cap : capture (negative)
+muster_cap : "Held at the Muster"
+state muster_seen #FFF9C4
+muster_seen : choice · 72w
+state muster_gate #D1C4E9
+muster_gate : rising · 90w
+state curtain_ap0 #D1C4E9
+curtain_ap0 : rising · 74w
+state curtain_pass #D1C4E9
+curtain_pass : rising · 60w
+state curtain_f0_c0 #D1C4E9
+curtain_f0_c0 : rising · 57w
+state curtain_f0_c1 #D1C4E9
+curtain_f0_c1 : rising · 55w
+state curtain_f0_end #FFCDD2
+curtain_f0_end : death (negative)
+curtain_f0_end : "Off the Blank Face"
+state curtain_f1_c0 #D1C4E9
+curtain_f1_c0 : rising · 57w
+state curtain_f1_c1 #D1C4E9
+curtain_f1_c1 : rising · 55w
+state curtain_f1_end #FFCDD2
+curtain_f1_end : death (negative)
+curtain_f1_end : "Under the Overhang"
+state curtain_f2_c0 #D1C4E9
+curtain_f2_c0 : rising · 57w
+state curtain_f2_c1 #D1C4E9
+curtain_f2_c1 : rising · 55w
+state curtain_f2_end #FFCDD2
+curtain_f2_end : death (negative)
+curtain_f2_end : "A Lunge Too Far"
+state curtain_f3_c0 #D1C4E9
+curtain_f3_c0 : rising · 57w
+state curtain_f3_c1 #D1C4E9
+curtain_f3_c1 : rising · 55w
+state curtain_f3_end #FFCDD2
+curtain_f3_end : death (negative)
+curtain_f3_end : "Spent on the Face"
+state curtain_f4_c0 #D1C4E9
+curtain_f4_c0 : rising · 57w
+state curtain_f4_c1 #D1C4E9
+curtain_f4_c1 : rising · 55w
+state curtain_f4_end #FFCDD2
+curtain_f4_end : death (negative)
+curtain_f4_end : "Off the Corner"
+state curtain_fd_c0 #D1C4E9
+curtain_fd_c0 : rising · 57w
+state curtain_fd_c1 #D1C4E9
+curtain_fd_c1 : rising · 55w
+state curtain_fd_end #FFCDD2
+curtain_fd_end : death (negative)
+curtain_fd_end : "Free of the Line"
+state curtain_slip #D1C4E9
+curtain_slip : rising · 64w
+state curtain_cap #FFCDD2
+curtain_cap : capture (negative)
+curtain_cap : "Roped Off the Wall"
+state curtain_seen #FFF9C4
+curtain_seen : choice · 72w
+state curtain_gate #D1C4E9
+curtain_gate : rising · 90w
+state warden_ap0 #D1C4E9
+warden_ap0 : rising · 74w
+state warden_pass #D1C4E9
+warden_pass : rising · 60w
+state warden_degrade #D1C4E9
+warden_degrade : rising · 62w
+state warden_f0_c0 #D1C4E9
+warden_f0_c0 : rising · 57w
+state warden_f0_c1 #D1C4E9
+warden_f0_c1 : rising · 55w
+state warden_f0_end #FFCDD2
+warden_f0_end : death (negative)
+warden_f0_end : "Caught in the Lie"
+state warden_f1_c0 #D1C4E9
+warden_f1_c0 : rising · 57w
+state warden_f1_c1 #D1C4E9
+warden_f1_c1 : rising · 55w
+state warden_f1_end #FFCDD2
+warden_f1_end : death (negative)
+warden_f1_end : "Grasped at the Seal"
+state warden_f2_c0 #D1C4E9
+warden_f2_c0 : rising · 57w
+state warden_f2_c1 #D1C4E9
+warden_f2_c1 : rising · 55w
+state warden_f2_end #FFCDD2
+warden_f2_end : death (negative)
+warden_f2_end : "Forced at the Post"
+state warden_fd_c0 #D1C4E9
+warden_fd_c0 : rising · 57w
+state warden_fd_c1 #D1C4E9
+warden_fd_c1 : rising · 55w
+state warden_fd_end #FFCDD2
+warden_fd_end : death (negative)
+warden_fd_end : "Denied at the Post"
+state warden_slip #D1C4E9
+warden_slip : rising · 64w
+state warden_cap #FFCDD2
+warden_cap : capture (negative)
+warden_cap : "Barred at the Post"
+state warden_seen #FFF9C4
+warden_seen : choice · 72w
+state warden_gate #D1C4E9
+warden_gate : rising · 90w
+state portcullis_ap0 #D1C4E9
+portcullis_ap0 : rising · 74w
+state portcullis_pass #D1C4E9
+portcullis_pass : rising · 60w
+state portcullis_f0_c0 #D1C4E9
+portcullis_f0_c0 : rising · 57w
+state portcullis_f0_c1 #D1C4E9
+portcullis_f0_c1 : rising · 55w
+state portcullis_f0_end #FFCDD2
+portcullis_f0_end : death (negative)
+portcullis_f0_end : "Under the Teeth"
+state portcullis_f1_c0 #D1C4E9
+portcullis_f1_c0 : rising · 57w
+state portcullis_f1_c1 #D1C4E9
+portcullis_f1_c1 : rising · 55w
+state portcullis_f1_end #FFCDD2
+portcullis_f1_end : death (negative)
+portcullis_f1_end : "Halted in the Channel"
+state portcullis_f2_c0 #D1C4E9
+portcullis_f2_c0 : rising · 57w
+state portcullis_f2_c1 #D1C4E9
+portcullis_f2_c1 : rising · 55w
+state portcullis_f2_end #FFCDD2
+portcullis_f2_end : death (negative)
+portcullis_f2_end : "Against the Ratchet"
+state portcullis_f3_c0 #D1C4E9
+portcullis_f3_c0 : rising · 57w
+state portcullis_f3_c1 #D1C4E9
+portcullis_f3_c1 : rising · 55w
+state portcullis_f3_end #FFCDD2
+portcullis_f3_end : death (negative)
+portcullis_f3_end : "Waiting at the Grid"
+state portcullis_f4_c0 #D1C4E9
+portcullis_f4_c0 : rising · 57w
+state portcullis_f4_c1 #D1C4E9
+portcullis_f4_c1 : rising · 55w
+state portcullis_f4_end #FFCDD2
+portcullis_f4_end : death (negative)
+portcullis_f4_end : "Into the Arch"
+state portcullis_fd_c0 #D1C4E9
+portcullis_fd_c0 : rising · 57w
+state portcullis_fd_c1 #D1C4E9
+portcullis_fd_c1 : rising · 55w
+state portcullis_fd_end #FFCDD2
+portcullis_fd_end : death (negative)
+portcullis_fd_end : "Beaten by the Grid"
+state portcullis_slip #D1C4E9
+portcullis_slip : rising · 64w
+state portcullis_cap #FFCDD2
+portcullis_cap : capture (negative)
+portcullis_cap : "Barred at the Grid"
+state portcullis_seen #FFF9C4
+portcullis_seen : choice · 72w
+state portcullis_gate #D1C4E9
+portcullis_gate : rising · 90w
+state chimney_ap0 #D1C4E9
+chimney_ap0 : rising · 74w
+state chimney_pass #D1C4E9
+chimney_pass : rising · 60w
+state chimney_f0_c0 #D1C4E9
+chimney_f0_c0 : rising · 57w
+state chimney_f0_c1 #D1C4E9
+chimney_f0_c1 : rising · 55w
+state chimney_f0_end #FFCDD2
+chimney_f0_end : death (negative)
+chimney_f0_end : "Down the Cleft"
+state chimney_f1_c0 #D1C4E9
+chimney_f1_c0 : rising · 57w
+state chimney_f1_c1 #D1C4E9
+chimney_f1_c1 : rising · 55w
+state chimney_f1_end #FFCDD2
+chimney_f1_end : death (negative)
+chimney_f1_end : "On a Loose Block"
+state chimney_f2_c0 #D1C4E9
+chimney_f2_c0 : rising · 57w
+state chimney_f2_c1 #D1C4E9
+chimney_f2_c1 : rising · 55w
+state chimney_f2_end #FFCDD2
+chimney_f2_end : death (negative)
+chimney_f2_end : "Split in the Gap"
+state chimney_f3_c0 #D1C4E9
+chimney_f3_c0 : rising · 57w
+state chimney_f3_c1 #D1C4E9
+chimney_f3_c1 : rising · 55w
+state chimney_f3_end #FFCDD2
+chimney_f3_end : death (negative)
+chimney_f3_end : "Wedged and Spent"
+state chimney_f4_c0 #D1C4E9
+chimney_f4_c0 : rising · 57w
+state chimney_f4_c1 #D1C4E9
+chimney_f4_c1 : rising · 55w
+state chimney_f4_end #FFCDD2
+chimney_f4_end : death (negative)
+chimney_f4_end : "Rushed in the Dark"
+state chimney_fd_c0 #D1C4E9
+chimney_fd_c0 : rising · 57w
+state chimney_fd_c1 #D1C4E9
+chimney_fd_c1 : rising · 55w
+state chimney_fd_end #FFCDD2
+chimney_fd_end : death (negative)
+chimney_fd_end : "Between Both Walls"
+state chimney_slip #D1C4E9
+chimney_slip : rising · 64w
+state chimney_cap #FFCDD2
+chimney_cap : capture (negative)
+chimney_cap : "Roped from the Cleft"
+state chimney_seen #FFF9C4
+chimney_seen : choice · 72w
+state chimney_gate #D1C4E9
+chimney_gate : rising · 90w
+state arrowslits_ap0 #D1C4E9
+arrowslits_ap0 : rising · 74w
+state arrowslits_pass #D1C4E9
+arrowslits_pass : rising · 60w
+state arrowslits_f0_c0 #D1C4E9
+arrowslits_f0_c0 : rising · 57w
+state arrowslits_f0_c1 #D1C4E9
+arrowslits_f0_c1 : rising · 55w
+state arrowslits_f0_end #FFCDD2
+arrowslits_f0_end : death (negative)
+arrowslits_f0_end : "In the Open Span"
+state arrowslits_f1_c0 #D1C4E9
+arrowslits_f1_c0 : rising · 57w
+state arrowslits_f1_c1 #D1C4E9
+arrowslits_f1_c1 : rising · 55w
+state arrowslits_f1_end #FFCDD2
+arrowslits_f1_end : death (negative)
+arrowslits_f1_end : "Down the Lit Stone"
+state arrowslits_f2_c0 #D1C4E9
+arrowslits_f2_c0 : rising · 57w
+state arrowslits_f2_c1 #D1C4E9
+arrowslits_f2_c1 : rising · 55w
+state arrowslits_f2_end #FFCDD2
+arrowslits_f2_end : death (negative)
+arrowslits_f2_end : "Marked on the Gallery"
+state arrowslits_f3_c0 #D1C4E9
+arrowslits_f3_c0 : rising · 57w
+state arrowslits_f3_c1 #D1C4E9
+arrowslits_f3_c1 : rising · 55w
+state arrowslits_f3_end #FFCDD2
+arrowslits_f3_end : death (negative)
+arrowslits_f3_end : "Found in the Niche"
+state arrowslits_f4_c0 #D1C4E9
+arrowslits_f4_c0 : rising · 57w
+state arrowslits_f4_c1 #D1C4E9
+arrowslits_f4_c1 : rising · 55w
+state arrowslits_f4_end #FFCDD2
+arrowslits_f4_end : death (negative)
+arrowslits_f4_end : "Onto the Wall-Walk"
+state arrowslits_fd_c0 #D1C4E9
+arrowslits_fd_c0 : rising · 57w
+state arrowslits_fd_c1 #D1C4E9
+arrowslits_fd_c1 : rising · 55w
+state arrowslits_fd_end #FFCDD2
+arrowslits_fd_end : death (negative)
+arrowslits_fd_end : "Run Down on the Gallery"
+state arrowslits_slip #D1C4E9
+arrowslits_slip : rising · 64w
+state arrowslits_cap #FFCDD2
+arrowslits_cap : capture (negative)
+arrowslits_cap : "Halted at the Slits"
+state arrowslits_seen #FFF9C4
+arrowslits_seen : choice · 72w
+state arrowslits_gate #D1C4E9
+arrowslits_gate : rising · 90w
+state murderholes_ap0 #D1C4E9
+murderholes_ap0 : rising · 74w
+state murderholes_pass #D1C4E9
+murderholes_pass : rising · 60w
+state murderholes_f0_c0 #D1C4E9
+murderholes_f0_c0 : rising · 57w
+state murderholes_f0_c1 #D1C4E9
+murderholes_f0_c1 : rising · 55w
+state murderholes_f0_end #FFCDD2
+murderholes_f0_end : death (negative)
+murderholes_f0_end : "Beneath the Holes"
+state murderholes_f1_c0 #D1C4E9
+murderholes_f1_c0 : rising · 57w
+state murderholes_f1_c1 #D1C4E9
+murderholes_f1_c1 : rising · 55w
+state murderholes_f1_end #FFCDD2
+murderholes_f1_end : death (negative)
+murderholes_f1_end : "Under the Opening"
+state murderholes_f2_c0 #D1C4E9
+murderholes_f2_c0 : rising · 57w
+state murderholes_f2_c1 #D1C4E9
+murderholes_f2_c1 : rising · 55w
+state murderholes_f2_end #FFCDD2
+murderholes_f2_end : death (negative)
+murderholes_f2_end : "Blind Under the Vault"
+state murderholes_f3_c0 #D1C4E9
+murderholes_f3_c0 : rising · 57w
+state murderholes_f3_c1 #D1C4E9
+murderholes_f3_c1 : rising · 55w
+state murderholes_f3_end #FFCDD2
+murderholes_f3_end : death (negative)
+murderholes_f3_end : "Stalled on the Mark"
+state murderholes_f4_c0 #D1C4E9
+murderholes_f4_c0 : rising · 57w
+state murderholes_f4_c1 #D1C4E9
+murderholes_f4_c1 : rising · 55w
+state murderholes_f4_end #FFCDD2
+murderholes_f4_end : death (negative)
+murderholes_f4_end : "Off the Marks"
+state murderholes_fd_c0 #D1C4E9
+murderholes_fd_c0 : rising · 57w
+state murderholes_fd_c1 #D1C4E9
+murderholes_fd_c1 : rising · 55w
+state murderholes_fd_end #FFCDD2
+murderholes_fd_end : death (negative)
+murderholes_fd_end : "Down the Middle"
+state murderholes_slip #D1C4E9
+murderholes_slip : rising · 64w
+state murderholes_cap #FFCDD2
+murderholes_cap : capture (negative)
+murderholes_cap : "Yielded in the Vault"
+state murderholes_seen #FFF9C4
+murderholes_seen : choice · 72w
+state murderholes_gate #D1C4E9
+murderholes_gate : rising · 90w
+state oath_ap0 #D1C4E9
+oath_ap0 : rising · 74w
+state oath_pass #D1C4E9
+oath_pass : rising · 60w
+state oath_degrade #D1C4E9
+oath_degrade : rising · 62w
+state oath_f0_c0 #D1C4E9
+oath_f0_c0 : rising · 57w
+state oath_f0_c1 #D1C4E9
+oath_f0_c1 : rising · 55w
+state oath_f0_end #FFCDD2
+oath_f0_end : death (negative)
+oath_f0_end : "On a Fallen Climber"
+state oath_f1_c0 #D1C4E9
+oath_f1_c0 : rising · 57w
+state oath_f1_c1 #D1C4E9
+oath_f1_c1 : rising · 55w
+state oath_f1_end #FFCDD2
+oath_f1_end : death (negative)
+oath_f1_end : "Off the Landing"
+state oath_f2_c0 #D1C4E9
+oath_f2_c0 : rising · 57w
+state oath_f2_c1 #D1C4E9
+oath_f2_c1 : rising · 55w
+state oath_f2_end #FFCDD2
+oath_f2_end : death (negative)
+oath_f2_end : "Struck for Waiting"
+state oath_fd_c0 #D1C4E9
+oath_fd_c0 : rising · 57w
+state oath_fd_c1 #D1C4E9
+oath_fd_c1 : rising · 55w
+state oath_fd_end #FFCDD2
+oath_fd_end : death (negative)
+oath_fd_end : "Argued Off the Landing"
+state oath_slip #D1C4E9
+oath_slip : rising · 64w
+state oath_cap #FFCDD2
+oath_cap : capture (negative)
+oath_cap : "Stood Down at the Oath"
+state oath_seen #FFF9C4
+oath_seen : choice · 72w
+state oath_gate #D1C4E9
+oath_gate : rising · 90w
+state spiral_ap0 #D1C4E9
+spiral_ap0 : rising · 74w
+state spiral_pass #D1C4E9
+spiral_pass : rising · 60w
+state spiral_f0_c0 #D1C4E9
+spiral_f0_c0 : rising · 57w
+state spiral_f0_c1 #D1C4E9
+spiral_f0_c1 : rising · 55w
+state spiral_f0_end #FFCDD2
+spiral_f0_end : death (negative)
+spiral_f0_end : "Into the Hollow"
+state spiral_f1_c0 #D1C4E9
+spiral_f1_c0 : rising · 57w
+state spiral_f1_c1 #D1C4E9
+spiral_f1_c1 : rising · 55w
+state spiral_f1_end #FFCDD2
+spiral_f1_end : death (negative)
+spiral_f1_end : "Off the Wet Treads"
+state spiral_f2_c0 #D1C4E9
+spiral_f2_c0 : rising · 57w
+state spiral_f2_c1 #D1C4E9
+spiral_f2_c1 : rising · 55w
+state spiral_f2_end #FFCDD2
+spiral_f2_end : death (negative)
+spiral_f2_end : "Over the Core"
+state spiral_f3_c0 #D1C4E9
+spiral_f3_c0 : rising · 57w
+state spiral_f3_c1 #D1C4E9
+spiral_f3_c1 : rising · 55w
+state spiral_f3_end #FFCDD2
+spiral_f3_end : death (negative)
+spiral_f3_end : "Stalled on the Turn"
+state spiral_f4_c0 #D1C4E9
+spiral_f4_c0 : rising · 57w
+state spiral_f4_c1 #D1C4E9
+spiral_f4_c1 : rising · 55w
+state spiral_f4_end #FFCDD2
+spiral_f4_end : death (negative)
+spiral_f4_end : "Vaulted to the Core"
+state spiral_fd_c0 #D1C4E9
+spiral_fd_c0 : rising · 57w
+state spiral_fd_c1 #D1C4E9
+spiral_fd_c1 : rising · 55w
+state spiral_fd_end #FFCDD2
+spiral_fd_end : death (negative)
+spiral_fd_end : "Run Off the Stair"
+state spiral_slip #D1C4E9
+spiral_slip : rising · 64w
+state spiral_cap #FFCDD2
+spiral_cap : capture (negative)
+spiral_cap : "Brought Down the Stair"
+state spiral_seen #FFF9C4
+spiral_seen : choice · 72w
+state spiral_gate #D1C4E9
+spiral_gate : rising · 90w
+state sheer_ap0 #D1C4E9
+sheer_ap0 : rising · 74w
+state sheer_pass #D1C4E9
+sheer_pass : rising · 60w
+state sheer_gf_c0 #D1C4E9
+sheer_gf_c0 : rising · 57w
+state sheer_gf_c1 #D1C4E9
+sheer_gf_c1 : rising · 55w
+state sheer_gf_end #FFCDD2
+sheer_gf_end : death (negative)
+sheer_gf_end : "Spent on the Sheer"
+state sheer_resolve #FFF9C4
+sheer_resolve : choice · 72w
+state sheer_f0_c0 #D1C4E9
+sheer_f0_c0 : rising · 57w
+state sheer_f0_c1 #D1C4E9
+sheer_f0_c1 : rising · 55w
+state sheer_f0_end #FFCDD2
+sheer_f0_end : death (negative)
+sheer_f0_end : "Off the Clean Line"
+state sheer_f1_c0 #D1C4E9
+sheer_f1_c0 : rising · 57w
+state sheer_f1_c1 #D1C4E9
+sheer_f1_c1 : rising · 55w
+state sheer_f1_end #FFCDD2
+sheer_f1_end : death (negative)
+sheer_f1_end : "Hung Out on the Wall"
+state sheer_f2_c0 #D1C4E9
+sheer_f2_c0 : rising · 57w
+state sheer_f2_c1 #D1C4E9
+sheer_f2_c1 : rising · 55w
+state sheer_f2_end #FFCDD2
+sheer_f2_end : death (negative)
+sheer_f2_end : "On a Loose Flake"
+state sheer_f3_c0 #D1C4E9
+sheer_f3_c0 : rising · 57w
+state sheer_f3_c1 #D1C4E9
+sheer_f3_c1 : rising · 55w
+state sheer_f3_end #FFCDD2
+sheer_f3_end : death (negative)
+sheer_f3_end : "Forced at the Overhang"
+state sheer_fd_c0 #D1C4E9
+sheer_fd_c0 : rising · 57w
+state sheer_fd_c1 #D1C4E9
+sheer_fd_c1 : rising · 55w
+state sheer_fd_end #FFCDD2
+sheer_fd_end : death (negative)
+sheer_fd_end : "Thrown Off the Top"
+state sheer_slip #D1C4E9
+sheer_slip : rising · 64w
+state sheer_cap #FFCDD2
+sheer_cap : capture (negative)
+sheer_cap : "Turned Back at the Sheer"
+state sheer_seen #FFF9C4
+sheer_seen : choice · 72w
+state sheer_gate #D1C4E9
+sheer_gate : rising · 90w
+state highgate_ap0 #D1C4E9
+highgate_ap0 : rising · 74w
+state highgate_pass_sealed #D1C4E9
+highgate_pass_sealed : rising · 60w
+state highgate_pass_forced #D1C4E9
+highgate_pass_forced : rising · 62w
+state highgate_f0_c0 #D1C4E9
+highgate_f0_c0 : rising · 57w
+state highgate_f0_c1 #D1C4E9
+highgate_f0_c1 : rising · 55w
+state highgate_f0_end #FFCDD2
+highgate_f0_end : death (negative)
+highgate_f0_end : "Around the High Gate"
+state highgate_f1_c0 #D1C4E9
+highgate_f1_c0 : rising · 57w
+state highgate_f1_c1 #D1C4E9
+highgate_f1_c1 : rising · 55w
+state highgate_f1_end #FFCDD2
+highgate_f1_end : death (negative)
+highgate_f1_end : "Broken on the Gate"
+state highgate_f2_c0 #D1C4E9
+highgate_f2_c0 : rising · 57w
+state highgate_f2_c1 #D1C4E9
+highgate_f2_c1 : rising · 55w
+state highgate_f2_end #FFCDD2
+highgate_f2_end : death (negative)
+highgate_f2_end : "Left at the Gate"
+state highgate_fd_c0 #D1C4E9
+highgate_fd_c0 : rising · 57w
+state highgate_fd_c1 #D1C4E9
+highgate_fd_c1 : rising · 55w
+state highgate_fd_end #FFCDD2
+highgate_fd_end : death (negative)
+highgate_fd_end : "Sprung at the Lock"
+state highgate_slip #D1C4E9
+highgate_slip : rising · 64w
+state highgate_cap #FFCDD2
+highgate_cap : capture (negative)
+highgate_cap : "Taken at the High Gate"
+state highgate_seen #FFF9C4
+highgate_seen : choice · 72w
+state highgate_gate #D1C4E9
+highgate_gate : rising · 90w
+state beacon_ap0 #D1C4E9
+beacon_ap0 : rising · 74w
+state beacon_pass #D1C4E9
+beacon_pass : rising · 60w
+state beacon_f0_c0 #D1C4E9
+beacon_f0_c0 : rising · 57w
+state beacon_f0_c1 #D1C4E9
+beacon_f0_c1 : rising · 55w
+state beacon_f0_end #FFCDD2
+beacon_f0_end : death (negative)
+beacon_f0_end : "Wide of the Causeway"
+state beacon_f1_c0 #D1C4E9
+beacon_f1_c0 : rising · 57w
+state beacon_f1_c1 #D1C4E9
+beacon_f1_c1 : rising · 55w
+state beacon_f1_end #FFCDD2
+beacon_f1_end : death (negative)
+beacon_f1_end : "Taken by the Gust"
+state beacon_f2_c0 #D1C4E9
+beacon_f2_c0 : rising · 57w
+state beacon_f2_c1 #D1C4E9
+beacon_f2_c1 : rising · 55w
+state beacon_f2_end #FFCDD2
+beacon_f2_end : death (negative)
+beacon_f2_end : "Against the Fire-Cage"
+state beacon_f3_c0 #D1C4E9
+beacon_f3_c0 : rising · 57w
+state beacon_f3_c1 #D1C4E9
+beacon_f3_c1 : rising · 55w
+state beacon_f3_end #FFCDD2
+beacon_f3_end : death (negative)
+beacon_f3_end : "Worn Off the Landing"
+state beacon_f4_c0 #D1C4E9
+beacon_f4_c0 : rising · 57w
+state beacon_f4_c1 #D1C4E9
+beacon_f4_c1 : rising · 55w
+state beacon_f4_end #FFCDD2
+beacon_f4_end : death (negative)
+beacon_f4_end : "Off the Landing's Rim"
+state beacon_fd_c0 #D1C4E9
+beacon_fd_c0 : rising · 57w
+state beacon_fd_c1 #D1C4E9
+beacon_fd_c1 : rising · 55w
+state beacon_fd_end #FFCDD2
+beacon_fd_end : death (negative)
+beacon_fd_end : "Run Off the Causeway"
+state beacon_slip #D1C4E9
+beacon_slip : rising · 64w
+state beacon_cap #FFCDD2
+beacon_cap : capture (negative)
+beacon_cap : "Fetched Off the Landing"
+state beacon_seen #FFF9C4
+beacon_seen : choice · 72w
+state beacon_gate #D1C4E9
+beacon_gate : rising · 90w
+state summit_ap0 #D1C4E9
+summit_ap0 : rising · 72w
+state summit_gate #FFE0B2
+summit_gate : climax · 86w
+state summit_honor_check #FFE0B2
+summit_honor_check : climax · 80w
+state win_honor #C8E6C9
+win_honor : success (positive)
+win_honor : "Named to the Crown"
+state win_creditable #C8E6C9
+win_creditable : completion (positive)
+win_creditable : "A True Ascent"
+state win_shamed #E0E0E0
+win_shamed : completion (neutral)
+win_shamed : "The Unnamed Summit"
+setup0 --> setup1 : Take the first stair.
+setup1 --> muster_ap0 : Line up for the muster.
+muster_ap0 --> muster_gate : Go on.
+muster_pass --> curtain_ap0 : Go on.
+muster_degrade --> curtain_ap0 : Go on.
+muster_f0_c0 --> muster_f0_c1 : Go on.
+muster_f0_c1 --> muster_f0_end : Go on.
+muster_f1_c0 --> muster_f1_c1 : Go on.
+muster_f1_c1 --> muster_f1_end : Go on.
+muster_f2_c0 --> muster_f2_c1 : Go on.
+muster_f2_c1 --> muster_f2_end : Go on.
+muster_fd_c0 --> muster_fd_c1 : Go on.
+muster_fd_c1 --> muster_fd_end : Go on.
+muster_slip --> curtain_ap0 : Go on.
+muster_seen --> muster_slip : Fall in quiet at the back and go uncount...
+muster_seen --> muster_fd_c0 : Argue your place aloud with the trial-ma...
+muster_seen --> muster_cap : Stand down and let the wardens hold you.
+muster_gate --> muster_pass : Stand the form and answer plain when nam...
+muster_gate --> muster_degrade : Push to the head of the line to climb fi...
+muster_gate --> muster_f0_c0 : Vault the inner barrier to skip the coun...
+muster_gate --> muster_f1_c0 : Strike back at the warden who shoves you...
+muster_gate --> muster_f2_c0 : Hang back at the edge until the count en...
+muster_gate --> muster_seen : Chance it and slip the count unseen.
+curtain_ap0 --> curtain_gate : Go on.
+curtain_pass --> warden_ap0 : Go on.
+curtain_f0_c0 --> curtain_f0_c1 : Go on.
+curtain_f0_c1 --> curtain_f0_end : Go on.
+curtain_f1_c0 --> curtain_f1_c1 : Go on.
+curtain_f1_c1 --> curtain_f1_end : Go on.
+curtain_f2_c0 --> curtain_f2_c1 : Go on.
+curtain_f2_c1 --> curtain_f2_end : Go on.
+curtain_f3_c0 --> curtain_f3_c1 : Go on.
+curtain_f3_c1 --> curtain_f3_end : Go on.
+curtain_f4_c0 --> curtain_f4_c1 : Go on.
+curtain_f4_c1 --> curtain_f4_end : Go on.
+curtain_fd_c0 --> curtain_fd_c1 : Go on.
+curtain_fd_c1 --> curtain_fd_end : Go on.
+curtain_slip --> warden_ap0 : Go on.
+curtain_seen --> curtain_slip : Scrabble the loose flue and haul over ha...
+curtain_seen --> curtain_fd_c0 : Free-climb the overhang line for speed.
+curtain_seen --> curtain_cap : Freeze on the holds and call to be roped...
+curtain_gate --> curtain_pass : Climb the graded line, hold to cut hold.
+curtain_gate --> curtain_f0_c0 : Take the smooth face direct to save the ...
+curtain_gate --> curtain_f1_c0 : Swing out under the overhang to pass fas...
+curtain_gate --> curtain_f2_c0 : Lunge for a high crack above the graded ...
+curtain_gate --> curtain_f3_c0 : Rest spread on the face to gather your n...
+curtain_gate --> curtain_f4_c0 : Chimney the smooth corner with braced le...
+curtain_gate --> curtain_seen : Chance the crumbling flue to the side.
+warden_ap0 --> warden_gate : Go on.
+warden_pass --> portcullis_ap0 : Go on.
+warden_degrade --> portcullis_ap0 : Go on.
+warden_f0_c0 --> warden_f0_c1 : Go on.
+warden_f0_c1 --> warden_f0_end : Go on.
+warden_f1_c0 --> warden_f1_c1 : Go on.
+warden_f1_c1 --> warden_f1_end : Go on.
+warden_f2_c0 --> warden_f2_c1 : Go on.
+warden_f2_c1 --> warden_f2_end : Go on.
+warden_fd_c0 --> warden_fd_c1 : Go on.
+warden_fd_c1 --> warden_fd_end : Go on.
+warden_slip --> portcullis_ap0 : Go on.
+warden_seen --> warden_slip : Traverse the outer ledge past the post.
+warden_seen --> warden_fd_c0 : Demand the seal as your right, loudly.
+warden_seen --> warden_cap : Kneel at the wicket and yield to the war...
+warden_gate --> warden_pass : Report in proper form and receive the cr...
+warden_gate --> warden_degrade : Slip past the wicket without reporting.
+warden_gate --> warden_f0_c0 : Give a false name to shortcut the report...
+warden_gate --> warden_f1_c0 : Snatch the seal from the warden's hand.
+warden_gate --> warden_f2_c0 : Batter the iron wicket open and climb th...
+warden_gate --> warden_seen : Chance the ledge around the barred wicke...
+portcullis_ap0 --> portcullis_gate : Go on.
+portcullis_pass --> chimney_ap0 : Go on.
+portcullis_f0_c0 --> portcullis_f0_c1 : Go on.
+portcullis_f0_c1 --> portcullis_f0_end : Go on.
+portcullis_f1_c0 --> portcullis_f1_c1 : Go on.
+portcullis_f1_c1 --> portcullis_f1_end : Go on.
+portcullis_f2_c0 --> portcullis_f2_c1 : Go on.
+portcullis_f2_c1 --> portcullis_f2_end : Go on.
+portcullis_f3_c0 --> portcullis_f3_c1 : Go on.
+portcullis_f3_c1 --> portcullis_f3_end : Go on.
+portcullis_f4_c0 --> portcullis_f4_c1 : Go on.
+portcullis_f4_c1 --> portcullis_f4_end : Go on.
+portcullis_fd_c0 --> portcullis_fd_c1 : Go on.
+portcullis_fd_c1 --> portcullis_fd_end : Go on.
+portcullis_slip --> chimney_ap0 : Go on.
+portcullis_seen --> portcullis_slip : Throw yourself through on the closing be...
+portcullis_seen --> portcullis_fd_c0 : Sprint it and beat the falling grid.
+portcullis_seen --> portcullis_cap : Step back and let the warden bar you out...
+portcullis_gate --> portcullis_pass : Cross clean on the up-beat, all the way ...
+portcullis_gate --> portcullis_f0_c0 : Dash under as the grid begins to fall.
+portcullis_gate --> portcullis_f1_c0 : Stop halfway to judge the ratchet's timi...
+portcullis_gate --> portcullis_f2_c0 : Wedge the ratchet to hold the grid up.
+portcullis_gate --> portcullis_f3_c0 : Wait for a later, slower beat to cross.
+portcullis_gate --> portcullis_f4_c0 : Climb the grid itself as it rises.
+portcullis_gate --> portcullis_seen : Chance the last of the up-beat and go no...
+chimney_ap0 --> chimney_gate : Go on.
+chimney_pass --> arrowslits_ap0 : Go on.
+chimney_f0_c0 --> chimney_f0_c1 : Go on.
+chimney_f0_c1 --> chimney_f0_end : Go on.
+chimney_f1_c0 --> chimney_f1_c1 : Go on.
+chimney_f1_c1 --> chimney_f1_end : Go on.
+chimney_f2_c0 --> chimney_f2_c1 : Go on.
+chimney_f2_c1 --> chimney_f2_end : Go on.
+chimney_f3_c0 --> chimney_f3_c1 : Go on.
+chimney_f3_c1 --> chimney_f3_end : Go on.
+chimney_f4_c0 --> chimney_f4_c1 : Go on.
+chimney_f4_c1 --> chimney_f4_end : Go on.
+chimney_fd_c0 --> chimney_fd_c1 : Go on.
+chimney_fd_c1 --> chimney_fd_end : Go on.
+chimney_slip --> arrowslits_ap0 : Go on.
+chimney_seen --> chimney_slip : Thrash the flared slot and beach on the ...
+chimney_seen --> chimney_fd_c0 : Bridge-jump the last of the cleft to the...
+chimney_seen --> chimney_cap : Wedge fast and shout for a rope from abo...
+chimney_gate --> chimney_pass : Bridge the chimney steady, testing each ...
+chimney_gate --> chimney_f0_c0 : Face-climb one wall to move up quicker.
+chimney_gate --> chimney_f1_c0 : Trust a jammed block for a high pull.
+chimney_gate --> chimney_f2_c0 : Stem wide across the full gap at once.
+chimney_gate --> chimney_f3_c0 : Rest wedged in the cleft to catch your b...
+chimney_gate --> chimney_f4_c0 : Chimney it fast to be out of the dark so...
+chimney_gate --> chimney_seen : Chance the flared exit slot direct.
+arrowslits_ap0 --> arrowslits_gate : Go on.
+arrowslits_pass --> murderholes_ap0 : Go on.
+arrowslits_f0_c0 --> arrowslits_f0_c1 : Go on.
+arrowslits_f0_c1 --> arrowslits_f0_end : Go on.
+arrowslits_f1_c0 --> arrowslits_f1_c1 : Go on.
+arrowslits_f1_c1 --> arrowslits_f1_end : Go on.
+arrowslits_f2_c0 --> arrowslits_f2_c1 : Go on.
+arrowslits_f2_c1 --> arrowslits_f2_end : Go on.
+arrowslits_f3_c0 --> arrowslits_f3_c1 : Go on.
+arrowslits_f3_c1 --> arrowslits_f3_end : Go on.
+arrowslits_f4_c0 --> arrowslits_f4_c1 : Go on.
+arrowslits_f4_c1 --> arrowslits_f4_end : Go on.
+arrowslits_fd_c0 --> arrowslits_fd_c1 : Go on.
+arrowslits_fd_c1 --> arrowslits_fd_end : Go on.
+arrowslits_slip --> murderholes_ap0 : Go on.
+arrowslits_seen --> arrowslits_slip : Dash low between the loosing beats.
+arrowslits_seen --> arrowslits_fd_c0 : Break into the open and run flat out.
+arrowslits_seen --> arrowslits_cap : Show your hands and stand still to be ta...
+arrowslits_gate --> arrowslits_pass : Keep to the shadow strip, low and steady...
+arrowslits_gate --> arrowslits_f0_c0 : Cross the open span quickly in the light...
+arrowslits_gate --> arrowslits_f1_c0 : Rush the gallery all at once, head down.
+arrowslits_gate --> arrowslits_f2_c0 : Taunt the wardens to waste their bolts.
+arrowslits_gate --> arrowslits_f3_c0 : Wait in a niche for the wardens to stand...
+arrowslits_gate --> arrowslits_f4_c0 : Climb above the slits to pass over them.
+arrowslits_gate --> arrowslits_seen : Chance a fast low dash between two volle...
+murderholes_ap0 --> murderholes_gate : Go on.
+murderholes_pass --> oath_ap0 : Go on.
+murderholes_f0_c0 --> murderholes_f0_c1 : Go on.
+murderholes_f0_c1 --> murderholes_f0_end : Go on.
+murderholes_f1_c0 --> murderholes_f1_c1 : Go on.
+murderholes_f1_c1 --> murderholes_f1_end : Go on.
+murderholes_f2_c0 --> murderholes_f2_c1 : Go on.
+murderholes_f2_c1 --> murderholes_f2_end : Go on.
+murderholes_f3_c0 --> murderholes_f3_c1 : Go on.
+murderholes_f3_c1 --> murderholes_f3_end : Go on.
+murderholes_f4_c0 --> murderholes_f4_c1 : Go on.
+murderholes_f4_c1 --> murderholes_f4_end : Go on.
+murderholes_fd_c0 --> murderholes_fd_c1 : Go on.
+murderholes_fd_c1 --> murderholes_fd_end : Go on.
+murderholes_slip --> oath_ap0 : Go on.
+murderholes_seen --> murderholes_slip : Weave the marks fast on a read of the li...
+murderholes_seen --> murderholes_fd_c0 : Sprint the middle and outrun the drops.
+murderholes_seen --> murderholes_cap : Halt on a mark and call up your surrende...
+murderholes_gate --> murderholes_pass : Step mark to mark, clear of every hole.
+murderholes_gate --> murderholes_f0_c0 : Run the passage straight down the middle...
+murderholes_gate --> murderholes_f1_c0 : Shelter directly under a hole to think.
+murderholes_gate --> murderholes_f2_c0 : Feel forward blind along the wall.
+murderholes_gate --> murderholes_f3_c0 : Pause on a safe-mark to wait out a drop.
+murderholes_gate --> murderholes_f4_c0 : Charge through fast before they can aim.
+murderholes_gate --> murderholes_seen : Chance a fast weave between two holes.
+oath_ap0 --> oath_gate : Go on.
+oath_pass --> spiral_ap0 : Go on.
+oath_degrade --> spiral_ap0 : Go on.
+oath_f0_c0 --> oath_f0_c1 : Go on.
+oath_f0_c1 --> oath_f0_end : Go on.
+oath_f1_c0 --> oath_f1_c1 : Go on.
+oath_f1_c1 --> oath_f1_end : Go on.
+oath_f2_c0 --> oath_f2_c1 : Go on.
+oath_f2_c1 --> oath_f2_end : Go on.
+oath_fd_c0 --> oath_fd_c1 : Go on.
+oath_fd_c1 --> oath_fd_end : Go on.
+oath_slip --> spiral_ap0 : Go on.
+oath_seen --> oath_slip : Skirt the ledge around the landing unsee...
+oath_seen --> oath_fd_c0 : Argue the oath does not bind you here.
+oath_seen --> oath_cap : Sit down beside the hurt climber and giv...
+oath_gate --> oath_pass : Bear the hurt climber clear before you g...
+oath_gate --> oath_degrade : Step over the hurt climber and press on ...
+oath_gate --> oath_f0_c0 : Use the wounded climber as a foothold up...
+oath_gate --> oath_f1_c0 : Shove a waiting rival off the landing ed...
+oath_gate --> oath_f2_c0 : Wait for another climber to clear the wa...
+oath_gate --> oath_seen : Chance the narrow ledge around the whole...
+spiral_ap0 --> spiral_gate : Go on.
+spiral_pass --> sheer_ap0 : Go on.
+spiral_f0_c0 --> spiral_f0_c1 : Go on.
+spiral_f0_c1 --> spiral_f0_end : Go on.
+spiral_f1_c0 --> spiral_f1_c1 : Go on.
+spiral_f1_c1 --> spiral_f1_end : Go on.
+spiral_f2_c0 --> spiral_f2_c1 : Go on.
+spiral_f2_c1 --> spiral_f2_end : Go on.
+spiral_f3_c0 --> spiral_f3_c1 : Go on.
+spiral_f3_c1 --> spiral_f3_end : Go on.
+spiral_f4_c0 --> spiral_f4_c1 : Go on.
+spiral_f4_c1 --> spiral_f4_end : Go on.
+spiral_fd_c0 --> spiral_fd_c1 : Go on.
+spiral_fd_c1 --> spiral_fd_end : Go on.
+spiral_slip --> sheer_ap0 : Go on.
+spiral_seen --> spiral_slip : Scramble the inner turns on failing legs...
+spiral_seen --> spiral_fd_c0 : Run the outer edge flat out to the top.
+spiral_seen --> spiral_cap : Freeze against the wall and wait to be b...
+spiral_gate --> spiral_pass : Climb the outer edge, a hand to the wall...
+spiral_gate --> spiral_f0_c0 : Cut the inner edge to climb the short wa...
+spiral_gate --> spiral_f1_c0 : Take the slick turns at a run.
+spiral_gate --> spiral_f2_c0 : Lean out over the core to see the way up...
+spiral_gate --> spiral_f3_c0 : Sit on a tread to rest your burning legs...
+spiral_gate --> spiral_f4_c0 : Vault two treads at a time to gain heigh...
+spiral_gate --> spiral_seen : Chance a fast scramble up the inner turn...
+sheer_ap0 --> sheer_gate : Go on.
+sheer_pass --> highgate_ap0 : Go on.
+sheer_gf_c0 --> sheer_gf_c1 : Go on.
+sheer_gf_c1 --> sheer_gf_end : Go on.
+sheer_resolve --> sheer_pass : Your reserve holds; you top out.
+sheer_resolve --> sheer_gf_c0 : Your arms are spent; the reach fails.
+sheer_f0_c0 --> sheer_f0_c1 : Go on.
+sheer_f0_c1 --> sheer_f0_end : Go on.
+sheer_f1_c0 --> sheer_f1_c1 : Go on.
+sheer_f1_c1 --> sheer_f1_end : Go on.
+sheer_f2_c0 --> sheer_f2_c1 : Go on.
+sheer_f2_c1 --> sheer_f2_end : Go on.
+sheer_f3_c0 --> sheer_f3_c1 : Go on.
+sheer_f3_c1 --> sheer_f3_end : Go on.
+sheer_fd_c0 --> sheer_fd_c1 : Go on.
+sheer_fd_c1 --> sheer_fd_end : Go on.
+sheer_slip --> highgate_ap0 : Go on.
+sheer_seen --> sheer_slip : Fight up the greasy corner on nerve alon...
+sheer_seen --> sheer_fd_c0 : Throw for the top and commit everything.
+sheer_seen --> sheer_cap : Down-climb and call the pitch beyond you...
+sheer_gate --> sheer_resolve : Climb the clean line of reaches, arm ove...
+sheer_gate --> sheer_f0_c0 : Fling for a far hold off the clean line.
+sheer_gate --> sheer_f1_c0 : Rest hanging on your arms mid-pitch.
+sheer_gate --> sheer_f2_c0 : Swing on a loose flake to shortcut the c...
+sheer_gate --> sheer_f3_c0 : Batter your way straight up the overhang...
+sheer_gate --> sheer_seen : Chance the greasy corner-crack instead.
+highgate_ap0 --> highgate_gate : Go on.
+highgate_pass_sealed --> beacon_ap0 : Go on.
+highgate_pass_forced --> beacon_ap0 : Go on.
+highgate_f0_c0 --> highgate_f0_c1 : Go on.
+highgate_f0_c1 --> highgate_f0_end : Go on.
+highgate_f1_c0 --> highgate_f1_c1 : Go on.
+highgate_f1_c1 --> highgate_f1_end : Go on.
+highgate_f2_c0 --> highgate_f2_c1 : Go on.
+highgate_f2_c1 --> highgate_f2_end : Go on.
+highgate_fd_c0 --> highgate_fd_c1 : Go on.
+highgate_fd_c1 --> highgate_fd_end : Go on.
+highgate_slip --> beacon_ap0 : Go on.
+highgate_seen --> highgate_slip : Climb the flue above the lintel and drop...
+highgate_seen --> highgate_fd_c0 : Pry the lock with a spike to force the b...
+highgate_seen --> highgate_cap : Set your back to the gate and wait to be...
+highgate_gate --> highgate_pass_sealed : Press the crown-seal to the lock and pas...
+highgate_gate --> highgate_pass_forced : Work the old service hatch by hand and s...
+highgate_gate --> highgate_f0_c0 : Climb the bare wall around the sealed ga...
+highgate_gate --> highgate_f1_c0 : Batter the iron gate off its seatings.
+highgate_gate --> highgate_f2_c0 : Wait at the gate for someone to open it.
+highgate_gate --> highgate_seen : Chance the crumbling flue above the lint...
+beacon_ap0 --> beacon_gate : Go on.
+beacon_pass --> summit_ap0 : Go on.
+beacon_f0_c0 --> beacon_f0_c1 : Go on.
+beacon_f0_c1 --> beacon_f0_end : Go on.
+beacon_f1_c0 --> beacon_f1_c1 : Go on.
+beacon_f1_c1 --> beacon_f1_end : Go on.
+beacon_f2_c0 --> beacon_f2_c1 : Go on.
+beacon_f2_c1 --> beacon_f2_end : Go on.
+beacon_f3_c0 --> beacon_f3_c1 : Go on.
+beacon_f3_c1 --> beacon_f3_end : Go on.
+beacon_f4_c0 --> beacon_f4_c1 : Go on.
+beacon_f4_c1 --> beacon_f4_end : Go on.
+beacon_fd_c0 --> beacon_fd_c1 : Go on.
+beacon_fd_c1 --> beacon_fd_end : Go on.
+beacon_slip --> summit_ap0 : Go on.
+beacon_seen --> beacon_slip : Dash the causeway low on a falling gust.
+beacon_seen --> beacon_fd_c0 : Run the causeway upright to beat the nex...
+beacon_seen --> beacon_cap : Drop flat and signal the wardens to fetc...
+beacon_gate --> beacon_pass : Cross the causeway low, straight, and st...
+beacon_gate --> beacon_f0_c0 : Step wide to skirt the streaming fire.
+beacon_gate --> beacon_f1_c0 : Stand tall to steady yourself against th...
+beacon_gate --> beacon_f2_c0 : Shelter against the hot fire-cage from t...
+beacon_gate --> beacon_f3_c0 : Wait for the wind to drop before crossin...
+beacon_gate --> beacon_f4_c0 : Crawl the very edge to stay out of the w...
+beacon_gate --> beacon_seen : Chance a low dash on a lull in the gale.
+summit_ap0 --> summit_gate : Stand before the crown-stone.
+summit_gate --> summit_honor_check : You kept every form: stand for the crown...
+summit_gate --> win_creditable : You kept some faith, not all: stand and ...
+summit_gate --> win_shamed : You kept the wall but not its faith: sta...
+summit_honor_check --> win_honor : You carried the crown-seal to the summit...
+summit_honor_check --> win_creditable : You reached the crown unsealed: take the...
+muster_f0_end --> [*]
+muster_f1_end --> [*]
+muster_f2_end --> [*]
+muster_fd_end --> [*]
+muster_cap --> [*]
+curtain_f0_end --> [*]
+curtain_f1_end --> [*]
+curtain_f2_end --> [*]
+curtain_f3_end --> [*]
+curtain_f4_end --> [*]
+curtain_fd_end --> [*]
+curtain_cap --> [*]
+warden_f0_end --> [*]
+warden_f1_end --> [*]
+warden_f2_end --> [*]
+warden_fd_end --> [*]
+warden_cap --> [*]
+portcullis_f0_end --> [*]
+portcullis_f1_end --> [*]
+portcullis_f2_end --> [*]
+portcullis_f3_end --> [*]
+portcullis_f4_end --> [*]
+portcullis_fd_end --> [*]
+portcullis_cap --> [*]
+chimney_f0_end --> [*]
+chimney_f1_end --> [*]
+chimney_f2_end --> [*]
+chimney_f3_end --> [*]
+chimney_f4_end --> [*]
+chimney_fd_end --> [*]
+chimney_cap --> [*]
+arrowslits_f0_end --> [*]
+arrowslits_f1_end --> [*]
+arrowslits_f2_end --> [*]
+arrowslits_f3_end --> [*]
+arrowslits_f4_end --> [*]
+arrowslits_fd_end --> [*]
+arrowslits_cap --> [*]
+murderholes_f0_end --> [*]
+murderholes_f1_end --> [*]
+murderholes_f2_end --> [*]
+murderholes_f3_end --> [*]
+murderholes_f4_end --> [*]
+murderholes_fd_end --> [*]
+murderholes_cap --> [*]
+oath_f0_end --> [*]
+oath_f1_end --> [*]
+oath_f2_end --> [*]
+oath_fd_end --> [*]
+oath_cap --> [*]
+spiral_f0_end --> [*]
+spiral_f1_end --> [*]
+spiral_f2_end --> [*]
+spiral_f3_end --> [*]
+spiral_f4_end --> [*]
+spiral_fd_end --> [*]
+spiral_cap --> [*]
+sheer_gf_end --> [*]
+sheer_f0_end --> [*]
+sheer_f1_end --> [*]
+sheer_f2_end --> [*]
+sheer_f3_end --> [*]
+sheer_fd_end --> [*]
+sheer_cap --> [*]
+highgate_f0_end --> [*]
+highgate_f1_end --> [*]
+highgate_f2_end --> [*]
+highgate_fd_end --> [*]
+highgate_cap --> [*]
+beacon_f0_end --> [*]
+beacon_f1_end --> [*]
+beacon_f2_end --> [*]
+beacon_f3_end --> [*]
+beacon_f4_end --> [*]
+beacon_fd_end --> [*]
+beacon_cap --> [*]
+win_honor --> [*]
+win_creditable --> [*]
+win_shamed --> [*]
+
+legend right
+  The Iron Spire Trial
+  Band 13-16 · Tier 2 · ~30 min
+  Topology: gauntlet
+  277 nodes · 79 endings (2+ / 1n / 76-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml

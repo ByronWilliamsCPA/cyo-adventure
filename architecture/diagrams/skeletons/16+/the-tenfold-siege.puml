@@ -1,0 +1,2558 @@
+@startuml the-tenfold-siege
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> s0
+state s0 #BBDEFB
+s0 : setup · 88w
+state s1 #BBDEFB
+s1 : setup · 84w
+state s2 #BBDEFB
+s2 : setup · 78w
+state s3 #BBDEFB
+s3 : setup · 74w
+state a01_ap #D1C4E9
+a01_ap : rising · 74w
+state a01_g1_f0_c0 #D1C4E9
+a01_g1_f0_c0 : rising · 58w
+state a01_g1_f0_c1 #D1C4E9
+a01_g1_f0_c1 : rising · 55w
+state a01_g1_f0_e #FFCDD2
+a01_g1_f0_e : death (negative)
+a01_g1_f0_e : "Stand square at the Main Gate"
+state a01_g1_f1_c0 #D1C4E9
+a01_g1_f1_c0 : rising · 58w
+state a01_g1_f1_c1 #D1C4E9
+a01_g1_f1_c1 : rising · 55w
+state a01_g1_f1_e #FFCDD2
+a01_g1_f1_e : death (negative)
+a01_g1_f1_e : "Throw the gate wide at the Main Gate"
+state a01_g1_f2_c0 #D1C4E9
+a01_g1_f2_c0 : rising · 58w
+state a01_g1_f2_c1 #D1C4E9
+a01_g1_f2_c1 : rising · 55w
+state a01_g1_f2_e #FFCDD2
+a01_g1_f2_e : death (negative)
+a01_g1_f2_e : "Wait for the ram at the Main Gate"
+state a01_g1_f3_c0 #D1C4E9
+a01_g1_f3_c0 : rising · 58w
+state a01_g1_f3_c1 #D1C4E9
+a01_g1_f3_c1 : rising · 55w
+state a01_g1_f3_e #FFCDD2
+a01_g1_f3_e : death (negative)
+a01_g1_f3_e : "Send men out to fire at the Main Gate"
+state a01_g1_f4_c0 #D1C4E9
+a01_g1_f4_c0 : rising · 58w
+state a01_g1_f4_c1 #D1C4E9
+a01_g1_f4_c1 : rising · 55w
+state a01_g1_f4_e #FFCDD2
+a01_g1_f4_e : death (negative)
+a01_g1_f4_e : "Pile the whole reserve at the Main Gate"
+state a01_g1 #D1C4E9
+a01_g1 : rising · 88w
+state a01_g2_f0_c0 #D1C4E9
+a01_g2_f0_c0 : rising · 58w
+state a01_g2_f0_c1 #D1C4E9
+a01_g2_f0_c1 : rising · 55w
+state a01_g2_f0_e #FFCDD2
+a01_g2_f0_e : death (negative)
+a01_g2_f0_e : "Answer the ram at the Main Gate"
+state a01_g2_f1_c0 #D1C4E9
+a01_g2_f1_c0 : rising · 58w
+state a01_g2_f1_c1 #D1C4E9
+a01_g2_f1_c1 : rising · 55w
+state a01_g2_f1_e #FFCDD2
+a01_g2_f1_e : death (negative)
+a01_g2_f1_e : "Pull the props to lure at the Main Gate"
+state a01_g2_f2_c0 #D1C4E9
+a01_g2_f2_c0 : rising · 58w
+state a01_g2_f2_c1 #D1C4E9
+a01_g2_f2_c1 : rising · 55w
+state a01_g2_f2_e #FFCDD2
+a01_g2_f2_e : death (negative)
+a01_g2_f2_e : "Hold the men back at the Main Gate"
+state a01_g2_f3_c0 #D1C4E9
+a01_g2_f3_c0 : rising · 58w
+state a01_g2_f3_c1 #D1C4E9
+a01_g2_f3_c1 : rising · 55w
+state a01_g2_f3_e #FFCDD2
+a01_g2_f3_e : death (negative)
+a01_g2_f3_e : "Order a countercharge through at the Main Gate"
+state a01_g2_f4_c0 #D1C4E9
+a01_g2_f4_c0 : rising · 58w
+state a01_g2_f4_c1 #D1C4E9
+a01_g2_f4_c1 : rising · 55w
+state a01_g2_f4_e #FFCDD2
+a01_g2_f4_e : death (negative)
+a01_g2_f4_e : "Sound the retreat at the Main Gate"
+state a01_g2 #D1C4E9
+a01_g2 : rising · 88w
+state a01_m #FFF9C4
+a01_m : choice · 80w
+state a01_res_f_c0 #D1C4E9
+a01_res_f_c0 : rising · 58w
+state a01_res_f_c1 #D1C4E9
+a01_res_f_c1 : rising · 55w
+state a01_res_f_e #FFCDD2
+a01_res_f_e : death (negative)
+a01_res_f_e : "The Wall Given Up at the Main Gate"
+state a01_firm #D1C4E9
+a01_firm : rising · 66w
+state a01_waver #D1C4E9
+a01_waver : rising · 68w
+state a01_res #D1C4E9
+a01_res : rising · 88w
+state a01_s1_loud_c0 #D1C4E9
+a01_s1_loud_c0 : rising · 58w
+state a01_s1_loud_c1 #D1C4E9
+a01_s1_loud_c1 : rising · 55w
+state a01_s1_loud_e #FFCDD2
+a01_s1_loud_e : death (negative)
+a01_s1_loud_e : "Answered Loud at the Main Gate, the Opening Rush"
+state a01_s1_cap #FFCDD2
+a01_s1_cap : capture (negative)
+a01_s1_cap : "Taken Alive at the Main Gate, the Opening Rush"
+state a01_s1 #FFF9C4
+a01_s1 : choice · 74w
+state a01_s2_loud_c0 #D1C4E9
+a01_s2_loud_c0 : rising · 58w
+state a01_s2_loud_c1 #D1C4E9
+a01_s2_loud_c1 : rising · 55w
+state a01_s2_loud_e #FFCDD2
+a01_s2_loud_e : death (negative)
+a01_s2_loud_e : "Answered Loud at the Main Gate, the Second Line"
+state a01_s2_cap #FFCDD2
+a01_s2_cap : capture (negative)
+a01_s2_cap : "Taken Alive at the Main Gate, the Second Line"
+state a01_s2 #FFF9C4
+a01_s2 : choice · 74w
+state a01_s3_loud_c0 #D1C4E9
+a01_s3_loud_c0 : rising · 58w
+state a01_s3_loud_c1 #D1C4E9
+a01_s3_loud_c1 : rising · 55w
+state a01_s3_loud_e #FFCDD2
+a01_s3_loud_e : death (negative)
+a01_s3_loud_e : "Answered Loud at the Main Gate, the Last Resolution"
+state a01_s3_cap #FFCDD2
+a01_s3_cap : capture (negative)
+a01_s3_cap : "Taken Alive at the Main Gate, the Last Resolution"
+state a01_s3 #FFF9C4
+a01_s3 : choice · 74w
+state a01_pass #FFF9C4
+a01_pass : choice · 76w
+state a02_ap #D1C4E9
+a02_ap : rising · 74w
+state a02_g1_f0_c0 #D1C4E9
+a02_g1_f0_c0 : rising · 58w
+state a02_g1_f0_c1 #D1C4E9
+a02_g1_f0_c1 : rising · 55w
+state a02_g1_f0_e #FFCDD2
+a02_g1_f0_e : death (negative)
+a02_g1_f0_e : "Let the ladders fill at the East Curtain"
+state a02_g1_f1_c0 #D1C4E9
+a02_g1_f1_c0 : rising · 58w
+state a02_g1_f1_c1 #D1C4E9
+a02_g1_f1_c1 : rising · 55w
+state a02_g1_f1_e #FFCDD2
+a02_g1_f1_e : death (negative)
+a02_g1_f1_e : "Meet the ladder-heads at the East Curtain"
+state a02_g1_f2_c0 #D1C4E9
+a02_g1_f2_c0 : rising · 58w
+state a02_g1_f2_c1 #D1C4E9
+a02_g1_f2_c1 : rising · 55w
+state a02_g1_f2_e #FFCDD2
+a02_g1_f2_e : death (negative)
+a02_g1_f2_e : "Pull men to one tower at the East Curtain"
+state a02_g1_f3_c0 #D1C4E9
+a02_g1_f3_c0 : rising · 58w
+state a02_g1_f3_c1 #D1C4E9
+a02_g1_f3_c1 : rising · 55w
+state a02_g1_f3_e #FFCDD2
+a02_g1_f3_e : death (negative)
+a02_g1_f3_e : "Wait to see which ladder at the East Curtain"
+state a02_g1_f4_c0 #D1C4E9
+a02_g1_f4_c0 : rising · 58w
+state a02_g1_f4_c1 #D1C4E9
+a02_g1_f4_c1 : rising · 55w
+state a02_g1_f4_e #FFCDD2
+a02_g1_f4_e : death (negative)
+a02_g1_f4_e : "Lean out past the merlon at the East Curtain"
+state a02_g1 #D1C4E9
+a02_g1 : rising · 88w
+state a02_g2_f0_c0 #D1C4E9
+a02_g2_f0_c0 : rising · 58w
+state a02_g2_f0_c1 #D1C4E9
+a02_g2_f0_c1 : rising · 55w
+state a02_g2_f0_e #FFCDD2
+a02_g2_f0_e : death (negative)
+a02_g2_f0_e : "Fork the last ladders at the East Curtain"
+state a02_g2_f1_c0 #D1C4E9
+a02_g2_f1_c0 : rising · 58w
+state a02_g2_f1_c1 #D1C4E9
+a02_g2_f1_c1 : rising · 55w
+state a02_g2_f1_e #FFCDD2
+a02_g2_f1_e : death (negative)
+a02_g2_f1_e : "Fire the hoarding to burn at the East Curtain"
+state a02_g2_f2_c0 #D1C4E9
+a02_g2_f2_c0 : rising · 58w
+state a02_g2_f2_c1 #D1C4E9
+a02_g2_f2_c1 : rising · 55w
+state a02_g2_f2_e #FFCDD2
+a02_g2_f2_e : death (negative)
+a02_g2_f2_e : "Rush every man at the East Curtain"
+state a02_g2_f3_c0 #D1C4E9
+a02_g2_f3_c0 : rising · 58w
+state a02_g2_f3_c1 #D1C4E9
+a02_g2_f3_c1 : rising · 55w
+state a02_g2_f3_e #FFCDD2
+a02_g2_f3_e : death (negative)
+a02_g2_f3_e : "Cut the merlon loose at the East Curtain"
+state a02_g2_f4_c0 #D1C4E9
+a02_g2_f4_c0 : rising · 58w
+state a02_g2_f4_c1 #D1C4E9
+a02_g2_f4_c1 : rising · 55w
+state a02_g2_f4_e #FFCDD2
+a02_g2_f4_e : death (negative)
+a02_g2_f4_e : "Stand at the East Curtain"
+state a02_g2 #D1C4E9
+a02_g2 : rising · 88w
+state a02_m #FFF9C4
+a02_m : choice · 80w
+state a02_res_f_c0 #D1C4E9
+a02_res_f_c0 : rising · 58w
+state a02_res_f_c1 #D1C4E9
+a02_res_f_c1 : rising · 55w
+state a02_res_f_e #FFCDD2
+a02_res_f_e : death (negative)
+a02_res_f_e : "The Wall Given Up at the East Curtain"
+state a02_firm #D1C4E9
+a02_firm : rising · 66w
+state a02_waver #D1C4E9
+a02_waver : rising · 68w
+state a02_res #D1C4E9
+a02_res : rising · 88w
+state a02_s1_loud_c0 #D1C4E9
+a02_s1_loud_c0 : rising · 58w
+state a02_s1_loud_c1 #D1C4E9
+a02_s1_loud_c1 : rising · 55w
+state a02_s1_loud_e #FFCDD2
+a02_s1_loud_e : death (negative)
+a02_s1_loud_e : "Answered Loud at the East Curtain, the Opening Rush"
+state a02_s1_cap #FFCDD2
+a02_s1_cap : capture (negative)
+a02_s1_cap : "Taken Alive at the East Curtain, the Opening Rush"
+state a02_s1 #FFF9C4
+a02_s1 : choice · 74w
+state a02_s2_loud_c0 #D1C4E9
+a02_s2_loud_c0 : rising · 58w
+state a02_s2_loud_c1 #D1C4E9
+a02_s2_loud_c1 : rising · 55w
+state a02_s2_loud_e #FFCDD2
+a02_s2_loud_e : death (negative)
+a02_s2_loud_e : "Answered Loud at the East Curtain, the Second Line"
+state a02_s2_cap #FFCDD2
+a02_s2_cap : capture (negative)
+a02_s2_cap : "Taken Alive at the East Curtain, the Second Line"
+state a02_s2 #FFF9C4
+a02_s2 : choice · 74w
+state a02_s3_loud_c0 #D1C4E9
+a02_s3_loud_c0 : rising · 58w
+state a02_s3_loud_c1 #D1C4E9
+a02_s3_loud_c1 : rising · 55w
+state a02_s3_loud_e #FFCDD2
+a02_s3_loud_e : death (negative)
+a02_s3_loud_e : "Answered Loud at the East Curtain, the Last Resolution"
+state a02_s3_cap #FFCDD2
+a02_s3_cap : capture (negative)
+a02_s3_cap : "Taken Alive at the East Curtain, the Last Resolution"
+state a02_s3 #FFF9C4
+a02_s3 : choice · 74w
+state a02_pass #FFF9C4
+a02_pass : choice · 76w
+state a03_ap #D1C4E9
+a03_ap : rising · 74w
+state a03_g1_f0_c0 #D1C4E9
+a03_g1_f0_c0 : rising · 58w
+state a03_g1_f0_c1 #D1C4E9
+a03_g1_f0_c1 : rising · 55w
+state a03_g1_f0_e #FFCDD2
+a03_g1_f0_e : death (negative)
+a03_g1_f0_e : "Wait for the ground at the Northwest Tower"
+state a03_g1_f1_c0 #D1C4E9
+a03_g1_f1_c0 : rising · 58w
+state a03_g1_f1_c1 #D1C4E9
+a03_g1_f1_c1 : rising · 55w
+state a03_g1_f1_e #FFCDD2
+a03_g1_f1_e : death (negative)
+a03_g1_f1_e : "Flood the sap at the Northwest Tower"
+state a03_g1_f2_c0 #D1C4E9
+a03_g1_f2_c0 : rising · 58w
+state a03_g1_f2_c1 #D1C4E9
+a03_g1_f2_c1 : rising · 55w
+state a03_g1_f2_e #FFCDD2
+a03_g1_f2_e : death (negative)
+a03_g1_f2_e : "Load the tower with men at the Northwest Tower"
+state a03_g1_f3_c0 #D1C4E9
+a03_g1_f3_c0 : rising · 58w
+state a03_g1_f3_c1 #D1C4E9
+a03_g1_f3_c1 : rising · 55w
+state a03_g1_f3_e #FFCDD2
+a03_g1_f3_e : death (negative)
+a03_g1_f3_e : "Sink your own shaft straight at the Northwest Tower"
+state a03_g1_f4_c0 #D1C4E9
+a03_g1_f4_c0 : rising · 58w
+state a03_g1_f4_c1 #D1C4E9
+a03_g1_f4_c1 : rising · 55w
+state a03_g1_f4_e #FFCDD2
+a03_g1_f4_e : death (negative)
+a03_g1_f4_e : "Abandon the tower at the Northwest Tower"
+state a03_g1 #D1C4E9
+a03_g1 : rising · 88w
+state a03_g2_f0_c0 #D1C4E9
+a03_g2_f0_c0 : rising · 58w
+state a03_g2_f0_c1 #D1C4E9
+a03_g2_f0_c1 : rising · 55w
+state a03_g2_f0_e #FFCDD2
+a03_g2_f0_e : death (negative)
+a03_g2_f0_e : "Fire their props at the Northwest Tower"
+state a03_g2_f1_c0 #D1C4E9
+a03_g2_f1_c0 : rising · 58w
+state a03_g2_f1_c1 #D1C4E9
+a03_g2_f1_c1 : rising · 55w
+state a03_g2_f1_e #FFCDD2
+a03_g2_f1_e : death (negative)
+a03_g2_f1_e : "Charge into their gallery at the Northwest Tower"
+state a03_g2_f2_c0 #D1C4E9
+a03_g2_f2_c0 : rising · 58w
+state a03_g2_f2_c1 #D1C4E9
+a03_g2_f2_c1 : rising · 55w
+state a03_g2_f2_e #FFCDD2
+a03_g2_f2_e : death (negative)
+a03_g2_f2_e : "Hold at the Northwest Tower"
+state a03_g2_f3_c0 #D1C4E9
+a03_g2_f3_c0 : rising · 58w
+state a03_g2_f3_c1 #D1C4E9
+a03_g2_f3_c1 : rising · 55w
+state a03_g2_f3_e #FFCDD2
+a03_g2_f3_e : death (negative)
+a03_g2_f3_e : "Pull the props yourself by at the Northwest Tower"
+state a03_g2_f4_c0 #D1C4E9
+a03_g2_f4_c0 : rising · 58w
+state a03_g2_f4_c1 #D1C4E9
+a03_g2_f4_c1 : rising · 55w
+state a03_g2_f4_e #FFCDD2
+a03_g2_f4_e : death (negative)
+a03_g2_f4_e : "Vent the smoke back through at the Northwest Tower"
+state a03_g2 #D1C4E9
+a03_g2 : rising · 88w
+state a03_g3_f0_c0 #D1C4E9
+a03_g3_f0_c0 : rising · 58w
+state a03_g3_f0_c1 #D1C4E9
+a03_g3_f0_c1 : rising · 55w
+state a03_g3_f0_e #FFCDD2
+a03_g3_f0_e : death (negative)
+a03_g3_f0_e : "Spend the powder to blow at the Northwest Tower"
+state a03_g3_f1_c0 #D1C4E9
+a03_g3_f1_c0 : rising · 58w
+state a03_g3_f1_c1 #D1C4E9
+a03_g3_f1_c1 : rising · 55w
+state a03_g3_f1_e #FFCDD2
+a03_g3_f1_e : death (negative)
+a03_g3_f1_e : "Save the powder at the Northwest Tower"
+state a03_g3_f2_c0 #D1C4E9
+a03_g3_f2_c0 : rising · 58w
+state a03_g3_f2_c1 #D1C4E9
+a03_g3_f2_c1 : rising · 55w
+state a03_g3_f2_e #FFCDD2
+a03_g3_f2_e : death (negative)
+a03_g3_f2_e : "Wait a watch to be at the Northwest Tower"
+state a03_g3_f3_c0 #D1C4E9
+a03_g3_f3_c0 : rising · 58w
+state a03_g3_f3_c1 #D1C4E9
+a03_g3_f3_c1 : rising · 55w
+state a03_g3_f3_e #FFCDD2
+a03_g3_f3_e : death (negative)
+a03_g3_f3_e : "Split the powder between two at the Northwest Tower"
+state a03_g3 #D1C4E9
+a03_g3 : rising · 88w
+state a03_m #FFF9C4
+a03_m : choice · 80w
+state a03_res_f_c0 #D1C4E9
+a03_res_f_c0 : rising · 58w
+state a03_res_f_c1 #D1C4E9
+a03_res_f_c1 : rising · 55w
+state a03_res_f_e #FFCDD2
+a03_res_f_e : death (negative)
+a03_res_f_e : "The Wall Given Up at the Northwest Tower"
+state a03_hold #D1C4E9
+a03_hold : rising · 66w
+state a03_thin #D1C4E9
+a03_thin : rising · 66w
+state a03_dry #D1C4E9
+a03_dry : rising · 66w
+state a03_res #D1C4E9
+a03_res : rising · 88w
+state a03_s1_loud_c0 #D1C4E9
+a03_s1_loud_c0 : rising · 58w
+state a03_s1_loud_c1 #D1C4E9
+a03_s1_loud_c1 : rising · 55w
+state a03_s1_loud_e #FFCDD2
+a03_s1_loud_e : death (negative)
+a03_s1_loud_e : "Answered Loud at the Northwest Tower, the Opening Rush"
+state a03_s1_cap #FFCDD2
+a03_s1_cap : capture (negative)
+a03_s1_cap : "Taken Alive at the Northwest Tower, the Opening Rush"
+state a03_s1 #FFF9C4
+a03_s1 : choice · 74w
+state a03_s2_loud_c0 #D1C4E9
+a03_s2_loud_c0 : rising · 58w
+state a03_s2_loud_c1 #D1C4E9
+a03_s2_loud_c1 : rising · 55w
+state a03_s2_loud_e #FFCDD2
+a03_s2_loud_e : death (negative)
+a03_s2_loud_e : "Answered Loud at the Northwest Tower, the Second Line"
+state a03_s2_cap #FFCDD2
+a03_s2_cap : capture (negative)
+a03_s2_cap : "Taken Alive at the Northwest Tower, the Second Line"
+state a03_s2 #FFF9C4
+a03_s2 : choice · 74w
+state a03_s3_loud_c0 #D1C4E9
+a03_s3_loud_c0 : rising · 58w
+state a03_s3_loud_c1 #D1C4E9
+a03_s3_loud_c1 : rising · 55w
+state a03_s3_loud_e #FFCDD2
+a03_s3_loud_e : death (negative)
+a03_s3_loud_e : "Answered Loud at the Northwest Tower, the Last Resolution"
+state a03_s3_cap #FFCDD2
+a03_s3_cap : capture (negative)
+a03_s3_cap : "Taken Alive at the Northwest Tower, the Last Resolution"
+state a03_s3 #FFF9C4
+a03_s3 : choice · 74w
+state a03_s4_loud_c0 #D1C4E9
+a03_s4_loud_c0 : rising · 58w
+state a03_s4_loud_c1 #D1C4E9
+a03_s4_loud_c1 : rising · 55w
+state a03_s4_loud_e #FFCDD2
+a03_s4_loud_e : death (negative)
+a03_s4_loud_e : "Answered Loud at the Northwest Tower, the Stores' Stand"
+state a03_s4_cap #FFCDD2
+a03_s4_cap : capture (negative)
+a03_s4_cap : "Taken Alive at the Northwest Tower, the Stores' Stand"
+state a03_s4 #FFF9C4
+a03_s4 : choice · 74w
+state a03_pass #FFF9C4
+a03_pass : choice · 76w
+state a04_ap #D1C4E9
+a04_ap : rising · 74w
+state a04_g1_f0_c0 #D1C4E9
+a04_g1_f0_c0 : rising · 58w
+state a04_g1_f0_c1 #D1C4E9
+a04_g1_f0_c1 : rising · 55w
+state a04_g1_f0_e #FFCDD2
+a04_g1_f0_e : death (negative)
+a04_g1_f0_e : "Wait for the first roof at the Burning Roofs"
+state a04_g1_f1_c0 #D1C4E9
+a04_g1_f1_c0 : rising · 58w
+state a04_g1_f1_c1 #D1C4E9
+a04_g1_f1_c1 : rising · 55w
+state a04_g1_f1_e #FFCDD2
+a04_g1_f1_e : death (negative)
+a04_g1_f1_e : "Send the water-line up onto at the Burning Roofs"
+state a04_g1_f2_c0 #D1C4E9
+a04_g1_f2_c0 : rising · 58w
+state a04_g1_f2_c1 #D1C4E9
+a04_g1_f2_c1 : rising · 55w
+state a04_g1_f2_e #FFCDD2
+a04_g1_f2_e : death (negative)
+a04_g1_f2_e : "Fire your own outbuildings at the Burning Roofs"
+state a04_g1_f3_c0 #D1C4E9
+a04_g1_f3_c0 : rising · 58w
+state a04_g1_f3_c1 #D1C4E9
+a04_g1_f3_c1 : rising · 55w
+state a04_g1_f3_e #FFCDD2
+a04_g1_f3_e : death (negative)
+a04_g1_f3_e : "Crowd the men under at the Burning Roofs"
+state a04_g1_f4_c0 #D1C4E9
+a04_g1_f4_c0 : rising · 58w
+state a04_g1_f4_c1 #D1C4E9
+a04_g1_f4_c1 : rising · 55w
+state a04_g1_f4_e #FFCDD2
+a04_g1_f4_e : death (negative)
+a04_g1_f4_e : "Answer fire-arrows with your own at the Burning Roofs"
+state a04_g1 #D1C4E9
+a04_g1 : rising · 88w
+state a04_g2_f0_c0 #D1C4E9
+a04_g2_f0_c0 : rising · 58w
+state a04_g2_f0_c1 #D1C4E9
+a04_g2_f0_c1 : rising · 55w
+state a04_g2_f0_e #FFCDD2
+a04_g2_f0_e : death (negative)
+a04_g2_f0_e : "Wet the hoardings at the Burning Roofs"
+state a04_g2_f1_c0 #D1C4E9
+a04_g2_f1_c0 : rising · 58w
+state a04_g2_f1_c1 #D1C4E9
+a04_g2_f1_c1 : rising · 55w
+state a04_g2_f1_e #FFCDD2
+a04_g2_f1_e : death (negative)
+a04_g2_f1_e : "Pull the whole watch at the Burning Roofs"
+state a04_g2_f2_c0 #D1C4E9
+a04_g2_f2_c0 : rising · 58w
+state a04_g2_f2_c1 #D1C4E9
+a04_g2_f2_c1 : rising · 55w
+state a04_g2_f2_e #FFCDD2
+a04_g2_f2_e : death (negative)
+a04_g2_f2_e : "Cut the burning roof loose at the Burning Roofs"
+state a04_g2_f3_c0 #D1C4E9
+a04_g2_f3_c0 : rising · 58w
+state a04_g2_f3_c1 #D1C4E9
+a04_g2_f3_c1 : rising · 55w
+state a04_g2_f3_e #FFCDD2
+a04_g2_f3_e : death (negative)
+a04_g2_f3_e : "Hold the buckets at the Burning Roofs"
+state a04_g2_f4_c0 #D1C4E9
+a04_g2_f4_c0 : rising · 58w
+state a04_g2_f4_c1 #D1C4E9
+a04_g2_f4_c1 : rising · 55w
+state a04_g2_f4_e #FFCDD2
+a04_g2_f4_e : death (negative)
+a04_g2_f4_e : "Climb out to smother at the Burning Roofs"
+state a04_g2 #D1C4E9
+a04_g2 : rising · 88w
+state a04_m #FFF9C4
+a04_m : choice · 80w
+state a04_res_f_c0 #D1C4E9
+a04_res_f_c0 : rising · 58w
+state a04_res_f_c1 #D1C4E9
+a04_res_f_c1 : rising · 55w
+state a04_res_f_e #FFCDD2
+a04_res_f_e : death (negative)
+a04_res_f_e : "The Wall Given Up at the Burning Roofs"
+state a04_firm #D1C4E9
+a04_firm : rising · 66w
+state a04_waver #D1C4E9
+a04_waver : rising · 68w
+state a04_res #D1C4E9
+a04_res : rising · 88w
+state a04_s1_loud_c0 #D1C4E9
+a04_s1_loud_c0 : rising · 58w
+state a04_s1_loud_c1 #D1C4E9
+a04_s1_loud_c1 : rising · 55w
+state a04_s1_loud_e #FFCDD2
+a04_s1_loud_e : death (negative)
+a04_s1_loud_e : "Answered Loud at the Burning Roofs, the Opening Rush"
+state a04_s1_cap #FFCDD2
+a04_s1_cap : capture (negative)
+a04_s1_cap : "Taken Alive at the Burning Roofs, the Opening Rush"
+state a04_s1 #FFF9C4
+a04_s1 : choice · 74w
+state a04_s2_loud_c0 #D1C4E9
+a04_s2_loud_c0 : rising · 58w
+state a04_s2_loud_c1 #D1C4E9
+a04_s2_loud_c1 : rising · 55w
+state a04_s2_loud_e #FFCDD2
+a04_s2_loud_e : death (negative)
+a04_s2_loud_e : "Answered Loud at the Burning Roofs, the Second Line"
+state a04_s2_cap #FFCDD2
+a04_s2_cap : capture (negative)
+a04_s2_cap : "Taken Alive at the Burning Roofs, the Second Line"
+state a04_s2 #FFF9C4
+a04_s2 : choice · 74w
+state a04_s3_loud_c0 #D1C4E9
+a04_s3_loud_c0 : rising · 58w
+state a04_s3_loud_c1 #D1C4E9
+a04_s3_loud_c1 : rising · 55w
+state a04_s3_loud_e #FFCDD2
+a04_s3_loud_e : death (negative)
+a04_s3_loud_e : "Answered Loud at the Burning Roofs, the Last Resolution"
+state a04_s3_cap #FFCDD2
+a04_s3_cap : capture (negative)
+a04_s3_cap : "Taken Alive at the Burning Roofs, the Last Resolution"
+state a04_s3 #FFF9C4
+a04_s3 : choice · 74w
+state a04_pass #FFF9C4
+a04_pass : choice · 76w
+state a05_ap #D1C4E9
+a05_ap : rising · 74w
+state a05_g1_f0_c0 #D1C4E9
+a05_g1_f0_c0 : rising · 58w
+state a05_g1_f0_c1 #D1C4E9
+a05_g1_f0_c1 : rising · 55w
+state a05_g1_f0_e #FFCDD2
+a05_g1_f0_e : death (negative)
+a05_g1_f0_e : "Light the whole wall at the Fogged Wall"
+state a05_g1_f1_c0 #D1C4E9
+a05_g1_f1_c0 : rising · 58w
+state a05_g1_f1_c1 #D1C4E9
+a05_g1_f1_c1 : rising · 55w
+state a05_g1_f1_e #FFCDD2
+a05_g1_f1_e : death (negative)
+a05_g1_f1_e : "Loose blind into the fog at the Fogged Wall"
+state a05_g1_f2_c0 #D1C4E9
+a05_g1_f2_c0 : rising · 58w
+state a05_g1_f2_c1 #D1C4E9
+a05_g1_f2_c1 : rising · 55w
+state a05_g1_f2_e #FFCDD2
+a05_g1_f2_e : death (negative)
+a05_g1_f2_e : "Wait to be certain at the Fogged Wall"
+state a05_g1_f3_c0 #D1C4E9
+a05_g1_f3_c0 : rising · 58w
+state a05_g1_f3_c1 #D1C4E9
+a05_g1_f3_c1 : rising · 55w
+state a05_g1_f3_e #FFCDD2
+a05_g1_f3_e : death (negative)
+a05_g1_f3_e : "Pull back off the fogged at the Fogged Wall"
+state a05_g1_f4_c0 #D1C4E9
+a05_g1_f4_c0 : rising · 58w
+state a05_g1_f4_c1 #D1C4E9
+a05_g1_f4_c1 : rising · 55w
+state a05_g1_f4_e #FFCDD2
+a05_g1_f4_e : death (negative)
+a05_g1_f4_e : "Send a party at the Fogged Wall"
+state a05_g1 #D1C4E9
+a05_g1 : rising · 88w
+state a05_g2_f0_c0 #D1C4E9
+a05_g2_f0_c0 : rising · 58w
+state a05_g2_f0_c1 #D1C4E9
+a05_g2_f0_c1 : rising · 55w
+state a05_g2_f0_e #FFCDD2
+a05_g2_f0_e : death (negative)
+a05_g2_f0_e : "Fire low on the first at the Fogged Wall"
+state a05_g2_f1_c0 #D1C4E9
+a05_g2_f1_c0 : rising · 58w
+state a05_g2_f1_c1 #D1C4E9
+a05_g2_f1_c1 : rising · 55w
+state a05_g2_f1_e #FFCDD2
+a05_g2_f1_e : death (negative)
+a05_g2_f1_e : "Empty the last arrows at the Fogged Wall"
+state a05_g2_f2_c0 #D1C4E9
+a05_g2_f2_c0 : rising · 58w
+state a05_g2_f2_c1 #D1C4E9
+a05_g2_f2_c1 : rising · 55w
+state a05_g2_f2_e #FFCDD2
+a05_g2_f2_e : death (negative)
+a05_g2_f2_e : "Set fire to the fog at the Fogged Wall"
+state a05_g2_f3_c0 #D1C4E9
+a05_g2_f3_c0 : rising · 58w
+state a05_g2_f3_c1 #D1C4E9
+a05_g2_f3_c1 : rising · 55w
+state a05_g2_f3_e #FFCDD2
+a05_g2_f3_e : death (negative)
+a05_g2_f3_e : "Hold every shot at the Fogged Wall"
+state a05_g2_f4_c0 #D1C4E9
+a05_g2_f4_c0 : rising · 58w
+state a05_g2_f4_c1 #D1C4E9
+a05_g2_f4_c1 : rising · 55w
+state a05_g2_f4_e #FFCDD2
+a05_g2_f4_e : death (negative)
+a05_g2_f4_e : "Lean into the fog at the Fogged Wall"
+state a05_g2 #D1C4E9
+a05_g2 : rising · 88w
+state a05_g3_f0_c0 #D1C4E9
+a05_g3_f0_c0 : rising · 58w
+state a05_g3_f0_c1 #D1C4E9
+a05_g3_f0_c1 : rising · 55w
+state a05_g3_f0_e #FFCDD2
+a05_g3_f0_e : death (negative)
+a05_g3_f0_e : "Spend the oil to light at the Fogged Wall"
+state a05_g3_f1_c0 #D1C4E9
+a05_g3_f1_c0 : rising · 58w
+state a05_g3_f1_c1 #D1C4E9
+a05_g3_f1_c1 : rising · 55w
+state a05_g3_f1_e #FFCDD2
+a05_g3_f1_e : death (negative)
+a05_g3_f1_e : "Save the oil at the Fogged Wall"
+state a05_g3_f2_c0 #D1C4E9
+a05_g3_f2_c0 : rising · 58w
+state a05_g3_f2_c1 #D1C4E9
+a05_g3_f2_c1 : rising · 55w
+state a05_g3_f2_e #FFCDD2
+a05_g3_f2_e : death (negative)
+a05_g3_f2_e : "Pour the oil straight at the Fogged Wall"
+state a05_g3_f3_c0 #D1C4E9
+a05_g3_f3_c0 : rising · 58w
+state a05_g3_f3_c1 #D1C4E9
+a05_g3_f3_c1 : rising · 55w
+state a05_g3_f3_e #FFCDD2
+a05_g3_f3_e : death (negative)
+a05_g3_f3_e : "Ration the oil at the Fogged Wall"
+state a05_g3 #D1C4E9
+a05_g3 : rising · 88w
+state a05_m #FFF9C4
+a05_m : choice · 80w
+state a05_res_f_c0 #D1C4E9
+a05_res_f_c0 : rising · 58w
+state a05_res_f_c1 #D1C4E9
+a05_res_f_c1 : rising · 55w
+state a05_res_f_e #FFCDD2
+a05_res_f_e : death (negative)
+a05_res_f_e : "The Wall Given Up at the Fogged Wall"
+state a05_hold #D1C4E9
+a05_hold : rising · 66w
+state a05_thin #D1C4E9
+a05_thin : rising · 66w
+state a05_dry #D1C4E9
+a05_dry : rising · 66w
+state a05_res #D1C4E9
+a05_res : rising · 88w
+state a05_s1_loud_c0 #D1C4E9
+a05_s1_loud_c0 : rising · 58w
+state a05_s1_loud_c1 #D1C4E9
+a05_s1_loud_c1 : rising · 55w
+state a05_s1_loud_e #FFCDD2
+a05_s1_loud_e : death (negative)
+a05_s1_loud_e : "Answered Loud at the Fogged Wall, the Opening Rush"
+state a05_s1_cap #FFCDD2
+a05_s1_cap : capture (negative)
+a05_s1_cap : "Taken Alive at the Fogged Wall, the Opening Rush"
+state a05_s1 #FFF9C4
+a05_s1 : choice · 74w
+state a05_s2_loud_c0 #D1C4E9
+a05_s2_loud_c0 : rising · 58w
+state a05_s2_loud_c1 #D1C4E9
+a05_s2_loud_c1 : rising · 55w
+state a05_s2_loud_e #FFCDD2
+a05_s2_loud_e : death (negative)
+a05_s2_loud_e : "Answered Loud at the Fogged Wall, the Second Line"
+state a05_s2_cap #FFCDD2
+a05_s2_cap : capture (negative)
+a05_s2_cap : "Taken Alive at the Fogged Wall, the Second Line"
+state a05_s2 #FFF9C4
+a05_s2 : choice · 74w
+state a05_s3_loud_c0 #D1C4E9
+a05_s3_loud_c0 : rising · 58w
+state a05_s3_loud_c1 #D1C4E9
+a05_s3_loud_c1 : rising · 55w
+state a05_s3_loud_e #FFCDD2
+a05_s3_loud_e : death (negative)
+a05_s3_loud_e : "Answered Loud at the Fogged Wall, the Last Resolution"
+state a05_s3_cap #FFCDD2
+a05_s3_cap : capture (negative)
+a05_s3_cap : "Taken Alive at the Fogged Wall, the Last Resolution"
+state a05_s3 #FFF9C4
+a05_s3 : choice · 74w
+state a05_s4_loud_c0 #D1C4E9
+a05_s4_loud_c0 : rising · 58w
+state a05_s4_loud_c1 #D1C4E9
+a05_s4_loud_c1 : rising · 55w
+state a05_s4_loud_e #FFCDD2
+a05_s4_loud_e : death (negative)
+a05_s4_loud_e : "Answered Loud at the Fogged Wall, the Stores' Stand"
+state a05_s4_cap #FFCDD2
+a05_s4_cap : capture (negative)
+a05_s4_cap : "Taken Alive at the Fogged Wall, the Stores' Stand"
+state a05_s4 #FFF9C4
+a05_s4 : choice · 74w
+state a05_pass #FFF9C4
+a05_pass : choice · 76w
+state a06_ap #D1C4E9
+a06_ap : rising · 74w
+state a06_g1_f0_c0 #D1C4E9
+a06_g1_f0_c0 : rising · 58w
+state a06_g1_f0_c1 #D1C4E9
+a06_g1_f0_c1 : rising · 55w
+state a06_g1_f0_e #FFCDD2
+a06_g1_f0_e : death (negative)
+a06_g1_f0_e : "Wait to see if at the West Curtain"
+state a06_g1_f1_c0 #D1C4E9
+a06_g1_f1_c0 : rising · 58w
+state a06_g1_f1_c1 #D1C4E9
+a06_g1_f1_c1 : rising · 55w
+state a06_g1_f1_e #FFCDD2
+a06_g1_f1_e : death (negative)
+a06_g1_f1_e : "Answer the great ram at the West Curtain"
+state a06_g1_f2_c0 #D1C4E9
+a06_g1_f2_c0 : rising · 58w
+state a06_g1_f2_c1 #D1C4E9
+a06_g1_f2_c1 : rising · 55w
+state a06_g1_f2_e #FFCDD2
+a06_g1_f2_e : death (negative)
+a06_g1_f2_e : "Load the parapet over at the West Curtain"
+state a06_g1_f3_c0 #D1C4E9
+a06_g1_f3_c0 : rising · 58w
+state a06_g1_f3_c1 #D1C4E9
+a06_g1_f3_c1 : rising · 55w
+state a06_g1_f3_e #FFCDD2
+a06_g1_f3_e : death (negative)
+a06_g1_f3_e : "Undercut the ram's ramp at the West Curtain"
+state a06_g1_f4_c0 #D1C4E9
+a06_g1_f4_c0 : rising · 58w
+state a06_g1_f4_c1 #D1C4E9
+a06_g1_f4_c1 : rising · 55w
+state a06_g1_f4_e #FFCDD2
+a06_g1_f4_e : death (negative)
+a06_g1_f4_e : "Fire the ram-tower at the West Curtain"
+state a06_g1 #D1C4E9
+a06_g1 : rising · 88w
+state a06_g2_f0_c0 #D1C4E9
+a06_g2_f0_c0 : rising · 58w
+state a06_g2_f0_c1 #D1C4E9
+a06_g2_f0_c1 : rising · 55w
+state a06_g2_f0_e #FFCDD2
+a06_g2_f0_e : death (negative)
+a06_g2_f0_e : "Drop the murder-stones at the West Curtain"
+state a06_g2_f1_c0 #D1C4E9
+a06_g2_f1_c0 : rising · 58w
+state a06_g2_f1_c1 #D1C4E9
+a06_g2_f1_c1 : rising · 55w
+state a06_g2_f1_e #FFCDD2
+a06_g2_f1_e : death (negative)
+a06_g2_f1_e : "Hold the stones at the West Curtain"
+state a06_g2_f2_c0 #D1C4E9
+a06_g2_f2_c0 : rising · 58w
+state a06_g2_f2_c1 #D1C4E9
+a06_g2_f2_c1 : rising · 55w
+state a06_g2_f2_e #FFCDD2
+a06_g2_f2_e : death (negative)
+a06_g2_f2_e : "Pull the keystone to drop at the West Curtain"
+state a06_g2_f3_c0 #D1C4E9
+a06_g2_f3_c0 : rising · 58w
+state a06_g2_f3_c1 #D1C4E9
+a06_g2_f3_c1 : rising · 55w
+state a06_g2_f3_e #FFCDD2
+a06_g2_f3_e : death (negative)
+a06_g2_f3_e : "Mass the garrison behind at the West Curtain"
+state a06_g2_f4_c0 #D1C4E9
+a06_g2_f4_c0 : rising · 58w
+state a06_g2_f4_c1 #D1C4E9
+a06_g2_f4_c1 : rising · 55w
+state a06_g2_f4_e #FFCDD2
+a06_g2_f4_e : death (negative)
+a06_g2_f4_e : "Sound recall from the west at the West Curtain"
+state a06_g2 #D1C4E9
+a06_g2 : rising · 88w
+state a06_g3_f0_c0 #D1C4E9
+a06_g3_f0_c0 : rising · 58w
+state a06_g3_f0_c1 #D1C4E9
+a06_g3_f0_c1 : rising · 55w
+state a06_g3_f0_e #FFCDD2
+a06_g3_f0_e : death (negative)
+a06_g3_f0_e : "Spend the powder to bring at the West Curtain"
+state a06_g3_f1_c0 #D1C4E9
+a06_g3_f1_c0 : rising · 58w
+state a06_g3_f1_c1 #D1C4E9
+a06_g3_f1_c1 : rising · 55w
+state a06_g3_f1_e #FFCDD2
+a06_g3_f1_e : death (negative)
+a06_g3_f1_e : "Save the powder at the West Curtain"
+state a06_g3_f2_c0 #D1C4E9
+a06_g3_f2_c0 : rising · 58w
+state a06_g3_f2_c1 #D1C4E9
+a06_g3_f2_c1 : rising · 55w
+state a06_g3_f2_e #FFCDD2
+a06_g3_f2_e : death (negative)
+a06_g3_f2_e : "Throw the powder onto at the West Curtain"
+state a06_g3_f3_c0 #D1C4E9
+a06_g3_f3_c0 : rising · 58w
+state a06_g3_f3_c1 #D1C4E9
+a06_g3_f3_c1 : rising · 55w
+state a06_g3_f3_e #FFCDD2
+a06_g3_f3_e : death (negative)
+a06_g3_f3_e : "Halve the charge to keep at the West Curtain"
+state a06_g3 #D1C4E9
+a06_g3 : rising · 88w
+state a06_m #FFF9C4
+a06_m : choice · 80w
+state a06_res_f_c0 #D1C4E9
+a06_res_f_c0 : rising · 58w
+state a06_res_f_c1 #D1C4E9
+a06_res_f_c1 : rising · 55w
+state a06_res_f_e #FFCDD2
+a06_res_f_e : death (negative)
+a06_res_f_e : "The Wall Given Up at the West Curtain"
+state a06_hold #D1C4E9
+a06_hold : rising · 66w
+state a06_thin #D1C4E9
+a06_thin : rising · 66w
+state a06_dry #D1C4E9
+a06_dry : rising · 70w
+state a06_res #D1C4E9
+a06_res : rising · 88w
+state a06_s1_loud_c0 #D1C4E9
+a06_s1_loud_c0 : rising · 58w
+state a06_s1_loud_c1 #D1C4E9
+a06_s1_loud_c1 : rising · 55w
+state a06_s1_loud_e #FFCDD2
+a06_s1_loud_e : death (negative)
+a06_s1_loud_e : "Answered Loud at the West Curtain, the Opening Rush"
+state a06_s1_cap #FFCDD2
+a06_s1_cap : capture (negative)
+a06_s1_cap : "Taken Alive at the West Curtain, the Opening Rush"
+state a06_s1 #FFF9C4
+a06_s1 : choice · 74w
+state a06_s2_loud_c0 #D1C4E9
+a06_s2_loud_c0 : rising · 58w
+state a06_s2_loud_c1 #D1C4E9
+a06_s2_loud_c1 : rising · 55w
+state a06_s2_loud_e #FFCDD2
+a06_s2_loud_e : death (negative)
+a06_s2_loud_e : "Answered Loud at the West Curtain, the Second Line"
+state a06_s2_cap #FFCDD2
+a06_s2_cap : capture (negative)
+a06_s2_cap : "Taken Alive at the West Curtain, the Second Line"
+state a06_s2 #FFF9C4
+a06_s2 : choice · 74w
+state a06_s3_loud_c0 #D1C4E9
+a06_s3_loud_c0 : rising · 58w
+state a06_s3_loud_c1 #D1C4E9
+a06_s3_loud_c1 : rising · 55w
+state a06_s3_loud_e #FFCDD2
+a06_s3_loud_e : death (negative)
+a06_s3_loud_e : "Answered Loud at the West Curtain, the Last Resolution"
+state a06_s3_cap #FFCDD2
+a06_s3_cap : capture (negative)
+a06_s3_cap : "Taken Alive at the West Curtain, the Last Resolution"
+state a06_s3 #FFF9C4
+a06_s3 : choice · 74w
+state a06_s4_loud_c0 #D1C4E9
+a06_s4_loud_c0 : rising · 58w
+state a06_s4_loud_c1 #D1C4E9
+a06_s4_loud_c1 : rising · 55w
+state a06_s4_loud_e #FFCDD2
+a06_s4_loud_e : death (negative)
+a06_s4_loud_e : "Answered Loud at the West Curtain, the Stores' Stand"
+state a06_s4_cap #FFCDD2
+a06_s4_cap : capture (negative)
+a06_s4_cap : "Taken Alive at the West Curtain, the Stores' Stand"
+state a06_s4 #FFF9C4
+a06_s4 : choice · 74w
+state a06_pass #FFF9C4
+a06_pass : choice · 76w
+state a07_ap #D1C4E9
+a07_ap : rising · 74w
+state a07_g1_f0_c0 #D1C4E9
+a07_g1_f0_c0 : rising · 58w
+state a07_g1_f0_c1 #D1C4E9
+a07_g1_f0_c1 : rising · 55w
+state a07_g1_f0_e #FFCDD2
+a07_g1_f0_e : death (negative)
+a07_g1_f0_e : "Open the port to receive at the Sally-Port"
+state a07_g1_f1_c0 #D1C4E9
+a07_g1_f1_c0 : rising · 58w
+state a07_g1_f1_c1 #D1C4E9
+a07_g1_f1_c1 : rising · 55w
+state a07_g1_f1_e #FFCDD2
+a07_g1_f1_e : death (negative)
+a07_g1_f1_e : "March out to parley at the Sally-Port"
+state a07_g1_f2_c0 #D1C4E9
+a07_g1_f2_c0 : rising · 58w
+state a07_g1_f2_c1 #D1C4E9
+a07_g1_f2_c1 : rising · 55w
+state a07_g1_f2_e #FFCDD2
+a07_g1_f2_e : death (negative)
+a07_g1_f2_e : "Wait on their good faith at the Sally-Port"
+state a07_g1_f3_c0 #D1C4E9
+a07_g1_f3_c0 : rising · 58w
+state a07_g1_f3_c1 #D1C4E9
+a07_g1_f3_c1 : rising · 55w
+state a07_g1_f3_e #FFCDD2
+a07_g1_f3_e : death (negative)
+a07_g1_f3_e : "Empty the wall to hear at the Sally-Port"
+state a07_g1_f4_c0 #D1C4E9
+a07_g1_f4_c0 : rising · 58w
+state a07_g1_f4_c1 #D1C4E9
+a07_g1_f4_c1 : rising · 55w
+state a07_g1_f4_e #FFCDD2
+a07_g1_f4_e : death (negative)
+a07_g1_f4_e : "Fire on the flag at the Sally-Port"
+state a07_g1 #D1C4E9
+a07_g1 : rising · 88w
+state a07_g2_f0_c0 #D1C4E9
+a07_g2_f0_c0 : rising · 58w
+state a07_g2_f0_c1 #D1C4E9
+a07_g2_f0_c1 : rising · 55w
+state a07_g2_f0_e #FFCDD2
+a07_g2_f0_e : death (negative)
+a07_g2_f0_e : "Hold the port barred until at the Sally-Port"
+state a07_g2_f1_c0 #D1C4E9
+a07_g2_f1_c0 : rising · 58w
+state a07_g2_f1_c1 #D1C4E9
+a07_g2_f1_c1 : rising · 55w
+state a07_g2_f1_e #FFCDD2
+a07_g2_f1_e : death (negative)
+a07_g2_f1_e : "Let a few inside as at the Sally-Port"
+state a07_g2_f2_c0 #D1C4E9
+a07_g2_f2_c0 : rising · 58w
+state a07_g2_f2_c1 #D1C4E9
+a07_g2_f2_c1 : rising · 55w
+state a07_g2_f2_e #FFCDD2
+a07_g2_f2_e : death (negative)
+a07_g2_f2_e : "Send hostages of your own at the Sally-Port"
+state a07_g2_f3_c0 #D1C4E9
+a07_g2_f3_c0 : rising · 58w
+state a07_g2_f3_c1 #D1C4E9
+a07_g2_f3_c1 : rising · 55w
+state a07_g2_f3_e #FFCDD2
+a07_g2_f3_e : death (negative)
+a07_g2_f3_e : "Stand the whole garrison at the Sally-Port"
+state a07_g2_f4_c0 #D1C4E9
+a07_g2_f4_c0 : rising · 58w
+state a07_g2_f4_c1 #D1C4E9
+a07_g2_f4_c1 : rising · 55w
+state a07_g2_f4_e #FFCDD2
+a07_g2_f4_e : death (negative)
+a07_g2_f4_e : "Delay the answer to buy at the Sally-Port"
+state a07_g2 #D1C4E9
+a07_g2 : rising · 88w
+state a07_m #FFF9C4
+a07_m : choice · 80w
+state a07_res_f_c0 #D1C4E9
+a07_res_f_c0 : rising · 58w
+state a07_res_f_c1 #D1C4E9
+a07_res_f_c1 : rising · 55w
+state a07_res_f_e #FFCDD2
+a07_res_f_e : death (negative)
+a07_res_f_e : "The Wall Given Up at the Sally-Port"
+state a07_firm #D1C4E9
+a07_firm : rising · 66w
+state a07_waver #D1C4E9
+a07_waver : rising · 68w
+state a07_res #D1C4E9
+a07_res : rising · 88w
+state a07_s1_loud_c0 #D1C4E9
+a07_s1_loud_c0 : rising · 58w
+state a07_s1_loud_c1 #D1C4E9
+a07_s1_loud_c1 : rising · 55w
+state a07_s1_loud_e #FFCDD2
+a07_s1_loud_e : death (negative)
+a07_s1_loud_e : "Answered Loud at the Sally-Port, the Opening Rush"
+state a07_s1_cap #FFCDD2
+a07_s1_cap : capture (negative)
+a07_s1_cap : "Taken Alive at the Sally-Port, the Opening Rush"
+state a07_s1 #FFF9C4
+a07_s1 : choice · 74w
+state a07_s2_loud_c0 #D1C4E9
+a07_s2_loud_c0 : rising · 58w
+state a07_s2_loud_c1 #D1C4E9
+a07_s2_loud_c1 : rising · 55w
+state a07_s2_loud_e #FFCDD2
+a07_s2_loud_e : death (negative)
+a07_s2_loud_e : "Answered Loud at the Sally-Port, the Second Line"
+state a07_s2_cap #FFCDD2
+a07_s2_cap : capture (negative)
+a07_s2_cap : "Taken Alive at the Sally-Port, the Second Line"
+state a07_s2 #FFF9C4
+a07_s2 : choice · 74w
+state a07_s3_loud_c0 #D1C4E9
+a07_s3_loud_c0 : rising · 58w
+state a07_s3_loud_c1 #D1C4E9
+a07_s3_loud_c1 : rising · 55w
+state a07_s3_loud_e #FFCDD2
+a07_s3_loud_e : death (negative)
+a07_s3_loud_e : "Answered Loud at the Sally-Port, the Last Resolution"
+state a07_s3_cap #FFCDD2
+a07_s3_cap : capture (negative)
+a07_s3_cap : "Taken Alive at the Sally-Port, the Last Resolution"
+state a07_s3 #FFF9C4
+a07_s3 : choice · 74w
+state a07_pass #FFF9C4
+a07_pass : choice · 76w
+state a08_ap #D1C4E9
+a08_ap : rising · 74w
+state a08_g1_f0_c0 #D1C4E9
+a08_g1_f0_c0 : rising · 58w
+state a08_g1_f0_c1 #D1C4E9
+a08_g1_f0_c1 : rising · 55w
+state a08_g1_f0_e #FFCDD2
+a08_g1_f0_e : death (negative)
+a08_g1_f0_e : "Wait for the bridge at the North Face"
+state a08_g1_f1_c0 #D1C4E9
+a08_g1_f1_c0 : rising · 58w
+state a08_g1_f1_c1 #D1C4E9
+a08_g1_f1_c1 : rising · 55w
+state a08_g1_f1_e #FFCDD2
+a08_g1_f1_e : death (negative)
+a08_g1_f1_e : "Ram the tower with your at the North Face"
+state a08_g1_f2_c0 #D1C4E9
+a08_g1_f2_c0 : rising · 58w
+state a08_g1_f2_c1 #D1C4E9
+a08_g1_f2_c1 : rising · 55w
+state a08_g1_f2_e #FFCDD2
+a08_g1_f2_e : death (negative)
+a08_g1_f2_e : "Crowd the wall-head under at the North Face"
+state a08_g1_f3_c0 #D1C4E9
+a08_g1_f3_c0 : rising · 58w
+state a08_g1_f3_c1 #D1C4E9
+a08_g1_f3_c1 : rising · 55w
+state a08_g1_f3_e #FFCDD2
+a08_g1_f3_e : death (negative)
+a08_g1_f3_e : "Fire the wall-walk to deny at the North Face"
+state a08_g1_f4_c0 #D1C4E9
+a08_g1_f4_c0 : rising · 58w
+state a08_g1_f4_c1 #D1C4E9
+a08_g1_f4_c1 : rising · 55w
+state a08_g1_f4_e #FFCDD2
+a08_g1_f4_e : death (negative)
+a08_g1_f4_e : "Loose fire-pots at the tower's at the North Face"
+state a08_g1 #D1C4E9
+a08_g1 : rising · 88w
+state a08_g2_f0_c0 #D1C4E9
+a08_g2_f0_c0 : rising · 58w
+state a08_g2_f0_c1 #D1C4E9
+a08_g2_f0_c1 : rising · 55w
+state a08_g2_f0_e #FFCDD2
+a08_g2_f0_e : death (negative)
+a08_g2_f0_e : "Cut the drawbridge chains before at the North Face"
+state a08_g2_f1_c0 #D1C4E9
+a08_g2_f1_c0 : rising · 58w
+state a08_g2_f1_c1 #D1C4E9
+a08_g2_f1_c1 : rising · 55w
+state a08_g2_f1_e #FFCDD2
+a08_g2_f1_e : death (negative)
+a08_g2_f1_e : "Hold your fire at the North Face"
+state a08_g2_f2_c0 #D1C4E9
+a08_g2_f2_c0 : rising · 58w
+state a08_g2_f2_c1 #D1C4E9
+a08_g2_f2_c1 : rising · 55w
+state a08_g2_f2_e #FFCDD2
+a08_g2_f2_e : death (negative)
+a08_g2_f2_e : "Pull the parapet out under at the North Face"
+state a08_g2_f3_c0 #D1C4E9
+a08_g2_f3_c0 : rising · 58w
+state a08_g2_f3_c1 #D1C4E9
+a08_g2_f3_c1 : rising · 55w
+state a08_g2_f3_e #FFCDD2
+a08_g2_f3_e : death (negative)
+a08_g2_f3_e : "Charge across onto the tower at the North Face"
+state a08_g2_f4_c0 #D1C4E9
+a08_g2_f4_c0 : rising · 58w
+state a08_g2_f4_c1 #D1C4E9
+a08_g2_f4_c1 : rising · 55w
+state a08_g2_f4_e #FFCDD2
+a08_g2_f4_e : death (negative)
+a08_g2_f4_e : "Mass every archer at the North Face"
+state a08_g2 #D1C4E9
+a08_g2 : rising · 88w
+state a08_g3_f0_c0 #D1C4E9
+a08_g3_f0_c0 : rising · 58w
+state a08_g3_f0_c1 #D1C4E9
+a08_g3_f0_c1 : rising · 55w
+state a08_g3_f0_e #FFCDD2
+a08_g3_f0_e : death (negative)
+a08_g3_f0_e : "Fire the tower at the North Face"
+state a08_g3_f1_c0 #D1C4E9
+a08_g3_f1_c0 : rising · 58w
+state a08_g3_f1_c1 #D1C4E9
+a08_g3_f1_c1 : rising · 55w
+state a08_g3_f1_e #FFCDD2
+a08_g3_f1_e : death (negative)
+a08_g3_f1_e : "Wait until the tower is at the North Face"
+state a08_g3_f2_c0 #D1C4E9
+a08_g3_f2_c0 : rising · 58w
+state a08_g3_f2_c1 #D1C4E9
+a08_g3_f2_c1 : rising · 55w
+state a08_g3_f2_e #FFCDD2
+a08_g3_f2_e : death (negative)
+a08_g3_f2_e : "Throw the pitch across at the North Face"
+state a08_g3_f3_c0 #D1C4E9
+a08_g3_f3_c0 : rising · 58w
+state a08_g3_f3_c1 #D1C4E9
+a08_g3_f3_c1 : rising · 55w
+state a08_g3_f3_e #FFCDD2
+a08_g3_f3_e : death (negative)
+a08_g3_f3_e : "Split the pitch between tower at the North Face"
+state a08_g3 #D1C4E9
+a08_g3 : rising · 88w
+state a08_m #FFF9C4
+a08_m : choice · 80w
+state a08_res_f_c0 #D1C4E9
+a08_res_f_c0 : rising · 58w
+state a08_res_f_c1 #D1C4E9
+a08_res_f_c1 : rising · 55w
+state a08_res_f_e #FFCDD2
+a08_res_f_e : death (negative)
+a08_res_f_e : "The Wall Given Up at the North Face"
+state a08_solid #D1C4E9
+a08_solid : rising · 66w
+state a08_gap #D1C4E9
+a08_gap : rising · 70w
+state a08_res #D1C4E9
+a08_res : rising · 88w
+state a08_s1_loud_c0 #D1C4E9
+a08_s1_loud_c0 : rising · 58w
+state a08_s1_loud_c1 #D1C4E9
+a08_s1_loud_c1 : rising · 55w
+state a08_s1_loud_e #FFCDD2
+a08_s1_loud_e : death (negative)
+a08_s1_loud_e : "Answered Loud at the North Face, the Opening Rush"
+state a08_s1_cap #FFCDD2
+a08_s1_cap : capture (negative)
+a08_s1_cap : "Taken Alive at the North Face, the Opening Rush"
+state a08_s1 #FFF9C4
+a08_s1 : choice · 74w
+state a08_s2_loud_c0 #D1C4E9
+a08_s2_loud_c0 : rising · 58w
+state a08_s2_loud_c1 #D1C4E9
+a08_s2_loud_c1 : rising · 55w
+state a08_s2_loud_e #FFCDD2
+a08_s2_loud_e : death (negative)
+a08_s2_loud_e : "Answered Loud at the North Face, the Second Line"
+state a08_s2_cap #FFCDD2
+a08_s2_cap : capture (negative)
+a08_s2_cap : "Taken Alive at the North Face, the Second Line"
+state a08_s2 #FFF9C4
+a08_s2 : choice · 74w
+state a08_s3_loud_c0 #D1C4E9
+a08_s3_loud_c0 : rising · 58w
+state a08_s3_loud_c1 #D1C4E9
+a08_s3_loud_c1 : rising · 55w
+state a08_s3_loud_e #FFCDD2
+a08_s3_loud_e : death (negative)
+a08_s3_loud_e : "Answered Loud at the North Face, the Last Resolution"
+state a08_s3_cap #FFCDD2
+a08_s3_cap : capture (negative)
+a08_s3_cap : "Taken Alive at the North Face, the Last Resolution"
+state a08_s3 #FFF9C4
+a08_s3 : choice · 74w
+state a08_s4_loud_c0 #D1C4E9
+a08_s4_loud_c0 : rising · 58w
+state a08_s4_loud_c1 #D1C4E9
+a08_s4_loud_c1 : rising · 55w
+state a08_s4_loud_e #FFCDD2
+a08_s4_loud_e : death (negative)
+a08_s4_loud_e : "Answered Loud at the North Face, the Stores' Stand"
+state a08_s4_cap #FFCDD2
+a08_s4_cap : capture (negative)
+a08_s4_cap : "Taken Alive at the North Face, the Stores' Stand"
+state a08_s4 #FFF9C4
+a08_s4 : choice · 74w
+state a08_pass #FFF9C4
+a08_pass : choice · 76w
+state a09_ap #D1C4E9
+a09_ap : rising · 74w
+state a09_g1_f0_c0 #D1C4E9
+a09_g1_f0_c0 : rising · 58w
+state a09_g1_f0_c1 #D1C4E9
+a09_g1_f0_c1 : rising · 55w
+state a09_g1_f0_e #FFCDD2
+a09_g1_f0_e : death (negative)
+a09_g1_f0_e : "Meet the storm at the Breach"
+state a09_g1_f1_c0 #D1C4E9
+a09_g1_f1_c0 : rising · 58w
+state a09_g1_f1_c1 #D1C4E9
+a09_g1_f1_c1 : rising · 55w
+state a09_g1_f1_e #FFCDD2
+a09_g1_f1_e : death (negative)
+a09_g1_f1_e : "Wait to judge the weight at the Breach"
+state a09_g1_f2_c0 #D1C4E9
+a09_g1_f2_c0 : rising · 58w
+state a09_g1_f2_c1 #D1C4E9
+a09_g1_f2_c1 : rising · 55w
+state a09_g1_f2_e #FFCDD2
+a09_g1_f2_e : death (negative)
+a09_g1_f2_e : "Fall back to the keep at the Breach"
+state a09_g1_f3_c0 #D1C4E9
+a09_g1_f3_c0 : rising · 58w
+state a09_g1_f3_c1 #D1C4E9
+a09_g1_f3_c1 : rising · 55w
+state a09_g1_f3_e #FFCDD2
+a09_g1_f3_e : death (negative)
+a09_g1_f3_e : "Fire the rubble ramp at the Breach"
+state a09_g1_f4_c0 #D1C4E9
+a09_g1_f4_c0 : rising · 58w
+state a09_g1_f4_c1 #D1C4E9
+a09_g1_f4_c1 : rising · 55w
+state a09_g1_f4_e #FFCDD2
+a09_g1_f4_e : death (negative)
+a09_g1_f4_e : "Throw every reserve at the Breach"
+state a09_g1 #D1C4E9
+a09_g1 : rising · 88w
+state a09_g2_f0_c0 #D1C4E9
+a09_g2_f0_c0 : rising · 58w
+state a09_g2_f0_c1 #D1C4E9
+a09_g2_f0_c1 : rising · 55w
+state a09_g2_f0_e #FFCDD2
+a09_g2_f0_e : death (negative)
+a09_g2_f0_e : "Spend the caltrops across at the Breach"
+state a09_g2_f1_c0 #D1C4E9
+a09_g2_f1_c0 : rising · 58w
+state a09_g2_f1_c1 #D1C4E9
+a09_g2_f1_c1 : rising · 55w
+state a09_g2_f1_e #FFCDD2
+a09_g2_f1_e : death (negative)
+a09_g2_f1_e : "Save the caltrops at the Breach"
+state a09_g2_f2_c0 #D1C4E9
+a09_g2_f2_c0 : rising · 58w
+state a09_g2_f2_c1 #D1C4E9
+a09_g2_f2_c1 : rising · 55w
+state a09_g2_f2_e #FFCDD2
+a09_g2_f2_e : death (negative)
+a09_g2_f2_e : "Scatter the caltrops behind your at the Breach"
+state a09_g2_f3_c0 #D1C4E9
+a09_g2_f3_c0 : rising · 58w
+state a09_g2_f3_c1 #D1C4E9
+a09_g2_f3_c1 : rising · 55w
+state a09_g2_f3_e #FFCDD2
+a09_g2_f3_e : death (negative)
+a09_g2_f3_e : "Charge down the ramp at the Breach"
+state a09_g2_f4_c0 #D1C4E9
+a09_g2_f4_c0 : rising · 58w
+state a09_g2_f4_c1 #D1C4E9
+a09_g2_f4_c1 : rising · 55w
+state a09_g2_f4_e #FFCDD2
+a09_g2_f4_e : death (negative)
+a09_g2_f4_e : "Mass the reserve one pace at the Breach"
+state a09_g2 #D1C4E9
+a09_g2 : rising · 88w
+state a09_g3_f0_c0 #D1C4E9
+a09_g3_f0_c0 : rising · 58w
+state a09_g3_f0_c1 #D1C4E9
+a09_g3_f0_c1 : rising · 55w
+state a09_g3_f0_e #FFCDD2
+a09_g3_f0_e : death (negative)
+a09_g3_f0_e : "Spend the last powder at the Breach"
+state a09_g3_f1_c0 #D1C4E9
+a09_g3_f1_c0 : rising · 58w
+state a09_g3_f1_c1 #D1C4E9
+a09_g3_f1_c1 : rising · 55w
+state a09_g3_f1_e #FFCDD2
+a09_g3_f1_e : death (negative)
+a09_g3_f1_e : "Hold the powder at the Breach"
+state a09_g3_f2_c0 #D1C4E9
+a09_g3_f2_c0 : rising · 58w
+state a09_g3_f2_c1 #D1C4E9
+a09_g3_f2_c1 : rising · 55w
+state a09_g3_f2_e #FFCDD2
+a09_g3_f2_e : death (negative)
+a09_g3_f2_e : "Fire the powder at the Breach"
+state a09_g3_f3_c0 #D1C4E9
+a09_g3_f3_c0 : rising · 58w
+state a09_g3_f3_c1 #D1C4E9
+a09_g3_f3_c1 : rising · 55w
+state a09_g3_f3_e #FFCDD2
+a09_g3_f3_e : death (negative)
+a09_g3_f3_e : "Lay a short charge at the Breach"
+state a09_g3 #D1C4E9
+a09_g3 : rising · 88w
+state a09_m #FFF9C4
+a09_m : choice · 80w
+state a09_res_f_c0 #D1C4E9
+a09_res_f_c0 : rising · 58w
+state a09_res_f_c1 #D1C4E9
+a09_res_f_c1 : rising · 55w
+state a09_res_f_e #FFCDD2
+a09_res_f_e : death (negative)
+a09_res_f_e : "The Wall Given Up at the Breach"
+state a09_hold #D1C4E9
+a09_hold : rising · 66w
+state a09_thin #D1C4E9
+a09_thin : rising · 66w
+state a09_dry #D1C4E9
+a09_dry : rising · 66w
+state a09_res #D1C4E9
+a09_res : rising · 88w
+state a09_s1_loud_c0 #D1C4E9
+a09_s1_loud_c0 : rising · 58w
+state a09_s1_loud_c1 #D1C4E9
+a09_s1_loud_c1 : rising · 55w
+state a09_s1_loud_e #FFCDD2
+a09_s1_loud_e : death (negative)
+a09_s1_loud_e : "Answered Loud at the Breach, the Opening Rush"
+state a09_s1_cap #FFCDD2
+a09_s1_cap : capture (negative)
+a09_s1_cap : "Taken Alive at the Breach, the Opening Rush"
+state a09_s1 #FFF9C4
+a09_s1 : choice · 74w
+state a09_s2_loud_c0 #D1C4E9
+a09_s2_loud_c0 : rising · 58w
+state a09_s2_loud_c1 #D1C4E9
+a09_s2_loud_c1 : rising · 55w
+state a09_s2_loud_e #FFCDD2
+a09_s2_loud_e : death (negative)
+a09_s2_loud_e : "Answered Loud at the Breach, the Second Line"
+state a09_s2_cap #FFCDD2
+a09_s2_cap : capture (negative)
+a09_s2_cap : "Taken Alive at the Breach, the Second Line"
+state a09_s2 #FFF9C4
+a09_s2 : choice · 74w
+state a09_s3_loud_c0 #D1C4E9
+a09_s3_loud_c0 : rising · 58w
+state a09_s3_loud_c1 #D1C4E9
+a09_s3_loud_c1 : rising · 55w
+state a09_s3_loud_e #FFCDD2
+a09_s3_loud_e : death (negative)
+a09_s3_loud_e : "Answered Loud at the Breach, the Last Resolution"
+state a09_s3_cap #FFCDD2
+a09_s3_cap : capture (negative)
+a09_s3_cap : "Taken Alive at the Breach, the Last Resolution"
+state a09_s3 #FFF9C4
+a09_s3 : choice · 74w
+state a09_s4_loud_c0 #D1C4E9
+a09_s4_loud_c0 : rising · 58w
+state a09_s4_loud_c1 #D1C4E9
+a09_s4_loud_c1 : rising · 55w
+state a09_s4_loud_e #FFCDD2
+a09_s4_loud_e : death (negative)
+a09_s4_loud_e : "Answered Loud at the Breach, the Stores' Stand"
+state a09_s4_cap #FFCDD2
+a09_s4_cap : capture (negative)
+a09_s4_cap : "Taken Alive at the Breach, the Stores' Stand"
+state a09_s4 #FFF9C4
+a09_s4 : choice · 74w
+state a09_pass #FFF9C4
+a09_pass : choice · 76w
+state a10_ap #D1C4E9
+a10_ap : rising · 74w
+state a10_g1_f0_c0 #D1C4E9
+a10_g1_f0_c0 : rising · 58w
+state a10_g1_f0_c1 #D1C4E9
+a10_g1_f0_c1 : rising · 55w
+state a10_g1_f0_e #FFCDD2
+a10_g1_f0_e : death (negative)
+a10_g1_f0_e : "Chase the first wing at the Dawn Wall"
+state a10_g1_f1_c0 #D1C4E9
+a10_g1_f1_c0 : rising · 58w
+state a10_g1_f1_c1 #D1C4E9
+a10_g1_f1_c1 : rising · 55w
+state a10_g1_f1_e #FFCDD2
+a10_g1_f1_e : death (negative)
+a10_g1_f1_e : "Wait for the main effort at the Dawn Wall"
+state a10_g1_f2_c0 #D1C4E9
+a10_g1_f2_c0 : rising · 58w
+state a10_g1_f2_c1 #D1C4E9
+a10_g1_f2_c1 : rising · 55w
+state a10_g1_f2_e #FFCDD2
+a10_g1_f2_e : death (negative)
+a10_g1_f2_e : "Thin the center to hold at the Dawn Wall"
+state a10_g1_f3_c0 #D1C4E9
+a10_g1_f3_c0 : rising · 58w
+state a10_g1_f3_c1 #D1C4E9
+a10_g1_f3_c1 : rising · 55w
+state a10_g1_f3_e #FFCDD2
+a10_g1_f3_e : death (negative)
+a10_g1_f3_e : "Order a sortie to break at the Dawn Wall"
+state a10_g1_f4_c0 #D1C4E9
+a10_g1_f4_c0 : rising · 58w
+state a10_g1_f4_c1 #D1C4E9
+a10_g1_f4_c1 : rising · 55w
+state a10_g1_f4_e #FFCDD2
+a10_g1_f4_e : death (negative)
+a10_g1_f4_e : "Pull all to the keep at the Dawn Wall"
+state a10_g1 #D1C4E9
+a10_g1 : rising · 88w
+state a10_g2_f0_c0 #D1C4E9
+a10_g2_f0_c0 : rising · 58w
+state a10_g2_f0_c1 #D1C4E9
+a10_g2_f0_c1 : rising · 55w
+state a10_g2_f0_e #FFCDD2
+a10_g2_f0_e : death (negative)
+a10_g2_f0_e : "Commit the last reserve at the Dawn Wall"
+state a10_g2_f1_c0 #D1C4E9
+a10_g2_f1_c0 : rising · 58w
+state a10_g2_f1_c1 #D1C4E9
+a10_g2_f1_c1 : rising · 55w
+state a10_g2_f1_e #FFCDD2
+a10_g2_f1_e : death (negative)
+a10_g2_f1_e : "Hold the last reserve back at the Dawn Wall"
+state a10_g2_f2_c0 #D1C4E9
+a10_g2_f2_c0 : rising · 58w
+state a10_g2_f2_c1 #D1C4E9
+a10_g2_f2_c1 : rising · 55w
+state a10_g2_f2_e #FFCDD2
+a10_g2_f2_e : death (negative)
+a10_g2_f2_e : "Split the reserve across at the Dawn Wall"
+state a10_g2_f3_c0 #D1C4E9
+a10_g2_f3_c0 : rising · 58w
+state a10_g2_f3_c1 #D1C4E9
+a10_g2_f3_c1 : rising · 55w
+state a10_g2_f3_e #FFCDD2
+a10_g2_f3_e : death (negative)
+a10_g2_f3_e : "Send the reserve out through at the Dawn Wall"
+state a10_g2_f4_c0 #D1C4E9
+a10_g2_f4_c0 : rising · 58w
+state a10_g2_f4_c1 #D1C4E9
+a10_g2_f4_c1 : rising · 55w
+state a10_g2_f4_e #FFCDD2
+a10_g2_f4_e : death (negative)
+a10_g2_f4_e : "Mass the reserve at the Dawn Wall"
+state a10_g2 #D1C4E9
+a10_g2 : rising · 88w
+state a10_m #FFF9C4
+a10_m : choice · 80w
+state a10_res_f_c0 #D1C4E9
+a10_res_f_c0 : rising · 58w
+state a10_res_f_c1 #D1C4E9
+a10_res_f_c1 : rising · 55w
+state a10_res_f_e #FFCDD2
+a10_res_f_e : death (negative)
+a10_res_f_e : "The Wall Given Up at the Dawn Wall"
+state a10_hold #D1C4E9
+a10_hold : rising · 66w
+state a10_thin #D1C4E9
+a10_thin : rising · 66w
+state a10_dry #D1C4E9
+a10_dry : rising · 66w
+state a10_res #D1C4E9
+a10_res : rising · 88w
+state a10_s1_loud_c0 #D1C4E9
+a10_s1_loud_c0 : rising · 58w
+state a10_s1_loud_c1 #D1C4E9
+a10_s1_loud_c1 : rising · 55w
+state a10_s1_loud_e #FFCDD2
+a10_s1_loud_e : death (negative)
+a10_s1_loud_e : "Answered Loud at the Dawn Wall, the Opening Rush"
+state a10_s1_cap #FFCDD2
+a10_s1_cap : capture (negative)
+a10_s1_cap : "Taken Alive at the Dawn Wall, the Opening Rush"
+state a10_s1 #FFF9C4
+a10_s1 : choice · 74w
+state a10_s2_loud_c0 #D1C4E9
+a10_s2_loud_c0 : rising · 58w
+state a10_s2_loud_c1 #D1C4E9
+a10_s2_loud_c1 : rising · 55w
+state a10_s2_loud_e #FFCDD2
+a10_s2_loud_e : death (negative)
+a10_s2_loud_e : "Answered Loud at the Dawn Wall, the Second Line"
+state a10_s2_cap #FFCDD2
+a10_s2_cap : capture (negative)
+a10_s2_cap : "Taken Alive at the Dawn Wall, the Second Line"
+state a10_s2 #FFF9C4
+a10_s2 : choice · 74w
+state a10_s3_loud_c0 #D1C4E9
+a10_s3_loud_c0 : rising · 58w
+state a10_s3_loud_c1 #D1C4E9
+a10_s3_loud_c1 : rising · 55w
+state a10_s3_loud_e #FFCDD2
+a10_s3_loud_e : death (negative)
+a10_s3_loud_e : "Answered Loud at the Dawn Wall, the Last Resolution"
+state a10_s3_cap #FFCDD2
+a10_s3_cap : capture (negative)
+a10_s3_cap : "Taken Alive at the Dawn Wall, the Last Resolution"
+state a10_s3 #FFF9C4
+a10_s3 : choice · 74w
+state a10_pass #D1C4E9
+a10_pass : rising · 72w
+state fin_f_c0 #D1C4E9
+fin_f_c0 : rising · 58w
+state fin_f_c1 #D1C4E9
+fin_f_c1 : rising · 55w
+state fin_f_e #FFCDD2
+fin_f_e : death (negative)
+fin_f_e : "The Last Sortie"
+state fin_gl_c0 #D1C4E9
+fin_gl_c0 : rising · 58w
+state fin_gl_c1 #D1C4E9
+fin_gl_c1 : rising · 55w
+state fin_gl_e #FFCDD2
+fin_gl_e : death (negative)
+fin_gl_e : "The One Loud Stand"
+state fin_gamble #FFF9C4
+fin_gamble : choice · 72w
+state fin_gcap #FFCDD2
+fin_gcap : capture (negative)
+fin_gcap : "Terms at the Tenth Dawn"
+state fin0 #D1C4E9
+fin0 : rising · 86w
+state fin_intact #D1C4E9
+fin_intact : rising · 82w
+state fin_intact_hi #D1C4E9
+fin_intact_hi : rising · 80w
+state fin_breached #D1C4E9
+fin_breached : rising · 82w
+state win_best #C8E6C9
+win_best : success (positive)
+win_best : "The Relief Finds the Fortress Whole"
+state win_whole #C8E6C9
+win_whole : completion (positive)
+win_whole : "Held Whole on the Last of the Will"
+state win_gutted #E0E0E0
+win_gutted : completion (neutral)
+win_gutted : "The Wall Held, the Garrison Did Not"
+state win_bargain #E0E0E0
+win_bargain : completion (neutral)
+win_bargain : "The Breach Held by a Hard Bargain"
+state win_grim #FFCDD2
+win_grim : completion (negative)
+win_grim : "The Breach Held Because the Storm Tired First"
+state win_nearthing #E0E0E0
+win_nearthing : completion (neutral)
+win_nearthing : "Held by a Near Thing at the Muster"
+s0 --> s1 : Take the wall.
+s1 --> s2 : Understand the reckoning.
+s2 --> s3 : Take your post on the gatehouse.
+s3 --> a01_ap : Stand to. The horns are sounding.
+a01_ap --> a01_g1 : To the wall.
+a01_g1_f0_c0 --> a01_g1_f0_c1 : There is no undoing it.
+a01_g1_f0_c1 --> a01_g1_f0_e : Meet it.
+a01_g1_f1_c0 --> a01_g1_f1_c1 : There is no undoing it.
+a01_g1_f1_c1 --> a01_g1_f1_e : Meet it.
+a01_g1_f2_c0 --> a01_g1_f2_c1 : There is no undoing it.
+a01_g1_f2_c1 --> a01_g1_f2_e : Meet it.
+a01_g1_f3_c0 --> a01_g1_f3_c1 : There is no undoing it.
+a01_g1_f3_c1 --> a01_g1_f3_e : Meet it.
+a01_g1_f4_c0 --> a01_g1_f4_c1 : There is no undoing it.
+a01_g1_f4_c1 --> a01_g1_f4_e : Meet it.
+a01_g1 --> a01_g2 : Set the props to the recoil, not the str...
+a01_g1 --> a01_g1_f0_c0 : Stand square and take the ram head-on.
+a01_g1 --> a01_g1_f1_c0 : Throw the gate wide to unbalance them.
+a01_g1 --> a01_g1_f2_c0 : Wait for the ram to tire on its own.
+a01_g1 --> a01_g1_f3_c0 : Send men out to fire the ram unshielded.
+a01_g1 --> a01_g1_f4_c0 : Pile the whole reserve at the gate.
+a01_g1 --> a01_s1 : Gamble it, take the risk, and press on.
+a01_g2_f0_c0 --> a01_g2_f0_c1 : There is no undoing it.
+a01_g2_f0_c1 --> a01_g2_f0_e : Meet it.
+a01_g2_f1_c0 --> a01_g2_f1_c1 : There is no undoing it.
+a01_g2_f1_c1 --> a01_g2_f1_e : Meet it.
+a01_g2_f2_c0 --> a01_g2_f2_c1 : There is no undoing it.
+a01_g2_f2_c1 --> a01_g2_f2_e : Meet it.
+a01_g2_f3_c0 --> a01_g2_f3_c1 : There is no undoing it.
+a01_g2_f3_c1 --> a01_g2_f3_e : Meet it.
+a01_g2_f4_c0 --> a01_g2_f4_c1 : There is no undoing it.
+a01_g2_f4_c1 --> a01_g2_f4_e : Meet it.
+a01_g2 --> a01_m : Brace the leaves and let the head spend ...
+a01_g2 --> a01_g2_f0_c0 : Answer the ram with the last of the oil ...
+a01_g2 --> a01_g2_f1_c0 : Pull the props to lure them in.
+a01_g2 --> a01_g2_f2_c0 : Hold the men back from the failing hinge...
+a01_g2 --> a01_g2_f3_c0 : Order a countercharge through the wicket...
+a01_g2 --> a01_g2_f4_c0 : Sound the retreat from the gatehouse.
+a01_g2 --> a01_s2 : Gamble it, take the risk, and press on.
+a01_m --> a01_res : Spend everything on this stand and share...
+a01_m --> a01_res : Spend only what the moment demands.
+a01_m --> a01_res : Hold the stores back and let the men fee...
+a01_res_f_c0 --> a01_res_f_c1 : There is no undoing it.
+a01_res_f_c1 --> a01_res_f_e : Meet it.
+a01_firm --> a01_pass : Hold on.
+a01_waver --> a01_pass : Hold the wavering line.
+a01_res --> a01_firm : The garrison's will is up: the line hold...
+a01_res --> a01_waver : The garrison wavers: steady them or lose...
+a01_res --> a01_res_f_c0 : Abandon the wall and pull back.
+a01_res --> a01_s3 : Gamble the resolution and press it.
+a01_s1_loud_c0 --> a01_s1_loud_c1 : There is no undoing it.
+a01_s1_loud_c1 --> a01_s1_loud_e : Meet it.
+a01_s1 --> a02_ap : Hold quiet and give them nothing.
+a01_s1 --> a01_s1_loud_c0 : Answer loud and rally the wall to you.
+a01_s1 --> a01_s1_cap : Lay down the fight and be taken.
+a01_s2_loud_c0 --> a01_s2_loud_c1 : There is no undoing it.
+a01_s2_loud_c1 --> a01_s2_loud_e : Meet it.
+a01_s2 --> a01_pass : Hold quiet and give them nothing.
+a01_s2 --> a01_s2_loud_c0 : Answer loud and rally the wall to you.
+a01_s2 --> a01_s2_cap : Lay down the fight and be taken.
+a01_s3_loud_c0 --> a01_s3_loud_c1 : There is no undoing it.
+a01_s3_loud_c1 --> a01_s3_loud_e : Meet it.
+a01_s3 --> a01_pass : Hold quiet and give them nothing.
+a01_s3 --> a01_s3_loud_c0 : Answer loud and rally the wall to you.
+a01_s3 --> a01_s3_cap : Lay down the fight and be taken.
+a01_pass --> a02_ap : Walk the wall with them and share the wa...
+a01_pass --> a02_ap : Let them rest and see the stores counted...
+a01_pass --> a02_ap : Drive them through the night to mend the...
+a02_ap --> a02_g1 : To the wall.
+a02_g1_f0_c0 --> a02_g1_f0_c1 : There is no undoing it.
+a02_g1_f0_c1 --> a02_g1_f0_e : Meet it.
+a02_g1_f1_c0 --> a02_g1_f1_c1 : There is no undoing it.
+a02_g1_f1_c1 --> a02_g1_f1_e : Meet it.
+a02_g1_f2_c0 --> a02_g1_f2_c1 : There is no undoing it.
+a02_g1_f2_c1 --> a02_g1_f2_e : Meet it.
+a02_g1_f3_c0 --> a02_g1_f3_c1 : There is no undoing it.
+a02_g1_f3_c1 --> a02_g1_f3_e : Meet it.
+a02_g1_f4_c0 --> a02_g1_f4_c1 : There is no undoing it.
+a02_g1_f4_c1 --> a02_g1_f4_e : Meet it.
+a02_g1 --> a02_g2 : Fork the ladders off before the third ru...
+a02_g1 --> a02_g1_f0_c0 : Let the ladders fill, then push them all...
+a02_g1 --> a02_g1_f1_c0 : Meet the ladder-heads with the sword alo...
+a02_g1 --> a02_g1_f2_c0 : Pull men to one tower and yield the curt...
+a02_g1 --> a02_g1_f3_c0 : Wait to see which ladder is the feint.
+a02_g1 --> a02_g1_f4_c0 : Lean out past the merlon to reach a ladd...
+a02_g1 --> a02_s1 : Gamble it, take the risk, and press on.
+a02_g2_f0_c0 --> a02_g2_f0_c1 : There is no undoing it.
+a02_g2_f0_c1 --> a02_g2_f0_e : Meet it.
+a02_g2_f1_c0 --> a02_g2_f1_c1 : There is no undoing it.
+a02_g2_f1_c1 --> a02_g2_f1_e : Meet it.
+a02_g2_f2_c0 --> a02_g2_f2_c1 : There is no undoing it.
+a02_g2_f2_c1 --> a02_g2_f2_e : Meet it.
+a02_g2_f3_c0 --> a02_g2_f3_c1 : There is no undoing it.
+a02_g2_f3_c1 --> a02_g2_f3_e : Meet it.
+a02_g2_f4_c0 --> a02_g2_f4_c1 : There is no undoing it.
+a02_g2_f4_c1 --> a02_g2_f4_e : Meet it.
+a02_g2 --> a02_m : Clear each crenel as its ladder-head sho...
+a02_g2 --> a02_g2_f0_c0 : Fork the last ladders and hold the crene...
+a02_g2 --> a02_g2_f1_c0 : Fire the hoarding to burn the ladders.
+a02_g2 --> a02_g2_f2_c0 : Rush every man to the breach in the line...
+a02_g2 --> a02_g2_f3_c0 : Cut the merlon loose to drop on them.
+a02_g2 --> a02_g2_f4_c0 : Stand and count the ladders before actin...
+a02_g2 --> a02_s2 : Gamble it, take the risk, and press on.
+a02_m --> a02_res : Spend everything on this stand and share...
+a02_m --> a02_res : Spend only what the moment demands.
+a02_m --> a02_res : Hold the stores back and let the men fee...
+a02_res_f_c0 --> a02_res_f_c1 : There is no undoing it.
+a02_res_f_c1 --> a02_res_f_e : Meet it.
+a02_firm --> a02_pass : Hold on.
+a02_waver --> a02_pass : Hold the wavering line.
+a02_res --> a02_firm : The garrison's will is up: the line hold...
+a02_res --> a02_waver : The garrison wavers: steady them or lose...
+a02_res --> a02_res_f_c0 : Abandon the wall and pull back.
+a02_res --> a02_s3 : Gamble the resolution and press it.
+a02_s1_loud_c0 --> a02_s1_loud_c1 : There is no undoing it.
+a02_s1_loud_c1 --> a02_s1_loud_e : Meet it.
+a02_s1 --> a03_ap : Hold quiet and give them nothing.
+a02_s1 --> a02_s1_loud_c0 : Answer loud and rally the wall to you.
+a02_s1 --> a02_s1_cap : Lay down the fight and be taken.
+a02_s2_loud_c0 --> a02_s2_loud_c1 : There is no undoing it.
+a02_s2_loud_c1 --> a02_s2_loud_e : Meet it.
+a02_s2 --> a02_pass : Hold quiet and give them nothing.
+a02_s2 --> a02_s2_loud_c0 : Answer loud and rally the wall to you.
+a02_s2 --> a02_s2_cap : Lay down the fight and be taken.
+a02_s3_loud_c0 --> a02_s3_loud_c1 : There is no undoing it.
+a02_s3_loud_c1 --> a02_s3_loud_e : Meet it.
+a02_s3 --> a02_pass : Hold quiet and give them nothing.
+a02_s3 --> a02_s3_loud_c0 : Answer loud and rally the wall to you.
+a02_s3 --> a02_s3_cap : Lay down the fight and be taken.
+a02_pass --> a03_ap : Walk the wall with them and share the wa...
+a02_pass --> a03_ap : Let them rest and see the stores counted...
+a02_pass --> a03_ap : Drive them through the night to mend the...
+a03_ap --> a03_g1 : To the wall.
+a03_g1_f0_c0 --> a03_g1_f0_c1 : There is no undoing it.
+a03_g1_f0_c1 --> a03_g1_f0_e : Meet it.
+a03_g1_f1_c0 --> a03_g1_f1_c1 : There is no undoing it.
+a03_g1_f1_c1 --> a03_g1_f1_e : Meet it.
+a03_g1_f2_c0 --> a03_g1_f2_c1 : There is no undoing it.
+a03_g1_f2_c1 --> a03_g1_f2_e : Meet it.
+a03_g1_f3_c0 --> a03_g1_f3_c1 : There is no undoing it.
+a03_g1_f3_c1 --> a03_g1_f3_e : Meet it.
+a03_g1_f4_c0 --> a03_g1_f4_c1 : There is no undoing it.
+a03_g1_f4_c1 --> a03_g1_f4_e : Meet it.
+a03_g1 --> a03_g2 : Drive the countermine to their props.
+a03_g1 --> a03_g1_f0_c0 : Wait for the ground to tell you where th...
+a03_g1 --> a03_g1_f1_c0 : Flood the sap and drown the diggers.
+a03_g1 --> a03_g1_f2_c0 : Load the tower with men to hold it.
+a03_g1 --> a03_g1_f3_c0 : Sink your own shaft straight down on the...
+a03_g1 --> a03_g1_f4_c0 : Abandon the tower and seal it off.
+a03_g1 --> a03_s1 : Gamble it, take the risk, and press on.
+a03_g2_f0_c0 --> a03_g2_f0_c1 : There is no undoing it.
+a03_g2_f0_c1 --> a03_g2_f0_e : Meet it.
+a03_g2_f1_c0 --> a03_g2_f1_c1 : There is no undoing it.
+a03_g2_f1_c1 --> a03_g2_f1_e : Meet it.
+a03_g2_f2_c0 --> a03_g2_f2_c1 : There is no undoing it.
+a03_g2_f2_c1 --> a03_g2_f2_e : Meet it.
+a03_g2_f3_c0 --> a03_g2_f3_c1 : There is no undoing it.
+a03_g2_f3_c1 --> a03_g2_f3_e : Meet it.
+a03_g2_f4_c0 --> a03_g2_f4_c1 : There is no undoing it.
+a03_g2_f4_c1 --> a03_g2_f4_e : Meet it.
+a03_g2 --> a03_g3 : Fire the gallery before the charge is la...
+a03_g2 --> a03_g2_f0_c0 : Fire their props with the countermine se...
+a03_g2 --> a03_g2_f1_c0 : Charge into their gallery to fight it ou...
+a03_g2 --> a03_g2_f2_c0 : Hold and let the countermine wait a nigh...
+a03_g2 --> a03_g2_f3_c0 : Pull the props yourself by hand.
+a03_g2 --> a03_g2_f4_c0 : Vent the smoke back through the keep.
+a03_g2 --> a03_s2 : Gamble it, take the risk, and press on.
+a03_g3_f0_c0 --> a03_g3_f0_c1 : There is no undoing it.
+a03_g3_f0_c1 --> a03_g3_f0_e : Meet it.
+a03_g3_f1_c0 --> a03_g3_f1_c1 : There is no undoing it.
+a03_g3_f1_c1 --> a03_g3_f1_e : Meet it.
+a03_g3_f2_c0 --> a03_g3_f2_c1 : There is no undoing it.
+a03_g3_f2_c1 --> a03_g3_f2_e : Meet it.
+a03_g3_f3_c0 --> a03_g3_f3_c1 : There is no undoing it.
+a03_g3_f3_c1 --> a03_g3_f3_e : Meet it.
+a03_g3 --> a03_m : Spend the stores and make the stand.
+a03_g3 --> a03_g3_f0_c0 : Spend the powder to blow their gallery c...
+a03_g3 --> a03_g3_f1_c0 : Save the powder and try the mattock.
+a03_g3 --> a03_g3_f2_c0 : Wait a watch to be sure of the charge.
+a03_g3 --> a03_g3_f3_c0 : Split the powder between two shafts.
+a03_g3 --> a03_s4 : Gamble it, take the risk, and press on.
+a03_m --> a03_res : Spend everything on this stand and share...
+a03_m --> a03_res : Spend only what the moment demands.
+a03_m --> a03_res : Hold the stores back and let the men fee...
+a03_res_f_c0 --> a03_res_f_c1 : There is no undoing it.
+a03_res_f_c1 --> a03_res_f_e : Meet it.
+a03_hold --> a03_pass : Hold on.
+a03_thin --> a03_pass : Hold on.
+a03_dry --> a03_pass : Hold on.
+a03_res --> a03_hold : You have the powder to hold: spend it an...
+a03_res --> a03_thin : Barely enough remains: hold thin and pra...
+a03_res --> a03_dry : Nothing left to hold with: meet them wit...
+a03_res --> a03_res_f_c0 : Abandon the wall and pull back.
+a03_res --> a03_s3 : Gamble the resolution and press it.
+a03_s1_loud_c0 --> a03_s1_loud_c1 : There is no undoing it.
+a03_s1_loud_c1 --> a03_s1_loud_e : Meet it.
+a03_s1 --> a04_ap : Hold quiet and give them nothing.
+a03_s1 --> a03_s1_loud_c0 : Answer loud and rally the wall to you.
+a03_s1 --> a03_s1_cap : Lay down the fight and be taken.
+a03_s2_loud_c0 --> a03_s2_loud_c1 : There is no undoing it.
+a03_s2_loud_c1 --> a03_s2_loud_e : Meet it.
+a03_s2 --> a03_pass : Hold quiet and give them nothing.
+a03_s2 --> a03_s2_loud_c0 : Answer loud and rally the wall to you.
+a03_s2 --> a03_s2_cap : Lay down the fight and be taken.
+a03_s3_loud_c0 --> a03_s3_loud_c1 : There is no undoing it.
+a03_s3_loud_c1 --> a03_s3_loud_e : Meet it.
+a03_s3 --> a03_pass : Hold quiet and give them nothing.
+a03_s3 --> a03_s3_loud_c0 : Answer loud and rally the wall to you.
+a03_s3 --> a03_s3_cap : Lay down the fight and be taken.
+a03_s4_loud_c0 --> a03_s4_loud_c1 : There is no undoing it.
+a03_s4_loud_c1 --> a03_s4_loud_e : Meet it.
+a03_s4 --> a03_pass : Hold quiet and give them nothing.
+a03_s4 --> a03_s4_loud_c0 : Answer loud and rally the wall to you.
+a03_s4 --> a03_s4_cap : Lay down the fight and be taken.
+a03_pass --> a04_ap : Walk the wall with them and share the wa...
+a03_pass --> a04_ap : Let them rest and see the stores counted...
+a03_pass --> a04_ap : Drive them through the night to mend the...
+a04_ap --> a04_g1 : To the wall.
+a04_g1_f0_c0 --> a04_g1_f0_c1 : There is no undoing it.
+a04_g1_f0_c1 --> a04_g1_f0_e : Meet it.
+a04_g1_f1_c0 --> a04_g1_f1_c1 : There is no undoing it.
+a04_g1_f1_c1 --> a04_g1_f1_e : Meet it.
+a04_g1_f2_c0 --> a04_g1_f2_c1 : There is no undoing it.
+a04_g1_f2_c1 --> a04_g1_f2_e : Meet it.
+a04_g1_f3_c0 --> a04_g1_f3_c1 : There is no undoing it.
+a04_g1_f3_c1 --> a04_g1_f3_e : Meet it.
+a04_g1_f4_c0 --> a04_g1_f4_c1 : There is no undoing it.
+a04_g1_f4_c1 --> a04_g1_f4_e : Meet it.
+a04_g1 --> a04_g2 : Strip the thatch ahead of the volley.
+a04_g1 --> a04_g1_f0_c0 : Wait for the first roof to catch, then a...
+a04_g1 --> a04_g1_f1_c0 : Send the water-line up onto the open wal...
+a04_g1 --> a04_g1_f2_c0 : Fire your own outbuildings to deny them ...
+a04_g1 --> a04_g1_f3_c0 : Crowd the men under the burning eaves.
+a04_g1 --> a04_g1_f4_c0 : Answer fire-arrows with your own oil pot...
+a04_g1 --> a04_s1 : Gamble it, take the risk, and press on.
+a04_g2_f0_c0 --> a04_g2_f0_c1 : There is no undoing it.
+a04_g2_f0_c1 --> a04_g2_f0_e : Meet it.
+a04_g2_f1_c0 --> a04_g2_f1_c1 : There is no undoing it.
+a04_g2_f1_c1 --> a04_g2_f1_e : Meet it.
+a04_g2_f2_c0 --> a04_g2_f2_c1 : There is no undoing it.
+a04_g2_f2_c1 --> a04_g2_f2_e : Meet it.
+a04_g2_f3_c0 --> a04_g2_f3_c1 : There is no undoing it.
+a04_g2_f3_c1 --> a04_g2_f3_e : Meet it.
+a04_g2_f4_c0 --> a04_g2_f4_c1 : There is no undoing it.
+a04_g2_f4_c1 --> a04_g2_f4_e : Meet it.
+a04_g2 --> a04_m : Wet the hoardings and hold the buckets c...
+a04_g2 --> a04_g2_f0_c0 : Wet the hoardings and beat out the spark...
+a04_g2 --> a04_g2_f1_c0 : Pull the whole watch to the worst blaze.
+a04_g2 --> a04_g2_f2_c0 : Cut the burning roof loose over the yard...
+a04_g2 --> a04_g2_f3_c0 : Hold the buckets for the fire yet to com...
+a04_g2 --> a04_g2_f4_c0 : Climb out to smother a stubborn flame.
+a04_g2 --> a04_s2 : Gamble it, take the risk, and press on.
+a04_m --> a04_res : Spend everything on this stand and share...
+a04_m --> a04_res : Spend only what the moment demands.
+a04_m --> a04_res : Hold the stores back and let the men fee...
+a04_res_f_c0 --> a04_res_f_c1 : There is no undoing it.
+a04_res_f_c1 --> a04_res_f_e : Meet it.
+a04_firm --> a04_pass : Hold on.
+a04_waver --> a04_pass : Hold the wavering line.
+a04_res --> a04_firm : The garrison's will is up: the line hold...
+a04_res --> a04_waver : The garrison wavers: steady them or lose...
+a04_res --> a04_res_f_c0 : Abandon the wall and pull back.
+a04_res --> a04_s3 : Gamble the resolution and press it.
+a04_s1_loud_c0 --> a04_s1_loud_c1 : There is no undoing it.
+a04_s1_loud_c1 --> a04_s1_loud_e : Meet it.
+a04_s1 --> a05_ap : Hold quiet and give them nothing.
+a04_s1 --> a04_s1_loud_c0 : Answer loud and rally the wall to you.
+a04_s1 --> a04_s1_cap : Lay down the fight and be taken.
+a04_s2_loud_c0 --> a04_s2_loud_c1 : There is no undoing it.
+a04_s2_loud_c1 --> a04_s2_loud_e : Meet it.
+a04_s2 --> a04_pass : Hold quiet and give them nothing.
+a04_s2 --> a04_s2_loud_c0 : Answer loud and rally the wall to you.
+a04_s2 --> a04_s2_cap : Lay down the fight and be taken.
+a04_s3_loud_c0 --> a04_s3_loud_c1 : There is no undoing it.
+a04_s3_loud_c1 --> a04_s3_loud_e : Meet it.
+a04_s3 --> a04_pass : Hold quiet and give them nothing.
+a04_s3 --> a04_s3_loud_c0 : Answer loud and rally the wall to you.
+a04_s3 --> a04_s3_cap : Lay down the fight and be taken.
+a04_pass --> a05_ap : Walk the wall with them and share the wa...
+a04_pass --> a05_ap : Let them rest and see the stores counted...
+a04_pass --> a05_ap : Drive them through the night to mend the...
+a05_ap --> a05_g1 : To the wall.
+a05_g1_f0_c0 --> a05_g1_f0_c1 : There is no undoing it.
+a05_g1_f0_c1 --> a05_g1_f0_e : Meet it.
+a05_g1_f1_c0 --> a05_g1_f1_c1 : There is no undoing it.
+a05_g1_f1_c1 --> a05_g1_f1_e : Meet it.
+a05_g1_f2_c0 --> a05_g1_f2_c1 : There is no undoing it.
+a05_g1_f2_c1 --> a05_g1_f2_e : Meet it.
+a05_g1_f3_c0 --> a05_g1_f3_c1 : There is no undoing it.
+a05_g1_f3_c1 --> a05_g1_f3_e : Meet it.
+a05_g1_f4_c0 --> a05_g1_f4_c1 : There is no undoing it.
+a05_g1_f4_c1 --> a05_g1_f4_e : Meet it.
+a05_g1 --> a05_g2 : Hold the volley until they crest the fog...
+a05_g1 --> a05_g1_f0_c0 : Light the whole wall to see the fog.
+a05_g1 --> a05_g1_f1_c0 : Loose blind into the fog at every sound.
+a05_g1 --> a05_g1_f2_c0 : Wait to be certain a shape is a man.
+a05_g1 --> a05_g1_f3_c0 : Pull back off the fogged wall entirely.
+a05_g1 --> a05_g1_f4_c0 : Send a party down into the fog to feel t...
+a05_g1 --> a05_s1 : Gamble it, take the risk, and press on.
+a05_g2_f0_c0 --> a05_g2_f0_c1 : There is no undoing it.
+a05_g2_f0_c1 --> a05_g2_f0_e : Meet it.
+a05_g2_f1_c0 --> a05_g2_f1_c1 : There is no undoing it.
+a05_g2_f1_c1 --> a05_g2_f1_e : Meet it.
+a05_g2_f2_c0 --> a05_g2_f2_c1 : There is no undoing it.
+a05_g2_f2_c1 --> a05_g2_f2_e : Meet it.
+a05_g2_f3_c0 --> a05_g2_f3_c1 : There is no undoing it.
+a05_g2_f3_c1 --> a05_g2_f3_e : Meet it.
+a05_g2_f4_c0 --> a05_g2_f4_c1 : There is no undoing it.
+a05_g2_f4_c1 --> a05_g2_f4_e : Meet it.
+a05_g2 --> a05_g3 : Fire low along the wall-walk on the firs...
+a05_g2 --> a05_g2_f0_c0 : Fire low on the first shape at the merlo...
+a05_g2 --> a05_g2_f1_c0 : Empty the last arrows into the dark.
+a05_g2 --> a05_g2_f2_c0 : Set fire to the fog with pitch.
+a05_g2 --> a05_g2_f3_c0 : Hold every shot for the massed rush.
+a05_g2 --> a05_g2_f4_c0 : Lean into the fog to strike down a climb...
+a05_g2 --> a05_s2 : Gamble it, take the risk, and press on.
+a05_g3_f0_c0 --> a05_g3_f0_c1 : There is no undoing it.
+a05_g3_f0_c1 --> a05_g3_f0_e : Meet it.
+a05_g3_f1_c0 --> a05_g3_f1_c1 : There is no undoing it.
+a05_g3_f1_c1 --> a05_g3_f1_e : Meet it.
+a05_g3_f2_c0 --> a05_g3_f2_c1 : There is no undoing it.
+a05_g3_f2_c1 --> a05_g3_f2_e : Meet it.
+a05_g3_f3_c0 --> a05_g3_f3_c1 : There is no undoing it.
+a05_g3_f3_c1 --> a05_g3_f3_e : Meet it.
+a05_g3 --> a05_m : Spend the stores and make the stand.
+a05_g3 --> a05_g3_f0_c0 : Spend the oil to light the ground, not t...
+a05_g3 --> a05_g3_f1_c0 : Save the oil and trust the fog to lift.
+a05_g3 --> a05_g3_f2_c0 : Pour the oil straight down the wall face...
+a05_g3 --> a05_g3_f3_c0 : Ration the oil to a single stretch.
+a05_g3 --> a05_s4 : Gamble it, take the risk, and press on.
+a05_m --> a05_res : Spend everything on this stand and share...
+a05_m --> a05_res : Spend only what the moment demands.
+a05_m --> a05_res : Hold the stores back and let the men fee...
+a05_res_f_c0 --> a05_res_f_c1 : There is no undoing it.
+a05_res_f_c1 --> a05_res_f_e : Meet it.
+a05_hold --> a05_pass : Hold on.
+a05_thin --> a05_pass : Hold on.
+a05_dry --> a05_pass : Hold on.
+a05_res --> a05_hold : You have the powder to hold: spend it an...
+a05_res --> a05_thin : Barely enough remains: hold thin and pra...
+a05_res --> a05_dry : Nothing left to hold with: meet them wit...
+a05_res --> a05_res_f_c0 : Abandon the wall and pull back.
+a05_res --> a05_s3 : Gamble the resolution and press it.
+a05_s1_loud_c0 --> a05_s1_loud_c1 : There is no undoing it.
+a05_s1_loud_c1 --> a05_s1_loud_e : Meet it.
+a05_s1 --> a06_ap : Hold quiet and give them nothing.
+a05_s1 --> a05_s1_loud_c0 : Answer loud and rally the wall to you.
+a05_s1 --> a05_s1_cap : Lay down the fight and be taken.
+a05_s2_loud_c0 --> a05_s2_loud_c1 : There is no undoing it.
+a05_s2_loud_c1 --> a05_s2_loud_e : Meet it.
+a05_s2 --> a05_pass : Hold quiet and give them nothing.
+a05_s2 --> a05_s2_loud_c0 : Answer loud and rally the wall to you.
+a05_s2 --> a05_s2_cap : Lay down the fight and be taken.
+a05_s3_loud_c0 --> a05_s3_loud_c1 : There is no undoing it.
+a05_s3_loud_c1 --> a05_s3_loud_e : Meet it.
+a05_s3 --> a05_pass : Hold quiet and give them nothing.
+a05_s3 --> a05_s3_loud_c0 : Answer loud and rally the wall to you.
+a05_s3 --> a05_s3_cap : Lay down the fight and be taken.
+a05_s4_loud_c0 --> a05_s4_loud_c1 : There is no undoing it.
+a05_s4_loud_c1 --> a05_s4_loud_e : Meet it.
+a05_s4 --> a05_pass : Hold quiet and give them nothing.
+a05_s4 --> a05_s4_loud_c0 : Answer loud and rally the wall to you.
+a05_s4 --> a05_s4_cap : Lay down the fight and be taken.
+a05_pass --> a06_ap : Walk the wall with them and share the wa...
+a05_pass --> a06_ap : Let them rest and see the stores counted...
+a05_pass --> a06_ap : Drive them through the night to mend the...
+a06_ap --> a06_g1 : To the wall.
+a06_g1_f0_c0 --> a06_g1_f0_c1 : There is no undoing it.
+a06_g1_f0_c1 --> a06_g1_f0_e : Meet it.
+a06_g1_f1_c0 --> a06_g1_f1_c1 : There is no undoing it.
+a06_g1_f1_c1 --> a06_g1_f1_e : Meet it.
+a06_g1_f2_c0 --> a06_g1_f2_c1 : There is no undoing it.
+a06_g1_f2_c1 --> a06_g1_f2_e : Meet it.
+a06_g1_f3_c0 --> a06_g1_f3_c1 : There is no undoing it.
+a06_g1_f3_c1 --> a06_g1_f3_e : Meet it.
+a06_g1_f4_c0 --> a06_g1_f4_c1 : There is no undoing it.
+a06_g1_f4_c1 --> a06_g1_f4_e : Meet it.
+a06_g1 --> a06_g2 : Shore the cracked course before it runs.
+a06_g1 --> a06_g1_f0_c0 : Wait to see if the crack is settling.
+a06_g1 --> a06_g1_f1_c0 : Answer the great ram with a sally at onc...
+a06_g1 --> a06_g1_f2_c0 : Load the parapet over the cracked course...
+a06_g1 --> a06_g1_f3_c0 : Undercut the ram's ramp yourself.
+a06_g1 --> a06_g1_f4_c0 : Fire the ram-tower with the last pitch.
+a06_g1 --> a06_s1 : Gamble it, take the risk, and press on.
+a06_g2_f0_c0 --> a06_g2_f0_c1 : There is no undoing it.
+a06_g2_f0_c1 --> a06_g2_f0_e : Meet it.
+a06_g2_f1_c0 --> a06_g2_f1_c1 : There is no undoing it.
+a06_g2_f1_c1 --> a06_g2_f1_e : Meet it.
+a06_g2_f2_c0 --> a06_g2_f2_c1 : There is no undoing it.
+a06_g2_f2_c1 --> a06_g2_f2_e : Meet it.
+a06_g2_f3_c0 --> a06_g2_f3_c1 : There is no undoing it.
+a06_g2_f3_c1 --> a06_g2_f3_e : Meet it.
+a06_g2_f4_c0 --> a06_g2_f4_c1 : There is no undoing it.
+a06_g2_f4_c1 --> a06_g2_f4_e : Meet it.
+a06_g2 --> a06_g3 : Drop the murder-stones while the arch ho...
+a06_g2 --> a06_g2_f0_c0 : Drop the murder-stones while the arch ho...
+a06_g2 --> a06_g2_f1_c0 : Hold the stones for the men on the ramp.
+a06_g2 --> a06_g2_f2_c0 : Pull the keystone to drop the arch on th...
+a06_g2 --> a06_g2_f3_c0 : Mass the garrison behind the cracked wal...
+a06_g2 --> a06_g2_f4_c0 : Sound recall from the west wall entirely...
+a06_g2 --> a06_s2 : Gamble it, take the risk, and press on.
+a06_g3_f0_c0 --> a06_g3_f0_c1 : There is no undoing it.
+a06_g3_f0_c1 --> a06_g3_f0_e : Meet it.
+a06_g3_f1_c0 --> a06_g3_f1_c1 : There is no undoing it.
+a06_g3_f1_c1 --> a06_g3_f1_e : Meet it.
+a06_g3_f2_c0 --> a06_g3_f2_c1 : There is no undoing it.
+a06_g3_f2_c1 --> a06_g3_f2_e : Meet it.
+a06_g3_f3_c0 --> a06_g3_f3_c1 : There is no undoing it.
+a06_g3_f3_c1 --> a06_g3_f3_e : Meet it.
+a06_g3 --> a06_m : Spend the stores and make the stand.
+a06_g3 --> a06_g3_f0_c0 : Spend the powder to bring the ram down.
+a06_g3 --> a06_g3_f1_c0 : Save the powder and trust the shoring.
+a06_g3 --> a06_g3_f2_c0 : Throw the powder onto the burning ramp.
+a06_g3 --> a06_g3_f3_c0 : Halve the charge to keep some in store.
+a06_g3 --> a06_s4 : Gamble it, take the risk, and press on.
+a06_m --> a06_res : Spend everything on this stand and share...
+a06_m --> a06_res : Spend only what the moment demands.
+a06_m --> a06_res : Hold the stores back and let the men fee...
+a06_res_f_c0 --> a06_res_f_c1 : There is no undoing it.
+a06_res_f_c1 --> a06_res_f_e : Meet it.
+a06_hold --> a06_pass : Hold on.
+a06_thin --> a06_pass : Hold on.
+a06_dry --> a06_pass : Hold the breach from within.
+a06_res --> a06_hold : You have the powder to hold: spend it an...
+a06_res --> a06_thin : Barely enough remains: hold thin and pra...
+a06_res --> a06_dry : Nothing left to hold with: meet them wit...
+a06_res --> a06_res_f_c0 : Abandon the wall and pull back.
+a06_res --> a06_s3 : Gamble the resolution and press it.
+a06_s1_loud_c0 --> a06_s1_loud_c1 : There is no undoing it.
+a06_s1_loud_c1 --> a06_s1_loud_e : Meet it.
+a06_s1 --> a07_ap : Hold quiet and give them nothing.
+a06_s1 --> a06_s1_loud_c0 : Answer loud and rally the wall to you.
+a06_s1 --> a06_s1_cap : Lay down the fight and be taken.
+a06_s2_loud_c0 --> a06_s2_loud_c1 : There is no undoing it.
+a06_s2_loud_c1 --> a06_s2_loud_e : Meet it.
+a06_s2 --> a06_pass : Hold quiet and give them nothing.
+a06_s2 --> a06_s2_loud_c0 : Answer loud and rally the wall to you.
+a06_s2 --> a06_s2_cap : Lay down the fight and be taken.
+a06_s3_loud_c0 --> a06_s3_loud_c1 : There is no undoing it.
+a06_s3_loud_c1 --> a06_s3_loud_e : Meet it.
+a06_s3 --> a06_pass : Hold quiet and give them nothing.
+a06_s3 --> a06_s3_loud_c0 : Answer loud and rally the wall to you.
+a06_s3 --> a06_s3_cap : Lay down the fight and be taken.
+a06_s4_loud_c0 --> a06_s4_loud_c1 : There is no undoing it.
+a06_s4_loud_c1 --> a06_s4_loud_e : Meet it.
+a06_s4 --> a06_pass : Hold quiet and give them nothing.
+a06_s4 --> a06_s4_loud_c0 : Answer loud and rally the wall to you.
+a06_s4 --> a06_s4_cap : Lay down the fight and be taken.
+a06_pass --> a07_ap : Walk the wall with them and share the wa...
+a06_pass --> a07_ap : Let them rest and see the stores counted...
+a06_pass --> a07_ap : Drive them through the night to mend the...
+a07_ap --> a07_g1 : To the wall.
+a07_g1_f0_c0 --> a07_g1_f0_c1 : There is no undoing it.
+a07_g1_f0_c1 --> a07_g1_f0_e : Meet it.
+a07_g1_f1_c0 --> a07_g1_f1_c1 : There is no undoing it.
+a07_g1_f1_c1 --> a07_g1_f1_e : Meet it.
+a07_g1_f2_c0 --> a07_g1_f2_c1 : There is no undoing it.
+a07_g1_f2_c1 --> a07_g1_f2_e : Meet it.
+a07_g1_f3_c0 --> a07_g1_f3_c1 : There is no undoing it.
+a07_g1_f3_c1 --> a07_g1_f3_e : Meet it.
+a07_g1_f4_c0 --> a07_g1_f4_c1 : There is no undoing it.
+a07_g1_f4_c1 --> a07_g1_f4_e : Meet it.
+a07_g1 --> a07_g2 : Talk across the bar, gate shut.
+a07_g1 --> a07_g1_f0_c0 : Open the port to receive their herald.
+a07_g1 --> a07_g1_f1_c0 : March out to parley in the open.
+a07_g1 --> a07_g1_f2_c0 : Wait on their good faith to be shown.
+a07_g1 --> a07_g1_f3_c0 : Empty the wall to hear the terms.
+a07_g1 --> a07_g1_f4_c0 : Fire on the flag to end the ruse.
+a07_g1 --> a07_s1 : Gamble it, take the risk, and press on.
+a07_g2_f0_c0 --> a07_g2_f0_c1 : There is no undoing it.
+a07_g2_f0_c1 --> a07_g2_f0_e : Meet it.
+a07_g2_f1_c0 --> a07_g2_f1_c1 : There is no undoing it.
+a07_g2_f1_c1 --> a07_g2_f1_e : Meet it.
+a07_g2_f2_c0 --> a07_g2_f2_c1 : There is no undoing it.
+a07_g2_f2_c1 --> a07_g2_f2_e : Meet it.
+a07_g2_f3_c0 --> a07_g2_f3_c1 : There is no undoing it.
+a07_g2_f3_c1 --> a07_g2_f3_e : Meet it.
+a07_g2_f4_c0 --> a07_g2_f4_c1 : There is no undoing it.
+a07_g2_f4_c1 --> a07_g2_f4_e : Meet it.
+a07_g2 --> a07_m : Hold the port barred until their column ...
+a07_g2 --> a07_g2_f0_c0 : Hold the port barred until the column sh...
+a07_g2 --> a07_g2_f1_c0 : Let a few inside as a gesture.
+a07_g2 --> a07_g2_f2_c0 : Send hostages of your own out first.
+a07_g2 --> a07_g2_f3_c0 : Stand the whole garrison at the open squ...
+a07_g2 --> a07_g2_f4_c0 : Delay the answer to buy the day.
+a07_g2 --> a07_s2 : Gamble it, take the risk, and press on.
+a07_m --> a07_res : Spend everything on this stand and share...
+a07_m --> a07_res : Spend only what the moment demands.
+a07_m --> a07_res : Hold the stores back and let the men fee...
+a07_res_f_c0 --> a07_res_f_c1 : There is no undoing it.
+a07_res_f_c1 --> a07_res_f_e : Meet it.
+a07_firm --> a07_pass : Hold on.
+a07_waver --> a07_pass : Hold the wavering line.
+a07_res --> a07_firm : The garrison's will is up: the line hold...
+a07_res --> a07_waver : The garrison wavers: steady them or lose...
+a07_res --> a07_res_f_c0 : Abandon the wall and pull back.
+a07_res --> a07_s3 : Gamble the resolution and press it.
+a07_s1_loud_c0 --> a07_s1_loud_c1 : There is no undoing it.
+a07_s1_loud_c1 --> a07_s1_loud_e : Meet it.
+a07_s1 --> a08_ap : Hold quiet and give them nothing.
+a07_s1 --> a07_s1_loud_c0 : Answer loud and rally the wall to you.
+a07_s1 --> a07_s1_cap : Lay down the fight and be taken.
+a07_s2_loud_c0 --> a07_s2_loud_c1 : There is no undoing it.
+a07_s2_loud_c1 --> a07_s2_loud_e : Meet it.
+a07_s2 --> a07_pass : Hold quiet and give them nothing.
+a07_s2 --> a07_s2_loud_c0 : Answer loud and rally the wall to you.
+a07_s2 --> a07_s2_cap : Lay down the fight and be taken.
+a07_s3_loud_c0 --> a07_s3_loud_c1 : There is no undoing it.
+a07_s3_loud_c1 --> a07_s3_loud_e : Meet it.
+a07_s3 --> a07_pass : Hold quiet and give them nothing.
+a07_s3 --> a07_s3_loud_c0 : Answer loud and rally the wall to you.
+a07_s3 --> a07_s3_cap : Lay down the fight and be taken.
+a07_pass --> a08_ap : Walk the wall with them and share the wa...
+a07_pass --> a08_ap : Let them rest and see the stores counted...
+a07_pass --> a08_ap : Drive them through the night to mend the...
+a08_ap --> a08_g1 : To the wall.
+a08_g1_f0_c0 --> a08_g1_f0_c1 : There is no undoing it.
+a08_g1_f0_c1 --> a08_g1_f0_e : Meet it.
+a08_g1_f1_c0 --> a08_g1_f1_c1 : There is no undoing it.
+a08_g1_f1_c1 --> a08_g1_f1_e : Meet it.
+a08_g1_f2_c0 --> a08_g1_f2_c1 : There is no undoing it.
+a08_g1_f2_c1 --> a08_g1_f2_e : Meet it.
+a08_g1_f3_c0 --> a08_g1_f3_c1 : There is no undoing it.
+a08_g1_f3_c1 --> a08_g1_f3_e : Meet it.
+a08_g1_f4_c0 --> a08_g1_f4_c1 : There is no undoing it.
+a08_g1_f4_c1 --> a08_g1_f4_e : Meet it.
+a08_g1 --> a08_g2 : Fire the tower on the ramp.
+a08_g1 --> a08_g1_f0_c0 : Wait for the bridge to fall, then fight ...
+a08_g1 --> a08_g1_f1_c0 : Ram the tower with your own beam.
+a08_g1 --> a08_g1_f2_c0 : Crowd the wall-head under the bridge.
+a08_g1 --> a08_g1_f3_c0 : Fire the wall-walk to deny the bridge.
+a08_g1 --> a08_g1_f4_c0 : Loose fire-pots at the tower's top.
+a08_g1 --> a08_s1 : Gamble it, take the risk, and press on.
+a08_g2_f0_c0 --> a08_g2_f0_c1 : There is no undoing it.
+a08_g2_f0_c1 --> a08_g2_f0_e : Meet it.
+a08_g2_f1_c0 --> a08_g2_f1_c1 : There is no undoing it.
+a08_g2_f1_c1 --> a08_g2_f1_e : Meet it.
+a08_g2_f2_c0 --> a08_g2_f2_c1 : There is no undoing it.
+a08_g2_f2_c1 --> a08_g2_f2_e : Meet it.
+a08_g2_f3_c0 --> a08_g2_f3_c1 : There is no undoing it.
+a08_g2_f3_c1 --> a08_g2_f3_e : Meet it.
+a08_g2_f4_c0 --> a08_g2_f4_c1 : There is no undoing it.
+a08_g2_f4_c1 --> a08_g2_f4_e : Meet it.
+a08_g2 --> a08_g3 : Cut the drawbridge before it drops.
+a08_g2 --> a08_g2_f0_c0 : Cut the drawbridge chains before it drop...
+a08_g2 --> a08_g2_f1_c0 : Hold your fire for the fullest bridge.
+a08_g2 --> a08_g2_f2_c0 : Pull the parapet out under the bridge.
+a08_g2 --> a08_g2_f3_c0 : Charge across onto the tower yourself.
+a08_g2 --> a08_g2_f4_c0 : Mass every archer at the bridge mouth.
+a08_g2 --> a08_s2 : Gamble it, take the risk, and press on.
+a08_g3_f0_c0 --> a08_g3_f0_c1 : There is no undoing it.
+a08_g3_f0_c1 --> a08_g3_f0_e : Meet it.
+a08_g3_f1_c0 --> a08_g3_f1_c1 : There is no undoing it.
+a08_g3_f1_c1 --> a08_g3_f1_e : Meet it.
+a08_g3_f2_c0 --> a08_g3_f2_c1 : There is no undoing it.
+a08_g3_f2_c1 --> a08_g3_f2_e : Meet it.
+a08_g3_f3_c0 --> a08_g3_f3_c1 : There is no undoing it.
+a08_g3_f3_c1 --> a08_g3_f3_e : Meet it.
+a08_g3 --> a08_m : Spend the stores and make the stand.
+a08_g3 --> a08_g3_f0_c0 : Fire the tower on the ramp with the rese...
+a08_g3 --> a08_g3_f1_c0 : Wait until the tower is at the wall to f...
+a08_g3 --> a08_g3_f2_c0 : Throw the pitch across the open bridge.
+a08_g3 --> a08_g3_f3_c0 : Split the pitch between tower and wall.
+a08_g3 --> a08_s4 : Gamble it, take the risk, and press on.
+a08_m --> a08_res : Spend everything on this stand and share...
+a08_m --> a08_res : Spend only what the moment demands.
+a08_m --> a08_res : Hold the stores back and let the men fee...
+a08_res_f_c0 --> a08_res_f_c1 : There is no undoing it.
+a08_res_f_c1 --> a08_res_f_e : Meet it.
+a08_solid --> a08_pass : Hold on.
+a08_gap --> a08_pass : Hold the gap.
+a08_res --> a08_solid : The wall is whole: meet the tower on sou...
+a08_res --> a08_gap : The wall is already broken: the tower ma...
+a08_res --> a08_res_f_c0 : Abandon the wall and pull back.
+a08_res --> a08_s3 : Gamble the resolution and press it.
+a08_s1_loud_c0 --> a08_s1_loud_c1 : There is no undoing it.
+a08_s1_loud_c1 --> a08_s1_loud_e : Meet it.
+a08_s1 --> a09_ap : Hold quiet and give them nothing.
+a08_s1 --> a08_s1_loud_c0 : Answer loud and rally the wall to you.
+a08_s1 --> a08_s1_cap : Lay down the fight and be taken.
+a08_s2_loud_c0 --> a08_s2_loud_c1 : There is no undoing it.
+a08_s2_loud_c1 --> a08_s2_loud_e : Meet it.
+a08_s2 --> a08_pass : Hold quiet and give them nothing.
+a08_s2 --> a08_s2_loud_c0 : Answer loud and rally the wall to you.
+a08_s2 --> a08_s2_cap : Lay down the fight and be taken.
+a08_s3_loud_c0 --> a08_s3_loud_c1 : There is no undoing it.
+a08_s3_loud_c1 --> a08_s3_loud_e : Meet it.
+a08_s3 --> a08_pass : Hold quiet and give them nothing.
+a08_s3 --> a08_s3_loud_c0 : Answer loud and rally the wall to you.
+a08_s3 --> a08_s3_cap : Lay down the fight and be taken.
+a08_s4_loud_c0 --> a08_s4_loud_c1 : There is no undoing it.
+a08_s4_loud_c1 --> a08_s4_loud_e : Meet it.
+a08_s4 --> a08_pass : Hold quiet and give them nothing.
+a08_s4 --> a08_s4_loud_c0 : Answer loud and rally the wall to you.
+a08_s4 --> a08_s4_cap : Lay down the fight and be taken.
+a08_pass --> a09_ap : Walk the wall with them and share the wa...
+a08_pass --> a09_ap : Let them rest and see the stores counted...
+a08_pass --> a09_ap : Drive them through the night to mend the...
+a09_ap --> a09_g1 : To the wall.
+a09_g1_f0_c0 --> a09_g1_f0_c1 : There is no undoing it.
+a09_g1_f0_c1 --> a09_g1_f0_e : Meet it.
+a09_g1_f1_c0 --> a09_g1_f1_c1 : There is no undoing it.
+a09_g1_f1_c1 --> a09_g1_f1_e : Meet it.
+a09_g1_f2_c0 --> a09_g1_f2_c1 : There is no undoing it.
+a09_g1_f2_c1 --> a09_g1_f2_e : Meet it.
+a09_g1_f3_c0 --> a09_g1_f3_c1 : There is no undoing it.
+a09_g1_f3_c1 --> a09_g1_f3_e : Meet it.
+a09_g1_f4_c0 --> a09_g1_f4_c1 : There is no undoing it.
+a09_g1_f4_c1 --> a09_g1_f4_e : Meet it.
+a09_g1 --> a09_g2 : Hold the throat, not the mouth.
+a09_g1 --> a09_g1_f0_c0 : Meet the storm at the open mouth of the ...
+a09_g1 --> a09_g1_f1_c0 : Wait to judge the weight of the storm.
+a09_g1 --> a09_g1_f2_c0 : Fall back to the keep and yield the brea...
+a09_g1 --> a09_g1_f3_c0 : Fire the rubble ramp with the men on it.
+a09_g1 --> a09_g1_f4_c0 : Throw every reserve into the mouth at on...
+a09_g1 --> a09_s1 : Gamble it, take the risk, and press on.
+a09_g2_f0_c0 --> a09_g2_f0_c1 : There is no undoing it.
+a09_g2_f0_c1 --> a09_g2_f0_e : Meet it.
+a09_g2_f1_c0 --> a09_g2_f1_c1 : There is no undoing it.
+a09_g2_f1_c1 --> a09_g2_f1_e : Meet it.
+a09_g2_f2_c0 --> a09_g2_f2_c1 : There is no undoing it.
+a09_g2_f2_c1 --> a09_g2_f2_e : Meet it.
+a09_g2_f3_c0 --> a09_g2_f3_c1 : There is no undoing it.
+a09_g2_f3_c1 --> a09_g2_f3_e : Meet it.
+a09_g2_f4_c0 --> a09_g2_f4_c1 : There is no undoing it.
+a09_g2_f4_c1 --> a09_g2_f4_e : Meet it.
+a09_g2 --> a09_g3 : Spend the caltrops across the ramp of ru...
+a09_g2 --> a09_g2_f0_c0 : Spend the caltrops across the rubble ram...
+a09_g2 --> a09_g2_f1_c0 : Save the caltrops for the second wave.
+a09_g2 --> a09_g2_f2_c0 : Scatter the caltrops behind your own lin...
+a09_g2 --> a09_g2_f3_c0 : Charge down the ramp into the storm.
+a09_g2 --> a09_g2_f4_c0 : Mass the reserve one pace inside the thr...
+a09_g2 --> a09_s2 : Gamble it, take the risk, and press on.
+a09_g3_f0_c0 --> a09_g3_f0_c1 : There is no undoing it.
+a09_g3_f0_c1 --> a09_g3_f0_e : Meet it.
+a09_g3_f1_c0 --> a09_g3_f1_c1 : There is no undoing it.
+a09_g3_f1_c1 --> a09_g3_f1_e : Meet it.
+a09_g3_f2_c0 --> a09_g3_f2_c1 : There is no undoing it.
+a09_g3_f2_c1 --> a09_g3_f2_e : Meet it.
+a09_g3_f3_c0 --> a09_g3_f3_c1 : There is no undoing it.
+a09_g3_f3_c1 --> a09_g3_f3_e : Meet it.
+a09_g3 --> a09_m : Spend the stores and make the stand.
+a09_g3 --> a09_g3_f0_c0 : Spend the last powder to blow the ramp.
+a09_g3 --> a09_g3_f1_c0 : Hold the powder for the inner gate.
+a09_g3 --> a09_g3_f2_c0 : Fire the powder into the packed mouth.
+a09_g3 --> a09_g3_f3_c0 : Lay a short charge to save the rest.
+a09_g3 --> a09_s4 : Gamble it, take the risk, and press on.
+a09_m --> a09_res : Spend everything on this stand and share...
+a09_m --> a09_res : Spend only what the moment demands.
+a09_m --> a09_res : Hold the stores back and let the men fee...
+a09_res_f_c0 --> a09_res_f_c1 : There is no undoing it.
+a09_res_f_c1 --> a09_res_f_e : Meet it.
+a09_hold --> a09_pass : Hold on.
+a09_thin --> a09_pass : Hold on.
+a09_dry --> a09_pass : Hold on.
+a09_res --> a09_hold : You have the powder to hold: spend it an...
+a09_res --> a09_thin : Barely enough remains: hold thin and pra...
+a09_res --> a09_dry : Nothing left to hold with: meet them wit...
+a09_res --> a09_res_f_c0 : Abandon the wall and pull back.
+a09_res --> a09_s3 : Gamble the resolution and press it.
+a09_s1_loud_c0 --> a09_s1_loud_c1 : There is no undoing it.
+a09_s1_loud_c1 --> a09_s1_loud_e : Meet it.
+a09_s1 --> a10_ap : Hold quiet and give them nothing.
+a09_s1 --> a09_s1_loud_c0 : Answer loud and rally the wall to you.
+a09_s1 --> a09_s1_cap : Lay down the fight and be taken.
+a09_s2_loud_c0 --> a09_s2_loud_c1 : There is no undoing it.
+a09_s2_loud_c1 --> a09_s2_loud_e : Meet it.
+a09_s2 --> a09_pass : Hold quiet and give them nothing.
+a09_s2 --> a09_s2_loud_c0 : Answer loud and rally the wall to you.
+a09_s2 --> a09_s2_cap : Lay down the fight and be taken.
+a09_s3_loud_c0 --> a09_s3_loud_c1 : There is no undoing it.
+a09_s3_loud_c1 --> a09_s3_loud_e : Meet it.
+a09_s3 --> a09_pass : Hold quiet and give them nothing.
+a09_s3 --> a09_s3_loud_c0 : Answer loud and rally the wall to you.
+a09_s3 --> a09_s3_cap : Lay down the fight and be taken.
+a09_s4_loud_c0 --> a09_s4_loud_c1 : There is no undoing it.
+a09_s4_loud_c1 --> a09_s4_loud_e : Meet it.
+a09_s4 --> a09_pass : Hold quiet and give them nothing.
+a09_s4 --> a09_s4_loud_c0 : Answer loud and rally the wall to you.
+a09_s4 --> a09_s4_cap : Lay down the fight and be taken.
+a09_pass --> a10_ap : Walk the wall with them and share the wa...
+a09_pass --> a10_ap : Let them rest and see the stores counted...
+a09_pass --> a10_ap : Drive them through the night to mend the...
+a10_ap --> a10_g1 : To the wall.
+a10_g1_f0_c0 --> a10_g1_f0_c1 : There is no undoing it.
+a10_g1_f0_c1 --> a10_g1_f0_e : Meet it.
+a10_g1_f1_c0 --> a10_g1_f1_c1 : There is no undoing it.
+a10_g1_f1_c1 --> a10_g1_f1_e : Meet it.
+a10_g1_f2_c0 --> a10_g1_f2_c1 : There is no undoing it.
+a10_g1_f2_c1 --> a10_g1_f2_e : Meet it.
+a10_g1_f3_c0 --> a10_g1_f3_c1 : There is no undoing it.
+a10_g1_f3_c1 --> a10_g1_f3_e : Meet it.
+a10_g1_f4_c0 --> a10_g1_f4_c1 : There is no undoing it.
+a10_g1_f4_c1 --> a10_g1_f4_e : Meet it.
+a10_g1 --> a10_g2 : Hold the center and let the wings bend.
+a10_g1 --> a10_g1_f0_c0 : Chase the first wing that gives.
+a10_g1 --> a10_g1_f1_c0 : Wait for the main effort to declare.
+a10_g1 --> a10_g1_f2_c0 : Thin the center to hold every wing.
+a10_g1 --> a10_g1_f3_c0 : Order a sortie to break the dawn assault...
+a10_g1 --> a10_g1_f4_c0 : Pull all to the keep and yield the walls...
+a10_g1 --> a10_s1 : Gamble it, take the risk, and press on.
+a10_g2_f0_c0 --> a10_g2_f0_c1 : There is no undoing it.
+a10_g2_f0_c1 --> a10_g2_f0_e : Meet it.
+a10_g2_f1_c0 --> a10_g2_f1_c1 : There is no undoing it.
+a10_g2_f1_c1 --> a10_g2_f1_e : Meet it.
+a10_g2_f2_c0 --> a10_g2_f2_c1 : There is no undoing it.
+a10_g2_f2_c1 --> a10_g2_f2_e : Meet it.
+a10_g2_f3_c0 --> a10_g2_f3_c1 : There is no undoing it.
+a10_g2_f3_c1 --> a10_g2_f3_e : Meet it.
+a10_g2_f4_c0 --> a10_g2_f4_c1 : There is no undoing it.
+a10_g2_f4_c1 --> a10_g2_f4_e : Meet it.
+a10_g2 --> a10_m : Commit the last reserve only to the true...
+a10_g2 --> a10_g2_f0_c0 : Commit the last reserve to the true push...
+a10_g2 --> a10_g2_f1_c0 : Hold the last reserve back entirely.
+a10_g2 --> a10_g2_f2_c0 : Split the reserve across every wing.
+a10_g2 --> a10_g2_f3_c0 : Send the reserve out through the sally-p...
+a10_g2 --> a10_g2_f4_c0 : Mass the reserve in the open bailey.
+a10_g2 --> a10_s2 : Gamble it, take the risk, and press on.
+a10_m --> a10_res : Spend everything on this stand and share...
+a10_m --> a10_res : Spend only what the moment demands.
+a10_m --> a10_res : Hold the stores back and let the men fee...
+a10_res_f_c0 --> a10_res_f_c1 : There is no undoing it.
+a10_res_f_c1 --> a10_res_f_e : Meet it.
+a10_hold --> a10_pass : Hold on.
+a10_thin --> a10_pass : Hold on.
+a10_dry --> a10_pass : Hold on.
+a10_res --> a10_hold : You have the powder to hold: spend it an...
+a10_res --> a10_thin : Barely enough remains: hold thin and pra...
+a10_res --> a10_dry : Nothing left to hold with: meet them wit...
+a10_res --> a10_res_f_c0 : Abandon the wall and pull back.
+a10_res --> a10_s3 : Gamble the resolution and press it.
+a10_s1_loud_c0 --> a10_s1_loud_c1 : There is no undoing it.
+a10_s1_loud_c1 --> a10_s1_loud_e : Meet it.
+a10_s1 --> fin0 : Hold quiet and give them nothing.
+a10_s1 --> a10_s1_loud_c0 : Answer loud and rally the wall to you.
+a10_s1 --> a10_s1_cap : Lay down the fight and be taken.
+a10_s2_loud_c0 --> a10_s2_loud_c1 : There is no undoing it.
+a10_s2_loud_c1 --> a10_s2_loud_e : Meet it.
+a10_s2 --> a10_pass : Hold quiet and give them nothing.
+a10_s2 --> a10_s2_loud_c0 : Answer loud and rally the wall to you.
+a10_s2 --> a10_s2_cap : Lay down the fight and be taken.
+a10_s3_loud_c0 --> a10_s3_loud_c1 : There is no undoing it.
+a10_s3_loud_c1 --> a10_s3_loud_e : Meet it.
+a10_s3 --> a10_pass : Hold quiet and give them nothing.
+a10_s3 --> a10_s3_loud_c0 : Answer loud and rally the wall to you.
+a10_s3 --> a10_s3_cap : Lay down the fight and be taken.
+a10_pass --> fin0 : See what the siege has left you.
+fin_f_c0 --> fin_f_c1 : There is no undoing it.
+fin_f_c1 --> fin_f_e : Meet it.
+fin_gl_c0 --> fin_gl_c1 : There is no undoing it.
+fin_gl_c1 --> fin_gl_e : Meet it.
+fin_gamble --> win_nearthing : Hold steady and let the throw settle in ...
+fin_gamble --> fin_gl_c0 : Throw everything into one loud stand.
+fin_gamble --> fin_gcap : Sound terms and end it.
+fin0 --> fin_intact : The wall stands whole, no breach ever ta...
+fin0 --> fin_breached : The wall carries a breach, held from wit...
+fin0 --> fin_f_c0 : Order a sortie into the drawing-off host...
+fin0 --> fin_gamble : Gamble the muster on one last throw.
+fin_intact --> fin_intact_hi : The garrison musters whole and unbroken ...
+fin_intact --> win_gutted : The garrison holds, but the men are gutt...
+fin_intact --> fin_f_c0 : Make a last stand on the whole wall rega...
+fin_intact_hi --> win_best : The magazine still holds: the fortress m...
+fin_intact_hi --> win_whole : The stores are spent: the fortress holds...
+fin_intact_hi --> fin_f_c0 : Refuse the relief and hold alone.
+fin_breached --> win_bargain : The garrison still has will: the breach ...
+fin_breached --> win_grim : The garrison is spent: the breach holds ...
+fin_breached --> fin_f_c0 : Abandon the breached wall at the last.
+a01_g1_f0_e --> [*]
+a01_g1_f1_e --> [*]
+a01_g1_f2_e --> [*]
+a01_g1_f3_e --> [*]
+a01_g1_f4_e --> [*]
+a01_g2_f0_e --> [*]
+a01_g2_f1_e --> [*]
+a01_g2_f2_e --> [*]
+a01_g2_f3_e --> [*]
+a01_g2_f4_e --> [*]
+a01_res_f_e --> [*]
+a01_s1_loud_e --> [*]
+a01_s1_cap --> [*]
+a01_s2_loud_e --> [*]
+a01_s2_cap --> [*]
+a01_s3_loud_e --> [*]
+a01_s3_cap --> [*]
+a02_g1_f0_e --> [*]
+a02_g1_f1_e --> [*]
+a02_g1_f2_e --> [*]
+a02_g1_f3_e --> [*]
+a02_g1_f4_e --> [*]
+a02_g2_f0_e --> [*]
+a02_g2_f1_e --> [*]
+a02_g2_f2_e --> [*]
+a02_g2_f3_e --> [*]
+a02_g2_f4_e --> [*]
+a02_res_f_e --> [*]
+a02_s1_loud_e --> [*]
+a02_s1_cap --> [*]
+a02_s2_loud_e --> [*]
+a02_s2_cap --> [*]
+a02_s3_loud_e --> [*]
+a02_s3_cap --> [*]
+a03_g1_f0_e --> [*]
+a03_g1_f1_e --> [*]
+a03_g1_f2_e --> [*]
+a03_g1_f3_e --> [*]
+a03_g1_f4_e --> [*]
+a03_g2_f0_e --> [*]
+a03_g2_f1_e --> [*]
+a03_g2_f2_e --> [*]
+a03_g2_f3_e --> [*]
+a03_g2_f4_e --> [*]
+a03_g3_f0_e --> [*]
+a03_g3_f1_e --> [*]
+a03_g3_f2_e --> [*]
+a03_g3_f3_e --> [*]
+a03_res_f_e --> [*]
+a03_s1_loud_e --> [*]
+a03_s1_cap --> [*]
+a03_s2_loud_e --> [*]
+a03_s2_cap --> [*]
+a03_s3_loud_e --> [*]
+a03_s3_cap --> [*]
+a03_s4_loud_e --> [*]
+a03_s4_cap --> [*]
+a04_g1_f0_e --> [*]
+a04_g1_f1_e --> [*]
+a04_g1_f2_e --> [*]
+a04_g1_f3_e --> [*]
+a04_g1_f4_e --> [*]
+a04_g2_f0_e --> [*]
+a04_g2_f1_e --> [*]
+a04_g2_f2_e --> [*]
+a04_g2_f3_e --> [*]
+a04_g2_f4_e --> [*]
+a04_res_f_e --> [*]
+a04_s1_loud_e --> [*]
+a04_s1_cap --> [*]
+a04_s2_loud_e --> [*]
+a04_s2_cap --> [*]
+a04_s3_loud_e --> [*]
+a04_s3_cap --> [*]
+a05_g1_f0_e --> [*]
+a05_g1_f1_e --> [*]
+a05_g1_f2_e --> [*]
+a05_g1_f3_e --> [*]
+a05_g1_f4_e --> [*]
+a05_g2_f0_e --> [*]
+a05_g2_f1_e --> [*]
+a05_g2_f2_e --> [*]
+a05_g2_f3_e --> [*]
+a05_g2_f4_e --> [*]
+a05_g3_f0_e --> [*]
+a05_g3_f1_e --> [*]
+a05_g3_f2_e --> [*]
+a05_g3_f3_e --> [*]
+a05_res_f_e --> [*]
+a05_s1_loud_e --> [*]
+a05_s1_cap --> [*]
+a05_s2_loud_e --> [*]
+a05_s2_cap --> [*]
+a05_s3_loud_e --> [*]
+a05_s3_cap --> [*]
+a05_s4_loud_e --> [*]
+a05_s4_cap --> [*]
+a06_g1_f0_e --> [*]
+a06_g1_f1_e --> [*]
+a06_g1_f2_e --> [*]
+a06_g1_f3_e --> [*]
+a06_g1_f4_e --> [*]
+a06_g2_f0_e --> [*]
+a06_g2_f1_e --> [*]
+a06_g2_f2_e --> [*]
+a06_g2_f3_e --> [*]
+a06_g2_f4_e --> [*]
+a06_g3_f0_e --> [*]
+a06_g3_f1_e --> [*]
+a06_g3_f2_e --> [*]
+a06_g3_f3_e --> [*]
+a06_res_f_e --> [*]
+a06_s1_loud_e --> [*]
+a06_s1_cap --> [*]
+a06_s2_loud_e --> [*]
+a06_s2_cap --> [*]
+a06_s3_loud_e --> [*]
+a06_s3_cap --> [*]
+a06_s4_loud_e --> [*]
+a06_s4_cap --> [*]
+a07_g1_f0_e --> [*]
+a07_g1_f1_e --> [*]
+a07_g1_f2_e --> [*]
+a07_g1_f3_e --> [*]
+a07_g1_f4_e --> [*]
+a07_g2_f0_e --> [*]
+a07_g2_f1_e --> [*]
+a07_g2_f2_e --> [*]
+a07_g2_f3_e --> [*]
+a07_g2_f4_e --> [*]
+a07_res_f_e --> [*]
+a07_s1_loud_e --> [*]
+a07_s1_cap --> [*]
+a07_s2_loud_e --> [*]
+a07_s2_cap --> [*]
+a07_s3_loud_e --> [*]
+a07_s3_cap --> [*]
+a08_g1_f0_e --> [*]
+a08_g1_f1_e --> [*]
+a08_g1_f2_e --> [*]
+a08_g1_f3_e --> [*]
+a08_g1_f4_e --> [*]
+a08_g2_f0_e --> [*]
+a08_g2_f1_e --> [*]
+a08_g2_f2_e --> [*]
+a08_g2_f3_e --> [*]
+a08_g2_f4_e --> [*]
+a08_g3_f0_e --> [*]
+a08_g3_f1_e --> [*]
+a08_g3_f2_e --> [*]
+a08_g3_f3_e --> [*]
+a08_res_f_e --> [*]
+a08_s1_loud_e --> [*]
+a08_s1_cap --> [*]
+a08_s2_loud_e --> [*]
+a08_s2_cap --> [*]
+a08_s3_loud_e --> [*]
+a08_s3_cap --> [*]
+a08_s4_loud_e --> [*]
+a08_s4_cap --> [*]
+a09_g1_f0_e --> [*]
+a09_g1_f1_e --> [*]
+a09_g1_f2_e --> [*]
+a09_g1_f3_e --> [*]
+a09_g1_f4_e --> [*]
+a09_g2_f0_e --> [*]
+a09_g2_f1_e --> [*]
+a09_g2_f2_e --> [*]
+a09_g2_f3_e --> [*]
+a09_g2_f4_e --> [*]
+a09_g3_f0_e --> [*]
+a09_g3_f1_e --> [*]
+a09_g3_f2_e --> [*]
+a09_g3_f3_e --> [*]
+a09_res_f_e --> [*]
+a09_s1_loud_e --> [*]
+a09_s1_cap --> [*]
+a09_s2_loud_e --> [*]
+a09_s2_cap --> [*]
+a09_s3_loud_e --> [*]
+a09_s3_cap --> [*]
+a09_s4_loud_e --> [*]
+a09_s4_cap --> [*]
+a10_g1_f0_e --> [*]
+a10_g1_f1_e --> [*]
+a10_g1_f2_e --> [*]
+a10_g1_f3_e --> [*]
+a10_g1_f4_e --> [*]
+a10_g2_f0_e --> [*]
+a10_g2_f1_e --> [*]
+a10_g2_f2_e --> [*]
+a10_g2_f3_e --> [*]
+a10_g2_f4_e --> [*]
+a10_res_f_e --> [*]
+a10_s1_loud_e --> [*]
+a10_s1_cap --> [*]
+a10_s2_loud_e --> [*]
+a10_s2_cap --> [*]
+a10_s3_loud_e --> [*]
+a10_s3_cap --> [*]
+fin_f_e --> [*]
+fin_gl_e --> [*]
+fin_gcap --> [*]
+win_best --> [*]
+win_whole --> [*]
+win_gutted --> [*]
+win_bargain --> [*]
+win_grim --> [*]
+win_nearthing --> [*]
+
+legend right
+  The Tenfold Siege
+  Band 16+ · Tier 2 · ~55 min
+  Topology: gauntlet
+  677 nodes · 209 endings (2+ / 3n / 204-)
+  Production-eligible
+  Scale: long · gamebook
+endlegend
+@enduml

@@ -1,0 +1,1418 @@
+@startuml the-labyrinth-of-glass
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> sup0
+state sup0 #BBDEFB
+sup0 : setup · 78w
+state sup1 #BBDEFB
+sup1 : setup · 66w
+state st01_ap0 #D1C4E9
+st01_ap0 : rising · 55w
+state st01_gate #D1C4E9
+st01_gate : rising · 70w
+state st01_pass #D1C4E9
+st01_pass : rising · 50w
+state st01_f0_c0 #D1C4E9
+st01_f0_c0 : rising · 48w
+state st01_f0_c1 #D1C4E9
+st01_f0_c1 : rising · 46w
+state st01_f0_end #FFCDD2
+st01_f0_end : death (negative)
+st01_f0_end : "The Bright Door"
+state st01_f1_c0 #D1C4E9
+st01_f1_c0 : rising · 51w
+state st01_f1_c1 #D1C4E9
+st01_f1_c1 : rising · 50w
+state st01_f1_end #FFCDD2
+st01_f1_end : death (negative)
+st01_f1_end : "Too Long in the Hall"
+state st01_f2_c0 #D1C4E9
+st01_f2_c0 : rising · 54w
+state st01_f2_c1 #D1C4E9
+st01_f2_c1 : rising · 54w
+state st01_f2_end #FFCDD2
+st01_f2_end : death (negative)
+st01_f2_end : "A Latch of Glass"
+state st01_f3_c0 #D1C4E9
+st01_f3_c0 : rising · 48w
+state st01_f3_c1 #D1C4E9
+st01_f3_c1 : rising · 46w
+state st01_f3_end #FFCDD2
+st01_f3_end : death (negative)
+st01_f3_end : "Lost Behind the Glass"
+state st01_seen #FFF9C4
+st01_seen : choice · 62w
+state st01_fd_c0 #D1C4E9
+st01_fd_c0 : rising · 50w
+state st01_fd_c1 #D1C4E9
+st01_fd_c1 : rising · 48w
+state st01_fd_end #FFCDD2
+st01_fd_end : death (negative)
+st01_fd_end : "Sealed In by Silver"
+state st01_cap #FFCDD2
+st01_cap : capture (negative)
+st01_cap : "Handed to the Ushers"
+state st02_ap0 #D1C4E9
+st02_ap0 : rising · 58w
+state st02_gate #D1C4E9
+st02_gate : rising · 74w
+state st02_pass #D1C4E9
+st02_pass : rising · 54w
+state st02_f0_c0 #D1C4E9
+st02_f0_c0 : rising · 48w
+state st02_f0_c1 #D1C4E9
+st02_f0_c1 : rising · 46w
+state st02_f0_end #FFCDD2
+st02_f0_end : death (negative)
+st02_f0_end : "Down the Silvered Fall"
+state st02_f1_c0 #D1C4E9
+st02_f1_c0 : rising · 51w
+state st02_f1_c1 #D1C4E9
+st02_f1_c1 : rising · 50w
+state st02_f1_end #FFCDD2
+st02_f1_end : death (negative)
+st02_f1_end : "The Banister Ends"
+state st02_f2_c0 #D1C4E9
+st02_f2_c0 : rising · 54w
+state st02_f2_c1 #D1C4E9
+st02_f2_c1 : rising · 54w
+state st02_f2_end #FFCDD2
+st02_f2_end : death (negative)
+st02_f2_end : "The Candle Gutters"
+state st02_f3_c0 #D1C4E9
+st02_f3_c0 : rising · 48w
+state st02_f3_c1 #D1C4E9
+st02_f3_c1 : rising · 46w
+state st02_f3_end #FFCDD2
+st02_f3_end : death (negative)
+st02_f3_end : "A Leap onto Glass"
+state st02_seen #FFF9C4
+st02_seen : choice · 66w
+state st02_fd_c0 #D1C4E9
+st02_fd_c0 : rising · 50w
+state st02_fd_c1 #D1C4E9
+st02_fd_c1 : rising · 48w
+state st02_fd_end #FFCDD2
+st02_fd_end : death (negative)
+st02_fd_end : "Blind on the Stair"
+state st02_cap #FFCDD2
+st02_cap : capture (negative)
+st02_cap : "Caught in the Lantern"
+state st03_ap0 #D1C4E9
+st03_ap0 : rising · 61w
+state st03_gate #D1C4E9
+st03_gate : rising · 78w
+state st03_pass #D1C4E9
+st03_pass : rising · 46w
+state st03_f0_c0 #D1C4E9
+st03_f0_c0 : rising · 48w
+state st03_f0_c1 #D1C4E9
+st03_f0_c1 : rising · 46w
+state st03_f0_end #FFCDD2
+st03_f0_end : death (negative)
+st03_f0_end : "Loud in the Quiet"
+state st03_f1_c0 #D1C4E9
+st03_f1_c0 : rising · 51w
+state st03_f1_c1 #D1C4E9
+st03_f1_c1 : rising · 50w
+state st03_f1_end #FFCDD2
+st03_f1_end : death (negative)
+st03_f1_end : "The Answered Call"
+state st03_f2_c0 #D1C4E9
+st03_f2_c0 : rising · 54w
+state st03_f2_c1 #D1C4E9
+st03_f2_c1 : rising · 54w
+state st03_f2_end #FFCDD2
+st03_f2_end : death (negative)
+st03_f2_end : "Between the Pieces"
+state st03_f3_c0 #D1C4E9
+st03_f3_c0 : rising · 48w
+state st03_f3_c1 #D1C4E9
+st03_f3_c1 : rising · 46w
+state st03_f3_end #FFCDD2
+st03_f3_end : death (negative)
+st03_f3_end : "A Note in the Glass"
+state st03_f4_c0 #D1C4E9
+st03_f4_c0 : rising · 51w
+state st03_f4_c1 #D1C4E9
+st03_f4_c1 : rising · 50w
+state st03_f4_end #FFCDD2
+st03_f4_end : death (negative)
+st03_f4_end : "Half a Tone Off"
+state st03_seen #FFF9C4
+st03_seen : choice · 58w
+state st03_fd_c0 #D1C4E9
+st03_fd_c0 : rising · 50w
+state st03_fd_c1 #D1C4E9
+st03_fd_c1 : rising · 48w
+state st03_fd_end #FFCDD2
+st03_fd_end : death (negative)
+st03_fd_end : "A Stride Short"
+state st03_cap #FFCDD2
+st03_cap : capture (negative)
+st03_cap : "Through the Side Door"
+state st04_ap0 #D1C4E9
+st04_ap0 : rising · 64w
+state st04_gate #D1C4E9
+st04_gate : rising · 66w
+state st04_pass #D1C4E9
+st04_pass : rising · 50w
+state st04_f0_c0 #D1C4E9
+st04_f0_c0 : rising · 48w
+state st04_f0_c1 #D1C4E9
+st04_f0_c1 : rising · 46w
+state st04_f0_end #FFCDD2
+st04_f0_end : death (negative)
+st04_f0_end : "Under the Falling Weight"
+state st04_f1_c0 #D1C4E9
+st04_f1_c0 : rising · 51w
+state st04_f1_c1 #D1C4E9
+st04_f1_c1 : rising · 50w
+state st04_f1_end #FFCDD2
+st04_f1_end : death (negative)
+st04_f1_end : "The Chain Cut Early"
+state st04_f2_c0 #D1C4E9
+st04_f2_c0 : rising · 54w
+state st04_f2_c1 #D1C4E9
+st04_f2_c1 : rising · 54w
+state st04_f2_end #FFCDD2
+st04_f2_end : death (negative)
+st04_f2_end : "It Never Stops"
+state st04_f3_c0 #D1C4E9
+st04_f3_c0 : rising · 48w
+state st04_f3_c1 #D1C4E9
+st04_f3_c1 : rising · 46w
+state st04_f3_end #FFCDD2
+st04_f3_end : death (negative)
+st04_f3_end : "The Frayed Link"
+state st04_seen #FFF9C4
+st04_seen : choice · 62w
+state st04_fd_c0 #D1C4E9
+st04_fd_c0 : rising · 50w
+state st04_fd_c1 #D1C4E9
+st04_fd_c1 : rising · 48w
+state st04_fd_end #FFCDD2
+st04_fd_end : death (negative)
+st04_fd_end : "The Floor of Glass"
+state st04_cap #FFCDD2
+st04_cap : capture (negative)
+st04_cap : "Hauled to the Rigging"
+state st05_ap0 #D1C4E9
+st05_ap0 : rising · 52w
+state st05_gate #D1C4E9
+st05_gate : rising · 70w
+state st05_pass #D1C4E9
+st05_pass : rising · 54w
+state st05_f0_c0 #D1C4E9
+st05_f0_c0 : rising · 48w
+state st05_f0_c1 #D1C4E9
+st05_f0_c1 : rising · 46w
+state st05_f0_end #FFCDD2
+st05_f0_end : death (negative)
+st05_f0_end : "The Cold in the Hands"
+state st05_f1_c0 #D1C4E9
+st05_f1_c0 : rising · 51w
+state st05_f1_c1 #D1C4E9
+st05_f1_c1 : rising · 50w
+state st05_f1_end #FFCDD2
+st05_f1_end : death (negative)
+st05_f1_end : "One Breath Too Many"
+state st05_f2_c0 #D1C4E9
+st05_f2_c0 : rising · 54w
+state st05_f2_c1 #D1C4E9
+st05_f2_c1 : rising · 54w
+state st05_f2_end #FFCDD2
+st05_f2_end : death (negative)
+st05_f2_end : "The Brittle Pane"
+state st05_f3_c0 #D1C4E9
+st05_f3_c0 : rising · 48w
+state st05_f3_c1 #D1C4E9
+st05_f3_c1 : rising · 46w
+state st05_f3_end #FFCDD2
+st05_f3_end : death (negative)
+st05_f3_end : "The Bare Cold Glass"
+state st05_seen #FFF9C4
+st05_seen : choice · 66w
+state st05_fd_c0 #D1C4E9
+st05_fd_c0 : rising · 50w
+state st05_fd_c1 #D1C4E9
+st05_fd_c1 : rising · 48w
+state st05_fd_end #FFCDD2
+st05_fd_end : death (negative)
+st05_fd_end : "Frozen at the Guess"
+state st05_cap #FFCDD2
+st05_cap : capture (negative)
+st05_cap : "Carried from the Cold"
+state st06_ap0 #D1C4E9
+st06_ap0 : rising · 55w
+state st06_gate #D1C4E9
+st06_gate : rising · 74w
+state st06_pass #D1C4E9
+st06_pass : rising · 46w
+state st06_f0_c0 #D1C4E9
+st06_f0_c0 : rising · 48w
+state st06_f0_c1 #D1C4E9
+st06_f0_c1 : rising · 46w
+state st06_f0_end #FFCDD2
+st06_f0_end : death (negative)
+st06_f0_end : "The Warden's Hand"
+state st06_f1_c0 #D1C4E9
+st06_f1_c0 : rising · 51w
+state st06_f1_c1 #D1C4E9
+st06_f1_c1 : rising · 50w
+state st06_f1_end #FFCDD2
+st06_f1_end : death (negative)
+st06_f1_end : "The Wrong Blow"
+state st06_f2_c0 #D1C4E9
+st06_f2_c0 : rising · 54w
+state st06_f2_c1 #D1C4E9
+st06_f2_c1 : rising · 54w
+state st06_f2_end #FFCDD2
+st06_f2_end : death (negative)
+st06_f2_end : "Neither of Them Breathes"
+state st06_f3_c0 #D1C4E9
+st06_f3_c0 : rising · 48w
+state st06_f3_c1 #D1C4E9
+st06_f3_c1 : rising · 46w
+state st06_f3_end #FFCDD2
+st06_f3_end : death (negative)
+st06_f3_end : "Between the Wardens"
+state st06_seen #FFF9C4
+st06_seen : choice · 58w
+state st06_fd_c0 #D1C4E9
+st06_fd_c0 : rising · 50w
+state st06_fd_c1 #D1C4E9
+st06_fd_c1 : rising · 48w
+state st06_fd_end #FFCDD2
+st06_fd_end : death (negative)
+st06_fd_end : "A Warm Hand"
+state st06_cap #FFCDD2
+st06_cap : capture (negative)
+st06_cap : "Marched Off"
+state st07_ap0 #D1C4E9
+st07_ap0 : rising · 58w
+state st07_gate #D1C4E9
+st07_gate : rising · 78w
+state st07_pass #D1C4E9
+st07_pass : rising · 50w
+state st07_f0_c0 #D1C4E9
+st07_f0_c0 : rising · 48w
+state st07_f0_c1 #D1C4E9
+st07_f0_c1 : rising · 46w
+state st07_f0_end #FFCDD2
+st07_f0_end : death (negative)
+st07_f0_end : "Into the Pit"
+state st07_f1_c0 #D1C4E9
+st07_f1_c0 : rising · 51w
+state st07_f1_c1 #D1C4E9
+st07_f1_c1 : rising · 50w
+state st07_f1_end #FFCDD2
+st07_f1_end : death (negative)
+st07_f1_end : "No Wall to Climb"
+state st07_f2_c0 #D1C4E9
+st07_f2_c0 : rising · 54w
+state st07_f2_c1 #D1C4E9
+st07_f2_c1 : rising · 54w
+state st07_f2_end #FFCDD2
+st07_f2_end : death (negative)
+st07_f2_end : "The Water Rising"
+state st07_f3_c0 #D1C4E9
+st07_f3_c0 : rising · 48w
+state st07_f3_c1 #D1C4E9
+st07_f3_c1 : rising · 46w
+state st07_f3_end #FFCDD2
+st07_f3_end : death (negative)
+st07_f3_end : "The Rail That Wasn't"
+state st07_seen #FFF9C4
+st07_seen : choice · 62w
+state st07_fd_c0 #D1C4E9
+st07_fd_c0 : rising · 50w
+state st07_fd_c1 #D1C4E9
+st07_fd_c1 : rising · 48w
+state st07_fd_end #FFCDD2
+st07_fd_end : death (negative)
+st07_fd_end : "Short over the Water"
+state st07_cap #FFCDD2
+st07_cap : capture (negative)
+st07_cap : "Poled to the Cell"
+state st08_ap0 #D1C4E9
+st08_ap0 : rising · 61w
+state st08_gate #D1C4E9
+st08_gate : rising · 66w
+state st08_pass #D1C4E9
+st08_pass : rising · 54w
+state st08_f0_c0 #D1C4E9
+st08_f0_c0 : rising · 48w
+state st08_f0_c1 #D1C4E9
+st08_f0_c1 : rising · 46w
+state st08_f0_end #FFCDD2
+st08_f0_end : death (negative)
+st08_f0_end : "The Lighted Turn"
+state st08_f1_c0 #D1C4E9
+st08_f1_c0 : rising · 51w
+state st08_f1_c1 #D1C4E9
+st08_f1_c1 : rising · 50w
+state st08_f1_end #FFCDD2
+st08_f1_end : death (negative)
+st08_f1_end : "The Snuffed Candle"
+state st08_f2_c0 #D1C4E9
+st08_f2_c0 : rising · 54w
+state st08_f2_c1 #D1C4E9
+st08_f2_c1 : rising · 54w
+state st08_f2_end #FFCDD2
+st08_f2_end : death (negative)
+st08_f2_end : "The Candles Never Die"
+state st08_f3_c0 #D1C4E9
+st08_f3_c0 : rising · 48w
+state st08_f3_c1 #D1C4E9
+st08_f3_c1 : rising · 46w
+state st08_f3_end #FFCDD2
+st08_f3_end : death (negative)
+st08_f3_end : "The Pane Under Tension"
+state st08_seen #FFF9C4
+st08_seen : choice · 66w
+state st08_fd_c0 #D1C4E9
+st08_fd_c0 : rising · 50w
+state st08_fd_c1 #D1C4E9
+st08_fd_c1 : rising · 48w
+state st08_fd_end #FFCDD2
+st08_fd_end : death (negative)
+st08_fd_end : "Boxed by the Draft"
+state st08_cap #FFCDD2
+st08_cap : capture (negative)
+st08_cap : "Led by the Linkboy"
+state st09_ap0 #D1C4E9
+st09_ap0 : rising · 64w
+state st09_gate #D1C4E9
+st09_gate : rising · 70w
+state st09_pass #D1C4E9
+st09_pass : rising · 46w
+state st09_f0_c0 #D1C4E9
+st09_f0_c0 : rising · 48w
+state st09_f0_c1 #D1C4E9
+st09_f0_c1 : rising · 46w
+state st09_f0_end #FFCDD2
+st09_f0_end : death (negative)
+st09_f0_end : "Caught on the Rest"
+state st09_f1_c0 #D1C4E9
+st09_f1_c0 : rising · 51w
+state st09_f1_c1 #D1C4E9
+st09_f1_c1 : rising · 50w
+state st09_f1_end #FFCDD2
+st09_f1_end : death (negative)
+st09_f1_end : "The Music Ends"
+state st09_f2_c0 #D1C4E9
+st09_f2_c0 : rising · 54w
+state st09_f2_c1 #D1C4E9
+st09_f2_c1 : rising · 54w
+state st09_f2_end #FFCDD2
+st09_f2_end : death (negative)
+st09_f2_end : "The Wedge Snaps"
+state st09_f3_c0 #D1C4E9
+st09_f3_c0 : rising · 48w
+state st09_f3_c1 #D1C4E9
+st09_f3_c1 : rising · 46w
+state st09_f3_end #FFCDD2
+st09_f3_end : death (negative)
+st09_f3_end : "Half Through the Box"
+state st09_seen #FFF9C4
+st09_seen : choice · 58w
+state st09_fd_c0 #D1C4E9
+st09_fd_c0 : rising · 50w
+state st09_fd_c1 #D1C4E9
+st09_fd_c1 : rising · 48w
+state st09_fd_end #FFCDD2
+st09_fd_end : death (negative)
+st09_fd_end : "A Beat Late"
+state st09_cap #FFCDD2
+st09_cap : capture (negative)
+st09_cap : "Into the Prompter's Hands"
+state st10_ap0 #D1C4E9
+st10_ap0 : rising · 52w
+state st10_gate #D1C4E9
+st10_gate : rising · 74w
+state st10_pass #D1C4E9
+st10_pass : rising · 50w
+state st10_f0_c0 #D1C4E9
+st10_f0_c0 : rising · 48w
+state st10_f0_c1 #D1C4E9
+st10_f0_c1 : rising · 46w
+state st10_f0_end #FFCDD2
+st10_f0_end : death (negative)
+st10_f0_end : "The Blinking Mask"
+state st10_f1_c0 #D1C4E9
+st10_f1_c0 : rising · 51w
+state st10_f1_c1 #D1C4E9
+st10_f1_c1 : rising · 50w
+state st10_f1_end #FFCDD2
+st10_f1_end : death (negative)
+st10_f1_end : "Behind the Mask"
+state st10_f2_c0 #D1C4E9
+st10_f2_c0 : rising · 54w
+state st10_f2_c1 #D1C4E9
+st10_f2_c1 : rising · 54w
+state st10_f2_end #FFCDD2
+st10_f2_end : death (negative)
+st10_f2_end : "They Never Stop Blinking"
+state st10_f3_c0 #D1C4E9
+st10_f3_c0 : rising · 48w
+state st10_f3_c1 #D1C4E9
+st10_f3_c1 : rising · 46w
+state st10_f3_end #FFCDD2
+st10_f3_end : death (negative)
+st10_f3_end : "Blind Among the Masks"
+state st10_f4_c0 #D1C4E9
+st10_f4_c0 : rising · 51w
+state st10_f4_c1 #D1C4E9
+st10_f4_c1 : rising · 50w
+state st10_f4_end #FFCDD2
+st10_f4_end : death (negative)
+st10_f4_end : "The Opening Struck"
+state st10_seen #FFF9C4
+st10_seen : choice · 62w
+state st10_fd_c0 #D1C4E9
+st10_fd_c0 : rising · 50w
+state st10_fd_c1 #D1C4E9
+st10_fd_c1 : rising · 48w
+state st10_fd_end #FFCDD2
+st10_fd_end : death (negative)
+st10_fd_end : "Lost in the Flutter"
+state st10_cap #FFCDD2
+st10_cap : capture (negative)
+st10_cap : "Taken by the Dresser"
+state st11_ap0 #D1C4E9
+st11_ap0 : rising · 55w
+state st11_gate #D1C4E9
+st11_gate : rising · 78w
+state st11_pass #D1C4E9
+st11_pass : rising · 54w
+state st11_f0_c0 #D1C4E9
+st11_f0_c0 : rising · 48w
+state st11_f0_c1 #D1C4E9
+st11_f0_c1 : rising · 46w
+state st11_f0_end #FFCDD2
+st11_f0_end : death (negative)
+st11_f0_end : "Under the Sand"
+state st11_f1_c0 #D1C4E9
+st11_f1_c0 : rising · 51w
+state st11_f1_c1 #D1C4E9
+st11_f1_c1 : rising · 50w
+state st11_f1_end #FFCDD2
+st11_f1_end : death (negative)
+st11_f1_end : "The Sand Never Stops"
+state st11_f2_c0 #D1C4E9
+st11_f2_c0 : rising · 54w
+state st11_f2_c1 #D1C4E9
+st11_f2_c1 : rising · 54w
+state st11_f2_end #FFCDD2
+st11_f2_end : death (negative)
+st11_f2_end : "Buried Sweeping"
+state st11_f3_c0 #D1C4E9
+st11_f3_c0 : rising · 48w
+state st11_f3_c1 #D1C4E9
+st11_f3_c1 : rising · 46w
+state st11_f3_end #FFCDD2
+st11_f3_end : death (negative)
+st11_f3_end : "The Hollow Tile"
+state st11_seen #FFF9C4
+st11_seen : choice · 66w
+state st11_fd_c0 #D1C4E9
+st11_fd_c0 : rising · 50w
+state st11_fd_c1 #D1C4E9
+st11_fd_c1 : rising · 48w
+state st11_fd_end #FFCDD2
+st11_fd_end : death (negative)
+st11_fd_end : "The Gap Mid-Run"
+state st11_cap #FFCDD2
+st11_cap : capture (negative)
+st11_cap : "Dug Out and Barred"
+state st12_ap0 #D1C4E9
+st12_ap0 : rising · 58w
+state st12_gate #D1C4E9
+st12_gate : rising · 66w
+state st12_pass #D1C4E9
+st12_pass : rising · 46w
+state st12_f0_c0 #D1C4E9
+st12_f0_c0 : rising · 48w
+state st12_f0_c1 #D1C4E9
+st12_f0_c1 : rising · 46w
+state st12_f0_end #FFCDD2
+st12_f0_end : death (negative)
+st12_f0_end : "Off the Seam"
+state st12_f1_c0 #D1C4E9
+st12_f1_c0 : rising · 51w
+state st12_f1_c1 #D1C4E9
+st12_f1_c1 : rising · 50w
+state st12_f1_end #FFCDD2
+st12_f1_end : death (negative)
+st12_f1_end : "A Knee on the Span"
+state st12_f2_c0 #D1C4E9
+st12_f2_c0 : rising · 54w
+state st12_f2_c1 #D1C4E9
+st12_f2_c1 : rising · 54w
+state st12_f2_end #FFCDD2
+st12_f2_end : death (negative)
+st12_f2_end : "The Seam Fogs Out"
+state st12_f3_c0 #D1C4E9
+st12_f3_c0 : rising · 48w
+state st12_f3_c1 #D1C4E9
+st12_f3_c1 : rising · 46w
+state st12_f3_end #FFCDD2
+st12_f3_end : death (negative)
+st12_f3_end : "Spread on the Span"
+state st12_seen #FFF9C4
+st12_seen : choice · 58w
+state st12_fd_c0 #D1C4E9
+st12_fd_c0 : rising · 50w
+state st12_fd_c1 #D1C4E9
+st12_fd_c1 : rising · 48w
+state st12_fd_end #FFCDD2
+st12_fd_end : death (negative)
+st12_fd_end : "The Span Lets Go"
+state st12_cap #FFCDD2
+st12_cap : capture (negative)
+st12_cap : "Met at the Abutment"
+state st13_ap0 #D1C4E9
+st13_ap0 : rising · 61w
+state st13_gate #D1C4E9
+st13_gate : rising · 70w
+state st13_pass #D1C4E9
+st13_pass : rising · 50w
+state st13_f0_c0 #D1C4E9
+st13_f0_c0 : rising · 48w
+state st13_f0_c1 #D1C4E9
+st13_f0_c1 : rising · 46w
+state st13_f0_end #FFCDD2
+st13_f0_end : death (negative)
+st13_f0_end : "The Face That Turned"
+state st13_f1_c0 #D1C4E9
+st13_f1_c0 : rising · 51w
+state st13_f1_c1 #D1C4E9
+st13_f1_c1 : rising · 50w
+state st13_f1_end #FFCDD2
+st13_f1_end : death (negative)
+st13_f1_end : "Another Voice in the Glass"
+state st13_f2_c0 #D1C4E9
+st13_f2_c0 : rising · 54w
+state st13_f2_c1 #D1C4E9
+st13_f2_c1 : rising · 54w
+state st13_f2_end #FFCDD2
+st13_f2_end : death (negative)
+st13_f2_end : "The Voices Gather"
+state st13_f3_c0 #D1C4E9
+st13_f3_c0 : rising · 48w
+state st13_f3_c1 #D1C4E9
+st13_f3_c1 : rising · 46w
+state st13_f3_end #FFCDD2
+st13_f3_end : death (negative)
+st13_f3_end : "The Kindest Voice"
+state st13_seen #FFF9C4
+st13_seen : choice · 62w
+state st13_fd_c0 #D1C4E9
+st13_fd_c0 : rising · 50w
+state st13_fd_c1 #D1C4E9
+st13_fd_c1 : rising · 48w
+state st13_fd_end #FFCDD2
+st13_fd_end : death (negative)
+st13_fd_end : "The Doubled Voice"
+state st13_cap #FFCDD2
+st13_cap : capture (negative)
+st13_cap : "Answered by the Caller"
+state st14_ap0 #D1C4E9
+st14_ap0 : rising · 64w
+state st14_gate #D1C4E9
+st14_gate : rising · 74w
+state st14_pass #D1C4E9
+st14_pass : rising · 54w
+state st14_f0_c0 #D1C4E9
+st14_f0_c0 : rising · 48w
+state st14_f0_c1 #D1C4E9
+st14_f0_c1 : rising · 46w
+state st14_f0_end #FFCDD2
+st14_f0_end : death (negative)
+st14_f0_end : "Under the Whole Pane"
+state st14_f1_c0 #D1C4E9
+st14_f1_c0 : rising · 51w
+state st14_f1_c1 #D1C4E9
+st14_f1_c1 : rising · 50w
+state st14_f1_end #FFCDD2
+st14_f1_end : death (negative)
+st14_f1_end : "Shaken Loose"
+state st14_f2_c0 #D1C4E9
+st14_f2_c0 : rising · 54w
+state st14_f2_c1 #D1C4E9
+st14_f2_c1 : rising · 54w
+state st14_f2_end #FFCDD2
+st14_f2_end : death (negative)
+st14_f2_end : "The Pinned Panes"
+state st14_f3_c0 #D1C4E9
+st14_f3_c0 : rising · 48w
+state st14_f3_c1 #D1C4E9
+st14_f3_c1 : rising · 46w
+state st14_f3_end #FFCDD2
+st14_f3_end : death (negative)
+st14_f3_end : "Under at the Worst Instant"
+state st14_seen #FFF9C4
+st14_seen : choice · 66w
+state st14_fd_c0 #D1C4E9
+st14_fd_c0 : rising · 50w
+state st14_fd_c1 #D1C4E9
+st14_fd_c1 : rising · 48w
+state st14_fd_end #FFCDD2
+st14_fd_end : death (negative)
+st14_fd_end : "Down on the Shards"
+state st14_cap #FFCDD2
+st14_cap : capture (negative)
+st14_cap : "Bound by the Property-Master"
+state st15_ap0 #D1C4E9
+st15_ap0 : rising · 52w
+state st15_gate #D1C4E9
+st15_gate : rising · 78w
+state st15_pass #D1C4E9
+st15_pass : rising · 46w
+state st15_f0_c0 #D1C4E9
+st15_f0_c0 : rising · 48w
+state st15_f0_c1 #D1C4E9
+st15_f0_c1 : rising · 46w
+state st15_f0_end #FFCDD2
+st15_f0_end : death (negative)
+st15_f0_end : "Held to the Wet Glass"
+state st15_f1_c0 #D1C4E9
+st15_f1_c0 : rising · 51w
+state st15_f1_c1 #D1C4E9
+st15_f1_c1 : rising · 50w
+state st15_f1_end #FFCDD2
+st15_f1_end : death (negative)
+st15_f1_end : "The Soaked Sleeve"
+state st15_f2_c0 #D1C4E9
+st15_f2_c0 : rising · 54w
+state st15_f2_c1 #D1C4E9
+st15_f2_c1 : rising · 54w
+state st15_f2_end #FFCDD2
+st15_f2_end : death (negative)
+st15_f2_end : "The Vein Narrows"
+state st15_f3_c0 #D1C4E9
+st15_f3_c0 : rising · 48w
+state st15_f3_c1 #D1C4E9
+st15_f3_c1 : rising · 46w
+state st15_f3_end #FFCDD2
+st15_f3_end : death (negative)
+st15_f3_end : "Across the Wet"
+state st15_seen #FFF9C4
+st15_seen : choice · 58w
+state st15_fd_c0 #D1C4E9
+st15_fd_c0 : rising · 50w
+state st15_fd_c1 #D1C4E9
+st15_fd_c1 : rising · 48w
+state st15_fd_end #FFCDD2
+st15_fd_end : death (negative)
+st15_fd_end : "Down at the Wall"
+state st15_cap #FFCDD2
+st15_cap : capture (negative)
+st15_cap : "Hooked from the Wall"
+state st16_ap0 #D1C4E9
+st16_ap0 : rising · 55w
+state st16_gate #D1C4E9
+st16_gate : rising · 66w
+state st16_pass #D1C4E9
+st16_pass : rising · 50w
+state st16_f0_c0 #D1C4E9
+st16_f0_c0 : rising · 48w
+state st16_f0_c1 #D1C4E9
+st16_f0_c1 : rising · 46w
+state st16_f0_end #FFCDD2
+st16_f0_end : death (negative)
+st16_f0_end : "Against the Turning Wall"
+state st16_f1_c0 #D1C4E9
+st16_f1_c0 : rising · 51w
+state st16_f1_c1 #D1C4E9
+st16_f1_c1 : rising · 50w
+state st16_f1_end #FFCDD2
+st16_f1_end : death (negative)
+st16_f1_end : "The Drum Won't Stop"
+state st16_f2_c0 #D1C4E9
+st16_f2_c0 : rising · 54w
+state st16_f2_c1 #D1C4E9
+st16_f2_c1 : rising · 54w
+state st16_f2_end #FFCDD2
+st16_f2_end : death (negative)
+st16_f2_end : "The Window Shrinks"
+state st16_f3_c0 #D1C4E9
+st16_f3_c0 : rising · 48w
+state st16_f3_c1 #D1C4E9
+st16_f3_c1 : rising · 46w
+state st16_f3_end #FFCDD2
+st16_f3_end : death (negative)
+st16_f3_end : "Caught by the Trailing Leg"
+state st16_seen #FFF9C4
+st16_seen : choice · 62w
+state st16_fd_c0 #D1C4E9
+st16_fd_c0 : rising · 50w
+state st16_fd_c1 #D1C4E9
+st16_fd_c1 : rising · 48w
+state st16_fd_end #FFCDD2
+st16_fd_end : death (negative)
+st16_fd_end : "Thrown from the Rim"
+state st16_cap #FFCDD2
+st16_cap : capture (negative)
+st16_cap : "Caught on the Turn"
+state st17_ap0 #D1C4E9
+st17_ap0 : rising · 58w
+state st17_gate #D1C4E9
+st17_gate : rising · 70w
+state st17_pass #D1C4E9
+st17_pass : rising · 54w
+state st17_f0_c0 #D1C4E9
+st17_f0_c0 : rising · 48w
+state st17_f0_c1 #D1C4E9
+st17_f0_c1 : rising · 46w
+state st17_f0_end #FFCDD2
+st17_f0_end : death (negative)
+st17_f0_end : "Into Your Own Face"
+state st17_f1_c0 #D1C4E9
+st17_f1_c0 : rising · 51w
+state st17_f1_c1 #D1C4E9
+st17_f1_c1 : rising · 50w
+state st17_f1_end #FFCDD2
+st17_f1_end : death (negative)
+st17_f1_end : "Hand to Cold Hand"
+state st17_f2_c0 #D1C4E9
+st17_f2_c0 : rising · 54w
+state st17_f2_c1 #D1C4E9
+st17_f2_c1 : rising · 54w
+state st17_f2_end #FFCDD2
+st17_f2_end : death (negative)
+st17_f2_end : "It Never Looks Away"
+state st17_f3_c0 #D1C4E9
+st17_f3_c0 : rising · 48w
+state st17_f3_c1 #D1C4E9
+st17_f3_c1 : rising · 46w
+state st17_f3_end #FFCDD2
+st17_f3_end : death (negative)
+st17_f3_end : "It Feints With You"
+state st17_seen #FFF9C4
+st17_seen : choice · 66w
+state st17_fd_c0 #D1C4E9
+st17_fd_c0 : rising · 50w
+state st17_fd_c1 #D1C4E9
+st17_fd_c1 : rising · 48w
+state st17_fd_end #FFCDD2
+st17_fd_end : death (negative)
+st17_fd_end : "Full into the Last Mirror"
+state st17_cap #FFCDD2
+st17_cap : capture (negative)
+st17_cap : "Taken from Behind the Glass"
+state st18_ap0 #D1C4E9
+st18_ap0 : rising · 61w
+state st18_gate #D1C4E9
+st18_gate : rising · 74w
+state st18_pass #D1C4E9
+st18_pass : rising · 46w
+state st18_f0_c0 #D1C4E9
+st18_f0_c0 : rising · 48w
+state st18_f0_c1 #D1C4E9
+st18_f0_c1 : rising · 46w
+state st18_f0_end #FFCDD2
+st18_f0_end : death (negative)
+st18_f0_end : "Into the Thickest Crowd"
+state st18_f1_c0 #D1C4E9
+st18_f1_c0 : rising · 51w
+state st18_f1_c1 #D1C4E9
+st18_f1_c1 : rising · 50w
+state st18_f1_end #FFCDD2
+st18_f1_end : death (negative)
+st18_f1_end : "The Doubles Multiply"
+state st18_f2_c0 #D1C4E9
+st18_f2_c0 : rising · 54w
+state st18_f2_c1 #D1C4E9
+st18_f2_c1 : rising · 54w
+state st18_f2_end #FFCDD2
+st18_f2_end : death (negative)
+st18_f2_end : "A Thousand Eyes"
+state st18_f3_c0 #D1C4E9
+st18_f3_c0 : rising · 48w
+state st18_f3_c1 #D1C4E9
+st18_f3_c1 : rising · 46w
+state st18_f3_end #FFCDD2
+st18_f3_end : death (negative)
+st18_f3_end : "Beckoned into the Glass"
+state st18_seen #FFF9C4
+st18_seen : choice · 58w
+state st18_fd_c0 #D1C4E9
+st18_fd_c0 : rising · 50w
+state st18_fd_c1 #D1C4E9
+st18_fd_c1 : rising · 48w
+state st18_fd_end #FFCDD2
+st18_fd_end : death (negative)
+st18_fd_end : "Drifted into the Wall"
+state st18_cap #FFCDD2
+st18_cap : capture (negative)
+st18_cap : "Turned at the Gap"
+state win_ap #D1C4E9
+win_ap : rising · 58w
+state win_gate #FFE0B2
+win_gate : climax · 74w
+state win_clean #C8E6C9
+win_clean : success (positive)
+win_clean : "Up into the Grey Dawn"
+state win_costly #C8E6C9
+win_costly : completion (positive)
+win_costly : "Out, and Bleeding"
+state win_quiet #E0E0E0
+win_quiet : completion (neutral)
+win_quiet : "The Quiet Way Out"
+state win_f0_c0 #D1C4E9
+win_f0_c0 : rising · 50w
+state win_f0_c1 #D1C4E9
+win_f0_c1 : rising · 48w
+state win_f0_end #FFCDD2
+win_f0_end : death (negative)
+win_f0_end : "Sure, and Wrong"
+state win_f1_c0 #D1C4E9
+win_f1_c0 : rising · 50w
+state win_f1_c1 #D1C4E9
+win_f1_c1 : rising · 48w
+state win_f1_end #FFCDD2
+win_f1_end : capture (negative)
+win_f1_end : "Caught at the Threshold"
+state win_seen #FFF9C4
+win_seen : choice · 60w
+state win_seen_c0 #D1C4E9
+win_seen_c0 : rising · 50w
+state win_seen_c1 #D1C4E9
+win_seen_c1 : rising · 48w
+state win_seen_end #FFCDD2
+win_seen_end : death (negative)
+win_seen_end : "Led Back Down"
+sup0 --> sup1 : Go down into the glass.
+sup1 --> st01_ap0 : Take the first room.
+st01_ap0 --> st01_gate : Read the room.
+st01_gate --> st01_pass : Step through the doorway that shows no r...
+st01_gate --> st01_f0_c0 : Shoulder through the nearest bright door...
+st01_gate --> st01_f1_c0 : Wait for the true door to reveal itself.
+st01_gate --> st01_f2_c0 : Feel along the frames for a hidden latch...
+st01_gate --> st01_f3_c0 : Follow your own reflection deeper in.
+st01_gate --> st01_seen : Gamble on the door you first came in by.
+st01_pass --> st02_ap0 : Go on, deeper.
+st01_f0_c0 --> st01_f0_c1 : And then.
+st01_f0_c1 --> st01_f0_end : No time left.
+st01_f1_c0 --> st01_f1_c1 : And then.
+st01_f1_c1 --> st01_f1_end : No time left.
+st01_f2_c0 --> st01_f2_c1 : And then.
+st01_f2_c1 --> st01_f2_end : No time left.
+st01_f3_c0 --> st01_f3_c1 : And then.
+st01_f3_c1 --> st01_f3_end : No time left.
+st01_seen --> st02_ap0 : Trust it and go.
+st01_seen --> st01_fd_c0 : Push your luck harder.
+st01_seen --> st01_cap : Freeze at the wrong moment.
+st01_fd_c0 --> st01_fd_c1 : And then.
+st01_fd_c1 --> st01_fd_end : No time left.
+st02_ap0 --> st02_gate : Read the room.
+st02_gate --> st02_pass : Tread the dull steps the candle does not...
+st02_gate --> st02_f0_c0 : Take the bright steps, they look nearest...
+st02_gate --> st02_f1_c0 : Slide down the banister to save time.
+st02_gate --> st02_f2_c0 : Hold at the top until your eyes adjust.
+st02_gate --> st02_f3_c0 : Jump the flight to the lit candle below.
+st02_gate --> st02_seen : Gamble and pinch the candle out to read ...
+st02_pass --> st03_ap0 : Go on, deeper.
+st02_f0_c0 --> st02_f0_c1 : And then.
+st02_f0_c1 --> st02_f0_end : No time left.
+st02_f1_c0 --> st02_f1_c1 : And then.
+st02_f1_c1 --> st02_f1_end : No time left.
+st02_f2_c0 --> st02_f2_c1 : And then.
+st02_f2_c1 --> st02_f2_end : No time left.
+st02_f3_c0 --> st02_f3_c1 : And then.
+st02_f3_c1 --> st02_f3_end : No time left.
+st02_seen --> st03_ap0 : Trust it and go.
+st02_seen --> st02_fd_c0 : Push your luck harder.
+st02_seen --> st02_cap : Freeze at the wrong moment.
+st02_fd_c0 --> st02_fd_c1 : And then.
+st02_fd_c1 --> st02_fd_end : No time left.
+st03_ap0 --> st03_gate : Read the room.
+st03_gate --> st03_pass : Move only under the orchestra's loud swe...
+st03_gate --> st03_f0_c0 : Cross in the quiet to hear yourself thin...
+st03_gate --> st03_f1_c0 : Call out to test for an echo.
+st03_gate --> st03_f2_c0 : Wait for the music to stop, then run.
+st03_gate --> st03_f3_c0 : Drag your hand along the wall to steady ...
+st03_gate --> st03_f4_c0 : Hum along to match the swell.
+st03_gate --> st03_seen : Gamble and sprint the whole gallery at o...
+st03_pass --> st04_ap0 : Go on, deeper.
+st03_f0_c0 --> st03_f0_c1 : And then.
+st03_f0_c1 --> st03_f0_end : No time left.
+st03_f1_c0 --> st03_f1_c1 : And then.
+st03_f1_c1 --> st03_f1_end : No time left.
+st03_f2_c0 --> st03_f2_c1 : And then.
+st03_f2_c1 --> st03_f2_end : No time left.
+st03_f3_c0 --> st03_f3_c1 : And then.
+st03_f3_c1 --> st03_f3_end : No time left.
+st03_f4_c0 --> st03_f4_c1 : And then.
+st03_f4_c1 --> st03_f4_end : No time left.
+st03_seen --> st04_ap0 : Trust it and go.
+st03_seen --> st03_fd_c0 : Push your luck harder.
+st03_seen --> st03_cap : Freeze at the wrong moment.
+st03_fd_c0 --> st03_fd_c1 : And then.
+st03_fd_c1 --> st03_fd_end : No time left.
+st04_ap0 --> st04_gate : Read the room.
+st04_gate --> st04_pass : Cross while the chandelier hangs dead st...
+st04_gate --> st04_f0_c0 : Dash under it while it's still climbing.
+st04_gate --> st04_f1_c0 : Cut the chain to drop it out of the way.
+st04_gate --> st04_f2_c0 : Hold at the edge until it stops on its o...
+st04_gate --> st04_f3_c0 : Climb the chain above the swing.
+st04_gate --> st04_seen : Gamble on the mirror floor holding your ...
+st04_pass --> st05_ap0 : Go on, deeper.
+st04_f0_c0 --> st04_f0_c1 : And then.
+st04_f0_c1 --> st04_f0_end : No time left.
+st04_f1_c0 --> st04_f1_c1 : And then.
+st04_f1_c1 --> st04_f1_end : No time left.
+st04_f2_c0 --> st04_f2_c1 : And then.
+st04_f2_c1 --> st04_f2_end : No time left.
+st04_f3_c0 --> st04_f3_c1 : And then.
+st04_f3_c1 --> st04_f3_end : No time left.
+st04_seen --> st05_ap0 : Trust it and go.
+st04_seen --> st04_fd_c0 : Push your luck harder.
+st04_seen --> st04_cap : Freeze at the wrong moment.
+st04_fd_c0 --> st04_fd_c1 : And then.
+st04_fd_c1 --> st04_fd_end : No time left.
+st05_ap0 --> st05_gate : Read the room.
+st05_gate --> st05_pass : Fog it once, read the seam, and step thr...
+st05_gate --> st05_f0_c0 : Warm the whole glass with both hands.
+st05_gate --> st05_f1_c0 : Breathe on it slow to be sure of the sea...
+st05_gate --> st05_f2_c0 : Strike the frozen glass to break through...
+st05_gate --> st05_f3_c0 : Wipe the frost clear with your sleeve.
+st05_gate --> st05_seen : Gamble and step through where you guess ...
+st05_pass --> st06_ap0 : Go on, deeper.
+st05_f0_c0 --> st05_f0_c1 : And then.
+st05_f0_c1 --> st05_f0_end : No time left.
+st05_f1_c0 --> st05_f1_c1 : And then.
+st05_f1_c1 --> st05_f1_end : No time left.
+st05_f2_c0 --> st05_f2_c1 : And then.
+st05_f2_c1 --> st05_f2_end : No time left.
+st05_f3_c0 --> st05_f3_c1 : And then.
+st05_f3_c1 --> st05_f3_end : No time left.
+st05_seen --> st06_ap0 : Trust it and go.
+st05_seen --> st05_fd_c0 : Push your luck harder.
+st05_seen --> st05_cap : Freeze at the wrong moment.
+st05_fd_c0 --> st05_fd_c1 : And then.
+st05_fd_c1 --> st05_fd_end : No time left.
+st06_ap0 --> st06_gate : Read the room.
+st06_gate --> st06_pass : Pass the warden that casts no shadow.
+st06_gate --> st06_f0_c0 : Pass the one with a shadow at its feet.
+st06_gate --> st06_f1_c0 : Strike the glass one to be certain.
+st06_gate --> st06_f2_c0 : Wait to see which of them breathes.
+st06_gate --> st06_f3_c0 : Walk the line straight between them.
+st06_gate --> st06_seen : Gamble and offer your hand to the nearer...
+st06_pass --> st07_ap0 : Go on, deeper.
+st06_f0_c0 --> st06_f0_c1 : And then.
+st06_f0_c1 --> st06_f0_end : No time left.
+st06_f1_c0 --> st06_f1_c1 : And then.
+st06_f1_c1 --> st06_f1_end : No time left.
+st06_f2_c0 --> st06_f2_c1 : And then.
+st06_f2_c1 --> st06_f2_end : No time left.
+st06_f3_c0 --> st06_f3_c1 : And then.
+st06_f3_c1 --> st06_f3_end : No time left.
+st06_seen --> st07_ap0 : Trust it and go.
+st06_seen --> st06_fd_c0 : Push your luck harder.
+st06_seen --> st06_cap : Freeze at the wrong moment.
+st06_fd_c0 --> st06_fd_c1 : And then.
+st06_fd_c1 --> st06_fd_end : No time left.
+st07_ap0 --> st07_gate : Read the room.
+st07_gate --> st07_pass : Edge along the narrow stone rim.
+st07_gate --> st07_f0_c0 : Cross the bright floor in the middle.
+st07_gate --> st07_f1_c0 : Swim straight across, it's only water.
+st07_gate --> st07_f2_c0 : Wait on the rim for the water to still.
+st07_gate --> st07_f3_c0 : Reach for the reflected rail to steady y...
+st07_gate --> st07_seen : Gamble and leap the pit at its narrow th...
+st07_pass --> st08_ap0 : Go on, deeper.
+st07_f0_c0 --> st07_f0_c1 : And then.
+st07_f0_c1 --> st07_f0_end : No time left.
+st07_f1_c0 --> st07_f1_c1 : And then.
+st07_f1_c1 --> st07_f1_end : No time left.
+st07_f2_c0 --> st07_f2_c1 : And then.
+st07_f2_c1 --> st07_f2_end : No time left.
+st07_f3_c0 --> st07_f3_c1 : And then.
+st07_f3_c1 --> st07_f3_end : No time left.
+st07_seen --> st08_ap0 : Trust it and go.
+st07_seen --> st07_fd_c0 : Push your luck harder.
+st07_seen --> st07_cap : Freeze at the wrong moment.
+st07_fd_c0 --> st07_fd_c1 : And then.
+st07_fd_c1 --> st07_fd_end : No time left.
+st08_ap0 --> st08_gate : Read the room.
+st08_gate --> st08_pass : Take the unlit turns through the maze.
+st08_gate --> st08_f0_c0 : Follow the lighted turns, they seem the ...
+st08_gate --> st08_f1_c0 : Pinch out a candle to darken a false tur...
+st08_gate --> st08_f2_c0 : Stop and wait for a candle to burn out.
+st08_gate --> st08_f3_c0 : Knock a wall to hear which are hollow.
+st08_gate --> st08_seen : Gamble and follow the draft instead of t...
+st08_pass --> st09_ap0 : Go on, deeper.
+st08_f0_c0 --> st08_f0_c1 : And then.
+st08_f0_c1 --> st08_f0_end : No time left.
+st08_f1_c0 --> st08_f1_c1 : And then.
+st08_f1_c1 --> st08_f1_end : No time left.
+st08_f2_c0 --> st08_f2_c1 : And then.
+st08_f2_c1 --> st08_f2_end : No time left.
+st08_f3_c0 --> st08_f3_c1 : And then.
+st08_f3_c1 --> st08_f3_end : No time left.
+st08_seen --> st09_ap0 : Trust it and go.
+st08_seen --> st08_fd_c0 : Push your luck harder.
+st08_seen --> st08_cap : Freeze at the wrong moment.
+st08_fd_c0 --> st08_fd_c1 : And then.
+st08_fd_c1 --> st08_fd_end : No time left.
+st09_ap0 --> st09_gate : Read the room.
+st09_gate --> st09_pass : Drop through on the downbeat of the musi...
+st09_gate --> st09_f0_c0 : Pry the lid up during a quiet rest.
+st09_gate --> st09_f1_c0 : Wait for a longer, safer gap in the musi...
+st09_gate --> st09_f2_c0 : Wedge the lid so it can't close on you.
+st09_gate --> st09_f3_c0 : Drop through on the last note, not the f...
+st09_gate --> st09_seen : Gamble and roll through without counting...
+st09_pass --> st10_ap0 : Go on, deeper.
+st09_f0_c0 --> st09_f0_c1 : And then.
+st09_f0_c1 --> st09_f0_end : No time left.
+st09_f1_c0 --> st09_f1_c1 : And then.
+st09_f1_c1 --> st09_f1_end : No time left.
+st09_f2_c0 --> st09_f2_c1 : And then.
+st09_f2_c1 --> st09_f2_end : No time left.
+st09_f3_c0 --> st09_f3_c1 : And then.
+st09_f3_c1 --> st09_f3_end : No time left.
+st09_seen --> st10_ap0 : Trust it and go.
+st09_seen --> st09_fd_c0 : Push your luck harder.
+st09_seen --> st09_cap : Freeze at the wrong moment.
+st09_fd_c0 --> st09_fd_c1 : And then.
+st09_fd_c1 --> st09_fd_end : No time left.
+st10_ap0 --> st10_gate : Read the room.
+st10_gate --> st10_pass : Go to the mask that never blinks.
+st10_gate --> st10_f0_c0 : Push into a mask that blinks back at you...
+st10_gate --> st10_f1_c0 : Lift a mask off the wall to check behind...
+st10_gate --> st10_f2_c0 : Wait for the masks to stop blinking.
+st10_gate --> st10_f3_c0 : Cover your eyes and feel for the gap.
+st10_gate --> st10_f4_c0 : Break the stillest mask to open it wider...
+st10_gate --> st10_seen : Gamble and count the blinks for the odd ...
+st10_pass --> st11_ap0 : Go on, deeper.
+st10_f0_c0 --> st10_f0_c1 : And then.
+st10_f0_c1 --> st10_f0_end : No time left.
+st10_f1_c0 --> st10_f1_c1 : And then.
+st10_f1_c1 --> st10_f1_end : No time left.
+st10_f2_c0 --> st10_f2_c1 : And then.
+st10_f2_c1 --> st10_f2_end : No time left.
+st10_f3_c0 --> st10_f3_c1 : And then.
+st10_f3_c1 --> st10_f3_end : No time left.
+st10_f4_c0 --> st10_f4_c1 : And then.
+st10_f4_c1 --> st10_f4_end : No time left.
+st10_seen --> st11_ap0 : Trust it and go.
+st10_seen --> st10_fd_c0 : Push your luck harder.
+st10_seen --> st10_cap : Freeze at the wrong moment.
+st10_fd_c0 --> st10_fd_c1 : And then.
+st10_fd_c1 --> st10_fd_end : No time left.
+st11_ap0 --> st11_gate : Read the room.
+st11_gate --> st11_pass : Cross fast on the tiles the sand hasn't ...
+st11_gate --> st11_f0_c0 : Wade across the buried tiles anyway.
+st11_gate --> st11_f1_c0 : Wait for the sand to finish draining.
+st11_gate --> st11_f2_c0 : Sweep the sand aside to read the tiles.
+st11_gate --> st11_f3_c0 : Leap tile to tile down the middle.
+st11_gate --> st11_seen : Gamble and run the buried floor flat out...
+st11_pass --> st12_ap0 : Go on, deeper.
+st11_f0_c0 --> st11_f0_c1 : And then.
+st11_f0_c1 --> st11_f0_end : No time left.
+st11_f1_c0 --> st11_f1_c1 : And then.
+st11_f1_c1 --> st11_f1_end : No time left.
+st11_f2_c0 --> st11_f2_c1 : And then.
+st11_f2_c1 --> st11_f2_end : No time left.
+st11_f3_c0 --> st11_f3_c1 : And then.
+st11_f3_c1 --> st11_f3_end : No time left.
+st11_seen --> st12_ap0 : Trust it and go.
+st11_seen --> st11_fd_c0 : Push your luck harder.
+st11_seen --> st11_cap : Freeze at the wrong moment.
+st11_fd_c0 --> st11_fd_c1 : And then.
+st11_fd_c1 --> st11_fd_end : No time left.
+st12_ap0 --> st12_gate : Read the room.
+st12_gate --> st12_pass : Walk the welded seam down the centre.
+st12_gate --> st12_f0_c0 : Walk the open span, it looks solid enoug...
+st12_gate --> st12_f1_c0 : Crawl across to spread your weight.
+st12_gate --> st12_f2_c0 : Wait for the glass to frost over for gri...
+st12_gate --> st12_f3_c0 : Slide across on your back, faster.
+st12_gate --> st12_seen : Gamble and walk it upright without mindi...
+st12_pass --> st13_ap0 : Go on, deeper.
+st12_f0_c0 --> st12_f0_c1 : And then.
+st12_f0_c1 --> st12_f0_end : No time left.
+st12_f1_c0 --> st12_f1_c1 : And then.
+st12_f1_c1 --> st12_f1_end : No time left.
+st12_f2_c0 --> st12_f2_c1 : And then.
+st12_f2_c1 --> st12_f2_end : No time left.
+st12_f3_c0 --> st12_f3_c1 : And then.
+st12_f3_c1 --> st12_f3_end : No time left.
+st12_seen --> st13_ap0 : Trust it and go.
+st12_seen --> st12_fd_c0 : Push your luck harder.
+st12_seen --> st12_cap : Freeze at the wrong moment.
+st12_fd_c0 --> st12_fd_c1 : And then.
+st12_fd_c1 --> st12_fd_end : No time left.
+st13_ap0 --> st13_gate : Read the room.
+st13_gate --> st13_pass : Keep straight and answer none of the voi...
+st13_gate --> st13_f0_c0 : Turn to the voice that has your name.
+st13_gate --> st13_f1_c0 : Answer, to prove it isn't you.
+st13_gate --> st13_f2_c0 : Stop and wait for the voices to tire.
+st13_gate --> st13_f3_c0 : Follow the one voice that sounds kind.
+st13_gate --> st13_seen : Gamble and follow the one voice that doe...
+st13_pass --> st14_ap0 : Go on, deeper.
+st13_f0_c0 --> st13_f0_c1 : And then.
+st13_f0_c1 --> st13_f0_end : No time left.
+st13_f1_c0 --> st13_f1_c1 : And then.
+st13_f1_c1 --> st13_f1_end : No time left.
+st13_f2_c0 --> st13_f2_c1 : And then.
+st13_f2_c1 --> st13_f2_end : No time left.
+st13_f3_c0 --> st13_f3_c1 : And then.
+st13_f3_c1 --> st13_f3_end : No time left.
+st13_seen --> st14_ap0 : Trust it and go.
+st13_seen --> st13_fd_c0 : Push your luck harder.
+st13_seen --> st13_cap : Freeze at the wrong moment.
+st13_fd_c0 --> st13_fd_c1 : And then.
+st13_fd_c1 --> st13_fd_end : No time left.
+st14_ap0 --> st14_gate : Read the room.
+st14_gate --> st14_pass : Cross under the already-shattered panes.
+st14_gate --> st14_f0_c0 : Cross under the whole panes, the floor's...
+st14_gate --> st14_f1_c0 : Sweep a path clear through the shards.
+st14_gate --> st14_f2_c0 : Wait for the loose panes to fall first.
+st14_gate --> st14_f3_c0 : Run through fast before anything can fal...
+st14_gate --> st14_seen : Gamble and go barefoot over the shards f...
+st14_pass --> st15_ap0 : Go on, deeper.
+st14_f0_c0 --> st14_f0_c1 : And then.
+st14_f0_c1 --> st14_f0_end : No time left.
+st14_f1_c0 --> st14_f1_c1 : And then.
+st14_f1_c1 --> st14_f1_end : No time left.
+st14_f2_c0 --> st14_f2_c1 : And then.
+st14_f2_c1 --> st14_f2_end : No time left.
+st14_f3_c0 --> st14_f3_c1 : And then.
+st14_f3_c1 --> st14_f3_end : No time left.
+st14_seen --> st15_ap0 : Trust it and go.
+st14_seen --> st14_fd_c0 : Push your luck harder.
+st14_seen --> st14_cap : Freeze at the wrong moment.
+st14_fd_c0 --> st14_fd_c1 : And then.
+st14_fd_c1 --> st14_fd_end : No time left.
+st15_ap0 --> st15_gate : Read the room.
+st15_gate --> st15_pass : Follow the one dry vein down the wall.
+st15_gate --> st15_f0_c0 : Push through the wet glass, it's only wa...
+st15_gate --> st15_f1_c0 : Wipe the wall dry ahead of you.
+st15_gate --> st15_f2_c0 : Wait for the wall to stop weeping.
+st15_gate --> st15_f3_c0 : Cross to a dry patch on the far side.
+st15_gate --> st15_seen : Gamble and go through the thinnest run o...
+st15_pass --> st16_ap0 : Go on, deeper.
+st15_f0_c0 --> st15_f0_c1 : And then.
+st15_f0_c1 --> st15_f0_end : No time left.
+st15_f1_c0 --> st15_f1_c1 : And then.
+st15_f1_c1 --> st15_f1_end : No time left.
+st15_f2_c0 --> st15_f2_c1 : And then.
+st15_f2_c1 --> st15_f2_end : No time left.
+st15_f3_c0 --> st15_f3_c1 : And then.
+st15_f3_c1 --> st15_f3_end : No time left.
+st15_seen --> st16_ap0 : Trust it and go.
+st15_seen --> st15_fd_c0 : Push your luck harder.
+st15_seen --> st15_cap : Freeze at the wrong moment.
+st15_fd_c0 --> st15_fd_c1 : And then.
+st15_fd_c1 --> st15_fd_end : No time left.
+st16_ap0 --> st16_gate : Read the room.
+st16_gate --> st16_pass : Step through when the doorway lines up.
+st16_gate --> st16_f0_c0 : Step in against the closed wall to wait ...
+st16_gate --> st16_f1_c0 : Force the drum to stop turning.
+st16_gate --> st16_f2_c0 : Wait for the drum to slow down.
+st16_gate --> st16_f3_c0 : Dive through as the door is already leav...
+st16_gate --> st16_seen : Gamble and match the drum's spin from in...
+st16_pass --> st17_ap0 : Go on, deeper.
+st16_f0_c0 --> st16_f0_c1 : And then.
+st16_f0_c1 --> st16_f0_end : No time left.
+st16_f1_c0 --> st16_f1_c1 : And then.
+st16_f1_c1 --> st16_f1_end : No time left.
+st16_f2_c0 --> st16_f2_c1 : And then.
+st16_f2_c1 --> st16_f2_end : No time left.
+st16_f3_c0 --> st16_f3_c1 : And then.
+st16_f3_c1 --> st16_f3_end : No time left.
+st16_seen --> st17_ap0 : Trust it and go.
+st16_seen --> st16_fd_c0 : Push your luck harder.
+st16_seen --> st16_cap : Freeze at the wrong moment.
+st16_fd_c0 --> st16_fd_c1 : And then.
+st16_fd_c1 --> st16_fd_end : No time left.
+st17_ap0 --> st17_gate : Read the room.
+st17_gate --> st17_pass : Wait for the lamp to gutter, then move i...
+st17_gate --> st17_f0_c0 : Step for the door while the lamp still b...
+st17_gate --> st17_f1_c0 : Reach through the mirror to shove it asi...
+st17_gate --> st17_f2_c0 : Wait for the reflection to look away fir...
+st17_gate --> st17_f3_c0 : Feint one way and go the other.
+st17_gate --> st17_seen : Gamble and rush the mirror before you lo...
+st17_pass --> st18_ap0 : Go on, deeper.
+st17_f0_c0 --> st17_f0_c1 : And then.
+st17_f0_c1 --> st17_f0_end : No time left.
+st17_f1_c0 --> st17_f1_c1 : And then.
+st17_f1_c1 --> st17_f1_end : No time left.
+st17_f2_c0 --> st17_f2_c1 : And then.
+st17_f2_c1 --> st17_f2_end : No time left.
+st17_f3_c0 --> st17_f3_c1 : And then.
+st17_f3_c1 --> st17_f3_end : No time left.
+st17_seen --> st18_ap0 : Trust it and go.
+st17_seen --> st17_fd_c0 : Push your luck harder.
+st17_seen --> st17_cap : Freeze at the wrong moment.
+st17_fd_c0 --> st17_fd_c1 : And then.
+st17_fd_c1 --> st17_fd_end : No time left.
+st18_ap0 --> st18_gate : Read the room.
+st18_gate --> st18_pass : Walk toward the gap where your reflectio...
+st18_gate --> st18_f0_c0 : Walk toward the thickest crowd of yourse...
+st18_gate --> st18_f1_c0 : Wait for the reflections to settle and a...
+st18_gate --> st18_f2_c0 : Break the nearest you to open a way.
+st18_gate --> st18_f3_c0 : Follow the you that beckons you on.
+st18_gate --> st18_seen : Gamble and shut your eyes and walk a str...
+st18_pass --> win_ap : Go on, deeper.
+st18_f0_c0 --> st18_f0_c1 : And then.
+st18_f0_c1 --> st18_f0_end : No time left.
+st18_f1_c0 --> st18_f1_c1 : And then.
+st18_f1_c1 --> st18_f1_end : No time left.
+st18_f2_c0 --> st18_f2_c1 : And then.
+st18_f2_c1 --> st18_f2_end : No time left.
+st18_f3_c0 --> st18_f3_c1 : And then.
+st18_f3_c1 --> st18_f3_end : No time left.
+st18_seen --> win_ap : Trust it and go.
+st18_seen --> st18_fd_c0 : Push your luck harder.
+st18_seen --> st18_cap : Freeze at the wrong moment.
+st18_fd_c0 --> st18_fd_c1 : And then.
+st18_fd_c1 --> st18_fd_end : No time left.
+win_ap --> win_gate : Face the last threshold.
+win_gate --> win_clean : Step into the dark mirror that holds no ...
+win_gate --> win_costly : Go through the cracked pane, quick and s...
+win_gate --> win_quiet : Slip out the flooded pit door, unseen.
+win_gate --> win_f0_c0 : Smash the last mirror to be certain of i...
+win_gate --> win_f1_c0 : Wait for the house lights to prove the w...
+win_gate --> win_seen : Trust your own reflection to lead you up...
+win_f0_c0 --> win_f0_c1 : And then.
+win_f0_c1 --> win_f0_end : No time left.
+win_f1_c0 --> win_f1_c1 : And then.
+win_f1_c1 --> win_f1_end : No time left.
+win_seen --> win_quiet : Follow it toward the dark door you had a...
+win_seen --> win_seen_c0 : Follow it wherever it points.
+win_seen_c0 --> win_seen_c1 : And then.
+win_seen_c1 --> win_seen_end : No time left.
+st01_f0_end --> [*]
+st01_f1_end --> [*]
+st01_f2_end --> [*]
+st01_f3_end --> [*]
+st01_fd_end --> [*]
+st01_cap --> [*]
+st02_f0_end --> [*]
+st02_f1_end --> [*]
+st02_f2_end --> [*]
+st02_f3_end --> [*]
+st02_fd_end --> [*]
+st02_cap --> [*]
+st03_f0_end --> [*]
+st03_f1_end --> [*]
+st03_f2_end --> [*]
+st03_f3_end --> [*]
+st03_f4_end --> [*]
+st03_fd_end --> [*]
+st03_cap --> [*]
+st04_f0_end --> [*]
+st04_f1_end --> [*]
+st04_f2_end --> [*]
+st04_f3_end --> [*]
+st04_fd_end --> [*]
+st04_cap --> [*]
+st05_f0_end --> [*]
+st05_f1_end --> [*]
+st05_f2_end --> [*]
+st05_f3_end --> [*]
+st05_fd_end --> [*]
+st05_cap --> [*]
+st06_f0_end --> [*]
+st06_f1_end --> [*]
+st06_f2_end --> [*]
+st06_f3_end --> [*]
+st06_fd_end --> [*]
+st06_cap --> [*]
+st07_f0_end --> [*]
+st07_f1_end --> [*]
+st07_f2_end --> [*]
+st07_f3_end --> [*]
+st07_fd_end --> [*]
+st07_cap --> [*]
+st08_f0_end --> [*]
+st08_f1_end --> [*]
+st08_f2_end --> [*]
+st08_f3_end --> [*]
+st08_fd_end --> [*]
+st08_cap --> [*]
+st09_f0_end --> [*]
+st09_f1_end --> [*]
+st09_f2_end --> [*]
+st09_f3_end --> [*]
+st09_fd_end --> [*]
+st09_cap --> [*]
+st10_f0_end --> [*]
+st10_f1_end --> [*]
+st10_f2_end --> [*]
+st10_f3_end --> [*]
+st10_f4_end --> [*]
+st10_fd_end --> [*]
+st10_cap --> [*]
+st11_f0_end --> [*]
+st11_f1_end --> [*]
+st11_f2_end --> [*]
+st11_f3_end --> [*]
+st11_fd_end --> [*]
+st11_cap --> [*]
+st12_f0_end --> [*]
+st12_f1_end --> [*]
+st12_f2_end --> [*]
+st12_f3_end --> [*]
+st12_fd_end --> [*]
+st12_cap --> [*]
+st13_f0_end --> [*]
+st13_f1_end --> [*]
+st13_f2_end --> [*]
+st13_f3_end --> [*]
+st13_fd_end --> [*]
+st13_cap --> [*]
+st14_f0_end --> [*]
+st14_f1_end --> [*]
+st14_f2_end --> [*]
+st14_f3_end --> [*]
+st14_fd_end --> [*]
+st14_cap --> [*]
+st15_f0_end --> [*]
+st15_f1_end --> [*]
+st15_f2_end --> [*]
+st15_f3_end --> [*]
+st15_fd_end --> [*]
+st15_cap --> [*]
+st16_f0_end --> [*]
+st16_f1_end --> [*]
+st16_f2_end --> [*]
+st16_f3_end --> [*]
+st16_fd_end --> [*]
+st16_cap --> [*]
+st17_f0_end --> [*]
+st17_f1_end --> [*]
+st17_f2_end --> [*]
+st17_f3_end --> [*]
+st17_fd_end --> [*]
+st17_cap --> [*]
+st18_f0_end --> [*]
+st18_f1_end --> [*]
+st18_f2_end --> [*]
+st18_f3_end --> [*]
+st18_fd_end --> [*]
+st18_cap --> [*]
+win_clean --> [*]
+win_costly --> [*]
+win_quiet --> [*]
+win_f0_end --> [*]
+win_f1_end --> [*]
+win_seen_end --> [*]
+
+legend right
+  The Labyrinth of Glass
+  Band 13-16 · Tier 1 · ~35 min
+  Topology: gauntlet
+  383 nodes · 116 endings (2+ / 1n / 113-)
+  Production-eligible
+  Scale: long · gamebook
+endlegend
+@enduml

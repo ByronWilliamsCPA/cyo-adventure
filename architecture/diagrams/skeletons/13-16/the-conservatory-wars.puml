@@ -1,0 +1,550 @@
+@startuml the-conservatory-wars
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 150w
+state n_recital #D1C4E9
+n_recital : rising · 168w
+state n_sort #FFF9C4
+n_sort : choice · 178w
+state st01 #FFF9C4
+st01 : choice · 158w
+state st02 #D1C4E9
+st02 : rising · 136w
+state st03 #FFF9C4
+st03 : choice · 152w
+state st04 #D1C4E9
+st04 : rising · 138w
+state st05 #D1C4E9
+st05 : rising · 140w
+state st06 #D1C4E9
+st06 : rising · 134w
+state st07 #D1C4E9
+st07 : rising · 156w
+state st08 #FFF9C4
+st08 : choice · 150w
+state st09 #D1C4E9
+st09 : rising · 138w
+state st10 #D1C4E9
+st10 : rising · 140w
+state st11 #D1C4E9
+st11 : rising · 144w
+state st12 #C8E6C9
+st12 : success (positive)
+st12 : "Two Names on One Desk"
+state st13 #D1C4E9
+st13 : rising · 142w
+state st14 #FFF9C4
+st14 : choice · 150w
+state st15 #D1C4E9
+st15 : rising · 140w
+state st16 #D1C4E9
+st16 : rising · 144w
+state st17 #C8E6C9
+st17 : success (positive)
+st17 : "The True Bar"
+state st18 #D1C4E9
+st18 : rising · 146w
+state st19 #FFF9C4
+st19 : choice · 148w
+state st20 #D1C4E9
+st20 : rising · 142w
+state st21 #FFE0B2
+st21 : climax · 136w
+state st22 #C8E6C9
+st22 : completion (positive)
+st22 : "The Weight He Carried"
+state st23 #D1C4E9
+st23 : rising · 144w
+state st24 #E0E0E0
+st24 : discovery (neutral)
+st24 : "A Colder Door"
+state st25 #D1C4E9
+st25 : rising · 138w
+state st26 #FFF9C4
+st26 : choice · 148w
+state st27 #D1C4E9
+st27 : rising · 136w
+state st28 #D1C4E9
+st28 : rising · 152w
+state st29 #D1C4E9
+st29 : rising · 146w
+state st30 #D1C4E9
+st30 : rising · 140w
+state st31 #D1C4E9
+st31 : rising · 134w
+state st32 #FFE0B2
+st32 : climax · 132w
+state st33 #C8E6C9
+st33 : success (positive)
+st33 : "Late and True"
+state st34 #D1C4E9
+st34 : rising · 142w
+state st35 #D1C4E9
+st35 : rising · 140w
+state st36 #D1C4E9
+st36 : rising · 130w
+state st37 #FFCDD2
+st37 : setback (negative)
+st37 : "Pain Is Information"
+state st38 #D1C4E9
+st38 : rising · 138w
+state st39 #D1C4E9
+st39 : rising · 140w
+state st40 #D1C4E9
+st40 : rising · 144w
+state st41 #FFF9C4
+st41 : choice · 154w
+state st42 #D1C4E9
+st42 : rising · 142w
+state st43 #D1C4E9
+st43 : rising · 148w
+state st44 #D1C4E9
+st44 : rising · 138w
+state st45 #D1C4E9
+st45 : rising · 146w
+state st46 #D1C4E9
+st46 : rising · 136w
+state st47 #FFE0B2
+st47 : climax · 132w
+state st48 #C8E6C9
+st48 : completion (positive)
+st48 : "The Margin Tune, Voiced"
+state st49 #D1C4E9
+st49 : rising · 134w
+state st49b #D1C4E9
+st49b : rising · 140w
+state st50 #D1C4E9
+st50 : rising · 150w
+state st51 #D1C4E9
+st51 : rising · 148w
+state st52 #D1C4E9
+st52 : rising · 140w
+state st53 #FFE0B2
+st53 : climax · 136w
+state st54 #C8E6C9
+st54 : discovery (positive)
+st54 : "The Hour of the Tune"
+state cm01 #D1C4E9
+cm01 : rising · 144w
+state cm02 #D1C4E9
+cm02 : rising · 138w
+state cm03 #FFF9C4
+cm03 : choice · 150w
+state cm04 #D1C4E9
+cm04 : rising · 142w
+state cm05 #D1C4E9
+cm05 : rising · 140w
+state cm06 #D1C4E9
+cm06 : rising · 136w
+state cm07 #D1C4E9
+cm07 : rising · 154w
+state cm08 #FFF9C4
+cm08 : choice · 150w
+state cm09 #D1C4E9
+cm09 : rising · 146w
+state cm10 #D1C4E9
+cm10 : rising · 138w
+state cm11 #FFF9C4
+cm11 : choice · 162w
+state cm12 #D1C4E9
+cm12 : rising · 150w
+state cm13 #D1C4E9
+cm13 : rising · 142w
+state cm14 #C8E6C9
+cm14 : completion (positive)
+cm14 : "Four Bars of Weather"
+state cm15 #D1C4E9
+cm15 : rising · 146w
+state cm16 #D1C4E9
+cm16 : rising · 142w
+state cm17 #FFE0B2
+cm17 : climax · 132w
+state cm18 #C8E6C9
+cm18 : success (positive)
+cm18 : "The Door He Opened"
+state cm19 #D1C4E9
+cm19 : rising · 148w
+state cm20 #D1C4E9
+cm20 : rising · 140w
+state cm21 #E0E0E0
+cm21 : discovery (neutral)
+cm21 : "Procedure Before Mercy"
+state cm22 #D1C4E9
+cm22 : rising · 140w
+state cm23 #D1C4E9
+cm23 : rising · 144w
+state cm24 #D1C4E9
+cm24 : rising · 146w
+state cm25 #FFF9C4
+cm25 : choice · 152w
+state cm26 #D1C4E9
+cm26 : rising · 142w
+state cm27 #C8E6C9
+cm27 : success (positive)
+cm27 : "Say the True Thing First"
+state cm28 #D1C4E9
+cm28 : rising · 144w
+state cm29 #C8E6C9
+cm29 : discovery (positive)
+cm29 : "Both Halves of Kindness"
+state cm30 #D1C4E9
+cm30 : rising · 136w
+state cm31 #D1C4E9
+cm31 : rising · 142w
+state cm32 #D1C4E9
+cm32 : rising · 140w
+state cm33 #D1C4E9
+cm33 : rising · 150w
+state cm34 #D1C4E9
+cm34 : rising · 146w
+state cm35 #FFF9C4
+cm35 : choice · 148w
+state cm36 #D1C4E9
+cm36 : rising · 144w
+state cm37 #D1C4E9
+cm37 : rising · 142w
+state cm38 #D1C4E9
+cm38 : rising · 138w
+state cm39 #FFE0B2
+cm39 : climax · 134w
+state cm40 #C8E6C9
+cm40 : success (positive)
+cm40 : "Where Music Sleeps"
+state cm41 #D1C4E9
+cm41 : rising · 146w
+state cm42 #D1C4E9
+cm42 : rising · 144w
+state cm43 #FFF9C4
+cm43 : choice · 150w
+state cm44 #D1C4E9
+cm44 : rising · 140w
+state cm45 #FFE0B2
+cm45 : climax · 132w
+state cm46 #C8E6C9
+cm46 : success (positive)
+cm46 : "A Shared Credit"
+state cm47 #D1C4E9
+cm47 : rising · 142w
+state cm48 #FFE0B2
+cm48 : climax · 134w
+state cm49 #C8E6C9
+cm49 : completion (positive)
+cm49 : "The Studio's Name"
+state vo01 #D1C4E9
+vo01 : rising · 140w
+state vo02 #D1C4E9
+vo02 : rising · 144w
+state vo03 #FFF9C4
+vo03 : choice · 148w
+state vo04 #D1C4E9
+vo04 : rising · 136w
+state vo05 #D1C4E9
+vo05 : rising · 138w
+state vo06 #D1C4E9
+vo06 : rising · 152w
+state vo07 #FFF9C4
+vo07 : choice · 150w
+state vo08 #D1C4E9
+vo08 : rising · 142w
+state vo09 #FFF9C4
+vo09 : choice · 152w
+state vo10 #D1C4E9
+vo10 : rising · 148w
+state vo11 #FFF9C4
+vo11 : choice · 146w
+state vo12 #D1C4E9
+vo12 : rising · 144w
+state vo13 #FFE0B2
+vo13 : climax · 134w
+state vo14 #C8E6C9
+vo14 : success (positive)
+vo14 : "The Weathervane"
+state vo15 #D1C4E9
+vo15 : rising · 146w
+state vo16 #E0E0E0
+vo16 : discovery (neutral)
+vo16 : "Letters Sent Late"
+state vo17 #D1C4E9
+vo17 : rising · 148w
+state vo18 #D1C4E9
+vo18 : rising · 144w
+state vo19 #FFF9C4
+vo19 : choice · 152w
+state vo20 #D1C4E9
+vo20 : rising · 140w
+state vo21 #FFE0B2
+vo21 : climax · 138w
+state vo22 #C8E6C9
+vo22 : success (positive)
+vo22 : "The Lantern Verse"
+state vo23 #D1C4E9
+vo23 : rising · 140w
+state vo24 #C8E6C9
+vo24 : completion (positive)
+vo24 : "Steady in the Dark"
+state vo25 #D1C4E9
+vo25 : rising · 146w
+state vo26 #FFF9C4
+vo26 : choice · 148w
+state vo27 #D1C4E9
+vo27 : rising · 146w
+state vo28 #D1C4E9
+vo28 : rising · 144w
+state vo29 #FFE0B2
+vo29 : climax · 136w
+state vo30 #C8E6C9
+vo30 : success (positive)
+vo30 : "The Second Set of Scores"
+state vo31 #D1C4E9
+vo31 : rising · 146w
+state vo32 #D1C4E9
+vo32 : rising · 138w
+state vo33 #E0E0E0
+vo33 : discovery (neutral)
+vo33 : "The Unasked Question"
+state vo34 #D1C4E9
+vo34 : rising · 136w
+state vo35 #D1C4E9
+vo35 : rising · 142w
+state vo36 #D1C4E9
+vo36 : rising · 150w
+state vo37 #FFF9C4
+vo37 : choice · 152w
+state vo38 #D1C4E9
+vo38 : rising · 142w
+state vo39 #D1C4E9
+vo39 : rising · 148w
+state vo40 #FFF9C4
+vo40 : choice · 150w
+state vo41 #D1C4E9
+vo41 : rising · 140w
+state vo42 #FFE0B2
+vo42 : climax · 134w
+state vo43 #C8E6C9
+vo43 : success (positive)
+vo43 : "The Join"
+state vo44 #D1C4E9
+vo44 : rising · 144w
+state vo45 #FFCDD2
+vo45 : setback (negative)
+vo45 : "The Wrong War"
+state vo46 #D1C4E9
+vo46 : rising · 142w
+state vo47 #D1C4E9
+vo47 : rising · 152w
+state vo48 #FFF9C4
+vo48 : choice · 150w
+state vo49 #D1C4E9
+vo49 : rising · 138w
+state vo50 #FFE0B2
+vo50 : climax · 134w
+state vo51 #C8E6C9
+vo51 : success (positive)
+vo51 : "The Weir Song, Carried"
+state vo52 #D1C4E9
+vo52 : rising · 138w
+state vo53 #C8E6C9
+vo53 : completion (positive)
+vo53 : "Two Voices, One Weir"
+n_start --> n_recital : Follow Brant up to the welcome recital.
+n_recital --> n_sort : Join the line at the registrar's table.
+n_sort --> st01 : Sign for strings under Maestra Varga.
+n_sort --> cm01 : Sign for composition under Professor Tho...
+n_sort --> vo01 : Sign for voice under Director Osei.
+st01 --> st02 : Give the bar everything and shelve all e...
+st01 --> st38 : Work the bar but keep the margin tunes a...
+st02 --> st03 : Keep at it until Thursday.
+st03 --> st04 : Take Petra's help and learn the trick.
+st03 --> st25 : Thank her, and prove the bar alone.
+st04 --> st05 : Prepare for the seat challenge.
+st05 --> st06 : Play the blind hearing.
+st06 --> st07 : Walk into Monday.
+st07 --> st08 : Face the section on its worst day.
+st08 --> st09 : Speak for Petra, straight to Varga.
+st08 --> st13 : Say less, and re-check the facts yoursel...
+st09 --> st10 : Stand with the section at assembly.
+st10 --> st11 : Welcome Petra back.
+st11 --> st12 : Give December to the Cantata.
+st13 --> st14 : Decide what to do with what you found.
+st14 --> st15 : Bring it all to Maestra Varga.
+st14 --> st18 : Climb to the organ loft tonight.
+st15 --> st16 : Watch the search turn kind.
+st16 --> st17 : Carry the term to its last Friday.
+st18 --> st19 : Choose what happens next.
+st19 --> st20 : Stay, and walk him to the truth.
+st19 --> st23 : Go to the Provost tonight.
+st20 --> st21 : Let December do its work.
+st21 --> st22 : Take your desk for the Winter Concert.
+st23 --> st24 : Finish the term honestly.
+st25 --> st26 : Decide what the ache is telling you.
+st26 --> st27 : Rest the wrist as told.
+st26 --> st34 : Practice through the ache.
+st27 --> st28 : Meet the Monday after first frost.
+st28 --> st29 : Hold steady through the accusation week.
+st29 --> st30 : Hear the truth on Friday.
+st30 --> st31 : Take the quartet chair.
+st31 --> st32 : Play the final rehearsal.
+st32 --> st33 : Walk out for the Winter Concert.
+st34 --> st35 : Let the term reshape itself.
+st35 --> st36 : Mark the parts for December.
+st36 --> st37 : Take your seat in the audience.
+st38 --> st39 : Stand there while Varga reads.
+st39 --> st40 : Play the tune truly.
+st40 --> st41 : Hear what Thorn is asking.
+st41 --> st42 : Give the tune to the Cantata.
+st41 --> st49 : Keep it for the spring recital.
+st42 --> st43 : Keep working toward mid-term.
+st43 --> st44 : Watch the accusation week unfold.
+st44 --> st45 : Be there on Friday.
+st45 --> st46 : Go where the repair is happening.
+st46 --> st47 : Play the last rehearsal.
+st47 --> st48 : Take your desk for the concert.
+st49 --> st49b : Carry the true bar into ensemble week.
+st49b --> st50 : Meet the frost Monday.
+st50 --> st51 : Decide what the thread is worth.
+st51 --> st52 : Let the kind search work.
+st52 --> st53 : Give December to the Caprice.
+st53 --> st54 : Play the Winter Concert.
+cm01 --> cm02 : Take the riddle back to your room.
+cm02 --> cm03 : Bring the drizzle to Thorn.
+cm03 --> cm04 : Ask Thorn straight out what the riddle m...
+cm03 --> cm30 : Sit with the riddle another week.
+cm04 --> cm05 : Report to the workshop as copyist.
+cm05 --> cm06 : Keep copying toward mid-term.
+cm06 --> cm07 : Come in on the frost Monday.
+cm07 --> cm08 : Sit with the studio in the wreckage.
+cm08 --> cm09 : Answer the riddle with facts.
+cm08 --> cm22 : Answer it with charity first.
+cm09 --> cm10 : Follow the key.
+cm10 --> cm11 : Stand at Thorn's three doors.
+cm11 --> cm12 : Go to Felix alone.
+cm11 --> cm15 : Bring Thorn with you.
+cm11 --> cm19 : Put it before Provost Hale.
+cm12 --> cm13 : Hear him to the end.
+cm13 --> cm14 : Give December to the middle movement.
+cm15 --> cm16 : Stand by while the truth walks.
+cm16 --> cm17 : Come to the last week of term.
+cm17 --> cm18 : Take your seat for the concert.
+cm19 --> cm20 : See the hearing through.
+cm20 --> cm21 : Finish the term with open eyes.
+cm22 --> cm23 : Run the copy night.
+cm23 --> cm24 : Deliver the scores and wait.
+cm24 --> cm25 : Sit in the studio circle after.
+cm25 --> cm26 : Speak to what he did.
+cm25 --> cm28 : Speak to why he did it.
+cm26 --> cm27 : Let the term mend toward December.
+cm28 --> cm29 : Carry both halves to December.
+cm30 --> cm31 : Bring the four bars back grown.
+cm31 --> cm32 : Join the workshop.
+cm32 --> cm33 : Come in on the frost Monday.
+cm33 --> cm34 : Hold the studio together that week.
+cm34 --> cm35 : Take the riddle seriously.
+cm35 --> cm36 : Search where music sleeps.
+cm35 --> cm41 : Let the adults carry it, and write.
+cm36 --> cm37 : Carry it all to Thorn.
+cm37 --> cm38 : Watch the bridge get written.
+cm38 --> cm39 : Come to concert day.
+cm39 --> cm40 : Hear the Cantata whole.
+cm41 --> cm42 : Meet the aftermath.
+cm42 --> cm43 : Face the commission question.
+cm43 --> cm44 : Accept the nomination.
+cm43 --> cm47 : Ask that it go unawarded this term.
+cm44 --> cm45 : Rehearse it into the movement.
+cm45 --> cm46 : Take your seat for the concert.
+cm47 --> cm48 : Finish the movement with the studio.
+cm48 --> cm49 : Hear it played that way.
+vo01 --> vo02 : Learn the Evensong from the inside.
+vo02 --> vo03 : Settle into sectionals.
+vo03 --> vo04 : Audition for the descant line.
+vo03 --> vo34 : Anchor the alto seconds.
+vo04 --> vo05 : Sing into the cold weeks.
+vo05 --> vo06 : Come in on Monday.
+vo06 --> vo07 : Gather with the choir at noon.
+vo07 --> vo08 : Help Osei answer the memo with facts.
+vo07 --> vo25 : Rally the choir to re-mark scores overni...
+vo08 --> vo09 : Be in the office when the board writes b...
+vo09 --> vo10 : Urge Osei to sign and protect the progra...
+vo09 --> vo17 : Urge her to wait for the infirmary log.
+vo10 --> vo11 : Own what traveled.
+vo11 --> vo12 : Apologize to Petra, face to face.
+vo11 --> vo15 : Let it fade into the term's noise.
+vo12 --> vo13 : Sing toward December.
+vo13 --> vo14 : Sing the Winter Concert.
+vo15 --> vo16 : Sing the concert with the letter sent.
+vo17 --> vo18 : Watch the politics turn.
+vo18 --> vo19 : Plan the argument with Osei.
+vo19 --> vo20 : Back the lantern verse.
+vo19 --> vo23 : Back the flawless program.
+vo20 --> vo21 : Come to concert night.
+vo21 --> vo22 : Hold the verse to the end.
+vo23 --> vo24 : Finish in the dark, steady.
+vo25 --> vo26 : Work beside him till the urn runs dry.
+vo26 --> vo27 : Ask him, kindly, how he knows the markin...
+vo26 --> vo31 : Say nothing and finish the scores.
+vo27 --> vo28 : Hold the door open through the week.
+vo28 --> vo29 : Bring the scores home to December.
+vo29 --> vo30 : Sing the Winter Concert.
+vo31 --> vo32 : Carry the arithmetic to Osei.
+vo32 --> vo33 : Sing the concert with clear eyes.
+vo34 --> vo35 : Sing into the schedule fight.
+vo35 --> vo36 : Come in on Monday.
+vo36 --> vo37 : Meet with the choir that evening.
+vo37 --> vo38 : Back Danil's plan.
+vo37 --> vo46 : Back Osei's patience.
+vo38 --> vo39 : Ride the ripples.
+vo39 --> vo40 : Weigh the compromise with the choir.
+vo40 --> vo41 : Pour everything into the Cantata.
+vo40 --> vo44 : Keep fighting the schedule fight.
+vo41 --> vo42 : Sing the final rehearsal.
+vo42 --> vo43 : Sing the Winter Concert.
+vo44 --> vo45 : Sing the concert you rehearsed.
+vo46 --> vo47 : Let the term turn under you.
+vo47 --> vo48 : Hear Osei's offer.
+vo48 --> vo49 : Take the solo verse.
+vo48 --> vo52 : Ask to sing it as a duet with Danil.
+vo49 --> vo50 : Walk out under the lanterns.
+vo50 --> vo51 : Finish the verse.
+vo52 --> vo53 : Sing it together.
+st12 --> [*]
+st17 --> [*]
+st22 --> [*]
+st24 --> [*]
+st33 --> [*]
+st37 --> [*]
+st48 --> [*]
+st54 --> [*]
+cm14 --> [*]
+cm18 --> [*]
+cm21 --> [*]
+cm27 --> [*]
+cm29 --> [*]
+cm40 --> [*]
+cm46 --> [*]
+cm49 --> [*]
+vo14 --> [*]
+vo16 --> [*]
+vo22 --> [*]
+vo24 --> [*]
+vo30 --> [*]
+vo33 --> [*]
+vo43 --> [*]
+vo45 --> [*]
+vo51 --> [*]
+vo53 --> [*]
+
+legend right
+  The Conservatory Wars
+  Band 13-16 · Tier 1 · ~11 min
+  Topology: sorting_hat
+  160 nodes · 26 endings (20+ / 4n / 2-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

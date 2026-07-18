@@ -1,0 +1,431 @@
+@startuml the-storm-chasers-club
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 115w
+state n_brief #D1C4E9
+n_brief : rising · 112w
+state n_sort #FFF9C4
+n_sort : choice · 125w
+state r_post #D1C4E9
+r_post : rising · 105w
+state r_net #D1C4E9
+r_net : rising · 100w
+state r_split #FFF9C4
+r_split : choice · 112w
+state r_a_trace #D1C4E9
+r_a_trace : rising · 96w
+state r_a_finds #D1C4E9
+r_a_finds : rising · 100w
+state r_a_pick #FFF9C4
+r_a_pick : choice · 112w
+state r_a_fix #D1C4E9
+r_a_fix : rising · 96w
+state r_a_meter #D1C4E9
+r_a_meter : rising · 100w
+state r_a_test #FFF9C4
+r_a_test : choice · 112w
+state r_a_check1 #D1C4E9
+r_a_check1 : rising · 96w
+state r_a_check2 #FFE0B2
+r_a_check2 : climax · 100w
+state r_end_clear #C8E6C9
+r_end_clear : success (positive)
+r_end_clear : "Loud and Clear"
+state r_a_mid #D1C4E9
+r_a_mid : rising · 96w
+state r_end_crackle #FFCDD2
+r_end_crackle : setback (negative)
+r_end_crackle : "The Crackle Comes Back"
+state r_b_spool #D1C4E9
+r_b_spool : rising · 96w
+state r_b_crimp #D1C4E9
+r_b_crimp : rising · 100w
+state r_b_amp #FFF9C4
+r_b_amp : choice · 112w
+state r_b_hum #D1C4E9
+r_b_hum : rising · 96w
+state r_b_scud #FFE0B2
+r_b_scud : climax · 100w
+state r_end_longway #C8E6C9
+r_end_longway : success (positive)
+r_end_longway : "The Long Way Around"
+state r_b_faint #D1C4E9
+r_b_faint : rising · 96w
+state r_end_quiet #FFCDD2
+r_end_quiet : setback (negative)
+r_end_quiet : "Too Quiet Out There"
+state r_n_seat #D1C4E9
+r_n_seat : rising · 96w
+state r_n_line #D1C4E9
+r_n_line : rising · 100w
+state r_n_voice #D1C4E9
+r_n_voice : rising · 100w
+state r_n_call #FFF9C4
+r_n_call : choice · 115w
+state r_h_copy #D1C4E9
+r_h_copy : rising · 100w
+state r_h_name #D1C4E9
+r_h_name : rising · 100w
+state r_h_plan #FFF9C4
+r_h_plan : choice · 115w
+state r_h_card #D1C4E9
+r_h_card : rising · 100w
+state r_h_deputy #FFE0B2
+r_h_deputy : climax · 100w
+state r_end_relay #C8E6C9
+r_end_relay : success (positive)
+r_end_relay : "Relay Received"
+state r_h_tower #FFE0B2
+r_h_tower : climax · 100w
+state r_end_voice #C8E6C9
+r_end_voice : completion (positive)
+r_end_voice : "The Voice in the Storm"
+state r_m_second #D1C4E9
+r_m_second : rising · 100w
+state r_m_task #FFF9C4
+r_m_task : choice · 112w
+state r_m_pin #FFE0B2
+r_m_pin : climax · 100w
+state r_end_bearing #C8E6C9
+r_end_bearing : completion (positive)
+r_end_bearing : "Bearing True"
+state r_m_log #D1C4E9
+r_m_log : rising · 96w
+state r_end_log #E0E0E0
+r_end_log : discovery (neutral)
+r_end_log : "The Storm in the Log"
+state m_table #D1C4E9
+m_table : rising · 105w
+state m_plot #D1C4E9
+m_plot : rising · 100w
+state m_split #FFF9C4
+m_split : choice · 112w
+state m_a_replot #D1C4E9
+m_a_replot : rising · 100w
+state m_a_fair #D1C4E9
+m_a_fair : rising · 100w
+state m_a_verify #FFF9C4
+m_a_verify : choice · 115w
+state m_a_ask #D1C4E9
+m_a_ask : rising · 96w
+state m_a_fresh #D1C4E9
+m_a_fresh : rising · 100w
+state m_a_show #FFF9C4
+m_a_show : choice · 112w
+state m_a_walk #D1C4E9
+m_a_walk : rising · 100w
+state m_a_barns #FFE0B2
+m_a_barns : climax · 100w
+state m_end_343 #C8E6C9
+m_end_343 : success (positive)
+m_end_343 : "Three Forty-Three"
+state m_a_bold #FFE0B2
+m_a_bold : climax · 100w
+state m_end_sayit #C8E6C9
+m_end_sayit : completion (positive)
+m_end_sayit : "Say It, Then Show It"
+state m_a_frames #D1C4E9
+m_a_frames : rising · 96w
+state m_a_stale #D1C4E9
+m_a_stale : rising · 100w
+state m_a_call #FFF9C4
+m_a_call : choice · 112w
+state m_a_agree #FFE0B2
+m_a_agree : climax · 100w
+state m_end_agree #C8E6C9
+m_end_agree : success (positive)
+m_end_agree : "The Map and the Math Agree"
+state m_a_fuzzy #D1C4E9
+m_a_fuzzy : rising · 100w
+state m_end_fuzzy #FFCDD2
+m_end_fuzzy : setback (negative)
+m_end_fuzzy : "Fast but Fuzzy"
+state m_b_board #D1C4E9
+m_b_board : rising · 100w
+state m_b_colors #D1C4E9
+m_b_colors : rising · 96w
+state m_b_gap #FFF9C4
+m_b_gap : choice · 118w
+state m_b_draft #D1C4E9
+m_b_draft : rising · 100w
+state m_b_phone #FFF9C4
+m_b_phone : choice · 112w
+state m_b_ad #FFF9C4
+m_b_ad : choice · 112w
+state m_b_hailfact #D1C4E9
+m_b_hailfact : rising · 100w
+state m_b_gustfront #FFE0B2
+m_b_gustfront : climax · 96w
+state m_end_called #C8E6C9
+m_end_called : success (positive)
+m_end_called : "Called Before the Wind"
+state m_b_deal #FFE0B2
+m_b_deal : climax · 96w
+state m_end_delay #C8E6C9
+m_end_delay : completion (positive)
+m_end_delay : "Rain Delay, Club Style"
+state m_b_note #D1C4E9
+m_b_note : rising · 100w
+state m_end_note #C8E6C9
+m_end_note : completion (positive)
+m_end_note : "The Hand-Carried Warning"
+state m_b_columns #D1C4E9
+m_b_columns : rising · 100w
+state m_b_conflict #FFF9C4
+m_b_conflict : choice · 115w
+state m_b_tiebreak #FFE0B2
+m_b_tiebreak : climax · 96w
+state m_end_qmark #E0E0E0
+m_end_qmark : discovery (neutral)
+m_end_qmark : "The Question Mark Rule"
+state m_b_wrong #D1C4E9
+m_b_wrong : rising · 100w
+state m_end_sure #FFCDD2
+m_end_sure : setback (negative)
+m_end_sure : "The Board Was Sure"
+state f_van #D1C4E9
+f_van : rising · 105w
+state f_load #D1C4E9
+f_load : rising · 100w
+state f_route #FFF9C4
+f_route : choice · 118w
+state f_g_stops #D1C4E9
+f_g_stops : rising · 100w
+state f_g_farm #D1C4E9
+f_g_farm : rising · 100w
+state f_g_pick #FFF9C4
+f_g_pick : choice · 115w
+state f_g_goats #D1C4E9
+f_g_goats : rising · 100w
+state f_g_tarp #D1C4E9
+f_g_tarp : rising · 100w
+state f_g_count #FFF9C4
+f_g_count : choice · 115w
+state f_g_willow #D1C4E9
+f_g_willow : rising · 100w
+state f_g_inside #FFE0B2
+f_g_inside : climax · 100w
+state f_end_goats #C8E6C9
+f_end_goats : success (positive)
+f_end_goats : "Every Goat Counted"
+state f_g_cellar #FFE0B2
+f_g_cellar : climax · 100w
+state f_end_people #C8E6C9
+f_end_people : completion (positive)
+f_end_people : "People First"
+state f_g_swap #D1C4E9
+f_g_swap : rising · 96w
+state f_g_horn #D1C4E9
+f_g_horn : rising · 100w
+state f_g_tarp2 #FFF9C4
+f_g_tarp2 : choice · 112w
+state f_g_peel #FFE0B2
+f_g_peel : climax · 96w
+state f_end_dry #C8E6C9
+f_end_dry : completion (positive)
+f_end_dry : "Wet Hay, Dry People"
+state f_g_minute #D1C4E9
+f_g_minute : rising · 100w
+state f_end_margin #FFCDD2
+f_end_margin : setback (negative)
+f_end_margin : "Spent Margin"
+state f_h_hill #D1C4E9
+f_h_hill : rising · 100w
+state f_h_live #D1C4E9
+f_h_live : rising · 104w
+state f_h_job #FFF9C4
+f_h_job : choice · 112w
+state f_h_calls #D1C4E9
+f_h_calls : rising · 100w
+state f_h_hail #D1C4E9
+f_h_hail : rising · 100w
+state f_h_mast #FFF9C4
+f_h_mast : choice · 115w
+state f_h_peak #FFE0B2
+f_h_peak : climax · 104w
+state f_h_report #D1C4E9
+f_h_report : rising · 96w
+state f_end_58 #C8E6C9
+f_end_58 : success (positive)
+f_end_58 : "Fifty-Eight and Counting"
+state f_h_hand #D1C4E9
+f_h_hand : rising · 100w
+state f_end_gotaway #E0E0E0
+f_end_gotaway : discovery (neutral)
+f_end_gotaway : "The Peak That Got Away"
+state f_h_frame #D1C4E9
+f_h_frame : rising · 100w
+state f_h_van #FFF9C4
+f_h_van : choice · 118w
+state f_h_ruler #FFE0B2
+f_h_ruler : climax · 96w
+state f_end_19mm #C8E6C9
+f_end_19mm : success (positive)
+f_end_19mm : "Nineteen Millimeters"
+state f_h_light #FFE0B2
+f_h_light : climax · 96w
+state f_end_photo #FFCDD2
+f_end_photo : setback (negative)
+f_end_photo : "The Best Photo, the Lost Data"
+n_start --> n_brief : Head inside for the morning briefing.
+n_brief --> n_sort : Step up when she calls for volunteers.
+n_sort --> r_post : Join the RADIO team in the attic comms p...
+n_sort --> m_table : Join the MAPS team at the ops table.
+n_sort --> f_van : Join the FIELD KIT team in the club van.
+r_post --> r_net : Take the second seat and put on a headse...
+r_net --> r_split : Keep logging as the net wakes up.
+r_split --> r_a_trace : Help trace the crackling antenna cable.
+r_split --> r_n_seat : Take the logbook and run check-ins while...
+r_a_trace --> r_a_finds : Follow the line to where it moves the mo...
+r_a_finds --> r_a_pick : Weigh the two fixes with Marisol.
+r_a_pick --> r_a_fix : Clean and reseat the corroded window con...
+r_a_pick --> r_b_spool : Run the spare cable over the rafters to ...
+r_a_fix --> r_a_meter : Head back to the radio desk.
+r_a_meter --> r_a_test : Decide how much you trust your fix.
+r_a_test --> r_a_check1 : Run a radio check with far-off Pine Holl...
+r_a_test --> r_a_mid : Trust the meter and dive back into the n...
+r_a_check1 --> r_a_check2 : Rejoin the net with a proven antenna.
+r_a_check2 --> r_end_clear : Ride the storm at the radio until it pas...
+r_a_mid --> r_end_crackle : Scramble to catch what you can.
+r_b_spool --> r_b_crimp : Crimp the connectors and hook it to the ...
+r_b_crimp --> r_b_amp : Look at what the parts bin offers.
+r_b_amp --> r_b_hum : Wire in the inline amplifier.
+r_b_amp --> r_b_faint : Keep it simple and plug straight in.
+r_b_hum --> r_b_scud : Help sort out the scary-looking report.
+r_b_scud --> r_end_longway : See the net through to the storm's end.
+r_b_faint --> r_end_quiet : Copy everything you possibly can.
+r_n_seat --> r_n_line : Find your rhythm as the reports come in.
+r_n_line --> r_n_voice : Answer the next call on the repeater.
+r_n_voice --> r_n_call : Act the way the club trained you to.
+r_n_call --> r_h_copy : Answer the caller yourself, calm and slo...
+r_n_call --> r_m_second : Wave Marisol over and back her up on the...
+r_h_copy --> r_h_name : Get the facts, one question at a time.
+r_h_name --> r_h_plan : Work out the fastest way to get Jordan s...
+r_h_plan --> r_h_card : Relay Jordan's position to the sheriff's...
+r_h_plan --> r_h_tower : Guide Jordan to the fire tower shelter b...
+r_h_card --> r_h_deputy : Hold the net steady while help rolls.
+r_h_deputy --> r_end_relay : Log the moment they meet.
+r_h_tower --> r_end_voice : Stay on the mic until Jordan is through ...
+r_m_second --> r_m_task : Make yourself exactly as useful as possi...
+r_m_task --> r_m_pin : Plot the landmarks and work out a bearin...
+r_m_task --> r_m_log : Keep the storm net alive on radio two.
+r_m_pin --> r_end_bearing : Watch your bearing do its work.
+r_m_log --> r_end_log : Carry the net through the height of the ...
+m_table --> m_plot : Learn the plotter's job.
+m_plot --> m_split : Notice what the marks are starting to sa...
+m_split --> m_a_replot : Re-plot the last hour and test the forec...
+m_split --> m_b_board : Run the timeline board for the room.
+m_a_replot --> m_a_fair : Extend the line forward in time.
+m_a_fair --> m_a_verify : Take a breath, because this is a big cla...
+m_a_verify --> m_a_ask : Get fresh fixes from the south spotters.
+m_a_verify --> m_a_frames : Measure the storm's motion on radar with...
+m_a_ask --> m_a_fresh : See where the new marks land.
+m_a_fresh --> m_a_show : Get ready to present.
+m_a_show --> m_a_walk : Walk her through the marks and let the m...
+m_a_show --> m_a_bold : Lead with the headline, then show the wo...
+m_a_walk --> m_a_barns : Listen to the call your map started.
+m_a_barns --> m_end_343 : Watch the clock you predicted.
+m_a_bold --> m_end_sayit : Stand by while she makes the call.
+m_a_frames --> m_a_stale : Check the numbers twice.
+m_a_stale --> m_a_call : Decide what your answer will be.
+m_a_call --> m_a_agree : Add fresh spotter plots before calling i...
+m_a_call --> m_a_fuzzy : Call it in now on the radar math alone.
+m_a_agree --> m_end_agree : Follow your nowcast out into the world.
+m_a_fuzzy --> m_end_fuzzy : Help win the lost minutes back.
+m_b_board --> m_b_colors : Make the board even easier to read.
+m_b_colors --> m_b_gap : Say out loud what the board is showing.
+m_b_gap --> m_b_draft : Draft the warning and get it signed.
+m_b_gap --> m_b_columns : Hand the warning to Dev and keep the boa...
+m_b_draft --> m_b_phone : Now get it to the right ears.
+m_b_phone --> m_b_ad : Track down the athletic director's cell ...
+m_b_phone --> m_b_note : Call the snack stand and send the warnin...
+m_b_ad --> m_b_hailfact : Give him the evidence, plain and clear.
+m_b_ad --> m_b_deal : Offer him the club's deal.
+m_b_hailfact --> m_b_gustfront : Let the upstream fact land.
+m_b_gustfront --> m_end_called : Stay on the line while the field clears.
+m_b_deal --> m_end_delay : Keep the club's side of the bargain.
+m_b_note --> m_end_note : Listen for the announcement.
+m_b_columns --> m_b_conflict : Hold the county picture together.
+m_b_conflict --> m_b_tiebreak : Plot both with question marks and ask fo...
+m_b_conflict --> m_b_wrong : Pick Bell Creek and keep the board clean...
+m_b_tiebreak --> m_end_qmark : Notice what the question marks just did.
+m_b_wrong --> m_end_sure : Fix the board fast.
+f_van --> f_load : Roll out with the field team.
+f_load --> f_route : Check the route sheet with Ray.
+f_route --> f_g_stops : Start with the gauge run along Creek Roa...
+f_route --> f_h_hill : Set up the Windmill Hill post before the...
+f_g_stops --> f_g_farm : Head for the third farm.
+f_g_farm --> f_g_pick : Pile out and size it up.
+f_g_pick --> f_g_goats : Help with the animals and the tarp first...
+f_g_pick --> f_g_swap : Swap the gauge fast, then help the farm.
+f_g_goats --> f_g_tarp : Now the flapping tarp.
+f_g_tarp --> f_g_count : Help Mrs. Andersen count the goats.
+f_g_count --> f_g_willow : Take a fast two-minute look at the willo...
+f_g_count --> f_g_cellar : Get everyone inside now, people before g...
+f_g_willow --> f_g_inside : Free her and run for the barn.
+f_g_inside --> f_end_goats : Watch the storm do its worst to a ready ...
+f_g_cellar --> f_end_people : Look for Butterscotch once the line has ...
+f_g_swap --> f_g_horn : Throw everything at the yard.
+f_g_horn --> f_g_tarp2 : Make the call on the tarp.
+f_g_tarp2 --> f_g_peel : Leave the tarp, everyone inside now.
+f_g_tarp2 --> f_g_minute : Take one more minute and finish it with ...
+f_g_peel --> f_end_dry : Tally what was lost and what was not.
+f_g_minute --> f_end_margin : Catch your breath inside.
+f_h_hill --> f_h_live : Build the observation post.
+f_h_live --> f_h_job : Split the post's two jobs.
+f_h_job --> f_h_calls : Take the instruments and call the readin...
+f_h_job --> f_h_frame : Take the camera and document the storm.
+f_h_calls --> f_h_hail : Keep calling as the numbers climb.
+f_h_hail --> f_h_mast : Settle the mast question.
+f_h_mast --> f_h_peak : Leave the mast up till Ray's deadline an...
+f_h_mast --> f_h_hand : Strike the mast now and switch to the ha...
+f_h_peak --> f_h_report : Ride home with the number.
+f_h_report --> f_end_58 : Hand the data over.
+f_h_hand --> f_end_gotaway : Collect the hail pads after the all-clea...
+f_h_frame --> f_h_van : Keep shooting as the hail arrives.
+f_h_van --> f_h_ruler : Measure the hail on the pad before it me...
+f_h_van --> f_h_light : Chase the light for the club's best-ever...
+f_h_ruler --> f_end_19mm : File the archive's first calibrated hail...
+f_h_light --> f_end_photo : Bring your treasure back to the van.
+r_end_clear --> [*]
+r_end_crackle --> [*]
+r_end_longway --> [*]
+r_end_quiet --> [*]
+r_end_relay --> [*]
+r_end_voice --> [*]
+r_end_bearing --> [*]
+r_end_log --> [*]
+m_end_343 --> [*]
+m_end_sayit --> [*]
+m_end_agree --> [*]
+m_end_fuzzy --> [*]
+m_end_called --> [*]
+m_end_delay --> [*]
+m_end_note --> [*]
+m_end_qmark --> [*]
+m_end_sure --> [*]
+f_end_goats --> [*]
+f_end_people --> [*]
+f_end_dry --> [*]
+f_end_margin --> [*]
+f_end_58 --> [*]
+f_end_gotaway --> [*]
+f_end_19mm --> [*]
+f_end_photo --> [*]
+
+legend right
+  The Storm Chasers Club
+  Band 8-11 · Tier 1 · ~10 min
+  Topology: sorting_hat
+  121 nodes · 25 endings (16+ / 3n / 6-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

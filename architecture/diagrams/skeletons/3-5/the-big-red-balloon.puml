@@ -1,0 +1,126 @@
+@startuml the-big-red-balloon
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_park
+state n_park #BBDEFB
+n_park : setup · 44w
+state n_slip #BBDEFB
+n_slip : setup · 42w
+state n_run #BBDEFB
+n_run : setup · 38w
+state n_fork #FFF9C4
+n_fork : choice · 44w
+state n_pond #D1C4E9
+n_pond : rising · 40w
+state n_ducks #D1C4E9
+n_ducks : rising · 36w
+state n_reeds #FFF9C4
+n_reeds : choice · 44w
+state n_stones #D1C4E9
+n_stones : rising · 38w
+state n_willow #FFF9C4
+n_willow : choice · 42w
+state n_stick #D1C4E9
+n_stick : rising · 36w
+state n_catch_end #C8E6C9
+n_catch_end : success (positive)
+n_catch_end : "Caught Under the Willow"
+state n_breeze #D1C4E9
+n_breeze : rising · 38w
+state n_drift #D1C4E9
+n_drift : rising · 36w
+state n_parade_end #C8E6C9
+n_parade_end : discovery (positive)
+n_parade_end : "Leader of the Duck Parade"
+state n_boat #D1C4E9
+n_boat : rising · 40w
+state n_pedal #D1C4E9
+n_pedal : rising · 36w
+state n_fountain #D1C4E9
+n_fountain : rising · 38w
+state n_boat_end #C8E6C9
+n_boat_end : success (positive)
+n_boat_end : "The Fountain Catch"
+state n_hill #D1C4E9
+n_hill : rising · 40w
+state n_bell #D1C4E9
+n_bell : rising · 36w
+state n_hillside #FFF9C4
+n_hillside : choice · 44w
+state n_cart #D1C4E9
+n_cart : rising · 40w
+state n_umbrella #FFF9C4
+n_umbrella : choice · 42w
+state n_reachup #D1C4E9
+n_reachup : rising · 36w
+state n_sundae_end #C8E6C9
+n_sundae_end : completion (positive)
+n_sundae_end : "The Fanciest Rescue"
+state n_stool #D1C4E9
+n_stool : rising · 38w
+state n_gust #D1C4E9
+n_gust : rising · 38w
+state n_goodbye_end #E0E0E0
+n_goodbye_end : setback (neutral)
+n_goodbye_end : "The Strawberry Goodbye"
+state n_top #D1C4E9
+n_top : rising · 40w
+state n_kites #D1C4E9
+n_kites : rising · 38w
+state n_reel #D1C4E9
+n_reel : rising · 36w
+state n_kite_end #C8E6C9
+n_kite_end : success (positive)
+n_kite_end : "The Kindest Kite"
+n_park --> n_slip : Skip down the park path.
+n_slip --> n_run : Chase the big red balloon!
+n_run --> n_fork : Run to where the path splits.
+n_fork --> n_pond : Follow it down to the duck pond.
+n_fork --> n_hill : Follow it up kite hill.
+n_pond --> n_ducks : Hurry around the pond.
+n_ducks --> n_reeds : Go to the reeds by the willow.
+n_reeds --> n_stones : Tiptoe across the stepping stones.
+n_reeds --> n_boat : Wave to the paddle-boat lady.
+n_stones --> n_willow : Stop under the willow.
+n_willow --> n_stick : Reach up with the long stick.
+n_willow --> n_breeze : Wait for the breeze to help.
+n_stick --> n_catch_end : Catch the string!
+n_breeze --> n_drift : Watch where it goes.
+n_drift --> n_parade_end : Wave to the duck parade.
+n_boat --> n_pedal : Pedal after the balloon.
+n_pedal --> n_fountain : Follow it to the fountain.
+n_fountain --> n_boat_end : Hold out both hands.
+n_hill --> n_bell : Keep climbing toward the sounds.
+n_bell --> n_hillside : See where the balloon goes.
+n_hillside --> n_cart : Run to the ice-cream cart.
+n_hillside --> n_top : Climb up to the kite kids.
+n_cart --> n_umbrella : Look up at the tangled string.
+n_umbrella --> n_reachup : Ask the ice-cream man to reach it.
+n_umbrella --> n_stool : Climb the step stool and try.
+n_reachup --> n_sundae_end : Take the balloon back.
+n_stool --> n_gust : Reach one more inch.
+n_gust --> n_goodbye_end : Watch it go.
+n_top --> n_kites : Ask Jo to try.
+n_kites --> n_reel : Reel them in together.
+n_reel --> n_kite_end : Take hold of the string.
+n_catch_end --> [*]
+n_parade_end --> [*]
+n_boat_end --> [*]
+n_sundae_end --> [*]
+n_goodbye_end --> [*]
+n_kite_end --> [*]
+
+legend right
+  The Big Red Balloon
+  Band 3-5 · Tier 1 · ~4 min
+  Topology: time_cave
+  32 nodes · 6 endings (5+ / 1n / 0-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

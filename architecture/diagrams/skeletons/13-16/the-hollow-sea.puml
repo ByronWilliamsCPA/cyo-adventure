@@ -1,0 +1,749 @@
+@startuml the-hollow-sea
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 158w
+state n_deck #BBDEFB
+n_deck : setup · 152w
+state n_shed #BBDEFB
+n_shed : setup · 150w
+state n_launch #BBDEFB
+n_launch : setup · 148w
+state n_cove #FFF9C4
+n_cove : choice · 150w
+state n_galley #FFF9C4
+n_galley : choice · 132w
+state e_ashore #FFCDD2
+e_ashore : setback (negative)
+e_ashore : "Put Ashore"
+state bs_shore #FFF9C4
+bs_shore : choice · 152w
+state bs_help #D1C4E9
+bs_help : rising · 130w
+state bs_helpb #D1C4E9
+bs_helpb : rising · 132w
+state bs_watch #D1C4E9
+bs_watch : rising · 132w
+state bs_watchb #FFF9C4
+bs_watchb : choice · 134w
+state bs_near #FFF9C4
+bs_near : choice · 132w
+state bs_reckless #FFF9C4
+bs_reckless : choice · 130w
+state bs_risk #D1C4E9
+bs_risk : rising · 132w
+state bs_safe #D1C4E9
+bs_safe : rising · 128w
+state bs_conv #FFF9C4
+bs_conv : choice · 134w
+state bs_extra1 #D1C4E9
+bs_extra1 : rising · 128w
+state bs_read #FFF9C4
+bs_read : choice · 145w
+state bs_extra2 #D1C4E9
+bs_extra2 : rising · 128w
+state bs_gate #FFF9C4
+bs_gate : choice · 140w
+state bs_deep1 #D1C4E9
+bs_deep1 : rising · 155w
+state bs_deep2 #FFF9C4
+bs_deep2 : choice · 148w
+state bs_shallow #D1C4E9
+bs_shallow : rising · 132w
+state bs_shallowb #FFF9C4
+bs_shallowb : choice · 134w
+state bs_done #FFF9C4
+bs_done : choice · 148w
+state e_bs_awe #C8E6C9
+e_bs_awe : discovery (positive)
+e_bs_awe : "The Bell That Cannot Toll"
+state e_bs_risk #FFCDD2
+e_bs_risk : setback (negative)
+e_bs_risk : "Holed on the Teeth"
+state e_bs_deep #C8E6C9
+e_bs_deep : discovery (positive)
+e_bs_deep : "The Toll in Your Bones"
+state e_bs_shallow #E0E0E0
+e_bs_shallow : discovery (neutral)
+e_bs_shallow : "Sounded from Above"
+state e_bs_linger #C8E6C9
+e_bs_linger : discovery (positive)
+e_bs_linger : "Charting the Black Reef"
+state wl_shore #FFF9C4
+wl_shore : choice · 152w
+state wl_help #D1C4E9
+wl_help : rising · 130w
+state wl_helpb #D1C4E9
+wl_helpb : rising · 132w
+state wl_watch #D1C4E9
+wl_watch : rising · 132w
+state wl_watchb #FFF9C4
+wl_watchb : choice · 134w
+state wl_near #FFF9C4
+wl_near : choice · 132w
+state wl_reckless #FFF9C4
+wl_reckless : choice · 130w
+state wl_risk #D1C4E9
+wl_risk : rising · 132w
+state wl_safe #D1C4E9
+wl_safe : rising · 128w
+state wl_conv #FFF9C4
+wl_conv : choice · 134w
+state wl_extra1 #D1C4E9
+wl_extra1 : rising · 128w
+state wl_read #FFF9C4
+wl_read : choice · 145w
+state wl_extra2 #D1C4E9
+wl_extra2 : rising · 128w
+state wl_gate #FFF9C4
+wl_gate : choice · 140w
+state wl_deep1 #D1C4E9
+wl_deep1 : rising · 155w
+state wl_deep2 #FFF9C4
+wl_deep2 : choice · 148w
+state wl_shallow #D1C4E9
+wl_shallow : rising · 132w
+state wl_shallowb #FFF9C4
+wl_shallowb : choice · 134w
+state wl_done #FFF9C4
+wl_done : choice · 148w
+state e_wl_awe #C8E6C9
+e_wl_awe : discovery (positive)
+e_wl_awe : "The Soundless Heron"
+state e_wl_risk #FFCDD2
+e_wl_risk : setback (negative)
+e_wl_risk : "Run Dry in the Weed"
+state e_wl_deep #C8E6C9
+e_wl_deep : discovery (positive)
+e_wl_deep : "The Heart of the Weedland"
+state e_wl_shallow #E0E0E0
+e_wl_shallow : discovery (neutral)
+e_wl_shallow : "Read from the Weed-Edge"
+state e_wl_linger #E0E0E0
+e_wl_linger : discovery (neutral)
+e_wl_linger : "The Green Crossing"
+state ci_shore #FFF9C4
+ci_shore : choice · 152w
+state ci_help #D1C4E9
+ci_help : rising · 130w
+state ci_helpb #D1C4E9
+ci_helpb : rising · 132w
+state ci_watch #D1C4E9
+ci_watch : rising · 132w
+state ci_watchb #FFF9C4
+ci_watchb : choice · 134w
+state ci_near #FFF9C4
+ci_near : choice · 132w
+state ci_reckless #FFF9C4
+ci_reckless : choice · 130w
+state ci_risk #D1C4E9
+ci_risk : rising · 132w
+state ci_safe #D1C4E9
+ci_safe : rising · 128w
+state ci_conv #FFF9C4
+ci_conv : choice · 134w
+state ci_extra1 #D1C4E9
+ci_extra1 : rising · 128w
+state ci_read #FFF9C4
+ci_read : choice · 145w
+state ci_extra2 #D1C4E9
+ci_extra2 : rising · 128w
+state ci_gate #FFF9C4
+ci_gate : choice · 140w
+state ci_deep1 #D1C4E9
+ci_deep1 : rising · 155w
+state ci_deep2 #FFF9C4
+ci_deep2 : choice · 148w
+state ci_shallow #D1C4E9
+ci_shallow : rising · 132w
+state ci_shallowb #FFF9C4
+ci_shallowb : choice · 134w
+state ci_done #FFF9C4
+ci_done : choice · 148w
+state e_ci_awe #C8E6C9
+e_ci_awe : discovery (positive)
+e_ci_awe : "The Silent Lightning"
+state e_ci_risk #FFCDD2
+e_ci_risk : setback (negative)
+e_ci_risk : "Through the Wreck-Fangs"
+state e_ci_deep #C8E6C9
+e_ci_deep : discovery (positive)
+e_ci_deep : "A Light No One Will See"
+state e_ci_shallow #E0E0E0
+e_ci_shallow : discovery (neutral)
+e_ci_shallow : "The Keeper's Log"
+state e_ci_linger #C8E6C9
+e_ci_linger : discovery (positive)
+e_ci_linger : "Under the Dead Light"
+state gf_shore #FFF9C4
+gf_shore : choice · 152w
+state gf_help #D1C4E9
+gf_help : rising · 130w
+state gf_helpb #D1C4E9
+gf_helpb : rising · 132w
+state gf_watch #D1C4E9
+gf_watch : rising · 132w
+state gf_watchb #FFF9C4
+gf_watchb : choice · 134w
+state gf_near #FFF9C4
+gf_near : choice · 132w
+state gf_reckless #FFF9C4
+gf_reckless : choice · 130w
+state gf_risk #D1C4E9
+gf_risk : rising · 132w
+state gf_safe #D1C4E9
+gf_safe : rising · 128w
+state gf_conv #FFF9C4
+gf_conv : choice · 134w
+state gf_extra1 #D1C4E9
+gf_extra1 : rising · 128w
+state gf_read #FFF9C4
+gf_read : choice · 145w
+state gf_extra2 #D1C4E9
+gf_extra2 : rising · 128w
+state gf_gate #FFF9C4
+gf_gate : choice · 140w
+state gf_deep1 #D1C4E9
+gf_deep1 : rising · 155w
+state gf_deep2 #FFF9C4
+gf_deep2 : choice · 148w
+state gf_shallow #D1C4E9
+gf_shallow : rising · 132w
+state gf_shallowb #FFF9C4
+gf_shallowb : choice · 134w
+state gf_done #FFF9C4
+gf_done : choice · 148w
+state e_gf_awe #C8E6C9
+e_gf_awe : discovery (positive)
+e_gf_awe : "The Splash Without Sound"
+state e_gf_risk #FFCDD2
+e_gf_risk : setback (negative)
+e_gf_risk : "Grounded on the Bar"
+state e_gf_deep #C8E6C9
+e_gf_deep : discovery (positive)
+e_gf_deep : "The Flat That Sang"
+state e_gf_shallow #E0E0E0
+e_gf_shallow : discovery (neutral)
+e_gf_shallow : "Read from the Gutter"
+state e_gf_linger #E0E0E0
+e_gf_linger : discovery (neutral)
+e_gf_linger : "Walking on Light"
+state ds_shore #FFF9C4
+ds_shore : choice · 152w
+state ds_help #D1C4E9
+ds_help : rising · 130w
+state ds_helpb #D1C4E9
+ds_helpb : rising · 132w
+state ds_watch #D1C4E9
+ds_watch : rising · 132w
+state ds_watchb #FFF9C4
+ds_watchb : choice · 134w
+state ds_near #FFF9C4
+ds_near : choice · 132w
+state ds_reckless #FFF9C4
+ds_reckless : choice · 130w
+state ds_risk #D1C4E9
+ds_risk : rising · 132w
+state ds_safe #D1C4E9
+ds_safe : rising · 128w
+state ds_conv #FFF9C4
+ds_conv : choice · 134w
+state ds_extra1 #D1C4E9
+ds_extra1 : rising · 128w
+state ds_read #FFF9C4
+ds_read : choice · 145w
+state ds_extra2 #D1C4E9
+ds_extra2 : rising · 128w
+state ds_gate #FFF9C4
+ds_gate : choice · 140w
+state ds_deep1 #D1C4E9
+ds_deep1 : rising · 155w
+state ds_deep2 #FFF9C4
+ds_deep2 : choice · 148w
+state ds_shallow #D1C4E9
+ds_shallow : rising · 132w
+state ds_shallowb #FFF9C4
+ds_shallowb : choice · 134w
+state ds_done #FFF9C4
+ds_done : choice · 148w
+state e_ds_awe #C8E6C9
+e_ds_awe : discovery (positive)
+e_ds_awe : "The Town Breathing Fish"
+state e_ds_risk #FFCDD2
+e_ds_risk : setback (negative)
+e_ds_risk : "Nearly Over the Side"
+state e_ds_deep #C8E6C9
+e_ds_deep : discovery (positive)
+e_ds_deep : "The Floor of the Hollow"
+state e_ds_shallow #E0E0E0
+e_ds_shallow : discovery (neutral)
+e_ds_shallow : "Kirktown's High Streets"
+state e_ds_linger #C8E6C9
+e_ds_linger : discovery (positive)
+e_ds_linger : "Over the Drowned Stair"
+state e_ds_bonus #C8E6C9
+e_ds_bonus : discovery (positive)
+e_ds_bonus : "The Note You Knew"
+state bc_shore #FFF9C4
+bc_shore : choice · 152w
+state bc_help #D1C4E9
+bc_help : rising · 130w
+state bc_helpb #D1C4E9
+bc_helpb : rising · 132w
+state bc_watch #D1C4E9
+bc_watch : rising · 132w
+state bc_watchb #FFF9C4
+bc_watchb : choice · 134w
+state bc_near #FFF9C4
+bc_near : choice · 132w
+state bc_reckless #FFF9C4
+bc_reckless : choice · 130w
+state bc_risk #D1C4E9
+bc_risk : rising · 132w
+state bc_safe #D1C4E9
+bc_safe : rising · 128w
+state bc_conv #FFF9C4
+bc_conv : choice · 134w
+state bc_extra1 #D1C4E9
+bc_extra1 : rising · 128w
+state bc_read #FFF9C4
+bc_read : choice · 145w
+state bc_extra2 #D1C4E9
+bc_extra2 : rising · 128w
+state bc_gate #FFF9C4
+bc_gate : choice · 140w
+state bc_deep1 #D1C4E9
+bc_deep1 : rising · 155w
+state bc_deep2 #FFF9C4
+bc_deep2 : choice · 148w
+state bc_shallow #D1C4E9
+bc_shallow : rising · 132w
+state bc_shallowb #FFF9C4
+bc_shallowb : choice · 134w
+state bc_done #FFF9C4
+bc_done : choice · 148w
+state e_bc_awe #C8E6C9
+e_bc_awe : discovery (positive)
+e_bc_awe : "The Sea Breathing"
+state e_bc_risk #FFCDD2
+e_bc_risk : setback (negative)
+e_bc_risk : "Against the Breath"
+state e_bc_deep #C8E6C9
+e_bc_deep : discovery (positive)
+e_bc_deep : "Where the Sea Almost Answers"
+state e_bc_shallow #E0E0E0
+e_bc_shallow : discovery (neutral)
+e_bc_shallow : "Read from the Cave-Mouth"
+state e_bc_linger #E0E0E0
+e_bc_linger : discovery (neutral)
+e_bc_linger : "The Throat of the Hollow"
+state e_bc_bonus #C8E6C9
+e_bc_bonus : discovery (positive)
+e_bc_bonus : "The Voice You Half-Know"
+state fin_muster #FFF9C4
+fin_muster : choice · 150w
+state fin_brief #FFF9C4
+fin_brief : choice · 148w
+state fin_line #FFF9C4
+fin_line : choice · 132w
+state fin_line_a #FFF9C4
+fin_line_a : choice · 130w
+state fin_line_a2 #D1C4E9
+fin_line_a2 : rising · 130w
+state fin_line_b #FFF9C4
+fin_line_b : choice · 130w
+state fin_line_b2 #D1C4E9
+fin_line_b2 : rising · 130w
+state fin_line_j #D1C4E9
+fin_line_j : rising · 126w
+state fin_line_r #D1C4E9
+fin_line_r : rising · 126w
+state fin_shore #FFF9C4
+fin_shore : choice · 132w
+state fin_shore_a #FFF9C4
+fin_shore_a : choice · 130w
+state fin_shore_a2 #D1C4E9
+fin_shore_a2 : rising · 130w
+state fin_shore_b #FFF9C4
+fin_shore_b : choice · 130w
+state fin_shore_b2 #D1C4E9
+fin_shore_b2 : rising · 130w
+state fin_shore_j #D1C4E9
+fin_shore_j : rising · 126w
+state fin_shore_r #D1C4E9
+fin_shore_r : rising · 126w
+state fin_crew #FFF9C4
+fin_crew : choice · 132w
+state fin_crew_a #FFF9C4
+fin_crew_a : choice · 130w
+state fin_crew_a2 #D1C4E9
+fin_crew_a2 : rising · 130w
+state fin_crew_b #FFF9C4
+fin_crew_b : choice · 130w
+state fin_crew_b2 #D1C4E9
+fin_crew_b2 : rising · 132w
+state fin_crew_j #D1C4E9
+fin_crew_j : rising · 126w
+state fin_crew_r #D1C4E9
+fin_crew_r : rising · 126w
+state fin_tide #D1C4E9
+fin_tide : rising · 165w
+state fin_dark #D1C4E9
+fin_dark : rising · 145w
+state fin_row #D1C4E9
+fin_row : rising · 160w
+state fin_gather #D1C4E9
+fin_gather : rising · 150w
+state fin_still #FFF9C4
+fin_still : choice · 155w
+state fin_read #D1C4E9
+fin_read : rising · 175w
+state fin_rise #D1C4E9
+fin_rise : rising · 140w
+state fin_answered #FFF9C4
+fin_answered : choice · 150w
+state fin_partial #D1C4E9
+fin_partial : rising · 150w
+state fin_settle #D1C4E9
+fin_settle : rising · 138w
+state fin_afterp #FFF9C4
+fin_afterp : choice · 145w
+state fin_keepn #D1C4E9
+fin_keepn : rising · 150w
+state fin_hush #D1C4E9
+fin_hush : rising · 138w
+state fin_afterk #FFF9C4
+fin_afterk : choice · 145w
+state e_fin_charter #C8E6C9
+e_fin_charter : success (positive)
+e_fin_charter : "The Next Charter"
+state e_fin_answer #C8E6C9
+e_fin_answer : completion (positive)
+e_fin_answer : "The Sea's Own Sounding"
+state e_fin_pass #C8E6C9
+e_fin_pass : completion (positive)
+e_fin_pass : "Passed Whole"
+state e_fin_true #E0E0E0
+e_fin_true : completion (neutral)
+e_fin_true : "A True Figure"
+state e_fin_home #E0E0E0
+e_fin_home : completion (neutral)
+e_fin_home : "Rowing Home on the Breath"
+state e_fin_watch #C8E6C9
+e_fin_watch : completion (positive)
+e_fin_watch : "The Log Kept True"
+state e_fin_log #E0E0E0
+e_fin_log : completion (neutral)
+e_fin_log : "The Last Sounding Entered"
+n_start --> n_deck : Cast off with Mabe and Fen into the grey...
+n_deck --> n_shed : Learn the signs and take up the lead-lin...
+n_shed --> n_launch : Study the blank reaches and choose where...
+n_launch --> n_cove : Point Kestrel for the headland and the o...
+n_cove --> bs_shore : Cross to the Bell Skerries, where the dr...
+n_cove --> wl_shore : Cross to the Weedland, the floating raft...
+n_cove --> ci_shore : Cross to Cinder Isle under its dead blac...
+n_cove --> gf_shore : Cross to the Glass Flats, the mute mirro...
+n_cove --> ds_shore : Cross to the Drowned Stair over Kirktown...
+n_cove --> bc_shore : Cross to the Breathing Cave on the far c...
+n_cove --> n_galley : Stay in the cove a while and gather your...
+n_cove --> fin_muster : Answer the muster: the Stilling is near.
+n_galley --> n_cove : Warm up and get back out to the boat.
+n_galley --> e_ashore : Tell Mabe the silence has grown too heav...
+bs_shore --> bs_help : Take the lead beside Mabe along the reef...
+bs_shore --> bs_watch : Stand off at the oars and watch the bell...
+bs_shore --> bs_near : Row in close to the near gap in the blac...
+bs_help --> bs_helpb : Let Mabe teach the reef's grain.
+bs_helpb --> bs_conv : Bring the boat over the bell-water.
+bs_watch --> bs_watchb : Watch the bronze lip meet the water.
+bs_watchb --> bs_conv : Bring the boat over the bell-water.
+bs_watchb --> e_bs_awe : Stay with the soundless bell as the ligh...
+bs_near --> bs_risk : Scrape her through the narrow gap to rea...
+bs_near --> bs_safe : Back the oars and go the long clean way ...
+bs_near --> bs_reckless : Push deeper among the teeth as the light...
+bs_reckless --> e_bs_risk : Press on and trust your eye in the closi...
+bs_reckless --> bs_safe : Pull back while there is still water to ...
+bs_risk --> bs_conv : Hold her over the bell and take stock.
+bs_safe --> bs_conv : Bring her over the bell.
+bs_conv --> bs_read : Ready the gear and read the bell.
+bs_conv --> bs_extra1 : Let the crew settle the boat first.
+bs_extra1 --> bs_read : Ready the gear and read the bell.
+bs_read --> bs_gate : Decide how to read the drowned bell.
+bs_read --> bs_extra2 : Ask Mabe about the bell first.
+bs_extra2 --> bs_gate : Decide how to read the drowned bell.
+bs_gate --> bs_deep1 : Go over the side and down to the bell.
+bs_gate --> bs_shallow : Read the bell from the surface with the ...
+bs_deep1 --> bs_deep2 : Hang by the bell in the deep hush.
+bs_deep2 --> bs_done : Surface, log the reading, and come away.
+bs_deep2 --> e_bs_deep : Stay with the bell one breath too long, ...
+bs_shallow --> bs_shallowb : Log the reading and come away.
+bs_shallowb --> bs_done : Stow the gear and come away.
+bs_shallowb --> e_bs_shallow : Sit a while over the sounded bell before...
+bs_done --> n_cove : Bear away for Cradle Cove to re-store.
+bs_done --> fin_muster : Answer the muster if the Stilling has co...
+bs_done --> e_bs_linger : Lie off the reef and chart it fully befo...
+wl_shore --> wl_help : Work the poles with Fen and find the dri...
+wl_shore --> wl_watch : Rest the pole and read the green silence...
+wl_shore --> wl_near : Strike off toward a dark seam that might...
+wl_help --> wl_helpb : Let Mabe teach the current under the wee...
+wl_helpb --> wl_conv : Push on toward the pale water at the hea...
+wl_watch --> wl_watchb : Watch the heron lift from the weed.
+wl_watchb --> wl_conv : Push on toward the pale water at the hea...
+wl_watchb --> e_wl_awe : Stay and watch the soundless birds a whi...
+wl_near --> wl_risk : Pole the long lee hard around the thicke...
+wl_near --> wl_safe : Wait for the slow drift lane to open of ...
+wl_near --> wl_reckless : Force the poles straight into the matted...
+wl_reckless --> e_wl_risk : Drive her on into the heart of the raft.
+wl_reckless --> wl_safe : Work her back to clear water while you s...
+wl_risk --> wl_conv : Come up on the pale water at the heart.
+wl_safe --> wl_conv : Come up on the pale water at the heart.
+wl_conv --> wl_read : Come to the edge of the clear lagoon.
+wl_conv --> wl_extra1 : Let the crew mend and settle first.
+wl_extra1 --> wl_read : Come to the edge of the clear lagoon.
+wl_read --> wl_gate : Decide how to read the heart-lagoon.
+wl_read --> wl_extra2 : Ask Mabe about the heart-lagoon first.
+wl_extra2 --> wl_gate : Decide how to read the heart-lagoon.
+wl_gate --> wl_deep1 : Pole out to the center of the heart-lago...
+wl_gate --> wl_shallow : Read the lagoon from its weeded edge.
+wl_deep1 --> wl_deep2 : Take the reading at the lagoon's dead ce...
+wl_deep2 --> wl_done : Log the center reading and pole for home...
+wl_deep2 --> e_wl_deep : Rest in the lagoon's stillness before yo...
+wl_shallow --> wl_shallowb : Log the edge reading and pole for home.
+wl_shallowb --> wl_done : Turn the boat and pole for the open sea.
+wl_shallowb --> e_wl_shallow : Hold at the rim a while and take the lag...
+wl_done --> n_cove : Bear away for Cradle Cove to re-store.
+wl_done --> fin_muster : Answer the muster if the Stilling has co...
+wl_done --> e_wl_linger : Drift the weed's edge and chart its lane...
+ci_shore --> ci_help : Sound the approach with the lead for the...
+ci_shore --> ci_watch : Ship the oars and look up at the dead li...
+ci_shore --> ci_near : Run for the near landing past the wreck-...
+ci_help --> ci_helpb : Read the graveyard on the tallow.
+ci_helpb --> ci_conv : Take the boat ashore under the dead ligh...
+ci_watch --> ci_watchb : Watch the squall walk in off the water.
+ci_watchb --> ci_conv : Take the boat ashore under the dead ligh...
+ci_watchb --> e_ci_awe : Watch the silent storm build a while lon...
+ci_near --> ci_risk : Run the wreck-fangs to beat the squall a...
+ci_near --> ci_safe : Pull the long clean gut that Mabe sounde...
+ci_near --> ci_reckless : Crowd the point to save the last few min...
+ci_reckless --> e_ci_risk : Shave the last rib and trust the boat.
+ci_reckless --> ci_safe : Sheer off into the clean water while the...
+ci_risk --> ci_conv : Get her into the lee and take stock.
+ci_safe --> ci_conv : Bring her into the lee under the tower.
+ci_conv --> ci_read : Go to the foot of the keeper's stair.
+ci_conv --> ci_extra1 : Let the crew make the boat fast first.
+ci_extra1 --> ci_read : Go to the foot of the keeper's stair.
+ci_read --> ci_gate : Decide whether to climb into the storm.
+ci_read --> ci_extra2 : Ask Mabe about the keeper first.
+ci_extra2 --> ci_gate : Decide whether to climb into the storm.
+ci_gate --> ci_deep1 : Climb the stair and light the dead lamp.
+ci_gate --> ci_shallow : Shelter and read the keeper's left-behin...
+ci_deep1 --> ci_deep2 : Stand with the flame in the stilled stor...
+ci_deep2 --> ci_done : Bank the flame, log it, and go down.
+ci_deep2 --> e_ci_deep : Keep the light through the whole silent ...
+ci_shallow --> ci_shallowb : Close the log and wait the weather out.
+ci_shallowb --> ci_done : Take the boat off as the sky clears.
+ci_shallowb --> e_ci_shallow : Sit with the keeper's log until the weat...
+ci_done --> n_cove : Bear away for Cradle Cove to re-store.
+ci_done --> fin_muster : Answer the muster if the Stilling has co...
+ci_done --> e_ci_linger : Lie off the isle and chart the whole wre...
+gf_shore --> gf_help : Pole the flats with Fen and find the dee...
+gf_shore --> gf_watch : Rest the pole and stand in the stillness...
+gf_shore --> gf_near : Strike out for the bright perfect center...
+gf_help --> gf_helpb : Let Mabe teach the false bottom.
+gf_helpb --> gf_conv : Bring the boat toward the flats' center.
+gf_watch --> gf_watchb : Watch the fish jump and fall.
+gf_watchb --> gf_conv : Bring the boat toward the flats' center.
+gf_watchb --> e_gf_awe : Stay in the mute stillness a while longe...
+gf_near --> gf_risk : Drag her bodily across the bared bar to ...
+gf_near --> gf_safe : Float the long gutter channel to the cen...
+gf_near --> gf_reckless : Pole hard and heedless for the bright ce...
+gf_reckless --> e_gf_risk : Drive her on and trust she will float fr...
+gf_reckless --> gf_safe : Back off the bar before the water leaves...
+gf_risk --> gf_conv : Come to the flats' still center.
+gf_safe --> gf_conv : Come to the flats' still center.
+gf_conv --> gf_read : Bring the boat to the very center.
+gf_conv --> gf_extra1 : Let the boat glide to rest first.
+gf_extra1 --> gf_read : Bring the boat to the very center.
+gf_read --> gf_gate : Decide how to read the mute mirror.
+gf_read --> gf_extra2 : Ask Mabe about the flats first.
+gf_extra2 --> gf_gate : Decide how to read the mute mirror.
+gf_gate --> gf_deep1 : Pole out to the true center of the mirro...
+gf_gate --> gf_shallow : Read the flats from the gutter's edge.
+gf_deep1 --> gf_deep2 : Take the reading where the sea is only l...
+gf_deep2 --> gf_done : Log the center reading and pole clear.
+gf_deep2 --> e_gf_deep : Rest in the doubled light before turning...
+gf_shallow --> gf_shallowb : Log the gutter reading and pole clear.
+gf_shallowb --> gf_done : Find the deep water off the far edge.
+gf_shallowb --> e_gf_shallow : Hold at the gutter and take the mirror i...
+gf_done --> n_cove : Bear away for Cradle Cove to re-store.
+gf_done --> fin_muster : Answer the muster if the Stilling has co...
+gf_done --> e_gf_linger : Drift the flats and chart every gutter b...
+ds_shore --> ds_help : Sound down the stair tread by tread with...
+ds_shore --> ds_watch : Lie over the gunwale and look down the s...
+ds_shore --> ds_near : Work the boat over the leaning bell-towe...
+ds_help --> ds_helpb : Chart the town room by room from above.
+ds_helpb --> ds_conv : Bring the boat over the tower.
+ds_watch --> ds_watchb : Watch the fish pour from the tower windo...
+ds_watchb --> ds_conv : Bring the boat over the tower.
+ds_watchb --> e_ds_awe : Stay and watch the drowned town a while.
+ds_near --> ds_risk : Pay out the entire marked line down the ...
+ds_near --> ds_safe : Sound only the shallow drowned roofs.
+ds_near --> ds_reckless : Force the lead down into the black tower...
+ds_reckless --> e_ds_risk : Lean out the last inch to free the line ...
+ds_reckless --> ds_safe : Let the line go and let Fen pull you bac...
+ds_risk --> ds_conv : Bring the reading up over the tower.
+ds_safe --> ds_conv : Hold the boat over the town's heart.
+ds_conv --> ds_read : Ready the lead over the town's heart.
+ds_conv --> ds_extra1 : Let Fen make you fast first.
+ds_extra1 --> ds_read : Ready the lead over the town's heart.
+ds_read --> ds_gate : Decide how to read the drowned town.
+ds_read --> ds_extra2 : Ask Mabe about the town first.
+ds_read --> e_ds_bonus : Match the drowned bell's shape to a note...
+ds_extra2 --> ds_gate : Decide how to read the drowned town.
+ds_gate --> ds_deep1 : Pay the full lead down to the floor of t...
+ds_gate --> ds_shallow : Read the drowned roofs and leave the dee...
+ds_deep1 --> ds_deep2 : Read the true floor of the Hollow.
+ds_deep2 --> ds_done : Log the deep sounding and bare your head...
+ds_deep2 --> e_ds_deep : Hold the line on the floor a long grievi...
+ds_shallow --> ds_shallowb : Log the roof reading and bare your head.
+ds_shallowb --> ds_done : Take the boat off over the sinking stair...
+ds_shallowb --> e_ds_shallow : Hold over the town a while before you go...
+ds_done --> n_cove : Bear away for Cradle Cove to re-store.
+ds_done --> fin_muster : Answer the muster if the Stilling has co...
+ds_done --> e_ds_linger : Hold over Kirktown and chart every drown...
+bc_shore --> bc_help : Sound the cave-mouth and time the sea's ...
+bc_shore --> bc_watch : Hold off the mouth and feel the cave inh...
+bc_shore --> bc_near : Work the boat in toward the throat itsel...
+bc_help --> bc_helpb : Let Mabe teach the breath's rhythm.
+bc_helpb --> bc_conv : Take the boat into the throat.
+bc_watch --> bc_watchb : Ride the cave's exhale.
+bc_watchb --> bc_conv : Take the boat into the throat.
+bc_watchb --> e_bc_awe : Rock on the cave's slow breath a while l...
+bc_near --> bc_risk : Fight in against a bad outbreath to hold...
+bc_near --> bc_safe : Wait and ride the cave's own inbreath in...
+bc_near --> bc_reckless : Row hard against the breath on your own ...
+bc_reckless --> e_bc_risk : Row on against the breath and spend what...
+bc_reckless --> bc_safe : Ship the oars and wait for the breath to...
+bc_risk --> bc_conv : Come to the turning of the breath.
+bc_safe --> bc_conv : Come to the turning of the breath.
+bc_conv --> bc_read : Go on toward the turning of the breath.
+bc_conv --> bc_extra1 : Let Fen light the stern lamp first.
+bc_extra1 --> bc_read : Go on toward the turning of the breath.
+bc_read --> bc_gate : Decide how far to read into the dark.
+bc_read --> bc_extra2 : Ask Mabe about the cave first.
+bc_read --> e_bc_bonus : Complete the near-answer with a note you...
+bc_extra2 --> bc_gate : Decide how far to read into the dark.
+bc_gate --> bc_deep1 : Row the full dark throat to the turning-...
+bc_gate --> bc_shallow : Read the throat from nearer the lit mout...
+bc_deep1 --> bc_deep2 : Take the reading where the sea almost an...
+bc_deep2 --> bc_done : Log the deep reading and ride the breath...
+bc_deep2 --> e_bc_deep : Hold in the dark for the answer that alm...
+bc_shallow --> bc_shallowb : Log the mouth reading and ride the breat...
+bc_shallowb --> bc_done : Ride the outbreath back to the daylight.
+bc_shallowb --> e_bc_shallow : Rest at the mouth and feel the cave brea...
+bc_done --> n_cove : Bear away for Cradle Cove to re-store.
+bc_done --> fin_muster : Answer the muster if the Stilling has co...
+bc_done --> e_bc_linger : Lie in the cave-mouth and chart the whol...
+fin_muster --> fin_brief : Sit at the table and hear the plan.
+fin_brief --> fin_line : Ready the deep sounding-gear.
+fin_brief --> fin_shore : Careen Kestrel and ready the anchorage.
+fin_brief --> fin_crew : Row the shore and rouse the sounders.
+fin_line --> fin_line_a : Tallow and re-mark the deep lead.
+fin_line --> fin_line_b : Splice the spare line for the full depth...
+fin_line_a --> fin_line_a2 : Set the last markers and test the lead.
+fin_line_a2 --> fin_line_j : Lay the gear ready in the stern.
+fin_line_b --> fin_line_b2 : Serve the splice and test it on the beam...
+fin_line_b2 --> fin_line_j : Lay the gear ready in the stern.
+fin_line_j --> fin_line_r : Report the gear ready to Mabe.
+fin_line_r --> fin_tide : The dark of the moon comes on the ebb.
+fin_shore --> fin_shore_a : Careen Kestrel and pay her seams.
+fin_shore --> fin_shore_b : Set the leading lights for the gathering...
+fin_shore_a --> fin_shore_a2 : Pay the garboard and let her cool.
+fin_shore_a2 --> fin_shore_j : Float her and moor her ready.
+fin_shore_b --> fin_shore_b2 : Line the lights up true and light them.
+fin_shore_b2 --> fin_shore_j : Walk the cove once more, then report.
+fin_shore_j --> fin_shore_r : Report the anchorage ready to Mabe.
+fin_shore_r --> fin_tide : The dark of the moon comes on the ebb.
+fin_crew --> fin_crew_a : Row cove to cove carrying Mabe's word.
+fin_crew --> fin_crew_b : Row out to old Sounder Halloran and ask ...
+fin_crew_a --> fin_crew_a2 : Carry the word down the whole near shore...
+fin_crew_a2 --> fin_crew_j : Bring the tally back to Mabe.
+fin_crew_b --> fin_crew_b2 : Wait at his door while he decides.
+fin_crew_b2 --> fin_crew_j : Bring the tally back to Mabe.
+fin_crew_j --> fin_crew_r : Report the gathering to Mabe.
+fin_crew_r --> fin_tide : The dark of the moon comes on the ebb.
+fin_tide --> fin_dark : Take the lead of the little fleet.
+fin_dark --> fin_row : Pull on for the Hollow's center.
+fin_row --> fin_gather : Draw near the exact center.
+fin_gather --> fin_still : Ready the deep lead at the center.
+fin_still --> fin_read : Lower the lead yourself, and let the Hol...
+fin_still --> fin_partial : Take the honest partial reading Mabe gui...
+fin_still --> fin_keepn : Give the lead to Mabe and keep the log a...
+fin_read --> fin_rise : Hold the answer, and log it.
+fin_rise --> fin_answered : Look to Mabe as the sea begins, faintly,...
+fin_answered --> e_fin_charter : Take the name Mabe offers: the next char...
+fin_answered --> e_fin_answer : Say the sea's own sounding will take a l...
+fin_answered --> e_fin_pass : Let the craft be simply passed, whole, i...
+fin_partial --> fin_settle : Log the reading and hold the silence.
+fin_settle --> fin_afterp : Let the morning end at the center.
+fin_afterp --> e_fin_true : Call it a true figure, honestly got, and...
+fin_afterp --> e_fin_home : Turn for home on the waking swell with t...
+fin_keepn --> fin_hush : Enter the master's last reading in the l...
+fin_hush --> fin_afterk : Let the morning end at the center.
+fin_afterk --> e_fin_watch : Say the log kept true is the charter's o...
+fin_afterk --> e_fin_log : Enter the last sounding, close the book,...
+e_ashore --> [*]
+e_bs_awe --> [*]
+e_bs_risk --> [*]
+e_bs_deep --> [*]
+e_bs_shallow --> [*]
+e_bs_linger --> [*]
+e_wl_awe --> [*]
+e_wl_risk --> [*]
+e_wl_deep --> [*]
+e_wl_shallow --> [*]
+e_wl_linger --> [*]
+e_ci_awe --> [*]
+e_ci_risk --> [*]
+e_ci_deep --> [*]
+e_ci_shallow --> [*]
+e_ci_linger --> [*]
+e_gf_awe --> [*]
+e_gf_risk --> [*]
+e_gf_deep --> [*]
+e_gf_shallow --> [*]
+e_gf_linger --> [*]
+e_ds_awe --> [*]
+e_ds_risk --> [*]
+e_ds_deep --> [*]
+e_ds_shallow --> [*]
+e_ds_linger --> [*]
+e_ds_bonus --> [*]
+e_bc_awe --> [*]
+e_bc_risk --> [*]
+e_bc_deep --> [*]
+e_bc_shallow --> [*]
+e_bc_linger --> [*]
+e_bc_bonus --> [*]
+e_fin_charter --> [*]
+e_fin_answer --> [*]
+e_fin_pass --> [*]
+e_fin_true --> [*]
+e_fin_home --> [*]
+e_fin_watch --> [*]
+e_fin_log --> [*]
+
+legend right
+  The Hollow Sea
+  Band 13-16 · Tier 2 · ~24 min
+  Topology: open_map
+  197 nodes · 40 endings (21+ / 12n / 7-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

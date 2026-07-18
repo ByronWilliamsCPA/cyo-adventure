@@ -1,0 +1,284 @@
+@startuml the-robot-fair-sabotage
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 110w
+state n_survey #BBDEFB
+n_survey : setup · 112w
+state n_clues #FFF9C4
+n_clues : choice · 105w
+state k_bins1 #D1C4E9
+k_bins1 : rising · 95w
+state k_bins2 #D1C4E9
+k_bins2 : rising · 92w
+state k_door1 #D1C4E9
+k_door1 : rising · 95w
+state k_door2 #D1C4E9
+k_door2 : rising · 92w
+state k_kids1 #D1C4E9
+k_kids1 : rising · 95w
+state k_kids2 #D1C4E9
+k_kids2 : rising · 92w
+state n_assembly #D1C4E9
+n_assembly : rising · 115w
+state n_suspects #FFF9C4
+n_suspects : choice · 108w
+state m1 #FFF9C4
+m1 : choice · 102w
+state m_conf #FFF9C4
+m_conf : choice · 100w
+state m_conf2 #D1C4E9
+m_conf2 : rising · 92w
+state m_watch #D1C4E9
+m_watch : rising · 95w
+state m_watch2 #D1C4E9
+m_watch2 : rising · 92w
+state m_mate #D1C4E9
+m_mate : rising · 95w
+state m_mate2 #D1C4E9
+m_mate2 : rising · 90w
+state m_truth #D1C4E9
+m_truth : rising · 112w
+state m_light #D1C4E9
+m_light : rising · 96w
+state e_blame #FFCDD2
+e_blame : setback (negative)
+e_blame : "The Wrong Name"
+state p1 #FFF9C4
+p1 : choice · 102w
+state p_gentle #D1C4E9
+p_gentle : rising · 95w
+state p_scare #FFF9C4
+p_scare : choice · 96w
+state p_hide #D1C4E9
+p_hide : rising · 92w
+state p_jade #D1C4E9
+p_jade : rising · 95w
+state p_story #D1C4E9
+p_story : rising · 115w
+state p_drawing #D1C4E9
+p_drawing : rising · 100w
+state e_deadend #FFCDD2
+e_deadend : setback (negative)
+e_deadend : "A Trail Gone Cold"
+state o1 #FFF9C4
+o1 : choice · 102w
+state o_knock #D1C4E9
+o_knock : rising · 94w
+state o_peek #FFF9C4
+o_peek : choice · 100w
+state o_own #D1C4E9
+o_own : rising · 92w
+state o_wax #D1C4E9
+o_wax : rising · 95w
+state o_wax2 #D1C4E9
+o_wax2 : rising · 92w
+state o_secret #D1C4E9
+o_secret : rising · 118w
+state o_key #D1C4E9
+o_key : rising · 96w
+state e_rumor #FFCDD2
+e_rumor : setback (negative)
+e_rumor : "The Whisper That Grew"
+state n_lockup #D1C4E9
+n_lockup : rising · 116w
+state n_herbie #D1C4E9
+n_herbie : rising · 120w
+state n_plan #FFF9C4
+n_plan : choice · 106w
+state x1 #D1C4E9
+x1 : rising · 98w
+state x_how #FFF9C4
+x_how : choice · 102w
+state x_test #D1C4E9
+x_test : rising · 100w
+state x_ok #D1C4E9
+x_ok : rising · 96w
+state x_rush #FFF9C4
+x_rush : choice · 104w
+state x_whistle #D1C4E9
+x_whistle : rising · 95w
+state e_late #E0E0E0
+e_late : setback (neutral)
+e_late : "After the Applause"
+state y1 #D1C4E9
+y1 : rising · 100w
+state y2 #FFF9C4
+y2 : choice · 108w
+state y_delay #D1C4E9
+y_delay : rising · 96w
+state y_story #D1C4E9
+y_story : rising · 96w
+state y_quiet #FFF9C4
+y_quiet : choice · 100w
+state y_agree #D1C4E9
+y_agree : rising · 94w
+state e_secret #E0E0E0
+e_secret : setback (neutral)
+e_secret : "The Secret That Beeped"
+state z1 #FFF9C4
+z1 : choice · 100w
+state z_pool #D1C4E9
+z_pool : rising · 100w
+state z_ready #D1C4E9
+z_ready : rising · 92w
+state z_guard #FFF9C4
+z_guard : choice · 100w
+state z_late #D1C4E9
+z_late : rising · 94w
+state e_selfish #FFCDD2
+e_selfish : completion (negative)
+e_selfish : "A Heavy Ribbon"
+state n_demo #D1C4E9
+n_demo : rising · 118w
+state n_demo2 #FFF9C4
+n_demo2 : choice · 106w
+state f_solo #FFE0B2
+f_solo : climax · 110w
+state f_herbie #FFE0B2
+f_herbie : climax · 110w
+state f_story #FFE0B2
+f_story : climax · 108w
+state e_grit #C8E6C9
+e_grit : success (positive)
+e_grit : "Steady Hands"
+state e_showfix #C8E6C9
+e_showfix : discovery (positive)
+e_showfix : "The Live Repair"
+state e_stumble #E0E0E0
+e_stumble : setback (neutral)
+e_stumble : "The Long Way Around"
+state e_duo #C8E6C9
+e_duo : success (positive)
+e_duo : "The Oldest Robot at the Fair"
+state e_retro #E0E0E0
+e_retro : completion (neutral)
+e_retro : "A Dance Thirty Years Late"
+state e_chaos #E0E0E0
+e_chaos : setback (neutral)
+e_chaos : "The Tidy Finale"
+state e_honor #C8E6C9
+e_honor : completion (positive)
+e_honor : "Herbie's Second Debut"
+state e_team #C8E6C9
+e_team : success (positive)
+e_team : "Three Teams, One Pit Crew"
+n_start --> n_survey : Look closer at the wrecked workbench.
+n_survey --> n_clues : Take stock before the morning assembly.
+n_clues --> k_bins1 : Study the strange sorted bins.
+n_clues --> k_door1 : Examine the workshop door and lock.
+n_clues --> k_kids1 : Ask the kids gathering in the hall.
+k_bins1 --> k_bins2 : Check the labels against everyone's hand...
+k_bins2 --> n_assembly : Head to assembly with the label in her p...
+k_door1 --> k_door2 : Follow the scuffed loops across the floo...
+k_door2 --> n_assembly : Head to assembly, still thinking about t...
+k_kids1 --> k_kids2 : Press for exactly who was seen and when.
+k_kids2 --> n_assembly : Head to assembly with three names in min...
+n_assembly --> n_suspects : Watch the crowd while the principal talk...
+n_suspects --> m1 : Catch Marcus before class.
+n_suspects --> p1 : Find Poppy and ask what she saw.
+n_suspects --> o1 : Follow Mr. Okafor.
+m1 --> m_conf : Ask him straight out where he was last n...
+m1 --> m_watch : Say nothing yet and watch what he does.
+m1 --> m_mate : Talk to his teammate Sana instead.
+m_conf --> m_conf2 : Take a breath and start over, kindly.
+m_conf --> e_blame : Wave the principal over and accuse him.
+m_conf2 --> m_truth : Hear him out.
+m_watch --> m_watch2 : Keep following at a distance.
+m_watch2 --> m_truth : Catch up with Marcus and ask about the n...
+m_mate --> m_mate2 : Find Marcus and tell him what Sana said.
+m_mate2 --> m_truth : Ask about the one more thing.
+m_truth --> m_light : Ask exactly what the light did.
+m_light --> n_lockup : Get to the workshop and check the back o...
+p1 --> p_gentle : Sit down beside her and talk about drawi...
+p1 --> p_scare : Say you know she was at the window last ...
+p1 --> p_jade : Bring her big sister Jade over.
+p_gentle --> p_story : Promise she is not in trouble and listen...
+p_scare --> p_hide : Follow quietly and say sorry.
+p_scare --> e_deadend : Let her go and question the older kids.
+p_hide --> p_story : Wait until Poppy is ready to talk.
+p_jade --> p_story : Listen to Poppy's story.
+p_story --> p_drawing : Ask where the drawing ended up.
+p_drawing --> n_lockup : Head to the workshop at lunch with your ...
+o1 --> o_knock : Knock on the boiler room door and ask hi...
+o1 --> o_peek : Peek through the gap in the door.
+o1 --> o_wax : Study the waxy scuff tracks first.
+o_knock --> o_secret : Step inside the boiler room.
+o_peek --> o_own : Own up and ask about the robot photo.
+o_peek --> e_rumor : Slip away and tell the team what you saw...
+o_own --> o_secret : Go in and hear him out.
+o_wax --> o_wax2 : Compare the tread with the custodian's c...
+o_wax2 --> o_secret : Ask him who Herbie is.
+o_secret --> o_key : Hurry to the workshop with Mr. Okafor.
+o_key --> n_lockup : Go in and check the storage closet.
+n_lockup --> n_herbie : Follow the wheel tracks behind the paint...
+n_herbie --> n_plan : Decide what to do before the afternoon d...
+n_plan --> x1 : Fix Herbie's garbled chore card yourselv...
+n_plan --> y1 : Find Mr. Okafor and tell the principal e...
+n_plan --> z1 : Repair the robots first; Herbie can wait...
+x1 --> x_how : Work out the safest way to fix the card.
+x_how --> x_test : Punch a fresh card, carefully.
+x_how --> x_rush : Flip the LEARN switch and reteach him by...
+x_test --> x_ok : Put Herbie to work and rebuild Gizmo.
+x_ok --> n_demo : Roll everything to the gym.
+x_rush --> e_late : Yank the battery latch, safe and sudden.
+x_rush --> x_whistle : Whistle the end of chores signal from th...
+x_whistle --> n_demo : Sprint the last repairs and get to the g...
+y1 --> y2 : Go with him to Principal Vasquez.
+y2 --> y_delay : Ask to push the demos back an hour for f...
+y2 --> y_story : Ask that Herbie's story be told at the f...
+y2 --> y_quiet : Suggest keeping it quiet to spare Mr. Ok...
+y_delay --> n_demo : Take the extra hour, then head to the gy...
+y_story --> n_demo : Get Gizmo ready while the stage is set.
+y_quiet --> e_secret : Hold your ground: nobody else needs to k...
+y_quiet --> y_agree : Agree the truth should be told, kindly.
+y_agree --> n_demo : Head for the gym.
+z1 --> z_pool : Call the other teams over to share the b...
+z1 --> z_guard : Fix Gizmo first; the fair will not wait.
+z_pool --> z_ready : Finish the last bolts together.
+z_ready --> n_demo : Roll to the gym together.
+z_guard --> z_late : Run for Mr. Okafor and hand Herbie over.
+z_guard --> e_selfish : Head for the gym; you fixed what is your...
+z_late --> n_demo : Take your place at the start line.
+n_demo --> n_demo2 : Step up when Team Circuit Sparks is call...
+n_demo2 --> f_solo : Run the routine exactly as rehearsed.
+n_demo2 --> f_herbie : Invite Herbie into the demonstration.
+n_demo2 --> f_story : Tell the whole true story of the tidy sa...
+f_solo --> e_grit : Trust the practice and let Gizmo ride it...
+f_solo --> e_showfix : Stop and do a live repair, narrating eve...
+f_solo --> e_stumble : Steer around the ramp and take the safe ...
+f_herbie --> e_duo : Run the routine as a duet with Herbie.
+f_herbie --> e_retro : Let Herbie perform his old routine first...
+f_herbie --> e_chaos : Hand Herbie the confetti cannon for the ...
+f_story --> e_honor : Dedicate the demo to Mr. Okafor and Herb...
+f_story --> e_team : Call all three sabotaged teams up to dem...
+e_blame --> [*]
+e_deadend --> [*]
+e_rumor --> [*]
+e_late --> [*]
+e_secret --> [*]
+e_selfish --> [*]
+e_grit --> [*]
+e_showfix --> [*]
+e_stumble --> [*]
+e_duo --> [*]
+e_retro --> [*]
+e_chaos --> [*]
+e_honor --> [*]
+e_team --> [*]
+
+legend right
+  The Robot Fair Sabotage
+  Band 8-11 · Tier 1 · ~8 min
+  Topology: branch_and_bottleneck
+  74 nodes · 14 endings (5+ / 5n / 4-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

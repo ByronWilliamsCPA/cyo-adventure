@@ -1,0 +1,152 @@
+@startuml the-snow-day-expedition
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 85w
+state n_gear #BBDEFB
+n_gear : setup · 72w
+state n_basecamp #FFF9C4
+n_basecamp : choice · 82w
+state n_east #FFF9C4
+n_east : choice · 78w
+state n_west #FFF9C4
+n_west : choice · 78w
+state m_1 #D1C4E9
+m_1 : rising · 68w
+state m_2 #FFF9C4
+m_2 : choice · 80w
+state m_r1 #D1C4E9
+m_r1 : rising · 60w
+state e_m_retreat #FFCDD2
+e_m_retreat : setback (negative)
+e_m_retreat : "The Cocoa Retreat"
+state m_3 #D1C4E9
+m_3 : rising · 66w
+state m_4 #FFF9C4
+m_4 : choice · 78w
+state m_f1 #D1C4E9
+m_f1 : rising · 62w
+state e_m_flag #C8E6C9
+e_m_flag : success (positive)
+e_m_flag : "Flag on the Summit"
+state m_s1 #D1C4E9
+m_s1 : rising · 62w
+state e_m_sled #C8E6C9
+e_m_sled : success (positive)
+e_m_sled : "The Great Summit Sled Run"
+state t_1 #D1C4E9
+t_1 : rising · 68w
+state t_2 #FFF9C4
+t_2 : choice · 80w
+state t_3 #D1C4E9
+t_3 : rising · 72w
+state e_t_cat #C8E6C9
+e_t_cat : discovery (positive)
+e_t_cat : "The Snow Leopard's Den"
+state t_4 #D1C4E9
+t_4 : rising · 72w
+state e_t_rabbits #C8E6C9
+e_t_rabbits : discovery (positive)
+e_t_rabbits : "The Hidden Rabbit Base"
+state i_1 #D1C4E9
+i_1 : rising · 66w
+state i_2 #D1C4E9
+i_2 : rising · 68w
+state i_3 #FFF9C4
+i_3 : choice · 80w
+state i_f1 #D1C4E9
+i_f1 : rising · 62w
+state e_i_base #C8E6C9
+e_i_base : completion (positive)
+e_i_base : "Base Camp Igloo"
+state i_f2 #D1C4E9
+i_f2 : rising · 62w
+state e_i_tunnel #C8E6C9
+e_i_tunnel : success (positive)
+e_i_tunnel : "The Grand Snow Tunnel"
+state p_1 #D1C4E9
+p_1 : rising · 68w
+state p_2 #FFF9C4
+p_2 : choice · 80w
+state p_r1 #D1C4E9
+p_r1 : rising · 60w
+state e_p_retreat #FFCDD2
+e_p_retreat : setback (negative)
+e_p_retreat : "Regroup and Refuel"
+state p_3 #D1C4E9
+p_3 : rising · 66w
+state p_4 #FFF9C4
+p_4 : choice · 78w
+state p_f1 #D1C4E9
+p_f1 : rising · 62w
+state e_p_hospital #C8E6C9
+e_p_hospital : completion (positive)
+e_p_hospital : "Penguin Hospital Heroes"
+state p_f2 #D1C4E9
+p_f2 : rising · 62w
+state e_p_parade #C8E6C9
+e_p_parade : success (positive)
+e_p_parade : "The Great Rescue Parade"
+n_start --> n_gear : Suit up for the expedition.
+n_gear --> n_basecamp : March out to Base Camp One.
+n_basecamp --> n_east : Trek toward Mount Snowpile.
+n_basecamp --> n_west : Trek across the Frozen Flats.
+n_east --> m_1 : Climb Mount Snowpile.
+n_east --> t_1 : Follow the mysterious paw prints.
+n_west --> i_1 : Build the Great Igloo fort.
+n_west --> p_1 : Rescue the bird bath penguins.
+m_1 --> m_2 : Start up the lower slopes.
+m_2 --> m_3 : Push on through the snow-swirl.
+m_2 --> m_r1 : Head back down for cocoa.
+m_r1 --> e_m_retreat : Tromp inside to warm up.
+m_3 --> m_4 : Scramble up the last stretch.
+m_4 --> m_f1 : Plant the flag on the peak.
+m_4 --> m_s1 : Ride the sled down the far slope.
+m_f1 --> e_m_flag : Name the mountain out loud.
+m_s1 --> e_m_sled : Push off down the slope.
+t_1 --> t_2 : Track the prints along the fence.
+t_2 --> t_3 : Crawl through the tunnel under the holly...
+t_2 --> t_4 : Circle around behind the shed.
+t_3 --> e_t_cat : Peek around the woodpile.
+t_4 --> e_t_rabbits : Hold still and watch the gap.
+i_1 --> i_2 : Cut the first row of snow bricks.
+i_2 --> i_3 : Fit the last bricks of the dome.
+i_3 --> i_f1 : Carve a window and move in supplies.
+i_3 --> i_f2 : Dig the grand entrance tunnel.
+i_f1 --> e_i_base : Settle into the new base.
+i_f2 --> e_i_tunnel : Crawl through the finished tunnel.
+p_1 --> p_2 : Look closely at the icy situation.
+p_2 --> p_3 : Tap the ice loose, slow and steady.
+p_2 --> p_r1 : Pour warm cocoa over the ice.
+p_r1 --> e_p_retreat : Call a retreat to mission control.
+p_3 --> p_4 : Load the penguins for transport.
+p_4 --> p_f1 : Set up the penguin hospital.
+p_4 --> p_f2 : Lead the rescue parade.
+p_f1 --> e_p_hospital : Tuck the patients into their beds.
+p_f2 --> e_p_parade : March the full victory lap.
+e_m_retreat --> [*]
+e_m_flag --> [*]
+e_m_sled --> [*]
+e_t_cat --> [*]
+e_t_rabbits --> [*]
+e_i_base --> [*]
+e_i_tunnel --> [*]
+e_p_retreat --> [*]
+e_p_hospital --> [*]
+e_p_parade --> [*]
+
+legend right
+  The Snow Day Expedition
+  Band 5-8 · Tier 1 · ~5 min
+  Topology: time_cave
+  38 nodes · 10 endings (8+ / 0n / 2-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

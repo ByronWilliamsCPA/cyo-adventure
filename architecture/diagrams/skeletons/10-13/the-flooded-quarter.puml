@@ -1,0 +1,623 @@
+@startuml the-flooded-quarter
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 125w
+state n_skiff #BBDEFB
+n_skiff : setup · 110w
+state n_granary #BBDEFB
+n_granary : setup · 115w
+state n_hub #FFF9C4
+n_hub : choice · 110w
+state n_stores #FFF9C4
+n_stores : choice · 95w
+state e_benched #FFCDD2
+e_benched : setback (negative)
+e_benched : "Benched at the Granary"
+state bk_row #FFF9C4
+bk_row : choice · 105w
+state bk_lane #FFF9C4
+bk_lane : choice · 100w
+state bk_row2 #D1C4E9
+bk_row2 : rising · 90w
+state bk_ring #D1C4E9
+bk_ring : rising · 90w
+state bk_quiet #D1C4E9
+bk_quiet : rising · 85w
+state bk_court #D1C4E9
+bk_court : rising · 90w
+state bk_gate #D1C4E9
+bk_gate : rising · 90w
+state bk_marks #D1C4E9
+bk_marks : rising · 95w
+state bk_hail #FFF9C4
+bk_hail : choice · 95w
+state bk_terms #FFF9C4
+bk_terms : choice · 95w
+state bk_stand #FFF9C4
+bk_stand : choice · 95w
+state bk_relent #D1C4E9
+bk_relent : rising · 90w
+state bk_door #FFF9C4
+bk_door : choice · 100w
+state bk_stacks #FFF9C4
+bk_stacks : choice · 95w
+state bk_feel #FFF9C4
+bk_feel : choice · 95w
+state bk_shelf #D1C4E9
+bk_shelf : rising · 85w
+state bk_slip #D1C4E9
+bk_slip : rising · 90w
+state bk_guide #FFF9C4
+bk_guide : choice · 95w
+state bk_crate #FFF9C4
+bk_crate : choice · 105w
+state bk_wrap #FFF9C4
+bk_wrap : choice · 95w
+state bk_lower #D1C4E9
+bk_lower : rising · 95w
+state bk_fen #D1C4E9
+bk_fen : rising · 95w
+state bk_done #FFF9C4
+bk_done : choice · 110w
+state e_bk_turnback #FFCDD2
+e_bk_turnback : setback (negative)
+e_bk_turnback : "The Street Too Fast"
+state e_bk_lore #C8E6C9
+e_bk_lore : discovery (positive)
+e_bk_lore : "The Book of the River"
+state e_bk_pages #E0E0E0
+e_bk_pages : discovery (neutral)
+e_bk_pages : "The Wet-Paper Vigil"
+state ct_lane #FFF9C4
+ct_lane : choice · 105w
+state ct_sign #D1C4E9
+ct_sign : rising · 90w
+state ct_listen #D1C4E9
+ct_listen : rising · 90w
+state ct_hatch #D1C4E9
+ct_hatch : rising · 95w
+state ct_counter #D1C4E9
+ct_counter : rising · 90w
+state ct_stair #D1C4E9
+ct_stair : rising · 95w
+state ct_ovens #FFF9C4
+ct_ovens : choice · 100w
+state ct_kits #D1C4E9
+ct_kits : rising · 90w
+state ct_warm #D1C4E9
+ct_warm : rising · 85w
+state ct_coax #D1C4E9
+ct_coax : rising · 90w
+state ct_scratch #D1C4E9
+ct_scratch : rising · 85w
+state ct_loft #FFF9C4
+ct_loft : choice · 100w
+state ct_tom #FFF9C4
+ct_tom : choice · 95w
+state ct_plank #D1C4E9
+ct_plank : rising · 95w
+state ct_basket #FFF9C4
+ct_basket : choice · 105w
+state ct_hiders #FFF9C4
+ct_hiders : choice · 95w
+state ct_bowl #D1C4E9
+ct_bowl : rising · 90w
+state ct_ferry #D1C4E9
+ct_ferry : rising · 100w
+state ct_done #FFF9C4
+ct_done : choice · 110w
+state e_ct_wait #FFCDD2
+e_ct_wait : setback (negative)
+e_ct_wait : "A Lane Left for the Barge"
+state e_ct_two #E0E0E0
+e_ct_two : setback (neutral)
+e_ct_two : "The Two Who Stayed"
+state e_ct_ark #C8E6C9
+e_ct_ark : discovery (positive)
+e_ct_ark : "The Ark of Bakery Lane"
+state ph_cross #FFF9C4
+ph_cross : choice · 105w
+state ph_current #FFF9C4
+ph_current : choice · 95w
+state ph_plan #D1C4E9
+ph_plan : rising · 95w
+state ph_ring #D1C4E9
+ph_ring : rising · 90w
+state ph_alley #D1C4E9
+ph_alley : rising · 90w
+state ph_shelf #D1C4E9
+ph_shelf : rising · 90w
+state ph_boy #D1C4E9
+ph_boy : rising · 95w
+state ph_dispensary #FFF9C4
+ph_dispensary : choice · 105w
+state ph_lampin #D1C4E9
+ph_lampin : rising · 90w
+state ph_call #D1C4E9
+ph_call : rising · 95w
+state ph_plank #D1C4E9
+ph_plank : rising · 95w
+state ph_chest #FFF9C4
+ph_chest : choice · 105w
+state ph_slide #D1C4E9
+ph_slide : rising · 90w
+state ph_rope #D1C4E9
+ph_rope : rising · 90w
+state ph_satchel #D1C4E9
+ph_satchel : rising · 90w
+state ph_pack #D1C4E9
+ph_pack : rising · 95w
+state ph_check #D1C4E9
+ph_check : rising · 90w
+state ph_ice #FFF9C4
+ph_ice : choice · 100w
+state ph_stay #D1C4E9
+ph_stay : rising · 90w
+state ph_done #FFF9C4
+ph_done : choice · 110w
+state e_ph_shy #FFCDD2
+e_ph_shy : setback (negative)
+e_ph_shy : "Reported, Not Reached"
+state e_ph_ledger #E0E0E0
+e_ph_ledger : discovery (neutral)
+e_ph_ledger : "The List-Runner"
+state e_ph_cold #C8E6C9
+e_ph_cold : discovery (positive)
+e_ph_cold : "The Cold Chain"
+state os_stair #FFF9C4
+os_stair : choice · 105w
+state os_water #D1C4E9
+os_water : rising · 90w
+state os_call #FFF9C4
+os_call : choice · 95w
+state os_lane #D1C4E9
+os_lane : rising · 90w
+state os_garden #D1C4E9
+os_garden : rising · 90w
+state os_neighbors #D1C4E9
+os_neighbors : rising · 95w
+state os_roof #FFF9C4
+os_roof : choice · 110w
+state os_eaves #FFF9C4
+os_eaves : choice · 100w
+state os_ladder #FFF9C4
+os_ladder : choice · 100w
+state os_things #FFF9C4
+os_things : choice · 95w
+state os_talk #FFF9C4
+os_talk : choice · 95w
+state os_brazier #FFF9C4
+os_brazier : choice · 95w
+state os_signal #FFF9C4
+os_signal : choice · 100w
+state os_brigade #D1C4E9
+os_brigade : rising · 95w
+state os_bell #D1C4E9
+os_bell : rising · 95w
+state os_wait #D1C4E9
+os_wait : rising · 90w
+state os_aboard #FFF9C4
+os_aboard : choice · 100w
+state os_umbrella #D1C4E9
+os_umbrella : rising · 85w
+state os_done #FFF9C4
+os_done : choice · 110w
+state e_os_list #E0E0E0
+e_os_list : discovery (neutral)
+e_os_list : "Osei's List"
+state e_os_hold #FFCDD2
+e_os_hold : setback (negative)
+e_os_hold : "The Long Cold Wait"
+state e_os_stories #C8E6C9
+e_os_stories : discovery (positive)
+e_os_stories : "Four Floods Deep"
+state lp_arch #FFF9C4
+lp_arch : choice · 100w
+state lp_echo #D1C4E9
+lp_echo : rising · 90w
+state lp_listen #FFF9C4
+lp_listen : choice · 90w
+state lp_lane #FFF9C4
+lp_lane : choice · 105w
+state lp_hail #FFF9C4
+lp_hail : choice · 95w
+state lp_tick #D1C4E9
+lp_tick : rising · 95w
+state lp_under #D1C4E9
+lp_under : rising · 95w
+state lp_survey #FFF9C4
+lp_survey : choice · 95w
+state lp_gutter #D1C4E9
+lp_gutter : rising · 90w
+state lp_plan #FFF9C4
+lp_plan : choice · 110w
+state lp_knots #D1C4E9
+lp_knots : rising · 95w
+state lp_rope #FFF9C4
+lp_rope : choice · 100w
+state lp_lamps #D1C4E9
+lp_lamps : rising · 90w
+state lp_walk #D1C4E9
+lp_walk : rising · 100w
+state lp_stub #D1C4E9
+lp_stub : rising · 95w
+state lp_lamp #FFF9C4
+lp_lamp : choice · 95w
+state lp_done #FFF9C4
+lp_done : choice · 110w
+state e_lp_fetch #E0E0E0
+e_lp_fetch : setback (neutral)
+e_lp_fetch : "The Fetcher"
+state e_lp_brigade #FFCDD2
+e_lp_brigade : setback (negative)
+e_lp_brigade : "Held for the Brigade"
+state e_lp_lampsong #C8E6C9
+e_lp_lampsong : discovery (positive)
+e_lp_lampsong : "Keepers of the Lamps"
+state fin_muster #FFF9C4
+fin_muster : choice · 110w
+state fin_signal #FFF9C4
+fin_signal : choice · 100w
+state fin_wall #FFF9C4
+fin_wall : choice · 100w
+state fin_wall_a #FFF9C4
+fin_wall_a : choice · 95w
+state fin_wall_b #FFF9C4
+fin_wall_b : choice · 95w
+state fin_wall_j #D1C4E9
+fin_wall_j : rising · 90w
+state fin_wall_r #D1C4E9
+fin_wall_r : rising · 85w
+state fin_pump #FFF9C4
+fin_pump : choice · 100w
+state fin_pump_a #FFF9C4
+fin_pump_a : choice · 95w
+state fin_pump_b #FFF9C4
+fin_pump_b : choice · 95w
+state fin_pump_j #D1C4E9
+fin_pump_j : rising · 90w
+state fin_pump_r #D1C4E9
+fin_pump_r : rising · 85w
+state fin_count #FFF9C4
+fin_count : choice · 100w
+state fin_count_a #FFF9C4
+fin_count_a : choice · 95w
+state fin_count_b #FFF9C4
+fin_count_b : choice · 95w
+state fin_count_j #D1C4E9
+fin_count_j : rising · 90w
+state fin_count_r #D1C4E9
+fin_count_r : rising · 85w
+state fin_crest #D1C4E9
+fin_crest : rising · 105w
+state fin_dawn #D1C4E9
+fin_dawn : rising · 95w
+state fin_sun #D1C4E9
+fin_sun : rising · 85w
+state fin_tally #FFF9C4
+fin_tally : choice · 110w
+state fin_full #FFF9C4
+fin_full : choice · 100w
+state fin_good #FFF9C4
+fin_good : choice · 100w
+state fin_home #FFF9C4
+fin_home : choice · 100w
+state e_wall_dawn #C8E6C9
+e_wall_dawn : discovery (positive)
+e_wall_dawn : "Dawn on the Seawall"
+state e_wall_lull #E0E0E0
+e_wall_lull : discovery (neutral)
+e_wall_lull : "The Slack-Water Turn"
+state e_pump_out #FFCDD2
+e_pump_out : setback (negative)
+e_pump_out : "Pumped Out"
+state e_pump_song #C8E6C9
+e_pump_song : discovery (positive)
+e_pump_song : "The Relay Song"
+state e_count_names #C8E6C9
+e_count_names : discovery (positive)
+e_count_names : "Every Name Answered"
+state e_count_quiet #E0E0E0
+e_count_quiet : discovery (neutral)
+e_count_quiet : "The Quiet Arithmetic"
+state e_lantern #C8E6C9
+e_lantern : completion (positive)
+e_lantern : "Lantern of the Quarter"
+state e_keeper #C8E6C9
+e_keeper : success (positive)
+e_keeper : "The Ferry-Keeper's Kid"
+state e_steady #C8E6C9
+e_steady : success (positive)
+e_steady : "Steady Hands"
+state e_first_flood #E0E0E0
+e_first_flood : completion (neutral)
+e_first_flood : "First Flood"
+state e_home_water #E0E0E0
+e_home_water : completion (neutral)
+e_home_water : "Home by Water"
+state e_ferry_light #C8E6C9
+e_ferry_light : discovery (positive)
+e_ferry_light : "The Ferry Lamp"
+n_start --> n_skiff : Pull on boots and oilskin and go down to...
+n_skiff --> n_granary : Pole down the drowned lane toward the Ol...
+n_granary --> n_hub : Step out to the granary dock and read th...
+n_hub --> bk_row : Take the Binder's Row errand: Master Fen...
+n_hub --> ct_lane : Take Bakery Lane: the bakery cat colony ...
+n_hub --> ph_cross : Take Chandler's Cross: Salma the pharmac...
+n_hub --> os_stair : Take Weaver's Stair: Grandmother Osei is...
+n_hub --> lp_arch : Take Mill Lane while the low arch still ...
+n_hub --> n_stores : Step into the stores to refit and catch ...
+n_hub --> fin_muster : Answer the dawn muster forming at the se...
+n_stores --> n_hub : Top the stern lamp from the oil drum and...
+n_stores --> n_hub : Just soup, two minutes of warm, and back...
+n_stores --> e_benched : Admit to Brice that your arms are done f...
+bk_row --> bk_lane : Pole straight up the front lane.
+bk_row --> bk_court : Swing around behind the shops to the cou...
+bk_row --> bk_hail : Stand off and hail the lit window.
+bk_lane --> bk_ring : Hold the slack water and tie up at Fen's...
+bk_lane --> bk_row2 : Drift the shopfront line further along t...
+bk_lane --> e_bk_turnback : Judge the pull too strong for a loaded r...
+bk_row2 --> bk_court : Cut through to the courtyard.
+bk_row2 --> bk_hail : Come back and hail the lit window.
+bk_ring --> bk_quiet : Ease in through the swollen door onto th...
+bk_ring --> bk_hail : Call up to the window before going in.
+bk_quiet --> bk_door : Head for the dark stacks and the loft st...
+bk_quiet --> bk_hail : Go back out and hail him properly first.
+bk_court --> bk_gate : Work the wedged loading door loose with ...
+bk_court --> bk_hail : Call up to the lit window instead.
+bk_gate --> bk_door : Go in along the landing to the stacks.
+bk_gate --> bk_marks : Stop to read the carved flood marks firs...
+bk_marks --> bk_door : Carry that understanding into the shop.
+bk_hail --> bk_door : Catch the key and let yourself in.
+bk_hail --> bk_terms : Argue it straight: books float, people d...
+bk_terms --> bk_door : Agree: one crate, then he leaves with yo...
+bk_terms --> bk_stand : Refuse to load anything until he is in t...
+bk_stand --> bk_relent : Hold the lamp and wait him out.
+bk_stand --> bk_door : Give in and go up for the crate.
+bk_relent --> bk_done : Push off gently and let the row slide be...
+bk_door --> bk_stacks : Burn lamp oil and light the stacks prope...
+bk_door --> bk_feel : Feel along the shelf line by touch, savi...
+bk_door --> bk_guide : Call Fen down to talk you through his sh...
+bk_stacks --> bk_crate : Go on up for the folio crate.
+bk_stacks --> e_bk_lore : Stop over the river atlas and let it tea...
+bk_feel --> bk_slip : Freeze, then ease past the leaning shelf...
+bk_feel --> bk_shelf : Wedge the shelf steady with a scrap bloc...
+bk_shelf --> bk_crate : On to the loft stair.
+bk_slip --> bk_crate : Steady everything and climb to the loft.
+bk_guide --> bk_crate : Follow his voice up to the folio crate.
+bk_guide --> e_bk_lore : Ask him about the open river atlas on th...
+bk_crate --> bk_lower : Load the crate; Fen waits dry in the lof...
+bk_crate --> bk_fen : Take Fen; the crate stays high on the st...
+bk_crate --> bk_wrap : Wrap everything in double oilcloth first...
+bk_wrap --> bk_lower : Lower the crate; Fen stays for the barge...
+bk_wrap --> bk_fen : Leave the crate high; hand Fen down inst...
+bk_lower --> bk_done : Cast off careful with the crate lashed l...
+bk_fen --> bk_done : Push off and give the shop a moment of s...
+bk_done --> n_hub : Pole back to the granary dock and hand o...
+bk_done --> lp_arch : Cut across to Mill Lane while the low ar...
+bk_done --> fin_muster : Make for the seawall muster as the sky g...
+bk_done --> e_bk_pages : Stay a while first, pressing wet pages f...
+ct_lane --> ct_sign : Read the chalk sign on the bakery door o...
+ct_lane --> ct_stair : Pole to the outside stair up to the loft...
+ct_lane --> ct_listen : Sit still in the lane and listen before ...
+ct_lane --> e_ct_wait : Judge the lane's racing gutters wrong fo...
+ct_sign --> ct_hatch : In through the delivery hatch.
+ct_sign --> ct_listen : Hold up and listen for where they all ar...
+ct_listen --> ct_hatch : The young cry first: in through the hatc...
+ct_listen --> ct_stair : The crowd first: up the outside stair to...
+ct_hatch --> ct_counter : Follow the counter road toward the ovens...
+ct_hatch --> ct_ovens : Cross to the great ovens directly.
+ct_counter --> ct_ovens : To the ovens and the young cry.
+ct_counter --> ct_loft : Up the inner stair to the loft crowd.
+ct_stair --> ct_loft : In among the loft colony.
+ct_stair --> ct_counter : Down the inner stair first, toward the c...
+ct_ovens --> ct_kits : Burn lamp oil and light the oven mouth t...
+ct_ovens --> ct_coax : Coax her out with the sardine tin from y...
+ct_ovens --> ct_scratch : Reach in on faith and hurry.
+ct_kits --> ct_warm : Settle them in the basket, queen last, a...
+ct_warm --> ct_basket : Now the loft crowd; carry the basket up.
+ct_coax --> ct_basket : Carry the young family up toward the lof...
+ct_scratch --> ct_coax : Kneel back and try it her way, with the ...
+ct_loft --> ct_tom : Pay respects to the old tom first and wi...
+ct_loft --> ct_plank : Open the loft shutter and rig the gangpl...
+ct_tom --> ct_basket : Basket the willing ones while the treaty...
+ct_tom --> ct_plank : Open the shutter and let him lead them d...
+ct_plank --> ct_basket : Steady the plank and count them aboard.
+ct_basket --> ct_ferry : Push off with the ark and trust the barg...
+ct_basket --> ct_hiders : One more patient try for the two under t...
+ct_hiders --> ct_bowl : Wait them out with the last of the sardi...
+ct_hiders --> e_ct_two : Leave the tin open for them and mark the...
+ct_bowl --> ct_ferry : Thirteen aboard; push off for the granar...
+ct_ferry --> ct_done : Bring the ark alongside the granary dock...
+ct_done --> n_hub : Back to the tally board for the next str...
+ct_done --> fin_muster : Head for the seawall muster forming in t...
+ct_done --> e_ct_ark : Stay in the loft a moment among the sett...
+ph_cross --> ph_current : Read the braided cross-current before co...
+ph_cross --> ph_plan : Have Salma talk the route and the shop's...
+ph_cross --> ph_alley : Skip the cross entirely and slip up the ...
+ph_current --> ph_ring : Take the slack lane to the front steps a...
+ph_current --> e_ph_shy : Call it past saving by skiff and go repo...
+ph_plan --> ph_ring : In by the front steps and the ring bolt.
+ph_plan --> ph_alley : In by the alley window she unlatches.
+ph_ring --> ph_shelf : Along the counter road toward the back d...
+ph_ring --> ph_boy : Pause under the ceiling boards where Sal...
+ph_alley --> ph_shelf : Work along the shelf tops to the back di...
+ph_alley --> ph_boy : Stop beneath the stairwell where Salma w...
+ph_shelf --> ph_dispensary : Into the dark dispensary.
+ph_shelf --> ph_boy : A word with Salma first, through the sta...
+ph_boy --> ph_dispensary : Into the dark dispensary with the facts ...
+ph_dispensary --> ph_lampin : Burn lamp oil and light the room properl...
+ph_dispensary --> ph_call : Have Salma call the shelf numbers blind ...
+ph_dispensary --> ph_plank : Lay her stock-taking plank and cross by ...
+ph_lampin --> ph_chest : To the chest, hands sure in the light.
+ph_call --> ph_chest : Hands on the chest; now the moving of it...
+ph_plank --> ph_chest : Steady on the shelf end; now the chest.
+ph_chest --> ph_slide : Slide it along the counter road and out ...
+ph_chest --> ph_rope : Rope it down from the stair window like ...
+ph_chest --> ph_satchel : Take only the urgent-doses satchel Salma...
+ph_slide --> ph_pack : Now the cold packs, before anything else...
+ph_rope --> ph_pack : Now the cold packs, quick.
+ph_satchel --> ph_pack : Cold packs around the vials, then go.
+ph_pack --> ph_check : Lash it and double-check before pushing ...
+ph_check --> ph_ice : Out to the window for a last word with S...
+ph_ice --> ph_stay : Urge her once to ride along anyway.
+ph_ice --> ph_done : Push off careful for the granary, cold a...
+ph_ice --> e_ph_ledger : Offer to stay instead and run her list o...
+ph_stay --> ph_done : Pole for the granary, cold and level.
+ph_done --> n_hub : Straight to the granary dock and the she...
+ph_done --> os_stair : Two streets on to Weaver's Stair first, ...
+ph_done --> fin_muster : Make for the seawall muster in the greyi...
+ph_done --> e_ph_cold : Pole straight in and stay to help the nu...
+os_stair --> os_water : Pick the line up the stepped pools of th...
+os_stair --> os_garden : Go around by the garden side and the was...
+os_stair --> os_call : Call up to her from open water first.
+os_water --> os_lane : Come in under her eaves on the lane side...
+os_water --> os_call : Hail her while working closer.
+os_call --> os_lane : Work in close under the lane-side eaves ...
+os_call --> os_garden : Come at the garden side where the low ea...
+os_lane --> os_roof : Alongside the roof edge to talk terms.
+os_lane --> os_neighbors : Ask her first which neighbors' windows h...
+os_garden --> os_roof : Along the wash-house eave to the roof ed...
+os_garden --> os_neighbors : Ask after the neighbors while working cl...
+os_neighbors --> os_roof : Alongside the roof edge to settle her ow...
+os_roof --> os_eaves : Bring the gunwale level with the eaves a...
+os_roof --> os_ladder : Rig the rope ladder to the ring bolt, pr...
+os_roof --> os_talk : Ship the pole and simply talk with her f...
+os_eaves --> os_aboard : Take her aboard across the rail, one ste...
+os_eaves --> os_things : Steady her while she hands down the hatb...
+os_ladder --> os_aboard : Steady the ladder and hand her down into...
+os_ladder --> os_signal : The skiff is carrying all it can; make h...
+os_things --> os_aboard : Hand her down after them, slow and sure.
+os_things --> os_signal : No room left aboard tonight; wrap her wa...
+os_talk --> os_brazier : Accept the tea and let her take the long...
+os_talk --> os_ladder : Insist, gently: the river is not done ri...
+os_brazier --> os_ladder : Rig the ladder now, while the agreeing l...
+os_brazier --> e_os_list : Accept instead her list of neighbors to ...
+os_signal --> os_brigade : Burn the lamp bright in the three-and-on...
+os_signal --> os_bell : Strike the old roof bell and let it carr...
+os_signal --> e_os_hold : Your hands are past managing more tonigh...
+os_brigade --> os_done : Hand over to the brigade and take your l...
+os_bell --> os_wait : Keep station and keep her talking till t...
+os_wait --> os_done : Leave her in brigade hands and pole away...
+os_aboard --> os_umbrella : Rig her great green umbrella as a canopy...
+os_aboard --> os_done : Pole for the granary under her direction...
+os_umbrella --> os_done : Proceed, stately, for the granary.
+os_done --> n_hub : Back to the granary dock.
+os_done --> ph_cross : Swing past Chandler's Cross on the way, ...
+os_done --> fin_muster : Make for the seawall muster in the first...
+os_done --> e_os_stories : Let her flood-lore fill the whole slow p...
+lp_arch --> lp_echo : Duck low and take the arch slow and leve...
+lp_arch --> lp_listen : Back-water at the mouth and listen throu...
+lp_echo --> lp_lane : Out into Mill Lane proper.
+lp_listen --> lp_lane : Through the arch to them.
+lp_listen --> e_lp_fetch : They are safe enough perched; mark the s...
+lp_lane --> lp_hail : Hail them and get names and steadiness g...
+lp_lane --> lp_under : Burn lamp oil and pole the dark line und...
+lp_lane --> lp_survey : Stand off in open water and read the who...
+lp_hail --> lp_tick : Let Tick's chatter map the gantry while ...
+lp_hail --> lp_plan : Enough talk; weigh the ways down.
+lp_tick --> lp_plan : Weigh the ways down with the map in hand...
+lp_under --> lp_plan : Surface the facts and weigh the ways dow...
+lp_survey --> lp_plan : Weigh the ways down.
+lp_survey --> lp_gutter : Watch their guttering lamp a moment; min...
+lp_gutter --> lp_plan : Decide now.
+lp_plan --> lp_knots : Rope work: make the skiff their landing ...
+lp_plan --> lp_walk : Walk them the catwalk to the far stair s...
+lp_plan --> lp_lamp : Their lamp first: talk Tick through reli...
+lp_plan --> e_lp_brigade : The sag is getting worse as you watch; t...
+lp_knots --> lp_rope : Bram lowers Tick first, then follows; ha...
+lp_rope --> lp_done : Pole for home with both of them aboard.
+lp_rope --> lp_lamps : Let them name the lane's lamps to you as...
+lp_lamps --> lp_done : Home with the lamplighters and their lit...
+lp_walk --> lp_stub : See them onto the dry stair stub at the ...
+lp_stub --> lp_done : Turn for the arch and call it done.
+lp_lamp --> lp_knots : Now the rope: skiff under the ring bolt,...
+lp_lamp --> lp_walk : Now the catwalk: walk them to the far st...
+lp_done --> n_hub : Back through to the granary dock.
+lp_done --> fin_muster : Make for the seawall muster.
+lp_done --> e_lp_lampsong : Let Bram and Tick teach you the lampligh...
+fin_muster --> fin_signal : Tie into the raft and report to Brice at...
+fin_signal --> fin_wall : Join the watch line walking the seawall ...
+fin_signal --> fin_pump : Take a turn in the pump relay in the gra...
+fin_signal --> fin_count : Sit to the tally desk and help bring the...
+fin_wall --> fin_wall_a : Take the empty lamp station mid-wall.
+fin_wall --> fin_wall_b : Run the inch-mark messages between stati...
+fin_wall_a --> fin_wall_j : Pass your watch to the relief and rejoin...
+fin_wall_a --> e_wall_dawn : Stand the station straight through to fu...
+fin_wall_b --> fin_wall_j : Hand the route to a fresh runner and rej...
+fin_wall_b --> e_wall_lull : Keep the route through the slack turn of...
+fin_wall_j --> fin_wall_r : Report the wall steady to the muster hea...
+fin_wall_r --> fin_crest : Stand with the muster as the word comes ...
+fin_pump --> fin_pump_a : Take the pump bar in the relay.
+fin_pump --> fin_pump_b : Set the pace on the bucket-chain.
+fin_pump_a --> fin_pump_j : Swap out on the turn and rejoin the must...
+fin_pump_a --> e_pump_out : Refuse the swap once too often and spend...
+fin_pump_b --> fin_pump_j : Hand the pace to the next singer and rej...
+fin_pump_b --> e_pump_song : Keep the song going till the level visib...
+fin_pump_j --> fin_pump_r : Report the pumps holding to the muster h...
+fin_pump_r --> fin_crest : Stand with the muster as the word comes ...
+fin_count --> fin_count_a : Call the roll of streets aloud while Bri...
+fin_count --> fin_count_b : Cross-check the shelter ledger against t...
+fin_count_a --> fin_count_j : Finish the roll and carry the board to t...
+fin_count_a --> e_count_names : Stay on the roll until every last street...
+fin_count_b --> fin_count_j : Rule the last line and carry the ledger ...
+fin_count_b --> e_count_quiet : Keep the quiet arithmetic going till bot...
+fin_count_j --> fin_count_r : Take the squared count to the muster hea...
+fin_count_r --> fin_crest : Stand with the muster as the word comes ...
+fin_crest --> fin_dawn : Watch the marks start their first slow r...
+fin_dawn --> fin_sun : Turn from the wall toward Brice and the ...
+fin_sun --> fin_tally : Answer when Brice calls the runners to t...
+fin_tally --> fin_full : Stand for the full night's reckoning, st...
+fin_tally --> fin_good : Stand with the muster for whatever the n...
+fin_tally --> fin_home : Slip out early and pole home through the...
+fin_full --> e_lantern : Take the lantern she holds out, the ward...
+fin_full --> e_keeper : Just nod, and go stand where the ferry-k...
+fin_good --> e_steady : Take the dock-tea and the place by the b...
+fin_good --> e_first_flood : Ask her, honestly, how to be readier the...
+fin_home --> e_home_water : Take the long way past the quarter's lan...
+fin_home --> e_ferry_light : Make straight for the ferry-house landin...
+e_benched --> [*]
+e_bk_turnback --> [*]
+e_bk_lore --> [*]
+e_bk_pages --> [*]
+e_ct_wait --> [*]
+e_ct_two --> [*]
+e_ct_ark --> [*]
+e_ph_shy --> [*]
+e_ph_ledger --> [*]
+e_ph_cold --> [*]
+e_os_list --> [*]
+e_os_hold --> [*]
+e_os_stories --> [*]
+e_lp_fetch --> [*]
+e_lp_brigade --> [*]
+e_lp_lampsong --> [*]
+e_wall_dawn --> [*]
+e_wall_lull --> [*]
+e_pump_out --> [*]
+e_pump_song --> [*]
+e_count_names --> [*]
+e_count_quiet --> [*]
+e_lantern --> [*]
+e_keeper --> [*]
+e_steady --> [*]
+e_first_flood --> [*]
+e_home_water --> [*]
+e_ferry_light --> [*]
+
+legend right
+  The Flooded Quarter
+  Band 10-13 · Tier 2 · ~10 min
+  Topology: open_map
+  155 nodes · 28 endings (12+ / 9n / 7-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

@@ -1,0 +1,305 @@
+@startuml the-locked-carousel
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 105w
+state n_gate #BBDEFB
+n_gate : setup · 95w
+state n_notice #BBDEFB
+n_notice : setup · 110w
+state n_hub #FFF9C4
+n_hub : choice · 100w
+state tb_booth #FFF9C4
+tb_booth : choice · 95w
+state tb_ledgers #FFF9C4
+tb_ledgers : choice · 95w
+state tb_recent #FFF9C4
+tb_recent : choice · 105w
+state tb_old #FFF9C4
+tb_old : choice · 105w
+state tb_office #FFF9C4
+tb_office : choice · 100w
+state tb_photo #FFF9C4
+tb_photo : choice · 95w
+state e_set_doze #FFCDD2
+e_set_doze : setback (negative)
+e_set_doze : "The Chair That Was Too Comfortable"
+state hm_door #FFF9C4
+hm_door : choice · 100w
+state hm_echo #D1C4E9
+hm_echo : rising · 90w
+state hm_tall #FFF9C4
+hm_tall : choice · 95w
+state hm_bent #FFF9C4
+hm_bent : choice · 90w
+state hm_plank #FFF9C4
+hm_plank : choice · 95w
+state hm_rotunda #FFF9C4
+hm_rotunda : choice · 105w
+state hm_behind #FFF9C4
+hm_behind : choice · 100w
+state hm_flicker #FFF9C4
+hm_flicker : choice · 95w
+state e_set_lost #FFCDD2
+e_set_lost : setback (negative)
+e_set_lost : "Fresh Batteries and a Ball of String"
+state ws_door #FFF9C4
+ws_door : choice · 100w
+state ws_tools #FFF9C4
+ws_tools : choice · 95w
+state ws_horse #FFF9C4
+ws_horse : choice · 100w
+state ws_bench #FFF9C4
+ws_bench : choice · 105w
+state ws_crate #FFF9C4
+ws_crate : choice · 95w
+state bw_steps #FFF9C4
+bw_steps : choice · 100w
+state bw_pilings #FFF9C4
+bw_pilings : choice · 105w
+state bw_catwalk #FFF9C4
+bw_catwalk : choice · 95w
+state bw_footing #FFF9C4
+bw_footing : choice · 105w
+state bw_pierhead #FFF9C4
+bw_pierhead : choice · 95w
+state bw_watch #FFF9C4
+bw_watch : choice · 95w
+state bw_call #FFF9C4
+bw_call : choice · 100w
+state e_set_tide #FFCDD2
+e_set_tide : setback (negative)
+e_set_tide : "Soaked to the Knees"
+state cv_door #FFF9C4
+cv_door : choice · 95w
+state cv_window #FFF9C4
+cv_window : choice · 100w
+state cv_knock #D1C4E9
+cv_knock : rising · 90w
+state cv_table #FFF9C4
+cv_table : choice · 115w
+state cv_shims #FFF9C4
+cv_shims : choice · 95w
+state cv_ondine #FFF9C4
+cv_ondine : choice · 100w
+state e_disc_stories #E0E0E0
+e_disc_stories : discovery (neutral)
+e_disc_stories : "A Night of Stories"
+state ol_stairs #FFF9C4
+ol_stairs : choice · 90w
+state ol_listen #D1C4E9
+ol_listen : rising · 90w
+state ol_loft #FFF9C4
+ol_loft : choice · 105w
+state ol_key #FFF9C4
+ol_key : choice · 100w
+state ol_after #FFF9C4
+ol_after : choice · 95w
+state ol_rolls #FFF9C4
+ol_rolls : choice · 105w
+state ol_crest #FFF9C4
+ol_crest : choice · 95w
+state e_set_bolt #FFCDD2
+e_set_bolt : setback (negative)
+e_set_bolt : "The Loudest Note in Town"
+state e_disc_waltz #E0E0E0
+e_disc_waltz : discovery (neutral)
+e_disc_waltz : "Ondine's Waltz"
+state fin_approach #FFF9C4
+fin_approach : choice · 120w
+state fin_notice #FFF9C4
+fin_notice : choice · 100w
+state fin_climb #FFF9C4
+fin_climb : choice · 105w
+state fin_pry #FFF9C4
+fin_pry : choice · 100w
+state fin_press #D1C4E9
+fin_press : rising · 105w
+state fin_drawings #FFF9C4
+fin_drawings : choice · 120w
+state e_set_home #FFCDD2
+e_set_home : setback (negative)
+e_set_home : "Prying When You Should Press"
+state r_caretaker #FFF9C4
+r_caretaker : choice · 105w
+state r_meeting #D1C4E9
+r_meeting : rising · 100w
+state r_inspector #D1C4E9
+r_inspector : rising · 100w
+state r_family #FFF9C4
+r_family : choice · 105w
+state r_fund #D1C4E9
+r_fund : rising · 95w
+state r_crew #D1C4E9
+r_crew : rising · 95w
+state r_townhall #FFF9C4
+r_townhall : choice · 105w
+state r_council #D1C4E9
+r_council : rising · 100w
+state r_paper #D1C4E9
+r_paper : rising · 100w
+state e_festival #C8E6C9
+e_festival : success (positive)
+e_festival : "The Carousel Turns Again"
+state e_permit #C8E6C9
+e_permit : success (positive)
+e_permit : "Mended by Many Hands"
+state e_fund #C8E6C9
+e_fund : completion (positive)
+e_fund : "Pennies for Ondine"
+state e_crew #C8E6C9
+e_crew : completion (positive)
+e_crew : "Measure Twice, Love Always"
+state e_council #C8E6C9
+e_council : success (positive)
+e_council : "From Unsafe to Protected"
+state e_paper #C8E6C9
+e_paper : completion (positive)
+e_paper : "Front Page for the Sea Mare"
+n_start --> n_gate : Pull on your coat, pocket Gran's key rin...
+n_gate --> n_notice : Head down the midway to the carousel.
+n_notice --> n_hub : Step back to the midway crossroads and c...
+n_hub --> tb_booth : Try the shuttered ticket booth.
+n_hub --> hm_door : Slip into the hall of mirrors.
+n_hub --> ws_door : Unlock Gran's carousel workshop.
+n_hub --> bw_steps : Take the steps down under the boardwalk.
+n_hub --> cv_door : Follow the lamplight to the caretaker's ...
+n_hub --> ol_stairs : Climb toward the organ loft.
+n_hub --> fin_approach : Go straight to the chained carousel.
+tb_booth --> tb_ledgers : Slide behind the counter to the ledger s...
+tb_booth --> tb_office : Ease open the little back office.
+tb_ledgers --> tb_recent : Open the newest ledger at the paper book...
+tb_ledgers --> tb_old : Take down the 1968 ledger.
+tb_recent --> n_hub : Take what you've learned back to the cro...
+tb_recent --> fin_approach : Go look at the carousel itself with new ...
+tb_old --> n_hub : Carry the clue back to the crossroads.
+tb_old --> fin_approach : If the measures stay with the herd, go t...
+tb_office --> tb_photo : Hold your torch close to the photograph.
+tb_office --> e_set_doze : Sink into the big chair and sort through...
+tb_photo --> n_hub : Head back to the crossroads to search on...
+tb_photo --> fin_approach : Go straight to the lead horse and her ca...
+hm_door --> hm_tall : Take the left passage of tall mirrors.
+hm_door --> hm_bent : Take the right passage of bent mirrors.
+hm_door --> hm_echo : Call a brave hello into the dark.
+hm_echo --> hm_rotunda : Follow the glint deeper in.
+hm_tall --> hm_rotunda : Follow the bend to the mirrored rotunda.
+hm_tall --> n_hub : Slip back out to the midway crossroads.
+hm_bent --> hm_rotunda : Steady yourself and keep on toward the r...
+hm_bent --> hm_plank : Kneel and lift the loose plank.
+hm_plank --> hm_rotunda : Go on to the mirrored rotunda.
+hm_plank --> n_hub : Head back out to the crossroads.
+hm_rotunda --> hm_behind : Swing the crooked mirror aside.
+hm_rotunda --> hm_flicker : Track the flicker moving up high.
+hm_rotunda --> e_set_lost : Hurry along the painted arrows the way y...
+hm_behind --> fin_approach : Go ask the sea mare her secret yourself.
+hm_behind --> n_hub : Return to the crossroads first.
+hm_flicker --> fin_approach : Climb down and go to that saddle.
+hm_flicker --> n_hub : Climb down and go back to the crossroads...
+ws_door --> ws_tools : Open the long tool chest.
+ws_door --> ws_horse : Lift the dust sheet from the horse-sized...
+ws_door --> ws_bench : Search the paper-strewn drafting bench.
+ws_tools --> fin_approach : Carry the little rose chisel to the caro...
+ws_tools --> n_hub : Close the chest and head back to the cro...
+ws_horse --> ws_bench : Look over the drafting bench.
+ws_horse --> n_hub : Cover the colt gently and go back out.
+ws_bench --> fin_approach : O is for Ondine. Go find the lead horse.
+ws_bench --> ws_crate : Dig through the crate of offcuts.
+ws_bench --> n_hub : Go back to the crossroads to think.
+ws_crate --> fin_approach : Go find the finished hiding place on the...
+ws_crate --> n_hub : Head back to the crossroads.
+bw_steps --> bw_pilings : Pick your way between the pilings.
+bw_steps --> bw_catwalk : Climb up to the dry catwalk.
+bw_pilings --> bw_footing : Wade on to the carousel's center footing...
+bw_pilings --> bw_catwalk : Climb the rusty ladder up to the catwalk...
+bw_pilings --> e_set_tide : Explore out toward the dark arches.
+bw_catwalk --> bw_footing : Shine your torch on the big center beam.
+bw_catwalk --> bw_pierhead : Follow the catwalk toward the pier head.
+bw_footing --> fin_approach : Climb back up and look at the carousel w...
+bw_footing --> n_hub : Head back up to the crossroads.
+bw_pierhead --> bw_watch : Keep still and watch the figure.
+bw_pierhead --> bw_call : Call out across the water.
+bw_watch --> fin_approach : Go to the carousel he cares for so much.
+bw_watch --> n_hub : Head up to the crossroads.
+bw_call --> cv_door : Follow the bobbing lantern toward the ca...
+bw_call --> n_hub : Thank him and head for the crossroads.
+cv_door --> cv_knock : Knock on the caravan door.
+cv_door --> cv_window : Peep through the curtain gap first.
+cv_window --> cv_knock : Knock, gently.
+cv_window --> n_hub : Slip away to the crossroads and think.
+cv_knock --> cv_table : Sit down at his little table.
+cv_table --> cv_ondine : Ask which horse was Gran's favorite.
+cv_table --> cv_shims : Ask about the shims under the pier.
+cv_table --> e_disc_stories : Ask for every story about Gran, all of t...
+cv_shims --> cv_ondine : So where would Edith hide her measures? ...
+cv_shims --> n_hub : Say goodnight and go back to the crossro...
+cv_ondine --> fin_approach : Go to Ondine together, lantern and all.
+cv_ondine --> n_hub : Step out to the crossroads to steady you...
+ol_stairs --> ol_loft : Climb toward the sound.
+ol_stairs --> ol_listen : Stop on the bottom step and just listen.
+ol_listen --> ol_loft : Climb up, braver now.
+ol_listen --> n_hub : Leave the organ to its humming and go ba...
+ol_loft --> ol_key : Press one yellowed key.
+ol_loft --> ol_rolls : Open the music roll cabinet.
+ol_loft --> ol_crest : Lift the crest panel with the carved ros...
+ol_key --> ol_after : Freeze and count slowly to fifty.
+ol_key --> e_set_bolt : Bolt down the stairs and away.
+ol_after --> fin_approach : Take the hint and go to Ondine.
+ol_after --> n_hub : Pocket the program and return to the cro...
+ol_rolls --> fin_approach : Take the tracing straight to the lead ho...
+ol_rolls --> e_disc_waltz : Carry the waltz roll home to learn its s...
+ol_rolls --> n_hub : Put the roll back carefully and go down ...
+ol_crest --> fin_approach : Go down to that winking seam.
+ol_crest --> n_hub : Go down and back to the crossroads.
+fin_approach --> fin_climb : Duck under the chain and climb up to Ond...
+fin_approach --> fin_notice : Circle the platform and read the notice ...
+fin_notice --> fin_climb : Climb up to Ondine.
+fin_notice --> n_hub : Step back to the crossroads first.
+fin_climb --> fin_press : Press the smooth center of the carved ro...
+fin_climb --> fin_pry : Try to pry the seam open with the key ri...
+fin_pry --> fin_press : Press it with your thumb, the way Gran m...
+fin_pry --> e_set_home : Whisper sorry to Ondine and save it for ...
+fin_press --> fin_drawings : Unroll the drawings right there by torch...
+fin_drawings --> r_caretaker : Knock at the caretaker's caravan with th...
+fin_drawings --> r_family : Run home and wake your family.
+fin_drawings --> r_townhall : Wait for morning and carry it to the tow...
+r_caretaker --> r_meeting : Call the town to a meeting at the fair i...
+r_caretaker --> r_inspector : Go with him to the town surveyor at open...
+r_meeting --> e_festival : Watch the pledge board fill to the botto...
+r_inspector --> e_permit : Shake on it and start that same week.
+r_family --> r_fund : Start a Pennies for Ondine drive at scho...
+r_family --> r_crew : Sign the whole family up as repair crew.
+r_fund --> e_fund : Paint the thermometer to the top.
+r_crew --> e_crew : Carve the finishing touch.
+r_townhall --> r_council : Present the drawings at the public counc...
+r_townhall --> r_paper : Show the story to the local paper first.
+r_council --> e_council : Watch the vote go up.
+r_paper --> e_paper : Pin the front page to the ticket booth.
+e_set_doze --> [*]
+e_set_lost --> [*]
+e_set_tide --> [*]
+e_disc_stories --> [*]
+e_set_bolt --> [*]
+e_disc_waltz --> [*]
+e_set_home --> [*]
+e_festival --> [*]
+e_permit --> [*]
+e_fund --> [*]
+e_crew --> [*]
+e_council --> [*]
+e_paper --> [*]
+
+legend right
+  The Locked Carousel
+  Band 8-11 · Tier 1 · ~8 min
+  Topology: open_map
+  71 nodes · 13 endings (6+ / 2n / 5-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

@@ -1,0 +1,419 @@
+@startuml the-glass-comet
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 120w
+state n_plate_box #BBDEFB
+n_plate_box : setup · 115w
+state n_prep_hub #FFF9C4
+n_prep_hub : choice · 110w
+state a1_dome_floor #D1C4E9
+a1_dome_floor : rising · 100w
+state a2_runners #FFF9C4
+a2_runners : choice · 100w
+state a3_crank #FFF9C4
+a3_crank : choice · 95w
+state a4_log #FFF9C4
+a4_log : choice · 100w
+state a5_oiled #D1C4E9
+a5_oiled : rising · 95w
+state a6_left #FFF9C4
+a6_left : choice · 95w
+state a7_down #D1C4E9
+a7_down : rising · 90w
+state b1_darkroom #FFF9C4
+b1_darkroom : choice · 110w
+state b2_spent #D1C4E9
+b2_spent : rising · 100w
+state b7_two_left #D1C4E9
+b7_two_left : rising · 90w
+state b3_dud #FFF9C4
+b3_dud : choice · 100w
+state b4_watch #FFF9C4
+b4_watch : choice · 95w
+state b6_story #D1C4E9
+b6_story : rising · 95w
+state b5_out #D1C4E9
+b5_out : rising · 90w
+state c1_charts #FFF9C4
+c1_charts : choice · 105w
+state c2_own_math #FFF9C4
+c2_own_math : choice · 100w
+state c3_notes #FFF9C4
+c3_notes : choice · 100w
+state c4_check #D1C4E9
+c4_check : rising · 95w
+state c5_linger #D1C4E9
+c5_linger : rising · 95w
+state c6_set #D1C4E9
+c6_set : rising · 90w
+state c7_first_sight #D1C4E9
+c7_first_sight : rising · 95w
+state n_nightfall #FFF9C4
+n_nightfall : choice · 120w
+state n_open_glide #D1C4E9
+n_open_glide : rising · 95w
+state n_first_light #D1C4E9
+n_first_light : rising · 90w
+state n_open_slow #D1C4E9
+n_open_slow : rising · 95w
+state n_slow_clouds #D1C4E9
+n_slow_clouds : rising · 90w
+state n_dome_jam #FFF9C4
+n_dome_jam : choice · 115w
+state n_jam_bang #D1C4E9
+n_jam_bang : rising · 95w
+state n_jam_warden #D1C4E9
+n_jam_warden : rising · 100w
+state n_jam_forced #D1C4E9
+n_jam_forced : rising · 100w
+state n_band_watch #FFF9C4
+n_band_watch : choice · 120w
+state w1_vigil #FFF9C4
+w1_vigil : choice · 100w
+state w2_story #D1C4E9
+w2_story : rising · 100w
+state w3_seams #D1C4E9
+w3_seams : rising · 95w
+state w5_clouds #D1C4E9
+w5_clouds : rising · 95w
+state w4_doze #D1C4E9
+w4_doze : rising · 100w
+state d1_staging #FFF9C4
+d1_staging : choice · 100w
+state d2_swap #D1C4E9
+d2_swap : rising · 90w
+state d4_bath #D1C4E9
+d4_bath : rising · 90w
+state d3_stairs #D1C4E9
+d3_stairs : rising · 90w
+state g0_gauze #FFF9C4
+g0_gauze : choice · 105w
+state g1_gamble #FFF9C4
+g1_gamble : choice · 100w
+state g2_ghost_dev #FFF9C4
+g2_ghost_dev : choice · 110w
+state g4_race_up #D1C4E9
+g4_race_up : rising · 90w
+state n_gap_opens #FFF9C4
+n_gap_opens : choice · 125w
+state n_look #D1C4E9
+n_look : rising · 95w
+state n_warden_look #D1C4E9
+n_warden_look : rising · 95w
+state n_load1 #D1C4E9
+n_load1 : rising · 95w
+state n_attempt1 #FFE0B2
+n_attempt1 : climax · 115w
+state n_done1 #FFE0B2
+n_done1 : climax · 115w
+state n_fog1 #FFE0B2
+n_fog1 : climax · 110w
+state n_smear1 #FFE0B2
+n_smear1 : climax · 110w
+state n_reload #FFE0B2
+n_reload : climax · 100w
+state n_attempt2 #FFE0B2
+n_attempt2 : climax · 110w
+state n_done2 #FFE0B2
+n_done2 : climax · 105w
+state n_short2 #FFE0B2
+n_short2 : climax · 110w
+state n_attempt3 #FFE0B2
+n_attempt3 : climax · 105w
+state n_done3 #FFE0B2
+n_done3 : climax · 95w
+state n_stepback #FFF9C4
+n_stepback : choice · 110w
+state n_lesson_dev #FFF9C4
+n_lesson_dev : choice · 110w
+state n_thin_dev #FFF9C4
+n_thin_dev : choice · 105w
+state p1_descent #FFE0B2
+p1_descent : climax · 105w
+state p2_self #FFE0B2
+p2_self : climax · 110w
+state p3_with #FFE0B2
+p3_with : climax · 105w
+state q1_shudder #FFE0B2
+q1_shudder : climax · 105w
+state q3_ask #D1C4E9
+q3_ask : rising · 90w
+state q2_doubled #FFE0B2
+q2_doubled : climax · 110w
+state l1_low #FFE0B2
+l1_low : climax · 105w
+state l3_hands #D1C4E9
+l3_hands : rising · 85w
+state l2_amber #FFE0B2
+l2_amber : climax · 105w
+state z1_pale #FFE0B2
+z1_pale : climax · 105w
+state z2_wash #FFE0B2
+z2_wash : climax · 100w
+state s1_bent #FFF9C4
+s1_bent : choice · 105w
+state s2_confess #D1C4E9
+s2_confess : rising · 100w
+state s3_geometry #D1C4E9
+s3_geometry : rising · 100w
+state s4_lane #FFF9C4
+s4_lane : choice · 115w
+state s_watch #D1C4E9
+s_watch : rising · 95w
+state s6_test #D1C4E9
+s6_test : rising · 100w
+state s5_crossing #FFE0B2
+s5_crossing : climax · 110w
+state s7_head #FFF9C4
+s7_head : choice · 105w
+state s8_tail_wait #FFE0B2
+s8_tail_wait : climax · 100w
+state s_second #FFE0B2
+s_second : climax · 95w
+state n_end_perfect #C8E6C9
+n_end_perfect : completion (positive)
+n_end_perfect : "The Glass Comet"
+state n_end_shared #C8E6C9
+n_end_shared : completion (positive)
+n_end_shared : "Two Counts, One Comet"
+state n_end_pulled #FFCDD2
+n_end_pulled : setback (negative)
+n_end_pulled : "Pulled Too Soon"
+state n_end_shiver #C8E6C9
+n_end_shiver : success (positive)
+n_end_shiver : "The Shivered Star"
+state n_end_tremor #E0E0E0
+n_end_tremor : discovery (neutral)
+n_end_tremor : "The Tremor Study"
+state n_end_late #C8E6C9
+n_end_late : success (positive)
+n_end_late : "The Eleventh-Hour Plate"
+state n_end_provenance #E0E0E0
+n_end_provenance : discovery (neutral)
+n_end_provenance : "Plate and Provenance"
+state n_end_dawn #E0E0E0
+n_end_dawn : success (neutral)
+n_end_dawn : "Half Past Dawn"
+state n_end_archive #FFCDD2
+n_end_archive : setback (negative)
+n_end_archive : "The Honest Archive"
+state n_end_carried #E0E0E0
+n_end_carried : setback (neutral)
+n_end_carried : "The Unopened Letter"
+state n_end_ghost #E0E0E0
+n_end_ghost : discovery (neutral)
+n_end_ghost : "The Ghost of Vitrea"
+state n_end_lesson #E0E0E0
+n_end_lesson : discovery (neutral)
+n_end_lesson : "The Teaching Plate"
+state n_end_redlight #FFCDD2
+n_end_redlight : setback (negative)
+n_end_redlight : "Red Light, Long Night"
+state n_end_thin_saved #E0E0E0
+n_end_thin_saved : discovery (neutral)
+n_end_thin_saved : "Saved in the Bath"
+state n_end_thin_honest #E0E0E0
+n_end_thin_honest : discovery (neutral)
+n_end_thin_honest : "Faint but True"
+state n_end_eyes #FFCDD2
+n_end_eyes : setback (negative)
+n_end_eyes : "Eyes Only"
+state n_end_sketch #E0E0E0
+n_end_sketch : discovery (neutral)
+n_end_sketch : "The Logbook Page"
+state n_end_words #FFCDD2
+n_end_words : setback (negative)
+n_end_words : "Halloran's Lesson"
+state n_end_slit #E0E0E0
+n_end_slit : discovery (neutral)
+n_end_slit : "The Crooked Window"
+state n_end_tail #E0E0E0
+n_end_tail : discovery (neutral)
+n_end_tail : "The Headless Banner"
+n_start --> n_plate_box : Step inside before your nerve changes it...
+n_plate_box --> n_prep_hub : Nod, and ask where to start.
+n_prep_hub --> a1_dome_floor : Climb to the dome and check the shutter ...
+n_prep_hub --> b1_darkroom : Learn the darkroom and the plate holders...
+n_prep_hub --> c1_charts : Sit down with the charts and the ephemer...
+a1_dome_floor --> a2_runners : Run a thumb along the shutter runners.
+a1_dome_floor --> a3_crank : Try the crank, one careful notch.
+a1_dome_floor --> a4_log : Read the maintenance log first.
+a2_runners --> a5_oiled : Spend the hour oiling the runners proper...
+a2_runners --> a6_left : Note it and leave the iron as it is.
+a3_crank --> a5_oiled : Fetch the tin and oil the ring before da...
+a3_crank --> a6_left : One notch worked; that is enough for now...
+a4_log --> a5_oiled : Heed the log; oil the mechanism now.
+a4_log --> a6_left : Pocket the advice for later; dusk is sho...
+a5_oiled --> a7_down : Wipe your hands and head down the ladder...
+a6_left --> a7_down : Shrug the doubt off and climb down.
+a6_left --> a5_oiled : Turn back and oil the runners after all.
+a7_down --> n_nightfall : Tell him it is time to open up.
+b1_darkroom --> b2_spent : Sacrifice a real plate to learn it prope...
+b1_darkroom --> b3_dud : Drill with the cracked dud plate.
+b1_darkroom --> b4_watch : Keep your hands still and just watch.
+b2_spent --> b7_two_left : Open the felt box and count what is left...
+b7_two_left --> b5_out : Close the box gently and head out.
+b3_dud --> b5_out : Run the drill until it feels like a card...
+b3_dud --> b6_story : Ask about the framed 1910 comet plate on...
+b4_watch --> b3_dud : Admit you need one dry run with the dud.
+b4_watch --> b5_out : Trust your eyes and call it learned.
+b6_story --> b5_out : Carry the story out into the dark.
+b5_out --> n_nightfall : Join Halloran; it is time to open the do...
+c1_charts --> c2_own_math : Work the crossing out yourself from the ...
+c1_charts --> c3_notes : Use the club notebook's penciled positio...
+c1_charts --> c4_check : Ask Halloran to work it through with you...
+c2_own_math --> c5_linger : Check it a third time, every column.
+c2_own_math --> c6_set : Trust it; set the circles and wind the d...
+c3_notes --> c6_set : Trust the red ink and set the circles.
+c3_notes --> c5_linger : Redo the whole calculation from scratch.
+c4_check --> c6_set : Set the circles while the tea is still w...
+c5_linger --> c6_set : Enough; set the circles by lamplight.
+c6_set --> c7_first_sight : Take one look through the finder scope.
+c7_first_sight --> n_nightfall : Call Halloran; the dome has to open now.
+n_nightfall --> n_open_glide : Ease the crank; let the oiled shutter gl...
+n_nightfall --> n_dome_jam : Heave the crank hard and fast, dry iron ...
+n_nightfall --> n_open_slow : Work it open slow and steady, notch by p...
+n_open_glide --> n_first_light : Step to the rail and let the sky in.
+n_first_light --> n_band_watch : Find the west; watch for the comet's fie...
+n_open_slow --> n_slow_clouds : Open at last; check the western sky.
+n_slow_clouds --> n_band_watch : Settle in; the cloud band owns the sky f...
+n_dome_jam --> n_jam_bang : Throw your whole weight on the crank.
+n_dome_jam --> n_jam_warden : Swallow your pride; go down and fetch Ha...
+n_dome_jam --> n_jam_forced : Pull the emergency lever, hard.
+n_jam_bang --> n_band_watch : Shake out your hands and check the west.
+n_jam_warden --> n_band_watch : Thank him and turn to the western sky.
+n_jam_forced --> s1_bent : Stare at the bent track and breathe.
+n_band_watch --> w1_vigil : Keep vigil at the rail and wait it out.
+n_band_watch --> d1_staging : Use the wait: stage the darkroom for spe...
+n_band_watch --> g0_gauze : Line up on the comet through the cloud's...
+n_band_watch --> w4_doze : Doze in the warm room until the sky clea...
+w1_vigil --> w2_story : Ask about the plate he never got.
+w1_vigil --> w3_seams : Study the cloud for its seams and tears.
+w1_vigil --> w5_clouds : Have him name the kinds of cloud, one by...
+w2_story --> n_gap_opens : The west is tearing open; stand ready.
+w3_seams --> n_gap_opens : There, a rip of clear black; move.
+w5_clouds --> n_gap_opens : The band's trailing edge; get to the eye...
+w4_doze --> n_gap_opens : Up the stairs, heart pounding.
+d1_staging --> d2_swap : Rehearse the plate swap once more.
+d1_staging --> d4_bath : Check the developer bath and its thermom...
+d2_swap --> d3_stairs : Halloran is calling; the sky is tearing.
+d4_bath --> d3_stairs : The sky is clearing; take the stairs.
+d3_stairs --> n_gap_opens : To the eyepiece; here it comes.
+g0_gauze --> g1_gamble : Take the shot through the gauze; spend t...
+g0_gauze --> w1_vigil : Lower the cable; save the plate for clea...
+g1_gamble --> g2_ghost_dev : Race the plate down and develop it right...
+g1_gamble --> n_gap_opens : Rack the holder for later; stay with the...
+g2_ghost_dev --> n_end_ghost : Stay with the ghost; call Halloran down ...
+g2_ghost_dev --> g4_race_up : Pin the ghost to dry and race back up.
+g4_race_up --> n_gap_opens : Get to the eyepiece before the door open...
+n_gap_opens --> n_look : Take one long look with your own eyes fi...
+n_gap_opens --> n_warden_look : Wave Halloran to the eyepiece to see her...
+n_gap_opens --> n_load1 : Straight to work; load a plate now.
+n_look --> n_attempt1 : Now the camera: load the first plate.
+n_warden_look --> n_attempt1 : Load the first plate with steady hands.
+n_load1 --> n_attempt1 : Open the shutter and begin the exposure.
+n_attempt1 --> n_done1 : Hold the star. Breathe. Count the whole ...
+n_attempt1 --> n_fog1 : Halfway in, peek at the plate to be sure...
+n_attempt1 --> n_smear1 : The star drifts a hair; nudge the tube t...
+n_done1 --> p1_descent : Carry the plate down like a relic; the n...
+n_done1 --> q1_shudder : Carry it down hoping the dome's dry shud...
+n_done1 --> l1_low : Carry it down knowing the comet sat low ...
+n_done1 --> z1_pale : Carry it down through a sky already goin...
+n_fog1 --> n_reload : Load the next plate. Slower. You know th...
+n_fog1 --> n_lesson_dev : Take the fogged plate down and develop t...
+n_fog1 --> n_stepback : Step back from the camera and let the ni...
+n_smear1 --> n_reload : Load another plate and trust the drive t...
+n_smear1 --> n_lesson_dev : Develop the smear anyway; motion tells i...
+n_smear1 --> n_stepback : Step back from the camera; enough harm d...
+n_reload --> n_attempt2 : Back to the eyepiece; begin again.
+n_attempt2 --> n_done2 : Hold steady the full eight minutes; you ...
+n_attempt2 --> n_short2 : Cut the exposure short to beat the sinki...
+n_attempt2 --> n_stepback : Cap the lens unspent; your nerve is gone...
+n_done2 --> l1_low : Carry it down; the comet was low but the...
+n_done2 --> z1_pale : Carry it down under a sky already paling...
+n_short2 --> n_attempt3 : One more plate, the full count this time...
+n_short2 --> n_thin_dev : Develop the thin plate; something beats ...
+n_short2 --> n_stepback : Step back; the night has taken enough.
+n_attempt3 --> n_done3 : Expose it. Steady. Give it the whole cou...
+n_attempt3 --> n_stepback : Cap it; keep the last plate for another ...
+n_done3 --> z1_pale : Down to the red light with the dawn plat...
+n_stepback --> n_end_eyes : Watch her with your own eyes until she s...
+n_stepback --> n_end_sketch : Open the logbook and sketch her, tail an...
+n_stepback --> n_end_words : Ask Halloran what he would have done.
+n_lesson_dev --> n_reload : Lesson learned; get back up there while ...
+n_lesson_dev --> n_end_lesson : Measure the failure with him, edge to ed...
+n_lesson_dev --> n_end_redlight : Stay in the warm red light; the night is...
+n_thin_dev --> n_end_thin_saved : Try the old intensifier trick together.
+n_thin_dev --> n_end_thin_honest : Leave it honest and faint, exactly as sh...
+p1_descent --> p2_self : Develop it yourself: your plate, your ha...
+p1_descent --> p3_with : Ask him to stand at your shoulder while ...
+p2_self --> n_end_perfect : Full time. Count every second. Lift only...
+p2_self --> n_end_pulled : You cannot bear it; lift the plate early...
+p3_with --> n_end_shared : Count it out loud together to the last s...
+p3_with --> n_end_pulled : Your nerve breaks; you lift it early des...
+q1_shudder --> q2_doubled : Develop it and face whatever the shudder...
+q1_shudder --> q3_ask : Ask Halloran first whether a shiver can ...
+q3_ask --> q2_doubled : Into the developer, then, and no more gu...
+q2_doubled --> n_end_shiver : Claim it: title it honestly, tremor and ...
+q2_doubled --> n_end_tremor : Set it against the 1910 plate and measur...
+l1_low --> l2_amber : Develop it now, before doubt gets a vote...
+l1_low --> l3_hands : Warm your hands first; steady beats fast...
+l3_hands --> l2_amber : Now the developer, with hands that obey.
+l2_amber --> n_end_late : Print it proud: the eleventh-hour plate.
+l2_amber --> n_end_provenance : Log the seeing conditions beside it like...
+z1_pale --> z2_wash : Develop it; even dawn writes something.
+z1_pale --> n_end_carried : Leave it sealed; carry it to the club's ...
+z2_wash --> n_end_dawn : Mask the fogged half and print the clear...
+z2_wash --> n_end_archive : Give it whole to the club's archive of h...
+s1_bent --> s2_confess : Go down and confess to Halloran now.
+s1_bent --> s3_geometry : First work out what the crooked slit can...
+s2_confess --> s4_lane : Then let us use the slice we have.
+s3_geometry --> s4_lane : Show him the lane and the crossing time.
+s4_lane --> s_watch : Load a plate and wait dead-still on the ...
+s4_lane --> s6_test : Spend one plate first to test the lane's...
+s4_lane --> n_stepback : Put the plates away; tonight is for repa...
+s_watch --> s5_crossing : A brightening at the lane's edge: she is...
+s6_test --> s5_crossing : Re-aim on the corrected lane and wait fo...
+s5_crossing --> s7_head : Expose the moment her head enters the la...
+s5_crossing --> s8_tail_wait : Wait, and give the plate to the whole ta...
+s7_head --> n_end_slit : Develop it with Halloran, and face the t...
+s7_head --> s_second : Spend one more plate at the lane's far e...
+s8_tail_wait --> n_end_tail : Down to the red light to see what the ri...
+s_second --> n_end_tail : Develop the pair together and lay them e...
+n_end_perfect --> [*]
+n_end_shared --> [*]
+n_end_pulled --> [*]
+n_end_shiver --> [*]
+n_end_tremor --> [*]
+n_end_late --> [*]
+n_end_provenance --> [*]
+n_end_dawn --> [*]
+n_end_archive --> [*]
+n_end_carried --> [*]
+n_end_ghost --> [*]
+n_end_lesson --> [*]
+n_end_redlight --> [*]
+n_end_thin_saved --> [*]
+n_end_thin_honest --> [*]
+n_end_eyes --> [*]
+n_end_sketch --> [*]
+n_end_words --> [*]
+n_end_slit --> [*]
+n_end_tail --> [*]
+
+legend right
+  The Glass Comet
+  Band 10-13 · Tier 2 · ~7 min
+  Topology: branch_and_bottleneck
+  105 nodes · 20 endings (4+ / 11n / 5-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml
