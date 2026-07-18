@@ -1,0 +1,159 @@
+@startuml the-school-garden-mystery
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 85w
+state n_clue #BBDEFB
+n_clue : setup · 80w
+state n_hub #FFF9C4
+n_hub : choice · 90w
+state lb_prints #FFF9C4
+lb_prints : choice · 78w
+state lb_sketch #D1C4E9
+lb_sketch : rising · 68w
+state lb_follow #D1C4E9
+lb_follow : rising · 68w
+state cc_tunnel #FFF9C4
+cc_tunnel : choice · 80w
+state cc_peek #D1C4E9
+cc_peek : rising · 65w
+state cc_fence #D1C4E9
+cc_fence : rising · 65w
+state ts_shed #FFF9C4
+ts_shed : choice · 80w
+state ts_open #FFF9C4
+ts_open : choice · 72w
+state ts_look #D1C4E9
+ts_look : rising · 68w
+state ts_marco #D1C4E9
+ts_marco : rising · 72w
+state sf_row #FFF9C4
+sf_row : choice · 78w
+state sf_crawl #D1C4E9
+sf_crawl : rising · 65w
+state sf_bench #D1C4E9
+sf_bench : rising · 65w
+state pe_pond #FFF9C4
+pe_pond : choice · 80w
+state pe_mud #D1C4E9
+pe_mud : rising · 62w
+state pe_reeds #D1C4E9
+pe_reeds : rising · 65w
+state wc_approach #FFF9C4
+wc_approach : choice · 88w
+state wc_wait #D1C4E9
+wc_wait : rising · 72w
+state wc_offer #D1C4E9
+wc_offer : rising · 72w
+state wc_watch #D1C4E9
+wc_watch : rising · 70w
+state wc_reveal #FFF9C4
+wc_reveal : choice · 85w
+state r_patch #D1C4E9
+r_patch : rising · 72w
+state r_fence #D1C4E9
+r_fence : rising · 72w
+state r_tell #D1C4E9
+r_tell : rising · 70w
+state r_show #FFF9C4
+r_show : choice · 75w
+state e_set_compost #FFCDD2
+e_set_compost : setback (negative)
+e_set_compost : "The Wiggly Worm Detour"
+state e_set_splash #FFCDD2
+e_set_splash : setback (negative)
+e_set_splash : "One Squishy Boot"
+state e_set_dash #FFCDD2
+e_set_dash : setback (negative)
+e_set_dash : "A Flash of White Tail"
+state e_patch #C8E6C9
+e_patch : completion (positive)
+e_patch : "The Bunny Buffet"
+state e_fence #C8E6C9
+e_fence : success (positive)
+e_fence : "A Fence with a Gate"
+state e_share #C8E6C9
+e_share : completion (positive)
+e_share : "The Shared Garden"
+state e_watch #C8E6C9
+e_watch : success (positive)
+e_watch : "Rabbit Watchers on Duty"
+n_start --> n_clue : Take a closer look at the nibbled lettuc...
+n_clue --> n_hub : Start at the path circle where all the p...
+n_hub --> lb_prints : Search the lettuce beds for footprints.
+n_hub --> cc_tunnel : Poke around the compost corner.
+n_hub --> ts_shed : Check inside the tool shed.
+n_hub --> sf_row : Walk down the sunflower row.
+n_hub --> pe_pond : Look for clues along the pond edge.
+n_hub --> wc_approach : Head for the quiet willow at the back.
+lb_prints --> lb_sketch : Sketch the footprints in your notebook.
+lb_prints --> lb_follow : Follow the footprints right away.
+lb_sketch --> n_hub : Go back to the path circle.
+lb_sketch --> wc_approach : Follow the prints toward the willow corn...
+lb_follow --> n_hub : Head back to the path circle.
+lb_follow --> wc_approach : Trail the prints toward the willow corne...
+cc_tunnel --> cc_peek : Lie down and peek into the tunnel.
+cc_tunnel --> cc_fence : Check where the tunnel comes out past th...
+cc_tunnel --> e_set_compost : Dig through the compost heap for buried ...
+cc_peek --> n_hub : Return to the path circle.
+cc_peek --> wc_approach : Head toward the willow corner.
+cc_fence --> n_hub : Go back to the path circle.
+cc_fence --> wc_approach : Follow the nibbled trail to the willow c...
+ts_shed --> ts_open : Open the lunchbox carefully.
+ts_shed --> ts_look : Look around the shed for more signs.
+ts_open --> ts_marco : Go ask Marco about the lunchbox.
+ts_open --> n_hub : Take the clue back to the path circle.
+ts_look --> n_hub : Head back to the path circle.
+ts_look --> wc_approach : Follow the crumb trail toward the willow...
+ts_marco --> n_hub : Go back to the path circle.
+ts_marco --> wc_approach : Head for the willow corner.
+sf_row --> sf_crawl : Crawl along the tiny path under the stem...
+sf_row --> sf_bench : Climb the bench to look over the whole r...
+sf_crawl --> n_hub : Back out to the path circle.
+sf_crawl --> wc_approach : Keep following the tiny path to the will...
+sf_bench --> n_hub : Hop down and go to the path circle.
+sf_bench --> wc_approach : Head straight for the willow corner.
+pe_pond --> pe_mud : Follow the little prints along the mud.
+pe_pond --> pe_reeds : Check the rustling reeds.
+pe_pond --> e_set_splash : Lean way out over the water for a closer...
+pe_mud --> n_hub : Return to the path circle.
+pe_mud --> wc_approach : Follow the hops toward the willow corner...
+pe_reeds --> n_hub : Go back to the path circle.
+pe_reeds --> wc_approach : Follow the prints to the willow corner.
+wc_approach --> wc_wait : Tiptoe close and wait as still as a stat...
+wc_approach --> wc_offer : Sit in the clover and hold out a lettuce...
+wc_approach --> e_set_dash : Dash over for a quick peek.
+wc_wait --> wc_watch : Keep watching quietly.
+wc_offer --> wc_watch : Stay very still and watch.
+wc_watch --> wc_reveal : Put all the clues together.
+wc_reveal --> r_patch : Plant a bunny patch just for the rabbits...
+wc_reveal --> r_fence : Plan a low fence with a gate around the ...
+wc_reveal --> r_tell : Go tell Ms. Flores and the class.
+r_patch --> e_patch : Open the bunny buffet.
+r_fence --> e_fence : Finish the little fence together.
+r_tell --> r_show : Lead everyone to the willow corner on ti...
+r_show --> e_share : Hang a friendly Rabbit Crossing sign.
+r_show --> e_watch : Make rabbit watching a class job.
+e_set_compost --> [*]
+e_set_splash --> [*]
+e_set_dash --> [*]
+e_patch --> [*]
+e_fence --> [*]
+e_share --> [*]
+e_watch --> [*]
+
+legend right
+  The School Garden Mystery
+  Band 5-8 · Tier 1 · ~5 min
+  Topology: open_map
+  35 nodes · 7 endings (4+ / 0n / 3-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

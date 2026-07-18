@@ -1,0 +1,915 @@
+@startuml the-longwinter-station
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 180w
+state n_intro #BBDEFB
+n_intro : setup · 180w
+state n_rules #BBDEFB
+n_rules : setup · 180w
+state n_settle #BBDEFB
+n_settle : setup · 180w
+state n_mess #ECEFF1
+n_mess : shore · 184w
+state n_quiet #ECEFF1
+n_quiet : conv · 180w
+state e_quit #FFCDD2
+e_quit : setback (negative)
+e_quit : "A Winter Owned"
+state ph_shore #ECEFF1
+ph_shore : shore · 184w
+state ph_help #ECEFF1
+ph_help : help · 162w
+state ph_helpb #ECEFF1
+ph_helpb : helpb · 162w
+state ph_helpc #ECEFF1
+ph_helpc : helpc · 162w
+state ph_helpd #ECEFF1
+ph_helpd : helpd · 162w
+state ph_watch #ECEFF1
+ph_watch : watch · 170w
+state ph_watchb #ECEFF1
+ph_watchb : watchb · 180w
+state ph_watchc #ECEFF1
+ph_watchc : watchc · 162w
+state ph_near #ECEFF1
+ph_near : near · 180w
+state ph_reckless #ECEFF1
+ph_reckless : reckless · 162w
+state ph_recklessb #ECEFF1
+ph_recklessb : recklessb · 172w
+state ph_hard #ECEFF1
+ph_hard : hard · 177w
+state ph_care #ECEFF1
+ph_care : care · 167w
+state ph_conv #ECEFF1
+ph_conv : conv · 180w
+state ph_convb #ECEFF1
+ph_convb : convb · 162w
+state ph_call #ECEFF1
+ph_call : call · 190w
+state ph_read #ECEFF1
+ph_read : read · 180w
+state ph_extra2 #ECEFF1
+ph_extra2 : extra2 · 164w
+state ph_gate #ECEFF1
+ph_gate : gate · 184w
+state ph_deep0 #ECEFF1
+ph_deep0 : deep0 · 172w
+state ph_deep1 #ECEFF1
+ph_deep1 : deep1 · 202w
+state ph_deep2 #ECEFF1
+ph_deep2 : deep2 · 190w
+state ph_deep2b #ECEFF1
+ph_deep2b : deep2b · 177w
+state ph_deep3 #ECEFF1
+ph_deep3 : deep3 · 194w
+state ph_shallow #ECEFF1
+ph_shallow : shallow · 172w
+state ph_shallowb #ECEFF1
+ph_shallowb : shallowb · 184w
+state ph_done #ECEFF1
+ph_done : done · 184w
+state e_ph_awe #C8E6C9
+e_ph_awe : discovery (positive)
+e_ph_awe : "The Machine's Second Heart"
+state e_ph_risk #FFCDD2
+e_ph_risk : setback (negative)
+e_ph_risk : "Flashback in the Hall"
+state e_ph_cold #FFCDD2
+e_ph_cold : death (negative)
+e_ph_cold : "Alone at the Dying Burner"
+state e_ph_deep #C8E6C9
+e_ph_deep : discovery (positive)
+e_ph_deep : "The Beat in the Diesels"
+state e_ph_shallow #E0E0E0
+e_ph_shallow : discovery (neutral)
+e_ph_shallow : "Gauges Read Warm"
+state e_ph_linger #C8E6C9
+e_ph_linger : discovery (positive)
+e_ph_linger : "The Powerhouse Charted"
+state ca_shore #ECEFF1
+ca_shore : shore · 184w
+state ca_help #ECEFF1
+ca_help : help · 162w
+state ca_helpb #ECEFF1
+ca_helpb : helpb · 162w
+state ca_helpc #ECEFF1
+ca_helpc : helpc · 162w
+state ca_helpd #ECEFF1
+ca_helpd : helpd · 162w
+state ca_watch #ECEFF1
+ca_watch : watch · 170w
+state ca_watchb #ECEFF1
+ca_watchb : watchb · 180w
+state ca_watchc #ECEFF1
+ca_watchc : watchc · 162w
+state ca_near #ECEFF1
+ca_near : near · 180w
+state ca_reckless #ECEFF1
+ca_reckless : reckless · 162w
+state ca_recklessb #ECEFF1
+ca_recklessb : recklessb · 172w
+state ca_hard #ECEFF1
+ca_hard : hard · 177w
+state ca_care #ECEFF1
+ca_care : care · 167w
+state ca_conv #ECEFF1
+ca_conv : conv · 180w
+state ca_convb #ECEFF1
+ca_convb : convb · 162w
+state ca_call #ECEFF1
+ca_call : call · 190w
+state ca_read #ECEFF1
+ca_read : read · 180w
+state ca_extra2 #ECEFF1
+ca_extra2 : extra2 · 164w
+state ca_gate #ECEFF1
+ca_gate : gate · 184w
+state ca_deep0 #ECEFF1
+ca_deep0 : deep0 · 172w
+state ca_deep1 #ECEFF1
+ca_deep1 : deep1 · 202w
+state ca_deep2 #ECEFF1
+ca_deep2 : deep2 · 190w
+state ca_deep2b #ECEFF1
+ca_deep2b : deep2b · 177w
+state ca_deep3 #ECEFF1
+ca_deep3 : deep3 · 194w
+state ca_shallow #ECEFF1
+ca_shallow : shallow · 172w
+state ca_shallowb #ECEFF1
+ca_shallowb : shallowb · 184w
+state ca_done #ECEFF1
+ca_done : done · 184w
+state e_ca_awe #C8E6C9
+e_ca_awe : discovery (positive)
+e_ca_awe : "The Shelf's Own Pulse"
+state e_ca_risk #FFCDD2
+e_ca_risk : setback (negative)
+e_ca_risk : "Whiteout on the Flag Line"
+state e_ca_cold #FFCDD2
+e_ca_cold : death (negative)
+e_ca_cold : "Off the Line in the Dark"
+state e_ca_deep #C8E6C9
+e_ca_deep : discovery (positive)
+e_ca_deep : "The Beat Through the Ice"
+state e_ca_shallow #E0E0E0
+e_ca_shallow : discovery (neutral)
+e_ca_shallow : "The Cairn Reading"
+state e_ca_linger #C8E6C9
+e_ca_linger : discovery (positive)
+e_ca_linger : "The Traverse Charted"
+state ma_shore #ECEFF1
+ma_shore : shore · 184w
+state ma_help #ECEFF1
+ma_help : help · 162w
+state ma_helpb #ECEFF1
+ma_helpb : helpb · 162w
+state ma_helpc #ECEFF1
+ma_helpc : helpc · 162w
+state ma_helpd #ECEFF1
+ma_helpd : helpd · 162w
+state ma_watch #ECEFF1
+ma_watch : watch · 170w
+state ma_watchb #ECEFF1
+ma_watchb : watchb · 180w
+state ma_watchc #ECEFF1
+ma_watchc : watchc · 162w
+state ma_near #ECEFF1
+ma_near : near · 180w
+state ma_reckless #ECEFF1
+ma_reckless : reckless · 162w
+state ma_recklessb #ECEFF1
+ma_recklessb : recklessb · 172w
+state ma_hard #ECEFF1
+ma_hard : hard · 177w
+state ma_care #ECEFF1
+ma_care : care · 167w
+state ma_conv #ECEFF1
+ma_conv : conv · 180w
+state ma_convb #ECEFF1
+ma_convb : convb · 162w
+state ma_call #ECEFF1
+ma_call : call · 190w
+state ma_read #ECEFF1
+ma_read : read · 180w
+state ma_extra2 #ECEFF1
+ma_extra2 : extra2 · 164w
+state ma_gate #ECEFF1
+ma_gate : gate · 184w
+state ma_deep0 #ECEFF1
+ma_deep0 : deep0 · 172w
+state ma_deep1 #ECEFF1
+ma_deep1 : deep1 · 202w
+state ma_deep2 #ECEFF1
+ma_deep2 : deep2 · 190w
+state ma_deep2b #ECEFF1
+ma_deep2b : deep2b · 177w
+state ma_deep3 #ECEFF1
+ma_deep3 : deep3 · 194w
+state ma_shallow #ECEFF1
+ma_shallow : shallow · 172w
+state ma_shallowb #ECEFF1
+ma_shallowb : shallowb · 184w
+state ma_done #ECEFF1
+ma_done : done · 184w
+state e_ma_awe #C8E6C9
+e_ma_awe : discovery (positive)
+e_ma_awe : "The Beat Under the Aurora"
+state e_ma_risk #FFCDD2
+e_ma_risk : setback (negative)
+e_ma_risk : "Iced Off the Mast"
+state e_ma_cold #FFCDD2
+e_ma_cold : death (negative)
+e_ma_cold : "Bare Hands at the Masthead"
+state e_ma_deep #C8E6C9
+e_ma_deep : discovery (positive)
+e_ma_deep : "The Sky's Slow Pulse"
+state e_ma_shallow #E0E0E0
+e_ma_shallow : discovery (neutral)
+e_ma_shallow : "The Base Instruments Read"
+state e_ma_linger #C8E6C9
+e_ma_linger : discovery (positive)
+e_ma_linger : "The Mast Charted"
+state bh_shore #ECEFF1
+bh_shore : shore · 184w
+state bh_help #ECEFF1
+bh_help : help · 162w
+state bh_helpb #ECEFF1
+bh_helpb : helpb · 162w
+state bh_helpc #ECEFF1
+bh_helpc : helpc · 162w
+state bh_helpd #ECEFF1
+bh_helpd : helpd · 162w
+state bh_watch #ECEFF1
+bh_watch : watch · 170w
+state bh_watchb #ECEFF1
+bh_watchb : watchb · 180w
+state bh_watchc #ECEFF1
+bh_watchc : watchc · 162w
+state bh_near #ECEFF1
+bh_near : near · 180w
+state bh_reckless #ECEFF1
+bh_reckless : reckless · 162w
+state bh_recklessb #ECEFF1
+bh_recklessb : recklessb · 172w
+state bh_hard #ECEFF1
+bh_hard : hard · 177w
+state bh_care #ECEFF1
+bh_care : care · 167w
+state bh_conv #ECEFF1
+bh_conv : conv · 180w
+state bh_convb #ECEFF1
+bh_convb : convb · 162w
+state bh_call #ECEFF1
+bh_call : call · 190w
+state bh_read #ECEFF1
+bh_read : read · 180w
+state bh_extra2 #ECEFF1
+bh_extra2 : extra2 · 164w
+state bh_gate #ECEFF1
+bh_gate : gate · 184w
+state bh_deep0 #ECEFF1
+bh_deep0 : deep0 · 172w
+state bh_deep1 #ECEFF1
+bh_deep1 : deep1 · 202w
+state bh_deep2 #ECEFF1
+bh_deep2 : deep2 · 190w
+state bh_deep2b #ECEFF1
+bh_deep2b : deep2b · 177w
+state bh_deep3 #ECEFF1
+bh_deep3 : deep3 · 194w
+state bh_shallow #ECEFF1
+bh_shallow : shallow · 172w
+state bh_shallowb #ECEFF1
+bh_shallowb : shallowb · 184w
+state bh_done #ECEFF1
+bh_done : done · 184w
+state e_bh_awe #C8E6C9
+e_bh_awe : discovery (positive)
+e_bh_awe : "Close to the Source"
+state e_bh_risk #FFCDD2
+e_bh_risk : setback (negative)
+e_bh_risk : "Jammed in the Shaft"
+state e_bh_cold #FFCDD2
+e_bh_cold : death (negative)
+e_bh_cold : "Down Past the Deep Mark"
+state e_bh_deep #C8E6C9
+e_bh_deep : discovery (positive)
+e_bh_deep : "The Beat Up the Shaft"
+state e_bh_shallow #E0E0E0
+e_bh_shallow : discovery (neutral)
+e_bh_shallow : "The Wellhead Reading"
+state e_bh_linger #C8E6C9
+e_bh_linger : discovery (positive)
+e_bh_linger : "The Borehole Charted"
+state vt_shore #ECEFF1
+vt_shore : shore · 184w
+state vt_help #ECEFF1
+vt_help : help · 162w
+state vt_helpb #ECEFF1
+vt_helpb : helpb · 162w
+state vt_helpc #ECEFF1
+vt_helpc : helpc · 162w
+state vt_helpd #ECEFF1
+vt_helpd : helpd · 162w
+state vt_watch #ECEFF1
+vt_watch : watch · 170w
+state vt_watchb #ECEFF1
+vt_watchb : watchb · 180w
+state vt_watchc #ECEFF1
+vt_watchc : watchc · 162w
+state vt_near #ECEFF1
+vt_near : near · 180w
+state vt_reckless #ECEFF1
+vt_reckless : reckless · 162w
+state vt_recklessb #ECEFF1
+vt_recklessb : recklessb · 172w
+state vt_hard #ECEFF1
+vt_hard : hard · 177w
+state vt_care #ECEFF1
+vt_care : care · 167w
+state vt_conv #ECEFF1
+vt_conv : conv · 180w
+state vt_convb #ECEFF1
+vt_convb : convb · 162w
+state vt_call #ECEFF1
+vt_call : call · 190w
+state vt_read #ECEFF1
+vt_read : read · 180w
+state vt_extra2 #ECEFF1
+vt_extra2 : extra2 · 164w
+state vt_gate #ECEFF1
+vt_gate : gate · 184w
+state vt_deep0 #ECEFF1
+vt_deep0 : deep0 · 172w
+state vt_deep1 #ECEFF1
+vt_deep1 : deep1 · 202w
+state vt_deep2 #ECEFF1
+vt_deep2 : deep2 · 190w
+state vt_deep2b #ECEFF1
+vt_deep2b : deep2b · 177w
+state vt_deep3 #ECEFF1
+vt_deep3 : deep3 · 194w
+state vt_shallow #ECEFF1
+vt_shallow : shallow · 172w
+state vt_shallowb #ECEFF1
+vt_shallowb : shallowb · 184w
+state vt_done #ECEFF1
+vt_done : done · 184w
+state e_vt_awe #C8E6C9
+e_vt_awe : discovery (positive)
+e_vt_awe : "The Signal Whole"
+state e_vt_risk #FFCDD2
+e_vt_risk : setback (negative)
+e_vt_risk : "The Array Whited Out"
+state e_vt_cold #FFCDD2
+e_vt_cold : death (negative)
+e_vt_cold : "Sealed In With the Beat"
+state e_vt_deep #C8E6C9
+e_vt_deep : discovery (positive)
+e_vt_deep : "The Deep-Listen True"
+state e_vt_shallow #E0E0E0
+e_vt_shallow : discovery (neutral)
+e_vt_shallow : "The Traces Read Over"
+state e_vt_linger #C8E6C9
+e_vt_linger : discovery (positive)
+e_vt_linger : "The Vault Charted"
+state hu_shore #ECEFF1
+hu_shore : shore · 184w
+state hu_help #ECEFF1
+hu_help : help · 162w
+state hu_helpb #ECEFF1
+hu_helpb : helpb · 162w
+state hu_helpc #ECEFF1
+hu_helpc : helpc · 162w
+state hu_helpd #ECEFF1
+hu_helpd : helpd · 162w
+state hu_watch #ECEFF1
+hu_watch : watch · 170w
+state hu_watchb #ECEFF1
+hu_watchb : watchb · 180w
+state hu_watchc #ECEFF1
+hu_watchc : watchc · 162w
+state hu_near #ECEFF1
+hu_near : near · 180w
+state hu_reckless #ECEFF1
+hu_reckless : reckless · 162w
+state hu_recklessb #ECEFF1
+hu_recklessb : recklessb · 172w
+state hu_hard #ECEFF1
+hu_hard : hard · 177w
+state hu_care #ECEFF1
+hu_care : care · 167w
+state hu_conv #ECEFF1
+hu_conv : conv · 180w
+state hu_convb #ECEFF1
+hu_convb : convb · 162w
+state hu_call #ECEFF1
+hu_call : call · 190w
+state hu_read #ECEFF1
+hu_read : read · 180w
+state hu_extra2 #ECEFF1
+hu_extra2 : extra2 · 164w
+state hu_gate #ECEFF1
+hu_gate : gate · 184w
+state hu_deep0 #ECEFF1
+hu_deep0 : deep0 · 172w
+state hu_deep1 #ECEFF1
+hu_deep1 : deep1 · 202w
+state hu_deep2 #ECEFF1
+hu_deep2 : deep2 · 190w
+state hu_deep2b #ECEFF1
+hu_deep2b : deep2b · 177w
+state hu_deep3 #ECEFF1
+hu_deep3 : deep3 · 194w
+state hu_shallow #ECEFF1
+hu_shallow : shallow · 172w
+state hu_shallowb #ECEFF1
+hu_shallowb : shallowb · 184w
+state hu_done #ECEFF1
+hu_done : done · 184w
+state e_hu_awe #C8E6C9
+e_hu_awe : discovery (positive)
+e_hu_awe : "The First Crew Heard It"
+state e_hu_risk #FFCDD2
+e_hu_risk : setback (negative)
+e_hu_risk : "The Tunnel Slumped"
+state e_hu_cold #FFCDD2
+e_hu_cold : death (negative)
+e_hu_cold : "Deeper Into the Buried Dark"
+state e_hu_deep #C8E6C9
+e_hu_deep : discovery (positive)
+e_hu_deep : "The Last Winter's Log"
+state e_hu_shallow #E0E0E0
+e_hu_shallow : discovery (neutral)
+e_hu_shallow : "The Salvaged Pages"
+state e_hu_linger #C8E6C9
+e_hu_linger : discovery (positive)
+e_hu_linger : "The Old Hut Charted"
+state fin_muster #ECEFF1
+fin_muster : finlong · 197w
+state fin_brief #ECEFF1
+fin_brief : fin · 184w
+state fin_gear #ECEFF1
+fin_gear : fin · 184w
+state fin_gear_a #ECEFF1
+fin_gear_a : fin · 184w
+state fin_gear_a2 #ECEFF1
+fin_gear_a2 : fin · 184w
+state fin_gear_b #ECEFF1
+fin_gear_b : fin · 184w
+state fin_gear_b2 #ECEFF1
+fin_gear_b2 : fin · 184w
+state fin_gear_r #ECEFF1
+fin_gear_r : fin · 184w
+state fin_warm #ECEFF1
+fin_warm : fin · 184w
+state fin_warm_a #ECEFF1
+fin_warm_a : fin · 184w
+state fin_warm_a2 #ECEFF1
+fin_warm_a2 : fin · 184w
+state fin_warm_b #ECEFF1
+fin_warm_b : fin · 184w
+state fin_warm_b2 #ECEFF1
+fin_warm_b2 : fin · 184w
+state fin_warm_r #ECEFF1
+fin_warm_r : fin · 184w
+state fin_rouse #ECEFF1
+fin_rouse : fin · 184w
+state fin_rouse_a #ECEFF1
+fin_rouse_a : fin · 184w
+state fin_rouse_a2 #ECEFF1
+fin_rouse_a2 : fin · 184w
+state fin_rouse_b #ECEFF1
+fin_rouse_b : fin · 184w
+state fin_rouse_b2 #ECEFF1
+fin_rouse_b2 : fin · 184w
+state fin_rouse_r #ECEFF1
+fin_rouse_r : fin · 184w
+state fin_ready #ECEFF1
+fin_ready : fin · 184w
+state fin_tide #ECEFF1
+fin_tide : fin · 184w
+state fin_dark #ECEFF1
+fin_dark : fin · 184w
+state fin_gather #ECEFF1
+fin_gather : finlong · 197w
+state fin_descent #ECEFF1
+fin_descent : fin · 184w
+state fin_deep #ECEFF1
+fin_deep : fin · 184w
+state fin_still #ECEFF1
+fin_still : finlong · 197w
+state fin_read #ECEFF1
+fin_read : finlong · 197w
+state fin_rise #ECEFF1
+fin_rise : fin · 184w
+state fin_answered #ECEFF1
+fin_answered : fin · 184w
+state fin_partial #ECEFF1
+fin_partial : fin · 184w
+state fin_settle #ECEFF1
+fin_settle : fin · 184w
+state fin_afterp #ECEFF1
+fin_afterp : fin · 184w
+state fin_keepn #ECEFF1
+fin_keepn : fin · 184w
+state fin_hush #ECEFF1
+fin_hush : fin · 184w
+state fin_afterk #ECEFF1
+fin_afterk : fin · 184w
+state e_fin_whole #C8E6C9
+e_fin_whole : success (positive)
+e_fin_whole : "The Crew Whole"
+state e_fin_understood #C8E6C9
+e_fin_understood : completion (positive)
+e_fin_understood : "A Signal for a Lifetime"
+state e_fin_pass #C8E6C9
+e_fin_pass : completion (positive)
+e_fin_pass : "Through the Dark Whole"
+state e_fin_true #E0E0E0
+e_fin_true : completion (neutral)
+e_fin_true : "A True Measure"
+state e_fin_home #E0E0E0
+e_fin_home : completion (neutral)
+e_fin_home : "The Dark Turns"
+state e_fin_watch #C8E6C9
+e_fin_watch : completion (positive)
+e_fin_watch : "The Log Kept True"
+state e_fin_log #E0E0E0
+e_fin_log : completion (neutral)
+e_fin_log : "The Last Reading Entered"
+n_start --> n_intro : Pull on your boots and go through to the...
+n_intro --> n_rules : Ask Halvard what the winter needs of you...
+n_rules --> n_settle : Learn the station's shape and its module...
+n_settle --> n_mess : Take up the winter's work at the core.
+n_mess --> ph_shore : Cross the walkway to the powerhouse and ...
+n_mess --> ca_shore : Suit up for the traverse out to the fuel...
+n_mess --> ma_shore : Go up to the met mast under the aurora.
+n_mess --> bh_shore : Go down to the borehole shaft at the she...
+n_mess --> vt_shore : Cross to Marta's seismic vault under the...
+n_mess --> hu_shore : Go out to the buried hut of the first wi...
+n_mess --> n_quiet : Sit a while in the warm core with the cr...
+n_quiet --> n_mess : Warm through and get back to the winter'...
+n_quiet --> e_quit : Tell Halvard the dark has grown too heav...
+ph_shore --> ph_help : Work it shoulder to shoulder with Ivo, t...
+ph_shore --> ph_watch : Hang back a moment and take the module i...
+ph_shore --> ph_near : Go straight at the work on your own line...
+ph_help --> ph_helpb : Let the work settle into its rhythm.
+ph_helpb --> ph_helpc : Talk over what the beat is doing today.
+ph_helpc --> ph_helpd : Get back to it before the cold settles i...
+ph_helpd --> ph_conv : Turn to the reading itself.
+ph_watch --> ph_watchb : Watch, and let the module show itself.
+ph_watchb --> ph_watchc : Take the weight of it, then turn to the ...
+ph_watchb --> e_ph_awe : Stay with it, and let it be enough.
+ph_watchc --> ph_conv : Turn to the reading itself.
+ph_near --> ph_hard : Force the cold reserve burner alight fas...
+ph_near --> ph_care : Take the careful, slower line that keeps...
+ph_near --> ph_reckless : Push in harder and faster than the dark ...
+ph_reckless --> ph_recklessb : Commit, and drive it past the safe mark.
+ph_reckless --> ph_care : Catch yourself, and fall back to the car...
+ph_recklessb --> e_ph_cold : Go on alone into it whatever it costs.
+ph_recklessb --> e_ph_risk : Force the work through and pay for it.
+ph_hard --> ph_conv : Get to the reading now the way is forced...
+ph_care --> ph_conv : Come to the reading with everything inta...
+ph_conv --> ph_call : Square the gear and decide how to carry ...
+ph_conv --> ph_convb : Steady yourself and the module first.
+ph_convb --> ph_call : Decide how to carry what the module give...
+ph_call --> ph_read : Radio it back to the crew and share the ...
+ph_call --> ph_read : Keep it close and tell no one yet.
+ph_read --> ph_gate : Decide how far to take the reading.
+ph_read --> ph_extra2 : Ask Ivo about it first.
+ph_extra2 --> ph_gate : Decide how far to take the reading.
+ph_gate --> ph_deep0 : Fire the reserve burner and run the hall...
+ph_gate --> ph_shallow : Read the gauges and logs from the contro...
+ph_deep0 --> ph_deep1 : Take it all the way down.
+ph_deep1 --> ph_deep2 : Stay with the full reading as it comes.
+ph_deep2 --> ph_deep2b : Hold the reading and log it true.
+ph_deep2b --> ph_deep3 : Take stock, and think about coming away.
+ph_deep3 --> ph_done : Log it, gather the crew, and come away c...
+ph_deep3 --> e_ph_deep : Stay a while longer with what you have f...
+ph_shallow --> ph_shallowb : Log the short reading and stand down.
+ph_shallowb --> ph_done : Square the module away and come home.
+ph_shallowb --> e_ph_shallow : Sit a moment with the short reading befo...
+ph_done --> n_mess : Cross back to the warm core to re-ration...
+ph_done --> fin_muster : Answer the muster if midwinter has come.
+ph_done --> e_ph_linger : Work the module over once more and chart...
+ca_shore --> ca_help : Work it shoulder to shoulder with Ivo on...
+ca_shore --> ca_watch : Hang back a moment and take the module i...
+ca_shore --> ca_near : Go straight at the work on your own line...
+ca_help --> ca_helpb : Let the work settle into its rhythm.
+ca_helpb --> ca_helpc : Talk over what the beat is doing today.
+ca_helpc --> ca_helpd : Get back to it before the cold settles i...
+ca_helpd --> ca_conv : Turn to the reading itself.
+ca_watch --> ca_watchb : Watch, and let the module show itself.
+ca_watchb --> ca_watchc : Take the weight of it, then turn to the ...
+ca_watchb --> e_ca_awe : Stay with it, and let it be enough.
+ca_watchc --> ca_conv : Turn to the reading itself.
+ca_near --> ca_hard : Run the sled heater wide open to beat th...
+ca_near --> ca_care : Take the careful, slower line that keeps...
+ca_near --> ca_reckless : Push in harder and faster than the dark ...
+ca_reckless --> ca_recklessb : Commit, and drive it past the safe mark.
+ca_reckless --> ca_care : Catch yourself, and fall back to the car...
+ca_recklessb --> e_ca_cold : Go on alone into it whatever it costs.
+ca_recklessb --> e_ca_risk : Force the work through and pay for it.
+ca_hard --> ca_conv : Get to the reading now the way is forced...
+ca_care --> ca_conv : Come to the reading with everything inta...
+ca_conv --> ca_call : Square the gear and decide how to carry ...
+ca_conv --> ca_convb : Steady yourself and the module first.
+ca_convb --> ca_call : Decide how to carry what the module give...
+ca_call --> ca_read : Radio it back to the crew and share the ...
+ca_call --> ca_read : Keep it close and tell no one yet.
+ca_read --> ca_gate : Decide how far to take the reading.
+ca_read --> ca_extra2 : Ask Ivo on the sled line about it first.
+ca_extra2 --> ca_gate : Decide how far to take the reading.
+ca_gate --> ca_deep0 : Run the full heated traverse to the drum...
+ca_gate --> ca_shallow : Read from the halfway cairn and turn bac...
+ca_deep0 --> ca_deep1 : Take it all the way down.
+ca_deep1 --> ca_deep2 : Stay with the full reading as it comes.
+ca_deep2 --> ca_deep2b : Hold the reading and log it true.
+ca_deep2b --> ca_deep3 : Take stock, and think about coming away.
+ca_deep3 --> ca_done : Log it, gather the crew, and come away c...
+ca_deep3 --> e_ca_deep : Stay a while longer with what you have f...
+ca_shallow --> ca_shallowb : Log the short reading and stand down.
+ca_shallowb --> ca_done : Square the module away and come home.
+ca_shallowb --> e_ca_shallow : Sit a moment with the short reading befo...
+ca_done --> n_mess : Cross back to the warm core to re-ration...
+ca_done --> fin_muster : Answer the muster if midwinter has come.
+ca_done --> e_ca_linger : Work the module over once more and chart...
+ma_shore --> ma_help : Work it shoulder to shoulder with Sunny ...
+ma_shore --> ma_watch : Hang back a moment and take the module i...
+ma_shore --> ma_near : Go straight at the work on your own line...
+ma_help --> ma_helpb : Let the work settle into its rhythm.
+ma_helpb --> ma_helpc : Talk over what the beat is doing today.
+ma_helpc --> ma_helpd : Get back to it before the cold settles i...
+ma_helpd --> ma_conv : Turn to the reading itself.
+ma_watch --> ma_watchb : Watch, and let the module show itself.
+ma_watchb --> ma_watchc : Take the weight of it, then turn to the ...
+ma_watchb --> e_ma_awe : Stay with it, and let it be enough.
+ma_watchc --> ma_conv : Turn to the reading itself.
+ma_near --> ma_hard : Run the heater hot and force the frozen ...
+ma_near --> ma_care : Take the careful, slower line that keeps...
+ma_near --> ma_reckless : Push in harder and faster than the dark ...
+ma_reckless --> ma_recklessb : Commit, and drive it past the safe mark.
+ma_reckless --> ma_care : Catch yourself, and fall back to the car...
+ma_recklessb --> e_ma_cold : Go on alone into it whatever it costs.
+ma_recklessb --> e_ma_risk : Force the work through and pay for it.
+ma_hard --> ma_conv : Get to the reading now the way is forced...
+ma_care --> ma_conv : Come to the reading with everything inta...
+ma_conv --> ma_call : Square the gear and decide how to carry ...
+ma_conv --> ma_convb : Steady yourself and the module first.
+ma_convb --> ma_call : Decide how to carry what the module give...
+ma_call --> ma_read : Radio it back to the crew and share the ...
+ma_call --> ma_read : Keep it close and tell no one yet.
+ma_read --> ma_gate : Decide how far to take the reading.
+ma_read --> ma_extra2 : Ask Sunny at the mast foot about it firs...
+ma_extra2 --> ma_gate : Decide how far to take the reading.
+ma_gate --> ma_deep0 : Climb the iced mast to the sensor with t...
+ma_gate --> ma_shallow : Read the base instruments from the mast-...
+ma_deep0 --> ma_deep1 : Take it all the way down.
+ma_deep1 --> ma_deep2 : Stay with the full reading as it comes.
+ma_deep2 --> ma_deep2b : Hold the reading and log it true.
+ma_deep2b --> ma_deep3 : Take stock, and think about coming away.
+ma_deep3 --> ma_done : Log it, gather the crew, and come away c...
+ma_deep3 --> e_ma_deep : Stay a while longer with what you have f...
+ma_shallow --> ma_shallowb : Log the short reading and stand down.
+ma_shallowb --> ma_done : Square the module away and come home.
+ma_shallowb --> e_ma_shallow : Sit a moment with the short reading befo...
+ma_done --> n_mess : Cross back to the warm core to re-ration...
+ma_done --> fin_muster : Answer the muster if midwinter has come.
+ma_done --> e_ma_linger : Work the module over once more and chart...
+bh_shore --> bh_help : Work it shoulder to shoulder with Marta ...
+bh_shore --> bh_watch : Hang back a moment and take the module i...
+bh_shore --> bh_near : Go straight at the work on your own line...
+bh_help --> bh_helpb : Let the work settle into its rhythm.
+bh_helpb --> bh_helpc : Talk over what the beat is doing today.
+bh_helpc --> bh_helpd : Get back to it before the cold settles i...
+bh_helpd --> bh_conv : Turn to the reading itself.
+bh_watch --> bh_watchb : Watch, and let the module show itself.
+bh_watchb --> bh_watchc : Take the weight of it, then turn to the ...
+bh_watchb --> e_bh_awe : Stay with it, and let it be enough.
+bh_watchc --> bh_conv : Turn to the reading itself.
+bh_near --> bh_hard : Run the winch heater full to thaw the ic...
+bh_near --> bh_care : Take the careful, slower line that keeps...
+bh_near --> bh_reckless : Push in harder and faster than the dark ...
+bh_reckless --> bh_recklessb : Commit, and drive it past the safe mark.
+bh_reckless --> bh_care : Catch yourself, and fall back to the car...
+bh_recklessb --> e_bh_cold : Go on alone into it whatever it costs.
+bh_recklessb --> e_bh_risk : Force the work through and pay for it.
+bh_hard --> bh_conv : Get to the reading now the way is forced...
+bh_care --> bh_conv : Come to the reading with everything inta...
+bh_conv --> bh_call : Square the gear and decide how to carry ...
+bh_conv --> bh_convb : Steady yourself and the module first.
+bh_convb --> bh_call : Decide how to carry what the module give...
+bh_call --> bh_read : Radio it back to the crew and share the ...
+bh_call --> bh_read : Keep it close and tell no one yet.
+bh_read --> bh_gate : Decide how far to take the reading.
+bh_read --> bh_extra2 : Ask Marta at the wellhead about it first...
+bh_extra2 --> bh_gate : Decide how far to take the reading.
+bh_gate --> bh_deep0 : Ride the warmed cage down to the deep ma...
+bh_gate --> bh_shallow : Read from the wellhead with the sonde al...
+bh_deep0 --> bh_deep1 : Take it all the way down.
+bh_deep1 --> bh_deep2 : Stay with the full reading as it comes.
+bh_deep2 --> bh_deep2b : Hold the reading and log it true.
+bh_deep2b --> bh_deep3 : Take stock, and think about coming away.
+bh_deep3 --> bh_done : Log it, gather the crew, and come away c...
+bh_deep3 --> e_bh_deep : Stay a while longer with what you have f...
+bh_shallow --> bh_shallowb : Log the short reading and stand down.
+bh_shallowb --> bh_done : Square the module away and come home.
+bh_shallowb --> e_bh_shallow : Sit a moment with the short reading befo...
+bh_done --> n_mess : Cross back to the warm core to re-ration...
+bh_done --> fin_muster : Answer the muster if midwinter has come.
+bh_done --> e_bh_linger : Work the module over once more and chart...
+vt_shore --> vt_help : Work it shoulder to shoulder with Marta ...
+vt_shore --> vt_watch : Hang back a moment and take the module i...
+vt_shore --> vt_near : Go straight at the work on your own line...
+vt_help --> vt_helpb : Let the work settle into its rhythm.
+vt_helpb --> vt_helpc : Talk over what the beat is doing today.
+vt_helpc --> vt_helpd : Get back to it before the cold settles i...
+vt_helpd --> vt_conv : Turn to the reading itself.
+vt_watch --> vt_watchb : Watch, and let the module show itself.
+vt_watchb --> vt_watchc : Take the weight of it, then turn to the ...
+vt_watchb --> e_vt_awe : Stay with it, and let it be enough.
+vt_watchc --> vt_conv : Turn to the reading itself.
+vt_near --> vt_hard : Open the live channel yourself without w...
+vt_near --> vt_care : Take the careful, slower line that keeps...
+vt_near --> vt_reckless : Push in harder and faster than the dark ...
+vt_reckless --> vt_recklessb : Commit, and drive it past the safe mark.
+vt_reckless --> vt_care : Catch yourself, and fall back to the car...
+vt_recklessb --> e_vt_cold : Go on alone into it whatever it costs.
+vt_recklessb --> e_vt_risk : Force the work through and pay for it.
+vt_hard --> vt_conv : Get to the reading now the way is forced...
+vt_care --> vt_conv : Come to the reading with everything inta...
+vt_conv --> vt_call : Square the gear and decide how to carry ...
+vt_conv --> vt_convb : Steady yourself and the module first.
+vt_convb --> vt_call : Decide how to carry what the module give...
+vt_call --> vt_read : Radio it back to the crew and share the ...
+vt_call --> vt_read : Keep it close and tell no one yet.
+vt_read --> vt_gate : Decide how far to take the reading.
+vt_read --> vt_extra2 : Ask Marta at the array about it first.
+vt_extra2 --> vt_gate : Decide how far to take the reading.
+vt_gate --> vt_deep0 : Run the full live deep-listen, the crew ...
+vt_gate --> vt_shallow : Read the recorded traces over, quietly, ...
+vt_deep0 --> vt_deep1 : Take it all the way down.
+vt_deep1 --> vt_deep2 : Stay with the full reading as it comes.
+vt_deep2 --> vt_deep2b : Hold the reading and log it true.
+vt_deep2b --> vt_deep3 : Take stock, and think about coming away.
+vt_deep3 --> vt_done : Log it, gather the crew, and come away c...
+vt_deep3 --> e_vt_deep : Stay a while longer with what you have f...
+vt_shallow --> vt_shallowb : Log the short reading and stand down.
+vt_shallowb --> vt_done : Square the module away and come home.
+vt_shallowb --> e_vt_shallow : Sit a moment with the short reading befo...
+vt_done --> n_mess : Cross back to the warm core to re-ration...
+vt_done --> fin_muster : Answer the muster if midwinter has come.
+vt_done --> e_vt_linger : Work the module over once more and chart...
+hu_shore --> hu_help : Work it shoulder to shoulder with Halvar...
+hu_shore --> hu_watch : Hang back a moment and take the module i...
+hu_shore --> hu_near : Go straight at the work on your own line...
+hu_help --> hu_helpb : Let the work settle into its rhythm.
+hu_helpb --> hu_helpc : Talk over what the beat is doing today.
+hu_helpc --> hu_helpd : Get back to it before the cold settles i...
+hu_helpd --> hu_conv : Turn to the reading itself.
+hu_watch --> hu_watchb : Watch, and let the module show itself.
+hu_watchb --> hu_watchc : Take the weight of it, then turn to the ...
+hu_watchb --> e_hu_awe : Stay with it, and let it be enough.
+hu_watchc --> hu_conv : Turn to the reading itself.
+hu_near --> hu_hard : Break into the iced hut door yourself an...
+hu_near --> hu_care : Take the careful, slower line that keeps...
+hu_near --> hu_reckless : Push in harder and faster than the dark ...
+hu_reckless --> hu_recklessb : Commit, and drive it past the safe mark.
+hu_reckless --> hu_care : Catch yourself, and fall back to the car...
+hu_recklessb --> e_hu_cold : Go on alone into it whatever it costs.
+hu_recklessb --> e_hu_risk : Force the work through and pay for it.
+hu_hard --> hu_conv : Get to the reading now the way is forced...
+hu_care --> hu_conv : Come to the reading with everything inta...
+hu_conv --> hu_call : Square the gear and decide how to carry ...
+hu_conv --> hu_convb : Steady yourself and the module first.
+hu_convb --> hu_call : Decide how to carry what the module give...
+hu_call --> hu_read : Radio it back to the crew and share the ...
+hu_call --> hu_read : Keep it close and tell no one yet.
+hu_read --> hu_gate : Decide how far to take the reading.
+hu_read --> hu_extra2 : Ask Halvard with the shovels about it fi...
+hu_extra2 --> hu_gate : Decide how far to take the reading.
+hu_gate --> hu_deep0 : Dig through with the crew and read the l...
+hu_gate --> hu_shallow : Read the salvaged pages at the tunnel mo...
+hu_deep0 --> hu_deep1 : Take it all the way down.
+hu_deep1 --> hu_deep2 : Stay with the full reading as it comes.
+hu_deep2 --> hu_deep2b : Hold the reading and log it true.
+hu_deep2b --> hu_deep3 : Take stock, and think about coming away.
+hu_deep3 --> hu_done : Log it, gather the crew, and come away c...
+hu_deep3 --> e_hu_deep : Stay a while longer with what you have f...
+hu_shallow --> hu_shallowb : Log the short reading and stand down.
+hu_shallowb --> hu_done : Square the module away and come home.
+hu_shallowb --> e_hu_shallow : Sit a moment with the short reading befo...
+hu_done --> n_mess : Cross back to the warm core to re-ration...
+hu_done --> fin_muster : Answer the muster if midwinter has come.
+hu_done --> e_hu_linger : Work the module over once more and chart...
+fin_muster --> fin_brief : Sit at the table and hear the plan.
+fin_brief --> fin_gear : Ready the deep-listen gear.
+fin_brief --> fin_warm : Warm the borehole and the array through.
+fin_brief --> fin_rouse : Steady the crew for the long night.
+fin_gear --> fin_gear_a : Cold-proof and mark the recorder channel...
+fin_gear --> fin_gear_b : Splice the long signal line to the deep ...
+fin_gear_a --> fin_gear_a2 : See it through.
+fin_gear_a2 --> fin_gear_r : Report it ready.
+fin_gear_b --> fin_gear_b2 : See it through.
+fin_gear_b2 --> fin_gear_r : Report it ready.
+fin_gear_r --> fin_ready : One task done; the midwinter reading nea...
+fin_warm --> fin_warm_a : Warm the borehole shaft and free the son...
+fin_warm --> fin_warm_b : Warm the seismic vault and its array.
+fin_warm_a --> fin_warm_a2 : See it through.
+fin_warm_a2 --> fin_warm_r : Report it ready.
+fin_warm_b --> fin_warm_b2 : See it through.
+fin_warm_b2 --> fin_warm_r : Report it ready.
+fin_warm_r --> fin_ready : One task done; the midwinter reading nea...
+fin_rouse --> fin_rouse_a : See the crew rested and squared with Sun...
+fin_rouse --> fin_rouse_b : Hear Marta out on what she fears.
+fin_rouse_a --> fin_rouse_a2 : See it through.
+fin_rouse_a2 --> fin_rouse_r : Report it ready.
+fin_rouse_b --> fin_rouse_b2 : See it through.
+fin_rouse_b2 --> fin_rouse_r : Report it ready.
+fin_rouse_r --> fin_ready : One task done; the midwinter reading nea...
+fin_ready --> fin_tide : Take your place for the midwinter readin...
+fin_tide --> fin_dark : Gather with the crew at the deep post.
+fin_dark --> fin_gather : Ready to take the reading down.
+fin_gather --> fin_descent : Take the deep-listen line in your own ha...
+fin_descent --> fin_deep : Steady the line and take the measure.
+fin_deep --> fin_still : Ready the measure.
+fin_still --> fin_read : Take the full reading yourself, the whol...
+fin_still --> fin_partial : Take the honest partial reading Halvard ...
+fin_still --> fin_keepn : Give the line to Halvard and keep the lo...
+fin_read --> fin_rise : Hold the true reading, and log it whole.
+fin_rise --> fin_answered : Look to the crew as the reading closes.
+fin_answered --> e_fin_whole : Say the crew read it whole because they ...
+fin_answered --> e_fin_understood : Say the signal will take more than one w...
+fin_answered --> e_fin_pass : Let it be enough that the crew came thro...
+fin_partial --> fin_settle : Log the reading and hold the watch.
+fin_settle --> fin_afterp : Let the long night end at the post.
+fin_afterp --> e_fin_true : Call it a true measure, honestly got, an...
+fin_afterp --> e_fin_home : Turn in for the night with the crew, the...
+fin_keepn --> fin_hush : Keep the record true as Halvard reads.
+fin_hush --> fin_afterk : Let the long night end at the post.
+fin_afterk --> e_fin_watch : Say the log kept true is half the winter...
+fin_afterk --> e_fin_log : Close the book on the reading and turn i...
+e_quit --> [*]
+e_ph_awe --> [*]
+e_ph_risk --> [*]
+e_ph_cold --> [*]
+e_ph_deep --> [*]
+e_ph_shallow --> [*]
+e_ph_linger --> [*]
+e_ca_awe --> [*]
+e_ca_risk --> [*]
+e_ca_cold --> [*]
+e_ca_deep --> [*]
+e_ca_shallow --> [*]
+e_ca_linger --> [*]
+e_ma_awe --> [*]
+e_ma_risk --> [*]
+e_ma_cold --> [*]
+e_ma_deep --> [*]
+e_ma_shallow --> [*]
+e_ma_linger --> [*]
+e_bh_awe --> [*]
+e_bh_risk --> [*]
+e_bh_cold --> [*]
+e_bh_deep --> [*]
+e_bh_shallow --> [*]
+e_bh_linger --> [*]
+e_vt_awe --> [*]
+e_vt_risk --> [*]
+e_vt_cold --> [*]
+e_vt_deep --> [*]
+e_vt_shallow --> [*]
+e_vt_linger --> [*]
+e_hu_awe --> [*]
+e_hu_risk --> [*]
+e_hu_cold --> [*]
+e_hu_deep --> [*]
+e_hu_shallow --> [*]
+e_hu_linger --> [*]
+e_fin_whole --> [*]
+e_fin_understood --> [*]
+e_fin_pass --> [*]
+e_fin_true --> [*]
+e_fin_home --> [*]
+e_fin_watch --> [*]
+e_fin_log --> [*]
+
+legend right
+  The Longwinter Station
+  Band 16+ · Tier 2 · ~34 min
+  Topology: open_map
+  248 nodes · 44 endings (22+ / 9n / 13-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

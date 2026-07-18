@@ -1,0 +1,555 @@
+@startuml the-envoy-of-three-courts
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 118w
+state n_rules #D1C4E9
+n_rules : rising · 112w
+state n_sort #FFF9C4
+n_sort : choice · 132w
+state t_hall #D1C4E9
+t_hall : rising · 106w
+state t_walk #D1C4E9
+t_walk : rising · 104w
+state t_bridge #FFF9C4
+t_bridge : choice · 118w
+state t_a1 #D1C4E9
+t_a1 : rising · 102w
+state t_a2 #D1C4E9
+t_a2 : rising · 106w
+state t_a3 #D1C4E9
+t_a3 : rising · 100w
+state t_a4 #FFF9C4
+t_a4 : choice · 112w
+state t_a5 #D1C4E9
+t_a5 : rising · 108w
+state t_a6 #FFF9C4
+t_a6 : choice · 104w
+state t_a7 #D1C4E9
+t_a7 : rising · 102w
+state t_a8 #D1C4E9
+t_a8 : rising · 98w
+state t_a9 #FFE0B2
+t_a9 : climax · 100w
+state t_ae1 #C8E6C9
+t_ae1 : success (positive)
+t_ae1 : "The Bridge Witness"
+state t_a10 #D1C4E9
+t_a10 : rising · 100w
+state t_a11 #FFE0B2
+t_a11 : climax · 96w
+state t_ae2 #E0E0E0
+t_ae2 : discovery (neutral)
+t_ae2 : "The Patient Sounding"
+state t_a12 #D1C4E9
+t_a12 : rising · 104w
+state t_a13 #FFF9C4
+t_a13 : choice · 110w
+state t_a14 #D1C4E9
+t_a14 : rising · 102w
+state t_a15 #FFE0B2
+t_a15 : climax · 96w
+state t_ae3 #C8E6C9
+t_ae3 : completion (positive)
+t_ae3 : "Mended Trust"
+state t_a16 #D1C4E9
+t_a16 : rising · 100w
+state t_ae4 #FFCDD2
+t_ae4 : setback (negative)
+t_ae4 : "The Rumor Tide"
+state t_b1 #D1C4E9
+t_b1 : rising · 102w
+state t_b2 #D1C4E9
+t_b2 : rising · 104w
+state t_b3 #D1C4E9
+t_b3 : rising · 100w
+state t_b4 #FFF9C4
+t_b4 : choice · 106w
+state t_b5 #D1C4E9
+t_b5 : rising · 100w
+state t_b6 #D1C4E9
+t_b6 : rising · 104w
+state t_b7 #FFF9C4
+t_b7 : choice · 102w
+state t_b8 #D1C4E9
+t_b8 : rising · 100w
+state t_b8b #FFE0B2
+t_b8b : climax · 96w
+state t_be1 #C8E6C9
+t_be1 : success (positive)
+t_be1 : "Shoulder to Shoulder"
+state t_b9 #D1C4E9
+t_b9 : rising · 102w
+state t_be2 #C8E6C9
+t_be2 : completion (positive)
+t_be2 : "The Runner's Report"
+state t_b10 #D1C4E9
+t_b10 : rising · 102w
+state t_b11 #FFF9C4
+t_b11 : choice · 108w
+state t_b12 #D1C4E9
+t_b12 : rising · 104w
+state t_b12b #D1C4E9
+t_b12b : rising · 100w
+state t_b12c #FFE0B2
+t_b12c : climax · 96w
+state t_be3 #C8E6C9
+t_be3 : success (positive)
+t_be3 : "For the River"
+state t_b13 #D1C4E9
+t_b13 : rising · 104w
+state t_b14 #FFF9C4
+t_b14 : choice · 106w
+state t_b15 #D1C4E9
+t_b15 : rising · 100w
+state t_be4 #E0E0E0
+t_be4 : discovery (neutral)
+t_be4 : "Sounded Honest"
+state t_b16 #D1C4E9
+t_b16 : rising · 98w
+state t_be5 #FFCDD2
+t_be5 : setback (negative)
+t_be5 : "The Unsounded Page"
+state t_c1 #D1C4E9
+t_c1 : rising · 104w
+state t_c2 #D1C4E9
+t_c2 : rising · 102w
+state t_c3 #D1C4E9
+t_c3 : rising · 100w
+state t_c4 #FFF9C4
+t_c4 : choice · 112w
+state t_c5 #D1C4E9
+t_c5 : rising · 102w
+state t_c6 #FFF9C4
+t_c6 : choice · 104w
+state t_c7 #D1C4E9
+t_c7 : rising · 100w
+state t_c8 #FFE0B2
+t_c8 : climax · 98w
+state t_ce1 #C8E6C9
+t_ce1 : success (positive)
+t_ce1 : "The Neutral Chair"
+state t_c9 #D1C4E9
+t_c9 : rising · 102w
+state t_c10 #FFE0B2
+t_c10 : climax · 100w
+state t_ce3 #E0E0E0
+t_ce3 : discovery (neutral)
+t_ce3 : "The Chair's Eyes"
+state t_c11 #D1C4E9
+t_c11 : rising · 100w
+state t_c12 #D1C4E9
+t_c12 : rising · 102w
+state t_c13 #FFE0B2
+t_c13 : climax · 98w
+state t_ce2 #C8E6C9
+t_ce2 : completion (positive)
+t_ce2 : "The Harbor's Witness"
+state g_road #D1C4E9
+g_road : rising · 106w
+state g_gate #D1C4E9
+g_gate : rising · 102w
+state g_walk #D1C4E9
+g_walk : rising · 100w
+state g_night #FFF9C4
+g_night : choice · 108w
+state g_a1 #D1C4E9
+g_a1 : rising · 104w
+state g_a2 #D1C4E9
+g_a2 : rising · 106w
+state g_a3 #D1C4E9
+g_a3 : rising · 102w
+state g_a4 #FFF9C4
+g_a4 : choice · 112w
+state g_a5 #D1C4E9
+g_a5 : rising · 106w
+state g_a6 #D1C4E9
+g_a6 : rising · 108w
+state g_a7 #FFF9C4
+g_a7 : choice · 110w
+state g_a8 #D1C4E9
+g_a8 : rising · 102w
+state g_a9 #FFE0B2
+g_a9 : climax · 98w
+state g_ae1 #C8E6C9
+g_ae1 : success (positive)
+g_ae1 : "The Buried Gauge"
+state g_a10 #D1C4E9
+g_a10 : rising · 100w
+state g_a11 #FFE0B2
+g_a11 : climax · 98w
+state g_ae2 #C8E6C9
+g_ae2 : completion (positive)
+g_ae2 : "Clean Ledgers"
+state g_a12 #D1C4E9
+g_a12 : rising · 102w
+state g_a13 #FFE0B2
+g_a13 : climax · 98w
+state g_ae3 #C8E6C9
+g_ae3 : completion (positive)
+g_ae3 : "The Offer Carried"
+state g_a14 #D1C4E9
+g_a14 : rising · 106w
+state g_a15 #D1C4E9
+g_a15 : rising · 104w
+state g_a16 #FFF9C4
+g_a16 : choice · 108w
+state g_a17 #D1C4E9
+g_a17 : rising · 102w
+state g_ae4 #E0E0E0
+g_ae4 : discovery (neutral)
+g_ae4 : "The Late Truth"
+state g_a18 #D1C4E9
+g_a18 : rising · 100w
+state g_ae5 #FFCDD2
+g_ae5 : setback (negative)
+g_ae5 : "Gate Seven"
+state g_b1 #D1C4E9
+g_b1 : rising · 102w
+state g_b2 #D1C4E9
+g_b2 : rising · 104w
+state g_b3 #FFF9C4
+g_b3 : choice · 106w
+state g_b4 #D1C4E9
+g_b4 : rising · 102w
+state g_b5 #D1C4E9
+g_b5 : rising · 104w
+state g_b6 #FFF9C4
+g_b6 : choice · 104w
+state g_b7 #D1C4E9
+g_b7 : rising · 102w
+state g_b8 #FFE0B2
+g_b8 : climax · 98w
+state g_be1 #C8E6C9
+g_be1 : success (positive)
+g_be1 : "Measured Fair"
+state g_b9 #D1C4E9
+g_b9 : rising · 100w
+state g_b9b #FFE0B2
+g_b9b : climax · 96w
+state g_be2 #C8E6C9
+g_be2 : completion (positive)
+g_be2 : "Holding the Line"
+state g_b10 #D1C4E9
+g_b10 : rising · 102w
+state g_b10b #D1C4E9
+g_b10b : rising · 100w
+state g_b11 #FFF9C4
+g_b11 : choice · 108w
+state g_b12 #D1C4E9
+g_b12 : rising · 102w
+state g_b12b #FFE0B2
+g_b12b : climax · 98w
+state g_be3 #C8E6C9
+g_be3 : completion (positive)
+g_be3 : "The Festival Gift"
+state g_b13 #D1C4E9
+g_b13 : rising · 104w
+state g_b13b #D1C4E9
+g_b13b : rising · 100w
+state g_be4 #FFCDD2
+g_be4 : setback (negative)
+g_be4 : "Water Unaccounted"
+state b_hall #D1C4E9
+b_hall : rising · 106w
+state b_door #D1C4E9
+b_door : rising · 108w
+state b_vault #D1C4E9
+b_vault : rising · 100w
+state b_stacks #FFF9C4
+b_stacks : choice · 106w
+state b_c1 #D1C4E9
+b_c1 : rising · 102w
+state b_c2 #D1C4E9
+b_c2 : rising · 104w
+state b_c3 #D1C4E9
+b_c3 : rising · 100w
+state b_c4 #FFF9C4
+b_c4 : choice · 112w
+state b_c5 #D1C4E9
+b_c5 : rising · 104w
+state b_c5b #D1C4E9
+b_c5b : rising · 100w
+state b_c6 #FFF9C4
+b_c6 : choice · 108w
+state b_c7 #D1C4E9
+b_c7 : rising · 102w
+state b_c8 #FFE0B2
+b_c8 : climax · 98w
+state b_ce1 #C8E6C9
+b_ce1 : success (positive)
+b_ce1 : "The True Page"
+state b_c9 #D1C4E9
+b_c9 : rising · 102w
+state b_c10 #FFE0B2
+b_c10 : climax · 98w
+state b_ce2 #C8E6C9
+b_ce2 : completion (positive)
+b_ce2 : "Silt to the Collar"
+state b_c11 #D1C4E9
+b_c11 : rising · 102w
+state b_c12 #FFE0B2
+b_c12 : climax · 98w
+state b_ce3 #C8E6C9
+b_ce3 : success (positive)
+b_ce3 : "Plain Words"
+state b_c13 #D1C4E9
+b_c13 : rising · 104w
+state b_c14 #FFF9C4
+b_c14 : choice · 110w
+state b_c15 #D1C4E9
+b_c15 : rising · 102w
+state b_c16 #FFE0B2
+b_c16 : climax · 98w
+state b_ce4 #E0E0E0
+b_ce4 : discovery (neutral)
+b_ce4 : "One Extra Turn"
+state b_c17 #D1C4E9
+b_c17 : rising · 100w
+state b_ce5 #FFCDD2
+b_ce5 : setback (negative)
+b_ce5 : "The Quiet Handling"
+state b_k1 #D1C4E9
+b_k1 : rising · 102w
+state b_k2 #D1C4E9
+b_k2 : rising · 104w
+state b_k2b #D1C4E9
+b_k2b : rising · 98w
+state b_k3 #D1C4E9
+b_k3 : rising · 102w
+state b_k4 #FFF9C4
+b_k4 : choice · 110w
+state b_k5 #D1C4E9
+b_k5 : rising · 102w
+state b_k6 #FFF9C4
+b_k6 : choice · 106w
+state b_k7 #D1C4E9
+b_k7 : rising · 104w
+state b_k8 #FFE0B2
+b_k8 : climax · 98w
+state b_ke1 #C8E6C9
+b_ke1 : success (positive)
+b_ke1 : "The Keeper's Mark"
+state b_k9 #D1C4E9
+b_k9 : rising · 100w
+state b_ke2 #C8E6C9
+b_ke2 : completion (positive)
+b_ke2 : "Twice Measured"
+state b_k10 #D1C4E9
+b_k10 : rising · 102w
+state b_k11 #FFF9C4
+b_k11 : choice · 108w
+state b_k12 #D1C4E9
+b_k12 : rising · 100w
+state b_ke3 #E0E0E0
+b_ke3 : discovery (neutral)
+b_ke3 : "Not for the Stage"
+state b_k13 #D1C4E9
+b_k13 : rising · 100w
+state b_ke4 #FFCDD2
+b_ke4 : setback (negative)
+b_ke4 : "Too Clever by Half"
+n_start --> n_rules : Climb the Bell Hall steps to be sworn in...
+n_rules --> n_sort : Ask where you will serve tomorrow.
+n_sort --> t_hall : Serve the Court of Tides with Harbormist...
+n_sort --> g_road : Serve the Court of Groves with Warden Ol...
+n_sort --> b_hall : Serve the Court of Bells with First Arch...
+t_hall --> t_walk : Walk the evening quays with Selk.
+t_walk --> t_bridge : Hurry to the Lantern Bridge.
+t_bridge --> t_a1 : Stay close and listen to the courier's a...
+t_bridge --> t_b1 : Run and fetch Harbormistress Selk.
+t_bridge --> t_c1 : Look closely at the torn seal and the ra...
+t_a1 --> t_a2 : See Pell on his way and snatch some slee...
+t_a2 --> t_a3 : Follow the delegation back to the quays.
+t_a3 --> t_a4 : Head in when Marka beckons you aside.
+t_a4 --> t_a5 : Refuse, and tell Selk what you actually ...
+t_a4 --> t_a12 : Look away and let the rumor do its work.
+t_a5 --> t_a6 : Run out with the Tides crews.
+t_a6 --> t_a7 : Run with the sluice gang.
+t_a6 --> t_a10 : Dig into the tally logs.
+t_a7 --> t_a8 : Wash up and get to the dusk session.
+t_a8 --> t_a9 : Take the witness step.
+t_a9 --> t_ae1 : Tell it plainly, all three.
+t_a10 --> t_a11 : Bring the log page to the dusk session.
+t_a11 --> t_ae2 : Wait with the hall for the answer.
+t_a12 --> t_a13 : Run to the sluice with the crews.
+t_a13 --> t_a14 : Tell Selk the rumor is false and you let...
+t_a13 --> t_a16 : Say nothing and keep hauling.
+t_a14 --> t_a15 : Stand with her at the dusk session.
+t_a15 --> t_ae3 : See the evening through.
+t_a16 --> t_ae4 : Follow the crowd to the last session.
+t_b1 --> t_b2 : Get what sleep the night leaves you.
+t_b2 --> t_b3 : Return to Harbor Hall for orders.
+t_b3 --> t_b4 : Weigh the two errands.
+t_b4 --> t_b5 : Carry the tally book to Bell Hall.
+t_b4 --> t_b10 : Measure the grounded barges with Selk.
+t_b5 --> t_b6 : Report the overheard words to Selk.
+t_b6 --> t_b7 : Follow Selk into the low quarter.
+t_b7 --> t_b8 : Join the sandbag line.
+t_b7 --> t_b9 : Run the message chain.
+t_b8 --> t_b8b : Limp to the dusk session with the crews.
+t_b8b --> t_be1 : Watch the terms come together.
+t_b9 --> t_be2 : Stay for the dusk session.
+t_b10 --> t_b11 : Head back with the figures.
+t_b11 --> t_b12 : Bring the figures straight to Selk.
+t_b11 --> t_b13 : Let Marka pocket the page for now.
+t_b12 --> t_b12b : Work the flood beside her.
+t_b12b --> t_b12c : Follow them in for the last session.
+t_b12c --> t_be3 : See the accord through.
+t_b13 --> t_b14 : Lose yourself in the flood work.
+t_b14 --> t_b15 : Own it: hand Selk the page and the truth...
+t_b14 --> t_b16 : Stay silent and hope dusk moves on.
+t_b15 --> t_be4 : Stay to the last grain of the hourglass.
+t_b16 --> t_be5 : Watch the summit close.
+t_c1 --> t_c2 : Get some sleep before the dawn bell.
+t_c2 --> t_c3 : Slip out as the benches empty.
+t_c3 --> t_c4 : Answer the bell that starts ringing for ...
+t_c4 --> t_c5 : Sit beside the chair as neutral witness.
+t_c4 --> t_c11 : Keep your place at the Tides bench.
+t_c5 --> t_c6 : Ask the chancellor where he needs you.
+t_c6 --> t_c7 : Hold the Hall door and relay orders.
+t_c6 --> t_c9 : Go to the sluice as the chair's eyes.
+t_c7 --> t_c8 : Carry your door ledger to the dusk sessi...
+t_c8 --> t_ce1 : State the facts one last time.
+t_c9 --> t_c10 : Run the sketch back to the chancellor.
+t_c10 --> t_ce3 : Hear what the courts choose.
+t_c11 --> t_c12 : Follow her into the low quarter.
+t_c12 --> t_c13 : Tell her, bag for bag, all of it.
+t_c13 --> t_ce2 : Stand with the bench for the finish.
+g_road --> g_gate : Walk the new channels with the warden.
+g_gate --> g_walk : Follow him back toward the lodge.
+g_walk --> g_night : Decide what the night asks of you.
+g_night --> g_a1 : Run out with a lantern and help him.
+g_night --> g_b1 : Wake the warden and report what you saw.
+g_a1 --> g_a2 : Take the dawn bell at the Groves bench.
+g_a2 --> g_a3 : Walk back through the market with the de...
+g_a3 --> g_a4 : Hear what Sefa has to say.
+g_a4 --> g_a5 : Say the warden must hear it, and go with...
+g_a4 --> g_a14 : Promise her one day of silence.
+g_a5 --> g_a6 : Go with the delegation to the noon sessi...
+g_a6 --> g_a7 : Run with the wardens toward the water.
+g_a7 --> g_a8 : Join the sluice crew hauling debris.
+g_a7 --> g_a10 : Walk the channel line, checking and logg...
+g_a7 --> g_a12 : Carry the warden's compromise offer to B...
+g_a8 --> g_a9 : Get to the dusk session with what you sa...
+g_a9 --> g_ae1 : Say it the way you saw it.
+g_a10 --> g_a11 : Bring the gate book to dusk.
+g_a11 --> g_ae2 : Watch the ledger do its work.
+g_a12 --> g_a13 : Stay for the session you made possible.
+g_a13 --> g_ae3 : Hear the trading through to its end.
+g_a14 --> g_a15 : Follow the delegation into the scare.
+g_a15 --> g_a16 : Stay close through the dripping lull.
+g_a16 --> g_a17 : Break your promise: tell the warden now.
+g_a16 --> g_a18 : Keep your promise and stay silent.
+g_a17 --> g_ae4 : Stand with them while the courts decide.
+g_a18 --> g_ae5 : Watch the summit come apart.
+g_b1 --> g_b2 : Take your place at the dawn session.
+g_b2 --> g_b3 : Ride back to Grove Gate for orders.
+g_b3 --> g_b4 : Ride the measuring line with the warden.
+g_b3 --> g_b10 : Help ready the festival cisterns.
+g_b4 --> g_b5 : Carry the chalked figures to noon.
+g_b5 --> g_b6 : Run with the wardens to the sluice.
+g_b6 --> g_b7 : Wade in with the debris crew and your me...
+g_b6 --> g_b9 : Hold the channel gates against the surge...
+g_b7 --> g_b8 : Bring your soundings to the dusk session...
+g_b8 --> g_be1 : Hear the courts answer.
+g_b9 --> g_b9b : Carry the gate log to dusk.
+g_b9b --> g_be2 : Stay while the terms are talked.
+g_b10 --> g_b10b : Go in for the noon session.
+g_b10b --> g_b11 : Hurry back to the cistern gear with Sefa...
+g_b11 --> g_b12 : Do it properly: log, notify, open on the...
+g_b11 --> g_b13 : Skip the paperwork and open the valves n...
+g_b12 --> g_b12b : Walk to dusk with the release papers.
+g_b12b --> g_be3 : See what the warmth becomes.
+g_b13 --> g_b13b : Stand with the Groves through dusk.
+g_b13b --> g_be4 : Wait out the last of the hourglass.
+b_hall --> b_door : Take the midnight door duty with him.
+b_door --> b_vault : Ask what the Bells do next.
+b_vault --> b_stacks : Choose your trail into the stacks.
+b_stacks --> b_c1 : Start on the accord-year copy drafts.
+b_stacks --> b_k1 : Start on the sluice keepers' logbooks.
+b_c1 --> b_c2 : Keep sorting through the morning.
+b_c2 --> b_c3 : Ask who Marest is.
+b_c3 --> b_c4 : Look up as a shadow falls over the crate...
+b_c4 --> b_c5 : Bring it to Corvel now, together with Ma...
+b_c4 --> b_c13 : Give him until after the summit.
+b_c5 --> b_c5b : Help pin the drafts for the noon session...
+b_c5b --> b_c6 : Move when the whole hall moves.
+b_c6 --> b_c7 : Join the cellar brigade lifting the reco...
+b_c6 --> b_c9 : Go with Corvel to the sluice to see the ...
+b_c6 --> b_c11 : Stay with the chancellor's clerk draftin...
+b_c7 --> b_c8 : Go up with the last crate to the dusk se...
+b_c8 --> b_ce1 : Listen as the terms open.
+b_c9 --> b_c10 : Carry sketch and measurements to dusk.
+b_c10 --> b_ce2 : Hear the terms proposed.
+b_c11 --> b_c12 : Follow the draft into the dusk session.
+b_c12 --> b_ce3 : Watch the signing you helped word.
+b_c13 --> b_c14 : Splash down the stair to him.
+b_c14 --> b_c15 : Shout for the brigade and get the crate ...
+b_c14 --> b_c17 : Help him tuck it aside to deal with late...
+b_c15 --> b_c16 : Work the reconstruction to the dusk bell...
+b_c16 --> b_ce4 : Wait for the courts to weigh it.
+b_c17 --> b_ce5 : Endure the closing of the summit.
+b_k1 --> b_k2 : Read the last written page.
+b_k2 --> b_k2b : Take the note up to Corvel.
+b_k2b --> b_k3 : Search the bridge with him.
+b_k3 --> b_k4 : Decide what to do with the thread.
+b_k4 --> b_k5 : Take the thread to the watch now and kil...
+b_k4 --> b_k10 : Pocket it to reveal at dusk, when every ...
+b_k5 --> b_k6 : Run with Corvel to the waterline.
+b_k6 --> b_k7 : Row out now and read the mark before it ...
+b_k6 --> b_k9 : Wait for the jam to clear and verify at ...
+b_k7 --> b_k8 : Bring your soaked figures to dusk.
+b_k8 --> b_ke1 : Stand by your numbers.
+b_k9 --> b_ke2 : Present the witnessed reading.
+b_k10 --> b_k11 : Carry what you saw through the afternoon...
+b_k11 --> b_k12 : Go to the watch now and admit you held i...
+b_k11 --> b_k13 : Hold on for the dusk reveal you planned.
+b_k12 --> b_ke3 : Help carry the logs into dusk.
+b_k13 --> b_ke4 : Watch the question swallow the summit.
+t_ae1 --> [*]
+t_ae2 --> [*]
+t_ae3 --> [*]
+t_ae4 --> [*]
+t_be1 --> [*]
+t_be2 --> [*]
+t_be3 --> [*]
+t_be4 --> [*]
+t_be5 --> [*]
+t_ce1 --> [*]
+t_ce3 --> [*]
+t_ce2 --> [*]
+g_ae1 --> [*]
+g_ae2 --> [*]
+g_ae3 --> [*]
+g_ae4 --> [*]
+g_ae5 --> [*]
+g_be1 --> [*]
+g_be2 --> [*]
+g_be3 --> [*]
+g_be4 --> [*]
+b_ce1 --> [*]
+b_ce2 --> [*]
+b_ce3 --> [*]
+b_ce4 --> [*]
+b_ce5 --> [*]
+b_ke1 --> [*]
+b_ke2 --> [*]
+b_ke3 --> [*]
+b_ke4 --> [*]
+
+legend right
+  The Envoy of Three Courts
+  Band 10-13 · Tier 1 · ~9 min
+  Topology: sorting_hat
+  159 nodes · 30 endings (18+ / 6n / 6-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

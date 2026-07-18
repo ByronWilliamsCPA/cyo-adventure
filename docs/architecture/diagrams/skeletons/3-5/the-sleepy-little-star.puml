@@ -1,0 +1,81 @@
+@startuml the-sleepy-little-star
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 42w
+state n_moon #BBDEFB
+n_moon : setup · 40w
+state n_ready #FFF9C4
+n_ready : choice · 40w
+state n_cloud #FFF9C4
+n_cloud : choice · 40w
+state n_cozy_retry #D1C4E9
+n_cozy_retry : rising · 38w
+state n_peek #D1C4E9
+n_peek : rising · 38w
+state n_wiggle #FFF9C4
+n_wiggle : choice · 40w
+state n_giggle_retry #D1C4E9
+n_giggle_retry : rising · 38w
+state n_sway #D1C4E9
+n_sway : rising · 36w
+state n_slide #FFF9C4
+n_slide : choice · 40w
+state n_low #D1C4E9
+n_low : rising · 40w
+state n_almost #FFF9C4
+n_almost : choice · 40w
+state n_first_sparkle #D1C4E9
+n_first_sparkle : rising · 36w
+state n_shine #FFF9C4
+n_shine : choice · 42w
+state e_goodnight #C8E6C9
+e_goodnight : completion (positive)
+e_goodnight : "Goodnight, Little World"
+state e_lullaby #C8E6C9
+e_lullaby : success (positive)
+e_lullaby : "The Twinkle Lullaby"
+state e_friends #C8E6C9
+e_friends : success (positive)
+e_friends : "A Sky Full of Friends"
+n_start --> n_moon : Peek out at the evening sky.
+n_moon --> n_ready : Take a big, brave breath.
+n_ready --> n_cloud : Hide behind the fluffy cloud.
+n_ready --> n_wiggle : Do a big sparkle wiggle.
+n_ready --> n_slide : Scoot down low to peek at the world.
+n_cloud --> n_cozy_retry : Snuggle deeper into the cloud.
+n_cloud --> n_peek : Peek out one tiny sparkle.
+n_cozy_retry --> n_ready : Float back and try again.
+n_peek --> n_almost : Let the glow grow bigger.
+n_wiggle --> n_giggle_retry : Wiggle even faster!
+n_wiggle --> n_sway : Slow down and sway like a lullaby.
+n_giggle_retry --> n_ready : Float back and try again.
+n_sway --> n_almost : Glide to her shining spot.
+n_slide --> n_ready : Climb the moonbeam back up.
+n_slide --> n_low : Take a peek from down low.
+n_low --> n_almost : Float up to her spot in the sky.
+n_almost --> n_first_sparkle : Try one tiny practice sparkle.
+n_almost --> n_shine : Hold a moonbeam and shine all at once.
+n_first_sparkle --> n_shine : Shine with all her light.
+n_shine --> e_goodnight : Wink goodnight to the children.
+n_shine --> e_lullaby : Sing a twinkle song with Moon.
+n_shine --> e_friends : Invite the other little stars.
+e_goodnight --> [*]
+e_lullaby --> [*]
+e_friends --> [*]
+
+legend right
+  The Sleepy Little Star
+  Band 3-5 · Tier 1 · ~3 min
+  Topology: loop_and_grow
+  17 nodes · 3 endings (3+ / 0n / 0-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

@@ -138,7 +138,7 @@ mA_e1 : setback (negative)
 mA_e1 : "Forced Back: The Vows the Town Forgot"
 state mA_e2 #E0E0E0
 mA_e2 : discovery (neutral)
-mA_e2 : "Sealed Around The Vows The Tow"
+mA_e2 : "Sealed Around the Vows the Town Kept"
 state mB_1 #D1C4E9
 mB_1 : rising · 177w
 state mB_pad_s1 #D1C4E9
@@ -158,7 +158,7 @@ mB_e1 : setback (negative)
 mB_e1 : "Forced Back: The Pages She Never Shared"
 state mB_e2 #E0E0E0
 mB_e2 : discovery (neutral)
-mB_e2 : "Sealed Around The Pages She Ne"
+mB_e2 : "Sealed Around the Pages"
 state mC_1 #D1C4E9
 mC_1 : rising · 177w
 state mC_pad_s1 #D1C4E9
@@ -178,7 +178,7 @@ mC_e1 : setback (negative)
 mC_e1 : "Forced Back: The Names Saltmere Erased"
 state mC_e2 #E0E0E0
 mC_e2 : discovery (neutral)
-mC_e2 : "Sealed Around The Names Saltme"
+mC_e2 : "Sealed Around the Names of Saltmere"
 state mD_1 #D1C4E9
 mD_1 : rising · 177w
 state mD_pad_s1 #D1C4E9
@@ -198,7 +198,7 @@ mD_e1 : setback (negative)
 mD_e1 : "Forced Back: The Births the Town Denied"
 state mD_e2 #E0E0E0
 mD_e2 : discovery (neutral)
-mD_e2 : "Sealed Around The Births The T"
+mD_e2 : "Sealed Around the Register of Births"
 state p2 #ECEFF1
 p2 : revelation · 200w
 state p2_reveal #D1C4E9
@@ -223,10 +223,10 @@ state nA_5 #D1C4E9
 nA_5 : rising · 171w
 state nA_e1 #FFCDD2
 nA_e1 : setback (negative)
-nA_e1 : "Kept Distance: What Elias Verri"
+nA_e1 : "Kept Distance: What Elias Verrin Left Unsaid"
 state nA_e2 #E0E0E0
 nA_e2 : discovery (neutral)
-nA_e2 : "Refused the Page: What Elias Ver"
+nA_e2 : "Refused the Page Elias Verrin Left"
 state nB_1 #D1C4E9
 nB_1 : rising · 178w
 state nB_pad_s1 #D1C4E9
@@ -245,7 +245,7 @@ state nB_5 #D1C4E9
 nB_5 : rising · 171w
 state nB_e1 #FFCDD2
 nB_e1 : setback (negative)
-nB_e1 : "Kept Distance: The Last Voice T"
+nB_e1 : "Kept Distance: The Last Voice in the Archive"
 state nB_e2 #E0E0E0
 nB_e2 : discovery (neutral)
 nB_e2 : "Refused the Page: The Last Voice"

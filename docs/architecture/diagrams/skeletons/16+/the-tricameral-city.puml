@@ -1,0 +1,822 @@
+@startuml the-tricameral-city
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n01
+state a001 #FFCDD2
+a001 : setback (negative)
+a001 : "The Clean Stroke"
+state a002 #E0E0E0
+a002 : discovery (neutral)
+a002 : "What Fills the Space"
+state a003 #FFF9C4
+a003 : choice · 184w
+state a004 #D1C4E9
+a004 : rising · 160w
+state a005 #D1C4E9
+a005 : rising · 192w
+state a006 #D1C4E9
+a006 : rising · 172w
+state a007 #E0E0E0
+a007 : discovery (neutral)
+a007 : "The Line Confessed"
+state a008 #FFCDD2
+a008 : setback (negative)
+a008 : "Across the Line"
+state a009 #FFF9C4
+a009 : choice · 196w
+state a010 #D1C4E9
+a010 : rising · 166w
+state a011 #D1C4E9
+a011 : rising · 178w
+state a012 #D1C4E9
+a012 : rising · 174w
+state a013 #E0E0E0
+a013 : discovery (neutral)
+a013 : "The Question Held Open"
+state a014 #FFCDD2
+a014 : setback (negative)
+a014 : "A Complaint Without a Remedy"
+state a015 #FFF9C4
+a015 : choice · 184w
+state a016 #D1C4E9
+a016 : rising · 160w
+state a017 #D1C4E9
+a017 : rising · 192w
+state a018 #D1C4E9
+a018 : rising · 172w
+state a019 #E0E0E0
+a019 : discovery (neutral)
+a019 : "The Instrument of a Resignation"
+state a020 #FFCDD2
+a020 : setback (negative)
+a020 : "A Face for the Fault"
+state a021 #FFF9C4
+a021 : choice · 196w
+state a022 #D1C4E9
+a022 : rising · 166w
+state a023 #C8E6C9
+a023 : completion (positive)
+a023 : "The Exception Written In"
+state a024 #C8E6C9
+a024 : success (positive)
+a024 : "Heard in Open Bench"
+state a025 #FFF9C4
+a025 : choice · 176w
+state a026 #D1C4E9
+a026 : rising · 168w
+state a027 #D1C4E9
+a027 : rising · 184w
+state a028 #FFCDD2
+a028 : setback (negative)
+a028 : "The Auditor Who Signed Clean"
+state a029 #FFF9C4
+a029 : choice · 192w
+state a030 #D1C4E9
+a030 : rising · 172w
+state a031 #D1C4E9
+a031 : rising · 180w
+state a032 #D1C4E9
+a032 : rising · 158w
+state a033 #D1C4E9
+a033 : rising · 196w
+state a034 #FFF9C4
+a034 : choice · 166w
+state a035 #D1C4E9
+a035 : rising · 178w
+state a036 #D1C4E9
+a036 : rising · 174w
+state a037 #D1C4E9
+a037 : rising · 176w
+state a038 #D1C4E9
+a038 : rising · 168w
+state a039 #FFF9C4
+a039 : choice · 184w
+state a040 #D1C4E9
+a040 : rising · 160w
+state a041 #D1C4E9
+a041 : rising · 192w
+state a042 #D1C4E9
+a042 : rising · 172w
+state a043 #D1C4E9
+a043 : rising · 180w
+state a044 #FFF9C4
+a044 : choice · 158w
+state a045 #D1C4E9
+a045 : rising · 196w
+state a046 #D1C4E9
+a046 : rising · 166w
+state a047 #FFF9C4
+a047 : choice · 178w
+state a048 #D1C4E9
+a048 : rising · 174w
+state a049 #D1C4E9
+a049 : rising · 176w
+state a050 #E0E0E0
+a050 : discovery (neutral)
+a050 : "A Copy Kept Against the Day"
+state a051 #FFCDD2
+a051 : setback (negative)
+a051 : "The Renewed Silence"
+state a052 #FFF9C4
+a052 : choice · 160w
+state a053 #D1C4E9
+a053 : rising · 192w
+state a054 #D1C4E9
+a054 : rising · 172w
+state a055 #D1C4E9
+a055 : rising · 180w
+state a056 #FFF9C4
+a056 : choice · 158w
+state a057 #D1C4E9
+a057 : rising · 196w
+state a058 #D1C4E9
+a058 : rising · 166w
+state a059 #D1C4E9
+a059 : rising · 178w
+state a060 #D1C4E9
+a060 : rising · 174w
+state a061 #D1C4E9
+a061 : rising · 176w
+state a062 #D1C4E9
+a062 : rising · 168w
+state a063 #D1C4E9
+a063 : rising · 184w
+state a064 #D1C4E9
+a064 : rising · 160w
+state b065 #C8E6C9
+b065 : completion (positive)
+b065 : "The Vault Walked Honest"
+state b066 #FFCDD2
+b066 : setback (negative)
+b066 : "The Keeper's Peace"
+state b067 #E0E0E0
+b067 : discovery (neutral)
+b067 : "Half the Truth Up the Stair"
+state b068 #FFF9C4
+b068 : choice · 158w
+state b069 #D1C4E9
+b069 : rising · 196w
+state b070 #D1C4E9
+b070 : rising · 166w
+state b071 #ECEFF1
+b071 : peril · 178w
+state b072 #D1C4E9
+b072 : rising · 174w
+state b073 #D1C4E9
+b073 : rising · 176w
+state b074 #D1C4E9
+b074 : rising · 168w
+state b075 #D1C4E9
+b075 : rising · 184w
+state b076 #D1C4E9
+b076 : rising · 160w
+state b077 #ECEFF1
+b077 : peril · 192w
+state b078 #D1C4E9
+b078 : rising · 172w
+state b079 #D1C4E9
+b079 : rising · 180w
+state b080 #FFCDD2
+b080 : setback (negative)
+b080 : "Guarding an Empty Room"
+state b081 #D1C4E9
+b081 : rising · 196w
+state b082 #D1C4E9
+b082 : rising · 166w
+state b083 #D1C4E9
+b083 : rising · 178w
+state b084 #D1C4E9
+b084 : rising · 174w
+state b085 #D1C4E9
+b085 : rising · 176w
+state b086 #E0E0E0
+b086 : discovery (neutral)
+b086 : "The Provenance That Wasn't"
+state b087 #D1C4E9
+b087 : rising · 184w
+state b088 #D1C4E9
+b088 : rising · 160w
+state b089 #D1C4E9
+b089 : rising · 192w
+state b090 #D1C4E9
+b090 : rising · 172w
+state b091 #FFF9C4
+b091 : choice · 180w
+state b092 #D1C4E9
+b092 : rising · 158w
+state b093 #D1C4E9
+b093 : rising · 196w
+state b094 #D1C4E9
+b094 : rising · 166w
+state b095 #D1C4E9
+b095 : rising · 178w
+state b096 #C8E6C9
+b096 : completion (positive)
+b096 : "Balanced to the Ward"
+state b097 #D1C4E9
+b097 : rising · 176w
+state b098 #D1C4E9
+b098 : rising · 168w
+state b099 #D1C4E9
+b099 : rising · 184w
+state b100 #D1C4E9
+b100 : rising · 160w
+state b101 #D1C4E9
+b101 : rising · 192w
+state b102 #D1C4E9
+b102 : rising · 172w
+state b103 #D1C4E9
+b103 : rising · 180w
+state b104 #D1C4E9
+b104 : rising · 158w
+state b105 #D1C4E9
+b105 : rising · 196w
+state b106 #FFCDD2
+b106 : setback (negative)
+b106 : "Closed on the Coin"
+state b107 #D1C4E9
+b107 : rising · 178w
+state b108 #D1C4E9
+b108 : rising · 174w
+state b109 #D1C4E9
+b109 : rising · 176w
+state b110 #E0E0E0
+b110 : discovery (neutral)
+b110 : "Who Eats in the Outer Wards"
+state b111 #D1C4E9
+b111 : rising · 184w
+state b112 #D1C4E9
+b112 : rising · 160w
+state b113 #D1C4E9
+b113 : rising · 192w
+state b114 #E0E0E0
+b114 : discovery (neutral)
+b114 : "As Far as the Gate"
+state b115 #D1C4E9
+b115 : rising · 180w
+state b116 #D1C4E9
+b116 : rising · 158w
+state b117 #FFCDD2
+b117 : setback (negative)
+b117 : "A Ward Reported Delinquent"
+state b118 #D1C4E9
+b118 : rising · 166w
+state b119 #D1C4E9
+b119 : rising · 178w
+state b120 #FFF9C4
+b120 : choice · 174w
+state b121 #FFF9C4
+b121 : choice · 176w
+state b122 #D1C4E9
+b122 : rising · 168w
+state b123 #D1C4E9
+b123 : rising · 184w
+state b124 #D1C4E9
+b124 : rising · 160w
+state b125 #D1C4E9
+b125 : rising · 192w
+state b126 #D1C4E9
+b126 : rising · 172w
+state b127 #D1C4E9
+b127 : rising · 180w
+state b128 #D1C4E9
+b128 : rising · 158w
+state b129 #E0E0E0
+b129 : discovery (neutral)
+b129 : "The Second Distribution"
+state b130 #D1C4E9
+b130 : rising · 166w
+state b131 #D1C4E9
+b131 : rising · 178w
+state b132 #D1C4E9
+b132 : rising · 174w
+state b133 #FFCDD2
+b133 : setback (negative)
+b133 : "The Run That Stopped"
+state b134 #D1C4E9
+b134 : rising · 168w
+state b135 #D1C4E9
+b135 : rising · 184w
+state b136 #ECEFF1
+b136 : peril · 160w
+state b137 #D1C4E9
+b137 : rising · 192w
+state b138 #C8E6C9
+b138 : success (positive)
+b138 : "The Run Written Down"
+state b139 #D1C4E9
+b139 : rising · 180w
+state b140 #D1C4E9
+b140 : rising · 158w
+state b141 #D1C4E9
+b141 : rising · 196w
+state b142 #D1C4E9
+b142 : rising · 166w
+state b143 #D1C4E9
+b143 : rising · 178w
+state b144 #D1C4E9
+b144 : rising · 174w
+state b145 #D1C4E9
+b145 : rising · 176w
+state b146 #D1C4E9
+b146 : rising · 168w
+state b147 #FFCDD2
+b147 : setback (negative)
+b147 : "Smoothed Into the Columns"
+state b148 #D1C4E9
+b148 : rising · 160w
+state b149 #D1C4E9
+b149 : rising · 192w
+state b150 #E0E0E0
+b150 : discovery (neutral)
+b150 : "Left Open for the Reckoning"
+state b151 #D1C4E9
+b151 : rising · 180w
+state b152 #D1C4E9
+b152 : rising · 158w
+state b153 #FFF9C4
+b153 : choice · 196w
+state b154 #FFF9C4
+b154 : choice · 166w
+state b155 #D1C4E9
+b155 : rising · 178w
+state b156 #D1C4E9
+b156 : rising · 174w
+state b157 #D1C4E9
+b157 : rising · 176w
+state b158 #D1C4E9
+b158 : rising · 168w
+state b159 #D1C4E9
+b159 : rising · 184w
+state b160 #D1C4E9
+b160 : rising · 160w
+state b161 #D1C4E9
+b161 : rising · 192w
+state b162 #FFF9C4
+b162 : choice · 172w
+state b163 #D1C4E9
+b163 : rising · 180w
+state b164 #D1C4E9
+b164 : rising · 158w
+state c165 #FFCDD2
+c165 : setback (negative)
+c165 : "Ratified as Written"
+state c166 #E0E0E0
+c166 : discovery (neutral)
+c166 : "What the Clerks Never Do"
+state c167 #D1C4E9
+c167 : rising · 178w
+state c168 #D1C4E9
+c168 : rising · 174w
+state c169 #D1C4E9
+c169 : rising · 176w
+state c170 #C8E6C9
+c170 : discovery (positive)
+c170 : "The Memo Read Into the Roll"
+state c171 #FFCDD2
+c171 : setback (negative)
+c171 : "Circulated Out of Order"
+state c172 #FFF9C4
+c172 : choice · 160w
+state c173 #D1C4E9
+c173 : rising · 192w
+state c174 #D1C4E9
+c174 : rising · 172w
+state c175 #C8E6C9
+c175 : discovery (positive)
+c175 : "Ledd's File, Kept Faith"
+state c176 #FFCDD2
+c176 : setback (negative)
+c176 : "A Promise to Ledd"
+state c177 #E0E0E0
+c177 : discovery (neutral)
+c177 : "The File Refused"
+state c178 #FFF9C4
+c178 : choice · 166w
+state c179 #D1C4E9
+c179 : rising · 178w
+state c180 #D1C4E9
+c180 : rising · 174w
+state c181 #D1C4E9
+c181 : rising · 176w
+state c182 #D1C4E9
+c182 : rising · 168w
+state c183 #E0E0E0
+c183 : discovery (neutral)
+c183 : "The Founding Count, Read Plain"
+state c184 #D1C4E9
+c184 : rising · 160w
+state c185 #D1C4E9
+c185 : rising · 192w
+state c186 #D1C4E9
+c186 : rising · 172w
+state c187 #FFCDD2
+c187 : setback (negative)
+c187 : "The Gap Closed on Paper"
+state c188 #E0E0E0
+c188 : discovery (neutral)
+c188 : "The Gap Left Visible"
+state c189 #FFF9C4
+c189 : choice · 196w
+state c190 #D1C4E9
+c190 : rising · 166w
+state c191 #D1C4E9
+c191 : rising · 178w
+state c192 #FFCDD2
+c192 : setback (negative)
+c192 : "Over the Recorder's Head"
+state c193 #E0E0E0
+c193 : discovery (neutral)
+c193 : "Kept Within the Chamber"
+state c194 #FFF9C4
+c194 : choice · 168w
+state c195 #D1C4E9
+c195 : rising · 184w
+state c196 #D1C4E9
+c196 : rising · 160w
+state c197 #C8E6C9
+c197 : success (positive)
+c197 : "The Roll Amended True"
+state c198 #E0E0E0
+c198 : completion (neutral)
+c198 : "Noted for the Record"
+state c199 #FFF9C4
+c199 : choice · 180w
+state c200 #D1C4E9
+c200 : rising · 158w
+state c201 #D1C4E9
+c201 : rising · 196w
+state c202 #D1C4E9
+c202 : rising · 166w
+state c203 #D1C4E9
+c203 : rising · 178w
+state c204 #D1C4E9
+c204 : rising · 174w
+state c205 #FFF9C4
+c205 : choice · 176w
+state c206 #D1C4E9
+c206 : rising · 168w
+state c207 #D1C4E9
+c207 : rising · 184w
+state c208 #D1C4E9
+c208 : rising · 160w
+state c209 #D1C4E9
+c209 : rising · 192w
+state c210 #D1C4E9
+c210 : rising · 172w
+state c211 #FFF9C4
+c211 : choice · 180w
+state c212 #D1C4E9
+c212 : rising · 158w
+state c213 #D1C4E9
+c213 : rising · 196w
+state c214 #D1C4E9
+c214 : rising · 166w
+state c215 #D1C4E9
+c215 : rising · 178w
+state c216 #D1C4E9
+c216 : rising · 174w
+state c217 #D1C4E9
+c217 : rising · 176w
+state c218 #FFF9C4
+c218 : choice · 168w
+state c219 #D1C4E9
+c219 : rising · 184w
+state c220 #D1C4E9
+c220 : rising · 160w
+state c221 #D1C4E9
+c221 : rising · 192w
+state c222 #D1C4E9
+c222 : rising · 172w
+state c223 #D1C4E9
+c223 : rising · 180w
+state c224 #D1C4E9
+c224 : rising · 158w
+state c225 #FFF9C4
+c225 : choice · 196w
+state c226 #D1C4E9
+c226 : rising · 166w
+state c227 #D1C4E9
+c227 : rising · 178w
+state c228 #D1C4E9
+c228 : rising · 174w
+state c229 #D1C4E9
+c229 : rising · 176w
+state c230 #D1C4E9
+c230 : rising · 168w
+state c231 #D1C4E9
+c231 : rising · 184w
+state c232 #FFF9C4
+c232 : choice · 160w
+state c233 #D1C4E9
+c233 : rising · 192w
+state c234 #D1C4E9
+c234 : rising · 172w
+state c235 #D1C4E9
+c235 : rising · 180w
+state c236 #D1C4E9
+c236 : rising · 158w
+state c237 #D1C4E9
+c237 : rising · 196w
+state n01 #BBDEFB
+n01 : setup · 212w
+state n02 #BBDEFB
+n02 : setup · 206w
+state n03 #FFF9C4
+n03 : choice · 196w
+a003 --> a001 : Void the binding without provision.
+a003 --> a002 : Withdraw the opinion and weigh the provi...
+a004 --> a003 : Go on.
+a005 --> a004 : Go on.
+a006 --> a005 : Go on.
+a009 --> a007 : Report the crossing to Vale yourself.
+a009 --> a008 : Let it lie and hope the Register forgets...
+a010 --> a009 : Go on.
+a011 --> a010 : Go on.
+a012 --> a011 : Go on.
+a015 --> a013 : Withdraw the brief and stay to learn the...
+a015 --> a014 : Let the brief stand as a complaint on th...
+a016 --> a015 : Go on.
+a017 --> a016 : Go on.
+a018 --> a017 : Go on.
+a021 --> a019 : Hold it back and ask what it finds.
+a021 --> a020 : Enter it as written and close the file.
+a022 --> a021 : Go on.
+a025 --> a023 : Certify with the Abatement disclosed as ...
+a025 --> a024 : Refuse to certify until the consent bind...
+a026 --> a025 : Go on.
+a027 --> a026 : Go on.
+a029 --> a027 : Draft the certificate and carry it to th...
+a029 --> a028 : Step back and witness only.
+a030 --> a029 : Go on.
+a031 --> a030 : Go on.
+a032 --> a031 : Go on.
+a033 --> a032 : Go on.
+a034 --> a022 : Keep clear of the resignation.
+a034 --> a033 : Stay in and read how the Bench closes a ...
+a035 --> a034 : Go on.
+a036 --> a035 : Go on.
+a037 --> a036 : Go on.
+a038 --> a037 : Go on.
+a039 --> a018 : Prepare the Bench's private brief instea...
+a039 --> a038 : Attend the Concordance as Vale's clerk.
+a040 --> a039 : Go on.
+a041 --> a040 : Go on.
+a042 --> a041 : Go on.
+a043 --> a042 : Go on.
+a044 --> a012 : Carry it to the Register.
+a044 --> a043 : Keep it within the Bench, as remit requi...
+a045 --> a044 : Go on.
+a046 --> a045 : Go on.
+a047 --> a006 : Argue for voiding it now.
+a047 --> a046 : First learn what it holds in place.
+a048 --> a047 : Go on.
+a049 --> a048 : Go on.
+a052 --> a050 : Copy the sealed line for the record.
+a052 --> a051 : Reseal it and carry only what you rememb...
+a053 --> a052 : Go on.
+a054 --> a053 : Go on.
+a055 --> a054 : Go on.
+a056 --> a049 : Put the question to Vale in open session...
+a056 --> a055 : Trace the renewals yourself, quietly.
+a057 --> a056 : Go on.
+a058 --> a057 : Go on.
+a059 --> a058 : Go on.
+a060 --> a059 : Go on.
+a061 --> a060 : Go on.
+a062 --> a061 : Go on.
+a063 --> a062 : Go on.
+a064 --> a063 : Go on.
+b068 --> b065 : Report the substitution to the Reckoning...
+b068 --> b066 : Keep Roon's peace and report the count a...
+b068 --> b067 : Report the empty vault but not the wards...
+b069 --> b068 : Go on.
+b070 --> b069 : Go on.
+b071 --> b070 : Go on.
+b072 --> b071 : Go on.
+b073 --> b072 : Go on.
+b074 --> b073 : Go on.
+b075 --> b074 : Go on.
+b076 --> b075 : Go on.
+b077 --> b076 : Go on.
+b078 --> b077 : Go on.
+b079 --> b078 : Go on.
+b081 --> b080 : Go on.
+b082 --> b081 : Go on.
+b083 --> b082 : Go on.
+b084 --> b083 : Go on.
+b085 --> b084 : Go on.
+b087 --> b086 : Go on.
+b088 --> b087 : Go on.
+b089 --> b088 : Go on.
+b090 --> b089 : Go on.
+b091 --> b079 : Break the count and walk the lower vault...
+b091 --> b085 : Post the extra watch Roon orders and log...
+b091 --> b090 : Demand the vault-book's provenance in wr...
+b092 --> b091 : Go on.
+b093 --> b092 : Go on.
+b094 --> b093 : Go on.
+b095 --> b094 : Go on.
+b097 --> b096 : Go on.
+b098 --> b097 : Go on.
+b099 --> b098 : Go on.
+b100 --> b099 : Go on.
+b101 --> b100 : Go on.
+b102 --> b101 : Go on.
+b103 --> b102 : Go on.
+b104 --> b103 : Go on.
+b105 --> b104 : Go on.
+b107 --> b106 : Go on.
+b108 --> b107 : Go on.
+b109 --> b108 : Go on.
+b111 --> b110 : Go on.
+b112 --> b111 : Go on.
+b113 --> b112 : Go on.
+b115 --> b114 : Go on.
+b116 --> b115 : Go on.
+b118 --> b117 : Go on.
+b119 --> b118 : Go on.
+b120 --> b113 : Follow it to the outer wards and see who...
+b120 --> b116 : Stop at the ward-gate and file what you ...
+b120 --> b119 : Turn back and report the ward for under-...
+b121 --> b105 : Reconcile the levy ward by ward against ...
+b121 --> b109 : Accept the coin-balance and close the le...
+b121 --> b120 : Trace one ward's grain-flow to its end b...
+b122 --> b121 : Go on.
+b123 --> b122 : Go on.
+b124 --> b123 : Go on.
+b125 --> b124 : Go on.
+b126 --> b125 : Go on.
+b127 --> b126 : Go on.
+b128 --> b127 : Go on.
+b130 --> b129 : Go on.
+b131 --> b130 : Go on.
+b132 --> b131 : Go on.
+b134 --> b133 : Go on.
+b135 --> b134 : Go on.
+b136 --> b135 : Go on.
+b137 --> b136 : Go on.
+b139 --> b138 : Go on.
+b140 --> b139 : Go on.
+b141 --> b140 : Go on.
+b142 --> b141 : Go on.
+b143 --> b142 : Go on.
+b144 --> b143 : Go on.
+b145 --> b144 : Go on.
+b146 --> b145 : Go on.
+b148 --> b147 : Go on.
+b149 --> b148 : Go on.
+b151 --> b150 : Go on.
+b152 --> b151 : Go on.
+b153 --> b146 : Fold the hidden run into an honest excep...
+b153 --> b149 : Bury the run in the counted columns to h...
+b153 --> b152 : Keep the run but leave the books unsettl...
+b154 --> b132 : Ride the run and count the wagons honest...
+b154 --> b137 : Report the off-manifest deliveries to th...
+b154 --> b153 : Keep the run moving and settle the books...
+b155 --> b154 : Go on.
+b156 --> b155 : Go on.
+b157 --> b156 : Go on.
+b158 --> b157 : Go on.
+b159 --> b158 : Go on.
+b160 --> b159 : Go on.
+b161 --> b160 : Go on.
+b162 --> b095 : Take the Deepstore watch.
+b162 --> b128 : Take the levy-books.
+b162 --> b161 : Take the outer-ward provisioning run.
+b163 --> b162 : Go on.
+b164 --> b163 : Go on.
+c167 --> c166 : Go on.
+c168 --> c167 : Go on.
+c169 --> c168 : Go on.
+c172 --> c170 : Reintroduce the memo by motion, on the r...
+c172 --> c171 : Circulate it quietly to force the questi...
+c173 --> c172 : Go on.
+c174 --> c173 : Go on.
+c178 --> c175 : Promise to move it in order, and mean it...
+c178 --> c176 : Take the file and move on your own judgm...
+c178 --> c177 : Refuse the file rather than be bound by ...
+c179 --> c178 : Go on.
+c180 --> c179 : Go on.
+c181 --> c180 : Go on.
+c182 --> c181 : Go on.
+c184 --> c183 : Go on.
+c185 --> c184 : Go on.
+c186 --> c185 : Go on.
+c189 --> c187 : Adjust the ward figures to close the gap...
+c189 --> c188 : Tear up the draft and leave the gap visi...
+c190 --> c189 : Go on.
+c191 --> c190 : Go on.
+c194 --> c192 : Carry it to the other chambers unbidden.
+c194 --> c193 : Keep it within the Register and press Sa...
+c195 --> c194 : Go on.
+c196 --> c195 : Go on.
+c199 --> c197 : Move to amend the Roll to a true count, ...
+c199 --> c198 : Certify the census as-is and enter the f...
+c200 --> c199 : Go on.
+c201 --> c200 : Go on.
+c202 --> c201 : Go on.
+c203 --> c202 : Go on.
+c204 --> c203 : Go on.
+c205 --> c196 : Take the finding to the other chambers n...
+c205 --> c204 : Hold it for the Reckoning, in proper ord...
+c206 --> c205 : Go on.
+c207 --> c206 : Go on.
+c208 --> c207 : Go on.
+c209 --> c208 : Go on.
+c210 --> c209 : Go on.
+c211 --> c186 : Take the founding Roll down to its root ...
+c211 --> c191 : Draft a private reconciliation to close ...
+c211 --> c210 : Bring the question to Sarn and the full ...
+c212 --> c211 : Go on.
+c213 --> c212 : Go on.
+c214 --> c213 : Go on.
+c215 --> c214 : Go on.
+c216 --> c215 : Go on.
+c217 --> c216 : Go on.
+c218 --> c182 : Dig into the suppressed working papers.
+c218 --> c217 : Audit the current census against the lev...
+c219 --> c218 : Go on.
+c220 --> c219 : Go on.
+c221 --> c220 : Go on.
+c222 --> c221 : Go on.
+c223 --> c222 : Go on.
+c224 --> c223 : Go on.
+c225 --> c169 : Let the withdrawn memo lie and probe the...
+c225 --> c174 : Search the working papers for the memo y...
+c225 --> c224 : Request the withdrawn memo through the p...
+c226 --> c225 : Go on.
+c227 --> c226 : Go on.
+c228 --> c227 : Go on.
+c229 --> c228 : Go on.
+c230 --> c229 : Go on.
+c231 --> c230 : Go on.
+c232 --> c165 : Ask to see the founding Roll on the very...
+c232 --> c231 : Begin with the year's census, as instruc...
+c233 --> c232 : Go on.
+c234 --> c233 : Go on.
+c235 --> c234 : Go on.
+c236 --> c235 : Go on.
+c237 --> c236 : Go on.
+n01 --> n02 : Go on.
+n02 --> n03 : Go on.
+n03 --> a064 : Take the Bench, and learn how the city w...
+n03 --> b164 : Take the Prefecture, and walk the vaults...
+n03 --> c237 : Take the Register, and read the count th...
+a001 --> [*]
+a002 --> [*]
+a007 --> [*]
+a008 --> [*]
+a013 --> [*]
+a014 --> [*]
+a019 --> [*]
+a020 --> [*]
+a023 --> [*]
+a024 --> [*]
+a028 --> [*]
+a050 --> [*]
+a051 --> [*]
+b065 --> [*]
+b066 --> [*]
+b067 --> [*]
+b080 --> [*]
+b086 --> [*]
+b096 --> [*]
+b106 --> [*]
+b110 --> [*]
+b114 --> [*]
+b117 --> [*]
+b129 --> [*]
+b133 --> [*]
+b138 --> [*]
+b147 --> [*]
+b150 --> [*]
+c165 --> [*]
+c166 --> [*]
+c170 --> [*]
+c171 --> [*]
+c175 --> [*]
+c176 --> [*]
+c177 --> [*]
+c183 --> [*]
+c187 --> [*]
+c188 --> [*]
+c192 --> [*]
+c193 --> [*]
+c197 --> [*]
+c198 --> [*]
+
+legend right
+  The Tricameral City
+  Band 16+ · Tier 1 · ~44 min
+  Topology: sorting_hat
+  240 nodes · 42 endings (8+ / 17n / 17-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

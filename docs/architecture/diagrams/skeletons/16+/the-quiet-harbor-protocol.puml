@@ -1,0 +1,562 @@
+@startuml the-quiet-harbor-protocol
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 165w
+state n_recognize #BBDEFB
+n_recognize : setup · 180w
+state n_context #BBDEFB
+n_context : setup · 175w
+state n_stakes #BBDEFB
+n_stakes : setup · 160w
+state n_decline #D1C4E9
+n_decline : rising · 160w
+state e_decline #E0E0E0
+e_decline : setback (neutral)
+e_decline : "The Set Goes Quiet"
+state l1_enter #BBDEFB
+l1_enter : setup · 168w
+state l1_survey #FFF9C4
+l1_survey : choice · 150w
+state l1_c1 #D1C4E9
+l1_c1 : rising · 170w
+state l1_c2 #FFF9C4
+l1_c2 : choice · 150w
+state l1_cp #FFF9C4
+l1_cp : choice · 160w
+state l1_cpa #D1C4E9
+l1_cpa : rising · 175w
+state l1_cpb #D1C4E9
+l1_cpb : rising · 178w
+state l1_cn #D1C4E9
+l1_cn : rising · 172w
+state l1_cn2 #D1C4E9
+l1_cn2 : rising · 168w
+state l1_ck #D1C4E9
+l1_ck : rising · 170w
+state l1_ck2 #D1C4E9
+l1_ck2 : rising · 166w
+state l1_b1 #D1C4E9
+l1_b1 : rising · 172w
+state l1_b2 #FFF9C4
+l1_b2 : choice · 152w
+state l1_bf #D1C4E9
+l1_bf : rising · 175w
+state l1_bf2 #D1C4E9
+l1_bf2 : rising · 170w
+state l1_bd #D1C4E9
+l1_bd : rising · 174w
+state l1_bd2 #D1C4E9
+l1_bd2 : rising · 168w
+state l1_bx #D1C4E9
+l1_bx : rising · 170w
+state l1_bx2 #D1C4E9
+l1_bx2 : rising · 165w
+state l1_s1 #FFF9C4
+l1_s1 : choice · 148w
+state l1_s2 #D1C4E9
+l1_s2 : rising · 168w
+state l1_s2b #D1C4E9
+l1_s2b : rising · 165w
+state l1_s3 #D1C4E9
+l1_s3 : rising · 165w
+state l1_s3b #D1C4E9
+l1_s3b : rising · 162w
+state l1_s4 #D1C4E9
+l1_s4 : rising · 162w
+state l1_s4b #D1C4E9
+l1_s4b : rising · 160w
+state l1_mid #FFF9C4
+l1_mid : choice · 182w
+state l1_weigh #FFF9C4
+l1_weigh : choice · 172w
+state l1_exit #D1C4E9
+l1_exit : rising · 168w
+state l2_enter #BBDEFB
+l2_enter : setup · 168w
+state l2_survey #FFF9C4
+l2_survey : choice · 150w
+state l2_c1 #D1C4E9
+l2_c1 : rising · 170w
+state l2_c2 #FFF9C4
+l2_c2 : choice · 150w
+state l2_cp #FFF9C4
+l2_cp : choice · 160w
+state l2_cpa #D1C4E9
+l2_cpa : rising · 175w
+state l2_cpb #D1C4E9
+l2_cpb : rising · 178w
+state l2_cn #D1C4E9
+l2_cn : rising · 172w
+state l2_cn2 #D1C4E9
+l2_cn2 : rising · 168w
+state l2_ck #D1C4E9
+l2_ck : rising · 170w
+state l2_ck2 #D1C4E9
+l2_ck2 : rising · 166w
+state l2_b1 #D1C4E9
+l2_b1 : rising · 172w
+state l2_b2 #FFF9C4
+l2_b2 : choice · 152w
+state l2_bf #D1C4E9
+l2_bf : rising · 175w
+state l2_bf2 #D1C4E9
+l2_bf2 : rising · 170w
+state l2_bd #D1C4E9
+l2_bd : rising · 174w
+state l2_bd2 #D1C4E9
+l2_bd2 : rising · 168w
+state l2_bx #D1C4E9
+l2_bx : rising · 170w
+state l2_bx2 #D1C4E9
+l2_bx2 : rising · 165w
+state l2_s1 #FFF9C4
+l2_s1 : choice · 148w
+state l2_s2 #D1C4E9
+l2_s2 : rising · 168w
+state l2_s2b #D1C4E9
+l2_s2b : rising · 165w
+state l2_s3 #D1C4E9
+l2_s3 : rising · 165w
+state l2_s3b #D1C4E9
+l2_s3b : rising · 162w
+state l2_s4 #D1C4E9
+l2_s4 : rising · 162w
+state l2_s4b #D1C4E9
+l2_s4b : rising · 160w
+state l2_mid #FFF9C4
+l2_mid : choice · 182w
+state l2_weigh #FFF9C4
+l2_weigh : choice · 172w
+state l2_exit #D1C4E9
+l2_exit : rising · 168w
+state l3_enter #BBDEFB
+l3_enter : setup · 168w
+state l3_survey #FFF9C4
+l3_survey : choice · 150w
+state l3_c1 #D1C4E9
+l3_c1 : rising · 170w
+state l3_c2 #FFF9C4
+l3_c2 : choice · 150w
+state l3_cp #FFF9C4
+l3_cp : choice · 160w
+state l3_cpa #D1C4E9
+l3_cpa : rising · 175w
+state l3_cpb #D1C4E9
+l3_cpb : rising · 178w
+state l3_cn #D1C4E9
+l3_cn : rising · 172w
+state l3_cn2 #D1C4E9
+l3_cn2 : rising · 168w
+state l3_ck #D1C4E9
+l3_ck : rising · 170w
+state l3_ck2 #D1C4E9
+l3_ck2 : rising · 166w
+state l3_b1 #D1C4E9
+l3_b1 : rising · 172w
+state l3_b2 #FFF9C4
+l3_b2 : choice · 152w
+state l3_bf #D1C4E9
+l3_bf : rising · 175w
+state l3_bf2 #D1C4E9
+l3_bf2 : rising · 170w
+state l3_bd #D1C4E9
+l3_bd : rising · 174w
+state l3_bd2 #D1C4E9
+l3_bd2 : rising · 168w
+state l3_bx #D1C4E9
+l3_bx : rising · 170w
+state l3_bx2 #D1C4E9
+l3_bx2 : rising · 165w
+state l3_s1 #FFF9C4
+l3_s1 : choice · 148w
+state l3_s2 #D1C4E9
+l3_s2 : rising · 168w
+state l3_s2b #D1C4E9
+l3_s2b : rising · 165w
+state l3_s3 #D1C4E9
+l3_s3 : rising · 165w
+state l3_s3b #D1C4E9
+l3_s3b : rising · 162w
+state l3_s4 #D1C4E9
+l3_s4 : rising · 162w
+state l3_s4b #D1C4E9
+l3_s4b : rising · 160w
+state l3_mid #FFF9C4
+l3_mid : choice · 182w
+state l3_weigh #FFF9C4
+l3_weigh : choice · 172w
+state l3_exit #D1C4E9
+l3_exit : rising · 168w
+state n_eve #FFF9C4
+n_eve : choice · 185w
+state n_abort #FFF9C4
+n_abort : choice · 175w
+state n_abort_warn #D1C4E9
+n_abort_warn : rising · 166w
+state n_abort_dark #D1C4E9
+n_abort_dark : rising · 166w
+state e_abort_warn #E0E0E0
+e_abort_warn : discovery (neutral)
+e_abort_warn : "A Word in the Right Ear"
+state e_abort_dark #E0E0E0
+e_abort_dark : setback (neutral)
+e_abort_dark : "Let Sleeping Nets Lie"
+state e_abort_burn #FFCDD2
+e_abort_burn : setback (negative)
+e_abort_burn : "Ashes in the Grate"
+state e_abort_ashe #E0E0E0
+e_abort_ashe : discovery (neutral)
+e_abort_ashe : "Handing It to Ashe"
+state n_night #D1C4E9
+n_night : rising · 172w
+state n_approach #FFF9C4
+n_approach : choice · 182w
+state n_app_unseen #D1C4E9
+n_app_unseen : rising · 165w
+state n_app_watched #D1C4E9
+n_app_watched : rising · 165w
+state n_app_seen #D1C4E9
+n_app_seen : rising · 168w
+state n_pier #FFF9C4
+n_pier : choice · 188w
+state n_read #FFF9C4
+n_read : choice · 175w
+state n_clean #FFF9C4
+n_clean : choice · 182w
+state c_e3_scene #FFE0B2
+c_e3_scene : climax · 185w
+state c_e3_confront #FFE0B2
+c_e3_confront : climax · 182w
+state c_e3_tide #FFE0B2
+c_e3_tide : climax · 178w
+state e_clean_rollup #C8E6C9
+e_clean_rollup : completion (positive)
+e_clean_rollup : "The Quiet Harbor Protocol"
+state e_clean_alive #C8E6C9
+e_clean_alive : success (positive)
+e_clean_alive : "Both of Them Walk Away"
+state e_clean_tide #FFCDD2
+e_clean_tide : death (negative)
+e_clean_tide : "Slack Water"
+state c_e2_scene #FFE0B2
+c_e2_scene : climax · 180w
+state c_e2_beat #FFE0B2
+c_e2_beat : climax · 176w
+state c_e2_final #FFE0B2
+c_e2_final : climax · 178w
+state e2_petrel #C8E6C9
+e2_petrel : success (positive)
+e2_petrel : "Petrel Comes In"
+state e2_corbett #E0E0E0
+e2_corbett : success (neutral)
+e2_corbett : "One Name, Not the Other"
+state e2_standoff #E0E0E0
+e2_standoff : setback (neutral)
+e2_standoff : "A Draw at Slack Tide"
+state c_e1_scene #FFE0B2
+c_e1_scene : climax · 178w
+state c_e1_beat #FFE0B2
+c_e1_beat : climax · 174w
+state c_e1_final #FFE0B2
+c_e1_final : climax · 175w
+state e1_hunch #E0E0E0
+e1_hunch : discovery (neutral)
+e1_hunch : "On a Hunch"
+state e1_miss #FFCDD2
+e1_miss : setback (negative)
+e1_miss : "The Word You Couldn't Prove"
+state e1_safe #E0E0E0
+e1_safe : setback (neutral)
+e1_safe : "Better to Be Sure"
+state c_e0_scene #FFE0B2
+c_e0_scene : climax · 176w
+state c_e0_beat #FFE0B2
+c_e0_beat : climax · 172w
+state c_e0_final #FFE0B2
+c_e0_final : climax · 174w
+state e0_show #E0E0E0
+e0_show : discovery (neutral)
+e0_show : "Nothing to Offer but Herself"
+state e0_blind #FFCDD2
+e0_blind : setback (negative)
+e0_blind : "Nothing to Take to Anyone"
+state e0_watch #E0E0E0
+e0_watch : setback (neutral)
+e0_watch : "You Watched the Water"
+state e0_walk #E0E0E0
+e0_walk : discovery (neutral)
+e0_walk : "Home Before the Tide Turned"
+state n_burned #FFF9C4
+n_burned : choice · 184w
+state b_hi_scene #FFE0B2
+b_hi_scene : climax · 184w
+state b_hi_final #FFE0B2
+b_hi_final : climax · 180w
+state b_hi_costly #FFCDD2
+b_hi_costly : success (negative)
+b_hi_costly : "Proof, and a Price"
+state b_hi_trade #FFCDD2
+b_hi_trade : capture (negative)
+b_hi_trade : "The Beacon in Your Pocket"
+state b_hi_pyrrhic #FFCDD2
+b_hi_pyrrhic : death (negative)
+b_hi_pyrrhic : "Both Sides of the Rail"
+state b_mid_scene #FFE0B2
+b_mid_scene : climax · 180w
+state b_mid_beat #FFE0B2
+b_mid_beat : climax · 174w
+state b_mid_final #FFE0B2
+b_mid_final : climax · 176w
+state b_mid_scatter #FFCDD2
+b_mid_scatter : setback (negative)
+b_mid_scatter : "It All Comes Apart"
+state b_mid_flee #FFCDD2
+b_mid_flee : setback (negative)
+b_mid_flee : "Running the Wrong Way"
+state b_mid_caught #FFCDD2
+b_mid_caught : capture (negative)
+b_mid_caught : "Made at the Gate"
+state b_lo_scene #FFE0B2
+b_lo_scene : climax · 180w
+state b_lo_beat #FFE0B2
+b_lo_beat : climax · 172w
+state b_lo_final #FFE0B2
+b_lo_final : climax · 176w
+state b_lo_trap #FFCDD2
+b_lo_trap : death (negative)
+b_lo_trap : "Into the Trap"
+state b_lo_petrel #FFCDD2
+b_lo_petrel : death (negative)
+b_lo_petrel : "Petrel Pays for It"
+state b_lo_capture #FFCDD2
+b_lo_capture : capture (negative)
+b_lo_capture : "They Were Waiting"
+state b_lo_surrender #FFCDD2
+b_lo_surrender : capture (negative)
+b_lo_surrender : "On Your Own Terms, Barely"
+n_start --> n_recognize : Freeze the recording and play it back a ...
+n_recognize --> n_context : Sit with the impossible fact of it, then...
+n_context --> n_stakes : Two nights. Decide whether this is still...
+n_stakes --> l1_enter : Work it. Start where you are strongest: ...
+n_stakes --> n_decline : Let it lie. This is not your war any mor...
+n_decline --> e_decline : Let the tide keep its own counsel.
+l1_enter --> l1_survey : Decide how to work the signal.
+l1_survey --> l1_c1 : Work it silently: decode by hand against...
+l1_survey --> l1_b1 : Go active: run a direction-find sweep fo...
+l1_survey --> l1_s1 : Stay dark: log the frequency and touch n...
+l1_c1 --> l1_c2 : Choose what to read out of the signal.
+l1_c2 --> l1_cp : Match the sender's keying fist against t...
+l1_c2 --> l1_cn : Decode only the coordinates; fix the ren...
+l1_c2 --> l1_ck : Test only whether the pad handshake is a...
+l1_cp --> l1_cpa : Document the match cleanly, dot by dot.
+l1_cp --> l1_cpb : Pull Corbett's personnel keying sample t...
+l1_cpa --> l1_mid : Draw it together and move on.
+l1_cpb --> l1_mid : Draw it together and move on.
+l1_cn --> l1_cn2 : Draw it together and move on.
+l1_cn2 --> l1_mid : Draw it together and move on.
+l1_ck --> l1_ck2 : Draw it together and move on.
+l1_ck2 --> l1_mid : Draw it together and move on.
+l1_b1 --> l1_b2 : Commit to the sweep.
+l1_b2 --> l1_bf : Answer the preamble on the live net to d...
+l1_b2 --> l1_bd : Stay silent; take a passive bearing only...
+l1_b2 --> l1_bx : Abort the sweep; kill the set.
+l1_bf --> l1_bf2 : Draw it together and move on.
+l1_bf2 --> l1_mid : Draw it together and move on.
+l1_bd --> l1_bd2 : Draw it together and move on.
+l1_bd2 --> l1_mid : Draw it together and move on.
+l1_bx --> l1_bx2 : Draw it together and move on.
+l1_bx2 --> l1_mid : Draw it together and move on.
+l1_s1 --> l1_s2 : Listen for the schedule pattern without ...
+l1_s1 --> l1_s3 : Keep wholly clear; note nothing.
+l1_s1 --> l1_s4 : Log the frequency and switch off.
+l1_s2 --> l1_s2b : Draw it together and move on.
+l1_s2b --> l1_mid : Draw it together and move on.
+l1_s3 --> l1_s3b : Draw it together and move on.
+l1_s3b --> l1_mid : Draw it together and move on.
+l1_s4 --> l1_s4b : Draw it together and move on.
+l1_s4b --> l1_mid : Draw it together and move on.
+l1_mid --> l1_weigh : Bank what the night gave, and let the to...
+l1_weigh --> l1_exit : Close the leg and carry the balance forw...
+l1_exit --> l2_enter : Rest an hour, then drive to the records ...
+l2_enter --> l2_survey : Decide how to reach the file.
+l2_survey --> l2_c1 : Ask Wren to pull it openly, on the recor...
+l2_survey --> l2_b1 : Return after hours and open the shelf yo...
+l2_survey --> l2_s1 : Leave it sealed; work from memory and th...
+l2_c1 --> l2_c2 : Choose how deep to read.
+l2_c2 --> l2_cp : Read the countersign and the access log ...
+l2_c2 --> l2_cn : Read only the countersign page.
+l2_c2 --> l2_ck : Have Wren summarise it; handle nothing.
+l2_cp --> l2_cpa : Document the countersign and the log ent...
+l2_cp --> l2_cpb : Photograph the log page for corroboratio...
+l2_cpa --> l2_mid : Draw it together and move on.
+l2_cpb --> l2_mid : Draw it together and move on.
+l2_cn --> l2_cn2 : Draw it together and move on.
+l2_cn2 --> l2_mid : Draw it together and move on.
+l2_ck --> l2_ck2 : Draw it together and move on.
+l2_ck2 --> l2_mid : Draw it together and move on.
+l2_b1 --> l2_b2 : Cross into the dark stacks.
+l2_b2 --> l2_bf : Take the physical file away to study.
+l2_b2 --> l2_bd : Photograph every page and reshelve it cl...
+l2_b2 --> l2_bx : Take nothing; slip back out.
+l2_bf --> l2_bf2 : Draw it together and move on.
+l2_bf2 --> l2_mid : Draw it together and move on.
+l2_bd --> l2_bd2 : Draw it together and move on.
+l2_bd2 --> l2_mid : Draw it together and move on.
+l2_bx --> l2_bx2 : Draw it together and move on.
+l2_bx2 --> l2_mid : Draw it together and move on.
+l2_s1 --> l2_s2 : Reconstruct from the public inquiry reco...
+l2_s1 --> l2_s3 : Trust memory alone; read nothing.
+l2_s1 --> l2_s4 : Thank Wren and leave it wholly sealed.
+l2_s2 --> l2_s2b : Draw it together and move on.
+l2_s2b --> l2_mid : Draw it together and move on.
+l2_s3 --> l2_s3b : Draw it together and move on.
+l2_s3b --> l2_mid : Draw it together and move on.
+l2_s4 --> l2_s4b : Draw it together and move on.
+l2_s4b --> l2_mid : Draw it together and move on.
+l2_mid --> l2_weigh : Pocket what she has and let the annex cl...
+l2_weigh --> l2_exit : Close the leg and carry the balance forw...
+l2_exit --> l3_enter : Drive for the coast while the light last...
+l3_enter --> l3_survey : Decide how to read the ground.
+l3_survey --> l3_c1 : Set a clean OP and read the ground first...
+l3_survey --> l3_b1 : Approach Ashe directly at the weighbridg...
+l3_survey --> l3_s1 : Withdraw; trust the picture you already ...
+l3_c1 --> l3_c2 : Choose what to confirm from cover.
+l3_c2 --> l3_cp : Find and read the second watcher and the...
+l3_c2 --> l3_cn : Confirm Ashe's presence and no more.
+l3_c2 --> l3_ck : Map the approaches; pin no one.
+l3_cp --> l3_cpa : Fix the second watcher's position and fi...
+l3_cp --> l3_cpb : Sketch the whole trap: watchers, exits, ...
+l3_cpa --> l3_mid : Draw it together and move on.
+l3_cpb --> l3_mid : Draw it together and move on.
+l3_cn --> l3_cn2 : Draw it together and move on.
+l3_cn2 --> l3_mid : Draw it together and move on.
+l3_ck --> l3_ck2 : Draw it together and move on.
+l3_ck2 --> l3_mid : Draw it together and move on.
+l3_b1 --> l3_b2 : Cross to him.
+l3_b2 --> l3_bf : Tell Ashe about the reactivation.
+l3_b2 --> l3_bd : Draw out his field picture; reveal nothi...
+l3_b2 --> l3_bx : Say nothing real; retreat.
+l3_bf --> l3_bf2 : Draw it together and move on.
+l3_bf2 --> l3_mid : Draw it together and move on.
+l3_bd --> l3_bd2 : Draw it together and move on.
+l3_bd2 --> l3_mid : Draw it together and move on.
+l3_bx --> l3_bx2 : Draw it together and move on.
+l3_bx2 --> l3_mid : Draw it together and move on.
+l3_s1 --> l3_s2 : Take one distant look before withdrawing...
+l3_s1 --> l3_s3 : Withdraw fully; commit on what you have.
+l3_s1 --> l3_s4 : Leave the ground unread; go home to thin...
+l3_s2 --> l3_s2b : Draw it together and move on.
+l3_s2b --> l3_mid : Draw it together and move on.
+l3_s3 --> l3_s3b : Draw it together and move on.
+l3_s3b --> l3_mid : Draw it together and move on.
+l3_s4 --> l3_s4b : Draw it together and move on.
+l3_s4b --> l3_mid : Draw it together and move on.
+l3_mid --> l3_weigh : Fold the ground into the plan and start ...
+l3_weigh --> l3_exit : Close the leg and carry the balance forw...
+l3_exit --> n_eve : Go home to the hours before slack water.
+n_eve --> n_night : Go down to the pier and see it through.
+n_eve --> n_abort : Abort. There is more than one way to end...
+n_abort --> n_abort_warn : Pass an anonymous warning up the duty li...
+n_abort --> n_abort_dark : Go dark; stay away and let the trap sit ...
+n_abort --> e_abort_burn : Burn the notes and forget it happened.
+n_abort --> e_abort_ashe : Hand it all to Ashe and step back.
+n_abort_warn --> e_abort_warn : Send it and step back into the dark.
+n_abort_dark --> e_abort_dark : Keep the door shut and let the night pas...
+n_night --> n_approach : Come down to the harbour and read the ap...
+n_approach --> n_app_unseen : Slip in unseen through the boat-yards.
+n_approach --> n_app_watched : Come in assuming eyes are on you.
+n_approach --> n_app_seen : Walk in knowing you are already clocked.
+n_app_unseen --> n_pier : Take the pier approach in your own time.
+n_app_watched --> n_pier : Close on the pier, watching the watchers...
+n_app_seen --> n_pier : Walk in with your hand already forced.
+n_pier --> n_read : Step onto the boards and read where you ...
+n_read --> n_clean : You are still unseen by the enemy: play ...
+n_read --> n_burned : You are compromised: the enemy knows you...
+n_clean --> c_e3_scene : You can prove it all: the asset genuine,...
+n_clean --> c_e2_scene : You can prove most of it, but a piece is...
+n_clean --> c_e1_scene : You have one thread and little else.
+n_clean --> c_e0_scene : You have nothing you could take to anyon...
+c_e3_scene --> c_e3_confront : Now deal with the man who laid the trap.
+c_e3_confront --> e_clean_rollup : Spring the clean arrest: take Corbett wi...
+c_e3_confront --> e_clean_alive : Take him alive and unhurried; let the la...
+c_e3_confront --> c_e3_tide : Say nothing; let his own trap and the ti...
+c_e3_tide --> e_clean_tide : Watch the water do what you will not.
+c_e2_scene --> c_e2_beat : Play the incomplete hand.
+c_e2_beat --> c_e2_final : Play it out.
+c_e2_final --> e2_petrel : Get Petrel off the pier; let Corbett sli...
+c_e2_final --> e2_corbett : Move on Corbett; let the asset vanish.
+c_e2_final --> e2_standoff : Hold the middle; force a wary standoff.
+c_e1_scene --> c_e1_beat : Play the one thread you have.
+c_e1_beat --> c_e1_final : Play it out.
+c_e1_final --> e1_hunch : Act on the hunch; give the countersign a...
+c_e1_final --> e1_miss : Challenge the dark and hope the bluff ho...
+c_e1_final --> e1_safe : Pull the asset out on faith; prove nothi...
+c_e0_scene --> c_e0_beat : Face the rail with nothing but nerve.
+c_e0_beat --> c_e0_final : Play it out.
+c_e0_final --> e0_blind : Risk the countersign blind and see what ...
+c_e0_final --> e0_watch : Hold back; watch the water and commit to...
+c_e0_final --> e0_walk : Call it off; walk home unready.
+c_e0_final --> e0_show : Show yourself openly and let the figure ...
+n_burned --> b_hi_scene : Burned, but you can prove it: leverage t...
+n_burned --> b_mid_scene : Burned, with a single thread to bargain.
+n_burned --> b_lo_scene : Burned and blind: nothing between you an...
+b_hi_scene --> b_hi_final : Spend the case against the closing trap.
+b_hi_final --> b_hi_costly : Nail Corbett; accept you cannot save Pet...
+b_hi_final --> b_hi_trade : Let them take you; get the proof out ali...
+b_hi_final --> b_hi_pyrrhic : Force it on the rail; let the night fall...
+b_mid_scene --> b_mid_beat : Play the thread against the trap.
+b_mid_beat --> b_mid_final : Play it out.
+b_mid_final --> b_mid_scatter : Bluff the thread; buy the asset a run.
+b_mid_final --> b_mid_flee : Break and scatter; draw them onto yourse...
+b_mid_final --> b_mid_caught : Freeze at the wrong instant.
+b_lo_scene --> b_lo_beat : Meet the trap with nothing.
+b_lo_beat --> b_lo_final : Play it out.
+b_lo_final --> b_lo_trap : Walk out to the rail and meet it.
+b_lo_final --> b_lo_petrel : Shout a warning and run with the asset.
+b_lo_final --> b_lo_capture : Go still and silent; give them nothing.
+b_lo_final --> b_lo_surrender : Walk to the back-stop and give yourself ...
+e_decline --> [*]
+e_abort_warn --> [*]
+e_abort_dark --> [*]
+e_abort_burn --> [*]
+e_abort_ashe --> [*]
+e_clean_rollup --> [*]
+e_clean_alive --> [*]
+e_clean_tide --> [*]
+e2_petrel --> [*]
+e2_corbett --> [*]
+e2_standoff --> [*]
+e1_hunch --> [*]
+e1_miss --> [*]
+e1_safe --> [*]
+e0_show --> [*]
+e0_blind --> [*]
+e0_watch --> [*]
+e0_walk --> [*]
+b_hi_costly --> [*]
+b_hi_trade --> [*]
+b_hi_pyrrhic --> [*]
+b_mid_scatter --> [*]
+b_mid_flee --> [*]
+b_mid_caught --> [*]
+b_lo_trap --> [*]
+b_lo_petrel --> [*]
+b_lo_capture --> [*]
+b_lo_surrender --> [*]
+
+legend right
+  The Quiet Harbor Protocol
+  Band 16+ · Tier 2 · ~24 min
+  Topology: branch_and_bottleneck
+  153 nodes · 28 endings (3+ / 11n / 14-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

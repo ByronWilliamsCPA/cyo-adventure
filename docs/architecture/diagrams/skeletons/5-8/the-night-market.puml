@@ -1,0 +1,241 @@
+@startuml the-night-market
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 85w
+state n_meet #BBDEFB
+n_meet : setup · 78w
+state n_promise #BBDEFB
+n_promise : setup · 70w
+state n_hub #FFF9C4
+n_hub : choice · 92w
+state ds_entry #FFF9C4
+ds_entry : choice · 78w
+state ds_carry #FFF9C4
+ds_carry : choice · 72w
+state ds_happy #D1C4E9
+ds_happy : rising · 62w
+state ds_fold #D1C4E9
+ds_fold : rising · 68w
+state ds_gift #D1C4E9
+ds_gift : rising · 75w
+state pf_entry #FFF9C4
+pf_entry : choice · 80w
+state pf_scraps #FFF9C4
+pf_scraps : choice · 70w
+state pf_last #D1C4E9
+pf_last : rising · 60w
+state pf_breeze #D1C4E9
+pf_breeze : rising · 60w
+state pf_sort #D1C4E9
+pf_sort : rising · 68w
+state pf_gift #D1C4E9
+pf_gift : rising · 75w
+state tc_entry #FFF9C4
+tc_entry : choice · 78w
+state tc_cups #FFF9C4
+tc_cups : choice · 72w
+state tc_warm #D1C4E9
+tc_warm : rising · 62w
+state tc_kettle #D1C4E9
+tc_kettle : rising · 66w
+state tc_gift #D1C4E9
+tc_gift : rising · 75w
+state tm_entry #FFF9C4
+tm_entry : choice · 78w
+state tm_screws #FFF9C4
+tm_screws : choice · 72w
+state tm_neat #D1C4E9
+tm_neat : rising · 60w
+state tm_gear #D1C4E9
+tm_gear : rising · 66w
+state tm_gift #D1C4E9
+tm_gift : rising · 75w
+state fs_entry #FFF9C4
+fs_entry : choice · 80w
+state fs_stack #FFF9C4
+fs_stack : choice · 70w
+state fs_tower #D1C4E9
+fs_tower : rising · 60w
+state fs_pattern #D1C4E9
+fs_pattern : rising · 62w
+state fs_bundle #D1C4E9
+fs_bundle : rising · 66w
+state fs_gift #D1C4E9
+fs_gift : rising · 75w
+state mc_entry #FFF9C4
+mc_entry : choice · 78w
+state mc_bells #FFF9C4
+mc_bells : choice · 72w
+state mc_time #D1C4E9
+mc_time : rising · 62w
+state mc_pages #D1C4E9
+mc_pages : rising · 64w
+state mc_gift #D1C4E9
+mc_gift : rising · 75w
+state f_steps #FFF9C4
+f_steps : choice · 95w
+state f_paper #D1C4E9
+f_paper : rising · 68w
+state f_whisper #D1C4E9
+f_whisper : rising · 66w
+state f_write #FFF9C4
+f_write : choice · 80w
+state f_lantern #D1C4E9
+f_lantern : rising · 68w
+state f_string #D1C4E9
+f_string : rising · 66w
+state f_flame #FFF9C4
+f_flame : choice · 80w
+state f_friends #D1C4E9
+f_friends : rising · 70w
+state f_circle #D1C4E9
+f_circle : rising · 66w
+state f_countdown #FFF9C4
+f_countdown : choice · 80w
+state e_ds_spill #FFCDD2
+e_ds_spill : setback (negative)
+e_ds_spill : "Runaway Dumplings"
+state e_tc_slosh #FFCDD2
+e_tc_slosh : setback (negative)
+e_tc_slosh : "One Tray Too Full"
+state e_tm_spring #FFCDD2
+e_tm_spring : setback (negative)
+e_tm_spring : "Sproing Goes the Beetle"
+state e_mc_gong #FFCDD2
+e_mc_gong : setback (negative)
+e_mc_gong : "The Mighty Gong Whack"
+state e_wish_pip #C8E6C9
+e_wish_pip : completion (positive)
+e_wish_pip : "Pip's Own Wish"
+state e_wish_market #C8E6C9
+e_wish_market : success (positive)
+e_wish_market : "A Wish Big Enough to Share"
+state e_wish_brave #C8E6C9
+e_wish_brave : discovery (positive)
+e_wish_brave : "Wobbly Brave Letters"
+state e_light_pip #C8E6C9
+e_light_pip : completion (positive)
+e_light_pip : "Pip Lights the Way"
+state e_light_together #C8E6C9
+e_light_together : success (positive)
+e_light_together : "One, Two, Three, Glow"
+state e_light_keeper #C8E6C9
+e_light_keeper : completion (positive)
+e_light_keeper : "The Old Way"
+state e_up_pip #C8E6C9
+e_up_pip : success (positive)
+e_up_pip : "Pip Counts Us Down"
+state e_up_chorus #C8E6C9
+e_up_chorus : completion (positive)
+e_up_chorus : "The Whole Square Counts"
+state e_up_song #C8E6C9
+e_up_song : success (positive)
+e_up_song : "Sung into the Sky"
+n_start --> n_meet : Peek behind the barrel.
+n_meet --> n_promise : Promise to help Pip before the ceremony.
+n_promise --> n_hub : Step into the lantern square.
+n_hub --> ds_entry : Follow the ginger steam to the dumpling ...
+n_hub --> pf_entry : Visit the paper folder and his cranes.
+n_hub --> tc_entry : Stop by the tea cart with the tiny stove...
+n_hub --> tm_entry : Look in at the toy mender's table.
+n_hub --> fs_entry : Wander over to the fruit stand.
+n_hub --> mc_entry : Drift toward the musicians' corner.
+n_hub --> f_steps : Head to the ceremony steps with Pip.
+ds_entry --> ds_carry : Carry the warm trays to the tables.
+ds_entry --> ds_fold : Join the folding table and pleat dumplin...
+ds_carry --> ds_happy : Take one tray at a time, slow and steady...
+ds_carry --> e_ds_spill : Stack three trays high for one big trip.
+ds_happy --> ds_gift : Go collect Auntie Mo's thank-you.
+ds_fold --> ds_gift : See what Auntie Mo says next.
+ds_gift --> n_hub : Walk back to the lantern square.
+ds_gift --> f_steps : Head for the ceremony steps with Pip.
+pf_entry --> pf_scraps : Chase the drifting paper squares.
+pf_entry --> pf_sort : Sort the crane papers by color.
+pf_scraps --> pf_last : Ask the tall noodle cook for a boost.
+pf_scraps --> pf_breeze : Wait for the breeze to bring it down.
+pf_last --> pf_gift : Bring the rescued papers back to the fol...
+pf_breeze --> pf_gift : Carry the gold square back to the folder...
+pf_sort --> pf_gift : Hand the folder the last tidy tray.
+pf_gift --> n_hub : Walk back to the lantern square.
+pf_gift --> f_steps : Head for the ceremony steps with Pip.
+tc_entry --> tc_cups : Pass out the little clay cups.
+tc_entry --> tc_kettle : Refill the big kettle from the barrel.
+tc_cups --> tc_warm : Carry two cups at a time, nice and level...
+tc_cups --> e_tc_slosh : Load up the whole tray in one go.
+tc_warm --> tc_gift : Head back to Granny Osha's cart.
+tc_kettle --> tc_gift : See what Granny Osha has in mind.
+tc_gift --> n_hub : Walk back to the lantern square.
+tc_gift --> f_steps : Head for the ceremony steps with Pip.
+tm_entry --> tm_screws : Sort the tin of tiny screws by size.
+tm_entry --> tm_gear : Hunt for the runaway gear under the stal...
+tm_screws --> tm_neat : Keep lining the screws up in neat rows.
+tm_screws --> e_tm_spring : Wind the beetle's key as far as it can g...
+tm_neat --> tm_gift : Come see what Mr. Fez is reaching for.
+tm_gear --> tm_gift : Come see what Mr. Fez is reaching for.
+tm_gift --> n_hub : Walk back to the lantern square.
+tm_gift --> f_steps : Head for the ceremony steps with Pip.
+fs_entry --> fs_stack : Rebuild the orange pyramid.
+fs_entry --> fs_bundle : Tie fruit bundles with the golden string...
+fs_stack --> fs_tower : Build it the classic way, big ones on th...
+fs_stack --> fs_pattern : Try a fancy striped pattern.
+fs_tower --> fs_gift : Go get Auntie Plum's thank-you.
+fs_pattern --> fs_gift : Go see what Auntie Plum is twinkling abo...
+fs_bundle --> fs_gift : Watch what Auntie Plum snips off the spo...
+fs_gift --> n_hub : Walk back to the lantern square.
+fs_gift --> f_steps : Head for the ceremony steps with Pip.
+mc_entry --> mc_pages : Hold the songbook pages against the bree...
+mc_entry --> mc_bells : Try the little brass bells with the drum...
+mc_bells --> mc_time : Ring the bells softly in time.
+mc_bells --> e_mc_gong : Give the big gong one mighty whack.
+mc_time --> mc_gift : Take a bow with the band.
+mc_pages --> mc_gift : Listen to what the fiddler asks Pip.
+mc_gift --> n_hub : Walk back to the lantern square.
+mc_gift --> f_steps : Head for the ceremony steps with Pip.
+f_steps --> f_paper : Help Pip fold and write her wish.
+f_steps --> f_lantern : Help Pip get her lantern ready to fly.
+f_steps --> f_friends : Gather the stall friends around Pip firs...
+f_paper --> f_whisper : Lean in so Pip can whisper her wish.
+f_whisper --> f_write : Pick up the brush together.
+f_write --> e_wish_pip : Write Pip's wish just as she whispered i...
+f_write --> e_wish_market : Add a second wish for the whole market.
+f_write --> e_wish_brave : Hand Pip the brush to write it herself.
+f_lantern --> f_string : Tie on the golden string first.
+f_string --> f_flame : Get ready to light the lantern.
+f_flame --> e_light_pip : Let Pip light the wick all by herself.
+f_flame --> e_light_together : Light it together on a count of three.
+f_flame --> e_light_keeper : Ask the oldest keeper to light it the ol...
+f_friends --> f_circle : Bring everyone into a circle around Pip.
+f_circle --> f_countdown : Get ready to send the lantern up.
+f_countdown --> e_up_pip : Let Pip lead the count of three.
+f_countdown --> e_up_chorus : Count down all together.
+f_countdown --> e_up_song : Hum the wish song and let it lift.
+e_ds_spill --> [*]
+e_tc_slosh --> [*]
+e_tm_spring --> [*]
+e_mc_gong --> [*]
+e_wish_pip --> [*]
+e_wish_market --> [*]
+e_wish_brave --> [*]
+e_light_pip --> [*]
+e_light_together --> [*]
+e_light_keeper --> [*]
+e_up_pip --> [*]
+e_up_chorus --> [*]
+e_up_song --> [*]
+
+legend right
+  The Night Market
+  Band 5-8 · Tier 1 · ~7 min
+  Topology: open_map
+  59 nodes · 13 endings (9+ / 0n / 4-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml
