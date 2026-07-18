@@ -1,11 +1,11 @@
 ---
 schema_type: planning
 title: "Story Flexibility and Diversity Plan"
-description: "Strategy for expanding story diversity beyond the current fixed-skeleton model:
-  wire the requester's theme into the fill, parameterize skeleton beats so one structure yields
-  many themed stories, add character/tone packs, make selection diversity-aware, compose stories
-  from reusable structural modules, and offer a fresh-generation novelty tier, all while preserving
-  the gated safety guarantees."
+description: "Strategy for maximizing story diversity, defined as: each story must feel like a new
+  adventure to the reader. Vary the leaves (the descriptive content along a shared tree of paths and
+  decision points) first, add structural and state variety as the library scales, and let the
+  deterministic gate keep every variant safe. Corrects an earlier premise: the automated fill
+  already themes stories from the requester's brief."
 tags:
   - planning
   - architecture
@@ -14,265 +14,290 @@ status: active
 owner: core-maintainer
 authors:
   - name: "Byron Williams"
-purpose: "Record the problem, design principle, and phased workstreams for increasing story
-  flexibility so the concepts are not lost and each change can be planned and executed with full
-  context. Companion to the parameterized-beat pilot under out/pilot/."
+purpose: "Record the objective (each story feels like a new adventure), the leaves-on-a-tree model,
+  diversity metrics, and phased workstreams for maximizing story diversity so the concepts are not
+  lost and each change can be planned with full context. Revised 2026-07-18 after an adversarial
+  (Fable) review and an owner framing of the objective. Companion to the pilot under out/pilot/."
 component: Strategy
-source: "Design discussion 2026-07-18 following the initial story-inventory run; current-state
-  exploration of skeletons/, generation/, story_requests/, and the cyo-author skill."
+source: "Design discussion 2026-07-18 following the initial story-inventory run; owner objective
+  framing (leaves on a tree); adversarial review of the first draft; current-state exploration of
+  generation/ (fill.md, worker.py, orchestrator.py), story_requests/, skeleton_match.py, validator/,
+  and ADR-011."
 ---
 
-> **Status: Active (proposal + pilot underway).** The parameterized-beat pilot
-> (Phase 2 proof-of-concept) is built under `out/pilot/`; nothing here is wired
-> into the live fill path yet. This document is the design record; the
-> architectural decision it implies is an ADR-019 candidate (see Open questions).
+> **Status: Active (revised).** The parameterized-beat pilot (`out/pilot/`) is
+> built and proven; nothing beyond it is wired into the live path yet. This
+> revision (a) sets the objective from the negative, each story must feel like a
+> new adventure, in the academic leaves-on-a-tree frame; (b) corrects the original
+> problem statement (the automated fill already consumes the theme brief);
+> (c) adds a metrics workstream (WS-0) without which "maximize" is unfalsifiable;
+> and (d) adds structure/state variety and a catalog flywheel. Parameterized
+> skeletons are an ADR-019 candidate (see Open questions).
 
 ---
 
-## 1. Problem
+## 1. Objective: each story must feel like a new adventure
 
-The story pipeline turns a guardian/kid request into a published Storybook by
-**filling a pre-authored skeleton** with prose (`generation/`, the `cyo-author`
-skill). Each skeleton is a story graph whose node bodies hold
-`<<FILL role=... words=... beats='...'>>` directives. The intent was that a
-skeleton fixes *structure* and the fill supplies *prose*. In practice the
-`beats=` payloads hard-code a **specific, fully-cast story**, not just a shape.
+Defined from the negative, the failures we must avoid:
 
-Evidence (from the shipped catalog):
+- A reader reads two stories and feels they are **similar**.
+- A **dog swapped for a cat** with the rest of the story identical: a surface
+  substitution is not a new experience.
+- A reader requests **their own** story and it reads like another they requested.
 
-- `the-cave-of-echoes`: "Maya and her dog Biscuit slip into the sea caves under
-  the old lighthouse at low tide; three dark openings breathe cool air..."
-- `the-night-market`: "Milo and his cousin Ada... a small pangolin curled into a
-  ball; her name is Pip... she lost her basket with her wish paper, her golden
-  string, and her little candle."
+So the objective is perceptual: **minimize the perceived similarity between any
+two stories a reader encounters.** With only a handful of stories in a cell some
+similarity is inherent; the goal is to hold perceived-uniqueness up as the
+library grows so every book is a new adventure.
 
-Named characters, named settings, specific props, a fixed beat sequence, and
-theme-specific ending titles. Two consequences:
+### The leaves-on-a-tree model (the frame we design to)
 
-1. **Filling varies prose only.** Two fills of the same skeleton differ in voice,
-   word choice, and reading-level tuning, but tell the *same story* with the same
-   characters, plot, setting, and endings.
-2. **The requester's theme is ignored.** A whole-skill grep found **no use of
-   `theme_brief` / premise in the fill**. A kid who asks for "a story about
-   dinosaurs" in a given cell receives one of that cell's fixed skeletons,
-   reworded, never a dinosaur story.
+From the original research: a story is a **tree** whose branches are the
+**paths and decision points**, and whose **leaves** are the story told along
+those branches.
 
-Net: variety today equals **(number of skeletons per cell) x (prose variation)**.
-With 3-4 skeletons per cell, repeated requests recycle the same handful of plots.
-This is a direct risk to the engagement and replay goals in
-[project-vision.md](project-vision.md) and undercuts capability
-[K11](capability-register.md) (express interests and initiate a request in kid
-terms) because the expressed interest does not shape the result.
+- The **tree** (structure) may be **shared** between stories. Two stories can
+  follow the same path to the same branch point, and the path back to the main
+  line is the same path. Shared structure is acceptable, and inevitable when a
+  cell has few skeletons.
+- The **leaves** (the description of each point, "how they describe point A and
+  point B") must be **genuinely different** between stories. This is where
+  perceived uniqueness is made.
 
-## 2. Why it is built this way (the tradeoff to preserve)
+Two consequences for strategy:
 
-Fixed beats are what make the gated pipeline's guarantees cheap. Because the fill
-is a bounded, reviewable task, the deterministic `validator/` gate and
-`moderation/` review can be thorough, and the per-band content guarantee
-([K13](capability-register.md): no death endings in young bands, etc.) is
-provable. Any diversity lever **must keep these guarantees**. The design
-principle below is what makes added variety safe.
+1. **Leaf diversity is the primary lever.** Most of the perceived-uniqueness
+   load, per pair of stories, is carried by genuinely re-authored leaf content,
+   not by new structures. The dog-for-cat failure is a leaf that collapsed into a
+   variable substitution; the fix is a genuinely re-imagined leaf on the same
+   branch, not a new tree.
+2. **Structural variety is the scaling lever.** Shared trees are fine at small
+   scale, but as a family reads more and as the per-cell library grows, repeated
+   trees start to show. Structural variety (new trees, mutated trees) is what
+   keeps uniqueness up at scale; it complements leaf diversity rather than
+   replacing it.
 
-## 3. Design principle: freeze structure and safety, vary content
+This rebalances the adversarial review, which pushed structural variety as the
+ceiling: correct at scale, but leaf diversity is the first and largest lever.
 
-Every lever in this plan separates the two axes of a story:
+## 2. Problem (current-state)
 
-- **Structural axis** (branching shape, choice/ending topology, fail-state
-  policy, reading-level band): stays fixed and gate-verified. A theme can never
-  change it. This is where safety lives.
-- **Content axis** (characters, setting, props, tone, prose): the free surface a
-  theme fills in.
+1. **The automated fill already themes the story from the requester's brief.**
+   `generation/templates/fill.md` tells the model to "adapt the world, character
+   names, and surface theme to match the child's story request," rewrite every
+   choice `label`, and preserve only the beats/structure; the child's text is
+   fenced as `UNTRUSTED_USER_INPUT`. `worker.py::_run_skeleton_fill` reads
+   `authoring["theme_brief"]`; `orchestrator.fill_skeleton` builds the prompt with
+   it; `brief.py` sets `premise = request.request_text`. (An earlier draft wrongly
+   said the theme is ignored; that grep was of the manual `cyo-author` skill, the
+   one path that genuinely has no theme step.)
+2. **But the leaves may be varying too little.** The reskin changes names and
+   surface, and the same skeleton is reused (selection recency is on the slug
+   only, `skeleton_match.py`). Nothing measures whether two fills of one tree are
+   *genuinely* different leaves or just a dog-for-cat swap.
 
-The parameterized-beat pilot is the reference implementation: it rewrites beats
-and ending titles to `{SLOT}` placeholders while leaving ids, choices, targets,
-roles, word budgets, and every ending's `kind`/`valence` byte-identical to the
-source, so `check_skeleton` still passes and no theme can introduce (for example)
-a death ending in an 8-11 story.
+The real gaps:
 
-## 4. Two axes of diversity
+- **No measurement of perceived similarity.** "Maximize diversity" has no metric
+  and no eval loop, so "optimal" is unfalsifiable. This is the top gap.
+- **Leaf variation is unverified and possibly shallow.** The Stage 1 fidelity
+  gate (`moderation/fidelity_review.py`) checks beat/word fidelity, not whether
+  two fills of the same skeleton read as different adventures, and not whether the
+  requested theme was genuinely woven in vs surface-swapped.
+- **Skill-path parity.** The manual `cyo-author` skill has no theme step.
+- **Only the thematic axis moves, shallowly.** Structural and state/consequence
+  variety ([K3](capability-register.md)) are untouched; the thematic axis itself
+  is at risk of the dog-for-cat failure.
+- **Selection recycles trees.** Recency is slug-only; topology/tone/theme are not
+  de-weighted.
 
-| Axis | Question | Levers |
-|------|----------|--------|
-| Thematic | What is the story about? | theme_brief wiring, parameterized beats, character/tone packs |
-| Structural | How does it branch? | composable modules, topology variety, fresh generation |
+## 3. Design principle: freeze the safety *constraints*, vary within them
 
-Perceived novelty needs both: re-skinning the same shape helps thematic variety
-but two stories in a cell still branch identically until the structural axis
-moves too.
+Safety does not require freezing the ~50 hand-authored graphs in `skeletons/`. It
+requires freezing the **properties** the gate verifies: the ADR-011 per-band
+topology/primitive allowances, the ending kind/valence policy, the three clocks,
+the cell envelopes, the reading band. The validator (`topology.py`, `walk.py`,
+`policy.py`, `band_profile.py`, the L2 config walk, the L2-13 scale advisory)
+checks the properties of a graph, not its identity. The frozen safety object is
+the **ADR-011 constraint grammar**; any leaf content or any structure, sampled,
+mutated, or composed, is legitimate once it passes the same gate. Leaves vary
+freely within band + safety; trees vary within the grammar; the gate verifies
+every result.
 
-## 5. Workstreams (phased)
+## 4. Three axes of diversity (leaf-first)
 
-Ranked by impact x tractability. Each names the capability IDs it serves.
+| Axis | Question | Primary? | Levers |
+|------|----------|----------|--------|
+| **Leaf / content** | Does each point read as a new experience? | **Primary** | genuine per-node re-authoring (not slot substitution); theme binding (shipped, needs verification); anti-template guard |
+| Structural | How does it branch? | Scaling | mutation of verified trees, grammar-based composition, fresh-generation feed, catalog flywheel |
+| State / consequence | How does it play? | Scaling | Tier-2 variable semantics, condition-gated routes, ending-set variation within band policy ([K3](capability-register.md)) |
 
-### WS-1: Wire `theme_brief` into the fill (foundation)
+The anti-pattern that spans all three: a **template**, where the tree and the
+leaf skeleton are fixed and only proper nouns change (dog for cat). The metric
+in WS-0 must detect and fail it.
 
-- **Goal:** the fill consumes the requester's theme (names, setting, tone) so the
-  expressed interest shapes the story. Highest impact; prerequisite for WS-2/3.
-- **Approach:** add a theme-binding step to the `cyo-author` skill and the
-  automated fill prompt: read `theme_brief` (already carried in the job's
-  `authoring_metadata`) plus any skeleton theme contract, resolve a concrete
-  "world bible" (protagonist, companion, setting, props), then fill each node
-  binding beats to that world. On a fixed (non-parameterized) skeleton the brief
-  reskins surface flavor only; on a parameterized skeleton it drives the slots.
-- **Safety:** the brief is already screened at intake (`story_requests/`); the
-  fill must never let the theme override structure, fail-state policy, or band.
-- **Effort:** moderate (skill + prompt change, no schema change). **Serves:**
-  [K11](capability-register.md), [K13](capability-register.md).
+## 5. Workstreams (prioritized)
 
-### WS-2: Parameterize the skeleton catalog
+### WS-0: Diversity metrics + eval harness (do first)
 
-- **Goal:** one structure generates many themed stories. Diversity becomes
-  (#skeletons per cell) x (#themes) instead of a fixed plot count.
-- **Approach:** generalize the pilot (`out/pilot/`): neutralize beats to slots +
-  a per-skeleton theme contract declaring slots and their safety constraints.
-  Migrate incrementally (one skeleton per cell first), keeping fixed skeletons
-  alongside during transition. Structural identity to the source is verified by
-  diffing everything except beat/title text.
-- **Safety:** fail-state policy and ending kinds/valences stay baked into the
-  fixed structure; slots parameterize content only. `check_skeleton` and the full
-  gate must pass for every theme binding.
-- **Effort:** high (per-skeleton authoring, plus WS-1). **Serves:**
-  [K3](capability-register.md), [K11](capability-register.md),
+- **Goal:** measure perceived similarity per cell and per family so every claim
+  below is testable and regressions are caught.
+- **Headline metric:** **perceived-similarity / repeat-adventure rate**, the
+  probability that a reader's next story feels like one they have read. Proxied
+  by a judge-model "do these read as different adventures?" score, validated
+  against [K18](capability-register.md) ratings over time.
+- **The anti-template guard (most important):** for two fills of the **same
+  skeleton**, normalize proper nouns and measure leaf-level content overlap
+  (per-node embedding + lexical distance). Low distance after noun-normalization =
+  the dog-for-cat failure = a hard regression, even if the theme labels differ.
+- **Supporting metrics.** *Leaf:* per-node pairwise distance across fills of one
+  tree (the direct leaf-diversity signal). *Structural:* topology entropy;
+  pairwise structural distance (node/ending/branching/depth features); distinct
+  trees served per family per 90 days. *Thematic:* proper-noun overlap between a
+  family's consecutive stories (~0); theme-incorporation rate. *Lexical guard:*
+  self-BLEU / distinct-n, cross-checked with RL-13 so variety never buys
+  reading-level drift. *Aggregate:* effective catalog size (exp entropy of served
+  (tree, leaf-set) pairs).
+- **Harness.** A `nox` session runs a fixed (skeleton x theme-brief) panel,
+  including the same skeleton x multiple briefs, through `fill_skeleton` +
+  `run_story_gate`, emits the suite, and a CI guard fails on drops. Per-family
+  metrics from `storybook_version` history.
+- **Serves:** every workstream (their success metrics live here).
+
+### WS-1: Leaf-diversity verification + theme parity (re-scoped)
+
+- **Goal:** confirm two fills of one tree are genuinely different leaves (not
+  templates), that the requested theme is woven in, and bring the skill path to
+  parity. The automated theme wiring is shipped; the gap is verification and
+  genuine leaf variation.
+- **Approach:** add the anti-template guard (WS-0) as a check alongside Stage 1;
+  strengthen the fill instruction to re-imagine each leaf for the theme, not
+  substitute nouns; add a theme step to the `cyo-author` `SKILL.md` (the brief is
+  already in `authoring_metadata`). **Metric:** anti-template guard passes;
+  theme-incorporation > 90%.
+- **Serves:** [K11](capability-register.md), [K13](capability-register.md).
+
+### WS-4: Diversity-aware selection (promoted, nearly free)
+
+- **Goal:** stop reusing the same tree; a family's library spans trees and tones.
+- **Approach:** extend `skeleton_match.py` recency from `slug` to
+  `(slug, topology, theme-tags, tone)` with a per-family novelty budget. Infra
+  exists (`recent_skeleton_usage`, `_weight`, injected RNG).
+- **Serves:** [K3](capability-register.md), engagement. **Metric:**
+  repeat-tree rate per family, down.
+
+### WS-2: Parameterize the catalog for safe, auditable leaves (absorbs "packs")
+
+- **Goal:** make leaf variation *auditable* and its safety enforceable per band,
+  **without** turning the fill into slot substitution.
+- **Approach:** generalize the pilot: a per-skeleton theme contract declaring
+  what may vary (world, cast, props, tone) with per-band/per-slot safety
+  constraints, plus character/tone packs as slot-value libraries. Crucially, the
+  contract **bounds and audits** the reskin; the leaf prose is still **generated
+  fresh per node** (as `fill.md` does today), never filled by lookup, or it
+  becomes the dog-for-cat template WS-0 is built to fail. Reconcile the label
+  policy with `fill.md` (labels are content with a frozen action-semantic, not
+  frozen strings; the pilot froze them, a step back). Payoffs: measurable
+  incorporation, crisper Stage 1 fidelity (fewer reskin false-positives that burn
+  the shared `max_repairs=3` budget), per-slot safety.
+- **Serves:** [K3](capability-register.md), [K11](capability-register.md),
+  [K13](capability-register.md). **Metric:** anti-template distance up; Stage 1
+  false-positive rate down.
+
+### WS-5: Structure and state variation within the ADR-011 grammar (scaling)
+
+- **Goal:** new and mutated trees + state variety, for when leaf diversity alone
+  no longer holds uniqueness up (heavy readers, larger per-cell libraries).
+- **Approach:** cheap **mutation operators** on verified trees first (sibling
+  subtree swap; re-map which reconvergent leaf carries which ending within the
+  valence set; prune/graft within the envelope; vary decisions-per-path in 4-8;
+  **vary Tier-2 variable semantics and condition-gated routes**). Every mutant
+  re-runs the full gate. A grammar-based composer is the larger second step.
+- **Serves:** [K3](capability-register.md). **Metric:** distinct trees per cell.
+
+### WS-6: Harden `fresh_generation` as the flywheel feed
+
+- **Goal:** bespoke plots and a supply of new verified trees. Output persists via
+  WS-8 rather than being consumed once. Strictest gating (weakest safety posture).
+- **Serves:** [K11](capability-register.md); gated by [K13](capability-register.md).
+
+### WS-8: Catalog flywheel (highest ceiling)
+
+- **Goal:** grow the tree catalog with usage, not authoring budget.
+- **Approach:** promote any gate-passed, human-approved fresh (WS-6) or composed
+  (WS-5) tree via the neutralize transform (`out/pilot/_neutralize.py`) into the
+  parameterized catalog, behind a human structure-approval step.
+- **Serves:** [K3](capability-register.md). **Metric:** net new trees per month.
+
+### WS-7: Request interpretation and expectation-setting (delivers K19)
+
+- **Goal:** reflect the request back before generation, what is built in vs set
+  aside and why, and provide the rejection path for a theme a tree cannot carry.
+- **Approach:** interpret `premise` into structured intent with a disposition per
+  element; persist and return it in kid language and guardian detail. Consumes
+  WS-2's contract for precise dispositions and per-skeleton theme-compatibility.
+- **Delivers:** [K19](capability-register.md) (design record). **Also serves:**
+  [K11](capability-register.md), [K12](capability-register.md); gated by
   [K13](capability-register.md).
-
-### WS-3: Character, setting, and tone packs
-
-- **Goal:** orthogonal variety knobs the theme binding draws from.
-- **Approach:** formalize the ad-hoc tone notes already in some beats
-  (`the-night-market`: "warm and twinkly, never spooky") into an explicit,
-  band-bounded tone knob (cozy / eerie / comedic / adventurous), plus a curated
-  library of protagonist archetypes and companions.
-- **Effort:** low-moderate. **Serves:** [K11](capability-register.md),
-  [K13](capability-register.md).
-
-### WS-4: Diversity-aware selection
-
-- **Goal:** stop serving the same thing; a family's library spans structures and
-  tones, not three mysteries.
-- **Approach:** extend the existing recency-weighted matcher
-  (`generation/skeleton_match.py`, already de-weights recently used skeletons per
-  family) to also de-weight recently used **themes, topologies, and endings**,
-  with a per-family novelty budget.
-- **Effort:** moderate (builds on existing recency infra). **Serves:**
-  [K3](capability-register.md), engagement metrics in
-  [project-vision.md](project-vision.md).
-
-### WS-5: Composable structural modules ("beat-bank")
-
-- **Goal:** structural novelty, not just re-skins. Two stories in a cell can
-  differ in shape.
-- **Approach:** build a library of reusable structural modules (a sort, an
-  explore-and-choose track, a bottleneck reveal, a gauntlet checkpoint) that a
-  generator composes into a fresh graph per request. Productionizes the
-  generator-script pattern used to build `the-cinderwick-exchange`, and can reuse
-  the catalog region primitives (`skeleton_catalog.build_catalog_region` /
-  `splice_region`). Every composed graph runs the full gate, including the L2
-  config walk and the new L2-13 scale advisory.
-- **Effort:** high (new subsystem). Highest ceiling. **Serves:**
-  [K3](capability-register.md).
-
-### WS-6: `fresh_generation` novelty tier
-
-- **Goal:** maximum variety for requests where a bespoke plot matters more than
-  structural guarantees.
-- **Approach:** tune and harden the existing no-skeleton, fully-LLM-authored path
-  (already present in the pipeline as an alternative to `skeleton_fill`), with
-  stricter gating and moderation because there is no pre-verified structure.
-- **Effort:** moderate-high (mostly gating/moderation tuning). **Serves:**
-  [K11](capability-register.md); gated by [K13](capability-register.md).
-
-### WS-7: Request interpretation and expectation-setting (UX-facing)
-
-- **Goal:** reflect the free-form request back to the requester *before*
-  generation, so they understand how their idea will shape the story and what
-  will be set aside (and why). Sets expectations and closes the loop on a
-  free-form ask.
-- **Why now:** today the intake runs a safety screen (`screen_request_text`) and
-  captures the child's text as the brief's `premise`, but nothing interprets it
-  back to the requester, and (per the problem statement) the fill ignores
-  `premise` entirely. So a requester's idea currently vanishes silently. WS-7 is
-  the user-facing surface of WS-1's theme binding: the same interpretation that
-  binds the request to the story also tells the requester what was used and what
-  was dropped.
-- **Approach:** an interpretation stage turns the free-form `premise` into
-  structured intent (theme, protagonist, setting, tone, special asks) and gives
-  each element a disposition: **incorporated**, or **set aside** with a plain
-  reason, unsupported by the chosen story structure, outside the age band, safety
-  screened, or not yet supported. Persist the interpretation on the request and
-  return it to the requester in their own terms (kid language for kids, fuller
-  detail for guardians). Optionally a confirm-and-adjust step before it proceeds.
-- **Dependency:** precise "used vs dropped against the actual story structure"
-  comes from WS-1's binding / WS-2's theme contract. A submission-time version
-  can interpret against general capability + band/safety without a skeleton, then
-  add structure-specific drops once a skeleton is bound.
-- **Safety:** the interpretation is derived from untrusted requester input
-  (OWASP LLM01). It must never echo unsafe content back; it explains *why*
-  something was set aside without repeating disallowed detail, and reuses the
-  screening flags. **Delivers:** [K19](capability-register.md) (this workstream is
-  its design record); **also serves:** [K11](capability-register.md),
-  [K12](capability-register.md); gated by [K13](capability-register.md).
-- **Open product decisions:** (a) placement, at submission (pre-skeleton,
-  general) vs after skeleton pick (precise but currently an admin stage);
-  (b) informational vs a confirm-and-adjust gate; (c) surfaced to the kid, the
-  guardian, or both, and in what language.
 
 ## 6. Sequencing
 
 ```
-WS-1 (theme_brief wiring)  ->  WS-2 (parameterize catalog)  ->  WS-3 (packs)
-        |                              |
-        +--> WS-4 (diversity-aware selection) can start in parallel after WS-1
-        +--> WS-7 (request interpretation / expectation-setting) surfaces WS-1's binding
-        +--> WS-5 (structural modules) is an independent, larger bet
-        +--> WS-6 (fresh-generation tier) is independent; useful as a novelty escape hatch
+WS-0 (metrics; defines "feels like a new adventure")
+   |
+   +--> WS-4 (diversity-aware selection)      cheapest win; stops reusing trees today
+   +--> WS-1 (leaf-diversity verification + theme parity)   proves leaves differ
+          |
+          +--> WS-2 (auditable parameterized leaves; reconcile labels)
+                 +--> WS-7 (request interpretation)
+   +--> WS-5 (structure/state variation)  --feeds--> WS-8 (catalog flywheel) <-- WS-6
 ```
 
-WS-1 is the unlock: it is cheap, it independently raises perceived variety on
-today's fixed catalog, and WS-2/3 have little payoff without it. WS-4 protects
-the gains. WS-7 makes the whole thing legible to the requester. WS-5 and WS-6 are
-larger, independent bets for structural novelty.
+Leaf-first: WS-0 defines uniqueness, WS-4 stops tree reuse, WS-1/WS-2 make the
+leaves genuinely and auditably different. WS-5/6/8 add structural variety as the
+library scales.
 
 ## 7. Safety invariants (hold across all workstreams)
 
-1. A theme can never change structure, choice/ending topology, fail-state policy,
-   or reading-level band. Content axis only.
-2. Every generated story (any theme, any composition) passes the full
-   `validator/` gate and `moderation/` review before publish. No exceptions for
-   novelty.
-3. Per-band content guarantees ([K13](capability-register.md)) are enforced by
-   the fixed structure, not by trusting the theme_brief.
-4. The theme_brief is untrusted requester input (OWASP LLM01): screened at intake
-   and never allowed to inject instructions or override the gate.
+1. Neither a theme nor a leaf can change the gate-verified structural properties,
+   the fail-state policy, the reading band, or the ending kind/valence policy. The
+   frozen safety object is the ADR-011 constraint grammar, enforced by the gate on
+   **every** tree and every fill.
+2. Every generated story passes the full `validator/` gate and `moderation/`
+   review before publish. No novelty exception.
+3. Per-band content guarantees ([K13](capability-register.md)) are enforced by the
+   structure + the gate, never by trusting the theme brief. Theme freedom is
+   bounded per band, per slot, in the theme contract (WS-2), not left open.
+4. Untrusted-input handling (OWASP LLM01) covers **derived** artifacts: a
+   theme-derived world bible and the WS-7 reflected interpretation re-enter other
+   prompts (cover-art in `covers/`, repair, the kid-facing echo) and must be
+   fenced at every reuse, not only at intake.
+5. **Novelty floor.** Selection never fully excludes an eligible option (the
+   `_weight` nonzero floor). A rating- or learning-driven selector (WS-4) may set
+   a quality floor but must keep an exploration/novelty bonus, so optimizing
+   [K18](capability-register.md) ratings can never homogenize the catalog.
 
 ## 8. Current state
 
-- **Pilot built** (`out/pilot/`, committed): `the-cave-of-echoes.parameterized.json`
-  (64 nodes, structurally identical to the source, passes `check_skeleton`, no
-  theme can introduce a death), a 73-slot theme contract, three worked bindings
-  (sea caves / derelict space station / fossil-canyon dig), and the reproducible
-  neutralize transform.
-- **End-to-end proof done** (`out/pilot/RESULTS.md`): the parameterized skeleton
-  was filled for two new themes (derelict space station; fossil-canyon dino dig),
-  and both passed the gate (`blocked=False safety_flagged=False`, no death
-  endings). One structure produced two distinct, gate-passing stories, the core
-  WS-2 claim.
-- **Refinement found:** the pilot neutralized beats and ending titles but not
-  `choices[].label` strings, so labels retained the original theme's nouns
-  ("orange starfish", "brass compass") and the fills had to bridge them in prose.
-  WS-2 must extend parameterization to choice labels, slotting the *object* while
-  preserving the *action* the label encodes (e.g. "Look closely at
-  {ROUTE_B1_PRIZE_OBJECT}").
-- **Next:** WS-1 (wire `theme_brief` into the fill) is the natural first
-  production step; the pilot's manual theme binding is the stand-in it replaces.
+- **Pilot built and proven** (`out/pilot/`): one parameterized skeleton filled for
+  two new themes (space station, dino dig), both gate-passing and non-lethal. It
+  demonstrated a **structured, auditable** binding.
+- **Pilot cautions, now WS-2 requirements:** (a) it froze `choices[].label`, but
+  `fill.md` rewrites labels, labels are content; (b) a slot contract must bound
+  and audit the reskin, not become a fill-in-the-blank template, or it produces
+  the dog-for-cat failure WS-0 fails.
+- **Next:** WS-0 (define and measure "new adventure") is the true first step;
+  WS-4 and WS-1 are the cheapest immediate wins.
 
 ## 9. Open questions / ADR candidates
 
-- **ADR-019 candidate:** "Parameterized skeletons and theme-driven fills."
-  Ratify the parameterization scheme, the theme-contract format, and how
-  `theme_brief` binds to slots, before migrating the catalog (WS-2).
-- Do fixed and parameterized skeletons coexist permanently, or is parameterization
-  the target end-state for the whole catalog?
-- Where does the theme contract live: in skeleton `metadata`, a sibling file, or
-  a new field? (The pilot uses a sibling `.theme-contract.md` for now.)
-- How much theme freedom is safe per band without a human-in-the-loop theme
-  review step in addition to intake screening?
+- **ADR-019 candidate:** "Parameterized skeletons and theme-driven fills." Ratify
+  the parameterization scheme, the theme-contract format (per-band/per-slot safety
+  constraints, per-skeleton theme-compatibility), the label policy, and the rule
+  that leaves are generated fresh (not substituted), before migrating the catalog.
+- Do fixed and parameterized skeletons coexist, or is parameterization the target
+  end-state? Where does the theme contract live?
+- WS-8 promotion bar: what human approval gates a new tree into the catalog, and
+  how is its safety re-proven at promotion?
+- How much theme freedom is safe per band without a human theme-review step (a
+  WS-2 blocker, not an afterthought)?
