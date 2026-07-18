@@ -977,7 +977,10 @@ that selects the comparison partner from history.
   Adjustment 1.
 - **Phase 2 (fast-follow):** `aggregate` (ECS), `lexical` guards, the headline
   PS/RAR, `scripts/run_diversity_eval.py`, the `diversity_eval` nox session, the
-  committed panel, and the CI regression gate.
+  committed panel, and the CI regression gate. **Delivered**: see
+  [ws0-phase2-harness-design.md](ws0-phase2-harness-design.md) for the exact
+  panel contents, baseline format, CI-fail rules (R1-R6), module signatures,
+  and test plan this phase implemented.
 - **Phase 3 (when a provider is wired):** the judge-model calibration (section
   4). Run it once on the panel EARLY, not "quarterly", to validate the offline
   PS proxy against perception, since the whole objective is perceptual.

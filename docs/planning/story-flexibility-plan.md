@@ -146,6 +146,18 @@ in WS-0 must detect and fail it.
 
 ### WS-0: Diversity metrics + eval harness (do first)
 
+> **Status (2026-07-18): Phase 1 and Phase 2 delivered.** Phase 1 shipped the
+> `diversity/` package core (`normalize`, `structure`, `leaf` incl. the
+> anti-template guard, `report`, `history`, `query`). Phase 2 shipped
+> `aggregate` (ECS, PS, RAR), the `lexical` guards, the committed eval panel
+> and baseline, `scripts/run_diversity_eval.py`, the `diversity_eval` nox
+> session, and the per-PR CI regression gate (rules R1-R6); see
+> [ws0-phase2-harness-design.md](ws0-phase2-harness-design.md) for the exact
+> spec. Phase 3 (judge-model calibration) is implemented behind
+> `--with-judge` but not yet run (needs a live, non-mock provider); WS-1's
+> per-band threshold calibration and WS-4's consumption of the request-time
+> query remain open.
+
 - **Goal:** measure perceived similarity per cell and per family so every claim
   below is testable and regressions are caught.
 - **Headline metric:** **perceived-similarity / repeat-adventure rate**, the
