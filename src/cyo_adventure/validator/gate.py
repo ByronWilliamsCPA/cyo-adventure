@@ -12,7 +12,8 @@ Rule application order (per ``docs/planning/validator-rules.md``
    state-space walk is meaningful, and the document may not even parse.
 3. Policy (PL-15..PL-18): age-safety and shape invariants on the parsed
    model (forbidden ending kinds, content ceilings, floors, topology).
-4. Layer 2 (L2-9..L2-12): state-space walk, Tier-2 only (Tier-1 skips).
+4. Layer 2 (L2-9..L2-13): state-space walk, Tier-2 only (Tier-1 skips). L2-13
+   is a WARNING-only scale advisory and never sets ``blocked``.
 5. RL-13: advisory reading-level check (WARNING, never blocks).
 6. SAFE-14: safety content check (Phase-2 stub, always empty).
 
