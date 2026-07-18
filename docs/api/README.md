@@ -18,10 +18,11 @@ schema. CI runs it with [newman](https://github.com/postmanlabs/newman) in the `
 ## What is tested
 
 The collection contains 23 folders (one per resource), 136 requests, and 404 assertions, covering 67 of
-the 81 operations the app registers as of this writing. The 14 operations added by the M4b-d family-tier
-wave (PR #270: `flags`, `notifications`, `reading-history`, `recommendations`, `node-edit`, `rescreen`,
-`audit`, guardian family-connection consent, and the family budget/reading-summary reads) landed after
-this suite's last extension and still need folders; new routers must get a folder here. Every request
+the 83 operations the app registers as of this writing. The 16 operations added after this suite's last
+extension still need folders: 14 from the M4b-d family-tier wave (PR #270: `flags`, `notifications`,
+`reading-history`, `recommendations`, `node-edit`, `rescreen`, `audit`, guardian family-connection
+consent, and the family budget/reading-summary reads) plus the admin master library listing and the
+admin generation-job force-fail action (PR #277). New routers must get a folder here. Every request
 asserts an exact status code and validates the response body against a JSON Schema resolved from the
 app's OpenAPI components; happy-path requests add semantic assertions (state transitions, echoed fields,
 list contents guaranteed by seed data).

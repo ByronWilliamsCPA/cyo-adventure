@@ -8,6 +8,11 @@ import { useApi } from '../hooks/useApi'
 import { Mascot } from '../kid/Mascot'
 import { reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
+import {
+  cacheLibraryList,
+  getCachedLibraryList,
+  getCachedStorybook,
+} from '../offline/db'
 import { BookCard } from './BookCard'
 import { makeLibraryApi, type LibraryItemView, type ReadingHistoryItem } from './libraryApi'
 import { pickHero } from './pickHero'
@@ -43,6 +48,24 @@ type LibraryState =
       history: ReadingHistoryItem[]
       recommendations: RecommendationItem[]
     }
+  // Offline fallback (UX-K1): the network fetch failed but a cached shelf
+  // exists. `downloaded` holds the ids of books whose blob is in the local
+  // cache and can actually be opened offline.
+  | { status: 'offline'; items: LibraryItemView[]; downloaded: Set<string> }
+
+/** Which of these books have a downloaded blob available offline. */
+async function downloadedIds(items: LibraryItemView[]): Promise<Set<string>> {
+  const results = await Promise.all(
+    items.map(async (item) => {
+      try {
+        return (await getCachedStorybook(item.id, item.version)) ? item.id : null
+      } catch {
+        return null
+      }
+    })
+  )
+  return new Set(results.filter((id): id is string => id !== null))
+}
 
 /**
  * Kid library home (wireframe 4.2): Continue Reading hero for the most
@@ -108,6 +131,8 @@ export function LibraryPage() {
       setState({ status: 'loading' })
       try {
         const items = await libraryApi.list(id)
+        // Cache the last-good shelf so an offline kid still has a bookshelf.
+        void cacheLibraryList(id, items).catch(() => undefined)
         if (cancelled || !isMountedRef.current) return
         setState({ status: 'ready', items, history: [], recommendations: [] })
         // Offline-copy revocation (roadmap Phase 5, register G8/A5): this shelf
@@ -161,11 +186,27 @@ export function LibraryPage() {
         // Redacted shape only, never the raw axios error (its `config` carries
         // the Authorization header); see logApiError.
         logApiError('library list failed', err)
-        if (!cancelled && isMountedRef.current) {
-          const { kind } = classifyApiError(err)
-          if (kind === 'unauthenticated') setState({ status: 'unauthenticated' })
-          else if (kind === 'forbidden') setState({ status: 'forbidden' })
-          else setState({ status: 'error' })
+        if (cancelled || !isMountedRef.current) return
+        const { kind } = classifyApiError(err)
+        if (kind === 'unauthenticated') {
+          setState({ status: 'unauthenticated' })
+          return
+        }
+        if (kind === 'forbidden') {
+          setState({ status: 'forbidden' })
+          return
+        }
+        // Transient/offline: fall back to the cached shelf if we have one, so
+        // the child never hits a dead-end "Try again" that can't succeed
+        // offline (UX-K1). Only truly cache-less failures reach the error state.
+        const cached = await getCachedLibraryList(id).catch(() => undefined)
+        if (cancelled || !isMountedRef.current) return
+        if (cached && cached.length > 0) {
+          const downloaded = await downloadedIds(cached)
+          if (cancelled || !isMountedRef.current) return
+          setState({ status: 'offline', items: cached, downloaded })
+        } else {
+          setState({ status: 'error' })
         }
       }
     }
@@ -290,7 +331,17 @@ export function LibraryPage() {
       </div>
     )
   }
-  const { items, history, recommendations } = state
+  const { items } = state
+  const offline = state.status === 'offline'
+  // UX-K1 offline shelf: only an offline state carries a downloaded-blob set;
+  // online, every assigned book is openable, so isDownloaded is always true.
+  const offlineDownloaded = state.status === 'offline' ? state.downloaded : null
+  const isDownloaded = (item: LibraryItemView): boolean =>
+    offlineDownloaded === null || offlineDownloaded.has(item.id)
+  // K6/K17 decorations only exist on a live (ready) fetch; an offline shelf has
+  // neither history nor recommendations, so both degrade to no badges.
+  const history = state.status === 'ready' ? state.history : []
+  const recommendations = state.status === 'ready' ? state.recommendations : []
   // K6 endings tracker: keyed by storybook id so BookCard can look up its own
   // row in O(1); a book with no row (history still loading, fetch failed, or
   // genuinely no completion yet) gets `undefined` and BookCard renders no badge.
@@ -325,6 +376,11 @@ export function LibraryPage() {
   return (
     <div className="library">
       <h1 className="library__heading">My Books</h1>
+      {offline ? (
+        <p className="library__offline-banner" role="status">
+          No internet. These books are ready to read.
+        </p>
+      ) : null}
       {hero ? (
         <section aria-label="Continue Reading">
           <BookCard
@@ -333,6 +389,7 @@ export function LibraryPage() {
             hero
             onRate={rate}
             onContinue={askForNextBook}
+            downloaded={isDownloaded(hero)}
             endings={endingsFor(hero)}
             recommendation={recommendationFor(hero)}
           />
@@ -349,6 +406,7 @@ export function LibraryPage() {
                   profileId={profileId}
                   onRate={rate}
                   onContinue={askForNextBook}
+                  downloaded={isDownloaded(item)}
                   endings={endingsFor(item)}
                   recommendation={recommendationFor(item)}
                 />

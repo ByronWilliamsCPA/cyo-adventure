@@ -37,6 +37,40 @@ _CLASSIFIER_TIMEOUT = 20.0
 # hygiene, not a safety relaxation.
 _ADVISORY_SCORE_FLOOR = 0.01
 
+# Category slug for a "the automated net was down" advisory finding. It never
+# gates (ADVISORY), but it makes a classifier outage or unconfigured key visible
+# to the human reviewer, who otherwise cannot distinguish a clean report from
+# one produced with the classifiers off.
+_DEGRADED_CATEGORY = "classifier_degraded"
+
+
+class ClassifierUnavailable(Exception):  # noqa: N818 -- not an error state, a signal
+    """A classifier call failed (HTTP/parse error) so the run is degraded.
+
+    Raised by an individual classifier so :func:`run_classifiers` can record one
+    degraded advisory per classifier rather than one per node, and stop hammering
+    a down provider for the remaining nodes.
+    """
+
+    def __init__(self, source: Source, reason: str) -> None:
+        self.source = source
+        self.reason = reason
+        super().__init__(reason)
+
+
+def _degraded_finding(source: Source, reason: str) -> Finding:
+    """Build the whole-story advisory finding that flags a degraded classifier."""
+    return Finding(
+        stage=0,
+        source=source,
+        category=_DEGRADED_CATEGORY,
+        node_id=None,
+        verdict=Verdict.ADVISORY,
+        score=None,
+        message=f"{source.value} classifier unavailable: {reason}",
+    )
+
+
 # Bright-line OpenAI categories: any True flag is an immediate hard block.
 _OPENAI_BRIGHTLINE: frozenset[str] = frozenset(
     {
@@ -51,12 +85,13 @@ _OPENAI_BRIGHTLINE: frozenset[str] = frozenset(
 )
 
 
-async def run_classifiers(
+async def run_classifiers(  # noqa: PLR0913 -- all keyword-only, one cohesive call
     *,
     nodes: Sequence[tuple[str, str]],
     openai_key: str | None,
     perspective_key: str | None,
     client: httpx.AsyncClient,
+    require_classifiers: bool = False,
 ) -> list[Finding]:
     """Run available classifiers over each node's prose and collect findings.
 
@@ -65,21 +100,56 @@ async def run_classifiers(
         openai_key: OpenAI Moderation key, or ``None`` to skip OpenAI.
         perspective_key: Perspective key, or ``None`` to skip Perspective.
         client: An httpx async client (injected for testability).
+        require_classifiers: When True, an unconfigured classifier (``None``
+            key) also produces a degraded advisory. Deployed tiers pass True so
+            a missing key is visible to the reviewer; local/dev leave it False,
+            where an absent key is an intentional skip.
 
     Returns:
-        A flat list of findings across all nodes and classifiers.
+        A flat list of findings across all nodes and classifiers. A classifier
+        that fails on any node (HTTP/parse error) contributes exactly one
+        ``classifier_degraded`` advisory (whole-story) instead of failing
+        silently, and is not retried for the remaining nodes.
     """
-    # #CRITICAL: external-resource: classifier APIs are network calls; a failure of
-    # one classifier must not crash the pipeline (the LLM stages still gate).
-    # #VERIFY: per-call try/except logs and continues; both keys unset returns [].
+    # #CRITICAL: external-resource: classifier APIs are network calls; a failure
+    # of one classifier must not crash the pipeline (the LLM stages still gate).
+    # It must also not be invisible: a silent [] on a down provider looks
+    # identical to a genuinely clean report on a kids'-content pipeline whose
+    # reviewer calibration assumes the automated net ran. Each failure or unset
+    # key now surfaces a non-gating ADVISORY so the review UI can show it.
+    # #VERIFY: test_openai_http_error_yields_degraded_advisory,
+    # test_perspective_http_error_yields_degraded_advisory,
+    # test_require_classifiers_flags_unset_keys.
     findings: list[Finding] = []
+    openai_reason: str | None = None
+    perspective_reason: str | None = None
     for node_id, prose in nodes:
-        if openai_key:
-            findings.extend(await _run_openai(node_id, prose, openai_key, client))
-        if perspective_key:
-            findings.extend(
-                await _run_perspective(node_id, prose, perspective_key, client)
-            )
+        if openai_key and openai_reason is None:
+            try:
+                findings.extend(await _run_openai(node_id, prose, openai_key, client))
+            except ClassifierUnavailable as exc:
+                openai_reason = exc.reason
+        if perspective_key and perspective_reason is None:
+            try:
+                findings.extend(
+                    await _run_perspective(node_id, prose, perspective_key, client)
+                )
+            except ClassifierUnavailable as exc:
+                perspective_reason = exc.reason
+
+    if openai_reason is None and require_classifiers and openai_key is None:
+        openai_reason = "not configured"
+    if perspective_reason is None and require_classifiers and perspective_key is None:
+        perspective_reason = "not configured"
+
+    if openai_reason is not None:
+        _logger.warning("classifier_degraded", source="openai", reason=openai_reason)
+        findings.append(_degraded_finding(Source.OPENAI, openai_reason))
+    if perspective_reason is not None:
+        _logger.warning(
+            "classifier_degraded", source="perspective", reason=perspective_reason
+        )
+        findings.append(_degraded_finding(Source.PERSPECTIVE, perspective_reason))
     return findings
 
 
@@ -160,7 +230,7 @@ async def _run_openai(
         data: object = cast("object", response.json())
     except (httpx.HTTPError, ValueError) as exc:
         _logger.warning("openai_moderation_failed", node_id=node_id, error=str(exc))
-        return []
+        raise ClassifierUnavailable(Source.OPENAI, str(exc)) from exc
 
     top = _as_str_map(data)
     if top is None:
@@ -243,7 +313,7 @@ async def _run_perspective(
         data: object = cast("object", response.json())
     except (httpx.HTTPError, ValueError) as exc:
         _logger.warning("perspective_failed", node_id=node_id, error=str(exc))
-        return []
+        raise ClassifierUnavailable(Source.PERSPECTIVE, str(exc)) from exc
 
     top = _as_str_map(data)
     if top is None:

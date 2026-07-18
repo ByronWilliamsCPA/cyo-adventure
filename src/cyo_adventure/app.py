@@ -412,8 +412,6 @@ def create_app() -> FastAPI:
         description="Choose-your-own-adventure reader API for the family library.",
         openapi_tags=_OPENAPI_TAGS,
     )
-    # Correlation must wrap everything else so every log line carries the id.
-    app.add_middleware(CorrelationMiddleware)
     # #CRITICAL: security: the in-memory rate limiter (60 rpm/IP) is a public
     # deployment defense. It is disabled ONLY in ENVIRONMENT=local, where the
     # single-user dev stack and the e2e-real serial suite legitimately exceed
@@ -422,7 +420,23 @@ def create_app() -> FastAPI:
     # OIDC and signing-secret guards in core/config.py.
     # #VERIFY: tests/unit/test_app.py::TestRateLimitingByEnvironment asserts the
     # limiter is absent in local and present otherwise.
-    add_security_middleware(app, enable_rate_limiting=settings.environment != "local")
+    #
+    # #ASSUME: security: allowed_hosts is a comma-separated Host allowlist;
+    # empty leaves TrustedHostMiddleware off (prior behavior). A deployed tier
+    # sets its fronting domain(s) so a spoofed Host/X-Forwarded-Host is rejected.
+    # #VERIFY: tests/unit/test_app.py::TestTrustedHost.
+    _allowed_hosts = [h.strip() for h in settings.allowed_hosts.split(",") if h.strip()]
+    add_security_middleware(
+        app,
+        enable_rate_limiting=settings.environment != "local",
+        allowed_hosts=_allowed_hosts or None,
+    )
+    # #CRITICAL: observability: CorrelationMiddleware is added LAST so it is the
+    # OUTERMOST layer (Starlette applies the most-recently-added middleware
+    # first). This way a rate-limit / body-size / SSRF rejection emitted by the
+    # security middleware still runs inside an active correlation context and
+    # carries the id, instead of the correlation layer sitting inside them.
+    app.add_middleware(CorrelationMiddleware)
     app.add_exception_handler(ProjectBaseError, _handle_project_error)
     app.add_exception_handler(RequestValidationError, _handle_request_validation_error)
     app.add_exception_handler(

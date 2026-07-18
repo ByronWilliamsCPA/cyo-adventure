@@ -103,6 +103,22 @@ describe('RequestStory', () => {
     expect(screen.getByText(/let's try a different idea!/i)).toBeInTheDocument()
   })
 
+  it('quotes each request idea so pending rows are distinguishable (UX-K3)', async () => {
+    mockGet.mockResolvedValue({
+      data: {
+        requests: [
+          { id: 'req1', status: 'pending', request_text: 'A dragon who bakes bread' },
+          { id: 'req2', status: 'pending', request_text: 'A robot on the moon' },
+        ],
+      },
+    })
+
+    render(<RequestStory profileId="p1" />)
+
+    expect(await screen.findByText(/A dragon who bakes bread/)).toBeInTheDocument()
+    expect(screen.getByText(/A robot on the moon/)).toBeInTheDocument()
+  })
+
   describe('K12: approved generation status', () => {
     it('shows "being written" with no library data to match against', async () => {
       mockGet.mockResolvedValue({

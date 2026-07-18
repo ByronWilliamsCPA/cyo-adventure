@@ -207,7 +207,12 @@ export function ModerationDashboardPage() {
       {refreshError ? (
         <p role="alert" className="console__notice cyo-text-muted">
           {refreshError}{' '}
-          <button type="button" onClick={() => setRefreshError(null)} aria-label="Dismiss">
+          <button
+            type="button"
+            className="moderation-dashboard__button"
+            onClick={() => setRefreshError(null)}
+            aria-label="Dismiss"
+          >
             Dismiss
           </button>
         </p>
@@ -253,6 +258,7 @@ export function ModerationDashboardPage() {
                   */}
                   <button
                     type="button"
+                    className="moderation-dashboard__button"
                     disabled={applying.has(key)}
                     aria-label={`Apply: raise ${suggestion.category} (${suggestion.age_band}) to ${suggestion.suggested_min_verdict}`}
                     onClick={() => setConfirming(suggestion)}

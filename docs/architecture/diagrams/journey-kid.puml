@@ -137,6 +137,9 @@ legend bottom
   The kid surface is a separate route tree from the guardian console and shares
   no navigation. ADR-014: the whole tree sits behind a local device-grant check
   (DeviceAuthorizedRoute), not a per-page gate, and stays Supabase-free.
+  Newer kid-facing additions (#270) not drawn above: recommendation chips on the
+  library (ADR-016 ring-1/2 cross-family recs) and a flag-a-passage control in
+  the reader (files a kid_flag -> KID_FLAGGED for admin review).
   See journey-guardian for the parent side, seq-device-grant for the mint/verify/
   revoke mechanics, journey-end-to-end for the whole loop, and journey-dev-coverage
   for test coverage.

@@ -4,7 +4,7 @@
 ' CYO Adventure
 '
 ' Source files:
-'   src/cyo_adventure/events/models.py   (EventType: 14-value StrEnum;
+'   src/cyo_adventure/events/models.py   (EventType: 20-value StrEnum;
 '                                          Actor: system() / from_principal();
 '                                          D2 invariant: system actor <-> no
 '                                          user id, enforced at construction)
@@ -33,6 +33,12 @@
 '                                                      NOISE_FLOOR_CHANGED)
 '   src/cyo_adventure/api/assignments.py              (BOOK_ASSIGNED)
 '   src/cyo_adventure/api/ratings.py                  (RATED)
+'   src/cyo_adventure/api/admin_users.py              (USER_MANAGED x2, WS-J)
+'   src/cyo_adventure/api/families.py                 (FAMILY_MANAGED x2, WS-J)
+'   src/cyo_adventure/api/family_connections.py       (FAMILY_CONNECTION_CHANGED x2, WS-J)
+'   src/cyo_adventure/api/flags.py                    (KID_FLAGGED, FLAG_RESOLVED)
+'   src/cyo_adventure/api/node_edit.py                (NODE_EDITED)
+'   src/cyo_adventure/moderation/rescreen.py          (MODERATION_COMPLETED, per swept book)
 '
 '   Downstream reader:
 '   src/cyo_adventure/api/moderation_dashboard.py     (admin dashboard reads
@@ -54,9 +60,9 @@ skinparam component {
 
 package "Pipeline Event Log (WS-D)" #FFF8E1 {
 
-  component "EventType\nevents/models.py\n14-value StrEnum:\nREQUEST_CREATED/APPROVED/DECLINED,\nPLAN_ASSIGNED, GENERATION_STARTED/\nFINISHED, MODERATION_COMPLETED,\nREPAIR_APPLIED, SENT_BACK, RELEASED,\nTHRESHOLD_CHANGED, NOISE_FLOOR_CHANGED,\nBOOK_ASSIGNED, RATED" as event_type #FFECB3
+  component "EventType\nevents/models.py\n20-value StrEnum:\nREQUEST_CREATED/APPROVED/DECLINED,\nPLAN_ASSIGNED, GENERATION_STARTED/\nFINISHED, MODERATION_COMPLETED,\nREPAIR_APPLIED, SENT_BACK, RELEASED,\nTHRESHOLD_CHANGED, NOISE_FLOOR_CHANGED,\nBOOK_ASSIGNED, RATED,\nUSER_MANAGED, FAMILY_MANAGED,\nFAMILY_CONNECTION_CHANGED,\nKID_FLAGGED, FLAG_RESOLVED, NODE_EDITED" as event_type #FFECB3
 
-  component "Actor\nevents/models.py\nsystem() -- worker/moderation,\nno principal\nfrom_principal() -- HTTP caller\nD2: system <-> actor_id is None" as actor #FFECB3
+  component "Actor\nevents/models.py\nsystem() -- worker/moderation,\nno principal\nfrom_principal(acting_role?) -- HTTP caller;\nadmin-gated calls stamp actor_role='admin'\nD2: system <-> actor_id is None" as actor #FFECB3
 
   component "record_event()\nevents/writer.py\nTHE ONLY write path\n_validate_payload(): per-event-type\nkey allowlist + PII-safe value check\n(D3); adds + flushes on the\nCALLER's session/transaction (D1)" as record_event #FFD54F
 
@@ -97,6 +103,26 @@ assignments --> record_event : "BOOK_ASSIGNED\n(child_profile_id)"
 
 component "Ratings\napi/ratings.py" as ratings #DCEDC8
 ratings --> record_event : "RATED\n(value, is_update)"
+
+' --- Writers: WS-J admin surfaces (user management, families, connections) ---
+component "Admin Users\napi/admin_users.py [admin]\n[see component-api-persistence.puml]" as admin_users_ev #E1BEE7
+admin_users_ev --> record_event : "USER_MANAGED\n(invite / deactivate)"
+
+component "Families\napi/families.py [admin]" as families_ev #E1BEE7
+families_ev --> record_event : "FAMILY_MANAGED\n(create / deactivate)"
+
+component "Family Connections\napi/family_connections.py [admin]" as family_conn_ev #E1BEE7
+family_conn_ev --> record_event : "FAMILY_CONNECTION_CHANGED\n(create / delete)"
+
+' --- Writers: #270 kid flags, passage editor, admin re-screen ---
+component "Kid Flags\napi/flags.py [K15 / ADR-016]" as flags_ev #DDEEFF
+flags_ev --> record_event : "KID_FLAGGED (kid submits)\nFLAG_RESOLVED (admin resolves)"
+
+component "Passage Editor\napi/node_edit.py [G6]" as node_edit_ev #DDEEFF
+node_edit_ev --> record_event : "NODE_EDITED\n(prose-only edit accepted)"
+
+component "Admin Re-Screen\nmoderation/rescreen.py [admin]\n[see component-moderation.puml]" as rescreen_ev #E8F5E9
+rescreen_ev --> record_event : "MODERATION_COMPLETED\n(one per swept book)"
 
 ' --- Internal ---
 record_event --> event_type : "coerce + validate"
@@ -144,9 +170,12 @@ note bottom of pipeline_event_table
   (generation, moderation, publishing);
   the remaining call sites (story
   requests, threshold admin, assignments,
-  ratings) are the complete, grep-verified
-  set of every other record_event() site
-  in the codebase, shown for accuracy.
+  ratings, the WS-J admin surfaces (user
+  management, families, family connections),
+  and #270's kid flags, passage editor, and
+  admin re-screen) are the complete,
+  grep-verified set of every other
+  record_event() site in the codebase.
 end note
 
 @enduml

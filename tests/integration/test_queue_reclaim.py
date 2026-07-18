@@ -131,17 +131,12 @@ async def test_requeue_stranded_jobs_skips_fresh_row(
     assert calls == []
 
 
-@pytest.mark.asyncio
-async def test_requeue_stranded_jobs_ignores_non_queued_status(
+async def _seed_running_job(
     sessions: async_sessionmaker[AsyncSession],
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """A stale row that is already 'running' (still legitimately executing) is untouched.
-
-    Only 'queued' rows are ever candidates: a 'running' row stale beyond
-    stale_after is the top-level finally guard's job (run_generation_job),
-    not the reclaim sweep's.
-    """
+    *,
+    updated_at: datetime,
+) -> uuid.UUID:
+    """Insert a Family/Concept/GenerationJob row at status 'running'."""
     async with sessions() as session:
         fam = Family(name="Reclaim Test Family Running")
         session.add(fam)
@@ -150,9 +145,27 @@ async def test_requeue_stranded_jobs_ignores_non_queued_status(
         session.add(concept)
         await session.flush()
         job = GenerationJob(concept_id=concept.id, status="running")
-        job.updated_at = datetime.now(UTC) - timedelta(hours=2)
+        job.updated_at = updated_at
         session.add(job)
         await session.commit()
+        return job.id
+
+
+@pytest.mark.asyncio
+async def test_requeue_force_fails_stale_running_row(
+    sessions: async_sessionmaker[AsyncSession],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A 'running' row orphaned by a hard worker death is force-failed.
+
+    A SIGKILL/OOM leaves the row 'running' forever (the pipeline's finally
+    guard never runs on a hard kill), permanently consuming a family cap slot.
+    The sweep force-fails it with error 'interrupted: worker died' and does NOT
+    re-enqueue it (the job may have spent provider budget).
+    """
+    running_id = await _seed_running_job(
+        sessions, updated_at=datetime.now(UTC) - timedelta(hours=4)
+    )
 
     calls: list[tuple[str, str | None]] = []
 
@@ -167,11 +180,54 @@ async def test_requeue_stranded_jobs_ignores_non_queued_status(
 
     async with sessions() as session:
         count = await queue_mod.requeue_stranded_jobs(
-            session, stale_after=timedelta(minutes=30)
+            session,
+            stale_after=timedelta(minutes=30),
+            running_stale_after=timedelta(hours=1),
+        )
+
+    # Reclaimed via force-fail, never re-enqueued.
+    assert count == 1
+    assert calls == []
+
+    async with sessions() as session:
+        row = await session.get(GenerationJob, running_id)
+        assert row is not None
+        assert row.status == "failed"
+        assert row.error == "interrupted: worker died"
+
+
+@pytest.mark.asyncio
+async def test_requeue_leaves_recently_running_row_alone(
+    sessions: async_sessionmaker[AsyncSession],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A 'running' row younger than running_stale_after is still executing.
+
+    It must not be reaped early: a legitimate long generation run sits
+    'running' for the whole job timeout.
+    """
+    running_id = await _seed_running_job(
+        sessions, updated_at=datetime.now(UTC) - timedelta(minutes=10)
+    )
+
+    monkeypatch.setattr(
+        queue_mod,
+        "enqueue_generation",
+        lambda *_a, **_k: "rq-fake-id",
+    )
+
+    async with sessions() as session:
+        count = await queue_mod.requeue_stranded_jobs(
+            session,
+            stale_after=timedelta(minutes=30),
+            running_stale_after=timedelta(hours=1),
         )
 
     assert count == 0
-    assert calls == []
+    async with sessions() as session:
+        row = await session.get(GenerationJob, running_id)
+        assert row is not None
+        assert row.status == "running"
 
 
 # ---------------------------------------------------------------------------
@@ -279,11 +335,15 @@ async def test_requeue_stranded_jobs_second_sweep_same_row_is_queue_idempotent(
             session, stale_after=timedelta(minutes=30)
         )
 
-    # Both sweeps genuinely found the (still-stale) row a valid candidate; the
-    # second sweep's RQ-level DuplicateJobError is caught internally, not
-    # surfaced as a sweep failure.
+    # The first sweep re-enqueues the lost row and counts it. The second sweep
+    # finds the same still-stale row, but its enqueue raises the RQ-level
+    # DuplicateJobError (the row is already queued under this id); that is caught
+    # internally as a no-op and excluded from the reclaim count per the
+    # requeue_stranded_jobs contract, so the second sweep reclaims nothing.
     assert first_count == 1
-    assert second_count == 1
+    assert second_count == 0
 
+    # The invariant under test: two sweeps leave exactly one queue entry, never a
+    # duplicate that would run the job twice.
     queue = queue_mod.get_queue(queue_mod._default_settings)
     assert queue.job_ids.count(str(stale_id)) == 1

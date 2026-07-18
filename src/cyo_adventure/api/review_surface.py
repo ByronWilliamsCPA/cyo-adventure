@@ -25,6 +25,8 @@ from cyo_adventure.moderation.report import Source, Verdict
 from cyo_adventure.moderation.thresholds import admin_surfaces
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from cyo_adventure.moderation.thresholds import ThresholdPolicy
 
 
@@ -248,6 +250,7 @@ def build_review_queue_item(
     blob: dict[str, object],
     moderation_report: dict[str, object] | None,
     admin_noise_floor: float | None = None,
+    created_at: datetime | None = None,
 ) -> ReviewQueueItem:
     """Project one storybook version into a review-queue item.
 
@@ -265,6 +268,8 @@ def build_review_queue_item(
             passing the floor here keeps the console's "N flagged" badge and
             Flagged bucket consistent with the denoised detail view; a
             noise-only story no longer reads as flagged.
+        created_at: When this version was created, surfaced as the queue item's
+            ``waiting_since`` triage metadata (UX-A3), or ``None`` to omit it.
 
     Returns:
         ReviewQueueItem: Title, status, version, screened flag, flagged count,
@@ -308,6 +313,8 @@ def build_review_queue_item(
         screened=surface.screened,
         flagged_count=flagged_count,
         summary=surface.summary,
+        age_band=_queue_age_band(blob),
+        waiting_since=created_at,
     )
 
 
@@ -315,6 +322,16 @@ def _queue_title(blob: dict[str, object], storybook_id: str) -> str:
     """Return the story title from the blob, or the id as a fallback."""
     title = blob.get("title")
     return title if isinstance(title, str) and title else storybook_id
+
+
+def _queue_age_band(blob: dict[str, object]) -> str | None:
+    """Return the target age band from the blob metadata, or None if absent."""
+    metadata = blob.get("metadata")
+    if isinstance(metadata, dict):
+        band = metadata.get("age_band")
+        if isinstance(band, str) and band:
+            return band
+    return None
 
 
 def build_content_summary(

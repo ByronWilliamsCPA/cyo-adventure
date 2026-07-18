@@ -20,13 +20,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Postman/newman API coverage for 20 previously untested operations (67 of
-  the 81 now registered; the 14 added by the M4b-d family-tier wave still
-  need folders, see docs/api/README.md): child sessions, device grants
+  the 83 now registered; the 16 added by the M4b-d family-tier wave and the
+  2026-07-17 remediation still need folders, see docs/api/README.md): child sessions, device grants
   (including online revocation enforcement), onboarding idempotency, the
   admin user/profile consoles, family connections, the moderation dashboard,
   the admin story-request queue, series continuation, and admin family
   create/rename. The local compose stack ships benign dev token-signing
   secrets so the mint endpoints are testable end to end.
+
+### Documentation
+
+- Synced the architecture diagram set and companion docs with the current code
+  (through v0.11.0, PRs #270 and #277). The ER diagram and data model now cover
+  all 22 tables (adds `family_connection` + `kid_flag` and the ADR-015/016
+  cost-gate and consent columns); the API/C4/system-overview/README references
+  reflect 28 routers; the validator gains PL-22; moderation repair now re-runs
+  the full validation gate and the admin re-screen sweep is shown; the event log
+  is 20 event types; cover art storage (Cloudflare R2, ADR-017) is added; and the
+  sitemap/journeys pick up the new admin and family surfaces (master library,
+  audit, user management, reading-visibility, connection consent,
+  recommendations, kid flags, passage editor). Regenerated every affected SVG.
+
+## [0.12.0] - 2026-07-17
+
+### Added
+
+- Comprehensive security, UX, and design review (`docs/reviews/`) plus a tiered
+  remediation plan, and the remediation of most of its findings.
+- Reader text-size control (A/A+/A++, persisted per profile) and an offline
+  library shelf so an offline kid can still reach their downloaded books.
+- Admin review-queue flow-through (auto-advance + queue position), triage
+  metadata (age band, waiting time) on queue rows, and a new admin master
+  library (`/admin/library`, `GET /v1/admin/storybooks`) to browse and re-open
+  any story in any lifecycle status.
+- Admin operator endpoint to force-fail a stuck generation job.
+- A manually-triggered CI workflow to regenerate Playwright visual-regression
+  baselines on the runner and commit them back with a verified signature.
+
+### Fixed
+
+- Generation pipeline no longer strands jobs at `running` or double-executes
+  them after a hard worker death; the condition validator is depth-capped
+  against `RecursionError`.
+- A failed or unconfigured moderation classifier now surfaces a visible
+  degraded advisory instead of silently contributing nothing.
+- Kid routes no longer fall back to the guardian bearer and the reader refuses a
+  mismatched profile (closes cross-profile reads online and offline).
+- Library shows "Finished!" for completed books instead of a misleading page
+  count; several kid-surface tap targets, recovery links, and copy fixes.
+- Guardian/admin "Please reload" dead-ends became inline retry; muted-ink token
+  raised to WCAG AA.
+
+### Changed
+
+- Security hardening: TrustedHost activation, untrusted-input prompt fences,
+  correlation-middleware ordering, hidden production source maps, cache purge on
+  sign-out.
+- Supply chain and dev hygiene: Renovate manages container image digests and
+  pre-commit; nox extras fixed and Python 3.10 legs dropped; codecov
+  safety-critical gate extended.
 
 ## [0.11.0] - 2026-07-17
 
@@ -1855,7 +1907,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.8.0...v0.9.0

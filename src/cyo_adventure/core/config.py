@@ -122,6 +122,15 @@ class Settings(BaseSettings):
     # environments where no queue is configured. Production must override via
     # CYO_ADVENTURE_REDIS_URL.
     redis_url: str = "redis://localhost:6379/0"
+    # Comma-separated Host-header allowlist for TrustedHostMiddleware
+    # (defense-in-depth against Host/X-Forwarded-Host spoofing). Empty (the
+    # default) leaves the middleware off, matching prior behavior; deployed
+    # tiers set their fronting domain(s), e.g.
+    # "cyoadventure.app,api.cyoadventure.app".
+    allowed_hosts: str = Field(
+        default="",
+        validation_alias=AliasChoices("CYO_ADVENTURE_ALLOWED_HOSTS", "ALLOWED_HOSTS"),
+    )
     # M5/Phase 5: RateLimitMiddleware's backend selector (middleware/security.py).
     # "redis" shares rate-limit counters across every worker process via this
     # same redis_url (the RQ queue's Redis instance, database index 0 by

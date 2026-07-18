@@ -72,7 +72,7 @@ test('hero shows the in-progress book and shelf shows the rest', async ({ page }
   await page.goto('/library/p1')
   const hero = page.getByRole('region', { name: 'Continue Reading' })
   await expect(hero).toContainText('The Lantern')
-  await expect(hero).toContainText('5 of 10 pages explored')
+  await expect(hero).toContainText('5 pages explored')
   const shelf = page.getByRole('region', { name: 'More to Explore' })
   await expect(shelf).toContainText('Acorn Detectives')
   await expect(shelf).toContainText('Not started')

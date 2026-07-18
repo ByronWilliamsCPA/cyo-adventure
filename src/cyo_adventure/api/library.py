@@ -176,6 +176,22 @@ def _node_count(blob: Mapping[str, object], malformed: list[str]) -> int:
     return 0
 
 
+def _current_node_is_ending(blob: Mapping[str, object], current_node: str) -> bool:
+    """Return True when ``current_node`` is an ending node in the blob (UX-K5).
+
+    Read-only over the already-loaded blob: no extra query. A branching story
+    touches only a fraction of its nodes, so "reached an ending" is the honest
+    signal for "finished", not visit-count / total-node-count.
+    """
+    nodes = blob.get("nodes")
+    if not isinstance(nodes, list):
+        return False
+    for node in nodes:
+        if isinstance(node, dict) and node.get("id") == current_node:
+            return bool(node.get("is_ending", False))
+    return False
+
+
 def _library_item(
     storybook_id: str,
     blob: Mapping[str, object],
@@ -243,6 +259,7 @@ def _library_item(
             current_node=state.current_node,
             nodes_visited=len(visit_set),
             updated_at=state.updated_at,
+            completed=_current_node_is_ending(blob, state.current_node),
         )
 
     return LibraryItem(

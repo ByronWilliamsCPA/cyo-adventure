@@ -6,7 +6,8 @@
 ' Source files:
 '   frontend/src/offline/sync.ts   (saveProgress, replayQueue, OfflineError)
 '   frontend/src/offline/db.ts     (IndexedDB: putReadingState, enqueueWrite, dequeue)
-'   frontend/src/player/machine.ts (XState machine, triggers saveProgress)
+'   frontend/src/reader/ReaderPage.tsx (triggers saveProgress on choose/auto-save)
+'   frontend/src/hooks/useReplayOnReconnect.ts (triggers replayQueue on reconnect)
 '   docs/design/offline-conflict-ux.md
 '   docs/planning/tech-spec.md  (Multi-device sync rules)
 ' ============================================================
@@ -17,7 +18,7 @@ skinparam roundCorner 8
 skinparam sequenceMessageAlign center
 
 actor "Child Reader" as child
-participant "XState Machine\nplayer/machine.ts" as machine
+participant "Reader UI + hooks\nreader/ReaderPage.tsx (saveProgress)\nhooks/useReplayOnReconnect.ts (replayQueue)" as machine
 participant "Sync Layer\noffline/sync.ts\nsaveProgress()" as sync
 database "IndexedDB\noffline/db.ts\n(local cache + queue)" as idb
 participant "SyncApi\n(Generated Client)\nfrontend/src/client/" as api_client
@@ -69,8 +70,8 @@ sync --> machine : "{kind:'queued', eventId:'uuid-44'}"
 ' ========== Reconnect: ordered replay ==========
 note over child,backend: Network restored - replay queued writes in order
 
-machine -> sync : "replayQueue(api, profileId, storybookId)"
-sync -> idb : "listQueue(profileId, storybookId)"
+machine -> sync : "replayQueue(api)\n(replays ALL queued writes, not per-story)"
+sync -> idb : "listQueue()  (entire queue, FIFO)"
 idb --> sync : "[{event_id:'uuid-43', ...state2},\n {event_id:'uuid-44', ...state3}]"
 
 loop "for each write in queue order"
@@ -91,7 +92,7 @@ loop "for each write in queue order"
   idb --> sync : "OK"
 end
 
-sync --> machine : "{kind:'saved', row} (final state)"
+sync --> machine : "ReplayOutcome\n{replayed: n, conflicts: [], failed: []}"
 
 note over sync,backend
   Idempotency guarantee:
@@ -101,17 +102,24 @@ note over sync,backend
   the replay finds body.event_id == row.last_event_id
   and returns the current row without re-applying.
   The queue entry is then safely dequeued.
+  --
+  replayQueue() returns a ReplayOutcome with three
+  buckets: replayed (applied + dequeued), conflicts
+  (a 409 latches that write and every later write for
+  the same story), and failed (a non-offline 4xx/5xx
+  write is dropped from the queue, not retried).
 end note
 
 ' ========== Replay yields conflict ==========
 note over child,backend: Conflict during replay (another device advanced while offline)
 
-alt "replay returns 409"
+alt "a queued write returns 409"
   sync -> api_client : "putReadingState(event_id:'uuid-43', state_revision=N)"
   api_client -> backend : "PUT ..."
   backend --> api_client : "409 {detail:'revision mismatch', current_row:{state_revision:N+5}}"
   api_client --> sync : "{status:409, currentRow}"
-  sync --> machine : "{kind:'conflict', currentRow}"
+  sync -> sync : "latch: this write and every LATER write\nfor the same story go into outcome.conflicts"
+  sync --> machine : "ReplayOutcome {replayed, conflicts:[...], failed:[...]}"
   machine -> child : "show conflict UX\n(offline-conflict-ux.md options)"
 end
 

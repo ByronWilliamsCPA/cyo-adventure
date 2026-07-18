@@ -37,7 +37,13 @@ type PickerState =
 type PinPrompt = {
   profile: ProfileView
   status: 'idle' | 'checking' | 'wrong' | 'trouble'
+  /** Consecutive wrong-PIN attempts, for the "ask a grown-up" escape (UX-K6). */
+  attempts?: number
 }
+
+// After this many wrong tries, offer an "ask a grown-up" way out so a child who
+// forgot their PIN is not stuck retrying forever.
+const PIN_ATTEMPTS_BEFORE_HELP = 3
 
 // The backend's mint endpoint signals a failed PIN check with a 403 whose
 // body carries the distinct PIN_MISMATCH code (api/child_sessions.py); any
@@ -168,7 +174,9 @@ export function ProfilePickerPage() {
     if (!pinPrompt || pin.length < 4 || pinPrompt.status === 'checking') return
     const target = pinPrompt.profile
     const attempt = pin
-    setPinPrompt({ profile: target, status: 'checking' })
+    // Carry the running attempt count through the 'checking' transition so the
+    // wrong-PIN branch below increments it instead of resetting to 1 (UX-K6).
+    setPinPrompt((prev) => ({ profile: target, status: 'checking', attempts: prev?.attempts }))
     setPin('')
     try {
       const session = await childSessionApi.mint(target.id, attempt)
@@ -187,7 +195,11 @@ export function ProfilePickerPage() {
       // Redacted shape only, never the raw axios error; see logApiError.
       logApiError('child session mint failed', err)
       if (isPinMismatch(err)) {
-        setPinPrompt({ profile: target, status: 'wrong' })
+        setPinPrompt((prev) => ({
+          profile: target,
+          status: 'wrong',
+          attempts: (prev?.attempts ?? 0) + 1,
+        }))
         return
       }
       const { kind } = classifyApiError(err)
@@ -350,6 +362,16 @@ export function ProfilePickerPage() {
           {pinPrompt.status === 'wrong' ? (
             <p role="alert" className="picker-pin__retry">
               Hmm, that PIN didn&apos;t work. Give it another try!
+            </p>
+          ) : null}
+          {(pinPrompt.attempts ?? 0) >= PIN_ATTEMPTS_BEFORE_HELP ? (
+            // UX-K6: after a few wrong tries, a child who forgot their PIN needs
+            // a way out instead of retrying forever.
+            <p className="picker-pin__help">
+              Forgot your PIN?{' '}
+              <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
+                Ask a grown-up
+              </Link>
             </p>
           ) : null}
           {pinPrompt.status === 'trouble' ? (

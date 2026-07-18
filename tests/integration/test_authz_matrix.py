@@ -558,6 +558,14 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN}),
         path_params=_random_uuid_path("job_id"),
     ),
+    # generation.py: admin-only operator endpoint to force-fail a stranded job
+    # (guardian and child are both rejected; see test_force_fail_requires_admin).
+    RouteSpec(
+        "POST",
+        "/api/v1/admin/generation-jobs/{job_id}/force-fail",
+        frozenset({Role.ADMIN}),
+        path_params=_random_uuid_path("job_id"),
+    ),
     # -- assignments.py: guardian-only browse surface -----------------------
     RouteSpec("GET", "/api/v1/guardian/books", frozenset({Role.GUARDIAN})),
     # -- library.py --------------------------------------------------------
@@ -739,6 +747,8 @@ _ROUTE_SPECS: list[RouteSpec] = [
         path_params=_random_uuid_path("request_id"),
     ),
     # -- approval.py: admin-only publish state machine -----------------------
+    # Admin master library: browse every storybook in any lifecycle status.
+    RouteSpec("GET", "/api/v1/admin/storybooks", frozenset({Role.ADMIN})),
     RouteSpec(
         "POST",
         "/api/v1/storybooks/{storybook_id}/approve",

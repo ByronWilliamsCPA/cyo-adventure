@@ -1,5 +1,5 @@
 import { isAxiosError } from 'axios'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
@@ -76,9 +76,13 @@ export function BooksPage() {
     [profiles]
   )
 
+  const [reloadKey, setReloadKey] = useState(0)
+  const retry = useCallback(() => setReloadKey((k) => k + 1), [])
+
   useEffect(() => {
     let cancelled = false
     async function load() {
+      setState({ kind: 'loading' })
       try {
         const [books, profiles] = await Promise.all([
           assignApi.listBooks(),
@@ -109,7 +113,7 @@ export function BooksPage() {
     return () => {
       cancelled = true
     }
-  }, [assignApi, profilesApi])
+  }, [assignApi, profilesApi, reloadKey])
 
   function onAssigned(storybookId: string, profileIds: string[]) {
     setState((prev) => {
@@ -147,9 +151,12 @@ export function BooksPage() {
 
   if (state.kind === 'error') {
     return (
-      <p role="alert" className="console__error cyo-text-error">
-        We could not load your family&apos;s books. Please reload.
-      </p>
+      <div role="alert" className="console__error">
+        <p className="cyo-text-error">We could not load your family&apos;s books.</p>
+        <Button variant="primary" onClick={retry}>
+          Try again
+        </Button>
+      </div>
     )
   }
 

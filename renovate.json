@@ -3,8 +3,7 @@
   "extends": [
     "config:recommended",
     ":dependencyDashboard",
-    ":semanticCommits",
-    ":preserveSemverRanges"
+    ":semanticCommits"
   ],
   "timezone": "America/New_York",
   "schedule": [
@@ -32,12 +31,25 @@
       "schedule": ["every weekend"]
     },
     {
-      "description": "Group Python dev dependencies",
+      "description": "Group Python dev/optional dependencies",
       "matchManagers": ["pep621"],
-      "matchDepTypes": ["dev"],
+      "matchDepTypes": ["optional-dependencies"],
       "groupName": "Python dev dependencies",
       "automerge": false,
       "schedule": ["every weekend"]
+    },
+    {
+      "description": "Group container base image digest bumps",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "groupName": "Container base images",
+      "labels": ["dependencies", "docker"],
+      "automerge": false
+    },
+    {
+      "description": "Keep pre-commit hook versions in step with the lockfile",
+      "matchManagers": ["pre-commit"],
+      "groupName": "pre-commit hooks",
+      "automerge": false
     },
     {
       "description": "Auto-merge GitHub Actions minor/patch updates",
@@ -109,11 +121,23 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+.*?_VERSION:\\s*[\"']?(?<currentValue>.*?)[\"']?\\s"
       ]
+    },
+    {
+      "description": "Bump digest-pinned container images embedded in workflow run steps (e.g. the nginx.conf syntax check in ci.yml)",
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "managerFilePatterns": ["^\\.github/workflows/.*\\.ya?ml$"],
+      "matchStrings": [
+        "(?<depName>ghcr\\.io/[^:@\\s]+):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)"
+      ]
     }
   ],
   "enabledManagers": [
     "pep621",
     "github-actions",
-    "npm"
+    "npm",
+    "dockerfile",
+    "docker-compose",
+    "pre-commit"
   ]
 }

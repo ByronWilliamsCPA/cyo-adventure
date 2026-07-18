@@ -327,6 +327,35 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByText('Soft flags')).not.toBeInTheDocument()
   })
 
+  it('shows a degraded-screening alert when a classifier_degraded finding is present', async () => {
+    mockGet.mockResolvedValue({
+      data: {
+        ...SURFACE,
+        story_level_findings: [
+          {
+            stage: 0,
+            source: 'openai',
+            category: 'classifier_degraded',
+            node_id: null,
+            verdict: 'advisory',
+            score: null,
+            message: 'openai classifier unavailable: not configured',
+          },
+        ],
+      },
+    })
+    renderAt('s1')
+    const alert = await screen.findByText(/Automated screening was degraded/i)
+    expect(alert).toBeInTheDocument()
+    expect(alert).toHaveTextContent('openai')
+  })
+
+  it('does not show a degraded alert when no classifier_degraded finding is present', async () => {
+    renderAt('s1')
+    await screen.findByText('1 finding')
+    expect(screen.queryByText(/Automated screening was degraded/i)).not.toBeInTheDocument()
+  })
+
   it('jumps from a flagged card to its passage in the read-through and highlights it', async () => {
     const user = userEvent.setup()
     mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })
@@ -375,6 +404,32 @@ describe('ReviewDetailPage', () => {
       visibility: 'family',
     })
     expect(await screen.findByText('CONSOLE HOME')).toBeInTheDocument()
+  })
+
+  it('shows queue position and auto-advances to the next item after a decision (UX-A1)', async () => {
+    const user = userEvent.setup()
+    mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+    render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: '/admin/review/s1', state: { reviewQueue: ['s1', 's2'] } },
+        ]}
+      >
+        <Routes>
+          <Route path="/admin/review/:storybookId" element={<ReviewDetailPage />} />
+          <Route path="/admin" element={<div>CONSOLE HOME</div>} />
+        </Routes>
+      </MemoryRouter>
+    )
+    // Position indicator for the first item.
+    expect(await screen.findByText(/Reviewing 1 of 2 in the queue/i)).toBeInTheDocument()
+
+    await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+    await user.click(await screen.findByRole('button', { name: /Confirm approve/i }))
+
+    // Auto-advanced to s2 (the next item), not back to the console home.
+    expect(await screen.findByText(/Reviewing 2 of 2 in the queue/i)).toBeInTheDocument()
+    expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
   })
 
   it('approves to the catalog when the admin selects it', async () => {

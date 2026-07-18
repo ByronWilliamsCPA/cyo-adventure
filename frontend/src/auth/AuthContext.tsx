@@ -45,6 +45,31 @@ function safeRemoveToken(): void {
   clearChildSession()
 }
 
+/**
+ * Best-effort purge of authenticated data at rest on sign-out (SEC-F5).
+ *
+ * The Workbox runtime caches ('api-cache', 'storybook-blobs') and the offline
+ * reading-state store hold children's names, story content, and progress that
+ * would otherwise survive a sign-out on a returned or hand-me-down device.
+ * Every step is wrapped so a failure never blocks the sign-out; the offline
+ * store is imported dynamically to keep IndexedDB code out of the eager bundle.
+ */
+async function purgeAuthenticatedDataAtRest(): Promise<void> {
+  try {
+    if (typeof caches !== 'undefined') {
+      await Promise.all(['api-cache', 'storybook-blobs'].map((name) => caches.delete(name)))
+    }
+  } catch {
+    // Cache Storage unavailable or blocked: best-effort only.
+  }
+  try {
+    const { clearReadingStates } = await import('../offline/db')
+    await clearReadingStates()
+  } catch {
+    // IndexedDB unavailable or blocked: best-effort only.
+  }
+}
+
 // Alias, not a hand-typed shadow interface: the shape is the generated
 // OpenAPI client's MeResponse (frontend/src/client/types.gen.ts), the single
 // source of truth for the backend's GET /v1/me contract (Finding 7).
@@ -290,6 +315,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // clearAdultGate() above: a device must never be left parked on the
         // set-new-password gate just because the network revoke below failed.
         setRecovery(false)
+        // #ASSUME: security (SEC-F5): purge authenticated data at rest so a
+        // returned or handed-over device does not retain children's names,
+        // story content, or reading progress after sign-out. Best-effort and
+        // fire-and-forget: it must never block or fail the sign-out itself.
+        // #VERIFY: AuthContext.test.tsx "sign-out purges cached data".
+        void purgeAuthenticatedDataAtRest()
         const { error } = await supabase.auth.signOut()
         if (error) throw error
       },

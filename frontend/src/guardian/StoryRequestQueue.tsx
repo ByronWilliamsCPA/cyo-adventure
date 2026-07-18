@@ -9,7 +9,14 @@ import { useToast } from '../notifications/useToast'
 import { BUDGET_EXCEEDED_MESSAGE, isBudgetExceededError, makeBudgetApi } from './budgetApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
 import { formatRelativeTime } from './intakeApi'
-import { AGE_BANDS, LENGTHS, TEEN_BANDS, ageBandLabel } from './storyRequestOptions'
+import {
+  AGE_BANDS,
+  LENGTHS,
+  TEEN_BANDS,
+  ageBandLabel,
+  lengthLabel,
+  narrativeStyleLabel,
+} from './storyRequestOptions'
 import {
   makeStoryRequestQueueApi,
   STORY_REQUESTS_CHANGED_EVENT,
@@ -136,6 +143,9 @@ export function StoryRequestQueue({
     })
   }
 
+  const [reloadKey, setReloadKey] = useState(0)
+  const retry = useCallback(() => setReloadKey((k) => k + 1), [])
+
   // Informational only (see `remaining`'s doc): a failed fetch just leaves
   // the approve context absent, it never blocks or errors the queue itself.
   const refreshBudget = useCallback(async () => {
@@ -155,6 +165,7 @@ export function StoryRequestQueue({
   useEffect(() => {
     let cancelled = false
     async function load() {
+      setState({ kind: 'loading' })
       try {
         const requests = await queueApi.listPending()
         if (!cancelled) {
@@ -186,7 +197,7 @@ export function StoryRequestQueue({
     return () => {
       cancelled = true
     }
-  }, [queueApi])
+  }, [queueApi, reloadKey])
 
   function removeRow(id: string) {
     setState((prev) =>
@@ -313,9 +324,12 @@ export function StoryRequestQueue({
     )
   } else if (state.kind === 'error') {
     content = (
-      <p role="alert" className="console__error cyo-text-error">
-        We could not load story requests. Please reload.
-      </p>
+      <div role="alert" className="console__error">
+        <p className="cyo-text-error">We could not load story requests.</p>
+        <Button variant="primary" onClick={retry}>
+          Try again
+        </Button>
+      </div>
     )
   } else if (state.requests.length === 0) {
     content = (
@@ -411,7 +425,7 @@ export function StoryRequestQueue({
                       <option value="">Choose…</option>
                       {LENGTHS.map((l) => (
                         <option key={l} value={l}>
-                          {l}
+                          {lengthLabel(l)}
                         </option>
                       ))}
                     </select>
@@ -423,8 +437,8 @@ export function StoryRequestQueue({
                         value={decision.narrative_style}
                         onChange={(e) => setDecision(req, { narrative_style: e.target.value })}
                       >
-                        <option value="prose">prose</option>
-                        <option value="gamebook">gamebook</option>
+                        <option value="prose">{narrativeStyleLabel('prose')}</option>
+                        <option value="gamebook">{narrativeStyleLabel('gamebook')}</option>
                       </select>
                     </label>
                   ) : null}

@@ -786,6 +786,36 @@ class TestLibraryItemEnrichmentFields:
         assert item.node_count == 12
         assert item.rating == 5
 
+    @pytest.mark.unit
+    def test_progress_completed_true_when_current_node_is_an_ending(self) -> None:
+        """UX-K5: reaching an ending marks the book finished for the shelf."""
+        blob: dict[str, object] = {
+            "nodes": [
+                {"id": "n1", "is_ending": False},
+                {"id": "nEnd", "is_ending": True},
+            ],
+        }
+        state = _state_row(
+            uuid.uuid4(), "s1", visit_set=["n1", "nEnd"], current_node="nEnd"
+        )
+        item = _library_item("s1", blob, 1, state=state)
+        assert item.progress is not None
+        assert item.progress.completed is True
+
+    @pytest.mark.unit
+    def test_progress_completed_false_mid_story(self) -> None:
+        """A branch not yet at an ending is not marked finished."""
+        blob: dict[str, object] = {
+            "nodes": [
+                {"id": "n1", "is_ending": False},
+                {"id": "nEnd", "is_ending": True},
+            ],
+        }
+        state = _state_row(uuid.uuid4(), "s1", visit_set=["n1"], current_node="n1")
+        item = _library_item("s1", blob, 1, state=state)
+        assert item.progress is not None
+        assert item.progress.completed is False
+
 
 class TestListLibraryEnrichment:
     """list_library joins per-profile reading state and ratings into items."""

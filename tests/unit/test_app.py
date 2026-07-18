@@ -346,6 +346,44 @@ class TestRateLimitingByEnvironment:
 
 
 # ---------------------------------------------------------------------------
+# Trusted host allowlist (SEC-B3)
+# ---------------------------------------------------------------------------
+
+
+class TestTrustedHost:
+    """create_app() wires TrustedHostMiddleware only when allowed_hosts is set."""
+
+    @pytest.mark.unit
+    def test_trusted_host_absent_when_unset(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """With no allowed_hosts configured the middleware is not added."""
+        from starlette.middleware.trustedhost import TrustedHostMiddleware
+
+        from cyo_adventure.core.config import settings
+
+        monkeypatch.setattr(settings, "allowed_hosts", "")
+        app = create_app()
+
+        assert not any(m.cls is TrustedHostMiddleware for m in app.user_middleware)
+
+    @pytest.mark.unit
+    def test_trusted_host_present_when_configured(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A comma-separated allowlist wires TrustedHostMiddleware."""
+        from starlette.middleware.trustedhost import TrustedHostMiddleware
+
+        from cyo_adventure.core.config import settings
+
+        monkeypatch.setattr(
+            settings, "allowed_hosts", "cyoadventure.app, api.cyoadventure.app"
+        )
+        app = create_app()
+
+        assert any(m.cls is TrustedHostMiddleware for m in app.user_middleware)
+
+
 # OpenAPI contract customization (_DocumentedApp / _document_bearer_security)
 # ---------------------------------------------------------------------------
 

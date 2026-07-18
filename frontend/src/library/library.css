@@ -20,6 +20,32 @@
   margin: 0;
 }
 
+/* UX-K1: offline shelf banner. */
+.library__offline-banner {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold, 600);
+  color: var(--color-warning-ink, #7a4a00);
+  background: var(--color-warning-surface, #fff4e0);
+  border: 2px solid var(--color-warning, #b26a00);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  margin: 0;
+}
+
+/* A book with no downloaded blob while offline: shown, but not tappable. */
+.book-card__link--offline {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.book-card__offline-note {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary, #5c4a38);
+  text-align: center;
+}
+
 .library__shelf-heading {
   font-family: var(--font-sans);
   font-size: var(--text-lg);
@@ -119,6 +145,20 @@
 .book-card__not-started-label {
   font-size: var(--text-xs);
   color: var(--color-ink-secondary);
+  white-space: nowrap;
+}
+
+/* UX-K5: a finished book reads "Finished!" instead of a misleading page count. */
+.book-card__finished {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.book-card__finished-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold, 600);
+  color: var(--color-success-ink, #2f6b3a);
   white-space: nowrap;
 }
 
@@ -326,12 +366,24 @@
 }
 
 .request-story__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   color: var(--color-ink);
   background: var(--color-parchment-dark);
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-3);
+}
+
+/* UX-K3: the child's own idea, quoted, so three pending rows are not identical. */
+.request-story__item-idea {
+  font-weight: var(--weight-bold, 600);
+}
+
+.request-story__item-status {
+  color: var(--color-ink-secondary, #5c4a38);
 }
 
 /* K12: "Your story is being written..." with a gentle three-dot pulse.

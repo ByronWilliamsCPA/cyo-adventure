@@ -656,6 +656,28 @@ describe('ProfilePickerPage PIN gate (P6-07)', () => {
     errorSpy.mockRestore()
   })
 
+  it('offers an ask-a-grown-up escape after several wrong tries (UX-K6)', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    mockPost.mockRejectedValue({
+      isAxiosError: true,
+      response: { status: 403, data: { code: 'PIN_MISMATCH' } },
+    })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    for (let i = 0; i < 3; i++) {
+      await user.clear(input)
+      await user.type(input, '9999')
+      await user.click(screen.getByRole('button', { name: /let's read/i }))
+      await screen.findByText(/didn't work/i)
+    }
+    // After the third failure the escape appears; a single failure did not show it.
+    expect(await screen.findByText(/ask a grown-up/i)).toBeInTheDocument()
+    errorSpy.mockRestore()
+  })
+
   it('never persists the typed PIN anywhere', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const user = userEvent.setup()

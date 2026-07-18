@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 from cyo_adventure.moderation.classifiers import run_classifiers
-from cyo_adventure.moderation.report import Verdict
+from cyo_adventure.moderation.report import Source, Verdict
 
 pytestmark = pytest.mark.asyncio
 
@@ -487,19 +487,59 @@ async def test_openai_non_dict_categories_and_scores_return_no_findings() -> Non
 
 
 @pytest.mark.unit
-async def test_perspective_http_error_returns_no_findings() -> None:
-    """A non-2xx Perspective response raises HTTPStatusError, which is caught."""
+async def test_perspective_http_error_yields_degraded_advisory() -> None:
+    """A non-2xx Perspective response surfaces one degraded advisory, not silence.
+
+    The failure must be visible to the reviewer: a silent [] on a down provider
+    is indistinguishable from a genuinely clean report.
+    """
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(500)
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text"), ("n2", "more text")],
+        openai_key=None,
+        perspective_key="pkey",
+        client=_client(handler),
+    )
+    degraded = [f for f in findings if f.category == "classifier_degraded"]
+    # Exactly one advisory for the whole run, not one per node, and non-gating.
+    assert len(degraded) == 1
+    assert degraded[0].verdict is Verdict.ADVISORY
+    assert degraded[0].source is Source.PERSPECTIVE
+
+
+@pytest.mark.unit
+async def test_openai_http_error_yields_degraded_advisory() -> None:
+    """A non-2xx OpenAI response likewise surfaces one degraded advisory."""
 
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(500)
 
     findings = await run_classifiers(
         nodes=[("n1", "text")],
-        openai_key=None,
-        perspective_key="pkey",
+        openai_key="okey",
+        perspective_key=None,
         client=_client(handler),
     )
-    assert findings == []
+    degraded = [f for f in findings if f.category == "classifier_degraded"]
+    assert len(degraded) == 1
+    assert degraded[0].source is Source.OPENAI
+
+
+@pytest.mark.unit
+async def test_require_classifiers_flags_unset_keys() -> None:
+    """With require_classifiers, an unconfigured key yields a degraded advisory."""
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        perspective_key=None,
+        client=_client(lambda _r: httpx.Response(200, json={})),
+        require_classifiers=True,
+    )
+    degraded = {f.source for f in findings if f.category == "classifier_degraded"}
+    assert degraded == {Source.OPENAI, Source.PERSPECTIVE}
 
 
 @pytest.mark.unit
