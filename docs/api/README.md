@@ -87,7 +87,10 @@ two reasons:
 1. **Commit visibility.** The app's unit-of-work commits when the request's yield-dependency tears
    down, which happens after the response is sent. A zero-delay runner can therefore receive a 201 and
    fire the next request before the created row is committed, producing intermittent 403/404s on
-   just-created resources. The delay serializes each request against the previous one's commit.
+   just-created resources. The delay serializes each request against the previous one's commit. This
+   is a mitigation, not the fix: any sufficiently fast client can hit the same race, and the durable
+   fix is committing the unit-of-work before the response is sent
+   (`api/deps.py::get_db_session`), tracked as follow-up work.
 2. **Rate limiting.** Wherever `RateLimitMiddleware` is enabled (any non-`local` environment; the
    compose/CI stack runs `ENVIRONMENT=local`, where it is off), the delay keeps any 60-second window
    under the 60 requests/minute ceiling.

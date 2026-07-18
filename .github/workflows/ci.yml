@@ -598,7 +598,10 @@ jobs:
       # (FastAPI yield-dependency teardown): without a delay, a create's row
       # can be invisible to the immediately following request. It also paces
       # the suite under the 60 req/min rate limiter wherever that middleware
-      # is enabled (it is off in this stack's ENVIRONMENT=local).
+      # is enabled (it is off in this stack's ENVIRONMENT=local). The delay is
+      # a mitigation, not the fix: the durable fix is committing the
+      # unit-of-work before the response is sent (api/deps.py::get_db_session),
+      # which affects every fast client and is tracked as follow-up work.
       # #VERIFY: every newman invocation of this collection (here and the local
       # loop in docs/api/README.md) must carry the same delay, or fast
       # back-to-back requests intermittently 403/404 on just-created rows.

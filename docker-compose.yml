@@ -34,10 +34,12 @@ services:
       # fail with a 400 ConfigurationError, so this LOCAL stack ships benign
       # defaults, mirroring the POSTGRES_PASSWORD `password` default above;
       # the Postman/newman suite (docs/api/README.md) exercises both mints
-      # against this stack in CI. Non-local deployments never rely on these:
-      # core/config.py fails startup outside `local` unless real secrets are
-      # provided (docker-compose.prod.yml), and these dev values must never
-      # be used there.
+      # against this stack in CI. Non-local deployments can never rely on
+      # these: core/config.py fails startup outside `local` when a secret is
+      # missing or weak, and it rejects these two exact repository-known
+      # values by name, so running this compose file with
+      # ENVIRONMENT=dev/staging/production refuses to boot rather than sign
+      # forgeable tokens (docker-compose.prod.yml supplies real secrets).
       CHILD_SESSION_SECRET: ${CHILD_SESSION_SECRET:-local-dev-child-session-secret-not-for-production}
       DEVICE_GRANT_SECRET: ${DEVICE_GRANT_SECRET:-local-dev-device-grant-secret-not-for-production}
       # Redis cache (if applicable)

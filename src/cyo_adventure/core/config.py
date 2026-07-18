@@ -770,6 +770,12 @@ class Settings(BaseSettings):
             "your-secret-here",
             "secret",
             "xxx",
+            # The docker-compose.yml local-dev defaults are repository-known
+            # HMAC keys; long enough to pass the byte floor, so they must be
+            # rejected by exact value outside local (either secret slot, in
+            # case one is reused for the other).
+            "local-dev-child-session-secret-not-for-production",
+            "local-dev-device-grant-secret-not-for-production",
         }
         stripped = secret.strip()
         if (
@@ -837,6 +843,12 @@ class Settings(BaseSettings):
             "your-secret-here",
             "secret",
             "xxx",
+            # The docker-compose.yml local-dev defaults are repository-known
+            # HMAC keys; long enough to pass the byte floor, so they must be
+            # rejected by exact value outside local (either secret slot, in
+            # case one is reused for the other).
+            "local-dev-child-session-secret-not-for-production",
+            "local-dev-device-grant-secret-not-for-production",
         }
         stripped = secret.strip()
         if (

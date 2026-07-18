@@ -344,6 +344,14 @@ def _document_bearer_security(schema: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The same schema object, rewritten in place.
     """
+    # #CRITICAL: security: which operations are documented as authenticated is
+    # inferred from the presence of the FastAPI-generated `authorization`
+    # header parameter; an operation that authenticates any other way would be
+    # silently documented as public here (documentation only; the runtime 401
+    # behavior of api/deps.py is unaffected either way).
+    # #VERIFY: tests/unit/test_app.py::TestOpenApiContract pins that every
+    # non-health operation carries the bearer requirement and the health
+    # probes stay public, so a new route missing the requirement fails CI.
     components: dict[str, Any] = schema.setdefault("components", {})
     schemes: dict[str, Any] = components.setdefault("securitySchemes", {})
     schemes[_BEARER_SCHEME_NAME] = {
