@@ -183,6 +183,7 @@ exclude = [
     "dist",
     "build",
     "migrations",
+    "out",
 ]
 
 [tool.ruff.format]
