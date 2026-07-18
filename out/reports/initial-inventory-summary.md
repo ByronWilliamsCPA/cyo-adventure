@@ -4,15 +4,19 @@ Live status grid for the authoring run defined in
 `docs/planning/story-inventory-initial-run.md`. Updated by the supervisor at
 wave boundaries and major approvals.
 
-## CURRENT HOLD (2026-07-17)
+## CURRENT STATUS (2026-07-18)
 
-**Fable is unavailable** ("usage credits required"). Per operator direction,
-all Wave 5 skeleton **design** work is paused (designs use Fable). The
-non-Fable pipeline continues on Opus: story fills, compliance/design reviews,
-repairs, and adjudication. Three designers were mid-run when Fable went down
-and are PARKED for resume when directed: `the-envoy-of-three-courts` (#17),
-`the-midnight-frequency` (#15), `the-flooded-quarter` (#18). Designs #19-#36
-not started.
+**Wave 5 running on Opus.** Fable hit its usage limit again after the 10-13
+band completed; per operator direction ("try with opus") the designer role
+moved to Opus for the remaining hard cells. Opus-designed skeletons are
+clearing the independent Opus reviews as cleanly as the Fable ones (the
+first four: third-shift, quiet-harbor-protocol, hollow-sea,
+year-of-four-banners, all approved with 0-1 fixes). **26 of 36 approved.**
+All prose cells are complete except the 16+ Long pair (#33 tricameral-city
+sorting_hat, #34 longwinter-station open_map tier-2), which are designing
+now. Only the 8 dagger gamebook skeletons remain after that, and NO gauntlet
+pattern-setter exists yet (the first gauntlet is a novel topology for this
+run: must be an acyclic DAG with reconvergence, restart-on-fail unrolled).
 
 ## Stories (one per offered age x length combination, prose)
 
@@ -39,7 +43,7 @@ the Fable outage.
 
 ## Wave 5 skeletons (2 new per production cell; 36 total)
 
-**15 of 36 APPROVED** (each with a design report under
+**26 of 36 APPROVED** (each with a design report under
 `out/reports/skeletons/`):
 
 | Cell | Approved new skeletons |
@@ -51,16 +55,26 @@ the Fable outage.
 | 8-11 short | the-robot-fair-sabotage, the-locked-carousel |
 | 8-11 medium | the-storm-chasers-club, the-river-of-small-boats |
 | 8-11 long | the-guild-of-junior-inventors, the-hundred-door-hotel |
-| 10-13 short | the-glass-comet (+ the-midnight-frequency PARKED) |
+| 10-13 short | the-midnight-frequency, the-glass-comet |
+| 10-13 medium | the-envoy-of-three-courts, the-flooded-quarter |
+| 10-13 long | the-skyrail-heist, the-winter-of-the-wolf-queen |
+| 13-16 medium | the-undertow-season, the-conservatory-wars |
+| 13-16 long | the-year-of-four-banners (Opus), the-hollow-sea (Opus) |
+| 16+ medium | the-third-shift (Opus), the-quiet-harbor-protocol (Opus) |
 
-Remaining (all PARKED on Fable-down): the-midnight-frequency (#15),
-the-envoy-of-three-courts (#17), the-flooded-quarter (#18), and designs
-#19-#36 (10-13 long through 16+ long, incl. the 4 dagger-cell challengers).
+Designing now (Opus): the-tricameral-city (#33, 16+ long sorting_hat),
+the-longwinter-station (#34, 16+ long open_map tier-2).
 
-Pipeline metrics: every approved skeleton passed check_skeleton on the
-designer's first run; the two catches only an independent reviewer could
-make were the recap-leak class (tier-1 statelessness) and the guild's
-track-isomorphism (replay rhythm); every repair converged in one cycle.
+Remaining after those: the 8 dagger gamebook skeletons (13-16 medium #23/#24,
+13-16 long #27/#28, 16+ medium #31/#32, 16+ long #35/#36), each cell pairing
+one low-end and one ceiling-challenger per the dagger experiment.
+
+Pipeline metrics: every approved skeleton (Fable- and Opus-designed alike)
+passed check_skeleton on the designer's first run and cleared its
+independent Opus review with 0-1 node-level fixes; the catches only a
+reviewer could make were the recap-leak class (tier-1 statelessness), the
+guild track-isomorphism (replay rhythm), and the conservatory floor/telegraph
+polish. No skeleton has been rejected.
 
 ## Firsts / pattern-setters established (with recorded rule sets)
 
@@ -70,6 +84,14 @@ track-isomorphism (replay rhythm); every repair converged in one cycle.
 - **tier 2 (stateful)**: the-glass-comet (7 tier-2 rules: <=3 vars, exact-partition
   at convergence, unrolled self-terminating retries, early-gated best outcome,
   entry-agnostic state-reflecting beats, <=8-10 clicks, depth headroom).
+- **tier-2 open_map**: the-flooded-quarter (base-plus-adds relaxation valid only
+  while every gated node keeps a verified unconditional companion; monotone
+  once-per-spoke progress var for the best outcome; auto-reset inventory at hub
+  and muster; arrival-neutral reconvergence). Reaffirmed by undertow-season and
+  the-hollow-sea (197 nodes, 15,510 configs).
+- **tier-2 branch_and_bottleneck**: the-quiet-harbor-protocol (exact-partition at
+  all convergence gates proven by the config walk; best outcome gated exactly at
+  one config; dominator-clean high-weight funnel). First stateful b&b of the run.
 
 ## Run-wide process rules (enforced in later prompts)
 
