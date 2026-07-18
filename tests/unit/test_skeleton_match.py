@@ -35,6 +35,7 @@ def test_candidates_for_cell_excludes_non_eligible_and_length_mismatch() -> None
     """10-13/short/prose excludes the non-eligible clocktower-cipher (which has no
     length/style at all) and every other length in the band."""
     assert candidates_for_cell("10-13", "short", "prose") == [
+        "the-cinderwick-exchange",
         "the-glass-comet",
         "the-midnight-frequency",
         "the-midnight-museum",
