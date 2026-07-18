@@ -1,0 +1,2224 @@
+@startuml the-harrowstone-keep
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 90w
+state a0_notice #FFF9C4
+a0_notice : choice · 80w
+state a0_watchman #D1C4E9
+a0_watchman : rising · 70w
+state e_a0_walk_early #E0E0E0
+e_a0_walk_early : setback (neutral)
+e_a0_walk_early : "The Road Home"
+state a0_market #FFF9C4
+a0_market : choice · 80w
+state a0_lantern_buy #D1C4E9
+a0_lantern_buy : rising · 60w
+state a0_rope #D1C4E9
+a0_rope : rising · 60w
+state a0_market_look #D1C4E9
+a0_market_look : rising · 65w
+state a0_inn_early #D1C4E9
+a0_inn_early : rising · 65w
+state a0_redcloaks #D1C4E9
+a0_redcloaks : rising · 70w
+state e_a0_redcloaks #FFCDD2
+e_a0_redcloaks : setback (negative)
+e_a0_redcloaks : "Wages of Haste"
+state a0_inn_door #D1C4E9
+a0_inn_door : rising · 65w
+state a0_common #FFF9C4
+a0_common : choice · 75w
+state a0_supper #D1C4E9
+a0_supper : rising · 75w
+state a0_cellar #D1C4E9
+a0_cellar : rising · 80w
+state a0_watchroom #D1C4E9
+a0_watchroom : rising · 75w
+state a0_pell #FFF9C4
+a0_pell : choice · 85w
+state a0_doubt #D1C4E9
+a0_doubt : rising · 70w
+state e_a0_walk_away #E0E0E0
+e_a0_walk_away : setback (neutral)
+e_a0_walk_away : "The Quiet Measure"
+state a0_bram #FFF9C4
+a0_bram : choice · 80w
+state a0_bram_coin #FFF9C4
+a0_bram_coin : choice · 75w
+state a0_bram_plain #FFF9C4
+a0_bram_plain : choice · 75w
+state a0_bram_help #FFF9C4
+a0_bram_help : choice · 75w
+state e_a0_bram_refuse #FFCDD2
+e_a0_bram_refuse : setback (negative)
+e_a0_bram_refuse : "Graves for Fearless Men"
+state a0_bram_won #D1C4E9
+a0_bram_won : rising · 65w
+state a0_sable #FFF9C4
+a0_sable : choice · 80w
+state a0_sable_dice #FFF9C4
+a0_sable_dice : choice · 75w
+state a0_sable_watch #FFF9C4
+a0_sable_watch : choice · 80w
+state a0_sable_loud #FFF9C4
+a0_sable_loud : choice · 80w
+state e_a0_jail #FFCDD2
+e_a0_jail : setback (negative)
+e_a0_jail : "A Night in the Lockup"
+state a0_sable_offer #FFF9C4
+a0_sable_offer : choice · 75w
+state e_a0_sable_gone #FFCDD2
+e_a0_sable_gone : setback (negative)
+e_a0_sable_gone : "The Scout Says No"
+state a0_sable_won #D1C4E9
+a0_sable_won : rising · 70w
+state a0_night #D1C4E9
+a0_night : rising · 60w
+state a0_elowen #FFF9C4
+a0_elowen : choice · 85w
+state a0_elowen_vouch #FFF9C4
+a0_elowen_vouch : choice · 75w
+state e_a0_aldous #FFCDD2
+e_a0_aldous : setback (negative)
+e_a0_aldous : "The Gate Stays Shut"
+state a0_elowen_errand #FFF9C4
+a0_elowen_errand : choice · 80w
+state a0_no_wizard #FFF9C4
+a0_no_wizard : choice · 70w
+state e_a0_short_crew #FFCDD2
+e_a0_short_crew : setback (negative)
+e_a0_short_crew : "Three at the Gate"
+state a0_elowen_won #D1C4E9
+a0_elowen_won : rising · 75w
+state a0_hedda #FFE0B2
+a0_hedda : climax · 90w
+state a0_cart #D1C4E9
+a0_cart : rising · 60w
+state a1_fork #FFF9C4
+a1_fork : choice · 85w
+state a1_h1 #FFF9C4
+a1_h1 : choice · 75w
+state a1_h2a #D1C4E9
+a1_h2a : rising · 80w
+state a1_h2b #FFF9C4
+a1_h2b : choice · 75w
+state e_a1_deserters #FFCDD2
+e_a1_deserters : setback (negative)
+e_a1_deserters : "Toll of the Kings Road"
+state a1_h2c #FFF9C4
+a1_h2c : choice · 70w
+state e_a1_wolfrun #FFCDD2
+e_a1_wolfrun : setback (negative)
+e_a1_wolfrun : "Run Down in the Fallows"
+state a1_h3a #D1C4E9
+a1_h3a : rising · 75w
+state a1_h3b #D1C4E9
+a1_h3b : rising · 75w
+state a1_h3c #D1C4E9
+a1_h3c : rising · 70w
+state a1_r1 #FFF9C4
+a1_r1 : choice · 75w
+state a1_r2a #FFF9C4
+a1_r2a : choice · 85w
+state a1_r2b #FFF9C4
+a1_r2b : choice · 80w
+state a1_r3a #FFF9C4
+a1_r3a : choice · 75w
+state e_a1_river #FFCDD2
+e_a1_river : setback (negative)
+e_a1_river : "The River Keeps the Kit"
+state a1_r3b #D1C4E9
+a1_r3b : rising · 80w
+state a1_d1 #FFF9C4
+a1_d1 : choice · 80w
+state a1_d2a #FFF9C4
+a1_d2a : choice · 85w
+state a1_d2b #FFF9C4
+a1_d2b : choice · 75w
+state a1_d2c #FFF9C4
+a1_d2c : choice · 70w
+state a1_d3a #D1C4E9
+a1_d3a : rising · 70w
+state a1_d3b #FFF9C4
+a1_d3b : choice · 70w
+state e_a1_pool #FFCDD2
+e_a1_pool : death (negative)
+e_a1_pool : "The Black Pool"
+state a1_d3c #D1C4E9
+a1_d3c : rising · 70w
+state a1_d3d #FFF9C4
+a1_d3d : choice · 75w
+state e_a1_hunt #FFCDD2
+e_a1_hunt : capture (negative)
+e_a1_hunt : "Run to Ground"
+state a1_crows #FFF9C4
+a1_crows : choice · 85w
+state a1_w1 #FFF9C4
+a1_w1 : choice · 80w
+state a1_w2 #D1C4E9
+a1_w2 : rising · 70w
+state a1_w3 #FFF9C4
+a1_w3 : choice · 80w
+state a1_w4 #D1C4E9
+a1_w4 : rising · 75w
+state a1_w5 #D1C4E9
+a1_w5 : rising · 70w
+state a1_w6 #FFF9C4
+a1_w6 : choice · 75w
+state a1_w7 #D1C4E9
+a1_w7 : rising · 65w
+state e_a1_stragglers #FFCDD2
+e_a1_stragglers : capture (negative)
+e_a1_stragglers : "Taken Like the Rest"
+state a1_finch #FFF9C4
+a1_finch : choice · 85w
+state a1_f1 #D1C4E9
+a1_f1 : rising · 80w
+state a1_f2 #D1C4E9
+a1_f2 : rising · 80w
+state a1_f3 #FFF9C4
+a1_f3 : choice · 75w
+state a1_f4 #D1C4E9
+a1_f4 : rising · 70w
+state a1_f5 #D1C4E9
+a1_f5 : rising · 70w
+state a1_council #FFF9C4
+a1_council : choice · 90w
+state a1_c1 #FFF9C4
+a1_c1 : choice · 80w
+state a1_c1a #D1C4E9
+a1_c1a : rising · 65w
+state a1_c1b #D1C4E9
+a1_c1b : rising · 65w
+state a1_c2 #D1C4E9
+a1_c2 : rising · 75w
+state a1_c3 #FFF9C4
+a1_c3 : choice · 75w
+state e_a1_storm #FFCDD2
+e_a1_storm : setback (negative)
+e_a1_storm : "Storm Toll"
+state a1_c4 #D1C4E9
+a1_c4 : rising · 75w
+state a1_trail #FFF9C4
+a1_trail : choice · 85w
+state a1_g1 #FFF9C4
+a1_g1 : choice · 75w
+state e_a1_lane #FFCDD2
+e_a1_lane : death (negative)
+e_a1_lane : "The Sunken Lane"
+state a1_g2 #D1C4E9
+a1_g2 : rising · 80w
+state a1_g3 #FFF9C4
+a1_g3 : choice · 80w
+state a1_g4 #D1C4E9
+a1_g4 : rising · 70w
+state a1_tam #FFE0B2
+a1_tam : climax · 90w
+state a2_start #FFF9C4
+a2_start : choice · 90w
+state a2_cw1 #FFF9C4
+a2_cw1 : choice · 80w
+state a2_cw2a #FFF9C4
+a2_cw2a : choice · 85w
+state a2_cw2b #FFF9C4
+a2_cw2b : choice · 80w
+state a2_cw2c #FFF9C4
+a2_cw2c : choice · 75w
+state a2_cw3a #D1C4E9
+a2_cw3a : rising · 75w
+state a2_cw3b #D1C4E9
+a2_cw3b : rising · 75w
+state e_a2_cw_bluff #FFCDD2
+e_a2_cw_bluff : capture (negative)
+e_a2_cw_bluff : "The Toll Comes Due"
+state a2_cw3c #D1C4E9
+a2_cw3c : rising · 70w
+state a2_cw3d #D1C4E9
+a2_cw3d : rising · 70w
+state a2_cw3e #D1C4E9
+a2_cw3e : rising · 75w
+state a2_cw3f #FFF9C4
+a2_cw3f : choice · 70w
+state e_a2_cw_bog #FFCDD2
+e_a2_cw_bog : death (negative)
+e_a2_cw_bog : "The Black Bog"
+state e_a2_cw_horn #FFCDD2
+e_a2_cw_horn : setback (negative)
+e_a2_cw_horn : "Hunted Off the Stone"
+state a2_gp1 #FFF9C4
+a2_gp1 : choice · 80w
+state a2_gp2a #FFF9C4
+a2_gp2a : choice · 75w
+state a2_gp2b #FFF9C4
+a2_gp2b : choice · 75w
+state a2_gp2c #FFF9C4
+a2_gp2c : choice · 75w
+state a2_gp3a #D1C4E9
+a2_gp3a : rising · 80w
+state a2_gp3b #D1C4E9
+a2_gp3b : rising · 75w
+state a2_gp3c #FFF9C4
+a2_gp3c : choice · 75w
+state e_a2_gp_fall #FFCDD2
+e_a2_gp_fall : death (negative)
+e_a2_gp_fall : "The North Face"
+state a2_gp4 #FFF9C4
+a2_gp4 : choice · 80w
+state a2_gp5a #D1C4E9
+a2_gp5a : rising · 75w
+state a2_gp5b #D1C4E9
+a2_gp5b : rising · 75w
+state a2_gp5c #FFF9C4
+a2_gp5c : choice · 70w
+state a2_gp6 #D1C4E9
+a2_gp6 : rising · 70w
+state e_a2_gp_ledge #FFCDD2
+e_a2_gp_ledge : capture (negative)
+e_a2_gp_ledge : "Pinned on the Ledge"
+state e_a2_gp_back #FFCDD2
+e_a2_gp_back : setback (negative)
+e_a2_gp_back : "The Wind Says No"
+state a2_cu1 #FFF9C4
+a2_cu1 : choice · 80w
+state a2_cu2a #FFF9C4
+a2_cu2a : choice · 80w
+state a2_cu2b #FFF9C4
+a2_cu2b : choice · 80w
+state a2_cu2c #FFF9C4
+a2_cu2c : choice · 75w
+state a2_cu3a #D1C4E9
+a2_cu3a : rising · 75w
+state a2_cu3b #D1C4E9
+a2_cu3b : rising · 75w
+state a2_cu3c #FFF9C4
+a2_cu3c : choice · 75w
+state a2_cu3d #FFF9C4
+a2_cu3d : choice · 75w
+state a2_cu3e #FFF9C4
+a2_cu3e : choice · 75w
+state e_a2_cu_alarm #FFCDD2
+e_a2_cu_alarm : capture (negative)
+e_a2_cu_alarm : "The Screeching Grate"
+state e_a2_cu_eel #FFCDD2
+e_a2_cu_eel : death (negative)
+e_a2_cu_eel : "The Drowned Drain"
+state e_a2_cu_cistern #FFCDD2
+e_a2_cu_cistern : setback (negative)
+e_a2_cu_cistern : "Lost in the Dark"
+state a2_ct1 #FFF9C4
+a2_ct1 : choice · 85w
+state a2_ct2a #D1C4E9
+a2_ct2a : rising · 85w
+state a2_ct2b #FFF9C4
+a2_ct2b : choice · 80w
+state a2_ct2c #FFF9C4
+a2_ct2c : choice · 75w
+state a2_ct3a #D1C4E9
+a2_ct3a : rising · 80w
+state a2_ct3b #FFF9C4
+a2_ct3b : choice · 80w
+state a2_ct4 #D1C4E9
+a2_ct4 : rising · 70w
+state a2_ct3c #D1C4E9
+a2_ct3c : rising · 75w
+state a2_ct3d #FFF9C4
+a2_ct3d : choice · 70w
+state e_a2_ct_cavein #FFCDD2
+e_a2_ct_cavein : setback (negative)
+e_a2_ct_cavein : "The Hill Says Keep It"
+state e_a2_ct_sweet #FFCDD2
+e_a2_ct_sweet : setback (negative)
+e_a2_ct_sweet : "The Sleepy Air"
+state e_a2_ct_crew #FFCDD2
+e_a2_ct_crew : capture (negative)
+e_a2_ct_crew : "Counted by Diggers"
+state a2_ward #FFF9C4
+a2_ward : choice · 90w
+state a2_wd1a #FFF9C4
+a2_wd1a : choice · 80w
+state a2_wd1b #FFF9C4
+a2_wd1b : choice · 80w
+state a2_wd1c #FFF9C4
+a2_wd1c : choice · 80w
+state a2_wd1d #D1C4E9
+a2_wd1d : rising · 75w
+state a2_wd2a #D1C4E9
+a2_wd2a : rising · 75w
+state a2_wd2b #D1C4E9
+a2_wd2b : rising · 75w
+state a2_wd2c #D1C4E9
+a2_wd2c : rising · 75w
+state a2_wd2d #D1C4E9
+a2_wd2d : rising · 75w
+state e_a2_wd_dogs #FFCDD2
+e_a2_wd_dogs : setback (negative)
+e_a2_wd_dogs : "The Kennels Give Tongue"
+state e_a2_wd_open #FFCDD2
+e_a2_wd_open : capture (negative)
+e_a2_wd_open : "Caught on the Cobbles"
+state e_a2_wd_horn #FFCDD2
+e_a2_wd_horn : setback (negative)
+e_a2_wd_horn : "The Wrong Note"
+state a2_inner #FFE0B2
+a2_inner : climax · 85w
+state a3_start #FFF9C4
+a3_start : choice · 90w
+state a3_court #FFF9C4
+a3_court : choice · 95w
+state a3_x1a #FFF9C4
+a3_x1a : choice · 90w
+state a3_x1b #D1C4E9
+a3_x1b : rising · 80w
+state a3_x1c #D1C4E9
+a3_x1c : rising · 85w
+state a3_x2a #D1C4E9
+a3_x2a : rising · 75w
+state a3_x2b #D1C4E9
+a3_x2b : rising · 80w
+state a3_x2c #D1C4E9
+a3_x2c : rising · 75w
+state e_a3_x_shutter #FFCDD2
+e_a3_x_shutter : capture (negative)
+e_a3_x_shutter : "Eyes at the Shutter"
+state e_a3_x_late #FFCDD2
+e_a3_x_late : capture (negative)
+e_a3_x_late : "One Sentence Too Long"
+state a3_gate #FFF9C4
+a3_gate : choice · 90w
+state a3_g1a #D1C4E9
+a3_g1a : rising · 75w
+state a3_g1b #D1C4E9
+a3_g1b : rising · 75w
+state a3_g1c #D1C4E9
+a3_g1c : rising · 75w
+state e_a3_g_chute #FFCDD2
+e_a3_g_chute : death (negative)
+e_a3_g_chute : "The Wrong Throat"
+state e_a3_g_column #FFCDD2
+e_a3_g_column : capture (negative)
+e_a3_g_column : "Caught on the Steps"
+state a3_k1 #FFF9C4
+a3_k1 : choice · 85w
+state a3_k2a #FFF9C4
+a3_k2a : choice · 75w
+state a3_k2b #D1C4E9
+a3_k2b : rising · 70w
+state a3_k2c #D1C4E9
+a3_k2c : rising · 75w
+state a3_k2d #FFF9C4
+a3_k2d : choice · 75w
+state a3_k3a #D1C4E9
+a3_k3a : rising · 70w
+state a3_k3b #D1C4E9
+a3_k3b : rising · 65w
+state a3_k3c #D1C4E9
+a3_k3c : rising · 70w
+state a3_k3d #D1C4E9
+a3_k3d : rising · 70w
+state a3_k3e #D1C4E9
+a3_k3e : rising · 65w
+state e_a3_k_beer #FFCDD2
+e_a3_k_beer : capture (negative)
+e_a3_k_beer : "The Small Beer"
+state e_a3_k_barrow #FFCDD2
+e_a3_k_barrow : capture (negative)
+e_a3_k_barrow : "A Loud Wheel"
+state a3_k4 #FFF9C4
+a3_k4 : choice · 90w
+state a3_k5a #FFF9C4
+a3_k5a : choice · 75w
+state a3_k5b #D1C4E9
+a3_k5b : rising · 75w
+state a3_k5c #FFF9C4
+a3_k5c : choice · 80w
+state a3_k6a #D1C4E9
+a3_k6a : rising · 80w
+state a3_k6b #D1C4E9
+a3_k6b : rising · 75w
+state a3_k6c #D1C4E9
+a3_k6c : rising · 80w
+state e_a3_k_relief #FFCDD2
+e_a3_k_relief : capture (negative)
+e_a3_k_relief : "The Early Relief"
+state e_a3_k_keys #FFCDD2
+e_a3_k_keys : capture (negative)
+e_a3_k_keys : "The Warders Wrist"
+state a3_k7 #FFF9C4
+a3_k7 : choice · 90w
+state a3_k8a #FFF9C4
+a3_k8a : choice · 75w
+state a3_k8b #D1C4E9
+a3_k8b : rising · 75w
+state a3_k8c #D1C4E9
+a3_k8c : rising · 75w
+state a3_k9a #D1C4E9
+a3_k9a : rising · 70w
+state a3_k9b #D1C4E9
+a3_k9b : rising · 70w
+state a3_k9c #D1C4E9
+a3_k9c : rising · 70w
+state e_a3_k_cough #FFCDD2
+e_a3_k_cough : capture (negative)
+e_a3_k_cough : "One Small Cough"
+state e_a3_k_stand #FFCDD2
+e_a3_k_stand : setback (negative)
+e_a3_k_stand : "The Doomed Rush"
+state a3_h1 #FFF9C4
+a3_h1 : choice · 85w
+state a3_h2a #FFF9C4
+a3_h2a : choice · 80w
+state a3_h2b #FFF9C4
+a3_h2b : choice · 80w
+state a3_h2c #FFF9C4
+a3_h2c : choice · 75w
+state a3_h3a #D1C4E9
+a3_h3a : rising · 70w
+state a3_h3b #D1C4E9
+a3_h3b : rising · 70w
+state a3_h3c #D1C4E9
+a3_h3c : rising · 80w
+state a3_h3d #D1C4E9
+a3_h3d : rising · 70w
+state a3_h3e #D1C4E9
+a3_h3e : rising · 75w
+state a3_h3f #D1C4E9
+a3_h3f : rising · 70w
+state e_a3_h_champion #FFCDD2
+e_a3_h_champion : capture (negative)
+e_a3_h_champion : "The Hall Wakes"
+state e_a3_h_beam #FFCDD2
+e_a3_h_beam : death (negative)
+e_a3_h_beam : "The Long Fall"
+state a3_h4 #FFF9C4
+a3_h4 : choice · 85w
+state a3_h4b #FFF9C4
+a3_h4b : choice · 85w
+state a3_h5a #D1C4E9
+a3_h5a : rising · 75w
+state a3_h5b #D1C4E9
+a3_h5b : rising · 80w
+state a3_h5c #D1C4E9
+a3_h5c : rising · 75w
+state a3_h5d #FFF9C4
+a3_h5d : choice · 80w
+state e_a3_h_fire #FFCDD2
+e_a3_h_fire : setback (negative)
+e_a3_h_fire : "The Armory Burns"
+state a3_h6a #D1C4E9
+a3_h6a : rising · 70w
+state a3_h6b #D1C4E9
+a3_h6b : rising · 70w
+state e_a3_h_smith #FFCDD2
+e_a3_h_smith : capture (negative)
+e_a3_h_smith : "The Forge Bell"
+state e_a3_h_greed #FFCDD2
+e_a3_h_greed : setback (negative)
+e_a3_h_greed : "An Armful Too Far"
+state a3_s1 #FFF9C4
+a3_s1 : choice · 85w
+state a3_s2a #FFF9C4
+a3_s2a : choice · 80w
+state a3_s2b #FFF9C4
+a3_s2b : choice · 75w
+state a3_s2c #FFF9C4
+a3_s2c : choice · 75w
+state a3_s3a #D1C4E9
+a3_s3a : rising · 70w
+state a3_s3b #D1C4E9
+a3_s3b : rising · 70w
+state a3_s3c #D1C4E9
+a3_s3c : rising · 70w
+state a3_s3d #D1C4E9
+a3_s3d : rising · 75w
+state a3_s3e #D1C4E9
+a3_s3e : rising · 70w
+state a3_s3f #D1C4E9
+a3_s3f : rising · 70w
+state e_a3_s_count #FFCDD2
+e_a3_s_count : capture (negative)
+e_a3_s_count : "Counted Twice"
+state e_a3_s_rope #FFCDD2
+e_a3_s_rope : capture (negative)
+e_a3_s_rope : "A Peal of Brass"
+state a3_s4 #FFF9C4
+a3_s4 : choice · 90w
+state a3_s5a #FFF9C4
+a3_s5a : choice · 80w
+state a3_s5b #FFF9C4
+a3_s5b : choice · 80w
+state a3_s5c #FFF9C4
+a3_s5c : choice · 75w
+state a3_s5d #D1C4E9
+a3_s5d : rising · 70w
+state a3_s6a #D1C4E9
+a3_s6a : rising · 75w
+state a3_s6b #FFF9C4
+a3_s6b : choice · 80w
+state a3_s6c #D1C4E9
+a3_s6c : rising · 75w
+state a3_s6d #FFF9C4
+a3_s6d : choice · 75w
+state a3_s6e #D1C4E9
+a3_s6e : rising · 70w
+state e_a3_s_bowl #FFCDD2
+e_a3_s_bowl : capture (negative)
+e_a3_s_bowl : "The Bowl Sees"
+state e_a3_s_dart #FFCDD2
+e_a3_s_dart : death (negative)
+e_a3_s_dart : "The Bone Dart"
+state e_a3_s_wards #FFCDD2
+e_a3_s_wards : setback (negative)
+e_a3_s_wards : "The Chattering Wards"
+state a4_start #FFF9C4
+a4_start : choice · 95w
+state a4_w1 #FFF9C4
+a4_w1 : choice · 80w
+state a4_w2a #D1C4E9
+a4_w2a : rising · 75w
+state a4_w2b #FFF9C4
+a4_w2b : choice · 80w
+state a4_w3a #D1C4E9
+a4_w3a : rising · 75w
+state a4_w3b #D1C4E9
+a4_w3b : rising · 80w
+state e_a4_w_dust #FFCDD2
+e_a4_w_dust : capture (negative)
+e_a4_w_dust : "Dust in the Torchlight"
+state a4_l1 #FFF9C4
+a4_l1 : choice · 80w
+state a4_l2a #FFF9C4
+a4_l2a : choice · 75w
+state a4_l2b #D1C4E9
+a4_l2b : rising · 75w
+state a4_l3a #D1C4E9
+a4_l3a : rising · 70w
+state a4_l3b #D1C4E9
+a4_l3b : rising · 70w
+state a4_l3c #D1C4E9
+a4_l3c : rising · 70w
+state e_a4_l_rank #FFCDD2
+e_a4_l_rank : capture (negative)
+e_a4_l_rank : "Presented to the Wizard"
+state e_a4_l_drop #FFCDD2
+e_a4_l_drop : death (negative)
+e_a4_l_drop : "The Masons Walk"
+state a4_m1 #FFF9C4
+a4_m1 : choice · 85w
+state a4_m2a #FFF9C4
+a4_m2a : choice · 80w
+state a4_m2b #FFF9C4
+a4_m2b : choice · 85w
+state a4_m3a #D1C4E9
+a4_m3a : rising · 70w
+state a4_m3b #D1C4E9
+a4_m3b : rising · 75w
+state a4_m3c #D1C4E9
+a4_m3c : rising · 80w
+state a4_m3d #D1C4E9
+a4_m3d : rising · 75w
+state e_a4_m_wrong #FFCDD2
+e_a4_m_wrong : capture (negative)
+e_a4_m_wrong : "A Cracked Note"
+state e_a4_m_guard #FFCDD2
+e_a4_m_guard : capture (negative)
+e_a4_m_guard : "The Chief Says No"
+state a4_d1 #FFF9C4
+a4_d1 : choice · 80w
+state a4_d2a #FFF9C4
+a4_d2a : choice · 75w
+state a4_d2b #D1C4E9
+a4_d2b : rising · 75w
+state a4_d3a #D1C4E9
+a4_d3a : rising · 70w
+state a4_d3b #D1C4E9
+a4_d3b : rising · 75w
+state a4_d3c #D1C4E9
+a4_d3c : rising · 70w
+state e_a4_d_cord #FFCDD2
+e_a4_d_cord : capture (negative)
+e_a4_d_cord : "The Knotted Cord"
+state e_a4_d_smoke #FFCDD2
+e_a4_d_smoke : death (negative)
+e_a4_d_smoke : "A Handhold of Smoke"
+state a4_rite #FFF9C4
+a4_rite : choice · 95w
+state a4_r1a #FFF9C4
+a4_r1a : choice · 80w
+state a4_r1b #D1C4E9
+a4_r1b : rising · 80w
+state a4_r1c #D1C4E9
+a4_r1c : rising · 75w
+state a4_r1d #FFF9C4
+a4_r1d : choice · 85w
+state a4_r2a #D1C4E9
+a4_r2a : rising · 75w
+state a4_r2b #D1C4E9
+a4_r2b : rising · 75w
+state a4_r2c #D1C4E9
+a4_r2c : rising · 75w
+state a4_r2d #D1C4E9
+a4_r2d : rising · 75w
+state e_a4_r_late #FFCDD2
+e_a4_r_late : setback (negative)
+e_a4_r_late : "The Door Opens"
+state e_a4_r_bolt #FFCDD2
+e_a4_r_bolt : death (negative)
+e_a4_r_bolt : "Ash Light"
+state e_a4_r_shaman #FFCDD2
+e_a4_r_shaman : capture (negative)
+e_a4_r_shaman : "The Shamans Answer"
+state e_a4_r_dark #FFCDD2
+e_a4_r_dark : capture (negative)
+e_a4_r_dark : "Their Dark, Not Yours"
+state e_a4_r_bargain #FFCDD2
+e_a4_r_bargain : capture (negative)
+e_a4_r_bargain : "The Scholars Apprentice"
+state a4_turn #FFF9C4
+a4_turn : choice · 95w
+state a4_f1 #FFF9C4
+a4_f1 : choice · 85w
+state a4_f1a #D1C4E9
+a4_f1a : rising · 80w
+state a4_f1b #D1C4E9
+a4_f1b : rising · 80w
+state a4_f1c #D1C4E9
+a4_f1c : rising · 80w
+state e_a4_f_book #FFCDD2
+e_a4_f_book : setback (negative)
+e_a4_f_book : "The Scholars Scramble"
+state e_a4_f_grip #FFCDD2
+e_a4_f_grip : death (negative)
+e_a4_f_grip : "The Patient Gap"
+state a4_f2 #FFF9C4
+a4_f2 : choice · 85w
+state a4_f2a #D1C4E9
+a4_f2a : rising · 80w
+state a4_f2b #D1C4E9
+a4_f2b : rising · 80w
+state e_a4_f_cornered #FFCDD2
+e_a4_f_cornered : capture (negative)
+e_a4_f_cornered : "At Bay in the Arch"
+state e_a4_f_gap #FFCDD2
+e_a4_f_gap : death (negative)
+e_a4_f_gap : "Past the Sleeping Door"
+state a4_out1 #D1C4E9
+a4_out1 : rising · 85w
+state a4_out2 #D1C4E9
+a4_out2 : rising · 85w
+state a4_out3 #D1C4E9
+a4_out3 : rising · 80w
+state a4_out4 #D1C4E9
+a4_out4 : rising · 80w
+state e_a4_win_home #C8E6C9
+e_a4_win_home : completion (positive)
+e_a4_win_home : "The Company Rides Home"
+state e_a4_win_bargain #C8E6C9
+e_a4_win_bargain : success (positive)
+e_a4_win_bargain : "Vessks Bargain"
+state e_a4_win_ashes #C8E6C9
+e_a4_win_ashes : success (positive)
+e_a4_win_ashes : "Ashes at Dawn"
+state e_a4_win_long #C8E6C9
+e_a4_win_long : success (positive)
+e_a4_win_long : "The Long Way Round"
+state w0_square #FFF9C4
+w0_square : choice · 75w
+state w0_vigil #D1C4E9
+w0_vigil : rising · 75w
+state w0_sergeant #D1C4E9
+w0_sergeant : rising · 70w
+state e_w0_wall #E0E0E0
+e_w0_wall : setback (neutral)
+e_w0_wall : "Wages and a Wall"
+state w0_oddments #FFF9C4
+w0_oddments : choice · 75w
+state e_w0_cutpurse #FFCDD2
+e_w0_cutpurse : setback (negative)
+e_w0_cutpurse : "The Alley Lesson"
+state w0_drovers #FFF9C4
+w0_drovers : choice · 80w
+state e_w0_vengeance #FFCDD2
+e_w0_vengeance : setback (negative)
+e_w0_vengeance : "The Vengeance Ride"
+state w0_fiddler #D1C4E9
+w0_fiddler : rising · 75w
+state w0_bram_ale #FFF9C4
+w0_bram_ale : choice · 75w
+state w0_sable_bet #FFF9C4
+w0_sable_bet : choice · 80w
+state e_w0_renege #FFCDD2
+e_w0_renege : setback (negative)
+e_w0_renege : "The Welsher"
+state w0_elowen_ask #FFF9C4
+w0_elowen_ask : choice · 80w
+state w0_hedda_red #D1C4E9
+w0_hedda_red : rising · 70w
+state w1_h_keeper #FFF9C4
+w1_h_keeper : choice · 80w
+state w1_h_keeper2 #D1C4E9
+w1_h_keeper2 : rising · 75w
+state e_w1_shortcut #FFCDD2
+e_w1_shortcut : setback (negative)
+e_w1_shortcut : "The Shepherds Shortcut"
+state w1_r_eelboy #D1C4E9
+w1_r_eelboy : rising · 75w
+state e_w1_wake #FFCDD2
+e_w1_wake : death (negative)
+e_w1_wake : "The Rivers Chance"
+state w1_d_count #FFF9C4
+w1_d_count : choice · 80w
+state w1_d_shepherd #D1C4E9
+w1_d_shepherd : rising · 70w
+state w1_w_crows #D1C4E9
+w1_w_crows : rising · 75w
+state w1_w_perimeter #D1C4E9
+w1_w_perimeter : rising · 80w
+state e_w1_lookout #FFCDD2
+e_w1_lookout : capture (negative)
+e_w1_lookout : "The Ridge Lookout"
+state w1_f_herbs #D1C4E9
+w1_f_herbs : rising · 75w
+state w1_c_mound #FFF9C4
+w1_c_mound : choice · 80w
+state w1_c_mound2 #D1C4E9
+w1_c_mound2 : rising · 70w
+state e_w1_mound #FFCDD2
+e_w1_mound : setback (negative)
+e_w1_mound : "Wedged In"
+state w1_g_decoy #FFF9C4
+w1_g_decoy : choice · 80w
+state e_w1_whistle #FFCDD2
+e_w1_whistle : setback (negative)
+e_w1_whistle : "A Note Too True"
+state w2_cw_roof #FFF9C4
+w2_cw_roof : choice · 80w
+state w2_cw_roof2 #D1C4E9
+w2_cw_roof2 : rising · 70w
+state w2_cw_roof3 #D1C4E9
+w2_cw_roof3 : rising · 75w
+state e_w2_cw_slates #FFCDD2
+e_w2_cw_slates : capture (negative)
+e_w2_cw_slates : "The Loose Slate"
+state w2_cw_under #D1C4E9
+w2_cw_under : rising · 75w
+state w2_cw_under2 #D1C4E9
+w2_cw_under2 : rising · 70w
+state w2_gp_stair #FFF9C4
+w2_gp_stair : choice · 80w
+state w2_gp_stair2 #D1C4E9
+w2_gp_stair2 : rising · 70w
+state e_w2_gp_jackdaw #FFCDD2
+e_w2_gp_jackdaw : setback (negative)
+e_w2_gp_jackdaw : "The Jackdaw Alarm"
+state w2_gp_night #D1C4E9
+w2_gp_night : rising · 70w
+state w2_cu_tap #D1C4E9
+w2_cu_tap : rising · 75w
+state w2_cu_dam #FFF9C4
+w2_cu_dam : choice · 75w
+state e_w2_cu_dam #FFCDD2
+e_w2_cu_dam : setback (negative)
+e_w2_cu_dam : "The Dam Lets Go"
+state e_w2_cu_echo #FFCDD2
+e_w2_cu_echo : capture (negative)
+e_w2_cu_echo : "The Answering Echo"
+state w2_ct_kilns #D1C4E9
+w2_ct_kilns : rising · 75w
+state w2_ct_rival #FFF9C4
+w2_ct_rival : choice · 80w
+state w2_ct_rival2 #D1C4E9
+w2_ct_rival2 : rising · 75w
+state e_w2_ct_rival #FFCDD2
+e_w2_ct_rival : capture (negative)
+e_w2_ct_rival : "Coalfingers Fee"
+state e_w2_ct_bluff #FFCDD2
+e_w2_ct_bluff : capture (negative)
+e_w2_ct_bluff : "One Question Too Many"
+state w2_wd_smithy #FFF9C4
+w2_wd_smithy : choice · 80w
+state e_w2_wd_anvil #FFCDD2
+e_w2_wd_anvil : capture (negative)
+e_w2_wd_anvil : "Iron Applause"
+state w2_wd_well #D1C4E9
+w2_wd_well : rising · 75w
+state e_w2_wd_windlass #FFCDD2
+e_w2_wd_windlass : capture (negative)
+e_w2_wd_windlass : "The Windlass Pawl"
+state e_w2_cw_password #FFCDD2
+e_w2_cw_password : capture (negative)
+e_w2_cw_password : "A Stale Password"
+state e_w2_gp_gear #FFCDD2
+e_w2_gp_gear : death (negative)
+e_w2_gp_gear : "Divided Grip"
+state e_w2_cu_third #FFCDD2
+e_w2_cu_third : setback (negative)
+e_w2_cu_third : "The Third Mouth"
+state e_w2_ct_deep #FFCDD2
+e_w2_ct_deep : capture (negative)
+e_w2_ct_deep : "One Gallery Too Deep"
+state e_w2_wd_hay #FFCDD2
+e_w2_wd_hay : capture (negative)
+e_w2_wd_hay : "The Wrong Wain"
+state w3_k_vats #D1C4E9
+w3_k_vats : rising · 75w
+state w3_k_kennel #FFF9C4
+w3_k_kennel : choice · 80w
+state e_w3_k_kennel #FFCDD2
+e_w3_k_kennel : capture (negative)
+e_w3_k_kennel : "Led by the Nose"
+state w3_k_grate #D1C4E9
+w3_k_grate : rising · 75w
+state w3_k_split #D1C4E9
+w3_k_split : rising · 75w
+state e_w3_k_air #FFCDD2
+e_w3_k_air : capture (negative)
+e_w3_k_air : "The Shut Dark"
+state e_w3_k_whistle #FFCDD2
+e_w3_k_whistle : capture (negative)
+e_w3_k_whistle : "The Real Signal"
+state e_w3_k_lamps #FFCDD2
+e_w3_k_lamps : capture (negative)
+e_w3_k_lamps : "A Festival of Lamps"
+state e_w3_k_upright #FFCDD2
+e_w3_k_upright : capture (negative)
+e_w3_k_upright : "Crossed in the Light"
+state w3_h_boxes #FFF9C4
+w3_h_boxes : choice · 75w
+state w3_h_boxes2 #D1C4E9
+w3_h_boxes2 : rising · 70w
+state e_w3_h_boxfloor #FFCDD2
+e_w3_h_boxfloor : setback (negative)
+e_w3_h_boxfloor : "Flour and Eels"
+state w3_h_vault #FFF9C4
+w3_h_vault : choice · 80w
+state e_w3_h_strongbox #FFCDD2
+e_w3_h_strongbox : capture (negative)
+e_w3_h_strongbox : "The Strongroom Holds"
+state w3_h_forge #D1C4E9
+w3_h_forge : rising · 75w
+state e_w3_h_steam #FFCDD2
+e_w3_h_steam : capture (negative)
+e_w3_h_steam : "Out of the Steam"
+state e_w3_h_tablets #FFCDD2
+e_w3_h_tablets : setback (negative)
+e_w3_h_tablets : "The Tablet Stack"
+state e_w3_h_tongs #FFCDD2
+e_w3_h_tongs : capture (negative)
+e_w3_h_tongs : "Farm Habits"
+state e_w3_h_oil #FFCDD2
+e_w3_h_oil : setback (negative)
+e_w3_h_oil : "Uncorked"
+state w3_s_smoke #D1C4E9
+w3_s_smoke : rising · 75w
+state w3_s_smoke2 #D1C4E9
+w3_s_smoke2 : rising · 70w
+state e_w3_s_cough #FFCDD2
+e_w3_s_cough : capture (negative)
+e_w3_s_cough : "One Smothered Cough"
+state w3_s_flute #D1C4E9
+w3_s_flute : rising · 75w
+state e_w3_s_flutewrong #FFCDD2
+e_w3_s_flutewrong : capture (negative)
+e_w3_s_flutewrong : "A Half Tone Flat"
+state e_w3_s_name #FFCDD2
+e_w3_s_name : capture (negative)
+e_w3_s_name : "Names Are Not Debts"
+state e_w3_s_linger #FFCDD2
+e_w3_s_linger : capture (negative)
+e_w3_s_linger : "The Smeared Sign"
+state e_w3_s_chalkleft #FFCDD2
+e_w3_s_chalkleft : setback (negative)
+e_w3_s_chalkleft : "The Missing Chalk"
+state e_w3_x_early #FFCDD2
+e_w3_x_early : capture (negative)
+e_w3_x_early : "A Delivered Parcel"
+state w3_g_scout #D1C4E9
+w3_g_scout : rising · 75w
+state e_w3_g_ropefray #FFCDD2
+e_w3_g_ropefray : setback (negative)
+e_w3_g_ropefray : "The Frayed End"
+state e_w3_g_surf #FFCDD2
+e_w3_g_surf : capture (negative)
+e_w3_g_surf : "The Bone Slide"
+state e_w3_g_torch #FFCDD2
+e_w3_g_torch : capture (negative)
+e_w3_g_torch : "A Borrowed Light"
+state w4_w_niche #D1C4E9
+w4_w_niche : rising · 80w
+state w4_l_rank #D1C4E9
+w4_l_rank : rising · 75w
+state w4_m_capt #D1C4E9
+w4_m_capt : rising · 80w
+state w4_d_relief #D1C4E9
+w4_d_relief : rising · 75w
+state w4_r_chant #D1C4E9
+w4_r_chant : rising · 80w
+state w4_r_fire #D1C4E9
+w4_r_fire : rising · 75w
+state e_w4_r_burn #FFCDD2
+e_w4_r_burn : capture (negative)
+e_w4_r_burn : "The Fire Turns"
+state w4_f_roofs #D1C4E9
+w4_f_roofs : rising · 80w
+state w4_out_roofs #D1C4E9
+w4_out_roofs : rising · 80w
+state e_w4_w_pry #FFCDD2
+e_w4_w_pry : capture (negative)
+e_w4_w_pry : "The Wardens Answer"
+state e_w4_l_sneeze #FFCDD2
+e_w4_l_sneeze : capture (negative)
+e_w4_l_sneeze : "The Ninth Landing"
+state e_w4_m_silver #FFCDD2
+e_w4_m_silver : capture (negative)
+e_w4_m_silver : "Property of the Chief"
+state e_w4_d_beat #FFCDD2
+e_w4_d_beat : capture (negative)
+e_w4_d_beat : "The Offbeat"
+state e_w4_m_third #FFCDD2
+e_w4_m_third : capture (negative)
+e_w4_m_third : "The Third Call"
+state e_w4_d_lash #FFCDD2
+e_w4_d_lash : capture (negative)
+e_w4_d_lash : "The Second Lashing"
+state e_w4_w_crack #FFCDD2
+e_w4_w_crack : capture (negative)
+e_w4_w_crack : "Both Ways Blind"
+state e_w4_l_face #FFCDD2
+e_w4_l_face : capture (negative)
+e_w4_l_face : "Down the Kings Nose"
+state e_w4_f_wrap #FFCDD2
+e_w4_f_wrap : capture (negative)
+e_w4_f_wrap : "The Box Sings Out"
+state e_w4_gloat #FFCDD2
+e_w4_gloat : setback (negative)
+e_w4_gloat : "The Empty Rope"
+state w5_shrine #FFF9C4
+w5_shrine : choice · 75w
+state w5_shrine2 #D1C4E9
+w5_shrine2 : rising · 75w
+state e_w5_shrine #FFCDD2
+e_w5_shrine : setback (negative)
+e_w5_shrine : "The Curfew Bell"
+state w5_pip #D1C4E9
+w5_pip : rising · 75w
+state w5_map #D1C4E9
+w5_map : rising · 80w
+state w5_gift #D1C4E9
+w5_gift : rising · 75w
+state w5_h1 #FFF9C4
+w5_h1 : choice · 80w
+state w5_h2 #FFF9C4
+w5_h2 : choice · 80w
+state w5_h3 #D1C4E9
+w5_h3 : rising · 70w
+state e_w5_h #FFCDD2
+e_w5_h : setback (negative)
+e_w5_h : "Chasing Dust"
+state w5_r1 #FFF9C4
+w5_r1 : choice · 75w
+state e_w5_r #FFCDD2
+e_w5_r : setback (negative)
+e_w5_r : "The Weir Plank"
+state w5_r2 #FFF9C4
+w5_r2 : choice · 80w
+state w5_r3 #D1C4E9
+w5_r3 : rising · 75w
+state w5_d1 #FFF9C4
+w5_d1 : choice · 75w
+state w5_d2 #FFF9C4
+w5_d2 : choice · 80w
+state w5_d3 #D1C4E9
+w5_d3 : rising · 70w
+state e_w5_d #FFCDD2
+e_w5_d : capture (negative)
+e_w5_d : "Drawn by Drums"
+state w5_w1 #FFF9C4
+w5_w1 : choice · 80w
+state e_w5_w #FFCDD2
+e_w5_w : setback (negative)
+e_w5_w : "The Merchants Needle"
+state w5_w2 #D1C4E9
+w5_w2 : rising · 80w
+state w5_f1 #D1C4E9
+w5_f1 : rising · 75w
+state w5_c1 #FFF9C4
+w5_c1 : choice · 80w
+state w5_c2 #D1C4E9
+w5_c2 : rising · 75w
+state w5_c3 #D1C4E9
+w5_c3 : rising · 75w
+state w5_g1 #D1C4E9
+w5_g1 : rising · 85w
+state w5_cw1 #FFF9C4
+w5_cw1 : choice · 80w
+state e_w5_cw #FFCDD2
+e_w5_cw : death (negative)
+e_w5_cw : "The Pale Lights"
+state w5_cw2 #FFF9C4
+w5_cw2 : choice · 80w
+state w5_cw3 #D1C4E9
+w5_cw3 : rising · 75w
+state w5_gp1 #FFF9C4
+w5_gp1 : choice · 75w
+state e_w5_gp #FFCDD2
+e_w5_gp : setback (negative)
+e_w5_gp : "The Eyrie Toll"
+state w5_gp2 #D1C4E9
+w5_gp2 : rising · 75w
+state w5_cu1 #FFF9C4
+w5_cu1 : choice · 75w
+state w5_cu2 #FFF9C4
+w5_cu2 : choice · 80w
+state e_w5_cu #FFCDD2
+e_w5_cu : capture (negative)
+e_w5_cu : "The Echo Chorus"
+state w5_cu3 #D1C4E9
+w5_cu3 : rising · 75w
+state w5_ct1 #FFF9C4
+w5_ct1 : choice · 80w
+state e_w5_ct #FFCDD2
+e_w5_ct : setback (negative)
+e_w5_ct : "Mags Patience"
+state w5_ct2 #D1C4E9
+w5_ct2 : rising · 80w
+state w5_wd1 #FFF9C4
+w5_wd1 : choice · 85w
+state e_w5_wd #FFCDD2
+e_w5_wd : capture (negative)
+e_w5_wd : "Caught at the Grating"
+state w5_k1 #FFF9C4
+w5_k1 : choice · 80w
+state w5_k2 #FFF9C4
+w5_k2 : choice · 75w
+state e_w5_k #FFCDD2
+e_w5_k : capture (negative)
+e_w5_k : "Loudest Whisper Loses"
+state w5_h1a #FFF9C4
+w5_h1a : choice · 80w
+state e_w5_ha #FFCDD2
+e_w5_ha : setback (negative)
+e_w5_ha : "The History Thieves"
+state w5_h2a #D1C4E9
+w5_h2a : rising · 75w
+state w5_s1 #FFF9C4
+w5_s1 : choice · 80w
+state e_w5_s #FFCDD2
+e_w5_s : setback (negative)
+e_w5_s : "The Dead Object"
+state w5_s2 #D1C4E9
+w5_s2 : rising · 75w
+state w5_k3 #D1C4E9
+w5_k3 : rising · 80w
+state w5_x1 #D1C4E9
+w5_x1 : rising · 85w
+state w5_a4w #D1C4E9
+w5_a4w : rising · 80w
+state w5_a4l #FFF9C4
+w5_a4l : choice · 75w
+state w5_a4l2 #D1C4E9
+w5_a4l2 : rising · 70w
+state e_w5_a4 #FFCDD2
+e_w5_a4 : capture (negative)
+e_w5_a4 : "Between the Verses"
+state w6_stable #D1C4E9
+w6_stable : rising · 75w
+state w6_pellwarn #D1C4E9
+w6_pellwarn : rising · 75w
+state e_w6_mare #FFCDD2
+e_w6_mare : setback (negative)
+e_w6_mare : "The Borrowed Mare"
+state e_w6_brag #FFCDD2
+e_w6_brag : setback (negative)
+e_w6_brag : "Loose Talk"
+state w6_h_bell #D1C4E9
+w6_h_bell : rising · 75w
+state w6_r_bank #D1C4E9
+w6_r_bank : rising · 75w
+state w6_d_stone #D1C4E9
+w6_d_stone : rising · 75w
+state e_w6_ford #FFCDD2
+e_w6_ford : setback (negative)
+e_w6_ford : "The Flooded Ford"
+state w6_w_child #D1C4E9
+w6_w_child : rising · 75w
+state w6_c_map #D1C4E9
+w6_c_map : rising · 75w
+state e_w6_early #FFCDD2
+e_w6_early : capture (negative)
+e_w6_early : "The Night Picket"
+state w6_cw_horn #FFF9C4
+w6_cw_horn : choice · 75w
+state w6_cw_horn2 #D1C4E9
+w6_cw_horn2 : rising · 70w
+state e_w6_cw_dice #FFCDD2
+e_w6_cw_dice : capture (negative)
+e_w6_cw_dice : "Loaded Dice"
+state w6_gp_cache #D1C4E9
+w6_gp_cache : rising · 75w
+state e_w6_gp_old #FFCDD2
+e_w6_gp_old : death (negative)
+e_w6_gp_old : "The Old Rope"
+state w6_cu_otter #D1C4E9
+w6_cu_otter : rising · 75w
+state e_w6_cu_stuck #FFCDD2
+e_w6_cu_stuck : setback (negative)
+e_w6_cu_stuck : "The Otter Run"
+state w6_ct_song #D1C4E9
+w6_ct_song : rising · 75w
+state e_w6_ct_answer #FFCDD2
+e_w6_ct_answer : capture (negative)
+e_w6_ct_answer : "The Answer Line"
+state w6_k_water #D1C4E9
+w6_k_water : rising · 75w
+state e_w6_k_spill #FFCDD2
+e_w6_k_spill : capture (negative)
+e_w6_k_spill : "The Water Round"
+state w6_h_hound #D1C4E9
+w6_h_hound : rising · 75w
+state e_w6_h_hound #FFCDD2
+e_w6_h_hound : setback (negative)
+e_w6_h_hound : "The Honest Sentry"
+state w6_s_novice #D1C4E9
+w6_s_novice : rising · 80w
+state e_w6_s_novice #FFCDD2
+e_w6_s_novice : capture (negative)
+e_w6_s_novice : "The Novices Nerve"
+state w6_x_below #D1C4E9
+w6_x_below : rising · 75w
+state w6_a4_w #D1C4E9
+w6_a4_w : rising · 75w
+state w6_a4_l #D1C4E9
+w6_a4_l : rising · 75w
+state e_w6_a4_lamp #FFCDD2
+e_w6_a4_lamp : capture (negative)
+e_w6_a4_lamp : "The Flaring Lamp"
+state e_w6_a4_m #FFCDD2
+e_w6_a4_m : capture (negative)
+e_w6_a4_m : "The Chiefs Patience"
+state e_w6_a4_d #FFCDD2
+e_w6_a4_d : capture (negative)
+e_w6_a4_d : "One Flat Note"
+state w7_maren #FFF9C4
+w7_maren : choice · 80w
+state w7_maren2 #D1C4E9
+w7_maren2 : rising · 85w
+state w7_wain #FFF9C4
+w7_wain : choice · 75w
+state w7_wain2 #D1C4E9
+w7_wain2 : rising · 70w
+state w7_charm #D1C4E9
+w7_charm : rising · 80w
+state w7_corral #D1C4E9
+w7_corral : rising · 75w
+state w7_satchel #D1C4E9
+w7_satchel : rising · 80w
+state w7_chain #FFF9C4
+w7_chain : choice · 75w
+state w7_chain2 #D1C4E9
+w7_chain2 : rising · 70w
+state w7_beacon #FFF9C4
+w7_beacon : choice · 75w
+state w7_beacon2 #D1C4E9
+w7_beacon2 : rising · 70w
+state w7_tally #FFF9C4
+w7_tally : choice · 80w
+state w7_tally2 #D1C4E9
+w7_tally2 : rising · 70w
+state w7_kiln #FFF9C4
+w7_kiln : choice · 75w
+state w7_kiln2 #D1C4E9
+w7_kiln2 : rising · 70w
+state w7_manifest #D1C4E9
+w7_manifest : rising · 75w
+state w7_graffiti #D1C4E9
+w7_graffiti : rising · 75w
+state w7_muster #FFF9C4
+w7_muster : choice · 75w
+state w7_muster2 #D1C4E9
+w7_muster2 : rising · 70w
+state w7_cipher #FFF9C4
+w7_cipher : choice · 80w
+state w7_cipher2 #D1C4E9
+w7_cipher2 : rising · 70w
+state w7_gossip #FFF9C4
+w7_gossip : choice · 80w
+state w7_gossip2 #D1C4E9
+w7_gossip2 : rising · 70w
+state w7_pacing #D1C4E9
+w7_pacing : rising · 75w
+state w7_twelfth #D1C4E9
+w7_twelfth : rising · 80w
+state w7_harvest #D1C4E9
+w7_harvest : rising · 75w
+state w7_drumcount #D1C4E9
+w7_drumcount : rising · 75w
+n_start --> a0_notice : Read the notice board.
+n_start --> a0_market : Walk the market row before the stalls cl...
+n_start --> a0_inn_early : Go straight into the Gull and Lantern.
+n_start --> w0_square : Cross to the gate square and the candle ...
+n_start --> w5_shrine : Stop at the little shrine of the road in...
+a0_notice --> a0_watchman : Ask the gate watchman about it.
+a0_notice --> a0_inn_door : Take the bill into the inn and sign on.
+a0_notice --> e_a0_walk_early : Admit this is beyond you and turn for ho...
+a0_watchman --> a0_inn_door : Thank him and head into the inn.
+a0_market --> a0_lantern_buy : Buy the brass lantern.
+a0_market --> a0_rope : Buy rope and trail rations instead.
+a0_market --> a0_market_look : Keep your coin and listen to the crowd.
+a0_market --> w0_oddments : Poke through Jossers crate of oddments.
+a0_lantern_buy --> a0_inn_door : Head into the inn.
+a0_rope --> a0_inn_door : Head into the inn.
+a0_market_look --> a0_inn_door : Head into the inn.
+a0_inn_early --> a0_redcloaks : Hear the red cloak out.
+a0_inn_early --> a0_common : Shrug past into the common room.
+a0_inn_early --> w0_fiddler : Stop by the fiddler sawing out the old l...
+a0_redcloaks --> e_a0_redcloaks : Pay the kit fee and join them.
+a0_redcloaks --> a0_common : Back away and find your own footing.
+a0_inn_door --> a0_common : Take the room in before you act.
+a0_inn_door --> w6_stable : Look in on the stable yard before the wa...
+a0_common --> a0_pell : Go to the clerk about the commission.
+a0_common --> a0_supper : Order supper and listen to the room firs...
+a0_common --> a0_cellar : Take Martas cellar errand chalked on the...
+a0_common --> a0_watchroom : Warm your hands and watch the fire crowd...
+a0_common --> w0_drovers : Sit with the silent drover table.
+a0_common --> w5_pip : Tip Pip the pot boy for the kitchens vie...
+a0_common --> w7_maren : Ask Marta about her oldest lodger upstai...
+a0_supper --> a0_pell : Take that thought to the clerk.
+a0_supper --> e_w6_brag : Talk the commission over with the whole ...
+a0_cellar --> a0_pell : Collect the copper and see the clerk.
+a0_cellar --> a0_pell : Take the bruise, the copper, and the les...
+a0_watchroom --> a0_pell : Go to the clerk with your reading done.
+a0_pell --> a0_bram : Start with the dwarf by the fire.
+a0_pell --> a0_doubt : Step out to the yard to think it over.
+a0_pell --> w5_map : Study the survey maps Pell keeps under t...
+a0_pell --> w6_pellwarn : Hear Pells last word off the ledger.
+a0_doubt --> a0_bram : Go back in and start with the dwarf.
+a0_doubt --> e_a0_walk_away : Own your measure and take the road home.
+a0_bram --> a0_bram_coin : Offer coin, loud enough for the room.
+a0_bram --> a0_bram_plain : Speak plainly of the missing drovers and...
+a0_bram --> a0_bram_help : Say nothing and hold the strap steady fo...
+a0_bram --> w0_bram_ale : Buy him a proper ale and wait him out.
+a0_bram_coin --> a0_bram_won : Answer honest, afraid and going anyway.
+a0_bram_coin --> e_a0_bram_refuse : Boast that you fear nothing.
+a0_bram_plain --> a0_bram_won : Answer honest, afraid and going anyway.
+a0_bram_plain --> e_a0_bram_refuse : Swear you would never run from anything.
+a0_bram_help --> a0_bram_won : Answer honest, afraid and going anyway.
+a0_bram_help --> e_a0_bram_refuse : Claim your nerve has never broken.
+a0_bram_won --> a0_sable : Head for the dice table.
+a0_sable --> a0_sable_dice : Play a few honest rounds with your last ...
+a0_sable --> a0_sable_watch : Sit but watch her hands instead of the d...
+a0_sable --> a0_sable_offer : Skip the game and offer the job flat out...
+a0_sable --> w0_sable_bet : Stake your grandmothers sword on one rol...
+a0_sable_dice --> a0_sable_won : Tell her the odds, bad and getting worse...
+a0_sable_dice --> e_a0_sable_gone : Dress the odds up pretty to close the de...
+a0_sable_watch --> a0_sable_won : Say it quietly, just for her.
+a0_sable_watch --> a0_sable_loud : Call the cheat for the whole room.
+a0_sable_loud --> a0_night : Shake on it and rest before finding the ...
+a0_sable_loud --> e_a0_jail : Wade back inside to settle the drover.
+a0_sable_offer --> a0_sable_won : Tell her the odds, bad and getting worse...
+a0_sable_offer --> e_a0_sable_gone : Promise her glory and easy silver.
+a0_sable_won --> a0_night : Take a nights rest before finding the wi...
+a0_night --> a0_elowen : Rise at first light.
+a0_elowen --> a0_elowen_vouch : Vouch for her to Master Aldous.
+a0_elowen --> a0_elowen_errand : Offer to fetch her unfinished errand fir...
+a0_elowen --> a0_no_wizard : Decide to go without a wizard.
+a0_elowen --> w0_elowen_ask : Ask Elowen herself what she wants.
+a0_elowen_vouch --> a0_elowen_won : Swear to send her home at first true dan...
+a0_elowen_vouch --> e_a0_aldous : Promise him glory and a tale for the gui...
+a0_elowen_errand --> a0_elowen_won : Hand it over and let the root argue for ...
+a0_elowen_errand --> a0_elowen_won : Hand it over and add your promise to sen...
+a0_no_wizard --> a0_elowen_won : Turn back and give Aldous your oath to s...
+a0_no_wizard --> e_a0_short_crew : Report to the east gate with three of yo...
+a0_elowen_won --> a0_hedda : Report to Marshal Hedda at the east gate...
+a0_hedda --> a1_fork : Trade your spare kit for Jossers brass l...
+a0_hedda --> a1_fork : Take the road as you are.
+a0_hedda --> a0_cart : Hear Heddas last word on the hills befor...
+a0_hedda --> w0_hedda_red : Ask what head start the Redcloaks have.
+a0_hedda --> w5_gift : Take your leave of the vigil grandmother...
+a0_cart --> a1_fork : Take the road on foot.
+a1_fork --> a1_h1 : Take the high road along the ridges.
+a1_fork --> a1_r1 : Ride the river barge from the landing.
+a1_fork --> a1_d1 : Walk the old drover track.
+a1_fork --> w5_h1 : Check the smoke rising off the second fa...
+a1_fork --> w5_r1 : Work the eel weirs below the landing for...
+a1_fork --> w5_d1 : Pay respects at the drover shrine in the...
+a1_h1 --> a1_h2a : March to meet the riders openly.
+a1_h1 --> a1_h2b : Slip into the hedge and watch them pass.
+a1_h1 --> a1_h2c : Cut away from the road through the fallo...
+a1_h1 --> w1_h_keeper : Detour by the toll shrine keeper first.
+a1_h1 --> e_w1_shortcut : Take the shepherds shortcut over the dow...
+a1_h2a --> a1_h3a : Push on to the toll shrine.
+a1_h2a --> a1_h3b : Trade him tobacco for a look at his road...
+a1_h2b --> a1_h3a : Pay a little and pass.
+a1_h2b --> a1_h3b : Let Bram loom and talk them down, soldie...
+a1_h2b --> e_a1_deserters : Refuse and reach for iron.
+a1_h2c --> a1_h3c : Stand together and drive them back.
+a1_h2c --> e_a1_wolfrun : Throw the ration sack and run for the sh...
+a1_h3a --> a1_crows : Make for the crows.
+a1_h3a --> w6_h_bell : Dig the stolen bell out of the ditch and...
+a1_h3b --> a1_crows : Take the shortcut to the crow fields.
+a1_h3c --> a1_crows : Bind up and make for the crows.
+a1_r1 --> a1_r2a : Pay the fare and ride as cargo.
+a1_r1 --> a1_r2b : Work the pole and lines for passage.
+a1_r1 --> w1_r_eelboy : Pay the eel boy on the landing for river...
+a1_r2a --> a1_r3a : Watch the fog bank rolling in ahead.
+a1_r2a --> a1_r3b : Help Weck sound the channel as the fog t...
+a1_r2a --> e_w1_wake : Lean out and study the strange wake in t...
+a1_r2b --> a1_r3a : Stand ready at the rail through the fog.
+a1_r2b --> a1_r3b : Sound the channel with the pole where We...
+a1_r2b --> w7_charm : Accept the charm Weck presses on Elowen ...
+a1_r3a --> a1_crows : Promise them word and follow the crows w...
+a1_r3a --> e_a1_river : Jump for the shallows when the hull hits...
+a1_r3b --> a1_crows : Promise her word and follow the crows we...
+a1_r3b --> w6_r_bank : Walk the last west bank stretch reading ...
+a1_d1 --> a1_d2a : Give her the hour to read it right.
+a1_d1 --> a1_d2b : Push the pace, reading can wait.
+a1_d1 --> a1_d2c : Hail the small figure watching from the ...
+a1_d1 --> w1_d_count : Test the drover tables trick, count the ...
+a1_d2a --> a1_d3a : Step only where she counts.
+a1_d2a --> a1_d3b : Trust your own eye and take the straight...
+a1_d2b --> a1_d3a : Pick through slow and eat the lost time.
+a1_d2b --> a1_d3c : Keep the hard pace and sharp eyes.
+a1_d2c --> a1_d3c : Run for the fallow fields before the hun...
+a1_d2c --> a1_d3d : Go to ground in the gorse and let it pas...
+a1_d3a --> a1_crows : Make for the crows.
+a1_d3a --> w6_d_stone : Read the last waystone properly before t...
+a1_d3a --> e_w6_ford : Cut the flooded ford to save a mile.
+a1_d3b --> a1_crows : Wring out and make for the crow fields.
+a1_d3b --> e_a1_pool : Thrash for the far bank alone.
+a1_d3c --> a1_crows : Bind it and make for the crows.
+a1_d3d --> a1_crows : Rise and slip to the crow fields.
+a1_d3d --> e_a1_hunt : Crawl the ditch line out early while the...
+a1_crows --> a1_w1 : Search the wreck methodically.
+a1_crows --> a1_w2 : Call out for survivors.
+a1_crows --> a1_w3 : Let Elowen chalk a finding circle first.
+a1_crows --> a1_w4 : Circle the field edge reading the ground...
+a1_crows --> w1_w_perimeter : Circle the whole field perimeter first.
+a1_crows --> w5_w1 : Search Tallows overturned office wain.
+a1_w1 --> a1_w5 : Search on for any of the people.
+a1_w1 --> a1_w6 : Pick the whole field over for gear worth...
+a1_w1 --> w7_wain : Knuckle test the lead wains double floor...
+a1_w2 --> a1_finch : Run to the lead wain.
+a1_w2 --> w1_w_crows : Read the crows themselves before you run...
+a1_w3 --> a1_w5 : Follow the picture to the lead wain.
+a1_w3 --> a1_w6 : Sketch the soft shoed walker for later a...
+a1_w3 --> w6_w_child : Check under the third wain where the dus...
+a1_w4 --> a1_w5 : Close in on the wreck ring.
+a1_w5 --> a1_finch : Get the wain off whoever knocks.
+a1_w6 --> a1_w7 : Scatter into the ditch line and regroup ...
+a1_w6 --> e_a1_stragglers : Stand in the wreck ring and fight.
+a1_w7 --> a1_finch : Get the wain off whoever knocks.
+a1_finch --> a1_f1 : Lever the wain with a wheel spoke, slow ...
+a1_finch --> a1_f2 : Lift it on Brams count, fast and hard.
+a1_finch --> a1_f3 : Dig the casks out from around him first.
+a1_finch --> w1_f_herbs : Send Elowen for fever herbs before you l...
+a1_finch --> w5_f1 : Fetch the wagon jack from the office wai...
+a1_f1 --> a1_council : Hear everything he knows.
+a1_f2 --> a1_council : Splint him and hear what he knows.
+a1_f3 --> a1_f4 : Lever the axle now, no more time.
+a1_f3 --> a1_f5 : Wedge the axle with the spare wheel firs...
+a1_f4 --> a1_council : Splint him and hear what he knows.
+a1_f5 --> a1_council : Splint him and hear what he knows.
+a1_council --> a1_c1 : Fire in the deep hollow.
+a1_council --> a1_c2 : Cold camp in the hedge bones.
+a1_council --> a1_c3 : Push the trail through the storm dark.
+a1_council --> a1_c4 : Rig Finch a shelter first, whatever it c...
+a1_council --> w1_c_mound : Shelter in the old field barrow with the...
+a1_council --> w5_c1 : Take first watch beside Bram.
+a1_c1 --> a1_c1a : Wake everyone slow and stand to arms.
+a1_c1 --> a1_c1b : Throw light, shout, and rush the eyes.
+a1_c1 --> w5_c3 : Sit Sables knife lesson by the settling ...
+a1_c1a --> a1_trail : Sleep in watches to dawn.
+a1_c1b --> a1_trail : Bind it and sleep in watches.
+a1_c2 --> a1_trail : Rise stiff at dawn.
+a1_c2 --> w7_corral : Read the hedge bones properly by lantern...
+a1_c3 --> a1_trail : Haul out and shelter till the worst pass...
+a1_c3 --> e_a1_storm : Keep pushing hard through the flood dark...
+a1_c4 --> a1_trail : Rise at dawn and take the drag trail.
+a1_c4 --> w6_c_map : Spend the shelter hour flat over Finchs ...
+a1_trail --> a1_g1 : Rush the cart before it matters.
+a1_trail --> a1_g2 : Let Sable parley from the bank.
+a1_trail --> a1_g3 : Shadow the cart and take it after dark.
+a1_trail --> w1_g_decoy : Set Sables tin whistle decoy beyond the ...
+a1_trail --> e_w6_early : Rush the sunken lane before reading it.
+a1_g1 --> a1_tam : Cut the boy free.
+a1_g1 --> e_a1_lane : Chase the bolting mule down the lane.
+a1_g2 --> a1_tam : Unlash the cage and see to the boy.
+a1_g2 --> w5_g1 : Walk a while beside the boy and let him ...
+a1_g3 --> a1_tam : Cut the rope and lift the boy out quiet.
+a1_g3 --> a1_g4 : Take the whole cart, mule and all.
+a1_g3 --> w7_satchel : Go through the drivers satchel on the la...
+a1_g4 --> a1_tam : Run east with the boy and lose the noise...
+a1_tam --> a2_start : Turn northeast for the Hollow Hills.
+a2_start --> a2_cw1 : Walk up the causeway bold as brass.
+a2_start --> a2_gp1 : Climb the goat path up the north face.
+a2_start --> a2_cu1 : Find the culvert mouth under the east wa...
+a2_start --> a2_ct1 : Enter the charcoal burners tunnels.
+a2_cw1 --> a2_cw2a : March up like you are expected and paid ...
+a2_cw1 --> a2_cw2b : Crawl the causeway shadow line under the...
+a2_cw1 --> a2_cw2c : Wade the bog margin and flank the brazie...
+a2_cw1 --> w2_cw_roof : Swing up the drain chain to the gatehous...
+a2_cw1 --> w2_cw_under : Wade the arch shadows under the causeway...
+a2_cw1 --> w6_cw_horn : Wait for the change horn that empties th...
+a2_cw2a --> a2_cw3a : Toss them a coin and keep walking.
+a2_cw2a --> a2_cw3b : Bark at them in your best angry trader v...
+a2_cw2a --> e_a2_cw_bluff : Keep silent and keep walking when they h...
+a2_cw2b --> a2_cw3c : Freeze and let them fetch it.
+a2_cw2b --> a2_cw3d : Palm the die into the bog and flow on.
+a2_cw2b --> e_a2_cw_horn : Rise and dash the last stretch to the ar...
+a2_cw2b --> w7_chain : Check the chain locker grating in the fo...
+a2_cw2c --> a2_cw3e : Hold still until it passes.
+a2_cw2c --> a2_cw3f : Push hard for the gate footing now.
+a2_cw2c --> w5_cw1 : Study the pale lights drifting over the ...
+a2_cw3a --> a2_ward : Slip through the wicket gate into the ou...
+a2_cw3b --> a2_ward : Cross into the outer ward.
+a2_cw3c --> a2_ward : Slip into the outer ward.
+a2_cw3d --> a2_ward : Slip into the outer ward.
+a2_cw3e --> a2_ward : Climb the footing to the wicket gate.
+a2_cw3f --> a2_ward : Kick free and scramble to the gate footi...
+a2_cw3f --> e_a2_cw_bog : Tear loose whatever it costs.
+a2_gp1 --> a2_gp2a : Climb steady, testing every hold.
+a2_gp1 --> a2_gp2b : Climb fast between the wind gusts.
+a2_gp1 --> a2_gp2c : Rope the party together first.
+a2_gp1 --> w2_gp_stair : Let Sable hunt the cliff for the old war...
+a2_gp1 --> w2_gp_night : Wait out the deep watch in a cliff hollo...
+a2_gp1 --> w5_gp1 : Deal with the hawks eyrie blocking the s...
+a2_gp2a --> a2_gp3a : Lead around the bulge yourself.
+a2_gp2a --> a2_gp3b : Let Sable find the line and follow her c...
+a2_gp2a --> e_a2_gp_back : Read the rising wind and call the climb ...
+a2_gp2a --> w7_beacon : Climb to the old beacon bracket for the ...
+a2_gp2b --> a2_gp3c : Keep the pace around the bulge.
+a2_gp2b --> a2_gp3b : Steady down and follow Sables line.
+a2_gp2b --> e_w2_gp_gear : Haul the pack strap instead of the next ...
+a2_gp2c --> a2_gp3b : Send Sable ahead on the rope around the ...
+a2_gp2c --> a2_gp3a : Take the lead yourself with the rope pai...
+a2_gp2c --> e_a2_gp_ledge : Wait out the wind on the ledge, roped an...
+a2_gp3a --> a2_gp4 : Walk the last ledges to the broken wall.
+a2_gp3b --> a2_gp4 : Walk the last ledges to the broken wall.
+a2_gp3c --> a2_gp4 : Jam in and wait out the gust.
+a2_gp3c --> e_a2_gp_fall : Lunge for the next hold through it.
+a2_gp4 --> a2_gp5a : Time the sentrys circuit and slip the br...
+a2_gp4 --> a2_gp5b : Send Sable up to quiet the sentry first.
+a2_gp4 --> a2_gp5c : Wait for cloud over the moon, then all a...
+a2_gp5a --> a2_ward : Drop into the outer ward.
+a2_gp5b --> a2_ward : Climb through and drop into the ward.
+a2_gp5c --> a2_gp6 : Freeze against the wall until it loses i...
+a2_gp5c --> a2_ward : Drop into the ward fast and scatter to s...
+a2_gp6 --> a2_ward : Drop into the outer ward.
+a2_cu1 --> a2_cu2a : Light the brass lantern and shutter it l...
+a2_cu1 --> a2_cu2b : Feel your way in through the dark.
+a2_cu1 --> a2_cu2c : Send Sable ahead striking tinder sparks.
+a2_cu1 --> w2_cu_tap : Sound the pipe mouths by knuckle tap fir...
+a2_cu1 --> w2_cu_dam : Dam the flow at the mouth before you wad...
+a2_cu1 --> w5_cu1 : Start Elowens counting song and walk it ...
+a2_cu2a --> a2_cu3a : Walk the dry ledge to the inner grate.
+a2_cu2a --> a2_cu3b : Check the tallow marked side mouth first...
+a2_cu2a --> w7_tally : Search the side chamber off the dry ledg...
+a2_cu2b --> a2_cu3c : Keep the wall and count on.
+a2_cu2b --> a2_cu3d : Wade the faster center channel.
+a2_cu2b --> e_w2_cu_echo : Shout once up the pipe to test the echo.
+a2_cu2b --> e_w2_cu_third : Take the third side mouth on a guess.
+a2_cu2c --> a2_cu3c : Trust her count to the inner grate.
+a2_cu2c --> a2_cu3e : Stop and recount at the next spark.
+a2_cu3a --> a2_ward : Climb into the ward.
+a2_cu3b --> a2_cu3a : Back out and take the ledge to the inner...
+a2_cu3c --> a2_ward : Ease it open and climb into the ward.
+a2_cu3c --> e_a2_cu_alarm : Force it in one fast shove and rush the ...
+a2_cu3d --> a2_cu3c : Back slow to the wall and go on by touch...
+a2_cu3d --> e_a2_cu_eel : Stab at the bump and push through.
+a2_cu3e --> a2_cu3c : Follow the draft back to the main run.
+a2_cu3e --> e_a2_cu_cistern : Risk the rotten rungs straight up.
+a2_ct1 --> a2_ct2a : Ask the old burner for the way through.
+a2_ct1 --> a2_ct2b : Take the widest cart tunnel.
+a2_ct1 --> a2_ct2c : Take the narrow tunnel with the breathin...
+a2_ct1 --> w2_ct_kilns : Cross kiln to kiln and study the cart tu...
+a2_ct1 --> w2_ct_rival : Hear out the singed young burner selling...
+a2_ct1 --> w5_ct1 : Ask Mag about the wardens and her grandm...
+a2_ct2a --> a2_ct3a : Follow the tarred string in.
+a2_ct2a --> w7_kiln : Ask Mag to open the kiln heart itself.
+a2_ct2b --> a2_ct3b : Hide in a side pocket and let them pass.
+a2_ct2b --> a2_ct2c : Back out quiet and take the draft tunnel...
+a2_ct2b --> e_w2_ct_bluff : Bluff the dig crew in trade pidgin.
+a2_ct2b --> e_w2_ct_deep : Follow the diggings deeper toward the ol...
+a2_ct2b --> w6_ct_song : Learn the dig crews shift song through t...
+a2_ct2c --> a2_ct3c : Shore the worst prop with a spare timber...
+a2_ct2c --> a2_ct3d : Squeeze through fast and trust the props...
+a2_ct2c --> e_a2_ct_sweet : Follow the sweeter smelling side mouth w...
+a2_ct3a --> a2_ward : Climb the chimney into the ward.
+a2_ct3b --> a2_ward : Slip up the spoil chute into the ward.
+a2_ct3b --> a2_ct4 : Pilfer the barrow first for anything tel...
+a2_ct3b --> e_a2_ct_crew : Hold the pocket while a second crew pass...
+a2_ct3b --> w7_manifest : Pull the manifest board off the broken b...
+a2_ct4 --> a2_ward : Pocket it and take the spoil chute now.
+a2_ct3c --> a2_ward : Climb the spoil chute into the ward.
+a2_ct3d --> a2_ward : Climb the spoil chute bruised but throug...
+a2_ct3d --> e_a2_ct_cavein : Go back for the dropped pack under the g...
+a2_ward --> a2_wd1a : Shadow hop the wall line toward the inne...
+a2_ward --> a2_wd1b : Burrow into the hay wain bound for the i...
+a2_ward --> a2_wd1c : Take the sentry post over the kennels.
+a2_ward --> a2_wd1d : Sound Finchs two short notes and walk ac...
+a2_ward --> e_a2_wd_open : Walk straight across the open ward for t...
+a2_ward --> w2_wd_smithy : Cut through the banked smithy toward the...
+a2_ward --> w5_wd1 : Work along to the east grating and the w...
+a2_wd1a --> a2_wd2a : Toss the dried eel and jerky along the k...
+a2_wd1a --> a2_wd2b : Freeze in shadow until the noses settle.
+a2_wd1a --> e_a2_wd_dogs : Push past the kennel fence quick and qui...
+a2_wd1b --> a2_wd2c : Burrow deep and ride it all the way in.
+a2_wd1b --> a2_wd2a : Slip out in the arch shadow as it passes...
+a2_wd1b --> e_w2_wd_hay : Stay buried and ride the wain wherever i...
+a2_wd1c --> a2_wd2b : Signal all clear down the wall and cross...
+a2_wd1c --> a2_wd2d : Study the ward from above first.
+a2_wd1c --> e_a2_wd_horn : Sound the captured horn to wave off the ...
+a2_wd1c --> w2_wd_well : Ride the well windlass down to the sprin...
+a2_wd1d --> a2_wd2c : Make straight for the inner keep door.
+a2_wd2a --> a2_inner : Climb the service stair to the under kee...
+a2_wd2b --> a2_inner : Ease the door and slip in.
+a2_wd2c --> a2_inner : Descend toward the under keep.
+a2_wd2d --> a2_inner : Cross by the stair door with the count i...
+a2_wd2d --> w7_graffiti : Read the scratches around the inner door...
+a2_inner --> a3_start : Follow the stair down into the under kee...
+a3_start --> a3_k1 : West, toward the cells and the cough.
+a3_start --> a3_h1 : Center, through the great hall.
+a3_start --> a3_s1 : East, toward the incense and the bonewor...
+a3_court --> a3_x1a : Stay and hear the whole plan out.
+a3_court --> a3_x1b : Mark the guard rotations below and slip ...
+a3_court --> a3_x1c : Study Malverin himself, robes, staff, an...
+a3_court --> e_a3_x_shutter : Ease the shutter wider for a clean look ...
+a3_court --> w5_x1 : Angle for a look at the wizards travelin...
+a3_x1a --> a3_x2a : Slip down toward the crypt stair with th...
+a3_x1a --> a3_x2b : Watch Vessks face a moment longer.
+a3_x1a --> e_a3_x_late : Stay for the captains muttered asides to...
+a3_x1b --> a3_x2c : Drop to the emptying floor and follow th...
+a3_x1b --> e_w3_x_early : Drop to the floor before the court fully...
+a3_x1b --> w6_x_below : Fall in behind the plunder porters cross...
+a3_x1c --> a3_x2a : Slip down toward the crypt stair.
+a3_x1c --> w7_pacing : Count the wizards pacing like a jailers ...
+a3_x2a --> a3_gate : Make for the crypt approaches.
+a3_x2b --> a3_gate : Slip down and make for the crypt approac...
+a3_x2c --> a3_gate : Take the side arch to the crypt approach...
+a3_gate --> a3_g1a : Ride the spoil chute down, braking with ...
+a3_gate --> e_a3_g_chute : Leap the chute lip and slide it blind.
+a3_gate --> a3_g1b : Climb down the chapel drop shaft by rope...
+a3_gate --> a3_g1c : Shadow the processional stair behind the...
+a3_gate --> w3_g_scout : Send Sable alone ahead to read the door ...
+a3_g1a --> a4_start : Shake off the dust and find the stone do...
+a3_g1a --> e_w3_g_surf : Surf the spoil heap the rest of the way ...
+a3_g1b --> a4_start : Follow the cold passage to the stone doo...
+a3_g1b --> e_w3_g_ropefray : Swing wide on the rope to skip the last ...
+a3_g1c --> a4_start : Cut through the side vault to the stone ...
+a3_g1c --> e_a3_g_column : Stay in the columns shadow one landing f...
+a3_k1 --> a3_k2a : Wait out the game and slip past on the d...
+a3_k1 --> a3_k2b : Douse the nook lamp with a thrown wet ra...
+a3_k1 --> a3_k2c : Walk past purposeful with a stolen spoil...
+a3_k1 --> a3_k2d : Rush the nook and put both guards down q...
+a3_k1 --> w3_k_vats : Slip through the laundry vats and the se...
+a3_k1 --> w5_k1 : Listen at the second door to the strange...
+a3_k2a --> a3_k3a : Melt into the wall niche and let it pass...
+a3_k2a --> a3_k3b : Roll under the beer barrel trestle.
+a3_k2a --> e_a3_k_beer : Keep slipping past while he draws his be...
+a3_k2b --> a3_k3c : Press on to the cell block corner.
+a3_k2b --> e_w3_k_upright : Cross upright and quick while they blame...
+a3_k2c --> a3_k3c : Park the barrow at the cell block corner...
+a3_k2c --> e_a3_k_barrow : Wheel it straight through to the block w...
+a3_k2d --> a3_k3d : Bind and gag them and take their keys.
+a3_k2d --> a3_k3e : Drag them into the dark cell at the corn...
+a3_k3a --> a3_k4 : Study the cell block from the corner.
+a3_k3a --> e_w3_k_whistle : Whistle the block an all clear as you co...
+a3_k3b --> a3_k4 : Study the cell block from the corner.
+a3_k3c --> a3_k4 : Study the block before you touch a door.
+a3_k3d --> a3_k4 : Study the block, keys ready.
+a3_k3e --> a3_k4 : Study the block from the corner.
+a3_k4 --> a3_k5a : Lift the key board over the sleeping war...
+a3_k4 --> a3_k5b : Work the second doors lock with Sables p...
+a3_k4 --> a3_k5c : Whisper with Tallow through the grate fi...
+a3_k4 --> e_a3_k_relief : Wait for the warder to roll deeper aslee...
+a3_k4 --> w3_k_kennel : Send Sable to spring the kennel gate as ...
+a3_k4 --> w3_k_grate : Lift the block floor grate and go under ...
+a3_k5a --> a3_k6a : Open Tallows door first.
+a3_k5a --> a3_k6b : Open the far cells first, working toward...
+a3_k5a --> e_a3_k_keys : Snatch the whole ring in one quick motio...
+a3_k5b --> a3_k6a : Open the door and hold the hinge quiet.
+a3_k5c --> a3_k6a : Lift the keys and start on the doors.
+a3_k5c --> a3_k6c : Ask him what Malverin took to the crypts...
+a3_k5c --> w7_muster : Take Tallows whispered muster of all nin...
+a3_k6a --> a3_k7 : Ready them and plan the out.
+a3_k6b --> a3_k7 : Ready them and plan the out.
+a3_k6b --> e_w3_k_lamps : Light the block lamps to work faster.
+a3_k6c --> a3_k6a : Lift the keys and open the doors.
+a3_k7 --> a3_k8a : Hide them in the dry cistern off the blo...
+a3_k7 --> a3_k8b : Hide them in the old chapel loft above t...
+a3_k7 --> a3_k8c : Move them now along the west wall to the...
+a3_k7 --> e_a3_k_stand : Arm everyone and rush the ward gate toge...
+a3_k7 --> w3_k_split : Split the party, half to the gallery, ha...
+a3_k7 --> w5_k3 : Let Tallow swear the freight oath over t...
+a3_k8a --> a3_k9a : Leave them the signal word and go for th...
+a3_k8a --> a3_k9b : Leave Sable to guard them and go on ligh...
+a3_k8a --> e_w3_k_air : Seat the cistern lid full shut to be saf...
+a3_k8b --> a3_k9a : Leave the signal word and make for the c...
+a3_k8c --> a3_k9c : Set the signal and climb back for the co...
+a3_k8c --> e_a3_k_cough : Push them faster through the drain while...
+a3_k9a --> a3_court : Climb to the war court gallery.
+a3_k9b --> a3_court : Climb to the war court gallery.
+a3_k9c --> a3_court : Climb to the war court gallery.
+a3_k9c --> e_w3_g_torch : Borrow a sconce torch against the drain ...
+a3_h1 --> a3_h2a : Cross the hall floor among the sleepers.
+a3_h1 --> a3_h2b : Take the smoke loft along the roof beams...
+a3_h1 --> a3_h2c : Circle by the armory corridor instead.
+a3_h1 --> w3_h_boxes : Climb to the minstrel boxes along the ha...
+a3_h1 --> w5_h1a : Check the trophy wall behind the dais st...
+a3_h2a --> a3_h3a : Step the long way around the muttering o...
+a3_h2a --> a3_h3b : Step over him between snores.
+a3_h2a --> e_a3_h_champion : Nudge him gently out of the path with a ...
+a3_h2a --> w6_h_hound : Buy the old hall hound with the last of ...
+a3_h2b --> a3_h3c : Stop above the dais and listen.
+a3_h2b --> a3_h3d : Cross straight over and down the far lad...
+a3_h2b --> e_a3_h_beam : Hurry the crossing at a soot slick trot.
+a3_h2c --> a3_h3e : Wait out the argument in the rack shadow...
+a3_h2c --> a3_h3f : Slip past while they shout.
+a3_h2c --> e_a3_h_smith : Bluff past the smiths as spoil porters.
+a3_h3a --> a3_h4 : Climb to the gallery landing.
+a3_h3b --> a3_h4 : Climb to the gallery landing.
+a3_h3c --> a3_h4 : Take that gold and cross to the far ladd...
+a3_h3d --> a3_h4 : Take the gallery landing.
+a3_h3e --> a3_h4b : Go through the armory.
+a3_h3e --> e_w3_h_tongs : Help yourself to the forge tongs on the ...
+a3_h3f --> a3_h4b : Go through the armory.
+a3_h4 --> a3_h5a : Follow the fresh lit passage toward the ...
+a3_h4 --> a3_h5b : Search the plunder heap for anything tha...
+a3_h4 --> w3_h_vault : Pick the newer lock on the under dais st...
+a3_h4b --> a3_h5c : Take knives and oil and go for the war c...
+a3_h4b --> a3_h5d : Sabotage the racks, bowstrings, and spea...
+a3_h4b --> e_a3_h_greed : Strip the armory of everything four back...
+a3_h4b --> w3_h_forge : Tip the quench trough and walk out in th...
+a3_h5a --> a3_h6a : Close on the voices to the gallery.
+a3_h5b --> a3_h6a : Pocket the note and follow the lit passa...
+a3_h5b --> e_w3_h_tablets : Take the whole tablet stack for Hedda.
+a3_h5b --> w7_cipher : Set Elowen on the tablets ciphered margi...
+a3_h5c --> a3_h6b : Follow the corridor to the war court gal...
+a3_h5c --> e_w3_h_oil : Carry the oil uncorked for speed.
+a3_h5d --> a3_h6b : Finish and follow the corridor toward th...
+a3_h5d --> e_a3_h_fire : Fire the oil rack and be done properly.
+a3_h6a --> a3_court : Slip through to the court gallery.
+a3_h6b --> a3_court : Ease the shutter and take the gallery.
+a3_s1 --> a3_s2a : Work through the boneworks as spoil sort...
+a3_s1 --> a3_s2b : Take the chapel loft and cross above the...
+a3_s1 --> a3_s2c : Follow the incense smell around by the s...
+a3_s1 --> w3_s_smoke : Light a heavier pot and move inside the ...
+a3_s1 --> w5_s1 : Slip into the saints crypt behind the bo...
+a3_s2a --> a3_s3a : Keep sorting till his count loses intere...
+a3_s2a --> a3_s3b : Send Sable to knock a shelf over across ...
+a3_s2a --> e_a3_s_count : Drift for the curtain while he counts th...
+a3_s2b --> a3_s3c : Rope down behind the shrine niches.
+a3_s2b --> a3_s3d : Watch the curtain first and learn the de...
+a3_s2b --> e_a3_s_rope : Swing down the bell rope hole directly.
+a3_s2c --> a3_s3e : Slip past the novice niche to niche.
+a3_s2c --> a3_s3f : Wait for it to carry smoke through the c...
+a3_s2c --> w3_s_flute : Lift the novices bone flute and play the...
+a3_s2c --> w6_s_novice : Corner the shaking novice softly in the ...
+a3_s3a --> a3_s4 : Set the baskets down by the curtain.
+a3_s3b --> a3_s4 : Cross to the curtain in the noise.
+a3_s3b --> e_w3_s_chalkleft : Pocket a tally chalk as you cross.
+a3_s3c --> a3_s4 : Take the curtain edge.
+a3_s3d --> a3_s4 : Rope down and take the curtain between v...
+a3_s3e --> a3_s4 : Take the curtain edge.
+a3_s3f --> a3_s4 : Follow through on its heels.
+a3_s4 --> a3_s5a : Lift the sigil from the belt while it sc...
+a3_s4 --> a3_s5b : Free the caged crow spirit to buy a barg...
+a3_s4 --> a3_s5c : Put the shaman down fast before it can c...
+a3_s4 --> a3_s5d : Back away, the wards are not worth it.
+a3_s4 --> e_a3_s_wards : Push straight through the curtain at a w...
+a3_s5a --> a3_s6a : Slip out with the sigil before the water...
+a3_s5a --> e_a3_s_bowl : Linger to read the bowl over its shoulde...
+a3_s5b --> a3_s6b : Name the sigil as the debt.
+a3_s5b --> a3_s6c : Name safe passage as the debt.
+a3_s5b --> e_w3_s_name : Name the shamans true name as the debt.
+a3_s5b --> w7_gossip : Let the nosy spirit gossip past its debt...
+a3_s5c --> a3_s6d : Cut the sigil free and bind the shaman.
+a3_s5c --> e_a3_s_dart : Grab for the sigil first and the shaman ...
+a3_s5d --> a3_s6e : Make for the war court gallery.
+a3_s6a --> a3_court : Climb toward the war court gallery.
+a3_s6b --> a3_court : Take the sigil and go for the gallery.
+a3_s6c --> a3_court : Take the gallery stairs.
+a3_s6d --> a3_court : Climb toward the war court gallery.
+a3_s6d --> e_w3_s_linger : Question the bound shaman before you go.
+a3_s6e --> a3_court : Climb to the war court gallery.
+a4_start --> a4_w1 : Open the wardens postern with the bone s...
+a4_start --> a4_l1 : Go down the long stair through the pilla...
+a4_start --> a4_m1 : Sound Finchs calls and turn the Redtooth...
+a4_start --> a4_d1 : Climb through the drummers gallery above...
+a4_w1 --> a4_w2a : Follow the passage at a hunters trot.
+a4_w1 --> a4_w2b : Read the warden carvings as you go.
+a4_w1 --> e_a4_w_dust : Widen a spy slot for a proper look first...
+a4_w1 --> w4_w_niche : Search the wardens armory niche as you p...
+a4_w1 --> w5_a4w : Study the choir murals where the spy slo...
+a4_w2a --> a4_w3a : Take the postern to the doors blind side...
+a4_w2a --> w6_a4_w : Stop at the hinge slot and learn the sin...
+a4_w2b --> a4_w3a : Carry that truth to the doors blind side...
+a4_w2b --> a4_w3b : Hunt the carvings for the seals own weak...
+a4_w2b --> e_w4_w_pry : Pry at the deepest carving for the crown...
+a4_w2b --> w7_twelfth : Study the last mural panel a breath long...
+a4_w3a --> a4_rite : Move on the rite.
+a4_w3a --> e_w4_w_crack : Widen the postern crack for a better vie...
+a4_w3b --> a4_rite : Move on the rite with the knife of it.
+a4_l1 --> a4_l2a : Descend shadow to shadow between drumbea...
+a4_l1 --> a4_l2b : Take the maintenance ledge behind the pi...
+a4_l1 --> w4_l_rank : Join the last rank of the procession its...
+a4_l1 --> w5_a4l : Take the pillar forest floor on your bel...
+a4_l2a --> a4_l3a : Hold frozen through his sweep.
+a4_l2a --> a4_l3b : Flow on during the next beat anyway.
+a4_l2a --> e_a4_l_rank : Glide down two flights in one beat to be...
+a4_l2a --> w6_a4_l : Count the lamp ring before the last flig...
+a4_l2b --> a4_l3c : Climb down the carved head.
+a4_l2b --> e_a4_l_drop : Run the ledge upright to save time.
+a4_l3a --> a4_rite : Move on the rite.
+a4_l3b --> a4_rite : Move on the rite.
+a4_l3c --> a4_rite : Move on the rite.
+a4_l3c --> e_w4_l_face : Take the carved faces front in the open ...
+a4_m1 --> a4_m2a : Sound the hunt loosed call, pointed at t...
+a4_m1 --> a4_m2b : Sound the all clear, then walk to Vessk ...
+a4_m1 --> e_a4_m_wrong : Sound the calls at half breath to stay q...
+a4_m1 --> w4_m_capt : Approach the honor guard captain under a...
+a4_m2a --> a4_m3a : Slip down through the confusion toward t...
+a4_m2a --> a4_m3b : Sound it again from a new vault to feed ...
+a4_m2a --> e_w4_m_third : Sound the hunt call a third time for goo...
+a4_m2a --> w7_harvest : Harvest the confusion for gear and watch...
+a4_m2b --> a4_m3c : Tell him the truth, the wizard will feed...
+a4_m2b --> a4_m3d : Offer him the caravan plunder to march h...
+a4_m2b --> e_a4_m_guard : Demand he stand his band down in the mar...
+a4_m2b --> e_w6_a4_m : Press Vessk for hostages and weapons bot...
+a4_m3a --> a4_rite : Move on the rite.
+a4_m3b --> a4_rite : Move on the rite through the churn.
+a4_m3c --> a4_rite : Move on the rite as the ranks thin.
+a4_m3d --> a4_rite : Move on the rite as the ranks thin.
+a4_d1 --> a4_d2a : Cross behind the drummers under the scaf...
+a4_d1 --> a4_d2b : Climb the bell hooks above the smoke.
+a4_d1 --> w4_d_relief : Shoulder a skin drum and join the relief...
+a4_d2a --> a4_d3a : Take the far stair down to the floor.
+a4_d2a --> a4_d3b : Cut a scaffold lashing as you pass, for ...
+a4_d2a --> e_a4_d_cord : Cross inside the drum line where the smo...
+a4_d2a --> w7_drumcount : Count the rite time from inside the drum...
+a4_d2b --> a4_d3c : Slide the hook line to the pillar shadow...
+a4_d2b --> e_a4_d_smoke : Climb higher into the smoke for a hook l...
+a4_d3a --> a4_rite : Move on the rite.
+a4_d3b --> a4_rite : Move on the rite with the scaffold in yo...
+a4_d3b --> e_w4_d_lash : Cut a second lashing to be sure of the s...
+a4_d3c --> a4_rite : Move on the rite.
+a4_rite --> a4_r1a : Snatch the reliquary off the trestle mid...
+a4_rite --> a4_r1b : Set Elowen and her chalk against the sha...
+a4_rite --> a4_r1c : Send Bram to overturn the trestle lamp r...
+a4_rite --> a4_r1d : Speak the wizards name from the dark, ju...
+a4_rite --> e_a4_r_late : Wait one more verse for a perfect moment...
+a4_r1a --> a4_r2a : Dive behind the pillars as the wizard tu...
+a4_r1a --> a4_r2b : Stand and face him over the fallen box.
+a4_r1a --> e_a4_r_bolt : Chase the skittering box across the open...
+a4_r1b --> a4_r2c : Rush the trestle while the song is dead.
+a4_r1b --> e_a4_r_shaman : Leave Elowen to duel the shaman and circ...
+a4_r1b --> w4_r_chant : Add your own voice to the counter chant.
+a4_r1c --> a4_r2d : Hunt the rolling box in the dark by its ...
+a4_r1c --> e_a4_r_dark : Scatter blind into the dark with everyon...
+a4_r1c --> w4_r_fire : Kick the burning oil across the processi...
+a4_r1d --> a4_r2b : Refuse him with silence and move on the ...
+a4_r1d --> e_a4_r_bargain : Step into the light and accept his barga...
+a4_r2a --> a4_turn : Circle to put the box between you and hi...
+a4_r2b --> a4_turn : Hold his eyes and buy the party position...
+a4_r2c --> a4_turn : Turn with the box between you and the wi...
+a4_r2d --> a4_turn : Wrench it free and give ground.
+a4_turn --> a4_f1 : Stand, take the box, and end the ash rob...
+a4_turn --> a4_f2 : You are spent, dive for the box and run ...
+a4_f1 --> a4_f1a : Strike the book from his hands.
+a4_f1 --> a4_f1b : Give ground and let the groping gap have...
+a4_f1 --> a4_f1c : Rush him bodily with Bram, rope ready.
+a4_f1 --> e_a4_f_book : Race him to the box barehanded, speed ag...
+a4_f1a --> a4_out1 : Let him run into the dark and see to you...
+a4_f1b --> a4_out2 : Stand very still until the stone is quie...
+a4_f1b --> e_a4_f_grip : Crowd him into the gap yourself, hand ag...
+a4_f1c --> a4_out1 : Haul him up and signal the out.
+a4_f2 --> a4_f2a : Run for the culvert line and the drain.
+a4_f2 --> a4_f2b : Run for the wardens ways and out the lon...
+a4_f2 --> e_a4_f_cornered : Turn at bay in the antechamber arch.
+a4_f2 --> e_a4_f_gap : Cut past the half open door itself, the ...
+a4_f2 --> w4_f_roofs : Climb against the rout and take the roof...
+a4_f2a --> a4_out3 : Count heads in the ditch and move.
+a4_f2a --> e_w4_f_wrap : Stop to wrap the humming box mid run.
+a4_f2b --> a4_out4 : Walk the long dark out.
+a4_out1 --> e_a4_win_home : Take the road home to Barrowmere.
+a4_out1 --> e_w4_gloat : Parade the bound wizard once around the ...
+a4_out2 --> e_a4_win_bargain : March everyone home under a goblin chief...
+a4_out3 --> e_a4_win_ashes : Walk the last miles into dawn.
+a4_out4 --> e_a4_win_long : Take the long way home.
+w0_square --> w0_vigil : Speak with the families at the vigil.
+w0_square --> w0_sergeant : Press the sergeant for what the watch re...
+w0_square --> e_w0_wall : Sign the watch roster for steady wages i...
+w0_vigil --> a0_inn_door : Carry the names into the inn.
+w0_sergeant --> a0_inn_door : Take that into the inn.
+w0_oddments --> a0_inn_door : Buy the survey page and head for the inn...
+w0_oddments --> e_w0_cutpurse : Chase the cutpurse who just lifted your ...
+w0_drovers --> a0_pell : Commit the cider map to memory and see t...
+w0_drovers --> e_w0_vengeance : Join their talk of a vengeance ride toni...
+w0_fiddler --> a0_pell : Drop a copper in her hat and see the cle...
+w0_bram_ale --> a0_bram_won : Answer honest, afraid and going anyway.
+w0_bram_ale --> e_a0_bram_refuse : Say whatever sounds bravest.
+w0_sable_bet --> a0_sable_won : Tell her the odds, bad and getting worse...
+w0_sable_bet --> e_w0_renege : Snatch the sword back and call the dice ...
+w0_elowen_ask --> a0_elowen_won : Stand with her and let her words finish ...
+w0_elowen_ask --> e_a0_aldous : Undercut her with a joke to ease the old...
+w0_hedda_red --> a1_fork : Take the road with that in mind.
+w1_h_keeper --> a1_crows : Thank him and cut for the crow fields.
+w1_h_keeper --> w1_h_keeper2 : Ask him about the keep on the hill.
+w1_h_keeper2 --> a1_crows : Carry that to the crow fields.
+w1_r_eelboy --> a1_r3b : Board the barge and watch the water with...
+w1_d_count --> a1_d3a : Follow the count east with fresh eyes.
+w1_d_count --> w1_d_shepherd : Send word of the tally back by a passing...
+w1_d_shepherd --> a1_crows : Turn east on the heels of the message.
+w1_w_crows --> a1_finch : Go straight to the lead wain.
+w1_w_perimeter --> a1_w5 : Close in on the lead wain with the pictu...
+w1_w_perimeter --> e_w1_lookout : Climb the ridge for a lookout of your ow...
+w1_f_herbs --> a1_council : Hear everything he knows once the fever ...
+w1_c_mound --> w1_c_mound2 : Sleep dry in the dead mans doorway.
+w1_c_mound --> a1_c2 : Reconsider and take the cold hedge inste...
+w1_c_mound --> e_w1_mound : Wedge the door stone half shut for safet...
+w1_c_mound2 --> a1_trail : Rise and take the drag trail.
+w1_g_decoy --> a1_tam : Cut the boy out in the gap.
+w1_g_decoy --> a1_g4 : Take the mule and cart too for the wound...
+w1_g_decoy --> e_w1_whistle : Whistle the hunt call for a bigger distr...
+w2_cw_roof --> w2_cw_roof2 : Cross the slates to the wall walk.
+w2_cw_roof --> w2_cw_roof3 : Listen at the murder hole first.
+w2_cw_roof --> e_w2_cw_slates : Cross the slates at a hunters trot.
+w2_cw_roof2 --> a2_ward : Take the stair down into the ward.
+w2_cw_roof3 --> a2_ward : Down the inner chain to the ward, passwo...
+w2_cw_roof3 --> e_w2_cw_password : Try the wicket boldly with the password.
+w2_cw_under --> w2_cw_under2 : Climb the footing masonry to the wicket.
+w2_cw_under2 --> a2_ward : Slip through into the outer ward.
+w2_gp_stair --> w2_gp_stair2 : Clear as you climb, slow and hidden.
+w2_gp_stair --> e_w2_gp_jackdaw : Climb fast and let the nests fall.
+w2_gp_stair2 --> a2_gp5a : Walk the parapet to the breach and drop ...
+w2_gp_night --> a2_gp4 : Climb the last pitch in the dark gap.
+w2_gp_night --> w6_gp_cache : Search the cliff hollow while you wait.
+w2_cu_tap --> a2_cu3c : Follow the live echo to the inner grate.
+w2_cu_dam --> a2_cu3c : Walk the lowered channel to the inner gr...
+w2_cu_dam --> e_w2_cu_dam : Hurry before the dam decides otherwise.
+w2_cu_dam --> w6_cu_otter : Follow the otter run you spot while damm...
+w2_ct_kilns --> a2_ct3b : Slip into the cart tunnel behind the cre...
+w2_ct_rival --> w2_ct_rival2 : Pay the boots and take his quick way.
+w2_ct_rival --> e_w2_ct_rival : Refuse him with a laugh and walk on.
+w2_ct_rival2 --> a2_ward : Climb the spoil chute into the ward.
+w2_wd_smithy --> a2_wd2a : Thread the racks past the sleeper.
+w2_wd_smithy --> a2_wd2a : Muffle his hammer hand with a rag first,...
+w2_wd_smithy --> e_w2_wd_anvil : Feel through the dark racks at speed.
+w2_wd_well --> a2_inner : Ride the windlass down and take the spri...
+w2_wd_well --> e_w2_wd_windlass : Trust the windlass at full speed.
+w3_k_vats --> a3_k3c : Thread the servants way to the block cor...
+w3_k_vats --> w6_k_water : Steal the water round, buckets, yoke, an...
+w3_k_kennel --> a3_k6a : Open the doors in the gift of noise.
+w3_k_kennel --> e_w3_k_kennel : Wait out the noise before touching a doo...
+w3_k_grate --> a3_k6a : Come up inside the block past the warder...
+w3_k_split --> a3_k9a : Go light and fast to the court gallery.
+w3_h_boxes --> w3_h_boxes2 : Creep the boxes to the dais end.
+w3_h_boxes --> w3_h_boxes2 : Test each box floor before trusting it.
+w3_h_boxes --> e_w3_h_boxfloor : Trot the boxes without testing the floor...
+w3_h_boxes2 --> a3_h4 : Drop to the dais and take the landing.
+w3_h_vault --> a3_h6a : Take the ledgers and go for the court ga...
+w3_h_vault --> e_w3_h_strongbox : Force the strongbox too while you are he...
+w3_h_forge --> a3_h6b : Walk out in the steam toward the court s...
+w3_h_forge --> e_w3_h_steam : Linger in the armory for one more armloa...
+w3_s_smoke --> w3_s_smoke2 : Move inside the drift to the curtain.
+w3_s_smoke2 --> a3_s4 : Take the curtain edge.
+w3_s_smoke2 --> e_w3_s_cough : Hold in the deepest drift though your ch...
+w3_s_flute --> a3_s4 : Play the summons and slip in as the den ...
+w3_s_flute --> e_w3_s_flutewrong : Play it loud to be sure it carries.
+w3_g_scout --> a4_start : Move on the antechamber with her map in ...
+w4_w_niche --> a4_w3a : Carry the wardens horn to the doors blin...
+w4_l_rank --> a4_l3a : Peel off into the pillar shadows at the ...
+w4_l_rank --> e_w4_l_sneeze : Ride the column all the way to the trest...
+w4_m_capt --> a4_m3c : Put the truth to Vessk under the captain...
+w4_m_capt --> e_w4_m_silver : Offer the captain silver to clear your w...
+w4_d_relief --> a4_d3a : Set the drum down and drift to the far s...
+w4_d_relief --> e_w4_d_beat : Keep the drum and play along in the line...
+w4_d_relief --> e_w6_a4_d : Shoulder a second drum to look busier.
+w4_r_chant --> a4_turn : Press through the dying song toward the ...
+w4_r_fire --> a4_turn : Take the box straight off the trestle in...
+w4_r_fire --> e_w4_r_burn : Herd the flames wider before you move.
+w4_f_roofs --> w4_out_roofs : Run the rooflines north and down the bre...
+w4_out_roofs --> e_a4_win_long : Come home the long way.
+w5_shrine --> w5_shrine2 : Light a stub for luck and ask him about ...
+w5_shrine --> a0_inn_door : Light a stub and go in to the warmth.
+w5_shrine --> e_w5_shrine : Stay through the lamp trimming to hear t...
+w5_shrine2 --> a0_inn_door : Carry that into the inn.
+w5_pip --> a0_pell : Take that thought to the clerk.
+w5_map --> a0_bram : Commit the map to memory and go find the...
+w5_gift --> a1_fork : Promise her nothing aloud and everything...
+w5_h1 --> w5_h2 : Coax them up and hear what they saw.
+w5_h1 --> w5_h3 : Leave food and press on hard for the cro...
+w5_h1 --> e_w5_h : Track the cart dust cross country while ...
+w5_h2 --> w5_h3 : Set them on the road to the toll shrine ...
+w5_h3 --> a1_crows : Make for the crows.
+w5_r1 --> w5_r2 : Pay the hour and lift traps.
+w5_r1 --> e_w5_r : Walk the plank line fast through the ris...
+w5_r2 --> w5_r3 : Ask what a goblin wants with a boat.
+w5_r3 --> a1_crows : File it away and follow the crows west.
+w5_d1 --> w5_d2 : Let Elowen read the tooth against the of...
+w5_d1 --> w5_d3 : Knock the slate off the altar and move o...
+w5_d1 --> e_w5_d : Follow the drum sound straight over the ...
+w5_d2 --> w5_d3 : Carry the thought east along the track.
+w5_d3 --> a1_crows : Follow the track to the crow fields.
+w5_w1 --> w5_w2 : Track the two missing guards from the di...
+w5_w1 --> e_w5_w : Force the money box first.
+w5_w2 --> a1_finch : Say the drovers words and go back for th...
+w5_f1 --> a1_council : Splint him and hear everything he knows.
+w5_c1 --> w5_c2 : Keep the coals and the confidence till t...
+w5_c2 --> a1_trail : Wake the others and take the drag trail.
+w5_c3 --> a1_trail : Sleep on it and rise for the drag trail.
+w5_g1 --> a1_tam : Send him south with word and turn northe...
+w5_cw1 --> w5_cw2 : Watch the lights until their pattern sho...
+w5_cw1 --> e_w5_cw : Follow the nearest light out onto the bo...
+w5_cw2 --> w5_cw3 : Time the wicket change and move on the g...
+w5_cw3 --> a2_ward : Slip through into the outer ward.
+w5_gp1 --> w5_gp2 : Let Elowen gentle her with slow hands an...
+w5_gp1 --> e_w5_gp : Rob the eyrie for the eggs while she rag...
+w5_gp2 --> a2_gp4 : Climb on to the broken wall.
+w5_cu1 --> w5_cu2 : Walk the song into the dark.
+w5_cu2 --> w5_cu3 : Follow the numerals to the grate chamber...
+w5_cu2 --> e_w5_cu : Sing the chorus louder for confidence in...
+w5_cu3 --> a2_ward : Ease the grate and climb into the ward.
+w5_ct1 --> w5_ct2 : Ask her for the sealers back way.
+w5_ct1 --> e_w5_ct : Doubt her aloud and demand proof.
+w5_ct2 --> a2_ward : Take the sealers way to the spoil chute.
+w5_wd1 --> a2_wd2a : Promise it and take the midden door in.
+w5_wd1 --> e_w5_wd : Pass your spare knife through the bars f...
+w5_k1 --> w5_k2 : Learn the rhythm before you touch the bl...
+w5_k2 --> a3_k4 : Move on the cell block in the games own ...
+w5_k2 --> e_w5_k : Tap the rhythm again, eager, to be sure.
+w5_h1a --> w5_h2a : Give Bram the moment he is owed.
+w5_h1a --> e_w5_ha : Strip the whole wall of anything worth c...
+w5_h2a --> a3_h4 : Climb to the gallery landing with him.
+w5_s1 --> w5_s2 : Take one wardens chime, with respect.
+w5_s1 --> e_w5_s : Pocket the grave silver while you are he...
+w5_s2 --> a3_s4 : Carry the chime to the shamans den.
+w5_k3 --> a3_k9a : Sign the bond with your mark and set the...
+w5_x1 --> a3_x2a : Carry that name down toward the crypt st...
+w5_a4w --> a4_w3a : Take the lesson to the doors blind side.
+w5_a4l --> w5_a4l2 : Crawl the last trough line to the lamp r...
+w5_a4l --> e_w5_a4 : Crawl through the drum pause to save tim...
+w5_a4l2 --> a4_rite : Rise on the blind side and move on the r...
+w6_stable --> a0_common : Scratch her ears and carry the ache insi...
+w6_stable --> e_w6_mare : Take the unclaimed mare for one ride rou...
+w6_pellwarn --> a0_bram : Mind it and go find the dwarf.
+w6_h_bell --> a1_crows : Leave it ringing behind you and make for...
+w6_r_bank --> a1_crows : Note it hard and follow the crows west.
+w6_d_stone --> a1_crows : Carry both marks to the crow fields.
+w6_w_child --> a1_w5 : Search on for whoever knocked.
+w6_c_map --> a1_trail : Sleep on it and let the storm choose the...
+w6_cw_horn --> w6_cw_horn2 : Take the empty causeway at a dead run.
+w6_cw_horn --> e_w6_cw_dice : Scoop the abandoned dice stakes as you p...
+w6_cw_horn2 --> a2_ward : Slip through the wicket into the ward.
+w6_gp_cache --> a2_gp4 : Climb the peg line to the wall breach.
+w6_gp_cache --> e_w6_gp_old : Trust the old warden rope up the last re...
+w6_cu_otter --> a2_ward : Take the otter run under the wall.
+w6_cu_otter --> e_w6_cu_stuck : Push the pinch with your pack still on.
+w6_ct_song --> a2_ward : Cross the junction inside the songs beat...
+w6_ct_song --> e_w6_ct_answer : Join the answer line to blend deeper.
+w6_k_water --> a3_k4 : Set the buckets down and move on the blo...
+w6_k_water --> e_w6_k_spill : Carry the yoke through the low lintel at...
+w6_h_hound --> a3_h4 : Cross the last of the floor to the dais ...
+w6_h_hound --> e_w6_h_hound : Stare the hound down and save the jerky.
+w6_s_novice --> a3_s4 : Let it slip away and take the curtain ed...
+w6_s_novice --> e_w6_s_novice : Send the novice ahead to hold the curtai...
+w6_x_below --> a3_gate : Set the crate down at the stair and slip...
+w6_a4_w --> a4_rite : Move on the rite at the half beat.
+w6_a4_l --> a4_rite : Move on the rite through the guttering g...
+w6_a4_l --> e_w6_a4_lamp : Cross while the near lamp gutters lowest...
+w7_maren --> w7_maren2 : Ask her what the wardens actually warded...
+w7_maren2 --> a0_bram : Carry the lullaby word to the dwarf by t...
+w7_wain --> w7_wain2 : Take charge of wages and letters both.
+w7_wain2 --> a1_finch : Go back to the knocking under the lead w...
+w7_charm --> a1_crows : Stow the charm and follow the crows west...
+w7_corral --> a1_trail : Rise watered and rested for the drag tra...
+w7_satchel --> a1_tam : Pocket the marsh map and see to the boy.
+w7_chain --> w7_chain2 : Crawl the coin floor under the gate.
+w7_chain2 --> a2_ward : Take the winch stair down into the ward.
+w7_beacon --> w7_beacon2 : Fix the watch fires positions from up he...
+w7_beacon2 --> a2_gp5a : Slip the breach on the counted circuit.
+w7_tally --> w7_tally2 : Read the last legible year and move on.
+w7_tally2 --> a2_ward : Take the ledge on to the inner grate.
+w7_kiln --> w7_kiln2 : Duck through the kiln pipe while she hol...
+w7_kiln2 --> a2_ward : Lift the vent grating and slip into the ...
+w7_manifest --> a2_ward : Put the board back exactly and take the ...
+w7_graffiti --> a3_start : Follow the old arrow down into the under...
+w7_muster --> w7_muster2 : Tell Tallow his freight is about to move...
+w7_muster2 --> a3_k7 : Plan the out with the whole block ready.
+w7_cipher --> w7_cipher2 : Copy the cipher lines onto your own slat...
+w7_cipher2 --> a3_court : Follow the passage toward the war court.
+w7_gossip --> w7_gossip2 : Thank it and climb toward the gallery.
+w7_gossip2 --> a3_court : Take the gallery stairs.
+w7_pacing --> a3_gate : Slip down toward the crypt approaches wi...
+w7_twelfth --> a4_rite : Go to the blind side and keep the count ...
+w7_harvest --> a4_rite : Move on the rite dressed in borrowed cha...
+w7_drumcount --> a4_rite : Carry the count down to the rite.
+e_a0_walk_early --> [*]
+e_a0_redcloaks --> [*]
+e_a0_walk_away --> [*]
+e_a0_bram_refuse --> [*]
+e_a0_jail --> [*]
+e_a0_sable_gone --> [*]
+e_a0_aldous --> [*]
+e_a0_short_crew --> [*]
+e_a1_deserters --> [*]
+e_a1_wolfrun --> [*]
+e_a1_river --> [*]
+e_a1_pool --> [*]
+e_a1_hunt --> [*]
+e_a1_stragglers --> [*]
+e_a1_storm --> [*]
+e_a1_lane --> [*]
+e_a2_cw_bluff --> [*]
+e_a2_cw_bog --> [*]
+e_a2_cw_horn --> [*]
+e_a2_gp_fall --> [*]
+e_a2_gp_ledge --> [*]
+e_a2_gp_back --> [*]
+e_a2_cu_alarm --> [*]
+e_a2_cu_eel --> [*]
+e_a2_cu_cistern --> [*]
+e_a2_ct_cavein --> [*]
+e_a2_ct_sweet --> [*]
+e_a2_ct_crew --> [*]
+e_a2_wd_dogs --> [*]
+e_a2_wd_open --> [*]
+e_a2_wd_horn --> [*]
+e_a3_x_shutter --> [*]
+e_a3_x_late --> [*]
+e_a3_g_chute --> [*]
+e_a3_g_column --> [*]
+e_a3_k_beer --> [*]
+e_a3_k_barrow --> [*]
+e_a3_k_relief --> [*]
+e_a3_k_keys --> [*]
+e_a3_k_cough --> [*]
+e_a3_k_stand --> [*]
+e_a3_h_champion --> [*]
+e_a3_h_beam --> [*]
+e_a3_h_fire --> [*]
+e_a3_h_smith --> [*]
+e_a3_h_greed --> [*]
+e_a3_s_count --> [*]
+e_a3_s_rope --> [*]
+e_a3_s_bowl --> [*]
+e_a3_s_dart --> [*]
+e_a3_s_wards --> [*]
+e_a4_w_dust --> [*]
+e_a4_l_rank --> [*]
+e_a4_l_drop --> [*]
+e_a4_m_wrong --> [*]
+e_a4_m_guard --> [*]
+e_a4_d_cord --> [*]
+e_a4_d_smoke --> [*]
+e_a4_r_late --> [*]
+e_a4_r_bolt --> [*]
+e_a4_r_shaman --> [*]
+e_a4_r_dark --> [*]
+e_a4_r_bargain --> [*]
+e_a4_f_book --> [*]
+e_a4_f_grip --> [*]
+e_a4_f_cornered --> [*]
+e_a4_f_gap --> [*]
+e_a4_win_home --> [*]
+e_a4_win_bargain --> [*]
+e_a4_win_ashes --> [*]
+e_a4_win_long --> [*]
+e_w0_wall --> [*]
+e_w0_cutpurse --> [*]
+e_w0_vengeance --> [*]
+e_w0_renege --> [*]
+e_w1_shortcut --> [*]
+e_w1_wake --> [*]
+e_w1_lookout --> [*]
+e_w1_mound --> [*]
+e_w1_whistle --> [*]
+e_w2_cw_slates --> [*]
+e_w2_gp_jackdaw --> [*]
+e_w2_cu_dam --> [*]
+e_w2_cu_echo --> [*]
+e_w2_ct_rival --> [*]
+e_w2_ct_bluff --> [*]
+e_w2_wd_anvil --> [*]
+e_w2_wd_windlass --> [*]
+e_w2_cw_password --> [*]
+e_w2_gp_gear --> [*]
+e_w2_cu_third --> [*]
+e_w2_ct_deep --> [*]
+e_w2_wd_hay --> [*]
+e_w3_k_kennel --> [*]
+e_w3_k_air --> [*]
+e_w3_k_whistle --> [*]
+e_w3_k_lamps --> [*]
+e_w3_k_upright --> [*]
+e_w3_h_boxfloor --> [*]
+e_w3_h_strongbox --> [*]
+e_w3_h_steam --> [*]
+e_w3_h_tablets --> [*]
+e_w3_h_tongs --> [*]
+e_w3_h_oil --> [*]
+e_w3_s_cough --> [*]
+e_w3_s_flutewrong --> [*]
+e_w3_s_name --> [*]
+e_w3_s_linger --> [*]
+e_w3_s_chalkleft --> [*]
+e_w3_x_early --> [*]
+e_w3_g_ropefray --> [*]
+e_w3_g_surf --> [*]
+e_w3_g_torch --> [*]
+e_w4_r_burn --> [*]
+e_w4_w_pry --> [*]
+e_w4_l_sneeze --> [*]
+e_w4_m_silver --> [*]
+e_w4_d_beat --> [*]
+e_w4_m_third --> [*]
+e_w4_d_lash --> [*]
+e_w4_w_crack --> [*]
+e_w4_l_face --> [*]
+e_w4_f_wrap --> [*]
+e_w4_gloat --> [*]
+e_w5_shrine --> [*]
+e_w5_h --> [*]
+e_w5_r --> [*]
+e_w5_d --> [*]
+e_w5_w --> [*]
+e_w5_cw --> [*]
+e_w5_gp --> [*]
+e_w5_cu --> [*]
+e_w5_ct --> [*]
+e_w5_wd --> [*]
+e_w5_k --> [*]
+e_w5_ha --> [*]
+e_w5_s --> [*]
+e_w5_a4 --> [*]
+e_w6_mare --> [*]
+e_w6_brag --> [*]
+e_w6_ford --> [*]
+e_w6_early --> [*]
+e_w6_cw_dice --> [*]
+e_w6_gp_old --> [*]
+e_w6_cu_stuck --> [*]
+e_w6_ct_answer --> [*]
+e_w6_k_spill --> [*]
+e_w6_h_hound --> [*]
+e_w6_s_novice --> [*]
+e_w6_a4_lamp --> [*]
+e_w6_a4_m --> [*]
+e_w6_a4_d --> [*]
+
+legend right
+  The Harrowstone Keep
+  Band 13-16 · Tier 2 · ~30 min
+  Topology: branch_and_bottleneck
+  550 nodes · 152 endings (4+ / 3n / 145-)
+  Production-eligible
+  Scale: long · gamebook
+endlegend
+@enduml
