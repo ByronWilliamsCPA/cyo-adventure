@@ -189,7 +189,7 @@
     },
     {
       "id": "gh_maps",
-      "body": "<<FILL role=rising words=100 beats='Maren's map room, kept as she left it: route-books in her small square hand, cache marks pricked along every line of the fells, and in the margin of the oldest book a wolf drawn no bigger than a thumbnail, looking out; write this re-entry-safe, the room is the same patient room however often Rill comes to stand in it; copying her cache marks into a runner's own book feels less like study and more like being handed something'>>",
+      "body": "<<FILL role=rising words=100 beats='Maren's map room, kept as she left it: route-books in her small square hand, cache marks pricked along every line of the fells, and in the margin of the oldest book a wolf drawn no bigger than a thumbnail, looking out; write this re-entry-safe, the room is the same patient room however often Rill comes to stand in it; copying her cache marks into a runner's own book feels less like study and more like being handed something; note for the author: the two ways back to the yard must read as distinct textures, one lingering over the map wall, one brisk with cold air from the door, so the fork feels like flavor and not a duplicate'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1285,7 +1285,7 @@
     },
     {
       "id": "e_sc_morning",
-      "body": "<<FILL role=failure words=95 beats='The gusts win the argument and the rest ledge keeps runner and dog till the carriers' morning team comes up singing and takes the load and the company over the saddle together; the chest reaches Iben a night late with every seal sound, and the carriers teach Rill their gust-counting song, which is worth a day of anyone's time; waiting with the mountain is not losing to it'>>",
+      "body": "<<FILL role=failure words=95 beats='The gusts win the argument and the rest ledge keeps runner and dog till the carriers' morning team comes up singing and takes the load and the company over the saddle together; the chest reaches Iben a night late with every seal sound, and the carriers teach Rill their gust-counting song, which is worth a day of anyone's time; waiting with the mountain is not losing to it; note for the author: keep this ending laden-agnostic, attribute any chest arrival to Scarpsett's carrier team and never to the reader's own delivery'>>",
       "is_ending": true,
       "ending": {
         "id": "end_sc_morning",
@@ -1318,7 +1318,7 @@
     },
     {
       "id": "e_sc_hoist",
-      "body": "<<FILL role=ending words=95 beats='The rest of the light spent with the carriers overhauling the crag hoist, new rope rove, the basket's wicker mended, the pulley greased till it purrs; all winter now, whatever Scarpsett needs can come up the crag in one smooth pull; the head carrier chalks the tally-mark herself and adds a small extra stroke, which among carriers is applause'>>",
+      "body": "<<FILL role=ending words=95 beats='The rest of the light spent with the carriers overhauling the crag hoist, new rope rove, the basket's wicker mended, the pulley greased till it purrs; all winter now, whatever Scarpsett needs can come up the crag in one smooth pull; the head carrier chalks the tally-mark herself and adds a small extra stroke, which among carriers is applause; note for the author: keep this ending laden-agnostic, it is reachable both carrying and not carrying the chest, so never attribute a chest delivery to the reader here'>>",
       "is_ending": true,
       "ending": {
         "id": "end_sc_hoist",
