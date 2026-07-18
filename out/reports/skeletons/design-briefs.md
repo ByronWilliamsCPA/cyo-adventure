@@ -103,3 +103,29 @@ Ending-count targets follow the ADR-011 master table for the cell; gamebook cell
 are "few wins + many fails" with ~25-35% of nodes as terminals. Every brief also
 carries the constants: decisions per path ~4-8, choices per decision 2-3, ~2-3 setup
 nodes before the first choice, and the band's fail-state policy.
+
+GAUNTLET PATTERN RULES (from the approved pattern-setter the-red-meridian-run,
+reviewer-endorsed as SOUND; apply to gauntlet briefs #23, #27, #28, #35, #36):
+A gauntlet is structurally the SAME class as branch_and_bottleneck (PL-18 admits
+gauntlet for an acyclic graph with reconvergence); the difference is gamebook
+character. (1) ACYCLIC, restart UNROLLED: never author a back-edge; a "retry" is a
+terminal fail or a distinct FORWARD node; verify is_directed_acyclic_graph every
+build (a cycle reclassifies off gauntlet). (2) One driving SPINE of checkpoints,
+kept shallow (~3 spine nodes each: approach/gate/pass); the win path sits in
+[min_complete_floor, cell max_depth]; put node BULK in off-spine fail branches, not
+a deeper spine, or the depth ceiling blows (a deep multi-gate spine can exceed the
+~73-hop L1-7 wall). (3) RECONVERGENCE is the signature: route each
+spotted-survive/degrade branch FORWARD onto a LATER checkpoint's approach node so
+spine bottlenecks reach in-degree >= 2. (4) FAIR LETHALITY: state the danger in the
+gate body; every fatal choice is a legible violation of it; deaths shallow
+(consequence -> dread -> terminal) but grave, terse, gore-free. (5) PROSE-VARIETY
+GUARD: do NOT collapse the dread beat onto a tiny shared pool (the pattern-setter
+reused 4 dread directives across 72 nodes); make each dread directive reference its
+checkpoint's specific hazard, and give "Wait/Hold" fatals an explicit "delay is
+death" beat. (6) Few deep wins, many shallow fails: ~25-35% terminals, wins gated
+behind the full spine; endings >= ceil(0.25*nodes), decisions >= ceil(0.08*nodes).
+(7) Terse second-person prose, words=N leaning 45-80 (13-16) / 55-95 (16+); 6-7
+choices per gate (1 correct + telegraphed fatals + 1 gamble). (8) Co-located flavor
+wins (clean/costly/quiet off one final gate) are acceptable for a STATELESS tier-1
+gauntlet; three genuinely distinct EARNED routes require tier-2 state, so tier-2
+gauntlets (#23, #28, #36) should differentiate wins by the state a run accumulated.
