@@ -449,6 +449,12 @@ known-first-party = ["cyo_adventure"]
 # A config object would obscure the failure-recording contract.
 "**/generation/worker.py" = ["PLR0913"]
 
+# anti_template_verdict carries both fills plus their two independently
+# optional briefs and an optional per-band threshold override (WS-0 design
+# doc section 3.1); each is a distinct, independently optional concern. A
+# config object would obscure the guard's contract.
+"**/diversity/leaf.py" = ["PLR0913"]
+
 # approve carries session, principal, storybook, version, and the keyword-only
 # visibility (WS-E E2); each a distinct concern (unit-of-work, the approving
 # admin, the target row, which version to publish, and who may browse/assign
