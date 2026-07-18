@@ -27,7 +27,7 @@ share series id `brass-lantern` with `carries_state=true`.
 | Endings | 152 (1 completion + 3 success wins) | 152 (1 completion + 3 success wins) |
 | Words | 39,935 | 35,920 |
 | Longest path | 79 (budget 80) | 79 (same topology) |
-| Variables | vigor int 0..6, has_lantern, scout_ally, has_sigil | vigor int 0..6, has_lantern (carried, initial true), marsh_guide, choir_key |
+| Variables | vigor, has_lantern, scout_ally, has_sigil | vigor, has_lantern (carried true), marsh_guide, choir_key |
 | L2 walk | 7,280 reachable configs, uncapped | passes (smaller: carried var is constant) |
 | Gate result | blocked=false, 0 errors, **0 warnings** | blocked=false, 0 errors, **0 warnings** |
 
