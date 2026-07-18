@@ -208,7 +208,8 @@ Ranked by impact x tractability. Each names the capability IDs it serves.
 - **Safety:** the interpretation is derived from untrusted requester input
   (OWASP LLM01). It must never echo unsafe content back; it explains *why*
   something was set aside without repeating disallowed detail, and reuses the
-  screening flags. **Serves:** [K11](capability-register.md),
+  screening flags. **Delivers:** [K19](capability-register.md) (this workstream is
+  its design record); **also serves:** [K11](capability-register.md),
   [K12](capability-register.md); gated by [K13](capability-register.md).
 - **Open product decisions:** (a) placement, at submission (pre-skeleton,
   general) vs after skeleton pick (precise but currently an admin stage);

@@ -68,6 +68,7 @@ integration suites rather than browser E2E.
 | K16 | Picker, PIN, sibling isolation | ✅ | ✅ (IDOR) | ✅ | ✅ |
 | K17 | Recommendations | n/b | n/b | n/b | n/b |
 | K18 | Star ratings | ✅ | PR268 | ❌ | ❌ |
+| K19 | Request interpretation preview | n/b | n/b | n/b | n/b |
 | G1 | Profiles that shape experience | ✅ | ❌ | ❌ | ❌ |
 | G2/G3 | Content controls; per-child permissions | n/b (UI) | n/b | n/b | n/b |
 | G4 | Guardian-initiated stories | ✅ | ✅ | ❌ | ❌ |
