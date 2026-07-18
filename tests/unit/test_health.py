@@ -576,11 +576,12 @@ class TestHealthStatusModel:
         """HealthStatus sets timestamp and python_version automatically."""
         import sys
 
+        import cyo_adventure
         from cyo_adventure.api.health import HealthStatus
 
         hs = HealthStatus(status="ok", uptime_seconds=5.0)
 
-        assert hs.version == "0.1.0"
+        assert hs.version == cyo_adventure.__version__
         assert hs.python_version.startswith(sys.version.split()[0][:3])
         assert hs.timestamp > 0
 

@@ -51,6 +51,7 @@ from cyo_adventure.api.schemas import (
     GenerationJobResponse,
     JobStatusLiteral,
     ValidateResponse,
+    error_responses,
 )
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
@@ -73,7 +74,9 @@ from cyo_adventure.generation.queue import enqueue_generation
 from cyo_adventure.story_requests.service import enforce_family_quota
 from cyo_adventure.validator.gate import run_gate
 
-router = APIRouter(prefix="/api/v1", tags=["generation"])
+router = APIRouter(
+    prefix="/api/v1", tags=["generation"], responses=error_responses(401, 403)
+)
 
 _log = logging.getLogger(__name__)
 
@@ -239,7 +242,11 @@ async def create_concept(
     return ConceptCreatedResponse(concept_id=str(concept.id))
 
 
-@router.post("/concepts/{concept_id}/generate", status_code=202)
+@router.post(
+    "/concepts/{concept_id}/generate",
+    status_code=202,
+    responses=error_responses(404, 409),
+)
 async def enqueue_concept_generation(
     concept_id: str,
     ctx: Context,
@@ -418,7 +425,7 @@ async def list_generation_jobs(ctx: Context) -> GenerationJobListView:
     return GenerationJobListView(jobs=items)
 
 
-@router.get("/generation-jobs/{job_id}")
+@router.get("/generation-jobs/{job_id}", responses=error_responses(404))
 async def get_generation_job(
     job_id: str,
     ctx: Context,
@@ -502,7 +509,10 @@ async def get_generation_job(
     )
 
 
-@router.post("/admin/generation-jobs/{job_id}/force-fail")
+@router.post(
+    "/admin/generation-jobs/{job_id}/force-fail",
+    responses=error_responses(404, 409),
+)
 async def force_fail_generation_job(
     job_id: str,
     ctx: Context,
@@ -576,7 +586,10 @@ async def force_fail_generation_job(
     )
 
 
-@router.post("/storybooks/{storybook_id}/versions/{version}/validate")
+@router.post(
+    "/storybooks/{storybook_id}/versions/{version}/validate",
+    responses=error_responses(404),
+)
 async def validate_storybook_version(
     storybook_id: str,
     version: int,

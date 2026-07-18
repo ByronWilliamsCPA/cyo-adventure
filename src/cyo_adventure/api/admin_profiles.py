@@ -21,13 +21,16 @@ from cyo_adventure.api.schemas import (
     AdminProfileListView,
     AdminProfileUpdateBody,
     AdminProfileView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
 from cyo_adventure.core.pin import hash_pin
 from cyo_adventure.db.models import ChildProfile, Family
 from cyo_adventure.storybook.models import AgeBand
 
-router = APIRouter(prefix="/api/v1", tags=["admin-profiles"])
+router = APIRouter(
+    prefix="/api/v1", tags=["admin-profiles"], responses=error_responses(401, 403)
+)
 
 # Defensive ceiling mirroring families.py's _FAMILY_LIST_LIMIT convention.
 _PROFILE_LIST_LIMIT = 200
@@ -115,7 +118,7 @@ async def list_admin_profiles(
     return AdminProfileListView(profiles=[_view(row) for row in rows])
 
 
-@router.post("/admin/profiles", status_code=201)
+@router.post("/admin/profiles", status_code=201, responses=error_responses(404))
 async def create_admin_profile(
     body: AdminProfileCreateBody, ctx: Context
 ) -> AdminProfileView:
@@ -182,7 +185,7 @@ async def _apply_non_pin_fields(
             row.deactivated_at = None
 
 
-@router.patch("/admin/profiles/{profile_id}")
+@router.patch("/admin/profiles/{profile_id}", responses=error_responses(404))
 async def update_admin_profile(
     profile_id: str, body: AdminProfileUpdateBody, ctx: Context
 ) -> AdminProfileView:

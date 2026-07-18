@@ -26,6 +26,7 @@ from cyo_adventure.api.schemas import (
     ReadingStateView,
     SeriesNextBook,
     SeriesNextView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -46,7 +47,9 @@ from cyo_adventure.publishing.state_machine import Visibility
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-router = APIRouter(prefix="/api/v1", tags=["reading"])
+router = APIRouter(
+    prefix="/api/v1", tags=["reading"], responses=error_responses(401, 403, 404)
+)
 
 
 def _parse_uuid(raw: str, field: str) -> uuid.UUID:

@@ -25,6 +25,7 @@ from cyo_adventure.api.schemas import (
     UserStatus,
     UserUpdateBody,
     UserView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -35,7 +36,9 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import Family, User
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 
-router = APIRouter(prefix="/api/v1", tags=["admin-users"])
+router = APIRouter(
+    prefix="/api/v1", tags=["admin-users"], responses=error_responses(401, 403)
+)
 
 # Deterministic, unique-per-invite placeholder subject: no real Supabase JWT
 # can ever carry this shape, so a pending row can never accidentally
@@ -143,7 +146,7 @@ async def list_users(
     return UserListView(users=[_view(row) for row in rows])
 
 
-@router.post("/admin/users", status_code=201)
+@router.post("/admin/users", status_code=201, responses=error_responses(404, 409))
 async def create_user(body: UserCreateBody, ctx: Context) -> UserView:
     """Invite a guardian or admin into a family (admin only; WS-J).
 
@@ -205,7 +208,7 @@ async def create_user(body: UserCreateBody, ctx: Context) -> UserView:
     return _view(user)
 
 
-@router.patch("/admin/users/{user_id}")
+@router.patch("/admin/users/{user_id}", responses=error_responses(404))
 async def update_user(user_id: str, body: UserUpdateBody, ctx: Context) -> UserView:
     """Reassign, re-role, or activate/deactivate a guardian/admin (WS-J).
 

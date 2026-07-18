@@ -32,6 +32,7 @@ from cyo_adventure.api.schemas import (
     StorybookLibraryView,
     StorybookSummary,
     SubmittedView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -48,7 +49,9 @@ from cyo_adventure.utils.logging import get_logger
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-router = APIRouter(prefix="/api/v1", tags=["approval"])
+router = APIRouter(
+    prefix="/api/v1", tags=["approval"], responses=error_responses(401, 403)
+)
 
 _logger = get_logger(__name__)
 
@@ -114,7 +117,7 @@ async def _load_admin_story(ctx: Context, storybook_id: str) -> Storybook:
     return book
 
 
-@router.post("/storybooks/{storybook_id}/submit")
+@router.post("/storybooks/{storybook_id}/submit", responses=error_responses(404, 409))
 async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     """Submit a draft or needs-revision story for review (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
@@ -126,7 +129,9 @@ async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     )
 
 
-@router.post("/storybooks/{storybook_id}/approve")
+@router.post(
+    "/storybooks/{storybook_id}/approve", responses=error_responses(400, 404, 409)
+)
 async def approve_storybook(
     storybook_id: str, ctx: Context, body: ApproveBody | None = None
 ) -> ApprovedView:
@@ -158,7 +163,9 @@ async def approve_storybook(
     )
 
 
-@router.post("/storybooks/{storybook_id}/send-back")
+@router.post(
+    "/storybooks/{storybook_id}/send-back", responses=error_responses(404, 409)
+)
 async def send_back_storybook(
     storybook_id: str, body: SendBackRequest, ctx: Context
 ) -> SentBackView:
@@ -172,7 +179,7 @@ async def send_back_storybook(
     )
 
 
-@router.post("/storybooks/{storybook_id}/archive")
+@router.post("/storybooks/{storybook_id}/archive", responses=error_responses(404, 409))
 async def archive_storybook(storybook_id: str, ctx: Context) -> ArchivedView:
     """Archive a published story, removing it from the library (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
@@ -207,7 +214,7 @@ async def _latest_version(session: AsyncSession, storybook_id: str) -> int:
     return latest
 
 
-@router.get("/storybooks/{storybook_id}/review")
+@router.get("/storybooks/{storybook_id}/review", responses=error_responses(404))
 async def get_review_surface(
     storybook_id: str,
     ctx: Context,

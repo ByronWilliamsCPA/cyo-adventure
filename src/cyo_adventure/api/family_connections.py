@@ -32,6 +32,7 @@ from cyo_adventure.api.schemas import (
     FamilyConnectionMineItem,
     FamilyConnectionMineListView,
     FamilyConnectionView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -47,7 +48,11 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-router = APIRouter(prefix="/api/v1", tags=["family-connections"])
+router = APIRouter(
+    prefix="/api/v1",
+    tags=["family-connections"],
+    responses=error_responses(401, 403),
+)
 
 
 def _require_admin(ctx: Context) -> None:
@@ -106,7 +111,9 @@ async def list_family_connections(ctx: Context) -> FamilyConnectionListView:
     )
 
 
-@router.post("/admin/family-connections", status_code=201)
+@router.post(
+    "/admin/family-connections", status_code=201, responses=error_responses(404, 409)
+)
 async def create_family_connection(
     body: FamilyConnectionCreateBody, ctx: Context
 ) -> FamilyConnectionView:
@@ -185,7 +192,11 @@ async def create_family_connection(
     )
 
 
-@router.delete("/admin/family-connections/{connection_id}", status_code=204)
+@router.delete(
+    "/admin/family-connections/{connection_id}",
+    status_code=204,
+    responses=error_responses(404),
+)
 async def delete_family_connection(connection_id: str, ctx: Context) -> None:
     """Hard-delete a family connection (admin only; WS-J).
 

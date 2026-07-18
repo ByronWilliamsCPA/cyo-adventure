@@ -14,6 +14,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.responses import JSONResponse
 
+from cyo_adventure import __version__
 from cyo_adventure.api import (
     admin_profiles,
     admin_users,
@@ -205,6 +206,204 @@ def _handle_request_validation_error(_request: Request, exc: Exception) -> JSONR
     return JSONResponse(status_code=422, content={"detail": safe})
 
 
+# One entry per router tag, in the order the docs UI should group them:
+# probes, then kid/guardian reader surfaces, then intake/pipeline, then the
+# admin console. Keep in sync with the routers wired in create_app below.
+_OPENAPI_TAGS: list[dict[str, str]] = [
+    {
+        "name": "health",
+        "description": "Liveness, readiness, and startup probes (unauthenticated).",
+    },
+    {
+        "name": "me",
+        "description": "The authenticated caller's own identity, role, and capabilities.",
+    },
+    {
+        "name": "onboarding",
+        "description": "First-login guardian provisioning (idempotent family/user creation).",
+    },
+    {
+        "name": "library",
+        "description": "A profile's published-book library and story version fetches.",
+    },
+    {
+        "name": "reading",
+        "description": "Reading-state saves with optimistic concurrency, completions, and series continuation.",
+    },
+    {"name": "ratings", "description": "A child profile's star ratings of storybooks."},
+    {
+        "name": "reading-history",
+        "description": "Reading-history reads for the kid and guardian surfaces.",
+    },
+    {
+        "name": "recommendations",
+        "description": "A profile's recommendation feed across the family and connected-family rings (ADR-016).",
+    },
+    {
+        "name": "flags",
+        "description": "Kid-raised, structured content flags feeding the admin moderation queue.",
+    },
+    {
+        "name": "notifications",
+        "description": "The guardian notification feed projected from the pipeline event log.",
+    },
+    {
+        "name": "profiles",
+        "description": "Guardian-managed child profiles within the caller's own family.",
+    },
+    {
+        "name": "child-sessions",
+        "description": "Guardian-minted, short-lived child session tokens for the kid surface.",
+    },
+    {
+        "name": "device-grants",
+        "description": "Durable device authorizations for shared family devices (ADR-014).",
+    },
+    {
+        "name": "story-requests",
+        "description": "Story-request intake, screening, and the approve/decline lifecycle.",
+    },
+    {
+        "name": "generation",
+        "description": "Concept intake and the gated story-generation job pipeline.",
+    },
+    {
+        "name": "assignments",
+        "description": "Guardian assignment of published books to child profiles.",
+    },
+    {
+        "name": "approval",
+        "description": "The storybook review/publish state machine: submit, approve, send back, archive.",
+    },
+    {
+        "name": "node-edit",
+        "description": "The lightweight passage editor with mandatory re-review (G6).",
+    },
+    {
+        "name": "rescreen",
+        "description": "Admin policy re-screen of published storybook versions.",
+    },
+    {
+        "name": "audit",
+        "description": "Admin-only audit reads over the append-only pipeline event log.",
+    },
+    {
+        "name": "covers",
+        "description": "AI cover-art generation triggers and status reads.",
+    },
+    {
+        "name": "families",
+        "description": "Admin listing and lifecycle management of families.",
+    },
+    {
+        "name": "admin-users",
+        "description": "Admin console management of guardian and admin accounts.",
+    },
+    {
+        "name": "admin-profiles",
+        "description": "Admin console management of child profiles across families.",
+    },
+    {
+        "name": "family-connections",
+        "description": "Admin-managed directional cross-family recommendation opt-ins.",
+    },
+    {
+        "name": "moderation-thresholds",
+        "description": "Admin surfacing-threshold overrides and the global noise floor.",
+    },
+    {
+        "name": "moderation-dashboard",
+        "description": "Admin moderation evidence, override insights, and threshold suggestions.",
+    },
+    {
+        "name": "provider-allowlist",
+        "description": "Admin CRUD for the generation provider/model allowlist.",
+    },
+]
+
+_BEARER_SCHEME_NAME = "HTTPBearer"
+
+
+def _document_bearer_security(schema: dict[str, Any]) -> dict[str, Any]:
+    """Rewrite the OpenAPI schema to document bearer auth as a security scheme.
+
+    The auth seam is a plain ``Authorization`` header dependency
+    (``api/deps.py::require_principal``), which FastAPI documents as an
+    optional per-operation header parameter rather than a security
+    requirement. This rewrite declares one HTTP bearer security scheme,
+    replaces each operation's ``authorization`` header parameter with a
+    ``security`` requirement, and leaves unauthenticated operations (the
+    health probes) untouched. Documentation only: request handling and the
+    401 semantics for a missing token are unchanged, and the frontend client
+    keeps injecting the header through its axios interceptor
+    (``frontend/src/hooks/useApi.ts``), never through a per-call parameter.
+
+    Args:
+        schema: The schema produced by FastAPI's default builder.
+
+    Returns:
+        dict[str, Any]: The same schema object, rewritten in place.
+    """
+    # #CRITICAL: security: which operations are documented as authenticated is
+    # inferred from the presence of the FastAPI-generated `authorization`
+    # header parameter; an operation that authenticates any other way would be
+    # silently documented as public here (documentation only; the runtime 401
+    # behavior of api/deps.py is unaffected either way).
+    # #VERIFY: tests/unit/test_app.py::TestOpenApiContract pins that every
+    # non-health operation carries the bearer requirement and the health
+    # probes stay public, so a new route missing the requirement fails CI.
+    components: dict[str, Any] = schema.setdefault("components", {})
+    schemes: dict[str, Any] = components.setdefault("securitySchemes", {})
+    schemes[_BEARER_SCHEME_NAME] = {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": (
+            "Supabase-issued guardian/admin JWT, a backend-signed child "
+            "session token, or a backend-signed device grant token "
+            "(api/deps.py routes on the token's audience). The local dev "
+            "environment accepts seeded opaque subjects (docs/api/README.md)."
+        ),
+    }
+    paths = cast("dict[str, dict[str, Any]]", schema.get("paths", {}))
+    for path_item in paths.values():
+        for operation in path_item.values():
+            if not isinstance(operation, dict):
+                continue
+            op = cast("dict[str, Any]", operation)
+            parameters = cast("list[dict[str, Any]]", op.get("parameters", []))
+            kept = [
+                param
+                for param in parameters
+                if not (
+                    param.get("in") == "header"
+                    and str(param.get("name", "")).lower() == "authorization"
+                )
+            ]
+            if len(kept) == len(parameters):
+                continue
+            if kept:
+                op["parameters"] = kept
+            else:
+                op.pop("parameters", None)
+            op["security"] = [{_BEARER_SCHEME_NAME: []}]
+    return schema
+
+
+class _DocumentedApp(FastAPI):
+    """FastAPI app whose OpenAPI schema documents the bearer auth scheme."""
+
+    def openapi(self) -> dict[str, Any]:
+        """Build (once) and return the schema with bearer security documented.
+
+        Returns:
+            dict[str, Any]: The customized OpenAPI schema.
+        """
+        if self.openapi_schema is None:
+            self.openapi_schema = _document_bearer_security(super().openapi())
+        return self.openapi_schema
+
+
 def create_app() -> FastAPI:
     """Build and configure the FastAPI application.
 
@@ -212,10 +411,14 @@ def create_app() -> FastAPI:
         FastAPI: The configured application.
     """
     init_sentry(settings)
-    app = FastAPI(
+    app = _DocumentedApp(
         title="CYO Adventure",
-        version="0.1.0",
+        # The installed distribution version tracks pyproject.toml (bumped by
+        # the release workflow), so the served schema and /health report the
+        # real release instead of a hardcoded string (see __init__.py).
+        version=__version__,
         description="Choose-your-own-adventure reader API for the family library.",
+        openapi_tags=_OPENAPI_TAGS,
     )
     # #CRITICAL: security: the in-memory rate limiter (60 rpm/IP) is a public
     # deployment defense. It is disabled ONLY in ENVIRONMENT=local, where the

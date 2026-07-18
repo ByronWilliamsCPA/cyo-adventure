@@ -8,6 +8,7 @@ create_app() returning a configured FastAPI instance.
 from __future__ import annotations
 
 import json
+from typing import Any, cast
 from unittest.mock import MagicMock
 
 import pytest
@@ -381,3 +382,195 @@ class TestTrustedHost:
         app = create_app()
 
         assert any(m.cls is TrustedHostMiddleware for m in app.user_middleware)
+
+
+# OpenAPI contract customization (_DocumentedApp / _document_bearer_security)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def schema() -> dict[str, Any]:
+    """Build the customized OpenAPI schema once for this module.
+
+    Module-scoped (not a class-scoped instance method, which pytest deprecates
+    under this project's ``filterwarnings = ["error"]``) so the schema builds
+    a single time for the whole contract-test class below.
+    """
+    return create_app().openapi()
+
+
+class TestOpenApiContract:
+    """Pins the documentation-only OpenAPI rewrite in ``_DocumentedApp``.
+
+    The rewrite must declare one HTTP bearer scheme, mark every authenticated
+    operation with it (replacing the raw ``authorization`` header parameter
+    FastAPI derives from the auth dependency), leave the health probes
+    untouched, and report the installed distribution version. These tests are
+    the contract the generated frontend client and docs/api/README.md rely on.
+    """
+
+    @staticmethod
+    def _operations(schema: dict[str, Any]) -> list[tuple[str, str, dict[str, Any]]]:
+        """Return (path, method, operation) for every operation in the schema."""
+        methods = ("get", "post", "put", "patch", "delete")
+        paths = cast("dict[str, dict[str, dict[str, Any]]]", schema["paths"])
+        return [
+            (path, method, operation)
+            for path, item in paths.items()
+            for method, operation in item.items()
+            if method in methods
+        ]
+
+    @pytest.mark.unit
+    def test_bearer_scheme_is_declared(self, schema: dict[str, Any]) -> None:
+        """components.securitySchemes carries one HTTP bearer scheme."""
+        scheme = schema["components"]["securitySchemes"]["HTTPBearer"]
+
+        assert scheme["type"] == "http"
+        assert scheme["scheme"] == "bearer"
+
+    @pytest.mark.unit
+    def test_every_api_operation_requires_bearer_auth(
+        self, schema: dict[str, Any]
+    ) -> None:
+        """Every non-health operation carries the security requirement."""
+        api_ops = [
+            (path, method, op)
+            for path, method, op in self._operations(schema)
+            if not path.startswith("/health")
+        ]
+
+        assert api_ops, "expected /api/v1 operations in the schema"
+        for path, method, op in api_ops:
+            assert op.get("security") == [{"HTTPBearer": []}], (
+                f"{method.upper()} {path} must document bearer auth"
+            )
+
+    @pytest.mark.unit
+    def test_no_raw_authorization_header_parameter_survives(
+        self, schema: dict[str, Any]
+    ) -> None:
+        """The redundant authorization header parameter is stripped everywhere."""
+        for path, method, op in self._operations(schema):
+            params = cast("list[dict[str, Any]]", op.get("parameters", []))
+            leaked = [
+                p
+                for p in params
+                if p.get("in") == "header"
+                and str(p.get("name", "")).lower() == "authorization"
+            ]
+
+            assert not leaked, (
+                f"{method.upper()} {path} still documents a raw authorization header"
+            )
+
+    @pytest.mark.unit
+    def test_health_probes_stay_unauthenticated(self, schema: dict[str, Any]) -> None:
+        """The health probes carry no security requirement."""
+        health_ops = [
+            (path, method, op)
+            for path, method, op in self._operations(schema)
+            if path.startswith("/health")
+        ]
+
+        assert health_ops, "expected /health operations in the schema"
+        for path, method, op in health_ops:
+            assert "security" not in op, (
+                f"{method.upper()} {path} must stay unauthenticated"
+            )
+
+    @pytest.mark.unit
+    def test_info_version_tracks_installed_distribution(
+        self, schema: dict[str, Any]
+    ) -> None:
+        """info.version reports the package version, not a hardcoded literal."""
+        import cyo_adventure
+
+        assert schema["info"]["version"] == cyo_adventure.__version__
+
+    @pytest.mark.unit
+    def test_tag_metadata_covers_every_operation_tag(
+        self, schema: dict[str, Any]
+    ) -> None:
+        """Every tag used by an operation has a described top-level entry."""
+        declared = {
+            cast("dict[str, str]", tag)["name"]: cast("dict[str, str]", tag).get(
+                "description", ""
+            )
+            for tag in cast("list[dict[str, Any]]", schema["tags"])
+        }
+        used = {
+            tag
+            for _, _, op in self._operations(schema)
+            for tag in cast("list[str]", op.get("tags", []))
+        }
+
+        assert used <= set(declared), f"tags without metadata: {used - set(declared)}"
+        assert all(declared.values()), "every declared tag needs a description"
+
+    @pytest.mark.unit
+    def test_error_envelope_schema_is_documented(self, schema: dict[str, Any]) -> None:
+        """components.schemas carries the exception handlers' envelope."""
+        envelope = schema["components"]["schemas"]["ErrorResponse"]
+
+        assert set(envelope["required"]) == {"error", "message"}
+        assert set(envelope["properties"]) == {"error", "message", "code", "details"}
+
+    @pytest.mark.unit
+    def test_admin_users_patch_documents_error_statuses(
+        self, schema: dict[str, Any]
+    ) -> None:
+        """A representative admin op documents 401/403/404 with the envelope."""
+        responses = schema["paths"]["/api/v1/admin/users/{user_id}"]["patch"][
+            "responses"
+        ]
+
+        for status_code in ("401", "403", "404"):
+            ref = responses[status_code]["content"]["application/json"]["schema"]
+            assert ref == {"$ref": "#/components/schemas/ErrorResponse"}, (
+                f"PATCH /admin/users must document {status_code} with ErrorResponse"
+            )
+
+    @pytest.mark.unit
+    def test_reading_put_keeps_conflict_view_on_409(
+        self, schema: dict[str, Any]
+    ) -> None:
+        """The reading-state PUT keeps its richer 409 ConflictView body."""
+        responses = schema["paths"][
+            "/api/v1/reading-state/{profile_id}/{storybook_id}"
+        ]["put"]["responses"]
+        ref = responses["409"]["content"]["application/json"]["schema"]
+
+        assert ref == {"$ref": "#/components/schemas/ConflictView"}
+
+    @pytest.mark.unit
+    def test_openapi_schema_is_built_once_and_cached(self) -> None:
+        """Repeated openapi() calls return the same customized object."""
+        app = create_app()
+
+        assert app.openapi() is app.openapi()
+
+
+class TestErrorResponsesHelper:
+    """Pins the shape of the shared ``error_responses`` declaration helper."""
+
+    @pytest.mark.unit
+    def test_builds_one_envelope_entry_per_status(self) -> None:
+        """Each requested status maps to the envelope model and a description."""
+        from cyo_adventure.api.schemas import ErrorResponse, error_responses
+
+        built = error_responses(401, 403, 404, 409, 400)
+
+        assert set(built) == {400, 401, 403, 404, 409}
+        for entry in built.values():
+            assert entry["model"] is ErrorResponse
+            assert isinstance(entry["description"], str)
+            assert entry["description"]
+
+    @pytest.mark.unit
+    def test_rejects_an_undescribed_status(self) -> None:
+        """A status without a curated description is a programming error."""
+        from cyo_adventure.api.schemas import error_responses
+
+        with pytest.raises(KeyError):
+            error_responses(418)

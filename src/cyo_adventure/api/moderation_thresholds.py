@@ -15,6 +15,7 @@ from cyo_adventure.api.schemas import (
     ThresholdListView,
     ThresholdUpsertBody,
     ThresholdView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -39,7 +40,11 @@ from cyo_adventure.storybook.models import AgeBand
 # lives in exactly one place: cyo_adventure.moderation.thresholds.
 _NOISE_FLOOR_KEY = ADMIN_NOISE_FLOOR_KEY
 
-router = APIRouter(prefix="/api/v1", tags=["moderation-thresholds"])
+router = APIRouter(
+    prefix="/api/v1",
+    tags=["moderation-thresholds"],
+    responses=error_responses(401, 403),
+)
 
 _VALID_BANDS = frozenset(band.value for band in AgeBand)
 
@@ -237,7 +242,9 @@ async def upsert_threshold(
     )
 
 
-@router.delete("/admin/moderation-thresholds/{age_band}")
+@router.delete(
+    "/admin/moderation-thresholds/{age_band}", responses=error_responses(404)
+)
 async def delete_threshold(
     age_band: str, category: str, ctx: Context
 ) -> ThresholdListView:

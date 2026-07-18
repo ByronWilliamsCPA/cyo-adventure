@@ -44,6 +44,7 @@ from cyo_adventure.api.schemas import (
     StoryRequestListView,
     StoryRequestStatus,
     StoryRequestView,
+    error_responses,
 )
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
@@ -66,7 +67,9 @@ from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 if TYPE_CHECKING:
     import uuid
 
-router = APIRouter(prefix="/api/v1", tags=["story-requests"])
+router = APIRouter(
+    prefix="/api/v1", tags=["story-requests"], responses=error_responses(401, 403)
+)
 
 _log = logging.getLogger(__name__)
 
@@ -255,7 +258,7 @@ def _to_view(
     )
 
 
-@router.post("/story-requests", status_code=201)
+@router.post("/story-requests", status_code=201, responses=error_responses(404, 409))
 async def create_story_request(
     body: StoryRequestCreateBody, ctx: Context
 ) -> StoryRequestCreatedView:
@@ -514,7 +517,9 @@ async def _resolve_authored_profile(
     return profile
 
 
-@router.post("/story-requests/authored", status_code=201)
+@router.post(
+    "/story-requests/authored", status_code=201, responses=error_responses(404)
+)
 async def create_authored_story_request(
     body: StoryRequestAuthoredCreateBody, ctx: Context
 ) -> StoryRequestAuthoredCreatedView:
@@ -859,7 +864,9 @@ async def _load_scoped_request(
     return request
 
 
-@router.post("/story-requests/{request_id}/approve")
+@router.post(
+    "/story-requests/{request_id}/approve", responses=error_responses(404, 409)
+)
 async def approve_story_request_endpoint(
     request_id: str, body: StoryRequestApproveBody, ctx: Context
 ) -> StoryRequestApprovedView:
@@ -939,7 +946,11 @@ async def approve_story_request_endpoint(
     )
 
 
-@router.post("/story-requests/{request_id}/authoring-plan", status_code=201)
+@router.post(
+    "/story-requests/{request_id}/authoring-plan",
+    status_code=201,
+    responses=error_responses(404, 409),
+)
 async def create_authoring_plan(
     request_id: str,
     body: AuthoringPlanRequest,
@@ -1021,7 +1032,9 @@ async def create_authoring_plan(
     )
 
 
-@router.post("/story-requests/{request_id}/decline")
+@router.post(
+    "/story-requests/{request_id}/decline", responses=error_responses(404, 409)
+)
 async def decline_story_request_endpoint(
     request_id: str, ctx: Context
 ) -> StoryRequestDeclinedView:

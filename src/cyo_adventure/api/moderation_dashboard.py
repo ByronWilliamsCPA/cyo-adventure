@@ -21,6 +21,7 @@ from cyo_adventure.api.schemas import (
     SuggestionListView,
     ThresholdChangeView,
     ThresholdSuggestionView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import AuthorizationError
 from cyo_adventure.db.models import PipelineEvent
@@ -34,7 +35,11 @@ from cyo_adventure.moderation.insights import (
 )
 from cyo_adventure.moderation.thresholds import load_threshold_policy
 
-router = APIRouter(prefix="/api/v1", tags=["moderation-dashboard"])
+router = APIRouter(
+    prefix="/api/v1",
+    tags=["moderation-dashboard"],
+    responses=error_responses(401, 403),
+)
 
 _RECENT_CHANGES_LIMIT = 20
 

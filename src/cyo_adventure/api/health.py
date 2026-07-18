@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 from redis.asyncio import Redis
 from sqlalchemy import text
 
+from cyo_adventure import __version__
 from cyo_adventure.core.config import settings
 from cyo_adventure.utils.logging import get_logger
 
@@ -51,7 +52,7 @@ class HealthStatus(BaseModel):
     status: str = Field(..., description="Overall status: ok, degraded, or error")
     timestamp: float = Field(default_factory=time.time, description="Unix timestamp")
     uptime_seconds: float = Field(..., description="Application uptime in seconds")
-    version: str = Field(default="0.1.0", description="Application version")
+    version: str = Field(default=__version__, description="Application version")
     python_version: str = Field(default_factory=lambda: sys.version.split()[0])
 
 
