@@ -44,7 +44,7 @@
       "initial": 3,
       "min": 0,
       "max": 3,
-      "description": "Physical reserve in the arms for the hard pitches. Monotone decreasing: -1 each time the climber takes a gamble-slip on a climbing checkpoint (the Curtain Wall, the Chimney, the Spiral Stair), where the clean line costs nothing. Reachable set at the Sheer Pitch is {0,1,2,3}. Gates survival of the sheer overhang: grip>=2 tops out, grip<=1 falls."
+      "description": "Physical reserve in the arms for the hard pitches. Monotone decreasing: -1 each time the climber takes a gamble-slip on a climbing checkpoint (the Curtain Wall, the Chimney, the Spiral Stair), where the clean line costs nothing. Reachable set at the Sheer Pitch is {0,1,2,3}. Gates the honest clean-line resolution of the sheer overhang: on the clean line grip>=2 tops out and grip<=1 falls, but the standard gamble-slip bypasses the grip check (as at every checkpoint), so an under-gripped climber can still summit by nerve. grip therefore gates the clean climb, not survival absolutely; it does not differentiate the wins."
     },
     {
       "name": "token",
