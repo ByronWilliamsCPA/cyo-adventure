@@ -38,10 +38,14 @@ class NodeLeafDistance:
 
     Attributes:
         node_id: The shared node id.
-        d_uni: Masked content-unigram Jaccard distance.
-        d_big: All-token (including stopwords) bigram Jaccard distance.
-        word_count_a: Word count of the first fill's body at this node.
-        word_count_b: Word count of the second fill's body at this node.
+        d_uni: Masked content-unigram Jaccard distance, over leaf text
+            (body plus choice labels).
+        d_big: All-token (including stopwords) bigram Jaccard distance,
+            over leaf text (body plus choice labels).
+        word_count_a: Word count of the first fill's body at this node
+            (body-only; see :func:`leaf_distance_profile`).
+        word_count_b: Word count of the second fill's body at this node
+            (body-only; see :func:`leaf_distance_profile`).
     """
 
     node_id: str
@@ -54,6 +58,10 @@ class NodeLeafDistance:
 @dataclass(frozen=True, slots=True)
 class LeafDistanceProfile:
     """The full per-node leaf distance profile for a same-tree fill pair.
+
+    "Leaf text" for masking and distance purposes is a node's body plus its
+    choice labels (in choice order, space-joined): both are prose the
+    automated fill rewrites per theme (WS-0 labels-are-leaves decision).
 
     Attributes:
         nodes: Per-node distances, in the first fill's node order.
@@ -130,19 +138,29 @@ def leaf_distance_profile(
 
     Returns:
         LeafDistanceProfile: Per-node ``(d_uni, d_big)`` plus summary
-            statistics over ``d_uni`` and ``d_big``. Both distances are
-            ``0.0`` for a node whose bodies are both empty (WS-0 design doc
-            section 2.2).
+            statistics over ``d_uni`` and ``d_big``, computed over each
+            node's leaf text (body plus choice labels, in choice order,
+            space-joined; see :class:`LeafDistanceProfile`). Both distances
+            are ``0.0`` for a node whose leaf text is empty on both sides
+            (WS-0 design doc section 2.2).
     """
     entities = extract_entities(fill_a, brief_a) | extract_entities(fill_b, brief_b)
     bodies_a = {node.id: node.body for node in fill_a.nodes}
     bodies_b = {node.id: node.body for node in fill_b.nodes}
+    leaf_text_a = {
+        node.id: " ".join([node.body, *(choice.label for choice in node.choices)])
+        for node in fill_a.nodes
+    }
+    leaf_text_b = {
+        node.id: " ".join([node.body, *(choice.label for choice in node.choices)])
+        for node in fill_b.nodes
+    }
     shared_ids = [node_id for node_id in bodies_a if node_id in bodies_b]
 
     nodes: list[NodeLeafDistance] = []
     for node_id in shared_ids:
-        masked_a = mask_tokens(bodies_a[node_id], entities)
-        masked_b = mask_tokens(bodies_b[node_id], entities)
+        masked_a = mask_tokens(leaf_text_a[node_id], entities)
+        masked_b = mask_tokens(leaf_text_b[node_id], entities)
         uni_a = frozenset(content_tokens(masked_a))
         uni_b = frozenset(content_tokens(masked_b))
         nodes.append(
@@ -150,6 +168,12 @@ def leaf_distance_profile(
                 node_id=node_id,
                 d_uni=jaccard_distance(uni_a, uni_b),
                 d_big=jaccard_distance(_bigrams(masked_a), _bigrams(masked_b)),
+                # #ASSUME: data integrity: word counts stay body-only (they
+                # mirror the band word-count envelope in
+                # validator/band_profile.py, a body-length concept; labels
+                # are short functional micro-copy, not part of that budget).
+                # #VERIFY: tests/unit/test_diversity_leaf.py exercises both
+                # label-only and body-only variants.
                 word_count_a=len(bodies_a[node_id].split()),
                 word_count_b=len(bodies_b[node_id].split()),
             )
@@ -221,6 +245,13 @@ def anti_template_verdict(
     thresholds: AntiTemplateThresholds | None = None,
 ) -> AntiTemplateReport:
     """Judge whether two fills of one tree are genuinely different leaves.
+
+    Distance is measured over each node's leaf text (body plus choice
+    labels; see :class:`LeafDistanceProfile`). The precondition is
+    "same tree": a shared :func:`~cyo_adventure.diversity.structure.
+    structure_fingerprint`, which is label-free (labels are leaf content,
+    not structure), so this guard is robust to a fill that rewrites labels
+    per theme, which is exactly what the shipped fill contract does.
 
     Args:
         fill_a: The first fill.

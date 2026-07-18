@@ -123,7 +123,7 @@ def _cosine(a: Counter[str], b: Counter[str]) -> float:
 def _whole_story_token_counts(
     story: Storybook, entities: frozenset[str]
 ) -> Counter[str]:
-    """Return masked content-token counts pooled over every node body.
+    """Return masked content-token counts pooled over every node's leaf text.
 
     Args:
         story: The story to tokenize.
@@ -131,11 +131,16 @@ def _whole_story_token_counts(
             :func:`~cyo_adventure.diversity.normalize.mask_tokens`).
 
     Returns:
-        Counter[str]: Content-token counts, pooled across all node bodies.
+        Counter[str]: Content-token counts, pooled across all nodes' leaf
+            text (body plus choice labels; same leaf definition as
+            :func:`~cyo_adventure.diversity.leaf.leaf_distance_profile`, so
+            the cross-tree cosine branch sees the same "leaf" the same-tree
+            branch does).
     """
     counts: Counter[str] = Counter()
     for node in story.nodes:
-        counts.update(content_tokens(mask_tokens(node.body, entities)))
+        leaf_text = " ".join([node.body, *(choice.label for choice in node.choices)])
+        counts.update(content_tokens(mask_tokens(leaf_text, entities)))
     return counts
 
 

@@ -404,9 +404,11 @@ def extract_entities(
     """Return the NER-free entity set for one story (WS-0 design doc 2.1).
 
     The union of brief-declared entities and medial-caps tokens found in the
-    story's own node bodies. Callers comparing two fills union the result of
-    calling this once per fill (see :func:`~cyo_adventure.diversity.leaf.
-    leaf_distance_profile`).
+    story's own node bodies and choice labels. Choice labels are leaf text,
+    exactly like bodies: the automated fill rewrites them per theme, so a
+    label-level noun swap must mask the same way a body-level one does.
+    Callers comparing two fills union the result of calling this once per
+    fill (see :func:`~cyo_adventure.diversity.leaf.leaf_distance_profile`).
 
     Args:
         story: A validated Storybook, or a raw blob to coerce.
@@ -417,6 +419,7 @@ def extract_entities(
     """
     model = coerce_storybook(story)
     bodies = [node.body for node in model.nodes]
+    bodies.extend(choice.label for node in model.nodes for choice in node.choices)
     return _medial_caps_tokens(bodies) | _brief_declared_entities(brief)
 
 

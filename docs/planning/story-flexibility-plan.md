@@ -202,6 +202,21 @@ in WS-0 must detect and fail it.
   already in `authoring_metadata`). **Metric:** anti-template guard passes;
   theme-incorporation > 90%.
 - **Serves:** [K11](capability-register.md), [K13](capability-register.md).
+- **Precondition note (2026-07-18, WS-0 labels-are-leaves decision):** choice
+  labels are leaf content, stripped from `structure_fingerprint` and folded into
+  the ATG's leaf distance
+  (`docs/planning/ws0-label-fingerprint-evaluation.md`). The ATG's same-tree
+  precondition is now genuinely label-free: `select_atg_comparison_partner`'s
+  slug-matched pairs no longer raise `ValidationError` merely because the
+  automated fill rewrote choice labels per theme (the shipped `fill.md`
+  contract). This removes the only nominal byte-level check that a fill did
+  not change what a choice *means*; per-choice label-intent fidelity (does the
+  rewritten label still match the frozen action-semantic of the original
+  choice?) is a Stage 1 fidelity-reviewer extension, not a fingerprint concern.
+  Per the evaluation's supervisor sign-off (section 8), that extension is a
+  **hard prerequisite** on wiring the ATG into the production pipeline, not an
+  optional follow-up: WS-1 must not treat the ATG as production-ready until the
+  Stage 1 reviewer covers per-choice label intent.
 
 ### WS-4: Similarity-driven, escalating selection (consumes WS-0)
 

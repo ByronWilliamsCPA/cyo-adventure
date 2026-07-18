@@ -819,7 +819,12 @@ thin argparse shell like `run_story_gate.py`.
    growth priority 1 in section 1.5 (a second same-tree cell on a
    `branch_and_bottleneck` tree) is the first post-merge panel PR; the append-only rule
    prevents retuning to fit; the swap-table FAIL pair is synthetic and thus
-   tree-independent by construction.
+   tree-independent by construction. The monoculture-retirement path no longer requires
+   theme-neutral choice labels: the WS-0 labels-are-leaves decision
+   (`docs/planning/ws0-label-fingerprint-evaluation.md`) strips choice labels from
+   `structure_fingerprint`, so any same-tree candidate skeleton, including one whose
+   labels bake in theme-specific proper nouns (e.g. the harrowstone-class skeletons),
+   is same-tree-eligible once reskinned.
 2. **Baseline-update social engineering.** The gate is only as strong as review
    discipline on `baseline.json` and `panel.json` diffs; `--update-baseline` makes a
    regression one flag away from "blessed". Mitigation: the manifest/baseline authority

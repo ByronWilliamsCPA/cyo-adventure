@@ -1,29 +1,29 @@
 {
   "atg_pairs": {
     "cave-dino~cave-sea": {
-      "big_over_uni_ratio": 1.157346,
-      "mean_bigram_distance": 0.909558,
-      "median_distance": 0.792581,
-      "p10_distance": 0.695875,
-      "p25_distance": 0.760237,
+      "big_over_uni_ratio": 1.158362,
+      "mean_bigram_distance": 0.885457,
+      "median_distance": 0.783196,
+      "p10_distance": 0.673129,
+      "p25_distance": 0.731728,
       "templated_node_count": 0,
       "verdict": "pass"
     },
     "cave-dino~cave-space": {
-      "big_over_uni_ratio": 1.12059,
-      "mean_bigram_distance": 0.919638,
-      "median_distance": 0.824265,
-      "p10_distance": 0.761516,
-      "p25_distance": 0.791552,
+      "big_over_uni_ratio": 1.127314,
+      "mean_bigram_distance": 0.896712,
+      "median_distance": 0.802299,
+      "p10_distance": 0.722459,
+      "p25_distance": 0.761302,
       "templated_node_count": 0,
       "verdict": "pass"
     },
     "cave-sea~cave-space": {
-      "big_over_uni_ratio": 1.115731,
-      "mean_bigram_distance": 0.934433,
-      "median_distance": 0.848101,
-      "p10_distance": 0.770462,
-      "p25_distance": 0.814599,
+      "big_over_uni_ratio": 1.121374,
+      "mean_bigram_distance": 0.911033,
+      "median_distance": 0.821919,
+      "p10_distance": 0.746835,
+      "p25_distance": 0.78591,
       "templated_node_count": 0,
       "verdict": "pass"
     },
@@ -37,11 +37,11 @@
       "verdict": "fail"
     },
     "cave-space~cave-space-swap": {
-      "big_over_uni_ratio": 1.221507,
-      "mean_bigram_distance": 0.071722,
-      "median_distance": 0.068966,
+      "big_over_uni_ratio": 1.234091,
+      "mean_bigram_distance": 0.069357,
+      "median_distance": 0.064037,
       "p10_distance": 0.0,
-      "p25_distance": 0.036869,
+      "p25_distance": 0.035558,
       "templated_node_count": 64,
       "verdict": "fail"
     }
@@ -94,7 +94,7 @@
       "content_token_count": 2895,
       "distinct_1": 0.34715,
       "distinct_2": 0.879195,
-      "fingerprint": "4bd738af1b6db7e07e6ef721798d2110c4fb096c10f804b01c08d3b7d82b000a",
+      "fingerprint": "d1d253827e7876bf56f217cc714905ff398a0ae877efab0139bb406513e23c59",
       "self_bleu_lite": 0.39452
     },
     "cave-sea": {
@@ -102,7 +102,7 @@
       "content_token_count": 2988,
       "distinct_1": 0.335341,
       "distinct_2": 0.883379,
-      "fingerprint": "4bd738af1b6db7e07e6ef721798d2110c4fb096c10f804b01c08d3b7d82b000a",
+      "fingerprint": "d1d253827e7876bf56f217cc714905ff398a0ae877efab0139bb406513e23c59",
       "self_bleu_lite": 0.381134
     },
     "cave-space": {
@@ -110,7 +110,7 @@
       "content_token_count": 3678,
       "distinct_1": 0.327352,
       "distinct_2": 0.887659,
-      "fingerprint": "4bd738af1b6db7e07e6ef721798d2110c4fb096c10f804b01c08d3b7d82b000a",
+      "fingerprint": "d1d253827e7876bf56f217cc714905ff398a0ae877efab0139bb406513e23c59",
       "self_bleu_lite": 0.380999
     },
     "clockwork": {
@@ -118,7 +118,7 @@
       "content_token_count": 9330,
       "distinct_1": 0.18746,
       "distinct_2": 0.819184,
-      "fingerprint": "e135b58dff0189b95614210cafe886efdd983aacd27ac012eee3984104e70482",
+      "fingerprint": "9306b184a0a322c38bd9f2f04880f238f26c00eb2bb57377fab7a9027aa2ff77",
       "self_bleu_lite": 0.495402
     },
     "clover": {
@@ -126,58 +126,58 @@
       "content_token_count": 358,
       "distinct_1": 0.399441,
       "distinct_2": 0.825444,
-      "fingerprint": "7959b3ffa830afb556cd14872f157a79cc7891a3ebcda81f348834ec2574f3cf",
+      "fingerprint": "17b71af4648dc49b13fc47d832c4c712ca147309c2d7a6164e27bc7e630e311a",
       "self_bleu_lite": 0.405449
     },
     "lantern": {
       "band": "5-8",
       "content_token_count": 1095,
-      "distinct_1": 0.399087,
+      "distinct_1": 0.398174,
       "distinct_2": 0.923513,
-      "fingerprint": "3bcd8410a48c92314bdde5277627699c79353de2e61ea83e49c624b7af4ca0cf",
-      "self_bleu_lite": 0.314243
+      "fingerprint": "add20eb5b68d30b4857355cb50ec0bbc4fbca39454277ff54c7ebff37dd0606b",
+      "self_bleu_lite": 0.314437
     },
     "skyship": {
       "band": "8-11",
       "content_token_count": 4780,
       "distinct_1": 0.286611,
       "distinct_2": 0.889055,
-      "fingerprint": "e725c59c2e286710eead2226897f934180eea41cd0322c40a918dde9345cf456",
+      "fingerprint": "3eae193be143acf3b07323fa620119b60972bbb238528b40dcae77c5aac58ee5",
       "self_bleu_lite": 0.389575
     }
   },
   "ps_pairs": {
     "cave-dino~cave-sea": {
-      "leaf_similarity": 0.207419,
-      "perceived_similarity": 0.517995,
+      "leaf_similarity": 0.216804,
+      "perceived_similarity": 0.522688,
       "same_tree": true,
       "structural_similarity": 1.0,
       "theme_similarity": 0.571429
     },
     "cave-dino~cave-space": {
-      "leaf_similarity": 0.175735,
-      "perceived_similarity": 0.521201,
+      "leaf_similarity": 0.197701,
+      "perceived_similarity": 0.532184,
       "same_tree": true,
       "structural_similarity": 1.0,
       "theme_similarity": 0.666667
     },
     "cave-sea~cave-space": {
-      "leaf_similarity": 0.151899,
-      "perceived_similarity": 0.490235,
+      "leaf_similarity": 0.178081,
+      "perceived_similarity": 0.503326,
       "same_tree": true,
       "structural_similarity": 1.0,
       "theme_similarity": 0.571429
     },
     "cave-sea~clockwork": {
-      "leaf_similarity": 0.85029,
-      "perceived_similarity": 0.662668,
+      "leaf_similarity": 0.839031,
+      "perceived_similarity": 0.657038,
       "same_tree": false,
       "structural_similarity": 0.625077,
       "theme_similarity": 0.25
     },
     "cave-sea~skyship": {
-      "leaf_similarity": 0.760119,
-      "perceived_similarity": 0.613837,
+      "leaf_similarity": 0.750872,
+      "perceived_similarity": 0.609213,
       "same_tree": false,
       "structural_similarity": 0.612591,
       "theme_similarity": 0.25
@@ -190,15 +190,15 @@
       "theme_similarity": 1.0
     },
     "cave-space~cave-space-swap": {
-      "leaf_similarity": 0.931034,
-      "perceived_similarity": 0.965517,
+      "leaf_similarity": 0.935963,
+      "perceived_similarity": 0.967982,
       "same_tree": true,
       "structural_similarity": 1.0,
       "theme_similarity": 1.0
     },
     "clockwork~skyship": {
-      "leaf_similarity": 0.866923,
-      "perceived_similarity": 0.761065,
+      "leaf_similarity": 0.853471,
+      "perceived_similarity": 0.754339,
       "same_tree": false,
       "structural_similarity": 0.869788,
       "theme_similarity": 0.333333

@@ -74,6 +74,36 @@ def _make_noun_swap_variant(fill: dict[str, object]) -> dict[str, object]:
     return variant
 
 
+def _make_label_noun_swap_variant(fill: dict[str, object]) -> dict[str, object]:
+    """Return a deep copy of ``fill`` with every _NOUN_SWAPS word in labels swapped.
+
+    Mirrors :func:`_make_noun_swap_variant` but only touches choice labels,
+    leaving bodies untouched: the label-only counterpart of the dog-for-cat
+    variant, used to check that masked label entities contribute ~zero
+    distance (labels are leaf text too, per the WS-0 labels-are-leaves
+    decision).
+    """
+    variant = copy.deepcopy(fill)
+    for node in variant["nodes"]:  # type: ignore[index]
+        for choice in node.get("choices", []):  # type: ignore[attr-defined]
+            choice["label"] = _SWAP_PATTERN.sub(_swap_one, choice["label"])
+    return variant
+
+
+def _make_label_rewrite_variant(fill: dict[str, object]) -> dict[str, object]:
+    """Return a deep copy of ``fill`` with every choice label reworded.
+
+    Simulates the automated fill rewriting only labels (not bodies): the
+    scenario the WS-1 gap was about (same tree, rewritten labels, bodies
+    unchanged).
+    """
+    variant = copy.deepcopy(fill)
+    for node in variant["nodes"]:  # type: ignore[index]
+        for choice in node.get("choices", []):  # type: ignore[attr-defined]
+            choice["label"] = f"Reskinned: {choice['label']}"
+    return variant
+
+
 def _load(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -106,6 +136,45 @@ def test_anti_template_guard_noun_swap_variant_fails() -> None:
     assert report.verdict is AntiTemplateVerdict.FAIL
     assert report.median_distance <= 0.25
     assert len(report.templated_nodes) > 0
+
+
+@pytest.mark.unit
+def test_anti_template_guard_scores_label_rewritten_pair_without_raising() -> None:
+    """A label-only rewrite of a fill keeps the same fingerprint and scores FAIL.
+
+    Rewriting only choice labels does not change ``structure_fingerprint``
+    (labels are leaf content), so the guard compares instead of raising.
+    Bodies are identical, and bodies dominate leaf text, so the correct
+    reading of "only the labels changed" is a FAIL verdict, not an
+    exception.
+    """
+    original = _load(_SPACE_STATION_FILL)
+    label_rewritten = _make_label_rewrite_variant(original)
+    report = anti_template_verdict(
+        Storybook.model_validate(original), Storybook.model_validate(label_rewritten)
+    )
+    assert report.verdict is AntiTemplateVerdict.FAIL
+
+
+@pytest.mark.unit
+def test_anti_template_guard_masked_label_noun_swap_contributes_near_zero_distance() -> (
+    None
+):
+    """A masked proper-noun swap confined to labels barely moves the distance.
+
+    Contrasts with the body-level noun swap (which fails the guard): once
+    entities are masked, a label-only noun swap on top of otherwise
+    identical bodies should leave the pair scoring FAIL with a distance
+    very close to 0, since the swapped tokens are masked to the same
+    placeholder as the originals.
+    """
+    original = _load(_SPACE_STATION_FILL)
+    label_swapped = _make_label_noun_swap_variant(original)
+    report = anti_template_verdict(
+        Storybook.model_validate(original), Storybook.model_validate(label_swapped)
+    )
+    assert report.verdict is AntiTemplateVerdict.FAIL
+    assert report.median_distance <= 0.05
 
 
 @pytest.mark.unit

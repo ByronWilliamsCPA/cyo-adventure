@@ -4,6 +4,15 @@ WS-0 Phase 2 (design doc section 3.2). These are floors checked after the
 fact against a committed baseline, never optimization targets, and never
 exposed to ``generation`` (WS-0 design doc sections 2.6 and 7.2).
 
+Unlike :mod:`~cyo_adventure.diversity.leaf` and
+:mod:`~cyo_adventure.diversity.aggregate` (WS-0 labels-are-leaves
+decision), this module deliberately does NOT fold choice labels into its
+token pools. The lexical guard protects prose variety within one fill
+against the band envelope; labels are short, formulaic, functional
+micro-copy by design ("Follow the humming echo to the left."), and mixing
+them into ``distinct_1``/``distinct_2`` would dilute the signal with
+imperative boilerplate rather than measure genuine body-prose repetition.
+
 Pure module: stdlib plus sibling pure ``diversity`` modules and
 ``cyo_adventure.storybook.models`` only. Never imports ``db``,
 ``generation``, or ``sqlalchemy``.

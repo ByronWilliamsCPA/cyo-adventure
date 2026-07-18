@@ -53,8 +53,8 @@ def test_structural_distance_positive_across_skeletons() -> None:
 
 
 @pytest.mark.unit
-def test_fingerprint_ignores_titles_and_bodies() -> None:
-    """Retitling an ending (or a node body) does not change the fingerprint."""
+def test_fingerprint_ignores_titles_bodies_and_labels() -> None:
+    """Retitling an ending, a node body, or every choice label does not move it."""
     story = _load(_SPACE_STATION_FILL)
     before = structure_fingerprint(story)
 
@@ -64,9 +64,42 @@ def test_fingerprint_ignores_titles_and_bodies() -> None:
         node["body"] = "Different prose entirely."
         if node.get("ending") is not None:
             node["ending"]["title"] = "A New Ending Title"
+        for choice in node.get("choices", []):
+            choice["label"] = "A completely different choice label."
 
     after = structure_fingerprint(retitled)
     assert before == after
+
+
+@pytest.mark.unit
+def test_fingerprint_equal_for_label_rewritten_fill_of_same_skeleton() -> None:
+    """A fill whose choice labels alone were rewritten still shares a fingerprint.
+
+    Labels are leaf content the automated fill rewrites per theme (the
+    WS-0 labels-are-leaves decision); a rewritten choice ``target``, by
+    contrast, is a genuine structural change and must still move the hash.
+    """
+    story = _load(_SPACE_STATION_FILL)
+    before = structure_fingerprint(story)
+
+    label_rewritten = json.loads(json.dumps(story))
+    for node in label_rewritten["nodes"]:
+        for choice in node.get("choices", []):
+            choice["label"] = f"Reskinned: {choice['label']}"
+    assert structure_fingerprint(label_rewritten) == before
+
+    target_rewritten = json.loads(json.dumps(story))
+    first_node_with_choices = next(
+        node for node in target_rewritten["nodes"] if node.get("choices")
+    )
+    original_target = first_node_with_choices["choices"][0]["target"]
+    other_node_id = next(
+        node["id"]
+        for node in target_rewritten["nodes"]
+        if node["id"] not in (first_node_with_choices["id"], original_target)
+    )
+    first_node_with_choices["choices"][0]["target"] = other_node_id
+    assert structure_fingerprint(target_rewritten) != before
 
 
 @pytest.mark.unit

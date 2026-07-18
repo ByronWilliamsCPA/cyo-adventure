@@ -51,14 +51,15 @@ _TOPOLOGY_WEIGHT = 0.2
 
 
 def _strip_leaf_content(data: dict[str, object]) -> dict[str, object]:
-    """Return a deep copy of a story dump with title/body/ending-title removed.
+    """Return a deep copy of a story dump with title/body/ending-title/label removed.
 
     Args:
         data: A ``Storybook.model_dump(mode="json")`` result.
 
     Returns:
         dict[str, object]: The same structure with every piece of prose
-            content stripped, leaving only the graph shape.
+            content stripped -- story title, node body, ending title, and
+            choice labels -- leaving only the graph shape.
     """
     stripped = copy.deepcopy(data)
     stripped.pop("title", None)
@@ -71,6 +72,11 @@ def _strip_leaf_content(data: dict[str, object]) -> dict[str, object]:
                 ending = node.get("ending")
                 if isinstance(ending, dict):
                     cast("dict[str, object]", ending).pop("title", None)
+                choices = node.get("choices")
+                if isinstance(choices, list):
+                    for raw_choice in cast("list[object]", choices):
+                        if isinstance(raw_choice, dict):
+                            cast("dict[str, object]", raw_choice).pop("label", None)
     return stripped
 
 
@@ -82,10 +88,13 @@ def structure_fingerprint(story: Storybook | Mapping[str, object]) -> str:
 
     Returns:
         str: A sha256 hex digest of the canonicalized, leaf-content-free
-            story. Two fills of one skeleton hash equal by construction
-            (the fill contract forbids touching anything but bodies); a
-            titled ending or story title does not affect the fingerprint,
-            since titles are leaf content, not structure.
+            story. Choice labels are leaf prose: the automated fill
+            (``generation/templates/fill.md``) rewrites every label per
+            theme, exactly like a body sentence, so two fills of one
+            skeleton hash equal provided the fill touches only bodies and
+            labels, which is the shipped fill contract. A titled ending, a
+            story title, or a rewritten choice label does not affect the
+            fingerprint, since all three are leaf content, not structure.
     """
     model = coerce_storybook(story)
     canonical = _strip_leaf_content(model.model_dump(mode="json"))

@@ -63,7 +63,7 @@ Hard constraints this design is built around:
 Terminology used throughout:
 
 - **Fill:** a filled Storybook (nodes carry prose bodies), as stored in `StorybookVersion.blob`.
-- **Same-tree pair:** two fills whose structure fingerprints (section 3.6) are equal, in practice
+- **Same-tree pair:** two fills whose structure fingerprints (section 2.4) are equal, in practice
   two fills of one skeleton; node ids correspond 1:1, so leaves can be compared per node.
 - **Cross-tree pair:** two fills of different skeletons; leaves are compared at whole-story level.
 - **Cell:** a `(band, length, style)` triple, exactly as in `skeleton_match.py`.
@@ -235,17 +235,21 @@ No threshold gates this number directly; it trends on the dashboard and feeds th
 ### 2.4 Structural fingerprint and structural distance (`structure.py`)
 
 **Fingerprint (identity).** Reuse the `check_fill_integrity.py` convention: strip every node
-`body`, canonicalize (`json.dumps(..., sort_keys=True)` after also dropping `title` and each
-`ending.title`, which are leaf content), and hash:
+`body` and every choice `label`, canonicalize (`json.dumps(..., sort_keys=True)` after also
+dropping `title` and each `ending.title`, which are leaf content), and hash:
 
 ```text
 structure_fingerprint(s) = sha256(canonical_structure_json(s)).hexdigest()
 ```
 
-Two fills of one skeleton have equal fingerprints by construction (the fill contract forbids
-touching anything but bodies; `check_fill_integrity` enforces it). Titles are excluded from the
-fingerprint because the pilot's parameterized skeleton rewrites ending titles per theme; titles
-are leaves. `sha256` per FIPS guidance (no MD5).
+Two fills of one skeleton have equal fingerprints provided the fill touches only bodies and
+choice labels, which is the shipped `fill.md` contract (`generation/templates/fill.md` instructs
+the automated fill to rewrite every choice label per theme, so labels cannot be relied on to stay
+byte-identical across fills). Titles and choice labels are excluded from the fingerprint because
+both are leaf content the automated fill rewrites per theme: the pilot's parameterized skeleton
+rewrites ending titles per theme, and the shipped fill contract rewrites every choice label; both
+are leaves, not structure (WS-0 labels-are-leaves decision,
+`docs/planning/ws0-label-fingerprint-evaluation.md`). `sha256` per FIPS guidance (no MD5).
 
 **Feature vector (graded distance).** `structure_features(s) -> StructureFeatures`, computed
 with one `networkx.DiGraph` built from choices:
@@ -853,7 +857,10 @@ cwd-relative `skeletons/` convention; they are committed files.
 - `test_structural_distance_zero_for_same_skeleton_fills` (exactly 0.0).
 - `test_structural_distance_positive_across_skeletons`: any two distinct files in
   `skeletons/8-11/` give `struct_dist > 0`.
-- `test_fingerprint_ignores_titles_and_bodies` (retitle an ending, fingerprint unchanged).
+- `test_fingerprint_ignores_titles_bodies_and_labels` (retitle an ending, retitle a node body,
+  and rewrite every choice label; fingerprint unchanged).
+- `test_fingerprint_equal_for_label_rewritten_fill_of_same_skeleton` (a label-only rewrite keeps
+  the fingerprint; a rewritten `target` still changes it; WS-0 labels-are-leaves decision).
 - `test_features_handle_cyclic_topologies` (an `open_map`/`loop_and_grow` skeleton does not
   hang or crash BFS).
 

@@ -10,7 +10,7 @@ tags:
   - planning
   - diversity
   - generation
-status: open
+status: resolved
 owner: core-maintainer
 component: Strategy
 source: "Surfaced 2026-07-18 by the panel-monoculture growth attempt (reusing PR #297's
@@ -76,3 +76,14 @@ Recommendation: decide 1 vs 2 deliberately (it defines what "same tree" means fo
 diversity system); either way, option 3's cross-tree addition is a safe interim step. This
 document is the durable record so the finding is not lost; the chosen path updates
 `story-flexibility-plan.md` (WS-1) and `ws0-phase2-harness-design.md` (section 7 risk 1).
+
+## Resolution (2026-07-18)
+
+**Decided: option 2, labels become leaves.** See
+`docs/planning/ws0-label-fingerprint-evaluation.md` for the full evaluation (section 4.2), the
+empirical re-baseline verification (section 5), the recommended implementation outline
+(section 6), and the supervisor sign-off (section 8). Implemented in the same wave: choice
+labels are stripped from `structure_fingerprint`, folded into the anti-template guard's leaf
+distance and entity masking, `check_fill_integrity.py` aligned to the same convention, and the
+panel re-baselined. `story-flexibility-plan.md` (WS-1) and `ws0-phase2-harness-design.md`
+(section 7 risk 1) have been updated accordingly.
