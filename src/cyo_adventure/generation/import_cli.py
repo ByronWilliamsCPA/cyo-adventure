@@ -2,7 +2,16 @@
 
 Usage:
     uv run python -m cyo_adventure.generation.import_cli <path> --family <family-uuid> [--model <model-id>]
+    uv run python -m cyo_adventure.generation.import_cli <path> --library [--model <model-id>]
     uv run python -m cyo_adventure.generation.import_cli <path> --job <job-uuid> [--model <model-id>]
+
+``--library`` imports the story into the reserved admin-only Library family
+(core/catalog.py::LIBRARY_FAMILY_ID), the storage owner for the admin-authored
+base inventory, so a base-inventory story needs no real family's UUID. It is
+mutually exclusive with ``--family``. The import still runs the validation gate
+and moderation pipeline and lands the story ``in_review``; an admin approves,
+publishes, and sets ``visibility='catalog'`` through the normal flow before any
+guardian can browse or assign it.
 """
 
 from __future__ import annotations
@@ -14,6 +23,7 @@ import sys
 import uuid
 from pathlib import Path
 
+from cyo_adventure.core.catalog import LIBRARY_FAMILY_ID
 from cyo_adventure.core.database import get_session
 from cyo_adventure.core.exceptions import ProjectBaseError
 from cyo_adventure.generation.import_story import (
@@ -35,6 +45,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("path", help="Path to the filled story JSON.")
     parser.add_argument(
         "--family", default=None, help="Owning family UUID (ignored with --job)."
+    )
+    parser.add_argument(
+        "--library",
+        action="store_true",
+        help=(
+            "Import into the reserved admin-only Library family (the base "
+            "inventory storage owner). Mutually exclusive with --family."
+        ),
     )
     parser.add_argument("--model", default=None, help="Model id to record.")
     parser.add_argument(
@@ -166,17 +184,27 @@ def main(argv: list[str] | None = None) -> int:
     # rest of main stays strictly typed.
     path: str = args.path
     family: str | None = args.family
+    library: bool = args.library
     model: str | None = args.model
     job: str | None = args.job
-    if job is None and family is None:
-        sys.stderr.write("error: --family is required unless --job is given\n")
+    # --library and --family both name the owning family; accepting both would
+    # make the effective owner ambiguous, so reject the combination up front.
+    if library and family is not None:
+        sys.stderr.write("error: --library and --family are mutually exclusive\n")
+        return 1
+    if job is None and family is None and not library:
+        sys.stderr.write("error: one of --family, --library, or --job is required\n")
         return 1
     blob = _load_blob(path)
     if blob is None:
         return 1
     try:
         job_id = _parse_optional_uuid("job", job)
-        family_id = _parse_optional_uuid("family", family)
+        # --library resolves to the reserved Library family id; otherwise parse
+        # the caller-supplied --family (None on the --job path, which ignores it).
+        family_id = (
+            LIBRARY_FAMILY_ID if library else _parse_optional_uuid("family", family)
+        )
     except ValueError as exc:
         sys.stderr.write(str(exc))
         return 1

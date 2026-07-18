@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from cyo_adventure.core.catalog import LIBRARY_FAMILY_ID
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.import_cli import _run, build_arg_parser, main
 from cyo_adventure.generation.import_story import (
@@ -72,6 +73,51 @@ def test_arg_parser_requires_path_and_family() -> None:
     args = parser.parse_args(["out/demo.filled.json", "--family", "abc"])
     assert args.path == "out/demo.filled.json"
     assert args.family == "abc"
+
+
+@pytest.mark.unit
+def test_arg_parser_accepts_library_flag() -> None:
+    # --library is a store_true flag defaulting False; it selects the reserved
+    # Library family as the owner without a UUID argument.
+    parser = build_arg_parser()
+    args = parser.parse_args(["out/demo.filled.json", "--library"])
+    assert args.library is True
+    assert args.family is None
+    args_default = parser.parse_args(["out/demo.filled.json", "--family", "abc"])
+    assert args_default.library is False
+
+
+@pytest.mark.unit
+def test_main_library_imports_under_the_library_family(tmp_path: Path) -> None:
+    # --library must resolve the owning family to the reserved LIBRARY_FAMILY_ID
+    # (no --family UUID needed) and otherwise import normally.
+    f = tmp_path / "story.json"
+    f.write_text('{"id": "s1"}')
+    captured: dict[str, object] = {}
+
+    async def _fake_run(
+        blob: dict[str, object],
+        family_id: uuid.UUID | None,
+        model: str | None,
+        job_id: uuid.UUID | None,
+    ) -> tuple[str, str | None]:
+        captured["family_id"] = family_id
+        return ("story-lib-1", None)
+
+    with (
+        patch("pathlib.Path.cwd", return_value=tmp_path),
+        patch("cyo_adventure.generation.import_cli._run", side_effect=_fake_run),
+    ):
+        code = main([str(f), "--library"])
+    assert code == 0
+    assert captured["family_id"] == LIBRARY_FAMILY_ID
+
+
+@pytest.mark.unit
+def test_main_library_and_family_are_mutually_exclusive(tmp_path: Path) -> None:
+    # Passing both owners is ambiguous and must be rejected before any read.
+    code = main(["some.json", "--library", "--family", str(uuid.uuid4())])
+    assert code == 1
 
 
 @pytest.mark.unit
