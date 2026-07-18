@@ -19,13 +19,20 @@ from cyo_adventure.api.deps import (
     authorize_profile,
     parse_uuid,
 )
-from cyo_adventure.api.schemas import RatingBody, RatingListView, RatingView
+from cyo_adventure.api.schemas import (
+    RatingBody,
+    RatingListView,
+    RatingView,
+    error_responses,
+)
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
 from cyo_adventure.db.models import Rating, Storybook, StorybookAssignment
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.publishing.state_machine import Visibility
 
-router = APIRouter(prefix="/api/v1", tags=["ratings"])
+router = APIRouter(
+    prefix="/api/v1", tags=["ratings"], responses=error_responses(401, 403)
+)
 
 
 def _rating_view(row: Rating) -> RatingView:
@@ -39,7 +46,7 @@ def _rating_view(row: Rating) -> RatingView:
     )
 
 
-@router.post("/ratings")
+@router.post("/ratings", responses=error_responses(404))
 async def record_rating(body: RatingBody, ctx: Context) -> RatingView:
     """Set or update the calling child's rating of a storybook.
 

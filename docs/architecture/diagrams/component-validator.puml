@@ -6,7 +6,7 @@
 ' Source files:
 '   src/cyo_adventure/validator/gate.py          (run_gate, GateResult)
 '   src/cyo_adventure/validator/layer1.py        (L1-1..L1-7 graph rules)
-'   src/cyo_adventure/validator/policy.py        (PL-15..PL-21 age/scale policy)
+'   src/cyo_adventure/validator/policy.py        (PL-15..PL-22 age/scale policy)
 '   src/cyo_adventure/validator/band_profile.py  (BandProfile per age band,
 '                                                  six bands: 3-5, 5-8, 8-11,
 '                                                  10-13, 13-16, 16+)
@@ -34,18 +34,18 @@ package "Validator Gate" #E8F5E9 {
   component "Gate Entry\nvalidator/gate.py\nrun_gate(data) -> GateResult" as gate #A5D6A7
 
   package "Layer 1: Graph Structure" #DCEDC8 {
-    component "validate_layer1()\nvalidator/layer1.py\nL1-1: schema conformance (jsonschema)\nL1-2: start_node exists\nL1-3: all nodes reachable\nL1-4: at least one ending\nL1-5: no dangling targets\nL1-6: variable usage consistent\nL1-7: depth budget enforced" as layer1 #DCEDC8
+    component "validate_layer1()\nvalidator/layer1.py\nL1-1: schema conformance (jsonschema)\nL1-2: id uniqueness, start_node exists,\n  choice targets resolve (no dangling)\nL1-3: all nodes reachable (BFS)\nL1-4: termination well-formedness\n  (endings childless; non-endings have\n  choices + a path to an ending)\nL1-5: trap loops (every cycle can\n  reach an ending)\nL1-6: variable/condition/effect whitelist\nL1-7: ending_count + node-count band\n  + max branch depth" as layer1 #DCEDC8
   }
 
   package "Policy Layer: age/scale invariants (ADR-011)" #A5D6A7 {
-    component "validate_policy()\nvalidator/policy.py\nPL-15: forbidden ending kinds per band\nPL-16: content-flag ceilings per band\nPL-17: ending/decision floors per band\nPL-18: choice-graph topology\nPL-19: words-per-node cap (blocking) + story-mean (advisory)\nPL-20: fastest-finish arc floor\nPL-21: off-matrix cell rejection" as policy #A5D6A7
+    component "validate_policy()\nvalidator/policy.py\nPL-15: forbidden ending kinds per band\nPL-16: content-flag ceilings per band\nPL-17: ending/decision floors per band\nPL-18: choice-graph topology\nPL-19: words-per-node cap (blocking) + story-mean (advisory)\nPL-20: fastest-finish arc floor\nPL-21: off-matrix cell rejection\nPL-22: band profile not configured -> fail closed" as policy #A5D6A7
 
     component "band_profile.py\nBandProfile per age band:\n3-5 | 5-8 | 8-11 | 10-13 |\n13-16 | 16+\nnode/depth budget, content ceilings,\nforbidden endings, ending/decision floors" as band_profile #A5D6A7
   }
 
   package "Layer 2: State-Space Walk (Tier-2 only)" #C8E6C9 {
-    component "validate_layer2()\nvalidator/layer2.py\nL2-9: every path reaches an ending\nL2-10..L2-12: reachability under\nconditions (networkx + walk)" as layer2 #C8E6C9
-    component "state_space_walk()\nvalidator/walk.py\nBFS/DFS over variable state\ncombinations" as walk_comp #C8E6C9
+    component "validate_layer2()\nvalidator/layer2.py\nL2-9: stateful dead-ends (reachable\n  non-ending config, no visible choices)\nL2-10: loop escape (an ending stays\n  reachable from every config)\nL2-11: dead branch (conditional choice\n  never visible)\nL2-12: walk-cap ceiling (complexity)" as layer2 #C8E6C9
+    component "walk_configurations()\nvalidator/walk.py\nBFS over (node, var-state)\nconfigurations (cap 100k)" as walk_comp #C8E6C9
   }
 
   package "Advisory Checks" #B2DFDB {
@@ -54,7 +54,7 @@ package "Validator Gate" #E8F5E9 {
     component "check_safety()\nvalidator/safety.py\nSAFE-14: content safety\n(Phase 2 stub, always empty)" as safety #B2DFDB
   }
 
-  component "ValidationReport\nvalidator/report.py\nValidationFinding(rule_id, severity,\nnode_id, choice_id, message)\nSeverity: ERROR | WARNING" as report #E8F5E9
+  component "ValidationReport\nvalidator/report.py\nValidationFinding(rule_id, severity,\nstory_id, message, node_id, choice_id)\nSeverity: ERROR | WARNING" as report #E8F5E9
 
 }
 
@@ -91,7 +91,8 @@ note right of gate
   Rule application order (gate.py, validator-rules.md):
   1. L1 (always): graph structure + schema
   2. Early return on any L1 ERROR
-  3. Policy (PL-15..PL-21): age/scale invariants
+  3. Policy (PL-15..PL-22): age/scale invariants
+     (PL-22 = fail closed when band profile missing)
      on the parsed Storybook (ADR-011 band x
      length x style)
   4. L2 (Tier-2 only): state-space walk

@@ -55,12 +55,19 @@ class EventType(StrEnum):
     NOISE_FLOOR_CHANGED = "noise_floor_changed"
     BOOK_ASSIGNED = "book_assigned"
     RATED = "rated"
+    KID_FLAGGED = "kid_flagged"
+    FLAG_RESOLVED = "flag_resolved"
     # WS-J admin user management: each covers several mutations via a
     # payload "action" field (mirrors THRESHOLD_CHANGED covering both upsert
     # and delete), rather than one event type per CRUD verb per entity.
     USER_MANAGED = "user_managed"
     FAMILY_MANAGED = "family_managed"
     FAMILY_CONNECTION_CHANGED = "family_connection_changed"
+    # G6: a prose-only passage edit (node body and/or choice label text) that
+    # forced a re-run of the deterministic gate and the node's moderation
+    # findings. The payload carries only the node id (never the edited prose)
+    # per spec D3; see api/node_edit.py.
+    NODE_EDITED = "node_edited"
 
 
 SYSTEM_ACTOR_ROLE = "system"

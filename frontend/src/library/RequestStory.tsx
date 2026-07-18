@@ -9,9 +9,10 @@ import {
   type StoryRequestStatus,
 } from './storyRequestApi'
 
-const STATUS_COPY: Record<StoryRequestStatus, string> = {
+// 'approved' is handled separately below (K12): it splits into a
+// "being written" / "it's on your shelf" pair instead of one static line.
+const STATUS_COPY: Record<Exclude<StoryRequestStatus, 'approved'>, string> = {
   pending: 'Waiting for a grown-up to say yes',
-  approved: 'Yay! Your story is being made',
   declined: 'Not this time. Try another idea!',
   blocked: "Let's try a different idea!",
 }
@@ -21,6 +22,28 @@ type SendError = 'busy' | 'generic' | 'anchor'
 export interface ContinueAnchor {
   id: string
   title: string
+}
+
+// #ASSUME: data-integrity: the story-requests endpoint never marks a request
+// "published" (its status stays 'approved' forever once approved; see
+// api/story_requests.py and db/models.py's 4-value status check constraint).
+// There is no backend field linking a request to the storybook it produced,
+// so "it's on your shelf" is a best-effort GUESS from data already fetched
+// for the shelf itself (LibraryPage's existing GET /v1/library), not a real
+// status the server reports.
+// #VERIFY: match only the guardian-confirmed series title (never the child's
+// free-form idea text, which the backend does not echo back as a book
+// title) against the shelf's book titles, case-insensitively, substring not
+// exact (a generated book is commonly titled "<series>: <subtitle>"). A
+// request with no proposed_series_title (an ordinary one-off idea, or an
+// anchor-driven continuation) never matches, so it always shows "being
+// written" until a real link exists server-side; this under-reports rather
+// than ever falsely claiming a still-generating story is done.
+const MIN_MATCH_LENGTH = 3
+function isLikelyPublished(proposedSeriesTitle: string | null, libraryTitles: string[]): boolean {
+  const needle = proposedSeriesTitle?.trim().toLowerCase()
+  if (!needle || needle.length < MIN_MATCH_LENGTH) return false
+  return libraryTitles.some((title) => title.toLowerCase().includes(needle))
 }
 
 /**
@@ -33,15 +56,24 @@ export interface ContinueAnchor {
  * WS-B PR 3: an optional `anchor` (a series-tagged book the child tapped
  * "Ask for the next book" on) opens the form pre-set to request a continuation
  * of that book instead of a new series name.
+ *
+ * K12: `libraryTitles` (the profile's current shelf titles, already fetched
+ * by LibraryPage) lets an 'approved' request distinguish "being written"
+ * from "it's on your shelf" without any new backend call; see
+ * isLikelyPublished's #ASSUME for the matching heuristic and its limits.
+ * Defaults to an empty list so every approved request reads as "being
+ * written" when the caller has no shelf data to offer.
  */
 export function RequestStory({
   profileId,
   anchor = null,
   onClearAnchor,
+  libraryTitles = [],
 }: {
   profileId: string
   anchor?: ContinueAnchor | null
   onClearAnchor?: () => void
+  libraryTitles?: string[]
 }) {
   const api = useApi()
   const requestApi = useMemo(() => makeKidStoryRequestApi(api), [api])
@@ -251,11 +283,51 @@ export function RequestStory({
         <div className="request-story__status">
           <h2 className="request-story__list-heading">My requests</h2>
           <ul className="request-story__list">
-            {requests.map((req) => (
-              <li key={req.id} data-status={req.status} className="request-story__item">
-                {STATUS_COPY[req.status]}
-              </li>
-            ))}
+            {requests.map((req) => {
+              // UX-K3: the child's own idea, quoted, so pending rows are
+              // distinguishable regardless of the request's lifecycle state.
+              const idea = req.request_text ?? ''
+              const ideaSpan = idea ? (
+                <span className="request-story__item-idea">
+                  {'“'}
+                  {idea.length > 80 ? `${idea.slice(0, 80)}…` : idea}
+                  {'”'}
+                </span>
+              ) : null
+              if (req.status !== 'approved') {
+                return (
+                  <li key={req.id} data-status={req.status} className="request-story__item">
+                    {ideaSpan}
+                    <span className="request-story__item-status">{STATUS_COPY[req.status]}</span>
+                  </li>
+                )
+              }
+              const published = isLikelyPublished(req.proposedSeriesTitle, libraryTitles)
+              return (
+                <li
+                  key={req.id}
+                  data-status={published ? 'published' : 'generating'}
+                  className="request-story__item"
+                >
+                  {ideaSpan}
+                  {published ? (
+                    "It's on your shelf!"
+                  ) : (
+                    <span className="request-story__generating">
+                      {/* Decorative only; the text alone carries the meaning
+                          (stilled entirely under prefers-reduced-motion, see
+                          library.css). */}
+                      <span className="request-story__generating-dots" aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                      </span>
+                      Your story is being written…
+                    </span>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         </div>
       ) : null}

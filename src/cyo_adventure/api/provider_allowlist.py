@@ -16,6 +16,7 @@ from cyo_adventure.api.schemas import (
     AllowlistUpdateBody,
     AllowlistView,
     ProviderName,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -24,7 +25,11 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import ProviderModelAllowlist, ProviderModelAllowlistAudit
 
-router = APIRouter(prefix="/api/v1", tags=["provider-allowlist"])
+router = APIRouter(
+    prefix="/api/v1",
+    tags=["provider-allowlist"],
+    responses=error_responses(401, 403),
+)
 
 
 def _require_admin(ctx: Context) -> None:
@@ -84,7 +89,9 @@ async def list_allowlist(ctx: Context) -> AllowlistListView:
     return AllowlistListView(rows=[_view(row) for row in rows])
 
 
-@router.post("/admin/provider-allowlist", status_code=201)
+@router.post(
+    "/admin/provider-allowlist", status_code=201, responses=error_responses(409)
+)
 async def add_allowlist_entry(body: AllowlistCreateBody, ctx: Context) -> AllowlistView:
     """Add a new (provider, model_id) pair to the allowlist (admin only).
 
@@ -154,7 +161,7 @@ async def add_allowlist_entry(body: AllowlistCreateBody, ctx: Context) -> Allowl
     return _view(row)
 
 
-@router.put("/admin/provider-allowlist/{entry_id}")
+@router.put("/admin/provider-allowlist/{entry_id}", responses=error_responses(404))
 async def update_allowlist_entry(
     entry_id: uuid.UUID, body: AllowlistUpdateBody, ctx: Context
 ) -> AllowlistView:
@@ -201,7 +208,7 @@ async def update_allowlist_entry(
     return _view(row)
 
 
-@router.delete("/admin/provider-allowlist/{entry_id}")
+@router.delete("/admin/provider-allowlist/{entry_id}", responses=error_responses(404))
 async def delete_allowlist_entry(
     entry_id: uuid.UUID, ctx: Context
 ) -> AllowlistListView:

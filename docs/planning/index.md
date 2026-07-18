@@ -25,6 +25,7 @@ limited (iOS via TestFlight), and R3 public launch (App Store).
 | Document | Purpose |
 |----------|---------|
 | [project-vision.md](project-vision.md) | Project vision, scope, and success metrics |
+| [capability-register.md](capability-register.md) | Persona capability contract (K/G/A/S IDs): scope checkoff sheet and testing basis |
 | [tech-spec.md](tech-spec.md) | Technical architecture and implementation details |
 | [roadmap.md](roadmap.md) | Phased development roadmap and milestones |
 | [adr/README.md](adr/README.md) | Architecture Decision Records index |

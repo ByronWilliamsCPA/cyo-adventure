@@ -101,6 +101,14 @@
   outline-offset: 2px;
 }
 
+/* Groups the G10 notification bell with the existing sign-out button so
+   both sit together at the header's trailing edge (GuardianShell.tsx). */
+.guardian-shell__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+}
+
 .guardian-shell__main {
   max-width: 64rem;
   margin-inline: auto;
@@ -405,6 +413,36 @@
   font-size: 0.875rem;
 }
 
+/* ADR-015 G3: "Auto-approve on" card badge (ProfilesPage). */
+.profiles__badge {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--color-amber-subtle, #fdf3e6);
+  color: var(--color-amber-deep, #c17b2a);
+  width: fit-content;
+}
+
+/* G13 (interim) balance banner: "N of M stories left this month". */
+.budget-banner {
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  width: fit-content;
+  background: var(--color-amber-subtle, #fdf3e6);
+  color: var(--color-amber-deep, #c17b2a);
+}
+
+.budget-banner--warning {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
 .profile-form {
   display: flex;
   flex-direction: column;
@@ -447,6 +485,49 @@
   align-items: center;
   gap: 0.4rem;
   font-weight: 400;
+}
+
+.cyo-field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 400;
+}
+
+/* G2: per-child content-flag caps and banned-themes exclusions. */
+.profile-form__content-controls {
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ADR-015 G3: the "Story requests" auto-approve toggle + monthly limit. */
+.profile-form__budget {
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-form__theme-input {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.profile-form__theme-input .cyo-field__control {
+  flex: 1;
+}
+
+.profile-form__theme-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .intake-form {
@@ -868,6 +949,15 @@
   padding: 0.75rem 1rem;
 }
 
+.review-detail__degraded {
+  color: var(--color-warning-ink, #7a4a00);
+  background: var(--color-warning-surface, #fff4e0);
+  border: 1px solid var(--color-warning, #b26a00);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+
 .review-detail__reason {
   display: flex;
   flex-direction: column;
@@ -1055,6 +1145,115 @@
   gap: 0.5rem;
 }
 
+/* ============================================================================
+   StoryStructureSummary (G5 skim aid): shared between ReviewDetailPage
+   (admin, full) and AssignChildrenDialog (guardian, compact).
+   ============================================================================ */
+.story-structure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.story-structure__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  margin: 0;
+}
+
+.story-structure__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 6rem;
+}
+
+.story-structure__stat dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.story-structure__stat dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.story-structure__label {
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.story-structure__themes,
+.story-structure__content-flags {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.story-structure__endings {
+  margin: 0;
+}
+
+.story-structure__endings h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.story-structure__endings ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.story-structure__flags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.story-structure--compact .story-structure__stats {
+  gap: 0.75rem 1.25rem;
+}
+
+/* Collapsible overview panel above the admin passage list
+   (ReviewDetailPage.tsx): the skim entry point before flagged passages. */
+.review-overview {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 0.5rem;
+}
+
+.review-overview > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.review-overview__body {
+  margin-top: 0.75rem;
+}
+
+/* Story overview block inside the guardian assign dialog, sitting alongside
+   .assign__content-summary. */
+.assign__story-overview {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+.assign__story-overview h3 {
+  margin: 0 0 0.5rem;
+}
+
 .assign__content-summary {
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
@@ -1177,6 +1376,386 @@
 }
 
 /* ============================================================================
+   Reading (ReadingPage.tsx, register G9): per-child engagement cards and
+   their expandable per-book detail. Card/text-tone treatment comes from the
+   shared cyo-card / cyo-text-muted / cyo-text-error classes applied directly
+   in the component; only the layout stays here. */
+
+.reading__intro {
+  max-width: 40rem;
+  margin: 0 0 var(--space-4, 1rem);
+}
+
+.reading__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-full, 999px);
+  background: var(--color-amber-deep, #c17b2a);
+  color: white;
+  font-weight: var(--weight-bold, 700);
+  text-decoration: none;
+}
+
+.reading__cta:hover {
+  background: var(--color-amber-hover, #c4681c);
+}
+
+.reading__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.reading-card {
+  padding: var(--space-4, 1rem);
+}
+
+.reading-card__toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2, 0.5rem);
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.reading-card__toggle:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}
+
+.reading-card__name {
+  font-weight: var(--weight-bold, 700);
+  font-size: var(--text-lg, 1.25rem);
+}
+
+.reading-card__activity {
+  font-size: var(--text-sm, 0.9375rem);
+}
+
+.reading-card__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5, 1.25rem);
+  margin: var(--space-3, 0.75rem) 0 0;
+}
+
+.reading-card__stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.reading-card__stat dt {
+  font-size: 0.75rem;
+  color: var(--color-ink-muted, #8c6f56);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.reading-card__stat dd {
+  margin: 0;
+  font-size: var(--text-lg, 1.25rem);
+  font-weight: var(--weight-bold, 700);
+}
+
+.reading-card__nudge {
+  margin: var(--space-3, 0.75rem) 0 0;
+  font-size: 0.9375rem;
+}
+
+.reading-card__nudge-link {
+  color: var(--color-amber-deep, #c17b2a);
+  font-weight: var(--weight-semibold, 600);
+}
+
+.reading-card__detail {
+  margin-top: var(--space-4, 1rem);
+  padding-top: var(--space-3, 0.75rem);
+  border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+.reading-card__retry {
+  border: none;
+  background: none;
+  color: var(--color-amber-deep, #c17b2a);
+  font-weight: var(--weight-semibold, 600);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.reading-book-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.reading-book {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  padding: 0.6rem 0.85rem;
+}
+
+.reading-book__main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 8rem;
+}
+
+.reading-book__title {
+  font-weight: var(--weight-semibold, 600);
+}
+
+.reading-book__endings {
+  font-size: 0.8125rem;
+}
+
+.reading-book__progress {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: rgb(193 123 42 / 12%);
+  color: var(--color-amber-deep, #c17b2a);
+  font-size: 0.8125rem;
+  font-weight: var(--weight-semibold, 600);
+  white-space: nowrap;
+}
+
+.reading-book__age {
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+/* ============================================================================
+   Notification bell (NotificationBell.tsx, register G10): a header toggle
+   with an unread-count badge and a lightweight (non-modal) dropdown panel,
+   distinct from the design system's full-screen Dialog. */
+
+.notification-bell {
+  position: relative;
+}
+
+.notification-bell__toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: var(--radius-full, 999px);
+  border: 2px solid transparent;
+  background: transparent;
+  color: var(--color-ink-secondary, #5a3e28);
+  cursor: pointer;
+}
+
+.notification-bell__toggle:hover {
+  background: var(--color-amber-subtle, #fdf3e6);
+}
+
+.notification-bell__toggle:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}
+
+.notification-bell__badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: var(--radius-full, 999px);
+  background: var(--color-error, #9b2c2c);
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: var(--weight-bold, 700);
+  line-height: 1;
+}
+
+.notification-bell__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: var(--space-4, 1rem);
+  background: var(--color-parchment, #f8f3e8);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+}
+
+.notification-bell__panel-title {
+  margin: 0 0 var(--space-3, 0.75rem);
+  font-size: var(--text-base, 1.125rem);
+}
+
+.notification-bell__status,
+.notification-bell__empty {
+  margin: 0;
+}
+
+.notification-bell__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.notification-bell__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-md, 10px);
+  background: var(--color-parchment-dark, #ede6d0);
+  border-left: 3px solid transparent;
+}
+
+/* Alert kinds (kid flags, blocked requests, failed generations) must read as
+   visually distinct at a glance, not just by the "Alert" text tag: a tinted
+   background plus a solid error-colored left edge, mirroring the
+   flag-badge--block treatment used elsewhere in this file. */
+.notification-bell__item--alert {
+  background: var(--color-error-light, #fde8e8);
+  border-left-color: var(--color-error, #9b2c2c);
+}
+
+.notification-bell__item-tag {
+  align-self: flex-start;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-error, #9b2c2c);
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: var(--weight-bold, 700);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.notification-bell__item-title {
+  font-weight: var(--weight-semibold, 600);
+}
+
+.notification-bell__item-body {
+  font-size: 0.875rem;
+}
+
+.notification-bell__item-age {
+  font-size: 0.75rem;
+}
+
+.notification-bell__retry {
+  border: none;
+  background: none;
+  color: var(--color-amber-deep, #c17b2a);
+  font-weight: var(--weight-semibold, 600);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ============================================================================
+   Connections (ConnectionsPage.tsx, ADR-016 register G17): the guardian
+   consent console for cross-family recommendation connections. Card/text-tone
+   treatment comes from the shared cyo-card / cyo-text-muted / cyo-text-error
+   classes applied directly in the component, mirroring the Reading cards
+   above; only the layout and the status-chip tones stay here. */
+
+.connections__intro {
+  max-width: 40rem;
+  margin: 0 0 var(--space-4, 1rem);
+}
+
+.connections__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.connections-card {
+  padding: var(--space-4, 1rem);
+}
+
+.connections-card__main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2, 0.5rem);
+}
+
+.connections-card__name {
+  font-weight: var(--weight-bold, 700);
+  font-size: var(--text-lg, 1.25rem);
+}
+
+.connections-card__summary {
+  margin: var(--space-2, 0.5rem) 0 0;
+  font-size: 0.9375rem;
+}
+
+.connections-card__actions {
+  margin-top: var(--space-3, 0.75rem);
+}
+
+.connections-card__error {
+  margin: var(--space-2, 0.5rem) 0 0;
+  font-size: 0.875rem;
+}
+
+.connections-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full, 999px);
+  font-size: 0.75rem;
+  font-weight: var(--weight-semibold, 600);
+  white-space: nowrap;
+}
+
+.connections-chip--active {
+  background: var(--color-success-subtle, #e3f3e6);
+  color: var(--color-success-deep, #1f7a3d);
+}
+
+.connections-chip--waiting {
+  background: var(--color-amber-subtle, #fbe9d0);
+  color: var(--color-amber-deep, #c17b2a);
+}
+
+.connections-chip--inactive {
+  background: var(--color-border-soft, rgb(44 26 14 / 12%));
+  color: var(--color-ink-muted, #8c6f56);
+}
+
+/* ============================================================================
    Mobile breakpoint (~640px): guardian surfaces are managed from a phone as
    often as a desktop. Desktop layouts above are left untouched; this block
    only relaxes the row/action layouts that would otherwise overflow or
@@ -1241,5 +1820,30 @@
 
   .intake-request__body {
     min-width: 12rem;
+  }
+
+  /* Reading cards (ReadingPage.tsx, G9): the stat row and book rows use the
+     same wrap-with-a-floor treatment as .intake-request above, so the
+     "Still reading" tag and the age line move to their own line instead of
+     crushing the title at phone widths (down to ~360px). */
+  .reading-card__stats {
+    gap: var(--space-4, 1rem);
+  }
+
+  .reading-book {
+    flex-wrap: wrap;
+  }
+
+  .reading-book__main {
+    min-width: 9rem;
+  }
+
+  /* Notification panel (NotificationBell.tsx, G10): right:0 anchoring can
+     push the panel past the left edge of a narrow viewport since it is
+     wider than the bell toggle itself; centering it under the header at
+     phone widths keeps it fully on-screen instead of clipping. */
+  .notification-bell__panel {
+    right: -0.5rem;
+    width: min(20rem, calc(100vw - 1.5rem));
   }
 }

@@ -7,6 +7,110 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The served OpenAPI schema now documents the real API contract: bearer auth
+  as a proper security scheme on every authenticated operation (the Authorize
+  control now works in `/docs`, and generated clients see the requirement),
+  the 401/403/404/409 error envelope on each operation that can produce one,
+  a description for every router tag, and the installed release version
+  instead of a hardcoded `0.1.0`. `/health` reported the same stale `0.1.0`
+  and now tracks the release too.
+
+### Added
+
+- Postman/newman API coverage for 20 previously untested operations (67 of
+  the 83 now registered; the 16 added by the M4b-d family-tier wave and the
+  2026-07-17 remediation still need folders, see docs/api/README.md): child sessions, device grants
+  (including online revocation enforcement), onboarding idempotency, the
+  admin user/profile consoles, family connections, the moderation dashboard,
+  the admin story-request queue, series continuation, and admin family
+  create/rename. The local compose stack ships benign dev token-signing
+  secrets so the mint endpoints are testable end to end.
+
+### Documentation
+
+- Synced the architecture diagram set and companion docs with the current code
+  (through v0.11.0, PRs #270 and #277). The ER diagram and data model now cover
+  all 22 tables (adds `family_connection` + `kid_flag` and the ADR-015/016
+  cost-gate and consent columns); the API/C4/system-overview/README references
+  reflect 28 routers; the validator gains PL-22; moderation repair now re-runs
+  the full validation gate and the admin re-screen sweep is shown; the event log
+  is 20 event types; cover art storage (Cloudflare R2, ADR-017) is added; and the
+  sitemap/journeys pick up the new admin and family surfaces (master library,
+  audit, user management, reading-visibility, connection consent,
+  recommendations, kid flags, passage editor). Regenerated every affected SVG.
+
+## [0.12.0] - 2026-07-17
+
+### Added
+
+- Comprehensive security, UX, and design review (`docs/reviews/`) plus a tiered
+  remediation plan, and the remediation of most of its findings.
+- Reader text-size control (A/A+/A++, persisted per profile) and an offline
+  library shelf so an offline kid can still reach their downloaded books.
+- Admin review-queue flow-through (auto-advance + queue position), triage
+  metadata (age band, waiting time) on queue rows, and a new admin master
+  library (`/admin/library`, `GET /v1/admin/storybooks`) to browse and re-open
+  any story in any lifecycle status.
+- Admin operator endpoint to force-fail a stuck generation job.
+- A manually-triggered CI workflow to regenerate Playwright visual-regression
+  baselines on the runner and commit them back with a verified signature.
+
+### Fixed
+
+- Generation pipeline no longer strands jobs at `running` or double-executes
+  them after a hard worker death; the condition validator is depth-capped
+  against `RecursionError`.
+- A failed or unconfigured moderation classifier now surfaces a visible
+  degraded advisory instead of silently contributing nothing.
+- Kid routes no longer fall back to the guardian bearer and the reader refuses a
+  mismatched profile (closes cross-profile reads online and offline).
+- Library shows "Finished!" for completed books instead of a misleading page
+  count; several kid-surface tap targets, recovery links, and copy fixes.
+- Guardian/admin "Please reload" dead-ends became inline retry; muted-ink token
+  raised to WCAG AA.
+
+### Changed
+
+- Security hardening: TrustedHost activation, untrusted-input prompt fences,
+  correlation-middleware ordering, hidden production source maps, cache purge on
+  sign-out.
+- Supply chain and dev hygiene: Renovate manages container image digests and
+  pre-commit; nox extras fixed and Python 3.10 legs dropped; codecov
+  safety-critical gate extended.
+
+## [0.11.0] - 2026-07-17
+
+### Added
+
+- Capability register (K/G/A/S IDs) as the project's scope contract, with
+  ADR-015 (story initiation and gating), ADR-016 (three-ring social
+  boundary), ADR-017 (AI cover art), and ADR-018 (children's privacy
+  compliance, Proposed), plus the traceability review, test traceability
+  matrix, and re-anchored roadmap milestones.
+- M4b editor and engagement wave: read-aloud, endings tracker, kid feedback
+  flag, enforced content controls, per-child permissions, review skim aids,
+  and a prose-only passage editor that re-runs the validation gate and
+  moderation on every edit.
+- M4c family loops: notification infrastructure with a guardian bell,
+  guardian reading-visibility page, kid-friendly generation status, and the
+  ADR-015 budget consent gate with per-child auto-approve envelopes and a
+  balance surface.
+- M4d connections: dual-guardian connection consent, an enforced ring-2
+  recommendation boundary guard, and cousin recommendation chips on the kid
+  shelf.
+- Daily production E2E workflow with pinned-issue alerting.
+
+### Fixed
+
+- Moderation repair now re-runs the full validation gate on every adopted
+  repair, and the band-policy validator (PL-22) fails closed.
+- Generation quota is now debited on the legacy intake path, and the
+  generation report is restricted to admins.
+
+## [0.10.0] - 2026-07-17
+
 ## [0.9.0] - 2026-07-17
 
 ### Added
@@ -25,9 +129,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   assert the runtime image's ML-KEM-capable OpenSSL 3.5 line: a Debian 13
   container run of the assertion suite and a shell-free check inside the
   pinned production base image digest.
+- Mutation scoring shared by CI and `nox -s mutate` (`scripts/mutation_score.py`).
+- Weekly mutation and fuzzing workflows file a `ci-failure` tracking issue on a
+  failed scheduled run so schedule-only breakage cannot stay silent.
+- Hypothesis `ci`/`dev` settings profiles and generative player-engine property
+  tests; adversarial-corpus tests under the `ai_security` marker; negative-path
+  tests for the cover-art subsystem; generation-boundary malformed-output tests;
+  true-concurrency reading-state tests; and JWT time-boundary tests.
 
 ### Fixed
 
+- **Security (PII egress):** the prompt PII guard now NFKC-normalizes and strips
+  zero-width / format and control characters before matching, closing confirmed
+  bypasses (zero-width insertion, compatibility-form spelling, control chars)
+  that let a real-child name reach an external LLM provider. Confusable
+  homoglyphs remain a documented residual.
+- **Mutation testing** now runs: rewrote `[tool.mutmut]` in the mutmut 3.x
+  dialect (the stale 2.x keys crashed mutmut 3.6 at startup) and replaced the
+  broken org reusable workflow call with a self-contained, scored weekly job.
+- **Continuous fuzzing** now exercises real code: replaced the no-op template
+  harness with condition-evaluator and Storybook-validation Atheris targets and
+  seed corpora.
+- Docker-less test runs no longer exit non-zero: a failed testcontainer Docker
+  probe leaked a socket that `filterwarnings=["error"]` escalated at teardown.
 - FIPS checker no longer flags domain `seed()`/`idea()` method calls as the
   SEED/IDEA block ciphers; ambiguous cipher names now require cryptographic
   context (a crypto-library import or a crypto namespace in the call chain).
@@ -1783,7 +1907,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.11.0...v0.12.0
+[0.11.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.10.0...v0.11.0
+[0.10.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.6.0...v0.7.0

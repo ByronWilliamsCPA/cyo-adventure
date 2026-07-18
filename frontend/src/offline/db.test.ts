@@ -5,17 +5,27 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import type { DeviceGrant } from '../auth/deviceGrant'
 import type { ReadingState, Storybook } from '../player/types'
+import type { LibraryItemView } from '../library/libraryApi'
 import {
   _resetDbHandle,
+  cacheLibraryList,
   cacheStorybook,
   clearDeviceGrantMirror,
+  deleteReadingState,
+  deleteStorybooksById,
   dequeue,
   enqueueWrite,
+  getAllProfileShelves,
+  getCachedLibraryList,
+
   getCachedStorybook,
   getDeviceGrantMirror,
   getReadingState,
+  listCachedStorybookIds,
   listQueue,
+  listReadingStateStorybookIds,
   putDeviceGrantMirror,
+  putProfileShelf,
   putReadingState,
   type QueuedWrite,
 } from './db'
@@ -111,10 +121,10 @@ describe('offline IndexedDB cache', () => {
     expect(await getDeviceGrantMirror()).toBeUndefined()
   })
 
-  it('migrates a v1 database to v2 by adding only the device_grant store', async () => {
+  it('migrates a v1 database additively (adds device_grant and library_lists)', async () => {
     // Reproduce the pre-ADR-014-Phase-3 on-disk state: a real v1 database with
-    // exactly the three original stores and NO device_grant. This is what an
-    // existing reader's browser holds before the upgrade.
+    // exactly the three original stores. This is what an existing reader's
+    // browser holds before the upgrade.
     const v1 = await openDB(DB_NAME, 1, {
       upgrade(db) {
         db.createObjectStore('storybooks')
@@ -124,10 +134,10 @@ describe('offline IndexedDB cache', () => {
     })
     v1.close()
 
-    // getDb() opens at DB_VERSION (2), so idb's upgrade fires with
-    // oldVersion === 1: the `oldVersion < 1` block is skipped and only
-    // `device_grant` is created. This is the branch the fresh-database tests
-    // never exercise.
+    // getDb() opens at the current DB_VERSION, so idb's upgrade fires with
+    // oldVersion === 1: the `oldVersion < 1` block is skipped, and both
+    // device_grant (< 2) and library_lists (< 3) are created. This is the
+    // migration branch the fresh-database tests never exercise.
     const grant: DeviceGrant = {
       token: 'tok-2',
       expiresAt: '2099-01-01T00:00:00Z',
@@ -141,5 +151,112 @@ describe('offline IndexedDB cache', () => {
     // loses no data.
     await cacheStorybook(story)
     expect((await getCachedStorybook('s_demo', 1))?.id).toBe('s_demo')
+  })
+
+  it('migrates a v2 database to v3 by adding only the profile_shelf store', async () => {
+    // Reproduce a real pre-revocation v2 database: device_grant exists, but
+    // profile_shelf does not.
+    const v2 = await openDB(DB_NAME, 2, {
+      upgrade(db) {
+        db.createObjectStore('storybooks')
+        db.createObjectStore('reading_states')
+        db.createObjectStore('offline_queue', { keyPath: 'event_id' })
+        db.createObjectStore('device_grant')
+      },
+    })
+    v2.close()
+
+    // getDb() opens at DB_VERSION (3), so idb's upgrade fires with
+    // oldVersion === 2: both `oldVersion < 1` and `oldVersion < 2` blocks are
+    // skipped and only `profile_shelf` is created.
+    await putProfileShelf('p1', ['s1', 's2'])
+    expect(await getAllProfileShelves()).toEqual([
+      { profile_id: 'p1', storybook_ids: ['s1', 's2'] },
+    ])
+
+    // Pre-existing v1/v2 stores still work and lost no data.
+    await cacheStorybook(story)
+    expect((await getCachedStorybook('s_demo', 1))?.id).toBe('s_demo')
+  })
+
+  describe('offline-copy revocation primitives', () => {
+    it('deletes a single profile reading state without touching another profile', async () => {
+      await putReadingState('p1', 's_demo', state)
+      await putReadingState('p2', 's_demo', state)
+      await deleteReadingState('p1', 's_demo')
+      expect(await getReadingState('p1', 's_demo')).toBeUndefined()
+      expect(await getReadingState('p2', 's_demo')).toEqual(state)
+    })
+
+    it('lists only the storybook ids a given profile has reading state for', async () => {
+      await putReadingState('p1', 's_demo', state)
+      await putReadingState('p1', 's_other', state)
+      await putReadingState('p2', 's_demo', state)
+      expect((await listReadingStateStorybookIds('p1')).sort()).toEqual(['s_demo', 's_other'])
+      expect(await listReadingStateStorybookIds('p2')).toEqual(['s_demo'])
+    })
+
+    it('deletes every cached version of a storybook by id', async () => {
+      await cacheStorybook(story)
+      await cacheStorybook({ ...story, version: 2 })
+      await cacheStorybook({ ...story, id: 's_other' })
+      await deleteStorybooksById('s_demo')
+      expect(await getCachedStorybook('s_demo', 1)).toBeUndefined()
+      expect(await getCachedStorybook('s_demo', 2)).toBeUndefined()
+      expect(await getCachedStorybook('s_other', 1)).toBeDefined()
+    })
+
+    it('lists distinct cached storybook ids across versions', async () => {
+      await cacheStorybook(story)
+      await cacheStorybook({ ...story, version: 2 })
+      await cacheStorybook({ ...story, id: 's_other' })
+      expect((await listCachedStorybookIds()).sort()).toEqual(['s_demo', 's_other'])
+    })
+
+    it('round-trips a profile shelf snapshot and overwrites on the next put', async () => {
+      await putProfileShelf('p1', ['s1', 's2'])
+      expect(await getAllProfileShelves()).toEqual([
+        { profile_id: 'p1', storybook_ids: ['s1', 's2'] },
+      ])
+      await putProfileShelf('p1', ['s1'])
+      expect(await getAllProfileShelves()).toEqual([{ profile_id: 'p1', storybook_ids: ['s1'] }])
+    })
+  })
+})
+
+const libItem: LibraryItemView = {
+  id: 's_demo',
+  title: 'The Demo',
+  version: 1,
+  age_band: '5-8',
+  tier: 1,
+  reading_level_target: 2,
+  node_count: 4,
+  rating: null,
+  progress: null,
+  series_id: null,
+  book_index: null,
+  cover_url: null,
+}
+
+describe('library list cache (UX-K1)', () => {
+  beforeEach(() => {
+    _resetDbHandle()
+  })
+
+  it('round-trips a cached library list per profile', async () => {
+    await cacheLibraryList('p1', [libItem])
+    const got = await getCachedLibraryList('p1')
+    expect(got).toHaveLength(1)
+    expect(got?.[0].id).toBe('s_demo')
+  })
+
+  it('returns undefined for a profile with no cached list', async () => {
+    expect(await getCachedLibraryList('nobody')).toBeUndefined()
+  })
+
+  it('isolates cached lists between profiles', async () => {
+    await cacheLibraryList('p1', [libItem])
+    expect(await getCachedLibraryList('p2')).toBeUndefined()
   })
 })

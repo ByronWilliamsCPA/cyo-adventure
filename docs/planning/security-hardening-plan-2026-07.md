@@ -38,27 +38,34 @@ chain, cost, deployment, and inert-control cleanup. Each workstream lands as its
 
 ## Severity and status map
 
+> **Status note (2026-07-17):** this map was written before a run of hardening
+> PRs and a follow-up review (`docs/reviews/comprehensive-review-2026-07-17.md`
+> + `docs/planning/remediation-plan-2026-07-17.md`). The statuses below have been
+> reconciled against current code. Items marked "needs re-triage" were not
+> re-verified end to end and should be checked against HEAD before any further
+> work, not trusted from this table.
+
 | ID | Severity | Title | Workstream | Status |
 | --- | --- | --- | --- | --- |
-| C1 | Critical | `environment` defaults to unverified auth stub (fail-open) | A | [ ] not started |
-| H1 | High | No age-band ceiling from approval through delivery | B | [ ] not started |
-| H2 | High | AI cover images reach children unmoderated | B | [ ] not started |
-| H3 | High | ADR-007 retention purge unimplemented | D | [ ] not started |
-| H4 | High | No fail-fast on the no-op `mock` moderation reviewer | C | [ ] not started |
-| K1 | Keystone | Children share the guardian token in R1 | E | [ ] not started |
-| M1 | Medium | Reading/completion routes bypass the assignment read-gate | B | [ ] not started |
-| M2 | Medium | Guardian blob-fetch skips the assignment gate | B | [ ] not started |
-| M3 | Medium | Auto-repair skips the deterministic validator gate | B | [ ] not started |
-| M4 | Medium | Review-model IDs bypass the provider allowlist | F | [ ] not started |
-| M5 | Medium | PII egress guard is display-name-only; birthdate arm dead | D | [ ] not started |
-| M6 | Medium | Stranded-job reclaim can double-execute a job | F | [ ] not started |
-| M7 | Medium | Family cost cap enforced on only one enqueue path | F | [ ] not started |
-| M8 | Medium | Prod Postgres exposed to host; base compose password default | G | [ ] not started |
-| L1 | Low | Reading-state anti-forgery replay optional, off by default | H | [ ] not started |
-| L2 | Low | Child free-text templated into prompt with no delimiting | H | [ ] not started |
-| L3 | Low | `allowed_content_flags` cap completely inert | H | [ ] not started |
-| L4 | Low | `reading_level_cap` not enforced at delivery | H | [ ] not started |
-| L5 | Low | Health endpoints disclose exact Python/app version | G | [ ] not started |
+| C1 | Critical | `environment` defaults to unverified auth stub (fail-open) | A | [x] done: `core/config.py` fails closed on an unset tier / weak secrets |
+| H1 | High | No age-band ceiling from approval through delivery | B | [ ] needs re-triage |
+| H2 | High | AI cover images reach children unmoderated | B | [ ] needs re-triage |
+| H3 | High | ADR-007 retention purge unimplemented | D | [ ] needs re-triage |
+| H4 | High | No fail-fast on the no-op `mock` moderation reviewer | C | [ ] needs re-triage (related: ARCH-H3 classifier-degraded shipped 2026-07-17) |
+| K1 | Keystone | Children share the guardian token in R1 | E | [x] done: child-scoped session + device tokens (PRs #228, #247) |
+| M1 | Medium | Reading/completion routes bypass the assignment read-gate | B | [ ] needs re-triage |
+| M2 | Medium | Guardian blob-fetch skips the assignment gate | B | [ ] needs re-triage |
+| M3 | Medium | Auto-repair skips the deterministic validator gate | B | [ ] needs re-triage |
+| M4 | Medium | Review-model IDs bypass the provider allowlist | F | [ ] needs re-triage |
+| M5 | Medium | PII egress guard is display-name-only; birthdate arm dead | D | [ ] needs re-triage |
+| M6 | Medium | Stranded-job reclaim can double-execute a job | F | [x] done 2026-07-17: shared RQ identity + compare-and-set claim (ARCH-H2) |
+| M7 | Medium | Family cost cap enforced on only one enqueue path | F | [ ] needs re-triage |
+| M8 | Medium | Prod Postgres exposed to host; base compose password default | G | [ ] needs re-triage |
+| L1 | Low | Reading-state anti-forgery replay optional, off by default | H | [ ] needs re-triage |
+| L2 | Low | Child free-text templated into prompt with no delimiting | H | [x] done 2026-07-17: UNTRUSTED_USER_INPUT fences (SEC-B4) |
+| L3 | Low | `allowed_content_flags` cap completely inert | H | [ ] needs re-triage |
+| L4 | Low | `reading_level_cap` not enforced at delivery | H | [ ] needs re-triage |
+| L5 | Low | Health endpoints disclose exact Python/app version | G | [ ] needs re-triage |
 
 ## Architecture of the work
 
@@ -455,3 +462,42 @@ PII egress (folded into M5); dormant cross-book series validator (no runtime pat
 `TrustedHostMiddleware`/HTTPS in `app.py` (reasonably delegated to the reverse proxy; a defense-in-depth
 note, not a workstream); shared unbounded RQ queue as the sole throttle (overlaps M6/M7, no separate
 workstream). Seven candidates dismissed in total.
+
+---
+
+## Follow-ups from edge-case testing round (2026-07-17)
+
+Two residuals surfaced while hardening the PII egress guard and the token
+verifiers. Both are bounded and documented in code; recorded here so the
+open decisions are not lost.
+
+### R-1: PII guard does not fold confusable homoglyphs
+
+- **Severity:** Low (defense-in-depth; the common evasions are now closed).
+- **State:** The guard now NFKC-normalizes and strips zero-width / format and
+  control characters before matching (`generation/pii.py::_fold_for_match`), so
+  zero-width-split and compatibility-form (full-width, ligature) evasions are
+  blocked and tested (`tests/unit/test_pii_guard.py`). Confusable homoglyphs
+  (e.g. Cyrillic U+0415 for Latin "E") are NOT folded: NFKC does not treat them
+  as equivalent, and full UTS-39 confusable folding risks false positives on
+  legitimate multilingual real-child names.
+- **Decision needed.** Accept the residual (current), or add scoped confusable
+  folding (e.g. a curated Latin/Cyrillic/Greek homoglyph table) if the threat
+  model warrants it. The residual is pinned by
+  `test_name_with_cyrillic_homoglyph_is_not_matched`; inverting that test is the
+  entry point for the change.
+
+### R-2: OIDC verification runs with zero clock-skew leeway
+
+- **Severity:** Low (availability, not a security weakness).
+- **State:** All three JWT verifiers decode with PyJWT's default `leeway=0`.
+  For the self-issued child-session and device-grant tokens this is correct
+  (same backend mints and verifies). For the OIDC path the issuer is external
+  (Supabase), so a token whose `iat`/`nbf` is even slightly ahead of the
+  verifier's clock is rejected; current behavior is pinned in
+  `tests/unit/test_oidc_verification.py`.
+- **Decision needed.** Whether to add a small clock-skew leeway (e.g.
+  `leeway=timedelta(seconds=60)`) to `deps._verify_oidc_jwt` only. This trades a
+  negligible expiry-window extension for tolerance of real IdP/verifier clock
+  drift. Left unchanged pending that call; the boundary tests document the
+  current strict stance either way.

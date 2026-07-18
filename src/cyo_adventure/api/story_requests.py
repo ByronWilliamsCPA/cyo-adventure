@@ -30,6 +30,8 @@ from cyo_adventure.api.schemas import (
     AlternativeView,
     AuthoringPlanRequest,
     AuthoringPlanResponse,
+    ChildEnvelopeUsageView,
+    FamilyBudgetView,
     JobStatusLiteral,
     StoryRequestApproveBody,
     StoryRequestApprovedView,
@@ -42,6 +44,7 @@ from cyo_adventure.api.schemas import (
     StoryRequestListView,
     StoryRequestStatus,
     StoryRequestView,
+    error_responses,
 )
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
@@ -70,7 +73,9 @@ from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 if TYPE_CHECKING:
     import uuid
 
-router = APIRouter(prefix="/api/v1", tags=["story-requests"])
+router = APIRouter(
+    prefix="/api/v1", tags=["story-requests"], responses=error_responses(401, 403)
+)
 
 _log = logging.getLogger(__name__)
 
@@ -259,7 +264,7 @@ def _to_view(
     )
 
 
-@router.post("/story-requests", status_code=201)
+@router.post("/story-requests", status_code=201, responses=error_responses(404, 409))
 async def create_story_request(
     body: StoryRequestCreateBody, ctx: Context
 ) -> StoryRequestCreatedView:
@@ -272,13 +277,25 @@ async def create_story_request(
     soft continuation anchored to an existing, published, series-linked
     storybook in the caller's own family and profile band (WS-B PR 3).
 
+    ADR-015 G3: a non-blocked request auto-approves through the SAME
+    ``service.approve_story_request`` path a guardian's explicit click uses
+    (see the call below) when the profile has pre-authorization
+    (``request_auto_approve``) AND its own monthly envelope is not yet
+    exhausted AND the family's monthly quota is not yet exhausted (see
+    ``service.can_auto_approve``); otherwise the row rests ``pending`` as
+    before. Auto-approval uses the profile's own band, a ``short`` length,
+    and ``prose`` style -- it never overrides a guardian's stated
+    preference, since there is no guardian input to override.
+
     Args:
         body: The profile id, request text, and optional series proposal or
             continuation anchor.
         ctx: The request context (principal and session).
 
     Returns:
-        StoryRequestCreatedView: The new request id and post-screening status.
+        StoryRequestCreatedView: The new request id and its status after
+        screening AND, when applicable, G3 auto-approval (``approved``
+        rather than ``pending``).
 
     Raises:
         AuthorizationError: If the caller may not act on the profile (-> 403).
@@ -368,8 +385,45 @@ async def create_story_request(
         to_state=request.status,
         payload={"initiator_role": request.initiator_role},
     )
+
+    # ADR-015 G3: a blocked screening never auto-approves (checked via the
+    # `status == "pending"` guard: a blocked row's status is already
+    # "blocked" here, never "pending"), matching "blocked-screening never
+    # auto-approves" as a hard rule, not a quota/envelope outcome.
+    # #CRITICAL: payment/financial: can_auto_approve re-verifies both the
+    # envelope AND the family quota; approve_story_request re-verifies the
+    # family quota A THIRD time (enforce_family_quota) before building the
+    # concept. Belt-and-suspenders is deliberate here: this is the one path
+    # where a CHILD principal (not a guardian/admin click) can cause
+    # generation spend, so every layer re-checks rather than trusting an
+    # earlier layer's read.
+    # #VERIFY: tests/unit/test_story_requests.py::TestAutoApprove covers the
+    # auto-approve-within-envelope, envelope-exhausted-falls-back-to-pending,
+    # family-quota-exhausted-falls-back-to-pending, and
+    # blocked-never-auto-approves cases.
+    if request.status == "pending":
+        family = await ctx.session.get(Family, ctx.principal.family_id)
+        # #ASSUME: data-integrity: a profile's family_id is a NOT NULL FK to a
+        # live family row (the auth seam already resolved ctx.principal from
+        # that same family), so `family is None` should be unreachable; kept
+        # as a defensive skip (fall back to pending) rather than a 500.
+        if family is not None and await service.can_auto_approve(
+            ctx.session, profile, family
+        ):
+            await service.approve_story_request(
+                ctx.session,
+                ctx.principal,
+                request,
+                confirmation=service.ApprovalConfirmation(
+                    age_band=AgeBand(profile.age_band),
+                    length=Length.SHORT,
+                    narrative_style=NarrativeStyle.PROSE,
+                ),
+                auto_approved=True,
+            )
+
     return StoryRequestCreatedView(
-        id=str(request.id), status=cast("StoryRequestStatus", status)
+        id=str(request.id), status=cast("StoryRequestStatus", request.status)
     )
 
 
@@ -476,7 +530,9 @@ async def _resolve_authored_profile(
     return profile
 
 
-@router.post("/story-requests/authored", status_code=201)
+@router.post(
+    "/story-requests/authored", status_code=201, responses=error_responses(404)
+)
 async def create_authored_story_request(
     body: StoryRequestAuthoredCreateBody, ctx: Context
 ) -> StoryRequestAuthoredCreatedView:
@@ -703,6 +759,81 @@ async def list_story_requests_admin(
     return StoryRequestListView(requests=requests)
 
 
+@router.get("/families/me/budget")
+async def get_family_budget(ctx: Context) -> FamilyBudgetView:
+    """Return the caller's own family's monthly story budget (ADR-015 G7/G3).
+
+    Numbers only, no balance-display styling: the guardian/kid-facing
+    balance UI is a later, separately-scoped piece (see the CLAUDE.md
+    task note). ``spent_this_month`` is derived, not stored (ADR-015 G13,
+    interim): a count of the family's story requests that entered
+    ``approved`` in the current UTC calendar month
+    (``story_requests/service.py::family_monthly_spend``), not a decremented
+    ledger balance.
+
+    Args:
+        ctx: The request context (principal and session).
+
+    Returns:
+        FamilyBudgetView: The family's quota, this month's spend, remaining
+        headroom (floored at 0, never negative even if a quota was lowered
+        below an already-spent month), and each child's own envelope usage.
+
+    Raises:
+        AuthorizationError: If the caller is neither a guardian nor an admin
+            (a child or device token; this is an adults-only surface, same
+            gate as ``GET /families/me/reading-summary``) (-> 403).
+        ResourceNotFoundError: If the caller's family row is missing
+            (-> 404; not expected in practice, see the inline note).
+    """
+    # #CRITICAL: security: "me" is always the CALLER's own family_id, never a
+    # client-supplied id, so there is no cross-family parameter to IDOR here;
+    # mirrors reading_history.py::get_family_reading_summary's identical gate
+    # and identical reasoning (an adults-only signal, not a kid-facing one).
+    # #VERIFY: test_authz_matrix.py pins GET /api/v1/families/me/budget to
+    # guardian/admin; tests/unit/test_story_requests.py pins the 403 for
+    # child and device tokens directly.
+    if not (ctx.principal.is_guardian or ctx.principal.is_admin):
+        msg = "guardian or admin role required"
+        raise AuthorizationError(msg)
+    family = await ctx.session.get(Family, ctx.principal.family_id)
+    if family is None:
+        # #ASSUME: data-integrity: every authenticated guardian/admin
+        # principal resolves from a User row whose family_id is a live
+        # family (the auth seam itself depends on it); this branch is a
+        # defensive 404, not an expected runtime path.
+        msg = "family not found"
+        raise ResourceNotFoundError(msg)
+    quota = service.resolve_family_quota(family)
+    spent = await service.family_monthly_spend(ctx.session, family.id)
+    profiles = (
+        await ctx.session.scalars(
+            select(ChildProfile)
+            .where(ChildProfile.family_id == family.id)
+            .order_by(ChildProfile.created_at.asc(), ChildProfile.id.asc())
+        )
+    ).all()
+    usage_by_profile = await service.profile_monthly_spend_by_family(
+        ctx.session, family.id
+    )
+    children = [
+        ChildEnvelopeUsageView(
+            profile_id=str(profile.id),
+            display_name=profile.display_name,
+            request_auto_approve=profile.request_auto_approve,
+            monthly_request_envelope=profile.monthly_request_envelope,
+            used_this_month=usage_by_profile.get(profile.id, 0),
+        )
+        for profile in profiles
+    ]
+    return FamilyBudgetView(
+        quota=quota,
+        spent_this_month=spent,
+        remaining=max(quota - spent, 0),
+        children=children,
+    )
+
+
 async def _load_scoped_request(
     ctx: Context, request_id: str, *, for_update: bool = False
 ) -> StoryRequest:
@@ -747,7 +878,9 @@ async def _load_scoped_request(
     return request
 
 
-@router.post("/story-requests/{request_id}/approve")
+@router.post(
+    "/story-requests/{request_id}/approve", responses=error_responses(404, 409)
+)
 async def approve_story_request_endpoint(
     request_id: str, body: StoryRequestApproveBody, ctx: Context
 ) -> StoryRequestApprovedView:
@@ -827,7 +960,11 @@ async def approve_story_request_endpoint(
     )
 
 
-@router.post("/story-requests/{request_id}/authoring-plan", status_code=201)
+@router.post(
+    "/story-requests/{request_id}/authoring-plan",
+    status_code=201,
+    responses=error_responses(404, 409),
+)
 async def create_authoring_plan(
     request_id: str,
     body: AuthoringPlanRequest,
@@ -909,7 +1046,9 @@ async def create_authoring_plan(
     )
 
 
-@router.post("/story-requests/{request_id}/decline")
+@router.post(
+    "/story-requests/{request_id}/decline", responses=error_responses(404, 409)
+)
 async def decline_story_request_endpoint(
     request_id: str, ctx: Context
 ) -> StoryRequestDeclinedView:

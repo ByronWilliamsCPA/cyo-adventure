@@ -108,19 +108,23 @@ _COVER_STATUS_VALUES = "'none', 'generating', 'ready', 'failed'"
 # imports events.writer, which imports db.models, so importing
 # cyo_adventure.events.models from here creates a circular import; the
 # values are listed verbatim instead and must be kept in sync with
-# cyo_adventure.events.models.EventType by hand.
+# cyo_adventure.events.models.EventType by hand (see
+# tests/unit/test_pipeline_event_check_vocab.py, the drift guard for this
+# list).
 _PIPELINE_EVENT_TYPE_VALUES = (
     "'request_created', 'request_approved', 'request_declined', "
     "'plan_assigned', 'generation_started', 'generation_finished', "
     "'moderation_completed', 'repair_applied', 'sent_back', 'released', "
     "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated', "
-    "'user_managed', 'family_managed', 'family_connection_changed'"
+    "'kid_flagged', 'flag_resolved', "
+    "'user_managed', 'family_managed', 'family_connection_changed', "
+    "'node_edited'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
     "'story_request', 'generation_job', 'storybook', 'storybook_version', "
     "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
-    "'moderation_setting', 'user', 'family', 'family_connection'"
+    "'moderation_setting', 'kid_flag', 'user', 'family', 'family_connection'"
 )
 
 # The three admin-user lifecycle states (WS-J admin user management): a
@@ -135,9 +139,32 @@ class Family(Base):
     """A family: the ownership root for users, profiles, and stories."""
 
     __tablename__ = "family"
+    __table_args__ = (
+        CheckConstraint(
+            "monthly_story_quota IS NULL OR monthly_story_quota >= 0",
+            name="ck_family_monthly_story_quota_non_negative",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200))
+    # ADR-015 G7: the guardian cost gate's per-family monthly spend ceiling
+    # (spend = story requests that entered "approved" in the current UTC
+    # calendar month, see story_requests/service.py::family_monthly_spend).
+    # NULL means "use the platform default"
+    # (settings.default_monthly_story_quota) rather than freezing a stale
+    # per-row copy of that default at family-creation time, so raising the
+    # platform default automatically lifts every family that has not been
+    # given an explicit override.
+    # #CRITICAL: payment/financial: this is the ceiling that gates real LLM
+    # generation spend (ADR-003/ADR-015); a bug that treats NULL as
+    # "unlimited" instead of "platform default" would let a family bypass
+    # the cost gate entirely.
+    # #VERIFY: story_requests/service.py::_resolve_family_quota is the only
+    # reader; tests/unit/test_story_requests.py pins the None-falls-back
+    # case and tests/integration/test_story_requests_budget.py pins the
+    # override case end to end.
+    monthly_story_quota: Mapped[int | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     # Nullable timestamp rather than a status string (contrast User.status):
     # a family only ever has two states, so "when was it deactivated" is
@@ -278,15 +305,38 @@ class ChildProfile(Base):
     """A per-child reading profile with age band and content caps."""
 
     __tablename__ = "child_profile"
+    __table_args__ = (
+        CheckConstraint(
+            "monthly_request_envelope IS NULL OR monthly_request_envelope >= 0",
+            name="ck_child_profile_monthly_request_envelope_non_negative",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
     display_name: Mapped[str] = mapped_column(String(120))
     age_band: Mapped[str] = mapped_column(String(16))
     reading_level_cap: Mapped[float] = mapped_column(default=99.0)
+    # #ASSUME: data integrity: keys are a subset of {"violence", "scariness",
+    # "peril"} mapping to a ContentFlagLevel value (api/schemas.py
+    # ContentFlagCaps); a missing key means "no override, defer to the
+    # band's own ceiling" (validator/band_profile.py), never "no limit". The
+    # column itself carries no CHECK constraint on shape; api/profiles.py is
+    # the only writer and validates every value before it lands here.
+    # #VERIFY: tests/integration/test_profiles.py content-flag-cap tests;
+    # tests/unit/test_story_requests.py brief-derivation tests read this dict
+    # back through brief_from_request.
     allowed_content_flags: Mapped[dict[str, object]] = mapped_column(
         JSONB, default=dict
     )
+    # G2: guardian-set free-list theme exclusions for this child (e.g.
+    # "spiders", "magic"), distinct from the band-derived content-flag
+    # ceilings above. Nullable: unset means no additional exclusions, not an
+    # empty-list default, so a profile created before this column existed
+    # reads back as None rather than a spurious []. api/profiles.py is the
+    # only writer; each entry is lowercased, control-character-stripped, and
+    # length-capped there before it reaches this column.
+    banned_themes: Mapped[list[str] | None] = mapped_column(JSONB, default=None)
     tts_enabled: Mapped[bool] = mapped_column(default=False)
     avatar: Mapped[str | None] = mapped_column(String(255), default=None)
     # #CRITICAL: security: write-only PIN credential material (P6-07), encoded
@@ -295,6 +345,28 @@ class ChildProfile(Base):
     # #VERIFY: tests/integration/test_profiles.py::test_pin_hash_never_serialized
     # asserts the raw response JSON never contains "pin_hash".
     pin_hash: Mapped[str | None] = mapped_column(Text, default=None)
+    # ADR-015 G3: guardian-set per-child pre-authorization ("let this child's
+    # requests auto-consent"). False by default: a guardian must explicitly
+    # opt a child in. request_auto_approve alone is not sufficient to
+    # auto-approve anything -- monthly_request_envelope must ALSO be set (see
+    # below); the two columns are independent so a guardian can flip this on
+    # ahead of setting an envelope without accidentally auto-approving under
+    # an implicit "unlimited" envelope.
+    request_auto_approve: Mapped[bool] = mapped_column(default=False)
+    # The number of this child's own requests that may auto-approve in the
+    # current UTC calendar month before new requests fall back to the
+    # pending queue (story_requests/service.py::can_auto_approve). NULL means
+    # "no envelope set", which by itself blocks auto-approval even when
+    # request_auto_approve is True: pre-authorization delegates the click,
+    # never the liability (ADR-015), so there is no implicit-unlimited state.
+    # #CRITICAL: payment/financial: this bounds how much of the family's
+    # budget one child can auto-spend without a guardian's per-request
+    # click; a bug that treats NULL as "no limit" would let a
+    # mis-configured profile drain the family's whole monthly quota.
+    # #VERIFY: story_requests/service.py::can_auto_approve treats
+    # monthly_request_envelope IS NULL as "cannot auto-approve", never as
+    # unlimited; tests/unit/test_story_requests.py pins this.
+    monthly_request_envelope: Mapped[int | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     # Soft-remove (WS-J admin user management): a deactivated profile is
     # excluded from every listing a picker or guardian console reads
@@ -313,9 +385,17 @@ class FamilyConnection(Base):
     recommendations sourced from ``connected_family_id``. The relationship is
     deliberately one-way (admin decision): family_id -> connected_family_id
     does not imply the reverse, so mutual visibility is two rows, not one.
-    No recommendation engine reads this table yet (WS-J only builds the admin
-    allowlist); the `Rating` model's (child_profile_id, storybook_id) grain
-    was already shaped for the future join (see its docstring).
+    The `Rating` model's (child_profile_id, storybook_id) grain was already
+    shaped for the recommendation join (see its docstring); ``api/
+    recommendations.py`` (K17) is the sole reader.
+
+    ADR-016 (register G17): admin creation of a row is a permission edge only,
+    never consent. A connection is ACTIVE, and contributes to K17
+    recommendations, only when BOTH ``consented_by_viewer_user_id`` and
+    ``consented_by_sharer_user_id`` are set; either guardian may revoke their
+    own side at any time by clearing it back to ``None``, which deactivates
+    the connection immediately (there is no separate stored "active" flag to
+    fall out of sync -- it is always the two-columns-non-null check).
 
     Attributes:
         id: Surrogate primary key.
@@ -323,6 +403,16 @@ class FamilyConnection(Base):
         connected_family_id: The family whose stories may be recommended.
         created_by: The admin who created the connection, or ``None``.
         created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+        consented_by_viewer_user_id: The viewer-side guardian's ``User.id``
+            who consented, or ``None`` if the viewer has not (or no longer)
+            consented.
+        consented_by_viewer_at: When the viewer-side consent was recorded, or
+            ``None``. Paired with ``consented_by_viewer_user_id`` (both null
+            or both set; enforced by the migration's CHECK).
+        consented_by_sharer_user_id: The sharer-side guardian's ``User.id``
+            who consented, or ``None``.
+        consented_by_sharer_at: When the sharer-side consent was recorded, or
+            ``None``. Paired with ``consented_by_sharer_user_id``.
     """
 
     __tablename__ = "family_connection"
@@ -332,6 +422,26 @@ class FamilyConnection(Base):
         ),
         UniqueConstraint(
             "family_id", "connected_family_id", name="uq_family_connection_pair"
+        ),
+        CheckConstraint(
+            "(consented_by_viewer_user_id IS NULL) = (consented_by_viewer_at IS NULL)",
+            name="ck_family_connection_viewer_consent_pairing",
+        ),
+        CheckConstraint(
+            "(consented_by_sharer_user_id IS NULL) = (consented_by_sharer_at IS NULL)",
+            name="ck_family_connection_sharer_consent_pairing",
+        ),
+        # Mirrors the consent migration's partial index backing the K17
+        # "active connections where I am the viewer" lookup; the schema-parity
+        # test compares migration-built and ORM-built schemas, so it must
+        # exist on both sides.
+        Index(
+            "ix_family_connection_active_viewer",
+            "family_id",
+            postgresql_where=sa_text(
+                "consented_by_viewer_user_id IS NOT NULL"
+                " AND consented_by_sharer_user_id IS NOT NULL"
+            ),
         ),
     )
 
@@ -344,6 +454,14 @@ class FamilyConnection(Base):
         ForeignKey(_FK_USER), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    consented_by_viewer_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    consented_by_viewer_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    consented_by_sharer_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    consented_by_sharer_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
 class Storybook(Base):
@@ -646,6 +764,15 @@ class StoryRequest(Base):
             classifier score/source.
         reviewed_by: The guardian/admin who approved or declined, or ``None``.
         reviewed_at: When the decision was recorded, or ``None``.
+        approved_at: When the request entered ``approved`` specifically, or
+            ``None`` for a request that is still pending, was declined, or
+            was blocked. Distinct from ``reviewed_at`` (shared by both the
+            approve and decline transitions) so ADR-015's monthly spend
+            derivation (story_requests/service.py::family_monthly_spend) can
+            filter on approval alone without also relying on ``status`` to
+            disambiguate; stamped once, in ``_build_concept``, and never
+            updated afterward (a request's lifecycle is one-way: it never
+            re-enters ``pending`` after reaching ``approved``).
         concept_id: The concept created on approval, or ``None``.
         series_id: The series this request continues, or ``None`` for a
             standalone request (WS-B PR 3).
@@ -716,6 +843,12 @@ class StoryRequest(Base):
         Index("ix_story_request_family_status", "family_id", "status"),
         Index("ix_story_request_profile_status", "profile_id", "status"),
         Index("ix_story_request_status", "status"),
+        # ADR-015: the guardian cost gate and the budget endpoint both query
+        # "approved rows for this family/profile since <month start>"; these
+        # back that access pattern the same way the *_status indexes above
+        # back the status-scoped ones.
+        Index("ix_story_request_family_approved_at", "family_id", "approved_at"),
+        Index("ix_story_request_profile_approved_at", "profile_id", "approved_at"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
@@ -745,6 +878,7 @@ class StoryRequest(Base):
         ForeignKey(_FK_USER), default=None
     )
     reviewed_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    approved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     concept_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_CONCEPT), default=None
     )
@@ -1137,6 +1271,10 @@ class GenerationJob(Base):
             f"status IN ({_GENERATION_JOB_STATUS_VALUES})",
             name="ck_generation_job_status",
         ),
+        # Mirrors the ADR-007 purge migration's index backing the daily
+        # "terminal jobs older than 30 days" sweep; the schema-parity test
+        # requires migration-built and ORM-built schemas to agree.
+        Index("ix_generation_job_status_updated_at", "status", "updated_at"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
@@ -1147,14 +1285,19 @@ class GenerationJob(Base):
     prompt_version: Mapped[str | None] = mapped_column(String(120), default=None)
     # #CRITICAL: privacy: raw multi-stage LLM outputs; purge per ADR-007 after
     # 30 days or when the linked storybook version reaches "published" status.
+    # ADR-007 designates this column admin/system-only. Per the 2026-07-16
+    # ruling, GET /generation-jobs/{id} (api/generation.py::get_generation_job)
+    # returns it only when the caller holds the admin capability
+    # (Principal.is_admin, which covers a dual-role guardian+admin); a plain
+    # guardian gets None. The admin reviews generation output first, and the
+    # guardian reaches the result through the normal post-approval surfaces
+    # instead. The list endpoint (GenerationJobListView) never selects this
+    # column at all, for any principal.
     # #VERIFY: Phase 5 scheduled pg_cron job nulls this column (ADR-009 moved the
-    # ADR-007 retention purge from RQ to pg_cron); GET /generation-jobs/{id}
-    # (api/generation.py::get_generation_job) returns this field to the job's
-    # own family guardian, family-scoped and guardian-gated, not admin-only;
-    # only the list endpoint (GenerationJobListView) excludes it, and it is
-    # never exposed to a child principal. There is no separate stage_log
-    # column today; persisting a redacted stage log for post-purge
-    # auditability is a Phase 5 task (see ADR-007).
+    # ADR-007 retention purge from RQ to pg_cron); this field is never exposed
+    # to a child principal. There is no separate stage_log column today;
+    # persisting a redacted stage log for post-purge auditability is a Phase 5
+    # task (see ADR-007).
     # #ASSUME: data integrity: ``report`` schema is determined by
     # GenerationOutcome at the application layer; no DB-level constraint
     # enforces its shape.
@@ -1233,3 +1376,94 @@ class DeviceGrant(Base):
     # default keeps this trivially in schema-parity with the migration. The
     # app always provides the value, so no default is needed as a safety net.
     expires_at: Mapped[datetime] = mapped_column(_TS)
+
+
+# The two closed vocabularies for KidFlag, named once for their CHECK
+# constraints (mirrors the _STORY_REQUEST_*_VALUES pattern above).
+_KID_FLAG_REASON_VALUES = "'did_not_like', 'scared_me', 'confusing'"
+_KID_FLAG_RESOLUTION_VALUES = "'dismissed', 'archived_book', 'noted'"
+
+
+class KidFlag(Base):
+    """A child's structured "I didn't like this / this scared me" signal (K15).
+
+    Feeds the admin moderation queue (A1) directly via this table, and,
+    downstream, the guardian alert feed (G10) as a ``pipeline_event``
+    projection built separately (this table does not itself notify a
+    guardian). ``family_id`` is denormalized from the flagging profile
+    (mirrors ``StoryRequest.family_id``) so the admin queue stays
+    single-table.
+
+    # #CRITICAL: privacy: ADR-016's no-free-text principle -- a kid flag
+    # carries NO child-authored free text, by design. ``reason`` is a closed
+    # vocabulary (see ``ck_kid_flag_reason``) and ``node_id`` is a story-graph
+    # node identifier, not prose; this table has no text column a child could
+    # write into, so there is nothing here for a human to moderate before a
+    # grown-up sees it.
+    # #VERIFY: api/schemas.py::KidFlagCreateBody has no free-text field and
+    # forbids extra keys (``extra="forbid"``); tests/unit/test_flags_api.py
+    # asserts an injected free-text field is rejected.
+
+    Attributes:
+        id: Surrogate primary key.
+        family_id: Owning family; all admin/guardian access is scoped to this.
+        profile_id: The flagging child's profile.
+        storybook_id: The storybook being read when the flag was raised.
+        version: The storybook version being read when the flag was raised.
+        reason: Closed-vocabulary flag reason: did_not_like, scared_me, or
+            confusing.
+        node_id: The passage (story graph node id) being read when flagged,
+            or ``None`` if the client could not resolve one.
+        created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+        resolved_by: The admin who resolved this flag, or ``None`` while open.
+        resolved_at: When the flag was resolved, or ``None`` while open.
+        resolution: The admin's resolution (dismissed, archived_book, noted),
+            or ``None`` while open.
+    """
+
+    __tablename__ = "kid_flag"
+    # #CRITICAL: data integrity: ``reason``/``resolution`` are closed
+    # vocabularies; these CHECKs are the at-rest backstop (mirroring
+    # ck_story_request_status) so no write path persists a value outside
+    # them. The resolved-pairing CHECK keeps resolved_by/resolved_at
+    # consistent so the admin "open" filter (resolved_at IS NULL) never
+    # silently disagrees with resolved_by.
+    # #VERIFY: api/schemas.py coerces reason/resolution to the closed Literal
+    # at the API boundary before insert; api/flags.py's resolve handler
+    # always sets resolved_by/resolved_at/resolution together, never
+    # partially.
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["storybook_id", "version"],
+            ["storybook_version.storybook_id", "storybook_version.version"],
+        ),
+        CheckConstraint(
+            f"reason IN ({_KID_FLAG_REASON_VALUES})",
+            name="ck_kid_flag_reason",
+        ),
+        CheckConstraint(
+            f"resolution IS NULL OR resolution IN ({_KID_FLAG_RESOLUTION_VALUES})",
+            name="ck_kid_flag_resolution",
+        ),
+        CheckConstraint(
+            "(resolved_by IS NULL) = (resolved_at IS NULL)",
+            name="ck_kid_flag_resolved_pairing",
+        ),
+        Index("ix_kid_flag_resolved_created", "resolved_at", "created_at"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE), index=True
+    )
+    storybook_id: Mapped[str] = mapped_column(String(120), ForeignKey(_FK_STORYBOOK))
+    version: Mapped[int] = mapped_column()
+    reason: Mapped[str] = mapped_column(String(16))
+    node_id: Mapped[str | None] = mapped_column(String(120), default=None)
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    resolved_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    resolved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    resolution: Mapped[str | None] = mapped_column(String(16), default=None)

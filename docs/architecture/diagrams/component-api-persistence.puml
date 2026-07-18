@@ -5,13 +5,13 @@
 '
 ' Source files:
 '   src/cyo_adventure/app.py                 (FastAPI app, middleware order,
-'                                              wires all 18 routers)
+'                                              wires all 28 routers)
 '   src/cyo_adventure/api/health.py          (liveness/readiness/startup probes)
 '   src/cyo_adventure/api/library.py         (story library endpoints)
 '   src/cyo_adventure/api/reading.py         (reading-state + completions + series-next)
 '   src/cyo_adventure/api/generation.py      (guardian-only: concepts, jobs, validate)
 '   src/cyo_adventure/api/profiles.py        (guardian-only: child profile CRUD)
-'   src/cyo_adventure/api/families.py        (admin: family listing)
+'   src/cyo_adventure/api/families.py        (admin: family listing, create, deactivate)
 '   src/cyo_adventure/api/ratings.py         (kid ratings)
 '   src/cyo_adventure/api/assignments.py     (guardian-only: assign storybooks,
 '                                              content-summary, catalog /guardian/books)
@@ -29,6 +29,23 @@
 '                                              bearer OR a matching device grant, ADR-014)
 '   src/cyo_adventure/api/device_grants.py   (ADR-014: mint/list/revoke a device grant)
 '   src/cyo_adventure/api/onboarding.py      (first-login guardian/admin provisioning)
+'   src/cyo_adventure/api/admin_users.py     (admin: guardian/admin user mgmt,
+'                                              invite/deactivate; WS-J console)
+'   src/cyo_adventure/api/admin_profiles.py  (admin: cross-family child-profile CRUD)
+'   src/cyo_adventure/api/family_connections.py (admin CRUD + guardian consent,
+'                                              ADR-016 dual-consent connections)
+'   src/cyo_adventure/api/reading_history.py (K6 endings tracker + G9 family
+'                                              reading summary; read-only)
+'   src/cyo_adventure/api/node_edit.py       (G6 prose-only passage editor +
+'                                              re-review; admin or guardian-own-family)
+'   src/cyo_adventure/api/audit.py           (admin: filterable pipeline_event log)
+'   src/cyo_adventure/api/rescreen.py        (admin: synchronous re-screen sweep)
+'   src/cyo_adventure/api/flags.py           (K15/ADR-016 kid flags: submit +
+'                                              admin list/resolve)
+'   src/cyo_adventure/api/notifications.py   (guardian-only pipeline_event feed)
+'   src/cyo_adventure/api/recommendations.py (K17/ADR-016 rings 1-2 rec feed)
+'   src/cyo_adventure/api/review_surface.py  (support: review-surface / queue /
+'                                              content-summary projections)
 '   src/cyo_adventure/api/schemas.py         (Pydantic request/response models)
 '   src/cyo_adventure/api/deps.py            (Principal, Context, auth seam;
 '                                              Role.DEVICE routing branch, ADR-014)
@@ -38,7 +55,7 @@
 '   src/cyo_adventure/core/config.py         (Pydantic Settings)
 '   src/cyo_adventure/core/database.py       (async engine, Base, get_session)
 '   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
-'   src/cyo_adventure/db/models.py           (20 ORM tables)
+'   src/cyo_adventure/db/models.py           (22 ORM tables)
 '   src/cyo_adventure/events/writer.py       (append-only pipeline_event log, WS-D)
 '   docs/planning/authorization-matrix.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
@@ -66,29 +83,29 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
   package "Dependencies\napi/deps.py" #DCEDC8 {
     component "Auth Seam\n_extract_subject()\n[local: token-as-subject]\n[non-local: Supabase OIDC JWT,\nADR-009]" as auth_seam #DCEDC8
-    component "Principal\nrole, family_id, profile_ids\nauthorize_profile()\nauthorize_family()" as principal #DCEDC8
+    component "Principal\nsubject, user_id, role,\nfamily_id, profile_ids, is_admin\nauthorize_profile() / authorize_family()\n(module-level, take a principal)" as principal #DCEDC8
     component "DbSession\nasync unit-of-work\ncommit on success,\nrollback on exception" as db_session_dep #DCEDC8
     component "RequestContext\nContext = principal + session\nDependency-injected into\nevery route handler" as ctx #DCEDC8
   }
 
-  package "API Routers (all under /api/v1; 18 total)" #B2DFDB {
-    component "health.py\nGET /health/live\nGET /health/ready\nGET /health/startup" as health_router #B2DFDB
+  package "API Routers (27 under /api/v1 + health under /health; 28 total)" #B2DFDB {
+    component "health.py\nGET /health/ (root)\nGET /health/live\nGET /health/ready\nGET /health/startup" as health_router #B2DFDB
 
-    component "library.py\nGET /library\n(filtered by age band,\nreading cap, published status)" as library_router #B2DFDB
+    component "library.py\nGET /library (profile-scoped listing)\nGET /storybooks/{id}/versions/{version}\n(immutable blob; admin/catalog cross-family,\nchild/device assignment-gated)" as library_router #B2DFDB
 
     component "reading.py\nGET /reading-state/{profile}/{story}\nPUT /reading-state/{profile}/{story}\n(revision-based OCC, idempotent event_id)\nGET /series-next/{profile}/{story}\nPOST /completions" as reading_router #B2DFDB
 
-    component "generation.py [guardian-only]\nPOST /concepts (PII-screened)\nPOST /concepts/{id}/generate\nGET /generation-jobs, /generation-jobs/{id}\nPOST /storybooks/{id}/versions/{v}/validate" as gen_router #B2DFDB
+    component "generation.py [guardian; force-fail admin]\nPOST /concepts (PII-screened, family quota gate)\nPOST /concepts/{id}/generate\nGET /generation-jobs, /generation-jobs/{id}\n(raw report admin-only)\nPOST /admin/generation-jobs/{id}/force-fail [admin]\nPOST /storybooks/{id}/versions/{v}/validate" as gen_router #B2DFDB
 
     component "profiles.py [guardian-only]\nGET /profiles\nPOST /profiles\nPATCH /profiles/{id}" as profiles_router #B2DFDB
 
-    component "families.py [admin]\nGET /admin/families" as families_router #B2DFDB
+    component "families.py [admin]\nGET /admin/families\nPOST /admin/families\nPATCH /admin/families/{id}" as families_router #B2DFDB
 
     component "assignments.py [guardian-only]\nPOST/GET /storybooks/{id}/assignments\nGET /storybooks/{id}/content-summary\nGET /guardian/books (catalog, WS-E)" as assignments_router #B2DFDB
 
-    component "approval.py [global admin]\nPOST /storybooks/{id}/submit\nPOST /storybooks/{id}/approve\nPOST /storybooks/{id}/send-back\nPOST /storybooks/{id}/archive\nGET /storybooks/{id}/review\nGET /review-queue" as approval_router #B2DFDB
+    component "approval.py [global admin]\nPOST /storybooks/{id}/submit\nPOST /storybooks/{id}/approve\nPOST /storybooks/{id}/send-back\nPOST /storybooks/{id}/archive\nGET /storybooks/{id}/review\nGET /review-queue\nGET /admin/storybooks (master library, #277)" as approval_router #B2DFDB
 
-    component "covers.py\nPOST /storybooks/{id}/versions/{v}/cover\nGET /storybooks/{id}/versions/{v}/cover" as covers_router #B2DFDB
+    component "covers.py [admin]\nPOST /storybooks/{id}/versions/{v}/cover\nGET /storybooks/{id}/versions/{v}/cover\n(AI cover art -> Cloudflare R2, ADR-017)" as covers_router #B2DFDB
 
     component "moderation_thresholds.py [admin]\nGET/PUT/DELETE /admin/moderation-thresholds\nGET/PUT /admin/moderation/noise-floor" as mod_thresh_router #B2DFDB
 
@@ -100,13 +117,33 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
     component "me.py\nGET /me (principal identity)" as me_router #B2DFDB
 
-    component "story_requests.py [WS-B]\nPOST /story-requests\nPOST /story-requests/authored\nGET /story-requests\nPOST /story-requests/{id}/approve\nPOST /story-requests/{id}/decline\nPOST /story-requests/{id}/authoring-plan" as story_req_router #B2DFDB
+    component "story_requests.py [WS-B]\nPOST /story-requests (child/guardian)\nPOST /story-requests/authored [guardian/admin]\nGET /story-requests; GET /admin/story-requests [admin]\nGET /families/me/budget [guardian/admin]\nPOST /story-requests/{id}/approve|decline\nPOST /story-requests/{id}/authoring-plan [admin]" as story_req_router #B2DFDB
 
     component "child_sessions.py\nPOST /child-sessions\n[guardian/admin bearer, OR a\nmatching device grant, ADR-014]" as child_sessions_router #B2DFDB
 
     component "device_grants.py [ADR-014]\nPOST /device-grants (mint)\nGET /device-grants (list, own family)\nDELETE /device-grants/{id} (revoke)\nGuardian/admin only; never a device token" as device_grants_router #B2DFDB
 
     component "onboarding.py\nPOST /onboarding\nFirst-login guardian/admin\nprovisioning; refuses child\nsession + device grant tokens" as onboarding_router #B2DFDB
+
+    component "admin_users.py [admin]\nGET /admin/users\nPOST /admin/users (invite, 201)\nPATCH /admin/users/{id}\n(WS-J user management)" as admin_users_router #B2DFDB
+
+    component "admin_profiles.py [admin]\nGET /admin/profiles\nPOST /admin/profiles (201)\nPATCH /admin/profiles/{id}\n(cross-family child profiles)" as admin_profiles_router #B2DFDB
+
+    component "family_connections.py [admin CRUD + guardian consent]\nGET/POST/DELETE /admin/family-connections [admin]\nGET /family-connections/mine [guardian]\nPOST/DELETE /family-connections/{id}/consent\n[guardian, ADR-016 dual consent]" as family_conn_router #B2DFDB
+
+    component "reading_history.py [K6/G9]\nGET /reading-history/{profile_id}\nGET /families/me/reading-summary [guardian/admin]" as reading_history_router #B2DFDB
+
+    component "node_edit.py [admin OR guardian-own-family]\nPATCH /storybooks/{id}/versions/{v}/nodes/{node_id}\n(prose-only; in_review/needs_revision;\nre-runs gate + Stage 0/1 moderation; G6)" as node_edit_router #B2DFDB
+
+    component "audit.py [admin]\nGET /admin/audit\n(filterable pipeline_event projection)" as audit_router #B2DFDB
+
+    component "rescreen.py [admin]\nPOST /admin/rescreen\n(sync re-screen sweep; never auto-archives)" as rescreen_router #B2DFDB
+
+    component "flags.py [K15 / ADR-016]\nPOST /flags [kid own profile, assignment-gated]\nGET /admin/flags [admin]\nPOST /admin/flags/{id}/resolve [admin]" as flags_router #B2DFDB
+
+    component "notifications.py [guardian-only]\nGET /notifications\n(read-only pipeline_event feed)" as notifications_router #B2DFDB
+
+    component "recommendations.py [K17 / ADR-016]\nGET /recommendations/{profile_id}\n(rings 1-2: family + dual-consented connection)" as recommendations_router #B2DFDB
   }
 
   package "Core" #A5D6A7 {
@@ -117,14 +154,14 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
 }
 
-package "ORM Models\nsrc/cyo_adventure/db/models.py (20 tables)" #FFF8E1 {
-  component "Family\nSeries\nUser\nChildProfile\nStorybook\nStorybookVersion" as models_a #FFF8E1
+package "ORM Models\nsrc/cyo_adventure/db/models.py (22 tables)" #FFF8E1 {
+  component "Family\nSeries\nUser\nChildProfile\nFamilyConnection\nStorybook\nStorybookVersion" as models_a #FFF8E1
   component "ReadingState\nCompletion\nRating\nStorybookAssignment\nConcept\nStoryRequest" as models_b #FFF8E1
-  component "ModerationThreshold(+Audit)\nModerationSetting\nPipelineEvent\nProviderModelAllowlist(+Audit)\nGenerationJob" as models_c #FFF8E1
+  component "ModerationThreshold(+Audit)\nModerationSetting\nPipelineEvent\nProviderModelAllowlist(+Audit)\nGenerationJob\nKidFlag [K15]" as models_c #FFF8E1
   component "DeviceGrant [ADR-014]\nfamily_id, authorized_by, jti\n(unique), revoked_at" as models_d #FFF8E1
 }
 
-database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nAsync SQLAlchemy 2 sessions\nSession pooler :5432 (session mode)\nAlembic migrations" as pg #E0F7FA
+database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nAsync SQLAlchemy 2 sessions\nSession pooler :5432 (session mode)\nSupabase CLI SQL migrations (ADR-012)" as pg #E0F7FA
 
 ' --- Relationships ---
 corr_mw --> sec_mw : "request chain"
@@ -150,6 +187,16 @@ ctx --> me_router
 ctx --> story_req_router
 ctx --> child_sessions_router
 ctx --> device_grants_router
+ctx --> admin_users_router
+ctx --> admin_profiles_router
+ctx --> family_conn_router
+ctx --> reading_history_router
+ctx --> node_edit_router
+ctx --> audit_router
+ctx --> rescreen_router
+ctx --> flags_router
+ctx --> notifications_router
+ctx --> recommendations_router
 auth_seam --> onboarding_router : "OnboardingIdentityDep\n(own identity check, not Context:\nno Principal/User row exists yet)"
 
 reading_router --> models_a
@@ -168,6 +215,16 @@ device_grants_router --> models_a
 profiles_router --> models_a
 child_sessions_router --> models_a
 onboarding_router --> models_a : "creates Family + User\n(first-login provisioning)"
+admin_users_router --> models_a : "User/Family mgmt"
+admin_profiles_router --> models_a : "ChildProfile CRUD"
+family_conn_router --> models_a : "FamilyConnection"
+reading_history_router --> models_b
+node_edit_router --> models_a
+audit_router --> models_c
+rescreen_router --> models_c
+flags_router --> models_c : "KidFlag"
+notifications_router --> models_c
+recommendations_router --> models_a
 
 models_a --> pg
 models_b --> pg
@@ -226,6 +283,17 @@ note bottom of story_req_router
   transition here also writes a
   PipelineEvent row (events/writer.py,
   WS-D) in the same transaction.
+end note
+
+note bottom of family_conn_router
+  WS-J admin console (#267): admin_users
+  (guardian/admin invite + deactivate),
+  admin_profiles (cross-family child
+  profiles), and family_connections
+  (directional cross-family recommendation
+  opt-ins) each write a PipelineEvent
+  (USER_MANAGED / FAMILY_MANAGED /
+  FAMILY_CONNECTION_CHANGED).
 end note
 
 @enduml

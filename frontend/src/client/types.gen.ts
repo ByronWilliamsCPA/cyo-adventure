@@ -5,6 +5,26 @@ export type ClientOptions = {
 };
 
 /**
+ * AdminJobActionResponse
+ *
+ * Result of an admin operator action on a generation job.
+ */
+export type AdminJobActionResponse = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Status
+     */
+    status: 'queued' | 'running' | 'passed' | 'needs_review' | 'failed' | 'awaiting_manual_fill';
+    /**
+     * Error
+     */
+    error?: string | null;
+};
+
+/**
  * AdminProfileCreateBody
  *
  * An admin's request to create a child profile in any family.
@@ -357,6 +377,80 @@ export type AssignmentListView = {
 };
 
 /**
+ * AuditEventView
+ *
+ * One append-only pipeline_event row, projected for the admin console.
+ */
+export type AuditEventView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Occurred At
+     */
+    occurred_at: string;
+    /**
+     * Actor Id
+     */
+    actor_id: string | null;
+    /**
+     * Actor Role
+     */
+    actor_role: string;
+    /**
+     * Entity Type
+     */
+    entity_type: string;
+    /**
+     * Entity Id
+     */
+    entity_id: string;
+    /**
+     * Event Type
+     */
+    event_type: string;
+    /**
+     * From State
+     */
+    from_state: string | null;
+    /**
+     * To State
+     */
+    to_state: string | null;
+    /**
+     * Payload
+     */
+    payload: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * AuditListView
+ *
+ * A page of the audit log, newest first.
+ */
+export type AuditListView = {
+    /**
+     * Events
+     */
+    events: Array<AuditEventView>;
+    /**
+     * Limit
+     */
+    limit: number;
+    /**
+     * Offset
+     */
+    offset: number;
+    /**
+     * Has More
+     */
+    has_more: boolean;
+};
+
+/**
  * AuthoringPlanRequest
  *
  * Admin's choice of authoring method, mechanism, and prep model.
@@ -456,6 +550,34 @@ export type AuthoringPlanResponse = {
 };
 
 /**
+ * BookVerdictView
+ *
+ * One published storybook's re-screen outcome, on the wire.
+ */
+export type BookVerdictView = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Outcome
+     */
+    outcome: string;
+    /**
+     * Reasons
+     */
+    reasons: Array<string>;
+    /**
+     * Error
+     */
+    error: string | null;
+};
+
+/**
  * CategoryInsightView
  *
  * Override evidence for one (age_band, category) pair (WS-F).
@@ -493,6 +615,74 @@ export type CategoryInsightView = {
      * Last Seen
      */
     last_seen: string;
+};
+
+/**
+ * ChildEngagementItem
+ *
+ * One child's engagement signals for a guardian's family reading summary.
+ *
+ * Deliberately signals-only (G9's privacy model: signals, not surveillance):
+ * no story title, node, or choice content is carried here, only counts and
+ * ids already visible to the guardian elsewhere (the library listing).
+ */
+export type ChildEngagementItem = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
+    /**
+     * Books Started
+     */
+    books_started: number;
+    /**
+     * Books Finished
+     */
+    books_finished: number;
+    /**
+     * Total Endings Found
+     */
+    total_endings_found: number;
+    /**
+     * Last Activity At
+     */
+    last_activity_at: string | null;
+};
+
+/**
+ * ChildEnvelopeUsageView
+ *
+ * One child's ADR-015 G3 pre-authorization envelope usage this month.
+ *
+ * Deliberately usage-only, no balance-display styling here (the balance
+ * UI is a later, out-of-scope piece); this is the raw numbers a future
+ * guardian-facing view will render.
+ */
+export type ChildEnvelopeUsageView = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve: boolean;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope: number | null;
+    /**
+     * Used This Month
+     */
+    used_this_month: number;
 };
 
 /**
@@ -753,6 +943,34 @@ export type ConflictView = {
 };
 
 /**
+ * ContentFlagCaps
+ *
+ * Per-child ceiling overrides for the three content-sensitivity flags.
+ *
+ * Each field is ``None`` when the guardian has not set an override for
+ * that flag. A value here can only ever tighten what the child's age band
+ * already permits: the band's own ceiling
+ * (``validator/band_profile.py::BandProfile.content_ceiling``) is enforced
+ * unconditionally by the validation gate regardless of this model, so a
+ * guardian cannot use it to loosen the age-safety default, only to
+ * restrict further (see ``story_requests/brief.py``'s clamp-to-band-ceiling
+ * derivation). Stored on ``ChildProfile.allowed_content_flags`` as a dict
+ * containing only the keys that are set.
+ */
+export type ContentFlagCaps = {
+    violence?: ContentFlagLevel | null;
+    scariness?: ContentFlagLevel | null;
+    peril?: ContentFlagLevel | null;
+};
+
+/**
+ * ContentFlagLevel
+ *
+ * The intensity level of a content sensitivity flag.
+ */
+export type ContentFlagLevel = 'none' | 'mild' | 'moderate' | 'intense';
+
+/**
  * ContentSummaryView
  *
  * The guardian-facing content review summary for a published story.
@@ -885,6 +1103,64 @@ export type DeviceGrantView = {
 };
 
 /**
+ * ErrorResponse
+ *
+ * The standard error envelope rendered for core-exception failures.
+ *
+ * Mirrors ``ProjectBaseError.to_dict()`` after ``_client_safe_error``
+ * sanitization (``app.py``): the exception class name, its public message,
+ * an optional machine-readable ``code``, and optional structured ``details``
+ * with the sensitive ``value``/``context`` keys already pruned. Referenced
+ * by the OpenAPI ``responses`` declarations below so 401/403/404/409 bodies
+ * are part of the documented contract, not folklore; it is never
+ * instantiated on the serving path (the handlers render dicts directly).
+ */
+export type ErrorResponse = {
+    /**
+     * Error
+     */
+    error: string;
+    /**
+     * Message
+     */
+    message: string;
+    /**
+     * Code
+     */
+    code?: string | null;
+    /**
+     * Details
+     */
+    details?: {
+        [key: string]: unknown;
+    } | null;
+};
+
+/**
+ * FamilyBudgetView
+ *
+ * GET /families/me/budget: the caller's family monthly story budget (ADR-015 G7/G3).
+ */
+export type FamilyBudgetView = {
+    /**
+     * Quota
+     */
+    quota: number;
+    /**
+     * Spent This Month
+     */
+    spent_this_month: number;
+    /**
+     * Remaining
+     */
+    remaining: number;
+    /**
+     * Children
+     */
+    children: Array<ChildEnvelopeUsageView>;
+};
+
+/**
  * FamilyConnectionCreateBody
  *
  * An admin's request to opt one family in to another's recommendations.
@@ -910,6 +1186,60 @@ export type FamilyConnectionListView = {
      * Connections
      */
     connections: Array<FamilyConnectionView>;
+};
+
+/**
+ * FamilyConnectionMineItem
+ *
+ * One connection touching the caller's family, from their own side.
+ *
+ * ``direction`` is relative to the caller: ``"viewer"`` means the caller's
+ * family is ``FamilyConnection.family_id`` (it would see the counterpart's
+ * recommendations); ``"sharer"`` means the caller's family is
+ * ``connected_family_id`` (the counterpart would see theirs). ``active`` is
+ * ``True`` only when both sides have consented (ADR-016 dual-guardian rule).
+ */
+export type FamilyConnectionMineItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Direction
+     */
+    direction: 'viewer' | 'sharer';
+    /**
+     * Counterpart Family Id
+     */
+    counterpart_family_id: string;
+    /**
+     * Counterpart Family Name
+     */
+    counterpart_family_name: string;
+    /**
+     * My Consent
+     */
+    my_consent: boolean;
+    /**
+     * Active
+     */
+    active: boolean;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * FamilyConnectionMineListView
+ *
+ * Every connection touching the caller's family, from their own side.
+ */
+export type FamilyConnectionMineListView = {
+    /**
+     * Connections
+     */
+    connections: Array<FamilyConnectionMineItem>;
 };
 
 /**
@@ -966,6 +1296,18 @@ export type FamilyListView = {
      * Families
      */
     families: Array<FamilyView>;
+};
+
+/**
+ * FamilyReadingSummaryView
+ *
+ * Per-child engagement summary for the caller's own family (G9).
+ */
+export type FamilyReadingSummaryView = {
+    /**
+     * Children
+     */
+    children: Array<ChildEngagementItem>;
 };
 
 /**
@@ -1161,7 +1503,14 @@ export type GenerationJobListView = {
 /**
  * GenerationJobResponse
  *
- * Full status payload for a generation job.
+ * Status payload for a single generation job.
+ *
+ * ``report`` is the raw multi-stage LLM output (ADR-007: admin/system
+ * only). Per the 2026-07-16 ruling, ``GET /generation-jobs/{id}``
+ * (api/generation.py::get_generation_job) populates it only when the
+ * calling principal holds the admin capability (``Principal.is_admin``,
+ * which covers a dual-role guardian+admin); a plain guardian always gets
+ * ``None`` here, same as the list view.
  */
 export type GenerationJobResponse = {
     /**
@@ -1330,6 +1679,130 @@ export type HealthStatus = {
 };
 
 /**
+ * KidFlagCreateBody
+ *
+ * A child's structured flag on a storybook passage (K15).
+ *
+ * Deliberately carries no free-text field (``extra="forbid"`` rejects any
+ * caller attempt to smuggle one in under an unexpected key); ``reason`` is
+ * the entire signal.
+ */
+export type KidFlagCreateBody = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Reason
+     */
+    reason: 'did_not_like' | 'scared_me' | 'confusing';
+    /**
+     * Node Id
+     */
+    node_id?: string | null;
+};
+
+/**
+ * KidFlagCreatedView
+ *
+ * The response to a successful flag submission.
+ */
+export type KidFlagCreatedView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Reason
+     */
+    reason: 'did_not_like' | 'scared_me' | 'confusing';
+};
+
+/**
+ * KidFlagListView
+ *
+ * The admin open-flags queue, newest first.
+ */
+export type KidFlagListView = {
+    /**
+     * Flags
+     */
+    flags: Array<KidFlagView>;
+};
+
+/**
+ * KidFlagResolveBody
+ *
+ * An admin's resolution decision for one open flag.
+ */
+export type KidFlagResolveBody = {
+    /**
+     * Resolution
+     */
+    resolution: 'dismissed' | 'archived_book' | 'noted';
+};
+
+/**
+ * KidFlagView
+ *
+ * A stored kid flag, as returned on the admin queue.
+ */
+export type KidFlagView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Reason
+     */
+    reason: 'did_not_like' | 'scared_me' | 'confusing';
+    /**
+     * Node Id
+     */
+    node_id: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Resolved By
+     */
+    resolved_by: string | null;
+    /**
+     * Resolved At
+     */
+    resolved_at: string | null;
+    /**
+     * Resolution
+     */
+    resolution: 'dismissed' | 'archived_book' | 'noted' | null;
+};
+
+/**
  * Length
  *
  * The story-scale (length) tier: a total-word budget, world size.
@@ -1417,6 +1890,10 @@ export type LibraryProgress = {
      * Updated At
      */
     updated_at: string;
+    /**
+     * Completed
+     */
+    completed?: boolean;
 };
 
 /**
@@ -1495,6 +1972,30 @@ export type ModerationDashboardView = {
 export type NarrativeStyle = 'prose' | 'gamebook';
 
 /**
+ * NodeEditBody
+ *
+ * A prose-only edit to one node: replacement body text and/or choice labels.
+ *
+ * Structure (ids, targets, conditions, effects, graph shape) is never
+ * editable through this body; ``api/node_edit.py::edit_node`` applies
+ * ``body`` to the node's prose and each ``choice_labels`` entry to the
+ * matching existing choice id's ``label`` only, rejecting any id absent
+ * from the node.
+ */
+export type NodeEditBody = {
+    /**
+     * Body
+     */
+    body?: string | null;
+    /**
+     * Choice Labels
+     */
+    choice_labels?: {
+        [key: string]: string;
+    } | null;
+};
+
+/**
  * NoiseFloorUpdateBody
  *
  * PUT body for the global admin noise floor.
@@ -1516,6 +2017,67 @@ export type NoiseFloorView = {
      * Value
      */
     value: number;
+};
+
+/**
+ * NotificationListView
+ *
+ * The guardian's family-scoped notification feed, newest first.
+ */
+export type NotificationListView = {
+    /**
+     * Notifications
+     */
+    notifications: Array<NotificationView>;
+};
+
+/**
+ * NotificationView
+ *
+ * One guardian-facing notification derived from a pipeline_event row.
+ *
+ * A read-only projection: there is no notification table. ``id`` is the
+ * underlying pipeline_event id, which doubles as a stable sort/dedup key
+ * for the client-side unread tracking this first slice relies on (see
+ * api/notifications.py).
+ */
+export type NotificationView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Occurred At
+     */
+    occurred_at: string;
+    /**
+     * Kind
+     */
+    kind: string;
+    /**
+     * Severity
+     */
+    severity: 'alert' | 'info';
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Body
+     */
+    body: string;
+    /**
+     * Storybook Id
+     */
+    storybook_id?: string | null;
+    /**
+     * Request Id
+     */
+    request_id?: string | null;
+    /**
+     * Profile Id
+     */
+    profile_id?: string | null;
 };
 
 /**
@@ -1602,6 +2164,19 @@ export type ProfileCreateBody = {
      * Tts Enabled
      */
     tts_enabled?: boolean;
+    content_flag_caps?: ContentFlagCaps | null;
+    /**
+     * Banned Themes
+     */
+    banned_themes?: Array<string> | null;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve?: boolean;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope?: number | null;
 };
 
 /**
@@ -1621,10 +2196,13 @@ export type ProfileListView = {
  *
  * A guardian's partial update to a child profile.
  *
- * ``avatar`` and ``pin`` distinguish "omitted" from "explicit null" via
- * ``model_fields_set``: an explicit ``"avatar": null`` clears the avatar,
- * and an explicit ``"pin": null`` removes the profile's picker PIN (a
- * 4-8 digit string sets or replaces it). The other four fields have no
+ * ``avatar``, ``pin``, ``content_flag_caps``, and ``banned_themes``
+ * distinguish "omitted" from "explicit null" via ``model_fields_set``: an
+ * explicit ``"avatar": null`` clears the avatar, an explicit ``"pin":
+ * null`` removes the profile's picker PIN (a 4-8 digit string sets or
+ * replaces it), and an explicit null on either G2 field clears it back to
+ * "no override" / "no exclusions" (a non-null value replaces the stored
+ * value wholesale, it does not merge). The other four fields have no
  * legitimate "clear" semantics, so an explicit ``null`` on them is a
  * deliberate no-op (the router only applies non-null values); see
  * ``update_profile`` and
@@ -1652,6 +2230,19 @@ export type ProfileUpdateBody = {
      * Pin
      */
     pin?: string | null;
+    content_flag_caps?: ContentFlagCaps | null;
+    /**
+     * Banned Themes
+     */
+    banned_themes?: Array<string> | null;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve?: boolean | null;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope?: number | null;
 };
 
 /**
@@ -1662,6 +2253,11 @@ export type ProfileUpdateBody = {
  * ``has_pin`` is the ONLY PIN-related field any view exposes; the stored
  * ``pin_hash`` is write-only credential material and must never be
  * serialized (see the ``#CRITICAL`` note on ``ChildProfile.pin_hash``).
+ * ``content_flag_caps`` and ``banned_themes`` are the G2 per-child content
+ * controls (see ``ContentFlagCaps`` and ``ChildProfile.banned_themes``);
+ * both always serialize (an empty-caps object / empty list, never absent),
+ * so a profile created before G2 shipped reads back with no overrides
+ * rather than a missing field.
  */
 export type ProfileView = {
     /**
@@ -1689,6 +2285,19 @@ export type ProfileView = {
      * Has Pin
      */
     has_pin: boolean;
+    content_flag_caps: ContentFlagCaps;
+    /**
+     * Banned Themes
+     */
+    banned_themes: Array<string>;
+    /**
+     * Request Auto Approve
+     */
+    request_auto_approve: boolean;
+    /**
+     * Monthly Request Envelope
+     */
+    monthly_request_envelope: number | null;
     /**
      * Created At
      */
@@ -1815,6 +2424,12 @@ export type ReadinessCheck = {
      * Error message if failed
      */
     error?: string | null;
+    /**
+     * State
+     *
+     * Fine-grained state: ok, degraded, or unconfigured
+     */
+    state?: 'ok' | 'degraded' | 'unconfigured' | null;
 };
 
 /**
@@ -1859,6 +2474,63 @@ export type ReadinessStatus = {
     checks?: {
         [key: string]: ReadinessCheck;
     };
+};
+
+/**
+ * ReadingHistoryItem
+ *
+ * One storybook's reading-history summary for a profile (register K6/G9).
+ *
+ * ``total_endings`` is read from the pinned (currently published) version's
+ * ``metadata.ending_count``; a book with no current published version, or a
+ * version whose metadata is missing/malformed, reports 0 rather than raising
+ * (the listing degrades one row, never the whole response).
+ */
+export type ReadingHistoryItem = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Endings Found
+     */
+    endings_found: number;
+    /**
+     * Ending Ids
+     */
+    ending_ids: Array<string>;
+    /**
+     * Total Endings
+     */
+    total_endings: number;
+    /**
+     * In Progress
+     */
+    in_progress: boolean;
+    /**
+     * Last Activity At
+     */
+    last_activity_at: string;
+};
+
+/**
+ * ReadingHistoryView
+ *
+ * A profile's reading-history listing (the kid endings tracker, K6).
+ */
+export type ReadingHistoryView = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Books
+     */
+    books: Array<ReadingHistoryItem>;
 };
 
 /**
@@ -1970,6 +2642,96 @@ export type ReadingStateView = {
 };
 
 /**
+ * RecommendationItem
+ *
+ * One recommended book: a rating from another profile, never a message.
+ */
+export type RecommendationItem = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Cover Url
+     */
+    cover_url: string | null;
+    /**
+     * Recommender Name
+     */
+    recommender_name: string;
+    /**
+     * Rating
+     */
+    rating: number;
+    /**
+     * Ring
+     */
+    ring: 'family' | 'connection';
+};
+
+/**
+ * RecommendationsView
+ *
+ * A profile's recommendation feed (ring 1 family + ring 2 connections).
+ */
+export type RecommendationsView = {
+    /**
+     * Items
+     */
+    items: Array<RecommendationItem>;
+};
+
+/**
+ * RescreenRequest
+ *
+ * POST body: an optional scope for the sweep.
+ *
+ * Attributes:
+ * storybook_ids: When given, restrict the sweep to these ids (ids that
+ * are not currently published are silently skipped, matching an
+ * ordinary filtered list). ``None`` (the default) screens every
+ * published storybook.
+ */
+export type RescreenRequest = {
+    /**
+     * Storybook Ids
+     */
+    storybook_ids?: Array<string> | null;
+};
+
+/**
+ * RescreenSummaryView
+ *
+ * The sweep's aggregate result, on the wire.
+ */
+export type RescreenSummaryView = {
+    /**
+     * Checked
+     */
+    checked: number;
+    /**
+     * Passed
+     */
+    passed: number;
+    /**
+     * Flagged
+     */
+    flagged: number;
+    /**
+     * Errored
+     */
+    errored: number;
+    /**
+     * Results
+     */
+    results: Array<BookVerdictView>;
+};
+
+/**
  * ReviewQueueItem
  *
  * One storybook in the admin review queue, shaped for client bucketing.
@@ -2004,6 +2766,14 @@ export type ReviewQueueItem = {
      */
     flagged_count: number;
     summary: ReviewSummary | null;
+    /**
+     * Age Band
+     */
+    age_band?: string | null;
+    /**
+     * Waiting Since
+     */
+    waiting_since?: string | null;
 };
 
 /**
@@ -2425,6 +3195,68 @@ export type StoryRequestView = {
 };
 
 /**
+ * StorybookLibraryView
+ *
+ * The admin master library: every storybook, newest activity first.
+ */
+export type StorybookLibraryView = {
+    /**
+     * Items
+     */
+    items: Array<StorybookSummary>;
+};
+
+/**
+ * StorybookSummary
+ *
+ * One storybook in the admin master library, any lifecycle status (P19).
+ *
+ * Unlike the review queue (which lists only ``in_review`` stories), the master
+ * library lets an admin browse and re-open every story: published, archived,
+ * needs_revision, draft, or in_review. ``version`` is the latest version;
+ * ``updated_at`` is that version's creation time, an activity proxy for
+ * sorting most-recent-first.
+ */
+export type StorybookSummary = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Age Band
+     */
+    age_band?: string | null;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Current Published Version
+     */
+    current_published_version?: number | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at?: string | null;
+};
+
+/**
  * StructurePattern
  *
  * Narrative-structure templates available for story generation.
@@ -2826,12 +3658,6 @@ export type StartupHealthStartupGetResponse = StartupHealthStartupGetResponses[k
 
 export type ListLibraryApiV1LibraryGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query: {
         /**
@@ -2843,6 +3669,14 @@ export type ListLibraryApiV1LibraryGetData = {
 };
 
 export type ListLibraryApiV1LibraryGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -2862,12 +3696,6 @@ export type ListLibraryApiV1LibraryGetResponse = ListLibraryApiV1LibraryGetRespo
 
 export type GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -2883,6 +3711,18 @@ export type GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetData 
 };
 
 export type GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -2906,12 +3746,6 @@ export type GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetRespo
 
 export type GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Profile Id
@@ -2927,6 +3761,18 @@ export type GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetData = {
 };
 
 export type GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -2946,12 +3792,6 @@ export type GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponse = Ge
 
 export type PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutData = {
     body: ReadingStateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Profile Id
@@ -2967,6 +3807,18 @@ export type PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutData = {
 };
 
 export type PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Revision or version conflict; the body carries the current row for client-side reconciliation.
      */
@@ -2990,12 +3842,6 @@ export type PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponse = Pu
 
 export type GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Profile Id
@@ -3011,6 +3857,18 @@ export type GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetData = {
 };
 
 export type GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3030,18 +3888,24 @@ export type GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetResponse = GetSer
 
 export type RecordCompletionApiV1CompletionsPostData = {
     body: CompletionBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/completions';
 };
 
 export type RecordCompletionApiV1CompletionsPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3059,20 +3923,77 @@ export type RecordCompletionApiV1CompletionsPostResponses = {
 
 export type RecordCompletionApiV1CompletionsPostResponse = RecordCompletionApiV1CompletionsPostResponses[keyof RecordCompletionApiV1CompletionsPostResponses];
 
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetData = {
+    body?: never;
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/reading-history/{profile_id}';
+};
+
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetError = GetReadingHistoryApiV1ReadingHistoryProfileIdGetErrors[keyof GetReadingHistoryApiV1ReadingHistoryProfileIdGetErrors];
+
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReadingHistoryView;
+};
+
+export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetResponse = GetReadingHistoryApiV1ReadingHistoryProfileIdGetResponses[keyof GetReadingHistoryApiV1ReadingHistoryProfileIdGetResponses];
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/families/me/reading-summary';
+};
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetError = GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetErrors[keyof GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetErrors];
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyReadingSummaryView;
+};
+
+export type GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetResponse = GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetResponses[keyof GetFamilyReadingSummaryApiV1FamiliesMeReadingSummaryGetResponses];
+
 export type CreateConceptApiV1ConceptsPostData = {
     body: ConceptCreateRequest;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/concepts';
 };
 
 export type CreateConceptApiV1ConceptsPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3092,12 +4013,6 @@ export type CreateConceptApiV1ConceptsPostResponse = CreateConceptApiV1ConceptsP
 
 export type EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Concept Id
@@ -3109,6 +4024,22 @@ export type EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostData = {
 };
 
 export type EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3128,18 +4059,20 @@ export type EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostResponse =
 
 export type ListGenerationJobsApiV1GenerationJobsGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/generation-jobs';
 };
 
 export type ListGenerationJobsApiV1GenerationJobsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3159,12 +4092,6 @@ export type ListGenerationJobsApiV1GenerationJobsGetResponse = ListGenerationJob
 
 export type GetGenerationJobApiV1GenerationJobsJobIdGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Job Id
@@ -3176,6 +4103,18 @@ export type GetGenerationJobApiV1GenerationJobsJobIdGetData = {
 };
 
 export type GetGenerationJobApiV1GenerationJobsJobIdGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3193,14 +4132,54 @@ export type GetGenerationJobApiV1GenerationJobsJobIdGetResponses = {
 
 export type GetGenerationJobApiV1GenerationJobsJobIdGetResponse = GetGenerationJobApiV1GenerationJobsJobIdGetResponses[keyof GetGenerationJobApiV1GenerationJobsJobIdGetResponses];
 
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostData = {
+    body?: never;
+    path: {
+        /**
+         * Job Id
+         */
+        job_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/generation-jobs/{job_id}/force-fail';
+};
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostError = ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostErrors[keyof ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostErrors];
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: AdminJobActionResponse;
+};
+
+export type ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponse = ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponses[keyof ForceFailGenerationJobApiV1AdminGenerationJobsJobIdForceFailPostResponses];
+
 export type ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3216,6 +4195,18 @@ export type ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionVal
 };
 
 export type ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3235,18 +4226,20 @@ export type ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionVal
 
 export type ListProfilesApiV1ProfilesGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/profiles';
 };
 
 export type ListProfilesApiV1ProfilesGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3266,18 +4259,20 @@ export type ListProfilesApiV1ProfilesGetResponse = ListProfilesApiV1ProfilesGetR
 
 export type CreateProfileApiV1ProfilesPostData = {
     body: ProfileCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/profiles';
 };
 
 export type CreateProfileApiV1ProfilesPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3297,12 +4292,6 @@ export type CreateProfileApiV1ProfilesPostResponse = CreateProfileApiV1ProfilesP
 
 export type UpdateProfileApiV1ProfilesProfileIdPatchData = {
     body: ProfileUpdateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Profile Id
@@ -3314,6 +4303,18 @@ export type UpdateProfileApiV1ProfilesProfileIdPatchData = {
 };
 
 export type UpdateProfileApiV1ProfilesProfileIdPatchErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3333,18 +4334,20 @@ export type UpdateProfileApiV1ProfilesProfileIdPatchResponse = UpdateProfileApiV
 
 export type ListFamiliesApiV1AdminFamiliesGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/families';
 };
 
 export type ListFamiliesApiV1AdminFamiliesGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3364,18 +4367,20 @@ export type ListFamiliesApiV1AdminFamiliesGetResponse = ListFamiliesApiV1AdminFa
 
 export type CreateFamilyApiV1AdminFamiliesPostData = {
     body: FamilyCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/families';
 };
 
 export type CreateFamilyApiV1AdminFamiliesPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3395,12 +4400,6 @@ export type CreateFamilyApiV1AdminFamiliesPostResponse = CreateFamilyApiV1AdminF
 
 export type UpdateFamilyApiV1AdminFamiliesFamilyIdPatchData = {
     body: FamilyUpdateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Family Id
@@ -3412,6 +4411,18 @@ export type UpdateFamilyApiV1AdminFamiliesFamilyIdPatchData = {
 };
 
 export type UpdateFamilyApiV1AdminFamiliesFamilyIdPatchErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3431,18 +4442,24 @@ export type UpdateFamilyApiV1AdminFamiliesFamilyIdPatchResponse = UpdateFamilyAp
 
 export type RecordRatingApiV1RatingsPostData = {
     body: RatingBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/ratings';
 };
 
 export type RecordRatingApiV1RatingsPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3462,12 +4479,6 @@ export type RecordRatingApiV1RatingsPostResponse = RecordRatingApiV1RatingsPostR
 
 export type ListRatingsApiV1RatingsProfileIdGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Profile Id
@@ -3479,6 +4490,14 @@ export type ListRatingsApiV1RatingsProfileIdGetData = {
 };
 
 export type ListRatingsApiV1RatingsProfileIdGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3498,12 +4517,6 @@ export type ListRatingsApiV1RatingsProfileIdGetResponse = ListRatingsApiV1Rating
 
 export type GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3515,6 +4528,18 @@ export type GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetData = {
 };
 
 export type GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3534,12 +4559,6 @@ export type GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetResponse
 
 export type ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3551,6 +4570,18 @@ export type ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetData = {
 };
 
 export type ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3570,12 +4601,6 @@ export type ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetResponse = Li
 
 export type AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostData = {
     body: AssignmentCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3587,6 +4612,22 @@ export type AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostData = {
 };
 
 export type AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3606,18 +4647,20 @@ export type AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponse = A
 
 export type ListGuardianBooksApiV1GuardianBooksGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/guardian/books';
 };
 
 export type ListGuardianBooksApiV1GuardianBooksGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3637,12 +4680,6 @@ export type ListGuardianBooksApiV1GuardianBooksGetResponse = ListGuardianBooksAp
 
 export type SubmitStorybookApiV1StorybooksStorybookIdSubmitPostData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3654,6 +4691,22 @@ export type SubmitStorybookApiV1StorybooksStorybookIdSubmitPostData = {
 };
 
 export type SubmitStorybookApiV1StorybooksStorybookIdSubmitPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3676,12 +4729,6 @@ export type ApproveStorybookApiV1StorybooksStorybookIdApprovePostData = {
      * Body
      */
     body?: ApproveBody | null;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3693,6 +4740,26 @@ export type ApproveStorybookApiV1StorybooksStorybookIdApprovePostData = {
 };
 
 export type ApproveStorybookApiV1StorybooksStorybookIdApprovePostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3712,12 +4779,6 @@ export type ApproveStorybookApiV1StorybooksStorybookIdApprovePostResponse = Appr
 
 export type SendBackStorybookApiV1StorybooksStorybookIdSendBackPostData = {
     body: SendBackRequest;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3729,6 +4790,22 @@ export type SendBackStorybookApiV1StorybooksStorybookIdSendBackPostData = {
 };
 
 export type SendBackStorybookApiV1StorybooksStorybookIdSendBackPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3748,12 +4825,6 @@ export type SendBackStorybookApiV1StorybooksStorybookIdSendBackPostResponse = Se
 
 export type ArchiveStorybookApiV1StorybooksStorybookIdArchivePostData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3765,6 +4836,22 @@ export type ArchiveStorybookApiV1StorybooksStorybookIdArchivePostData = {
 };
 
 export type ArchiveStorybookApiV1StorybooksStorybookIdArchivePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3784,12 +4871,6 @@ export type ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponse = Arch
 
 export type GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3806,6 +4887,18 @@ export type GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetData = {
 };
 
 export type GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3825,18 +4918,20 @@ export type GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetResponse = GetRev
 
 export type GetReviewQueueApiV1ReviewQueueGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/review-queue';
 };
 
 export type GetReviewQueueApiV1ReviewQueueGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3854,14 +4949,84 @@ export type GetReviewQueueApiV1ReviewQueueGetResponses = {
 
 export type GetReviewQueueApiV1ReviewQueueGetResponse = GetReviewQueueApiV1ReviewQueueGetResponses[keyof GetReviewQueueApiV1ReviewQueueGetResponses];
 
+export type ListAdminStorybooksApiV1AdminStorybooksGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Status
+         */
+        status?: string | null;
+    };
+    url: '/api/v1/admin/storybooks';
+};
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetError = ListAdminStorybooksApiV1AdminStorybooksGetErrors[keyof ListAdminStorybooksApiV1AdminStorybooksGetErrors];
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: StorybookLibraryView;
+};
+
+export type ListAdminStorybooksApiV1AdminStorybooksGetResponse = ListAdminStorybooksApiV1AdminStorybooksGetResponses[keyof ListAdminStorybooksApiV1AdminStorybooksGetResponses];
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchData = {
+    body: NodeEditBody;
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+        /**
+         * Version
+         */
+        version: number;
+        /**
+         * Node Id
+         */
+        node_id: string;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}';
+};
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchError = EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchErrors[keyof EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchErrors];
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReviewSurfaceView;
+};
+
+export type EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponse = EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponses[keyof EditNodeApiV1StorybooksStorybookIdVersionsVersionNodesNodeIdPatchResponses];
+
 export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3877,6 +5042,18 @@ export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetData = {
 };
 
 export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3896,12 +5073,6 @@ export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetResponse
 
 export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Storybook Id
@@ -3917,6 +5088,22 @@ export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostData =
 };
 
 export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3936,18 +5123,20 @@ export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostRespon
 
 export type ListThresholdsApiV1AdminModerationThresholdsGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/moderation-thresholds';
 };
 
 export type ListThresholdsApiV1AdminModerationThresholdsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -3967,12 +5156,6 @@ export type ListThresholdsApiV1AdminModerationThresholdsGetResponse = ListThresh
 
 export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Age Band
@@ -3989,6 +5172,18 @@ export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteData = {
 };
 
 export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4008,12 +5203,6 @@ export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponse =
 
 export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutData = {
     body: ThresholdUpsertBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Age Band
@@ -4030,6 +5219,14 @@ export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutData = {
 };
 
 export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4049,18 +5246,20 @@ export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponse = Up
 
 export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/moderation/noise-floor';
 };
 
 export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4080,18 +5279,20 @@ export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponse = GetNoiseFlo
 
 export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutData = {
     body: NoiseFloorUpdateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/moderation/noise-floor';
 };
 
 export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4111,18 +5312,20 @@ export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponse = UpdateNo
 
 export type ModerationDashboardApiV1AdminModerationDashboardGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/moderation/dashboard';
 };
 
 export type ModerationDashboardApiV1AdminModerationDashboardGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4142,18 +5345,20 @@ export type ModerationDashboardApiV1AdminModerationDashboardGetResponse = Modera
 
 export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/moderation/suggestions';
 };
 
 export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4171,20 +5376,105 @@ export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses = {
 
 export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponse = ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses[keyof ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses];
 
+export type ListAuditEventsApiV1AdminAuditGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Kind
+         */
+        kind?: string | null;
+        /**
+         * Actor Id
+         */
+        actor_id?: string | null;
+        /**
+         * Storybook Id
+         */
+        storybook_id?: string | null;
+        /**
+         * Profile Id
+         */
+        profile_id?: string | null;
+        /**
+         * Since
+         */
+        since?: string | null;
+        /**
+         * Until
+         */
+        until?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Offset
+         */
+        offset?: number;
+    };
+    url: '/api/v1/admin/audit';
+};
+
+export type ListAuditEventsApiV1AdminAuditGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListAuditEventsApiV1AdminAuditGetError = ListAuditEventsApiV1AdminAuditGetErrors[keyof ListAuditEventsApiV1AdminAuditGetErrors];
+
+export type ListAuditEventsApiV1AdminAuditGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: AuditListView;
+};
+
+export type ListAuditEventsApiV1AdminAuditGetResponse = ListAuditEventsApiV1AdminAuditGetResponses[keyof ListAuditEventsApiV1AdminAuditGetResponses];
+
+export type TriggerRescreenApiV1AdminRescreenPostData = {
+    body: RescreenRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/rescreen';
+};
+
+export type TriggerRescreenApiV1AdminRescreenPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TriggerRescreenApiV1AdminRescreenPostError = TriggerRescreenApiV1AdminRescreenPostErrors[keyof TriggerRescreenApiV1AdminRescreenPostErrors];
+
+export type TriggerRescreenApiV1AdminRescreenPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: RescreenSummaryView;
+};
+
+export type TriggerRescreenApiV1AdminRescreenPostResponse = TriggerRescreenApiV1AdminRescreenPostResponses[keyof TriggerRescreenApiV1AdminRescreenPostResponses];
+
 export type ListAllowlistApiV1AdminProviderAllowlistGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/provider-allowlist';
 };
 
 export type ListAllowlistApiV1AdminProviderAllowlistGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4204,18 +5494,24 @@ export type ListAllowlistApiV1AdminProviderAllowlistGetResponse = ListAllowlistA
 
 export type AddAllowlistEntryApiV1AdminProviderAllowlistPostData = {
     body: AllowlistCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/provider-allowlist';
 };
 
 export type AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4235,12 +5531,6 @@ export type AddAllowlistEntryApiV1AdminProviderAllowlistPostResponse = AddAllowl
 
 export type DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Entry Id
@@ -4252,6 +5542,18 @@ export type DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteData = {
 };
 
 export type DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4271,12 +5573,6 @@ export type DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteResponse
 
 export type UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutData = {
     body: AllowlistUpdateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Entry Id
@@ -4288,6 +5584,18 @@ export type UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutData = {
 };
 
 export type UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4307,18 +5615,16 @@ export type UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponse = 
 
 export type WhoamiApiV1MeGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/me';
 };
 
 export type WhoamiApiV1MeGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4338,12 +5644,6 @@ export type WhoamiApiV1MeGetResponse = WhoamiApiV1MeGetResponses[keyof WhoamiApi
 
 export type ListStoryRequestsApiV1StoryRequestsGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: {
         /**
@@ -4359,6 +5659,14 @@ export type ListStoryRequestsApiV1StoryRequestsGetData = {
 };
 
 export type ListStoryRequestsApiV1StoryRequestsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4378,18 +5686,28 @@ export type ListStoryRequestsApiV1StoryRequestsGetResponse = ListStoryRequestsAp
 
 export type CreateStoryRequestApiV1StoryRequestsPostData = {
     body: StoryRequestCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/story-requests';
 };
 
 export type CreateStoryRequestApiV1StoryRequestsPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4409,18 +5727,24 @@ export type CreateStoryRequestApiV1StoryRequestsPostResponse = CreateStoryReques
 
 export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData = {
     body: StoryRequestAuthoredCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/story-requests/authored';
 };
 
 export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4440,12 +5764,6 @@ export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponse = C
 
 export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: {
         /**
@@ -4461,6 +5779,14 @@ export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetData = {
 };
 
 export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4478,14 +5804,41 @@ export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses = {
 
 export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponse = ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses[keyof ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses];
 
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/families/me/budget';
+};
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetError = GetFamilyBudgetApiV1FamiliesMeBudgetGetErrors[keyof GetFamilyBudgetApiV1FamiliesMeBudgetGetErrors];
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyBudgetView;
+};
+
+export type GetFamilyBudgetApiV1FamiliesMeBudgetGetResponse = GetFamilyBudgetApiV1FamiliesMeBudgetGetResponses[keyof GetFamilyBudgetApiV1FamiliesMeBudgetGetResponses];
+
 export type ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData = {
     body: StoryRequestApproveBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Request Id
@@ -4497,6 +5850,22 @@ export type ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostDat
 };
 
 export type ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4516,12 +5885,6 @@ export type ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostRes
 
 export type CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostData = {
     body: AuthoringPlanRequest;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Request Id
@@ -4533,6 +5896,22 @@ export type CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostData 
 };
 
 export type CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4552,12 +5931,6 @@ export type CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostRespo
 
 export type DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Request Id
@@ -4569,6 +5942,22 @@ export type DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostDat
 };
 
 export type DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4588,18 +5977,24 @@ export type DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostRes
 
 export type CreateChildSessionApiV1ChildSessionsPostData = {
     body: ChildSessionCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/child-sessions';
 };
 
 export type CreateChildSessionApiV1ChildSessionsPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4619,18 +6014,20 @@ export type CreateChildSessionApiV1ChildSessionsPostResponse = CreateChildSessio
 
 export type ListDeviceGrantsApiV1DeviceGrantsGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/device-grants';
 };
 
 export type ListDeviceGrantsApiV1DeviceGrantsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4655,18 +6052,24 @@ export type CreateDeviceGrantApiV1DeviceGrantsPostData = {
      * Body
      */
     body?: DeviceGrantCreateBody | null;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/device-grants';
 };
 
 export type CreateDeviceGrantApiV1DeviceGrantsPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4686,12 +6089,6 @@ export type CreateDeviceGrantApiV1DeviceGrantsPostResponse = CreateDeviceGrantAp
 
 export type RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Grant Id
@@ -4703,6 +6100,18 @@ export type RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteData = {
 };
 
 export type RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4725,18 +6134,20 @@ export type OnboardApiV1OnboardingPostData = {
      * Body
      */
     body?: OnboardingBody | null;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/onboarding';
 };
 
 export type OnboardApiV1OnboardingPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4758,14 +6169,122 @@ export type OnboardApiV1OnboardingPostResponses = {
 
 export type OnboardApiV1OnboardingPostResponse = OnboardApiV1OnboardingPostResponses[keyof OnboardApiV1OnboardingPostResponses];
 
+export type CreateFlagApiV1FlagsPostData = {
+    body: KidFlagCreateBody;
+    path?: never;
+    query?: never;
+    url: '/api/v1/flags';
+};
+
+export type CreateFlagApiV1FlagsPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateFlagApiV1FlagsPostError = CreateFlagApiV1FlagsPostErrors[keyof CreateFlagApiV1FlagsPostErrors];
+
+export type CreateFlagApiV1FlagsPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: KidFlagCreatedView;
+};
+
+export type CreateFlagApiV1FlagsPostResponse = CreateFlagApiV1FlagsPostResponses[keyof CreateFlagApiV1FlagsPostResponses];
+
+export type ListOpenFlagsApiV1AdminFlagsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/flags';
+};
+
+export type ListOpenFlagsApiV1AdminFlagsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListOpenFlagsApiV1AdminFlagsGetError = ListOpenFlagsApiV1AdminFlagsGetErrors[keyof ListOpenFlagsApiV1AdminFlagsGetErrors];
+
+export type ListOpenFlagsApiV1AdminFlagsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: KidFlagListView;
+};
+
+export type ListOpenFlagsApiV1AdminFlagsGetResponse = ListOpenFlagsApiV1AdminFlagsGetResponses[keyof ListOpenFlagsApiV1AdminFlagsGetResponses];
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostData = {
+    body: KidFlagResolveBody;
+    path: {
+        /**
+         * Flag Id
+         */
+        flag_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/flags/{flag_id}/resolve';
+};
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostError = ResolveFlagApiV1AdminFlagsFlagIdResolvePostErrors[keyof ResolveFlagApiV1AdminFlagsFlagIdResolvePostErrors];
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: KidFlagView;
+};
+
+export type ResolveFlagApiV1AdminFlagsFlagIdResolvePostResponse = ResolveFlagApiV1AdminFlagsFlagIdResolvePostResponses[keyof ResolveFlagApiV1AdminFlagsFlagIdResolvePostResponses];
+
+export type ListNotificationsApiV1NotificationsGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Since
+         */
+        since?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/notifications';
+};
+
+export type ListNotificationsApiV1NotificationsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListNotificationsApiV1NotificationsGetError = ListNotificationsApiV1NotificationsGetErrors[keyof ListNotificationsApiV1NotificationsGetErrors];
+
+export type ListNotificationsApiV1NotificationsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: NotificationListView;
+};
+
+export type ListNotificationsApiV1NotificationsGetResponse = ListNotificationsApiV1NotificationsGetResponses[keyof ListNotificationsApiV1NotificationsGetResponses];
+
 export type ListUsersApiV1AdminUsersGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: {
         /**
@@ -4786,6 +6305,14 @@ export type ListUsersApiV1AdminUsersGetData = {
 
 export type ListUsersApiV1AdminUsersGetErrors = {
     /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
      * Validation Error
      */
     422: HttpValidationError;
@@ -4804,18 +6331,28 @@ export type ListUsersApiV1AdminUsersGetResponse = ListUsersApiV1AdminUsersGetRes
 
 export type CreateUserApiV1AdminUsersPostData = {
     body: UserCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/users';
 };
 
 export type CreateUserApiV1AdminUsersPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4835,12 +6372,6 @@ export type CreateUserApiV1AdminUsersPostResponse = CreateUserApiV1AdminUsersPos
 
 export type UpdateUserApiV1AdminUsersUserIdPatchData = {
     body: UserUpdateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * User Id
@@ -4852,6 +6383,18 @@ export type UpdateUserApiV1AdminUsersUserIdPatchData = {
 };
 
 export type UpdateUserApiV1AdminUsersUserIdPatchErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4871,12 +6414,6 @@ export type UpdateUserApiV1AdminUsersUserIdPatchResponse = UpdateUserApiV1AdminU
 
 export type ListAdminProfilesApiV1AdminProfilesGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: {
         /**
@@ -4888,6 +6425,14 @@ export type ListAdminProfilesApiV1AdminProfilesGetData = {
 };
 
 export type ListAdminProfilesApiV1AdminProfilesGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4907,18 +6452,24 @@ export type ListAdminProfilesApiV1AdminProfilesGetResponse = ListAdminProfilesAp
 
 export type CreateAdminProfileApiV1AdminProfilesPostData = {
     body: AdminProfileCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/profiles';
 };
 
 export type CreateAdminProfileApiV1AdminProfilesPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4938,12 +6489,6 @@ export type CreateAdminProfileApiV1AdminProfilesPostResponse = CreateAdminProfil
 
 export type UpdateAdminProfileApiV1AdminProfilesProfileIdPatchData = {
     body: AdminProfileUpdateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Profile Id
@@ -4955,6 +6500,18 @@ export type UpdateAdminProfileApiV1AdminProfilesProfileIdPatchData = {
 };
 
 export type UpdateAdminProfileApiV1AdminProfilesProfileIdPatchErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -4974,18 +6531,20 @@ export type UpdateAdminProfileApiV1AdminProfilesProfileIdPatchResponse = UpdateA
 
 export type ListFamilyConnectionsApiV1AdminFamilyConnectionsGetData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/family-connections';
 };
 
 export type ListFamilyConnectionsApiV1AdminFamilyConnectionsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */
@@ -5005,18 +6564,28 @@ export type ListFamilyConnectionsApiV1AdminFamilyConnectionsGetResponse = ListFa
 
 export type CreateFamilyConnectionApiV1AdminFamilyConnectionsPostData = {
     body: FamilyConnectionCreateBody;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path?: never;
     query?: never;
     url: '/api/v1/admin/family-connections';
 };
 
 export type CreateFamilyConnectionApiV1AdminFamilyConnectionsPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */
@@ -5036,12 +6605,6 @@ export type CreateFamilyConnectionApiV1AdminFamilyConnectionsPostResponse = Crea
 
 export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteData = {
     body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string | null;
-    };
     path: {
         /**
          * Connection Id
@@ -5053,6 +6616,18 @@ export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteD
 };
 
 export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -5069,3 +6644,142 @@ export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteR
 };
 
 export type DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponse = DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses[keyof DeleteFamilyConnectionApiV1AdminFamilyConnectionsConnectionIdDeleteResponses];
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/family-connections/mine';
+};
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetError = ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetErrors[keyof ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetErrors];
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionMineListView;
+};
+
+export type ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponse = ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponses[keyof ListMyFamilyConnectionsApiV1FamilyConnectionsMineGetResponses];
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * Connection Id
+         */
+        connection_id: string;
+    };
+    query?: never;
+    url: '/api/v1/family-connections/{connection_id}/consent';
+};
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteError = RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteErrors[keyof RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteErrors];
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionMineItem;
+};
+
+export type RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponse = RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponses[keyof RevokeFamilyConnectionConsentApiV1FamilyConnectionsConnectionIdConsentDeleteResponses];
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostData = {
+    body?: never;
+    path: {
+        /**
+         * Connection Id
+         */
+        connection_id: string;
+    };
+    query?: never;
+    url: '/api/v1/family-connections/{connection_id}/consent';
+};
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostError = ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostErrors[keyof ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostErrors];
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyConnectionMineItem;
+};
+
+export type ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponse = ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponses[keyof ConsentFamilyConnectionApiV1FamilyConnectionsConnectionIdConsentPostResponses];
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetData = {
+    body?: never;
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/recommendations/{profile_id}';
+};
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetError = GetRecommendationsApiV1RecommendationsProfileIdGetErrors[keyof GetRecommendationsApiV1RecommendationsProfileIdGetErrors];
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: RecommendationsView;
+};
+
+export type GetRecommendationsApiV1RecommendationsProfileIdGetResponse = GetRecommendationsApiV1RecommendationsProfileIdGetResponses[keyof GetRecommendationsApiV1RecommendationsProfileIdGetResponses];

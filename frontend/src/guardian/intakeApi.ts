@@ -118,6 +118,14 @@ export interface BuildBriefParams {
    * names and the display name must never enter the prompt.
    */
   childDisplayName?: string
+  /**
+   * G2: the selected child's profilesApi.ts ProfileView.banned_themes,
+   * carried into the brief's content_nogo verbatim (mirrors the same
+   * derivation server-side for the child-initiated flow, see
+   * story_requests/brief.py::_content_controls). Defaults to no exclusions
+   * when omitted, matching the pre-G2 behavior.
+   */
+  bannedThemes?: string[]
 }
 
 /**
@@ -149,7 +157,8 @@ export function buildBrief(params: BuildBriefParams): ConceptBriefBody {
     tier: 1,
     tone: params.tone,
     themes_allowed: [],
-    content_nogo: [],
+    // G2: the selected child's banned_themes, or none when unset/omitted.
+    content_nogo: params.bannedThemes ?? [],
     target_node_count: band.nodes,
     ending_count: band.endings,
     structure_pattern: 'branch_and_bottleneck',

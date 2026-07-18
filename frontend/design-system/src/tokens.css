@@ -9,7 +9,10 @@
   /* Ink: deep warm browns for text */
   --color-ink:             #2c1a0e;
   --color-ink-secondary:   #5a3e28;
-  --color-ink-muted:       #8c6f56;
+  /* UX-C2: darkened from #8c6f56 (4.20:1, below WCAG AA) to #806048 (5.15:1 on
+     --color-parchment) so muted copy that turned out to be load-bearing (wait-
+     time hints, submit blockers, kid-surface labels) clears AA. */
+  --color-ink-muted:       #806048;
 
   /* Border: warm neutral hairline for card, row, and form-field boundaries
      (ink at low opacity). Consolidates 6+ former inline

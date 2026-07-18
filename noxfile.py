@@ -4,7 +4,7 @@ Nox-UV uses UV for fast virtual environment creation and package installation.
 This file defines sessions organized by the test pyramid pattern.
 
 Test Pyramid Sessions:
-    nox -s test            # Run full test suite across Python 3.10-3.14
+    nox -s test            # Run full test suite across Python 3.11-3.14
     nox -s unit            # Run unit tests only (fast, 85%+ coverage target)
     nox -s integration     # Run integration tests (70%+ coverage target)
     nox -s fast            # Fast dev loop - excludes slow tests
@@ -13,8 +13,8 @@ Test Pyramid Sessions:
     nox -s mutate          # Run mutation testing (if mutation testing enabled)
 
 Code Quality Sessions:
-    nox -s lint            # Run Ruff linting across Python 3.10-3.14
-    nox -s typecheck       # Run MyPy type checking across Python 3.10-3.14
+    nox -s lint            # Run Ruff linting across Python 3.11-3.14
+    nox -s typecheck       # Run BasedPyright type checking across Python 3.11-3.14
     nox -s docstrings      # Check docstring coverage
 
 Documentation Sessions:
@@ -65,7 +65,7 @@ def docs(session: nox.Session) -> None:
     This session installs the project with docs dependencies and builds
     the documentation in strict mode.
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run("mkdocs", "build", "--strict")
 
 
@@ -76,7 +76,7 @@ def serve(session: nox.Session) -> None:
     This session starts the MkDocs development server with live reloading.
     Access at http://127.0.0.1:8000
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run("mkdocs", "serve")
 
 
@@ -101,7 +101,7 @@ def validate(session: nox.Session) -> None:
     """
     session.install(
         "-e",
-        ".[dev]",
+        ".[dev,api]",
         "pydantic>=2.0",
         "python-frontmatter>=1.1",
         "ruamel.yaml>=0.18",
@@ -283,7 +283,7 @@ def assuredoss(session: nox.Session) -> None:
     - GOOGLE_CLOUD_PROJECT
     - GOOGLE_APPLICATION_CREDENTIALS or GOOGLE_APPLICATION_CREDENTIALS_B64
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run("python", "scripts/validate_assuredoss.py")
 
 
@@ -292,14 +292,14 @@ def assuredoss(session: nox.Session) -> None:
 # ==========================================
 
 
-@nox.session(python=["3.10", "3.11", "3.12", "3.13", "3.14"])
+@nox.session(python=["3.11", "3.12", "3.13", "3.14"])
 def test(session: nox.Session) -> None:
     """Run full test suite across multiple Python versions.
 
     This session runs all tests with coverage reporting
-    across Python 3.10, 3.11, 3.12, 3.13, and 3.14 to ensure compatibility.
+    across Python 3.11, 3.12, 3.13, and 3.14 to ensure compatibility.
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run(
         "pytest",
         "-v",
@@ -320,7 +320,7 @@ def unit(session: nox.Session) -> None:
     Unit tests are isolated, fast, and don't require external dependencies.
     Target: 85%+ coverage for unit tests.
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run(
         "pytest",
         "-m",
@@ -342,7 +342,7 @@ def integration(session: nox.Session) -> None:
     Integration tests verify interaction between components.
     Target: 70%+ coverage for integration tests.
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run(
         "pytest",
         "-m",
@@ -364,7 +364,7 @@ def fast(session: nox.Session) -> None:
     Use this for rapid feedback during development.
     Excludes slow tests and stops after 5 failures.
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run(
         "pytest",
         "-m",
@@ -385,7 +385,7 @@ def security_tests(session: nox.Session) -> None:
 
     Tests focused on security-critical functionality.
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run(
         "pytest",
         "-m",
@@ -405,20 +405,23 @@ def mutate(session: nox.Session) -> None:
 
     Mutation testing introduces small code changes (mutations) and verifies
     that tests catch them. A high mutation score indicates effective tests.
+    Scope and pytest flags come from [tool.mutmut] in pyproject.toml
+    (mutmut 3.x dialect); scripts/mutation_score.py aggregates the .meta
+    results into the score the weekly CI workflow also reports.
 
     Usage:
         nox -s mutate              # Run mutation testing
-        nox -s mutate -- --report  # Show mutation report
+        nox -s mutate -- --report  # Score existing results only
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
 
     if session.posargs and "--report" in session.posargs:
-        # Show results only
-        session.run("mutmut", "results")
+        # Score existing results only
+        session.run("python", "scripts/mutation_score.py")
     else:
-        # Run mutation testing
-        session.run("mutmut", "run", "--no-progress")
-        session.run("mutmut", "results")
+        # Run mutation testing (mutmut 3.x has no --no-progress flag)
+        session.run("mutmut", "run")
+        session.run("python", "scripts/mutation_score.py")
 
 
 # ==========================================
@@ -426,20 +429,20 @@ def mutate(session: nox.Session) -> None:
 # ==========================================
 
 
-@nox.session(python=["3.10", "3.11", "3.12", "3.13", "3.14"])
+@nox.session(python=["3.11", "3.12", "3.13", "3.14"])
 def lint(session: nox.Session) -> None:
     """Run linting across multiple Python versions.
 
     This session runs Ruff linting and type hint checks to ensure code quality
     across all supported Python versions.
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run("ruff", "check", ".", "--config=pyproject.toml")
     session.run("ruff", "format", "--check")
     session.run("python", "scripts/check_type_hints.py", "--src-dir=src")
 
 
-@nox.session(python=["3.10", "3.11", "3.12", "3.13", "3.14"])
+@nox.session(python=["3.11", "3.12", "3.13", "3.14"])
 def typecheck(session: nox.Session) -> None:
     """Run type checking across multiple Python versions.
 
@@ -447,5 +450,5 @@ def typecheck(session: nox.Session) -> None:
     across all supported Python versions. BasedPyright is a stricter fork
     of Pyright that provides faster analysis than MyPy.
     """
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,api]")
     session.run("basedpyright", "src")

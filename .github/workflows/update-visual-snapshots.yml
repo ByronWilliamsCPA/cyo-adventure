@@ -1,0 +1,164 @@
+# Regenerate Playwright visual-regression baselines on the CI runner.
+#
+# Why this exists: the `*-chromium-linux.png` snapshots in
+# frontend/e2e/visual.spec.ts-snapshots/ are pixel-exact to the Chromium build
+# and font stack of the CI runner. An intentional UI change invalidates them,
+# and they can only be regenerated correctly in that same environment. This
+# workflow runs `playwright test --update-snapshots` on the runner and commits
+# the refreshed PNGs back to the target branch.
+#
+# The commit is created server-side via the GraphQL createCommitOnBranch
+# mutation (not `git push`): this repo's branch protection requires every commit
+# to carry a verified signature, and GitHub signs commits it constructs through
+# its API, so the result shows "Verified" with no key management in CI. This
+# mirrors the proven mechanism in release.yml.
+#
+# After it runs, re-run CI on the branch (the visual step will now match) and
+# review the committed baseline diff in the PR before merging: an update accepts
+# whatever the app renders, so a human must confirm the new appearance is
+# correct, not a regression.
+#
+# Re-run trigger: touch this file (a comment bump is enough) and push to a
+# feature branch to regenerate after a UI change or a merge from main.
+name: Update Visual Snapshots
+
+on:
+  # workflow_dispatch only works once this file is on the default branch (a
+  # GitHub limitation: the dispatch trigger is read from the default branch).
+  # Until then, the push trigger below runs it from a feature branch: touching
+  # this file runs the job once. The baseline commit it makes touches only PNG
+  # paths, so it does not re-trigger this workflow.
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to regenerate visual baselines on (defaults to the selected branch)
+        required: false
+        type: string
+  push:
+    branches-ignore:
+      - main
+      - master
+      - develop
+    paths:
+      - .github/workflows/update-visual-snapshots.yml
+
+# contents:write lets the createCommitOnBranch mutation land the refreshed
+# baselines when it falls back to the job's GITHUB_TOKEN (a fine-grained
+# RELEASE_TOKEN, when configured, carries its own scope instead).
+permissions:
+  contents: write
+
+concurrency:
+  group: update-visual-snapshots-${{ inputs.branch || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  update:
+    name: Regenerate visual baselines
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+
+      # --update-snapshots rewrites any baseline that differs and reports the
+      # run as passing for those; a genuinely broken (non-visual) test still
+      # fails. Keep going either way so the refreshed baselines are committed;
+      # any remaining functional failure surfaces on the next CI run.
+      - name: Regenerate visual snapshots
+        id: regen
+        working-directory: ./frontend
+        continue-on-error: true
+        run: npm run test:e2e -- --update-snapshots
+
+      - name: Commit refreshed baselines (verified, via createCommitOnBranch)
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          BRANCH: ${{ inputs.branch || github.ref_name }}
+          SNAP_DIR: frontend/e2e/visual.spec.ts-snapshots
+        run: |
+          set -euo pipefail
+
+          # Collect added/modified baseline PNGs (porcelain code then path).
+          mapfile -t FILES < <(
+            git status --porcelain -- "${SNAP_DIR}" \
+              | awk '{ $1=""; sub(/^ /, ""); print }'
+          )
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "No baseline changes; nothing to commit."
+            exit 0
+          fi
+          printf 'Updating %s baseline(s):\n' "${#FILES[@]}"
+          printf '  %s\n' "${FILES[@]}"
+
+          # Build fileChanges.additions in a file so the (large, base64) blobs
+          # never land on a command line: --rawfile reads content from disk and
+          # the assembled array is passed to the final jq via --slurpfile.
+          ADDITIONS="$(mktemp)"
+          B64="$(mktemp)"
+          echo '[]' > "${ADDITIONS}"
+          for f in "${FILES[@]}"; do
+            base64 -w0 "${f}" > "${B64}"
+            jq -c --arg p "${f}" --rawfile c "${B64}" \
+              '. + [{path: $p, contents: $c}]' "${ADDITIONS}" > "${ADDITIONS}.next"
+            mv "${ADDITIONS}.next" "${ADDITIONS}"
+          done
+
+          BASE_SHA="$(git rev-parse HEAD)"
+          # shellcheck disable=SC2016  # literal GraphQL text, expansion not wanted
+          QUERY='mutation($input: CreateCommitOnBranchInput!) {
+            createCommitOnBranch(input: $input) { commit { oid } } }'
+
+          BODY="$(mktemp)"
+          jq -n \
+            --arg q "${QUERY}" \
+            --arg repo "${GITHUB_REPOSITORY}" \
+            --arg branch "${BRANCH}" \
+            --arg oid "${BASE_SHA}" \
+            --arg headline "test(frontend): regenerate visual regression baselines" \
+            --slurpfile adds "${ADDITIONS}" \
+            '{
+              query: $q,
+              variables: {
+                input: {
+                  branch: {repositoryNameWithOwner: $repo, branchName: $branch},
+                  message: {headline: $headline},
+                  expectedHeadOid: $oid,
+                  fileChanges: {additions: $adds[0]}
+                }
+              }
+            }' > "${BODY}"
+
+          RESPONSE="$(gh api graphql --input "${BODY}")"
+          OID="$(echo "${RESPONSE}" | jq -r '.data.createCommitOnBranch.commit.oid // empty')"
+          if [ -z "${OID}" ]; then
+            echo "::error::createCommitOnBranch did not return a commit oid."
+            echo "${RESPONSE}"
+            exit 1
+          fi
+          echo "Committed refreshed baselines as ${OID} on ${BRANCH}."
+
+      - name: Report regeneration test outcome
+        if: steps.regen.outcome == 'failure'
+        run: |
+          echo "::notice::The e2e run reported failures even with" \
+            "--update-snapshots. Visual baselines were still refreshed and" \
+            "committed; any remaining failure is functional (non-visual) and" \
+            "will surface on the next CI run for the branch."

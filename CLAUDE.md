@@ -422,11 +422,16 @@ for current status and review the relevant planning documents and
 - [project-vision.md](docs/planning/project-vision.md) - Problem, solution, scope, success metrics (codename "Ariadne")
 - [tech-spec.md](docs/planning/tech-spec.md) - Architecture, data model, APIs, security
 - [roadmap.md](docs/planning/roadmap.md) - Phased implementation plan and current status
-- [adr/](docs/planning/adr/) - 13 architecture decision records (story format, client PWA,
+- [adr/](docs/planning/adr/) - 18 architecture decision records (story format, client PWA,
   frontier LLM generation, homelab-first deployment, mandatory human approval, in-house
   condition evaluator, raw-output retention, public App Store launch, Supabase platform,
   Modal review + gated generation, story-scale framework, Supabase CLI migrations,
-  hybrid PQC readiness)
+  hybrid PQC readiness, device-authorized kid access, story request initiation and gating,
+  recommendation sharing and the three-ring social boundary, AI cover art,
+  children's-privacy compliance)
+- [capability-register.md](docs/planning/capability-register.md) - Persona capability
+  contract with stable K/G/A/S IDs; the scope checkoff sheet and acceptance-testing basis.
+  New feature proposals must cite the register ID(s) they serve.
 - [PROJECT-PLAN.md](docs/planning/PROJECT-PLAN.md) - Synthesized plan with git branches
 
 **Current status** (per `roadmap.md`, as of 2026-07-03): Phases 0, 1, 2, 2b,
@@ -553,9 +558,14 @@ React frontend (frontend/)
    |  npm run generate-client                  committed to git, CI fails on drift
    v  reads  http://localhost:8000/openapi.json
 FastAPI backend (src/cyo_adventure/)
-   - api/            14 routers (health, library, reading, generation, profiles,
-                      families, ratings, assignments, approval, covers,
-                      moderation_thresholds, provider_allowlist, me, story_requests)
+   - api/            28 routers (health, library, reading, reading_history,
+                      recommendations, flags, notifications, generation,
+                      profiles, families, ratings, assignments, approval,
+                      node_edit, rescreen, audit, covers,
+                      moderation_thresholds, moderation_dashboard,
+                      provider_allowlist, me, story_requests, child_sessions,
+                      device_grants, onboarding, admin_users, admin_profiles,
+                      family_connections)
    - core/           config.py, database.py (async SQLAlchemy), exceptions.py
    - middleware/     correlation.py, security.py (OWASP headers)
    - db/             SQLAlchemy ORM models (stories, profiles, families, requests,
@@ -612,11 +622,16 @@ PostgreSQL (async SQLAlchemy, core/database.py) + Redis (RQ job queue)
 src/cyo_adventure/
 ├── __init__.py
 ├── app.py                  # FastAPI app; wires all routers via include_router
-├── api/                     # FastAPI routers (14): health, library, reading,
-│                            # generation, profiles, families, ratings, assignments,
-│                            # approval, covers, moderation_thresholds,
-│                            # provider_allowlist, me, story_requests; support
-│                            # modules (not routers): schemas, deps, review_surface
+├── api/                     # FastAPI routers (28): health, library, reading,
+│                            # reading_history, recommendations, flags,
+│                            # notifications, generation, profiles, families,
+│                            # ratings, assignments, approval, node_edit,
+│                            # rescreen, audit, covers, moderation_thresholds,
+│                            # moderation_dashboard, provider_allowlist, me,
+│                            # story_requests, child_sessions, device_grants,
+│                            # onboarding, admin_users, admin_profiles,
+│                            # family_connections; support modules (not routers):
+│                            # schemas, deps, review_surface
 ├── core/                    # config.py, database.py, exceptions.py
 ├── middleware/              # security.py, correlation.py
 ├── db/                      # SQLAlchemy ORM models.py (domain: stories, profiles,

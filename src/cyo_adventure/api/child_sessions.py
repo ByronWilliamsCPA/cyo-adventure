@@ -24,7 +24,11 @@ from cyo_adventure.api.deps import (
     authorize_profile,
     parse_uuid,
 )
-from cyo_adventure.api.schemas import ChildSessionCreateBody, ChildSessionView
+from cyo_adventure.api.schemas import (
+    ChildSessionCreateBody,
+    ChildSessionView,
+    error_responses,
+)
 from cyo_adventure.core.child_session import mint_child_session_token
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
 from cyo_adventure.core.pin import verify_pin
@@ -37,7 +41,11 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/v1", tags=["child-sessions"])
+router = APIRouter(
+    prefix="/api/v1",
+    tags=["child-sessions"],
+    responses=error_responses(401, 403, 404),
+)
 
 # Deterministic synthetic subject for JIT-provisioned child accounts. Supabase
 # guardian subs are bare UUIDs and the seed scripts use short opaque tokens

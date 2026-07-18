@@ -1,5 +1,6 @@
 """Cover-related settings load from env with sane defaults."""
 
+import pydantic
 import pytest
 
 from cyo_adventure.core.config import Settings
@@ -30,3 +31,32 @@ def test_env_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
     assert s.r2_secret_access_key == "svc"
     assert s.r2_bucket == "custom-covers"
     assert s.r2_public_base_url == "https://images.example.com"
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "env_var",
+    [
+        "CYO_ADVENTURE_COVER_MAX_WIDTH",
+        "CYO_ADVENTURE_COVER_QUALITY",
+        "CYO_ADVENTURE_COVER_MAX_BYTES",
+        "CYO_ADVENTURE_COVER_JOB_TIMEOUT_SECONDS",
+    ],
+)
+def test_settings_non_integer_cover_value_raises_validation_error(
+    env_var: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A non-integer env value for an int cover setting fails fast at load."""
+    monkeypatch.setenv(env_var, "not-a-number")
+    with pytest.raises(pydantic.ValidationError):
+        Settings()
+
+
+@pytest.mark.unit
+def test_settings_fractional_cover_max_width_raises_validation_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A fractional width is rejected rather than silently truncated."""
+    monkeypatch.setenv("CYO_ADVENTURE_COVER_MAX_WIDTH", "800.5")
+    with pytest.raises(pydantic.ValidationError):
+        Settings()

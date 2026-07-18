@@ -34,6 +34,8 @@ uv sync --all-extras
 - [API Reference](api-reference.md) - Complete API documentation
 - [Development](development/architecture.md) - Architecture and contributing
 - [Project](project/roadmap.md) - Roadmap and changelog
+- [Operator Runbook](operations/runbook.md) - Start/stop, health checks, incidents, secrets, kill switch
+- [Authoring Guide](operations/authoring-guide.md) - Non-technical guide to the story review and approval flow
 
 ## License
 

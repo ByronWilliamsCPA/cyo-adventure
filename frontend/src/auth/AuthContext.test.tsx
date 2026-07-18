@@ -517,6 +517,39 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
   })
 
+  it('sign-out purges the authenticated runtime caches (SEC-F5)', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignOut.mockResolvedValue({ error: null })
+    const deleted: string[] = []
+    const originalCaches = (globalThis as { caches?: unknown }).caches
+    Object.defineProperty(globalThis, 'caches', {
+      configurable: true,
+      value: {
+        delete: (name: string): Promise<boolean> => {
+          deleted.push(name)
+          return Promise.resolve(true)
+        },
+      },
+    })
+    try {
+      render(
+        <AuthProvider>
+          <ActionsProbe />
+        </AuthProvider>
+      )
+      await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+      fireEvent.click(screen.getByText('sign out'))
+      await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
+      await waitFor(() => expect(deleted).toContain('api-cache'))
+      expect(deleted).toContain('storybook-blobs')
+    } finally {
+      Object.defineProperty(globalThis, 'caches', {
+        configurable: true,
+        value: originalCaches,
+      })
+    }
+  })
+
   it('sign-out drops warm adult-gate state', async () => {
     // ADR-014 Phase 5: an explicit sign-out hands the device over, so a warm
     // adult gate must not survive it and greet the next sign-in already

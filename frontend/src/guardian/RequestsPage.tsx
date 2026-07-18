@@ -1,4 +1,5 @@
 import { useAuth } from '../auth/useAuth'
+import { BudgetBanner } from './BudgetBanner'
 import { RequestStoryForm } from './RequestStoryForm'
 import { StoryRequestQueue } from './StoryRequestQueue'
 
@@ -16,6 +17,11 @@ export function RequestsPage() {
   return (
     <>
       {principal?.role === 'guardian' ? <RequestStoryForm mode="guardian" /> : null}
+      {/* G13 (interim) balance: "N of M stories left this month". This
+          queue is always family-scoped (see the component doc above), so
+          the banner's own family-budget read is always the right one here,
+          for either a guardian or a dual-role admin. */}
+      <BudgetBanner />
       {/* The tracking hint is guardian-specific (this family's Story
           requests view); the admin cross-family queue keeps the component's
           neutral default message. */}

@@ -33,6 +33,7 @@ import uuid
 from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter, BackgroundTasks
+from rq.exceptions import DuplicateJobError
 from sqlalchemy import func, select
 from sqlalchemy.orm import defer
 
@@ -41,6 +42,7 @@ if TYPE_CHECKING:
 
 from cyo_adventure.api.deps import Context, authorize_family
 from cyo_adventure.api.schemas import (
+    AdminJobActionResponse,
     ConceptCreatedResponse,
     ConceptCreateRequest,
     GenerationEnqueuedResponse,
@@ -49,6 +51,7 @@ from cyo_adventure.api.schemas import (
     GenerationJobResponse,
     JobStatusLiteral,
     ValidateResponse,
+    error_responses,
 )
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
@@ -64,11 +67,16 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+from cyo_adventure.events.models import Actor, EventType
+from cyo_adventure.events.writer import record_event
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.generation.queue import enqueue_generation
+from cyo_adventure.story_requests.service import enforce_family_quota
 from cyo_adventure.validator.gate import run_gate
 
-router = APIRouter(prefix="/api/v1", tags=["generation"])
+router = APIRouter(
+    prefix="/api/v1", tags=["generation"], responses=error_responses(401, 403)
+)
 
 _log = logging.getLogger(__name__)
 
@@ -156,8 +164,21 @@ def _enqueue_safely(job_id: str) -> None:
     # #VERIFY: generation/queue.py::requeue_stranded_jobs re-queues rows
     # stranded in the "queued" state by this failure (or any other outage);
     # run once at worker-process startup (generation/worker_main.py::main).
+    #
+    # #CRITICAL: concurrency: pass rq_job_id=job_id so the original enqueue and
+    # the reclaim sweep's re-enqueue share ONE RQ identity. Previously this path
+    # let RQ mint a random id, so after a long worker outage the sweep's
+    # rq_job_id=row_id re-enqueue did not collide with the still-queued original
+    # and the job executed twice. With a shared id, unique=True makes RQ raise
+    # DuplicateJobError (a no-op) instead of admitting a second execution.
+    # DuplicateJobError on this original enqueue means the row is already queued
+    # under its own id (e.g. a retried request), which is the desired outcome.
+    # #VERIFY: test_enqueue_safely_uses_row_id_as_rq_job_id and the reclaim
+    # double-execution integration test.
     try:
-        enqueue_generation(job_id, settings)
+        enqueue_generation(job_id, settings, rq_job_id=job_id)
+    except DuplicateJobError:
+        _log.info("enqueue_generation skipped for job %s; already queued", job_id)
     except Exception:  # noqa: BLE001 -- best-effort enqueue; row is the source of truth
         _log.exception(
             "enqueue_generation failed for job %s; row committed but not queued",
@@ -221,7 +242,11 @@ async def create_concept(
     return ConceptCreatedResponse(concept_id=str(concept.id))
 
 
-@router.post("/concepts/{concept_id}/generate", status_code=202)
+@router.post(
+    "/concepts/{concept_id}/generate",
+    status_code=202,
+    responses=error_responses(404, 409),
+)
 async def enqueue_concept_generation(
     concept_id: str,
     ctx: Context,
@@ -263,6 +288,15 @@ async def enqueue_concept_generation(
         msg = f"concept '{concept_id}' not found"
         raise ResourceNotFoundError(msg)
     authorize_family(ctx.principal, concept.family_id)
+
+    # #CRITICAL: payment/financial: the direct intake path spends generation
+    # budget exactly like a story-request approval, so it passes the same
+    # ADR-015 guardian cost gate; without this call the legacy concept path
+    # bypasses the family quota entirely (traceability finding, 2026-07-17).
+    # Admin acting-capacity bypasses inside enforce_family_quota
+    # (platform-funded), mirroring the request paths.
+    # #VERIFY: test_generation_api_unit.py::TestEnqueueQuotaGate.
+    await enforce_family_quota(ctx.session, ctx.principal, concept.family_id)
 
     # #CRITICAL: security: enforce the per-family active-job cap before insert
     # (audit Finding 9). A rare off-by-one under concurrent enqueues is
@@ -391,19 +425,21 @@ async def list_generation_jobs(ctx: Context) -> GenerationJobListView:
     return GenerationJobListView(jobs=items)
 
 
-@router.get("/generation-jobs/{job_id}")
+@router.get("/generation-jobs/{job_id}", responses=error_responses(404))
 async def get_generation_job(
     job_id: str,
     ctx: Context,
 ) -> GenerationJobResponse:
-    """Return the status and report for a generation job.
+    """Return the status for a generation job, and the report for admins only.
 
     Args:
         job_id: The UUID string of the job to fetch.
         ctx: The request context (principal and session).
 
     Returns:
-        GenerationJobResponse: Status, report, storybook link, and error.
+        GenerationJobResponse: Status, storybook link, and error for any
+        family-scoped guardian; ``report`` is populated only when the
+        principal also holds the admin capability, and is ``None`` otherwise.
 
     Raises:
         AuthorizationError: If the principal is not a guardian (-> 403) or if
@@ -448,10 +484,23 @@ async def get_generation_job(
     # #VERIFY: JobStatusLiteral's five values match
     # db/models.py's _GENERATION_JOB_STATUS_VALUES exactly (see
     # tests/unit/test_schemas.py::test_job_status_literal_matches_db_constraint).
+    #
+    # #CRITICAL: security: the raw ``report`` JSON is admin/system-only
+    # (ADR-007). The 2026-07-16 ruling narrowed the single-job GET to match
+    # the list endpoint: the admin reviews generation output first, and a
+    # guardian sees the fill-in-the-blank result only through the normal
+    # post-approval surfaces (library/reading), never the raw multi-stage
+    # report. A dual-role adult (guardian with the admin capability) is
+    # covered by the admin side, so gate on ``is_admin``, not on
+    # ``is_guardian`` (which every caller here already satisfies).
+    # #VERIFY: test_get_generation_job_report_hidden_from_plain_guardian and
+    # test_get_generation_job_report_visible_to_admin /
+    # test_get_generation_job_report_visible_to_dual_role_guardian_admin.
+    report = job.report if ctx.principal.is_admin else None
     return GenerationJobResponse(
         id=str(job.id),
         status=cast("JobStatusLiteral", job.status),
-        report=job.report,
+        report=report,
         storybook_id=job.storybook_id,
         version=job.version,
         error=job.error,
@@ -460,7 +509,87 @@ async def get_generation_job(
     )
 
 
-@router.post("/storybooks/{storybook_id}/versions/{version}/validate")
+@router.post(
+    "/admin/generation-jobs/{job_id}/force-fail",
+    responses=error_responses(404, 409),
+)
+async def force_fail_generation_job(
+    job_id: str,
+    ctx: Context,
+) -> AdminJobActionResponse:
+    """Force-fail a stuck generation job so its family's cap slot is freed.
+
+    Operator escape hatch for a job wedged at ``"queued"`` or ``"running"``
+    (for example after a hard worker death that the startup reclaim sweep has
+    not yet reached, or a job the operator wants to abandon). Because the
+    per-family active-job cap counts both statuses, two wedged rows otherwise
+    block that family from generating anything, with no other way to clear them.
+
+    Args:
+        job_id: The UUID string of the job to force-fail.
+        ctx: The request context (principal and session).
+
+    Returns:
+        AdminJobActionResponse: The job id, its new status, and the error string.
+
+    Raises:
+        AuthorizationError: If the caller is not an admin (-> 403).
+        ResourceNotFoundError: If the job does not exist (-> 404).
+        StateTransitionError: If the job is already in a terminal state (-> 409).
+        ValidationError: If ``job_id`` is not a valid UUID (-> 422).
+    """
+    # #CRITICAL: security: admin-only operator action; a guardian must not be
+    # able to force-fail arbitrary jobs across families.
+    # #VERIFY: test_force_fail_requires_admin and test_force_fail_cross_family.
+    if not ctx.principal.is_admin:
+        msg = "admin role required for this endpoint"
+        raise AuthorizationError(msg, required_permission="admin")
+
+    job_uuid = _parse_uuid(job_id, "job_id")
+    job = await ctx.session.get(GenerationJob, job_uuid)
+    if job is None:
+        msg = f"generation job '{job_id}' not found"
+        raise ResourceNotFoundError(msg)
+
+    # #EDGE: data-integrity: only an active job can be force-failed; a terminal
+    # row (passed/needs_review/failed) is rejected so this action never rewrites
+    # a real outcome.
+    # #VERIFY: test_force_fail_rejects_terminal_job.
+    if job.status not in ("queued", "running"):
+        msg = f"job '{job_id}' is not active (status={job.status})"
+        raise StateTransitionError(msg)
+
+    from_state = job.status
+    job.status = "failed"
+    job.error = "interrupted: force-failed by admin"
+    # #CRITICAL: data-integrity: the event rides the request unit-of-work commit
+    # alongside the status write (record_event only flushes); the shared commit
+    # is performed by the injected unit-of-work, never inline here.
+    # #VERIFY: test_force_fail_records_finished_event.
+    await record_event(
+        ctx.session,
+        Actor.system(),
+        entity_type="generation_job",
+        entity_id=str(job.id),
+        event_type=EventType.GENERATION_FINISHED,
+        from_state=from_state,
+        to_state="failed",
+        payload={"outcome": "failed"},
+    )
+    # Log the validated UUID (job.id), never the raw user-supplied path string,
+    # so a crafted job_id can never forge log entries (CodeQL log-injection).
+    _log.warning("generation_job.force_failed job=%s by admin", job.id)
+    return AdminJobActionResponse(
+        id=str(job.id),
+        status=cast("JobStatusLiteral", job.status),
+        error=job.error,
+    )
+
+
+@router.post(
+    "/storybooks/{storybook_id}/versions/{version}/validate",
+    responses=error_responses(404),
+)
 async def validate_storybook_version(
     storybook_id: str,
     version: int,

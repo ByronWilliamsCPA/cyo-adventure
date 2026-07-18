@@ -11,7 +11,7 @@ import math
 import random
 
 import pytest
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 from cyo_adventure.covers.optimize import optimize_cover
 
@@ -114,3 +114,40 @@ def test_non_multiple_of_ten_quality_never_crashes():
     out = optimize_cover(source, max_width=300, quality=85, max_bytes=1_000)
     assert out[:4] == b"RIFF"
     assert out[8:12] == b"WEBP"
+
+
+@pytest.mark.unit
+def test_optimize_cover_undecodable_bytes_raises_unidentified_image_error() -> None:
+    """Provider bytes that are not an image raise UnidentifiedImageError."""
+    # Intentionally uncaught in optimize_cover: covers/service.py treats any
+    # exception from this function as a failed cover (cover_status="failed").
+    with pytest.raises(UnidentifiedImageError):
+        optimize_cover(b"garbage-not-an-image")
+
+
+@pytest.mark.unit
+def test_optimize_cover_empty_bytes_raises_unidentified_image_error() -> None:
+    """An empty provider payload raises UnidentifiedImageError, not a silent pass."""
+    with pytest.raises(UnidentifiedImageError):
+        optimize_cover(b"")
+
+
+@pytest.mark.unit
+def test_optimize_cover_truncated_png_raises_os_error() -> None:
+    """A PNG cut off mid-stream fails at decode with OSError."""
+    # The header parses (Image.open succeeds), but the forced full decode in
+    # convert("RGB") hits the missing tail and raises.
+    source = _png(400, 600)
+    truncated = source[: len(source) // 2]
+    with pytest.raises(OSError, match="truncated"):
+        optimize_cover(truncated)
+
+
+@pytest.mark.unit
+def test_optimize_cover_zero_max_width_raises_value_error() -> None:
+    """A misconfigured max_width of 0 propagates Pillow's ValueError."""
+    # Documents that an invalid COVER_MAX_WIDTH is surfaced as a job failure
+    # (via the service's failed-status handler) rather than producing a
+    # degenerate zero-width image.
+    with pytest.raises(ValueError, match="width must be > 0"):
+        optimize_cover(_png(400, 600), max_width=0)

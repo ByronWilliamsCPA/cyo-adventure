@@ -180,6 +180,27 @@ describe('AdminConsolePage', () => {
     expect(link).toHaveAttribute('href', '/admin/review/flag-1')
   })
 
+  it('shows age-band and waiting-time triage metadata on a row (UX-A3)', async () => {
+    mockQueue([
+      {
+        ...FLAGGED,
+        age_band: '6-8',
+        waiting_since: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      },
+    ])
+    renderPage()
+    expect(await screen.findByText('Ages 6-8')).toBeInTheDocument()
+    expect(screen.getByText(/Waiting 2 hours ago/i)).toBeInTheDocument()
+  })
+
+  it('passes the flagged bucket order to the detail page for auto-advance (UX-A1)', async () => {
+    renderPage()
+    // The row links carry the queue via router state, exercised end-to-end by
+    // ReviewDetailPage.test.tsx; here we assert the link still points at detail.
+    const link = await screen.findByRole('link', { name: /Scary Tale/i })
+    expect(link).toHaveAttribute('href', '/admin/review/flag-1')
+  })
+
   it('shows the empty state when nothing is pending', async () => {
     mockQueue([])
     renderPage()

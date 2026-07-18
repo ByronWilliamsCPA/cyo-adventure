@@ -10,9 +10,9 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from cyo_adventure.api.deps import Context
-from cyo_adventure.api.schemas import MeResponse
+from cyo_adventure.api.schemas import MeResponse, error_responses
 
-router = APIRouter(prefix="/api/v1", tags=["me"])
+router = APIRouter(prefix="/api/v1", tags=["me"], responses=error_responses(401))
 
 
 @router.get("/me")

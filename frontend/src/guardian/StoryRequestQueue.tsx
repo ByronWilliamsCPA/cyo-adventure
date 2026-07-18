@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactElement } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
@@ -6,15 +6,28 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { useToast } from '../notifications/useToast'
+import { BUDGET_EXCEEDED_MESSAGE, isBudgetExceededError, makeBudgetApi } from './budgetApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
 import { formatRelativeTime } from './intakeApi'
-import { AGE_BANDS, LENGTHS, TEEN_BANDS, ageBandLabel } from './storyRequestOptions'
+import {
+  AGE_BANDS,
+  LENGTHS,
+  TEEN_BANDS,
+  ageBandLabel,
+  lengthLabel,
+  narrativeStyleLabel,
+} from './storyRequestOptions'
 import {
   makeStoryRequestQueueApi,
   STORY_REQUESTS_CHANGED_EVENT,
   type StoryRequestQueueScope,
   type StoryRequestView,
 } from './storyRequestQueueApi'
+
+// Generic fallback for a row action failure that is not the ADR-015 G7
+// budget 409 (see isBudgetExceededError); unchanged from before the budget
+// surfacing was added.
+const GENERIC_ROW_ERROR = 'Could not update the request. Try again.'
 
 type LoadState =
   | { kind: 'loading' }
@@ -72,6 +85,7 @@ export function StoryRequestQueue({
   const api = useApi()
   const { showToast } = useToast()
   const queueApi = useMemo(() => makeStoryRequestQueueApi(api, scope), [api, scope])
+  const budgetApi = useMemo(() => makeBudgetApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   // "Now" for the "Asked N minutes ago" provenance lines, stamped when the
   // list loads (IntakePage's jobsSyncedAt pattern): render stays pure (the
@@ -79,8 +93,20 @@ export function StoryRequestQueue({
   // exist after a fetch has stamped it, so the 0 initial value never shows.
   const [loadedAt, setLoadedAt] = useState(0)
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set())
-  const [rowErrors, setRowErrors] = useState<Record<string, boolean>>({})
+  // Message text per row (absent = no error), not a boolean: a budget-409
+  // gets its own friendly copy (see runRowAction's catch) instead of the
+  // generic fallback every other row failure still uses.
+  const [rowErrors, setRowErrors] = useState<Record<string, string>>({})
   const [decisions, setDecisions] = useState<Record<string, RowDecision>>({})
+  // ADR-015 G7/G3 remaining-budget context for the approve action
+  // ("This will use 1 of your N remaining stories this month"). Only
+  // meaningful for the guardian's own family queue: an admin's 'all' scope
+  // reviews requests across many families, and GET /v1/families/me/budget
+  // always answers for the ADMIN's own family, not the row's -- showing it
+  // there would misattribute someone else's family budget to this request.
+  // #VERIFY: StoryRequestQueue.test.tsx / RequestsPage.test.tsx pin the
+  // family-scope-only rendering.
+  const [remaining, setRemaining] = useState<number | null>(null)
   // The request awaiting decline confirmation (null when the dialog is
   // closed). Decline is destructive from the child's point of view (the idea
   // silently disappears from the queue), so it gets a confirm step; Approve
@@ -117,9 +143,29 @@ export function StoryRequestQueue({
     })
   }
 
+  const [reloadKey, setReloadKey] = useState(0)
+  const retry = useCallback(() => setReloadKey((k) => k + 1), [])
+
+  // Informational only (see `remaining`'s doc): a failed fetch just leaves
+  // the approve context absent, it never blocks or errors the queue itself.
+  const refreshBudget = useCallback(async () => {
+    if (scope !== 'family') return
+    try {
+      const budget = await budgetApi.get()
+      setRemaining(budget.remaining)
+    } catch (err) {
+      console.error('budget fetch for queue failed:', err instanceof Error ? err.message : err)
+    }
+  }, [scope, budgetApi])
+
+  useEffect(() => {
+    void refreshBudget()
+  }, [refreshBudget])
+
   useEffect(() => {
     let cancelled = false
     async function load() {
+      setState({ kind: 'loading' })
       try {
         const requests = await queueApi.listPending()
         if (!cancelled) {
@@ -151,7 +197,7 @@ export function StoryRequestQueue({
     return () => {
       cancelled = true
     }
-  }, [queueApi])
+  }, [queueApi, reloadKey])
 
   function removeRow(id: string) {
     setState((prev) =>
@@ -202,7 +248,15 @@ export function StoryRequestQueue({
       // #VERIFY: RequestsPage.test.tsx rejected-approve test asserts the
       // visible alert and that the row remains in the list.
       console.error('story-request action failed:', err instanceof Error ? err.message : err)
-      setRowErrors((prev) => ({ ...prev, [id]: true }))
+      // ADR-015 G7: an approve past the family's monthly quota 409s with a
+      // distinct, friendlier message (with a hint to wait for next month)
+      // instead of the generic "could not update" fallback every other row
+      // failure still gets.
+      // #VERIFY: RequestsPage.test.tsx "budget-exhausted approve" test.
+      setRowErrors((prev) => ({
+        ...prev,
+        [id]: isBudgetExceededError(err) ? BUDGET_EXCEEDED_MESSAGE : GENERIC_ROW_ERROR,
+      }))
       return false
     } finally {
       setPendingIds((prev) => {
@@ -225,7 +279,14 @@ export function StoryRequestQueue({
     const approved = await runRowAction(req.id, () => queueApi.approve(req.id, payload))
     // Success-only: a failed action keeps the row visible with its inline
     // alert (runRowAction's catch), so a toast would be contradictory noise.
-    if (approved) showToast(approveSuccessMessage, { tone: 'success' })
+    if (approved) {
+      showToast(approveSuccessMessage, { tone: 'success' })
+      // An approve spends 1 of the family's remaining stories; refresh so
+      // the next row's approve context (and RequestsPage's/IntakePage's
+      // BudgetBanner, via the STORY_REQUESTS_CHANGED_EVENT runRowAction
+      // already dispatched above) reflect the new count.
+      void refreshBudget()
+    }
   }
 
   async function decline(id: string) {
@@ -263,9 +324,12 @@ export function StoryRequestQueue({
     )
   } else if (state.kind === 'error') {
     content = (
-      <p role="alert" className="console__error cyo-text-error">
-        We could not load story requests. Please reload.
-      </p>
+      <div role="alert" className="console__error">
+        <p className="cyo-text-error">We could not load story requests.</p>
+        <Button variant="primary" onClick={retry}>
+          Try again
+        </Button>
+      </div>
     )
   } else if (state.requests.length === 0) {
     content = (
@@ -330,7 +394,7 @@ export function StoryRequestQueue({
                   ) : null}
                   {rowErrors[req.id] ? (
                     <p role="alert" className="console-row__error cyo-text-error">
-                      Could not update the request. Try again.
+                      {rowErrors[req.id]}
                     </p>
                   ) : null}
                 </div>
@@ -361,7 +425,7 @@ export function StoryRequestQueue({
                       <option value="">Choose…</option>
                       {LENGTHS.map((l) => (
                         <option key={l} value={l}>
-                          {l}
+                          {lengthLabel(l)}
                         </option>
                       ))}
                     </select>
@@ -373,8 +437,8 @@ export function StoryRequestQueue({
                         value={decision.narrative_style}
                         onChange={(e) => setDecision(req, { narrative_style: e.target.value })}
                       >
-                        <option value="prose">prose</option>
-                        <option value="gamebook">gamebook</option>
+                        <option value="prose">{narrativeStyleLabel('prose')}</option>
+                        <option value="gamebook">{narrativeStyleLabel('gamebook')}</option>
                       </select>
                     </label>
                   ) : null}
@@ -412,6 +476,17 @@ export function StoryRequestQueue({
                   {needsLength ? (
                     <p className="console-row__approve-hint cyo-text-muted">
                       Choose a length to approve
+                    </p>
+                  ) : scope === 'family' && remaining !== null && isActionable ? (
+                    // ADR-015 G7/G3: remaining-budget context for the
+                    // approve action; family-scope only, see `remaining`'s
+                    // doc for why the admin cross-family queue never shows
+                    // this. Approve itself deliberately stays one-click (no
+                    // confirm dialog, see the comment above this component);
+                    // this is context alongside the button, not a gate.
+                    <p className="console-row__approve-hint cyo-text-muted">
+                      This will use 1 of your {remaining}{' '}
+                      {remaining === 1 ? 'remaining story' : 'remaining stories'} this month.
                     </p>
                   ) : null}
                 </div>

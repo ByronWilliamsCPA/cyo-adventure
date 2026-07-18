@@ -356,3 +356,44 @@ async def test_verify_oidc_identity_email_none_when_blank() -> None:
     """An empty-string email claim degrades to None (contact data, not a key)."""
     _subject, email = await deps._verify_oidc_identity(_sign(_claims(email="")))
     assert email is None
+
+
+# ---------------------------------------------------------------------------
+# Time-boundary / clock-skew edge cases (PyJWT leeway defaults to 0).
+#
+# The OIDC token is minted by an EXTERNAL issuer (Supabase), so the verifier's
+# clock can legitimately differ from the issuer's. With leeway=0 the boundary
+# is strict: exp exactly at now is expired, and an iat/nbf even slightly in the
+# future is rejected. These pin the current behavior; if a clock-skew leeway is
+# ever added to _verify_oidc_jwt, update these expectations deliberately.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_expiry_exactly_at_now_is_rejected() -> None:
+    """A token whose exp equals the current instant is treated as expired."""
+    now = datetime.now(UTC)
+    token = _sign(_claims(iat=now - timedelta(minutes=5), exp=now))
+    with pytest.raises(AuthenticationError):
+        await deps._verify_oidc_jwt(token)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_future_issued_at_is_rejected_under_zero_leeway() -> None:
+    """An iat in the future (issuer clock ahead) is rejected with leeway=0."""
+    now = datetime.now(UTC)
+    token = _sign(_claims(iat=now + timedelta(minutes=5), exp=now + timedelta(hours=1)))
+    with pytest.raises(AuthenticationError):
+        await deps._verify_oidc_jwt(token)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_future_not_before_is_rejected() -> None:
+    """An nbf in the future is rejected even though nbf is not in the require set."""
+    now = datetime.now(UTC)
+    token = _sign(_claims(nbf=now + timedelta(minutes=5)))
+    with pytest.raises(AuthenticationError):
+        await deps._verify_oidc_jwt(token)

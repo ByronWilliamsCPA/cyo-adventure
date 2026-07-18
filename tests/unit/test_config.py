@@ -715,6 +715,11 @@ class TestValidatorRequireChildSessionSecretOutsideLocal:
             "REPLACE_ME",  # placeholder shipped in .env.staging.example
             "changeme",  # common placeholder
             "SECRET",  # placeholder (casefolded match)
+            # The docker-compose.yml local-dev defaults: long enough to pass
+            # the byte floor, so they must be rejected by exact value outside
+            # local (repository-known HMAC keys sign forgeable tokens).
+            "local-dev-child-session-secret-not-for-production",
+            "local-dev-device-grant-secret-not-for-production",
         ],
     )
     def test_non_local_with_weak_child_secret_raises(self, secret: str) -> None:
@@ -754,6 +759,21 @@ class TestValidatorRequireChildSessionSecretOutsideLocal:
 
         settings = Settings(environment="local")
         assert settings.child_session_secret is None
+
+    @pytest.mark.unit
+    def test_non_local_rejects_compose_dev_device_secret(self) -> None:
+        """The compose dev device-grant default is refused outside local.
+
+        The docker-compose.yml default is a repository-known HMAC key; if a
+        non-local process ever starts with it, device grants become forgeable,
+        so the validator must reject the exact value despite its length.
+        """
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            _non_local_settings(
+                device_grant_secret="local-dev-device-grant-secret-not-for-production"
+            )
 
 
 class TestValidatorRequireDeviceGrantSecretOutsideLocal:

@@ -1,10 +1,39 @@
 import { render, screen } from '@testing-library/react'
+import { Suspense } from 'react'
 import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MockInstance } from 'vitest'
 
-import { NotFoundPage, RouteError, RouteFallback } from './routeElements'
+import {
+  AdminLibraryPage,
+  AuditPage,
+  AuthoringQueuePage,
+  NotFoundPage,
+  ProviderAllowlistPage,
+  RouteError,
+  RouteFallback,
+  UserManagementPage,
+} from './routeElements'
 import { routes } from './router'
+
+// The lazy route chunks below are loaded through their real dynamic-import
+// factories; AdminLibraryPage is the only one that reaches the network on mount,
+// so stub its data hook to an empty library.
+vi.mock('./hooks/useApi', () => ({
+  useApi: () => ({ get: vi.fn().mockResolvedValue({ data: { items: [] } }) }),
+}))
+vi.mock('./admin/AuditPage', () => ({
+  AuditPage: () => <div>AuditPage loaded</div>,
+}))
+vi.mock('./admin/AuthoringQueuePage', () => ({
+  AuthoringQueuePage: () => <div>AuthoringQueuePage loaded</div>,
+}))
+vi.mock('./admin/ProviderAllowlistPage', () => ({
+  ProviderAllowlistPage: () => <div>ProviderAllowlistPage loaded</div>,
+}))
+vi.mock('./admin/UserManagementPage', () => ({
+  UserManagementPage: () => <div>UserManagementPage loaded</div>,
+}))
 
 describe('NotFoundPage', () => {
   it('renders friendly 404 copy with a way home for both audiences', () => {
@@ -87,6 +116,23 @@ describe('RouteError', () => {
   })
 })
 
+describe('lazy route chunks', () => {
+  it('loads the AdminLibraryPage chunk through its dynamic-import factory', async () => {
+    // Rendering the lazy export exercises the real chunk factory
+    // (`() => import('./admin/AdminLibraryPage').then(...)`), the same wiring the
+    // router mounts in production, and confirms the resolved module renders.
+    render(
+      <MemoryRouter>
+        <Suspense fallback={<div>loading</div>}>
+          <AdminLibraryPage />
+        </Suspense>
+      </MemoryRouter>
+    )
+
+    expect(await screen.findByText(/No stories here/i)).toBeInTheDocument()
+  })
+})
+
 describe('router catch-all (router.tsx)', () => {
   it('renders the styled 404 for an unmatched URL', async () => {
     const router = createMemoryRouter(routes, {
@@ -106,5 +152,31 @@ describe('router catch-all (router.tsx)', () => {
     const catchAll = routes.find((route) => 'path' in route && route.path === '*')
     expect(catchAll).toBeDefined()
     expect(catchAll && 'errorElement' in catchAll && catchAll.errorElement).toBeTruthy()
+  })
+})
+
+describe('lazy admin page loaders', () => {
+  // The loader thunk and its named-export mapper are the only code this file
+  // adds per page; mounting each lazy component through Suspense executes both
+  // without needing the real page's data layer. Pages exercised only through
+  // full-router navigation cover their thunks nondeterministically (Suspense
+  // timing), which is exactly the per-file function-coverage flake this block
+  // pins down.
+  const cases = [
+    ['AuditPage', AuditPage],
+    ['AuthoringQueuePage', AuthoringQueuePage],
+    ['ProviderAllowlistPage', ProviderAllowlistPage],
+    ['UserManagementPage', UserManagementPage],
+  ] as const
+
+  it.each(cases)('resolves the %s loader to the named export', async (name, LazyPage) => {
+    render(
+      <MemoryRouter>
+        <Suspense fallback={<RouteFallback />}>
+          <LazyPage />
+        </Suspense>
+      </MemoryRouter>
+    )
+    expect(await screen.findByText(`${name} loaded`)).toBeInTheDocument()
   })
 })

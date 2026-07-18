@@ -35,4 +35,34 @@ describe('makeProfilesApi', () => {
     expect(api.patch).toHaveBeenCalledWith('/v1/profiles/p1', { avatar: null })
     expect(result.avatar).toBeNull()
   })
+
+  // ADR-015 G3: the wire shape only, per ProfileEnvelopeFields' header
+  // comment -- these two fields are not yet accepted by the live backend,
+  // this just pins that the adapter passes them through verbatim when a
+  // caller (ProfileFormDialog) includes them.
+  it('passes request_auto_approve/monthly_request_envelope through on create', async () => {
+    const api = fakeAxios()
+    api.post.mockResolvedValue({ data: { id: 'p3' } })
+    const body: ProfileCreateBody = {
+      display_name: 'Nova',
+      age_band: '5-8',
+      request_auto_approve: true,
+      monthly_request_envelope: 3,
+    }
+    await makeProfilesApi(api as never).create(body)
+    expect(api.post).toHaveBeenCalledWith('/v1/profiles', body)
+  })
+
+  it('passes request_auto_approve/monthly_request_envelope through on update', async () => {
+    const api = fakeAxios()
+    api.patch.mockResolvedValue({ data: { id: 'p1' } })
+    await makeProfilesApi(api as never).update('p1', {
+      request_auto_approve: false,
+      monthly_request_envelope: null,
+    })
+    expect(api.patch).toHaveBeenCalledWith('/v1/profiles/p1', {
+      request_auto_approve: false,
+      monthly_request_envelope: null,
+    })
+  })
 })

@@ -24,6 +24,7 @@ from cyo_adventure.api.schemas import (
     DeviceGrantCreateBody,
     DeviceGrantListItem,
     DeviceGrantView,
+    error_responses,
 )
 from cyo_adventure.core.device_grant import mint_device_grant_token
 from cyo_adventure.core.exceptions import (
@@ -36,7 +37,9 @@ from cyo_adventure.utils.logging import get_logger
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/v1", tags=["device-grants"])
+router = APIRouter(
+    prefix="/api/v1", tags=["device-grants"], responses=error_responses(401, 403)
+)
 
 # The role gate shared by every endpoint here: only a guardian (own family) or
 # an admin may manage device grants. Defined once so the three endpoints cannot
@@ -44,7 +47,7 @@ router = APIRouter(prefix="/api/v1", tags=["device-grants"])
 _ADULT_ROLE_REQUIRED = "guardian or admin role required"
 
 
-@router.post("/device-grants", status_code=201)
+@router.post("/device-grants", status_code=201, responses=error_responses(404))
 async def create_device_grant(
     ctx: Context, body: DeviceGrantCreateBody | None = None
 ) -> DeviceGrantView:
@@ -235,7 +238,9 @@ async def list_device_grants(ctx: Context) -> list[DeviceGrantListItem]:
     ]
 
 
-@router.delete("/device-grants/{grant_id}", status_code=204)
+@router.delete(
+    "/device-grants/{grant_id}", status_code=204, responses=error_responses(404)
+)
 async def revoke_device_grant(grant_id: uuid.UUID, ctx: Context) -> None:
     """Revoke a device grant belonging to the caller's family.
 

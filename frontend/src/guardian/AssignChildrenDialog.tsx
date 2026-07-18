@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { makeFetchStory } from '../api/readerApi'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { makeAssignApi, type ContentSummary } from './assignApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
+import { StoryStructureSummary } from './StoryStructureSummary'
 import './guardian.css'
 
 interface AssignChildrenDialogProps {
@@ -60,6 +62,43 @@ function ContentSummarySection({ summary }: { summary: ContentSummary }) {
 }
 
 /**
+ * G5 skim aid, compact variant: endings, read time, and themes for the book
+ * being assigned, so a guardian sees what it is without opening every
+ * passage. Additive to ContentSummarySection above (which already owns the
+ * flagged-count pill and itemized findings); this block renders once the
+ * published version's blob has loaded, and is silently omitted while it is
+ * still loading or unavailable -- it is a supplementary skim aid, not a
+ * blocker for assignment.
+ *
+ * #ASSUME: external resources: the blob fetch (GET
+ * /v1/storybooks/{id}/versions/{version}) is a second, best-effort request
+ * beyond the content-summary call; a failure here must never block the
+ * assign flow, so it degrades to "nothing rendered" rather than an error.
+ * #VERIFY: AssignChildrenDialog.test.tsx asserts a failed/slow blob fetch
+ * still leaves the dialog usable.
+ */
+function StoryOverviewSection({
+  summary,
+  structureBlob,
+}: {
+  summary: ContentSummary
+  structureBlob: Record<string, unknown> | null
+}) {
+  if (structureBlob === null) return null
+  return (
+    <div className="assign__story-overview">
+      <h3>Story overview</h3>
+      <StoryStructureSummary
+        compact
+        blob={structureBlob}
+        screened={summary.screened}
+        flaggedCount={summary.flagged_count}
+      />
+    </div>
+  )
+}
+
+/**
  * Guardian "Assign more" dialog (wireframe 4.5): a multi-select checklist of
  * family child profiles. Already-assigned children are shown checked and
  * disabled; Save posts only the newly selected ids (add-only, idempotent).
@@ -72,6 +111,7 @@ export function AssignChildrenDialog({
   const api = useApi()
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
   const assignApi = useMemo(() => makeAssignApi(api), [api])
+  const fetchStory = useMemo(() => makeFetchStory(api), [api])
   const [profiles, setProfiles] = useState<ProfileView[] | null>(null)
   const [assigned, setAssigned] = useState<Set<string>>(new Set())
   const [picked, setPicked] = useState<Set<string>>(new Set())
@@ -80,6 +120,7 @@ export function AssignChildrenDialog({
   const [saving, setSaving] = useState(false)
   const [summary, setSummary] = useState<ContentSummary | null>(null)
   const [summaryError, setSummaryError] = useState(false)
+  const [structureBlob, setStructureBlob] = useState<Record<string, unknown> | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -139,6 +180,35 @@ export function AssignChildrenDialog({
       cancelled = true
     }
   }, [assignApi, storybookId])
+
+  // G5 skim aid: fetch the published version's blob (same immutable-version
+  // endpoint the reader uses) once the content summary tells us which version
+  // is current, and derive the structure overview from it client-side. Reset
+  // to null on every storybookId/summary change so a stale story's structure
+  // never bleeds into the next one; a fetch failure is logged and left null
+  // (StoryOverviewSection renders nothing), never surfaced as a blocking error.
+  useEffect(() => {
+    let cancelled = false
+    async function loadStructure() {
+      // Reset stale structure from a previous storybookId/summary before the
+      // new fetch resolves, same set-state-in-effect rule as loadSummary
+      // above: the reset lives in the nested async function, not the effect
+      // body itself.
+      if (cancelled) return
+      setStructureBlob(null)
+      if (!summary) return
+      try {
+        const story = await fetchStory(storybookId, summary.version)
+        if (!cancelled) setStructureBlob(story as unknown as Record<string, unknown>)
+      } catch (err) {
+        console.error('story structure load failed:', err instanceof Error ? err.message : err)
+      }
+    }
+    void loadStructure()
+    return () => {
+      cancelled = true
+    }
+  }, [fetchStory, storybookId, summary])
 
   function toggle(id: string) {
     setPicked((prev) => {
@@ -204,7 +274,10 @@ export function AssignChildrenDialog({
               loaded.
             </p>
           ) : summary ? (
-            <ContentSummarySection summary={summary} />
+            <>
+              <StoryOverviewSection summary={summary} structureBlob={structureBlob} />
+              <ContentSummarySection summary={summary} />
+            </>
           ) : null}
           {profiles.length === 0 ? (
             // A family with no profiles would otherwise see a bare empty

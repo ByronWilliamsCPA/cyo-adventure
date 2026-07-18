@@ -18,7 +18,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.api import approval
 from cyo_adventure.api.deps import Principal, RequestContext
-from cyo_adventure.api.schemas import ReviewQueueView, SendBackRequest
+from cyo_adventure.api.schemas import (
+    ReviewQueueView,
+    SendBackRequest,
+    StorybookLibraryView,
+)
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
@@ -657,3 +661,77 @@ async def test_review_queue_is_bulk_not_n_plus_one() -> None:
     assert session.execute_calls == 1
     # The admin noise floor is loaded once for the listing, never per story.
     assert session.get_calls == 1
+
+
+# ---------------------------------------------------------------------------
+# list_admin_storybooks (P19)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_admin_storybooks_blocks_non_admin() -> None:
+    """A non-admin caller raises AuthorizationError without any DB round trip."""
+    session = _QueueSession(storybooks=[], latest=[], versions=[])
+    ctx = RequestContext(principal=_principal("guardian"), session=session)  # type: ignore[arg-type]
+
+    with pytest.raises(AuthorizationError, match="admin role required"):
+        await approval.list_admin_storybooks(ctx)
+
+    assert session.scalars_calls == 0
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_admin_storybooks_rejects_unknown_status() -> None:
+    """An unrecognized status filter raises ValidationError, not a silent all-list."""
+    session = _QueueSession(storybooks=[], latest=[], versions=[])
+    ctx = RequestContext(principal=_principal("admin"), session=session)  # type: ignore[arg-type]
+
+    with pytest.raises(ValidationError, match="unknown storybook status"):
+        await approval.list_admin_storybooks(ctx, status="bogus")
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_admin_storybooks_lists_all_statuses_bulk_newest_first() -> None:
+    """Books of any status are listed, bulk-loaded, newest activity first (P19)."""
+    from datetime import UTC, datetime
+
+    book_a = _story("published", current=1)
+    book_a.id = "a"
+    book_a.created_at = datetime(2026, 6, 1, tzinfo=UTC)
+    book_b = _story("archived")
+    book_b.id = "b"
+    book_b.created_at = datetime(2026, 6, 2, tzinfo=UTC)
+    ver_a = StorybookVersion(
+        storybook_id="a",
+        version=1,
+        blob={"title": "A", "metadata": {"age_band": "6-8"}, "nodes": []},
+    )
+    ver_a.created_at = datetime(2026, 6, 10, tzinfo=UTC)  # newer activity
+    ver_b = StorybookVersion(
+        storybook_id="b", version=2, blob={"title": "B", "nodes": []}
+    )
+    ver_b.created_at = datetime(2026, 6, 5, tzinfo=UTC)
+    session = _QueueSession(
+        storybooks=[book_a, book_b],
+        latest=[("a", 1), ("b", 2)],
+        versions=[ver_a, ver_b],
+    )
+    ctx = RequestContext(principal=_principal("admin"), session=session)  # type: ignore[arg-type]
+
+    view = await approval.list_admin_storybooks(ctx)
+
+    assert isinstance(view, StorybookLibraryView)
+    # Newest activity first: a's version was created 2026-06-10, b's 2026-06-05.
+    assert [item.storybook_id for item in view.items] == ["a", "b"]
+    first = view.items[0]
+    assert first.title == "A"
+    assert first.age_band == "6-8"
+    assert first.status == "published"
+    assert first.current_published_version == 1
+    assert first.version == 1
+    # Bulk: exactly 2 scalars (books, versions) + 1 execute (grouped max).
+    assert session.scalars_calls == 2
+    assert session.execute_calls == 1

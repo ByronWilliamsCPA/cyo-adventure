@@ -17,7 +17,11 @@ if TYPE_CHECKING:
 _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     EventType.REQUEST_CREATED: frozenset({"initiator_role"}),
     EventType.REQUEST_APPROVED: frozenset(
-        {"series_created", "anchor_resolved", "series_id"}
+        # ADR-015 G3: "auto_approved" is the pre-authorization audit marker
+        # (True when this approval came from a guardian's standing envelope,
+        # not a fresh explicit click); a bool, not free text, so it fits the
+        # PII-free payload contract unchanged.
+        {"series_created", "anchor_resolved", "series_id", "auto_approved"}
     ),
     EventType.REQUEST_DECLINED: frozenset(),
     EventType.PLAN_ASSIGNED: frozenset({"job_status", "plan_kind"}),
@@ -37,12 +41,26 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     EventType.NOISE_FLOOR_CHANGED: frozenset({"value"}),
     EventType.BOOK_ASSIGNED: frozenset({"child_profile_id"}),
     EventType.RATED: frozenset({"value", "is_update"}),
+    # K15: a structured, no-free-text child signal (ADR-016). Only the closed
+    # vocabulary reason and the storybook id are ever recorded here; the flag
+    # itself carries no free text and neither does this event.
+    EventType.KID_FLAGGED: frozenset({"reason", "storybook_id"}),
+    EventType.FLAG_RESOLVED: frozenset({"resolution"}),
     # WS-J admin user management. Deliberately excludes email/display_name/
     # family name: those are contact/identity data, not the control-plane
     # facts (action, role, status) this log needs to stay PII-free (D3).
     EventType.USER_MANAGED: frozenset({"action", "role", "status"}),
     EventType.FAMILY_MANAGED: frozenset({"action", "status"}),
-    EventType.FAMILY_CONNECTION_CHANGED: frozenset({"action", "connected_family_id"}),
+    # ADR-016 (register G17): "role" ("viewer"/"sharer") and "active" (both
+    # sides now consented) are consent markers, not free text, added for the
+    # new consent/revoke actions; "created"/"removed" (admin CRUD) never set
+    # them.
+    EventType.FAMILY_CONNECTION_CHANGED: frozenset(
+        {"action", "connected_family_id", "role", "active"}
+    ),
+    # G6: the node id only, never the edited prose (spec D3); see
+    # api/node_edit.py::edit_node.
+    EventType.NODE_EDITED: frozenset({"node_id"}),
 }
 
 

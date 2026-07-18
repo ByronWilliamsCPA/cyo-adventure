@@ -33,10 +33,11 @@
 '   frontend/src/kid/ProfilePickerPage.tsx, library/LibraryPage.tsx,
 '     reader/ReaderRoute.tsx
 '   frontend/src/guardian/ConsolePage.tsx, IntakePage.tsx, RequestsPage.tsx,
-'     BooksPage.tsx, ProfilesPage.tsx
-'   frontend/src/admin/AdminConsolePage.tsx, AdminRequestsPage.tsx,
-'     ReviewDetailPage.tsx, ModerationDashboardPage.tsx,
-'     ModerationThresholdsPage.tsx
+'     BooksPage.tsx, ProfilesPage.tsx, ReadingPage.tsx, ConnectionsPage.tsx
+'   frontend/src/admin/AdminConsolePage.tsx, AdminLibraryPage.tsx,
+'     AdminRequestsPage.tsx, ReviewDetailPage.tsx, ModerationDashboardPage.tsx,
+'     ModerationThresholdsPage.tsx, AuthoringQueuePage.tsx,
+'     ProviderAllowlistPage.tsx, UserManagementPage.tsx, AuditPage.tsx
 '   docs/planning/adr/adr-014-device-authorized-kid-access.md
 ' ============================================================
 
@@ -69,6 +70,8 @@ package "Adult Zone\nAdultGate: one Supabase-session + warm step-up boundary" #E
     component "RequestsPage\n/guardian/requests\nApprove/decline a child's idea" as requests #C8E6C9
     component "BooksPage\n/guardian/books\nCatalog browse + assign (WS-E)" as books #C8E6C9
     component "ProfilesPage\n/guardian/profiles\nChild profiles + device grants" as profiles #C8E6C9
+    component "ReadingPage\n/guardian/reading\nFamily reading-visibility\n(G9 engagement summary)" as g_reading #C8E6C9
+    component "ConnectionsPage\n/guardian/connections\nCross-family connection consent\n(ADR-016 ring-2 dual consent)" as g_connections #C8E6C9
   }
 
   package "Admin Console (nested)\nProtectedRoute(allowedRoles=[admin])" #A5D6A7 {
@@ -77,6 +80,11 @@ package "Adult Zone\nAdultGate: one Supabase-session + warm step-up boundary" #E
     component "ReviewDetailPage\n/admin/review/:storybookId\nApprove / send back (ADR-005)" as review_detail #A5D6A7
     component "ModerationDashboardPage\n/admin/moderation-dashboard" as mod_dashboard #A5D6A7
     component "ModerationThresholdsPage\n/admin/moderation-thresholds" as mod_thresholds #A5D6A7
+    component "AdminLibraryPage\n/admin/library\nMaster library: all storybooks,\nany status, cross-family (#277)" as admin_library #A5D6A7
+    component "AuthoringQueuePage\n/admin/authoring-queue\nApproved requests awaiting\nan authoring plan (WS-C)" as admin_authoring #A5D6A7
+    component "ProviderAllowlistPage\n/admin/provider-allowlist\nGlobal provider/model gate" as admin_allowlist #A5D6A7
+    component "UserManagementPage\n/admin/users\nGuardians/admins, kids, families,\nfamily connections (WS-J #267)" as admin_users #A5D6A7
+    component "AuditPage\n/admin/audit\nFilterable pipeline_event log" as admin_audit #A5D6A7
   }
 }
 
@@ -89,6 +97,8 @@ console --> intake : "nav"
 console --> requests : "nav"
 console --> books : "nav"
 console --> profiles : "nav"
+console --> g_reading : "nav"
+console --> g_connections : "nav"
 intake --> console : "back"
 requests --> console : "back"
 books --> console : "back"
@@ -98,6 +108,11 @@ admin_console --> admin_requests : "nav"
 admin_console --> review_detail : "open a story"
 admin_console --> mod_dashboard : "nav"
 admin_console --> mod_thresholds : "nav"
+admin_console --> admin_library : "nav"
+admin_console --> admin_authoring : "nav"
+admin_console --> admin_allowlist : "nav"
+admin_console --> admin_users : "nav"
+admin_console --> admin_audit : "nav"
 review_detail --> admin_console : "approve / send back\n-> back to queue"
 
 console ..> admin_console : "dual-role adult:\n\"Admin console\" link\n(free, no re-challenge)"

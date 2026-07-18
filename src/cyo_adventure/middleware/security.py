@@ -23,9 +23,13 @@ from __future__ import annotations
 import json
 import logging
 import time
+import uuid
 from collections import defaultdict
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
+import structlog
+from redis.asyncio import Redis
+from redis.exceptions import RedisError
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
@@ -33,9 +37,25 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import JSONResponse, Response
 
 logger = logging.getLogger(__name__)
+# Structured logger for the Redis-backed rate limiter's fail-open path: an
+# operator alerting rule should be able to key on the `event` field
+# ("rate_limit_redis_unavailable") rather than parsing a stdlib log line.
+#
+# Uses structlog directly rather than cyo_adventure.utils.logging.get_logger:
+# that wrapper module imports from cyo_adventure.middleware.correlation,
+# which is a sibling submodule imported by this package's __init__.py before
+# security.py -- routing through the wrapper here creates a circular import
+# (cyo_adventure.utils.logging -> cyo_adventure.middleware -> .security ->
+# cyo_adventure.utils.logging, observed as a partially-initialized-module
+# ImportError during test collection). structlog.get_logger(__name__) is
+# exactly what the wrapper does internally (see utils/logging.py::get_logger)
+# minus the import-time dependency, and still honors whatever structlog.configure()
+# call setup_logging() has made process-wide.
+_struct_logger = structlog.get_logger(__name__)
 
 if TYPE_CHECKING:
     from fastapi import FastAPI, Request
+    from redis.commands.core import AsyncScript
     from starlette.middleware.base import RequestResponseEndpoint
     from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
@@ -214,23 +234,109 @@ async def _send_413(send: Send) -> None:
     await send({"type": "http.response.body", "body": body})
 
 
+# Atomic sliding-window-log rate check, run server-side via Redis' EVAL so the
+# expire-count-decide-record sequence cannot race with another worker
+# process/replica hitting the same Redis instance between our count read and
+# our record write. That atomicity is the entire point of this backend: the
+# multi-process property a plain (non-scripted) sequence of ZCARD/ZADD calls
+# from Python would NOT reliably provide under concurrent requests.
+#
+# KEYS[1]: per-client-IP sorted-set key (member=unique request id, score=the
+#          request's time.time())
+# ARGV: now, minute_window_seconds, burst_window_seconds, rpm_limit,
+#       burst_limit, member
+#
+# Returns {0, count} if allowed (and records the request), {1, count} if the
+# per-minute limit is exceeded, or {2, count} if the burst limit is exceeded.
+# In both rejection cases nothing is recorded, matching the in-memory
+# limiter's behavior of never counting a rejected request against later ones.
+_RATE_LIMIT_SCRIPT = """
+local key = KEYS[1]
+local now = tonumber(ARGV[1])
+local minute_window = tonumber(ARGV[2])
+local burst_window = tonumber(ARGV[3])
+local rpm_limit = tonumber(ARGV[4])
+local burst_limit = tonumber(ARGV[5])
+local member = ARGV[6]
+
+redis.call('ZREMRANGEBYSCORE', key, '-inf', now - minute_window)
+
+local minute_count = redis.call('ZCARD', key)
+if minute_count >= rpm_limit then
+    return {1, minute_count}
+end
+
+local burst_count = redis.call('ZCOUNT', key, now - burst_window, '+inf')
+if burst_count >= burst_limit then
+    return {2, burst_count}
+end
+
+redis.call('ZADD', key, now, member)
+redis.call('EXPIRE', key, minute_window)
+return {0, minute_count + 1}
+"""
+
+
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    """Simple in-memory rate limiting middleware.
+    """Rate limiting middleware: Redis-backed, with an in-memory fail-open fallback.
 
     Implements rate limiting to prevent:
     - Brute force attacks (OWASP A07)
     - DoS attacks (OWASP A04)
     - Credential stuffing (OWASP A07)
 
-    Note: For production, use Redis-backed rate limiting:
-        - slowapi (https://github.com/laurents/slowapi)
-        - fastapi-limiter (https://github.com/long2ice/fastapi-limiter)
+    Two backends:
+
+    - ``backend="redis"`` (the deployed default; see
+      ``core/config.py::Settings.rate_limit_backend``): per-client-IP counters
+      live in a Redis sorted set, shared by every worker process/replica, via
+      the atomic Lua script above (``_RATE_LIMIT_SCRIPT``). This replaces the
+      single-process-only limiter documented as a known limitation in
+      SECURITY.md.
+    - ``backend="memory"``: the original process-local ``dict``-of-timestamps
+      counter. Used directly by most unit tests and single-process local dev,
+      and used automatically as the fail-open fallback when Redis is
+      unreachable (see ``dispatch``) regardless of the configured backend.
+
+    #CRITICAL: security/concurrency: choosing to fail OPEN (fall back to the
+    weaker in-memory limiter) rather than fail CLOSED (reject all requests, or
+    hang) on a Redis outage is a deliberate availability-over-strictness
+    trade-off: an operator-visible Redis outage must not become a
+    customer-visible API outage. The cost is that during an outage, the
+    effective limit reverts to per-process enforcement (a client distributing
+    requests across replicas is no longer capped in aggregate) until Redis
+    recovers and a fresh attempt succeeds.
+    #VERIFY: the fallback logs ``rate_limit_redis_unavailable`` via structlog
+    (``_struct_logger``) so this degraded mode is observable/alertable in
+    production; SECURITY.md documents the trade-off explicitly.
 
     Args:
         requests_per_minute: Maximum requests per IP per minute
         burst_size: Maximum burst requests allowed
-        max_tracked_ips: Maximum IPs to track (prevents memory exhaustion)
-        cleanup_interval: Seconds between full cleanup cycles
+        max_tracked_ips: Maximum IPs to track in the in-memory fallback
+            (prevents memory exhaustion)
+        cleanup_interval: Seconds between full in-memory cleanup cycles
+        backend: ``"redis"`` to prefer the shared Redis-backed counter
+            (falling back to memory on error), or ``"memory"`` to use only
+            the process-local counter. Defaults to ``"memory"`` so
+            constructing this middleware directly, as most unit tests and ad
+            hoc wiring do, never depends on a reachable Redis;
+            ``add_security_middleware`` resolves the real deployed default
+            from ``Settings.rate_limit_backend`` (``"redis"``) when the
+            caller does not override it.
+        redis_url: Redis connection URL, used when backend="redis" and no
+            ``redis_client`` is supplied. Reuses the same URL as the RQ task
+            queue (``Settings.redis_url``).
+        redis_client: An already-constructed async Redis client (or
+            test double) to use instead of building one from ``redis_url``.
+        redis_timeout_seconds: Socket connect/read timeout for the Redis
+            client, bounding how long a single request can be delayed by an
+            unresponsive (not just unreachable) Redis.
+        redis_retry_cooldown_seconds: After a Redis error, how long to skip
+            further Redis attempts and serve straight from the in-memory
+            fallback, so a sustained outage costs one timeout, not one
+            timeout per request.
+        redis_key_prefix: Namespace prefix for the Redis sorted-set keys.
     """
 
     def __init__(
@@ -240,6 +346,13 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         burst_size: int = 10,
         max_tracked_ips: int = 10000,
         cleanup_interval: int = 300,
+        *,
+        backend: Literal["redis", "memory"] = "memory",
+        redis_url: str | None = None,
+        redis_client: Redis | None = None,
+        redis_timeout_seconds: float = 0.5,
+        redis_retry_cooldown_seconds: float = 5.0,
+        redis_key_prefix: str = "cyo:ratelimit",
     ) -> None:
         """Initialize rate limiter."""
         super().__init__(app)
@@ -249,6 +362,18 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.cleanup_interval = cleanup_interval
         self.requests: dict[str, list[float]] = defaultdict(list)
         self._last_cleanup = time.time()
+
+        self.backend: Literal["redis", "memory"] = backend
+        self._redis_url = redis_url
+        self._redis_client = redis_client
+        self._redis_timeout_seconds = redis_timeout_seconds
+        self._redis_retry_cooldown_seconds = redis_retry_cooldown_seconds
+        self._redis_key_prefix = redis_key_prefix
+        self._script: AsyncScript | None = None
+        # 0.0 (not a future timestamp) so the very first request after
+        # startup always attempts Redis rather than skipping straight to the
+        # fallback.
+        self._redis_unavailable_until: float = 0.0
 
     def _cleanup_stale_entries(self, current_time: float) -> None:
         """Remove stale IP entries to prevent memory leaks.
@@ -296,17 +421,14 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 },
             )
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
-        """Apply rate limiting per IP address."""
-        if request.client is None:
-            logger.warning(
-                "request.client is None; using 'unknown' as client IP for rate limiting"
-            )
-        client_ip = request.client.host if request.client else "unknown"
-        current_time = time.time()
+    def _check_memory(self, client_ip: str, current_time: float) -> Response | None:
+        """Evaluate the in-memory sliding-window counters for one request.
 
+        Returns a 429 ``JSONResponse`` if either limit is exceeded, else
+        records the request and returns ``None`` so the caller proceeds. Used
+        both as the ``"memory"`` backend and as the fail-open fallback path
+        for ``"redis"`` (see ``dispatch``).
+        """
         # Periodic cleanup to prevent memory leaks
         self._cleanup_stale_entries(current_time)
 
@@ -346,6 +468,127 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # Record request
         self.requests[client_ip].append(current_time)
+        return None
+
+    async def _get_script(self) -> AsyncScript:
+        """Lazily construct the Redis client and register the Lua script.
+
+        #CRITICAL: external-resources: this is the first point of contact
+        with Redis on the request path; a connection error surfaces either
+        here (client construction is lazy, so a bad URL only fails on first
+        use) or from the subsequent ``await script(...)`` call in
+        ``_check_redis``. Both are caught by ``dispatch``.
+        #VERIFY: test_redis_backend_falls_back_to_memory_on_connection_error
+        drives this path with an unreachable redis_url.
+        """
+        if self._redis_client is None:
+            if self._redis_url is None:
+                msg = (
+                    "redis_url is required when backend='redis' and no "
+                    "redis_client is supplied"
+                )
+                raise RedisError(msg)
+            self._redis_client = Redis.from_url(
+                self._redis_url,
+                socket_connect_timeout=self._redis_timeout_seconds,
+                socket_timeout=self._redis_timeout_seconds,
+            )
+        if self._script is None:
+            self._script = self._redis_client.register_script(_RATE_LIMIT_SCRIPT)
+        return self._script
+
+    async def _check_redis(
+        self, client_ip: str, current_time: float
+    ) -> Response | None:
+        """Evaluate the Redis-backed sliding-window counters for one request.
+
+        Raises whatever the ``redis`` client raises on a connection, timeout,
+        or protocol error; ``dispatch`` is responsible for catching that and
+        falling back to ``_check_memory``. Intentionally does not catch
+        anything itself, so the fallback decision stays centralized in one
+        place.
+        """
+        script = await self._get_script()
+        # #ASSUME: data-integrity: pairing the float timestamp with a uuid4
+        # suffix keeps the sorted-set member unique even for two requests
+        # landing on the same float tick, so a second ZADD in the same tick
+        # cannot silently overwrite the first member's score (which would
+        # undercount a genuine concurrent burst).
+        # #VERIFY: see TestRedisBackedRateLimitMiddleware in test_security.py.
+        member = f"{current_time!r}:{uuid.uuid4().hex}"
+        key = f"{self._redis_key_prefix}:{client_ip}"
+        code, count = await script(
+            keys=[key],
+            args=[
+                current_time,
+                60,  # minute window (seconds)
+                1,  # burst window (seconds)
+                self.requests_per_minute,
+                self.burst_size,
+                member,
+            ],
+        )
+        del count  # returned for observability/debugging only, unused here
+        if code == 1:
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "error": "Too Many Requests",
+                    "message": f"Rate limit exceeded: {self.requests_per_minute} requests per minute",
+                    "retry_after": 60,
+                },
+                headers={"Retry-After": "60"},
+            )
+        if code == 2:
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "error": "Too Many Requests",
+                    "message": f"Burst limit exceeded: {self.burst_size} requests per second",
+                    "retry_after": 1,
+                },
+                headers={"Retry-After": "1"},
+            )
+        return None
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        """Apply rate limiting per IP address."""
+        if request.client is None:
+            logger.warning(
+                "request.client is None; using 'unknown' as client IP for rate limiting"
+            )
+        client_ip = request.client.host if request.client else "unknown"
+        current_time = time.time()
+
+        decision: Response | None
+        if self.backend == "redis" and current_time >= self._redis_unavailable_until:
+            try:
+                decision = await self._check_redis(client_ip, current_time)
+            except (RedisError, OSError, TimeoutError) as exc:
+                # #CRITICAL: concurrency/security: fail OPEN, not closed --
+                # see the class docstring for the full trade-off. Arm the
+                # circuit-breaker cooldown so a sustained outage costs one
+                # connection timeout per redis_retry_cooldown_seconds window,
+                # not one per request.
+                # #VERIFY: see TestRedisBackedRateLimitMiddleware in
+                # test_security.py (the circuit-breaker cooldown tests).
+                self._redis_unavailable_until = (
+                    current_time + self._redis_retry_cooldown_seconds
+                )
+                _struct_logger.warning(
+                    "rate_limit_redis_unavailable",
+                    error=str(exc),
+                    client_ip=client_ip,
+                    cooldown_seconds=self._redis_retry_cooldown_seconds,
+                )
+                decision = self._check_memory(client_ip, current_time)
+        else:
+            decision = self._check_memory(client_ip, current_time)
+
+        if decision is not None:
+            return decision
 
         return await call_next(request)
 
@@ -553,6 +796,8 @@ def add_security_middleware(
     allowed_hosts: list[str] | None = None,
     rate_limit_rpm: int = 60,
     max_body_bytes: int = _DEFAULT_MAX_BODY_BYTES,
+    rate_limit_backend: Literal["redis", "memory"] | None = None,
+    redis_url: str | None = None,
 ) -> None:
     """Add all security middleware to FastAPI application.
 
@@ -568,6 +813,18 @@ def add_security_middleware(
         allowed_hosts: Trusted host names (default: all)
         rate_limit_rpm: Rate limit requests per minute
         max_body_bytes: Request-body byte ceiling (default 1 MiB)
+        rate_limit_backend: ``"redis"`` or ``"memory"`` for
+            ``RateLimitMiddleware``'s backend (see its docstring). When left
+            as ``None`` (the default used by ``app.py::create_app``, which
+            does not pass this), resolved lazily from
+            ``core.config.settings.rate_limit_backend`` -- "redis" for every
+            deployed tier. Passed explicitly here (rather than importing
+            ``settings`` at module scope) so this generic middleware-wiring
+            helper stays trivially unit-testable without a Settings object.
+        redis_url: Redis connection URL for the ``"redis"`` backend. When
+            ``None``, resolved lazily from ``core.config.settings.redis_url``
+            (the same URL the RQ task queue uses) alongside
+            ``rate_limit_backend``.
 
     Example:
         >>> from fastapi import FastAPI
@@ -616,10 +873,29 @@ def add_security_middleware(
 
     # Rate limiting (OWASP A07)
     if enable_rate_limiting:
+        resolved_backend = rate_limit_backend
+        resolved_redis_url = redis_url
+        if resolved_backend is None or resolved_redis_url is None:
+            # Lazy import: keeps this generic middleware-wiring helper
+            # importable/testable without pulling in Settings (env parsing,
+            # validators) when the caller supplies both values explicitly.
+            # This is also what makes the Redis backend the real production
+            # default with NO change needed in app.py::create_app, which
+            # calls add_security_middleware() without either of these two
+            # kwargs: Settings.rate_limit_backend defaults to "redis" and
+            # Settings.redis_url is the same URL the RQ task queue uses.
+            from cyo_adventure.core.config import settings as _settings
+
+            if resolved_backend is None:
+                resolved_backend = _settings.rate_limit_backend
+            if resolved_redis_url is None:
+                resolved_redis_url = _settings.redis_url
         app.add_middleware(
             RateLimitMiddleware,
             requests_per_minute=rate_limit_rpm,
             burst_size=10,
+            backend=resolved_backend,
+            redis_url=resolved_redis_url,
         )
 
     # SSRF prevention (OWASP A10)

@@ -29,7 +29,12 @@ from cyo_adventure.api.deps import (
     authorize_family,
     authorize_profile,
 )
-from cyo_adventure.api.schemas import LibraryItem, LibraryProgress, LibraryView
+from cyo_adventure.api.schemas import (
+    LibraryItem,
+    LibraryProgress,
+    LibraryView,
+    error_responses,
+)
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.db.models import (
     Rating,
@@ -46,7 +51,9 @@ if TYPE_CHECKING:
 
 _logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/v1", tags=["library"])
+router = APIRouter(
+    prefix="/api/v1", tags=["library"], responses=error_responses(401, 403)
+)
 
 _PUBLISHED = "published"
 
@@ -169,6 +176,22 @@ def _node_count(blob: Mapping[str, object], malformed: list[str]) -> int:
     return 0
 
 
+def _current_node_is_ending(blob: Mapping[str, object], current_node: str) -> bool:
+    """Return True when ``current_node`` is an ending node in the blob (UX-K5).
+
+    Read-only over the already-loaded blob: no extra query. A branching story
+    touches only a fraction of its nodes, so "reached an ending" is the honest
+    signal for "finished", not visit-count / total-node-count.
+    """
+    nodes = blob.get("nodes")
+    if not isinstance(nodes, list):
+        return False
+    for node in nodes:
+        if isinstance(node, dict) and node.get("id") == current_node:
+            return bool(node.get("is_ending", False))
+    return False
+
+
 def _library_item(
     storybook_id: str,
     blob: Mapping[str, object],
@@ -236,6 +259,7 @@ def _library_item(
             current_node=state.current_node,
             nodes_visited=len(visit_set),
             updated_at=state.updated_at,
+            completed=_current_node_is_ending(blob, state.current_node),
         )
 
     return LibraryItem(
@@ -363,7 +387,10 @@ async def list_library(
     return LibraryView(stories=items)
 
 
-@router.get("/storybooks/{storybook_id}/versions/{version}")
+@router.get(
+    "/storybooks/{storybook_id}/versions/{version}",
+    responses=error_responses(404),
+)
 async def get_storybook_version(
     storybook_id: str,
     version: int,

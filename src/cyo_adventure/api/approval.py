@@ -29,7 +29,10 @@ from cyo_adventure.api.schemas import (
     ReviewSurfaceView,
     SendBackRequest,
     SentBackView,
+    StorybookLibraryView,
+    StorybookSummary,
     SubmittedView,
+    error_responses,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -46,11 +49,19 @@ from cyo_adventure.utils.logging import get_logger
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-router = APIRouter(prefix="/api/v1", tags=["approval"])
+router = APIRouter(
+    prefix="/api/v1", tags=["approval"], responses=error_responses(401, 403)
+)
 
 _logger = get_logger(__name__)
 
 _IN_REVIEW = "in_review"
+
+# The five storybook lifecycle statuses (mirrors db/models._STORYBOOK_STATUS_VALUES).
+# Used to validate the master-library status filter (P19).
+_STORYBOOK_STATUSES = frozenset(
+    {"draft", "in_review", "needs_revision", "published", "archived"}
+)
 
 # #ASSUME: data integrity: each `cast("Literal[...]", book.status)` call below
 # assumes approval_service's corresponding call (submit/approve/send_back/archive)
@@ -106,7 +117,7 @@ async def _load_admin_story(ctx: Context, storybook_id: str) -> Storybook:
     return book
 
 
-@router.post("/storybooks/{storybook_id}/submit")
+@router.post("/storybooks/{storybook_id}/submit", responses=error_responses(404, 409))
 async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     """Submit a draft or needs-revision story for review (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
@@ -118,7 +129,9 @@ async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     )
 
 
-@router.post("/storybooks/{storybook_id}/approve")
+@router.post(
+    "/storybooks/{storybook_id}/approve", responses=error_responses(400, 404, 409)
+)
 async def approve_storybook(
     storybook_id: str, ctx: Context, body: ApproveBody | None = None
 ) -> ApprovedView:
@@ -150,7 +163,9 @@ async def approve_storybook(
     )
 
 
-@router.post("/storybooks/{storybook_id}/send-back")
+@router.post(
+    "/storybooks/{storybook_id}/send-back", responses=error_responses(404, 409)
+)
 async def send_back_storybook(
     storybook_id: str, body: SendBackRequest, ctx: Context
 ) -> SentBackView:
@@ -164,7 +179,7 @@ async def send_back_storybook(
     )
 
 
-@router.post("/storybooks/{storybook_id}/archive")
+@router.post("/storybooks/{storybook_id}/archive", responses=error_responses(404, 409))
 async def archive_storybook(storybook_id: str, ctx: Context) -> ArchivedView:
     """Archive a published story, removing it from the library (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
@@ -199,7 +214,7 @@ async def _latest_version(session: AsyncSession, storybook_id: str) -> int:
     return latest
 
 
-@router.get("/storybooks/{storybook_id}/review")
+@router.get("/storybooks/{storybook_id}/review", responses=error_responses(404))
 async def get_review_surface(
     storybook_id: str,
     ctx: Context,
@@ -377,6 +392,7 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
                     blob=row.blob,
                     moderation_report=row.moderation_report,
                     admin_noise_floor=floor,
+                    created_at=row.created_at,
                 )
             )
         except ValidationError as exc:
@@ -394,3 +410,144 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
             )
             continue
     return ReviewQueueView(items=items)
+
+
+def _summary_title(blob: object, storybook_id: str) -> str:
+    """Return the story title from the blob, or the id as a fallback."""
+    if isinstance(blob, dict):
+        title = blob.get("title")
+        if isinstance(title, str) and title:
+            return title
+    return storybook_id
+
+
+def _summary_age_band(blob: object) -> str | None:
+    """Return the target age band from the blob metadata, or None if absent."""
+    if isinstance(blob, dict):
+        metadata = blob.get("metadata")
+        if isinstance(metadata, dict):
+            band = metadata.get("age_band")
+            if isinstance(band, str) and band:
+                return band
+    return None
+
+
+@router.get("/admin/storybooks")
+async def list_admin_storybooks(
+    ctx: Context, status: str | None = None
+) -> StorybookLibraryView:
+    """Return every storybook for the admin master library (admin only, P19).
+
+    Unlike the review queue (in_review only), this lists stories in ANY
+    lifecycle status so an admin can browse and re-open a published, archived,
+    needs_revision, or draft story via the existing review detail view. Newest
+    activity (latest version's creation time) first.
+
+    Args:
+        ctx: The request context (principal and session).
+        status: Optional lifecycle-status filter (e.g. ``"published"``); when
+            omitted, every status is returned.
+
+    Returns:
+        StorybookLibraryView: One summary per storybook, newest activity first.
+
+    Raises:
+        AuthorizationError: If the caller is not an admin (-> 403).
+        ValidationError: If ``status`` is not a recognized lifecycle status.
+    """
+    # #CRITICAL: security: admin-only GLOBAL library, mirroring get_review_queue.
+    # The role is checked before any row is read, and authorize_family is NOT
+    # called: the safety operator browses cross-family.
+    # #VERIFY: tests/unit/test_approval_unit.py::test_admin_storybooks_blocks_non_admin.
+    if not ctx.principal.is_admin:
+        msg = "admin role required"
+        raise AuthorizationError(msg, required_permission="admin")
+
+    # #EDGE: data-integrity: reject an unknown status filter loudly rather than
+    # silently returning everything (which would mislead the operator).
+    # #VERIFY: test_admin_storybooks_rejects_unknown_status.
+    if status is not None and status not in _STORYBOOK_STATUSES:
+        msg = f"unknown storybook status '{status}'"
+        raise ValidationError(msg, field="status", value=status)
+
+    stmt = select(Storybook)
+    if status is not None:
+        stmt = stmt.where(Storybook.status == status)
+    books = (await ctx.session.scalars(stmt)).all()
+    if not books:
+        return StorybookLibraryView(items=[])
+
+    # #ASSUME: external-resources: resolve the latest version per story and load
+    # those version rows in two bulk queries, never one round trip per story
+    # (same pattern as get_review_queue).
+    # #VERIFY: test_admin_storybooks_is_bulk_not_n_plus_one.
+    ids = [book.id for book in books]
+    latest_rows = cast(
+        "list[tuple[str, int]]",
+        (
+            await ctx.session.execute(
+                select(
+                    StorybookVersion.storybook_id,
+                    func.max(StorybookVersion.version),
+                )
+                .where(StorybookVersion.storybook_id.in_(ids))
+                .group_by(StorybookVersion.storybook_id)
+            )
+        ).all(),
+    )
+    latest: dict[str, int] = dict(latest_rows)
+    keys = list(latest.items())
+    if not keys:
+        # Every story lacks a version row (draft not yet generated); still list
+        # them with a best-effort title so the operator can see them.
+        return StorybookLibraryView(
+            items=sorted(
+                (
+                    StorybookSummary(
+                        storybook_id=book.id,
+                        title=book.id,
+                        status=book.status,
+                        version=0,
+                        family_id=str(book.family_id),
+                        current_published_version=book.current_published_version,
+                        created_at=book.created_at,
+                    )
+                    for book in books
+                ),
+                key=lambda item: item.created_at,
+                reverse=True,
+            )
+        )
+    version_rows = (
+        await ctx.session.scalars(
+            select(StorybookVersion).where(
+                tuple_(StorybookVersion.storybook_id, StorybookVersion.version).in_(
+                    keys
+                )
+            )
+        )
+    ).all()
+    by_key = {(row.storybook_id, row.version): row for row in version_rows}
+
+    items: list[StorybookSummary] = []
+    for book in books:
+        version = latest.get(book.id)
+        row = by_key.get((book.id, version)) if version is not None else None
+        blob = row.blob if row is not None else None
+        items.append(
+            StorybookSummary(
+                storybook_id=book.id,
+                title=_summary_title(blob, book.id),
+                status=book.status,
+                version=version if version is not None else 0,
+                age_band=_summary_age_band(blob),
+                family_id=str(book.family_id),
+                current_published_version=book.current_published_version,
+                created_at=book.created_at,
+                updated_at=row.created_at if row is not None else None,
+            )
+        )
+    # Newest activity first: sort by the latest version's creation time, falling
+    # back to the storybook's own created_at for versionless drafts.
+    items.sort(key=lambda item: item.updated_at or item.created_at, reverse=True)
+    return StorybookLibraryView(items=items)

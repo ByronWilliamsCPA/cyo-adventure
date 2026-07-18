@@ -14,8 +14,18 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 # Technical Implementation Spec: CYO Adventure
 
 > **Status**: Active
-> **Version**: 1.1 | **Updated**: 2026-07-10
+> **Version**: 1.2 | **Updated**: 2026-07-16
 > **Codename**: Ariadne
+>
+> Persona-level scope is tracked in the [capability register](./capability-register.md).
+> A story-request lifecycle sits upstream of the concept/generation pipeline described here:
+> universal initiation (child/guardian/admin) with guardian approval before any concept or
+> generation exists, shipped in the story-lifecycle redesign (WS-A through WS-G, merged
+> 2026-07-10; see [story-lifecycle-redesign.md](./story-lifecycle-redesign.md)) and recorded
+> at ADR level in [ADR-015](./adr/adr-015-story-request-initiation-and-gating.md). ADR-015's
+> outstanding delta is budget-consent semantics at the guardian approval step. This spec has
+> not yet absorbed the request-lifecycle endpoints into its API table; see the
+> authorization matrix for the current per-role contract.
 
 ## TL;DR
 
@@ -309,9 +319,14 @@ binding on both.
 - **Saves are snapshots**: a save stores `current_node`, `var_state`, `path`, the visit
   set, `save_slots`, the story `version`, and `state_revision`. v1 uses snapshots, not an
   event log.
-- **No backtracking in v1**: the reader moves forward only. A "back" button would reopen
-  state semantics (undoing effects); deferred until and unless an event-log model is
-  added.
+- **Single-step "Go back" via replay (ratified 2026-07-16, reversing the earlier
+  no-backtracking rule)**: the reader may undo the most recent choice. The undo never
+  mutates state backwards; the player recomputes the prior configuration by
+  deterministically replaying the recorded path from the start, so effect semantics
+  (including `once`) stay exactly as defined above and no event-log model is required.
+  The button hides when there is nothing to undo or the recorded path cannot be
+  faithfully replayed. Rationale: mis-tap recovery for young readers outweighs the
+  original concern, which the replay implementation avoids.
 - **Endings are identified by `ending.id`**: stable across edits, so the "endings found"
   tracker survives prose changes.
 - **Version pinning for in-progress reads**: a reader stays on the `version` they
@@ -437,6 +452,13 @@ Versioned under `/api/v1`. OIDC via Supabase; child sessions are restricted to r
 and library endpoints. The token subject maps to a set of allowed profiles; `profile_id`
 is never trusted on its own. Inputs are validated against the published story
 (`ending_id` must belong to the cited version; `current_node` must exist in it).
+
+> **Story requests (implemented, not yet in the table below)**: a child session additionally
+> holds one authoring-adjacent route, `POST /story-requests` (own profile only, intake
+> screening, pending cap); guardian/admin request approval and the admin authoring plan sit
+> between a request and any concept or GenerationJob. See the authorization matrix for the
+> per-role rows. ADR-015's planned delta wires family quota/credit debiting into the guardian
+> approve action. No child path triggers generation directly.
 
 | Method | Path | Purpose | Auth |
 |--------|------|---------|------|
@@ -632,5 +654,6 @@ cap.
 ## Related Documents
 
 - [Project Vision](./project-vision.md)
+- [Capability Register](./capability-register.md)
 - [Architecture Decisions](./adr/README.md)
 - [Development Roadmap](./roadmap.md)

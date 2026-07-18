@@ -6,11 +6,13 @@ import { DeviceAuthorizedRoute } from './auth/DeviceAuthorizedRoute'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import {
   AdminConsolePage,
+  AdminLibraryPage,
   AdminRequestsPage,
   AdminShell,
   AdultGate,
   AuthoringQueuePage,
   BooksPage,
+  ConnectionsPage,
   ConsolePage,
   GuardianAuthLayout,
   GuardianShell,
@@ -26,10 +28,12 @@ import {
   ProfilesPage,
   ProviderAllowlistPage,
   ReaderRoute,
+  ReadingPage,
   RequestsPage,
   ReviewDetailPage,
   RouteError,
   RouteFallback,
+  AuditPage,
   UserManagementPage,
 } from './routeElements'
 import {
@@ -156,8 +160,10 @@ export const routes = [
                   { index: true, element: suspended(<ConsolePage />) },
                   { path: 'intake', element: suspended(<IntakePage />) },
                   { path: 'requests', element: suspended(<RequestsPage />) },
+                  { path: 'reading', element: suspended(<ReadingPage />) },
                   { path: 'books', element: suspended(<BooksPage />) },
                   { path: 'profiles', element: suspended(<ProfilesPage />) },
+                  { path: 'connections', element: suspended(<ConnectionsPage />) },
                 ],
               },
             ],
@@ -184,6 +190,7 @@ export const routes = [
                 element: suspended(<AdminShell />),
                 children: [
                   { index: true, element: suspended(<AdminConsolePage />) },
+                  { path: 'library', element: suspended(<AdminLibraryPage />) },
                   { path: 'requests', element: suspended(<AdminRequestsPage />) },
                   { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
                   {
@@ -205,6 +212,10 @@ export const routes = [
                   {
                     path: 'users',
                     element: suspended(<UserManagementPage />),
+                  },
+                  {
+                    path: 'audit',
+                    element: suspended(<AuditPage />),
                   },
                 ],
               },
