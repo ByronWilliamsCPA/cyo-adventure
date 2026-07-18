@@ -1,0 +1,4032 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_winter_wolf_queen",
+  "version": 1,
+  "title": "The Winter of the Wolf Queen",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "winter",
+      "the wild",
+      "inheritance",
+      "community"
+    ],
+    "estimated_minutes": 12,
+    "ending_count": 40,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "open_map",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "frost",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "How deep the winter's freeze stands over the five fells: 0 hard, 1 deeper, 2 iron-deep. It deepens one mark with the cold snap that follows each finished leg and never eases before the thaw. The High Shoulder pass to Fellgate closes at iron-deep; the black ice of Thornmere tarn will not bear until the freeze has deepened at least once."
+    },
+    {
+      "name": "provisions",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Day-marks left in the sledge crate: food, lamp-oil, dry socks, and wax for the dog's paws, packed in thirds the guild way. Dark cuts and long lamp-lit lines burn a day-mark each; the guildhall shelf and the stocked cache-houses refill the crate to full."
+    },
+    {
+      "name": "laden",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the sledge already carries a heavy load or a passenger, the stillroom medicine chest or a rider bundled in the lashings. A laden sledge keeps off the steep and quick lines until the load is delivered; yard hands unload whatever it carries the moment it reaches the guildhall yard or the ridge muster."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=125 beats='The hardest winter in living memory has shut the passes between the five villages of the Hollow Fells one by one; Rill, apprentice to the wayfinder guild of Harthollow, wakes in the loft over the guildhall to the sound of the route bell; Grandmother Maren, the old wayfinder, is two winters gone, but her sledge hangs waxed in the yard and her route-dog Bracken sleeps at the foot of the ladder; below, guildmaster Edda Vane is calling for a runner, because the villages still need messages, medicine, and word of one another carried between them; by the hearth the old folk are whispering that the White Wolf, the Wolf Queen of the fireside stories, walks the high passes again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Climb down, whistle Bracken, and answer the bell.",
+          "target": "n_sledge"
+        }
+      ]
+    },
+    {
+      "id": "n_sledge",
+      "body": "<<FILL role=setup words=110 beats='Readying the sledge in the blue morning dark, exactly the way Maren taught: wax worked into Bracken's paws, wool under oilskin, the crate packed in day-marks with food and lamp-oil and dry socks, a bundle of red-willow wands for re-flagging drifted line; her three-times rule recited aloud, keep to the flagged routes, wait out squalls in the bothies, and turn back the moment turning back is still easy; Bracken leans into the harness like a door closing on the cold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_sledge_1",
+          "label": "Haul the sledge round to the guildhall porch.",
+          "target": "n_guild"
+        }
+      ]
+    },
+    {
+      "id": "n_guild",
+      "body": "<<FILL role=setup words=115 beats='Edda Vane at the route board with its five pegged lines, one to each village of the fells, a wooden tally peg for every leg still wanting a runner; she looks Rill over the way she looks over harness, then nods at the board; her word on the wolf talk: wolves are wolves and routes are routes, keep to the line and keep the dog close and bring every rumour home to her, not to the hearth gossips; the first deep cold snap is forecast off the north fells, and after each snap the freeze will stand deeper on all five lines'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_guild_1",
+          "label": "Step out to the porch and read the route board.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL role=choice words=115 beats='The guildhall porch and the route board, the hub every leg begins from and comes home to; write this arrival-neutral, the same steady scene whenever the sledge swings into the yard, in any order and any state of the winter: yard hands take whatever the sledge carries the moment the runners are clipped, Bracken gets his minute at the water pan, and the board lists the legs still wanting a runner; Edda matches runners to lines and trusts a wayfinder's apprentice to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_1",
+          "label": "Take the Ashfirth leg: the pass-ledger and word to bring the village in before the deep cold.",
+          "target": "af_out"
+        },
+        {
+          "id": "c_n_hub_2",
+          "label": "Take the Scarpsett leg: healer Iben's medicine chest is crated in the stillroom, wanted at the fever house.",
+          "target": "sc_yard"
+        },
+        {
+          "id": "c_n_hub_3",
+          "label": "Take the Drumford leg: the winter bridge is down and old Hetta must cross the river ice to her daughter.",
+          "target": "dr_road"
+        },
+        {
+          "id": "c_n_hub_4",
+          "label": "Take the Thornmere line: Maren's old route, unflagged for two winters, wants reading and re-pegging.",
+          "target": "th_fell"
+        },
+        {
+          "id": "c_n_hub_5",
+          "label": "Take the Fellgate leg over the High Shoulder while the pass still opens: two ice-cutters are overdue.",
+          "target": "fg_out",
+          "condition": {
+            "<": [
+              {
+                "var": "frost"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_n_hub_6",
+          "label": "Step into the hall to refit and catch your breath.",
+          "target": "gh_hall"
+        },
+        {
+          "id": "c_n_hub_7",
+          "label": "Answer the beacon-call: Edda is mustering the hearth-keepers on the Queen's Ridge bearing.",
+          "target": "fin_muster"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "laden",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "gh_hall",
+      "body": "<<FILL role=choice words=95 beats='The hall behind the porch: the kettle on its chain, the provisions shelf in guild day-mark thirds, the wax pot warming by the fire; Edda checks Rill over the way she checks harness for wear, without a word wasted; the winter goes on outside without hurrying anyone in here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gh_hall_1",
+          "label": "Repack the crate to full day-marks from the guild shelf and get back out.",
+          "target": "n_hub",
+          "effects": [
+            {
+              "op": "set",
+              "var": "provisions",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": "c_gh_hall_2",
+          "label": "Just soup, two minutes of warm, and back to the board.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_gh_hall_3",
+          "label": "Slip into Maren's old map room off the hall.",
+          "target": "gh_maps"
+        },
+        {
+          "id": "c_gh_hall_4",
+          "label": "Admit to Edda that the winter has won today.",
+          "target": "e_hearth"
+        },
+        {
+          "id": "c_gh_hall_5",
+          "label": "Spend ten minutes at the wax bench putting the sledge right.",
+          "target": "gh_wax"
+        }
+      ]
+    },
+    {
+      "id": "gh_maps",
+      "body": "<<FILL role=rising words=100 beats='Maren's map room, kept as she left it: route-books in her small square hand, cache marks pricked along every line of the fells, and in the margin of the oldest book a wolf drawn no bigger than a thumbnail, looking out; write this re-entry-safe, the room is the same patient room however often Rill comes to stand in it; copying her cache marks into a runner's own book feels less like study and more like being handed something'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gh_maps_1",
+          "label": "Copy the cache marks into your own book and go back out.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_gh_maps_2",
+          "label": "Close the book gently and return to the yard.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_hearth",
+      "body": "<<FILL role=failure words=95 beats='Edda invokes the hearth rule before Rill finishes asking, because no argument wins against a guildmaster; blankets, soup, Bracken flat as a rug at Rill's feet; every leg already run stays pegged safe on the board, and other runners go out under other dogs; falling asleep to the creak of sledges in the yard is not nothing; a dignified early stop'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hearth",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Hearth Rule"
+      }
+    },
+    {
+      "id": "af_road",
+      "body": "<<FILL role=choice words=105 beats='The Ashfirth line drops from the guild yard into the larch valley, three ways written on it plain as a signpost: the flagged road swinging wide and sure round the open shoulder, the dark-bough cut straight through the larch wood where the boughs seal out the sky and a lamp must burn the whole way, and off to the side the old waystone where wayfinders read the weather before choosing; the pass-ledger rides in its oilcloth against Rill's chest, word that Ashfirth must bring its people and herds in before the deep cold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_road_1",
+          "label": "Keep to the flagged road round the open shoulder.",
+          "target": "af_flags"
+        },
+        {
+          "id": "c_af_road_2",
+          "label": "Take the dark-bough cut through the larch wood, burning a day-mark of lamp-oil.",
+          "target": "af_wood",
+          "condition": {
+            ">=": [
+              {
+                "var": "provisions"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "provisions",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_af_road_3",
+          "label": "Stop at the waystone and read the sky first.",
+          "target": "af_stone"
+        },
+        {
+          "id": "c_af_road_4",
+          "label": "Take the river-ice line under the alder banks, fast and level by daylight.",
+          "target": "af_river"
+        }
+      ]
+    },
+    {
+      "id": "af_stone",
+      "body": "<<FILL role=rising words=95 beats='The waystone, carved by four generations of wayfinders, Maren's initials small among the rest; the sky reads badly, a squall building blue-black off the north fells, an hour away at most; and pressed in the fresh snow at the stone's foot, a single line of wolf tracks, big ones, laid neat as stitching beside the flagged line and pointing the same way Rill is going'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_stone_1",
+          "label": "Take the flagged road and race the squall round the shoulder.",
+          "target": "af_flags"
+        },
+        {
+          "id": "c_af_stone_2",
+          "label": "Duck into the dark-bough cut where the wood will break the wind, burning a day-mark.",
+          "target": "af_wood",
+          "condition": {
+            ">=": [
+              {
+                "var": "provisions"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "provisions",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_af_stone_3",
+          "label": "Judge the squall too close, turn back, and report the sky.",
+          "target": "e_af_turnback"
+        }
+      ]
+    },
+    {
+      "id": "af_flags",
+      "body": "<<FILL role=choice words=100 beats='The flagged road in open country, red-willow wands leaning with the drift, some buried to their tips; Bracken trots the line like it is painted on the snow; the wind begins to talk in the way that means the squall is coming whether anyone is ready or not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_flags_1",
+          "label": "Stop and re-set the leaning wands while the line can still be seen.",
+          "target": "af_count"
+        },
+        {
+          "id": "c_af_flags_2",
+          "label": "Push on and make distance before the weather lands.",
+          "target": "af_squall"
+        }
+      ]
+    },
+    {
+      "id": "af_drift",
+      "body": "<<FILL role=rising words=95 beats='Re-flagging the drifted stretch the guild way, each wand sighted back to the last, hands going wooden in the wind; slow work that some other runner will bless; by the last wand the squall is no longer coming, it is here, and the world goes the colour of the inside of an egg'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_drift_1",
+          "label": "Make for the Larch bothy, half a line away, while the wands hold.",
+          "target": "af_bothy"
+        },
+        {
+          "id": "c_af_drift_2",
+          "label": "Trust the fresh-set line and keep moving through the white.",
+          "target": "af_squall"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "af_squall",
+      "body": "<<FILL role=rising words=100 beats='The squall closes like a door: wind with teeth, snow travelling flat, the next wand a guess and the one after that a rumour; Maren's rule arrives in her own dry voice, turn back while turning back is easy; Bracken presses against Rill's knee, ears flat, waiting to be told something sensible'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_squall_1",
+          "label": "Do the sensible thing: run down the wind to the Larch bothy.",
+          "target": "af_bothy"
+        },
+        {
+          "id": "c_af_squall_2",
+          "label": "Work wand to wand, hand on the sledge rail, and push through.",
+          "target": "af_push"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "af_push",
+      "body": "<<FILL role=rising words=100 beats='Wand to wand through the white, counting steps between flags the way the guild drills it, the cold prying at every seam of wool; Bracken finds two buried wands by nose alone and looks back each time to be sure the apprentice is still attached to the world; there is bravery in this and also the exact edge where bravery stops being sense'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_push_1",
+          "label": "The wind slackens a breath: press on to the weir under the village.",
+          "target": "af_meet"
+        },
+        {
+          "id": "c_af_push_2",
+          "label": "Swallow pride and double back to the bothy while the count still holds.",
+          "target": "af_bothy"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "af_bothy",
+      "body": "<<FILL role=choice words=105 beats='The Larch bothy, stone and turf, wood stacked to the roof beam and a tin kettle on a nail, names scratched by generations of waiting runners; write this re-entry-safe and neutral to how the reader came, breathless or deliberate, the bothy is the same patient shelter either way; through the shutter slat, far across the whitening field, something pale is crossing the open ground, unhurried, the size of a calf'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_bothy_1",
+          "label": "When the squall thins, take the last stretch down to the weir.",
+          "target": "af_meet"
+        },
+        {
+          "id": "c_af_bothy_2",
+          "label": "Watch the pale shape through the shutter slat while the kettle heats.",
+          "target": "af_watch"
+        },
+        {
+          "id": "c_af_bothy_3",
+          "label": "Let the squall keep you: bank the stove and wait it out overnight.",
+          "target": "e_af_bothy"
+        }
+      ]
+    },
+    {
+      "id": "af_watch",
+      "body": "<<FILL role=rising words=90 beats='Through the slat, at a long safe distance: a wolf, white as the field, bigger than any dog in the five villages, moving along the flagged line as if she has known it longer than the flags; she stops once, head turned toward the bothy smoke, then goes on over the crest without hurrying; Bracken watches too and does not growl, which is its own strange fact to carry'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_watch_1",
+          "label": "When the field is empty, go on down to the weir.",
+          "target": "af_meet"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "af_wood",
+      "body": "<<FILL role=choice words=100 beats='The dark-bough cut: larch boughs sealed overhead so noon and midnight weigh the same, the sledge lamp making a small travelling room of light, snow squeaking underfoot; the old blaze marks run tree to tree in Maren's plain style; the wood is quiet the way a held breath is quiet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_wood_1",
+          "label": "Follow the blazes quick, tree to tree.",
+          "target": "af_blaze"
+        },
+        {
+          "id": "c_af_wood_2",
+          "label": "Hold to the compass line and count paces the drill way.",
+          "target": "af_hush"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "af_blaze",
+      "body": "<<FILL role=rising words=95 beats='The blazes run true, and halfway through the wood they pass a cache tree, a big larch with a peg and a tin box set at shoulder height, one of Maren's; inside, no food, only a folded list in her handwriting, meat, marrow bones, tallow, in quantities no runner would ever carry for themselves; the tin is polished by years of opening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_blaze_1",
+          "label": "Pocket the list, close the tin gently, and move on.",
+          "target": "af_meet"
+        },
+        {
+          "id": "c_af_blaze_2",
+          "label": "Cast around the cache tree in the lamp-ring first.",
+          "target": "af_sign"
+        }
+      ]
+    },
+    {
+      "id": "af_sign",
+      "body": "<<FILL role=rising words=95 beats='Around the cache tree the snow tells a long story: wolf beds pressed in hollows, layer under layer like leaves of a book, a gnawed marrow bone grey with age half sunk by the roots; many winters of some large animal coming back to this exact tree; the wood stays quiet, watchful but not unfriendly, and Bracken sniffs the beds with his hackles smooth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_sign_1",
+          "label": "Leave the beds unbothered and follow the blazes out.",
+          "target": "af_meet"
+        }
+      ]
+    },
+    {
+      "id": "af_compass",
+      "body": "<<FILL role=rising words=90 beats='The compass line through the still wood, paces counted in fifties, lamp swinging its room of light along; far off, a single howl lifts, long and level, and no pack answers it, which every fireside story says is wrong; one wolf, alone, somewhere north; Bracken listens with his whole body and then walks on, so Rill does too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_compass_1",
+          "label": "Count the last fifties and come out at the weir.",
+          "target": "af_meet"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "af_meet",
+      "body": "<<FILL role=choice words=100 beats='The mill weir below Ashfirth, where road, wood, and field lines all come down to the frozen race; write this entry-agnostic, whichever way the valley was crossed the weir is the same landmark, ice sheeted over the sluice gate and the village chimneys showing over the rise; the ledger is nearly delivered and the day has more in it yet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_meet_1",
+          "label": "Climb the lane to the village gate lanterns.",
+          "target": "af_lane"
+        },
+        {
+          "id": "c_af_meet_2",
+          "label": "Check the weir ice and the mill first, since the line runs past it.",
+          "target": "af_mill"
+        }
+      ]
+    },
+    {
+      "id": "af_mill",
+      "body": "<<FILL role=rising words=90 beats='The mill shut down for winter, wheel locked in ice, sacks stacked and mouse-proofed; on the loading step, fresh tracks again, the same big neat line of them, crossing the yard without a single pause at the grain, which no hungry fox or stray dog would ever manage; whatever walks here wants something other than barley'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_mill_1",
+          "label": "Up the lane to the gate lanterns.",
+          "target": "af_lane2"
+        }
+      ]
+    },
+    {
+      "id": "af_gate",
+      "body": "<<FILL role=choice words=110 beats='Ashfirth's gate lanterns lit against the grey, and Sorrel the hearth-keeper already at the gate because she reads the valley better than most read print; the pass-ledger handed over with numb fingers, her quick eyes down the page, the nod that means the news is bad but welcome; the village must come in, outlying households, herds, elders, all of it before the deep cold lands; she offers the errand back: what will the guild's runner help with first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_gate_1",
+          "label": "Help call in the outlying households with lamp-signals.",
+          "target": "af_call"
+        },
+        {
+          "id": "c_af_gate_2",
+          "label": "Go round the fold with Piet, her son, to bring the herd down.",
+          "target": "af_fold"
+        },
+        {
+          "id": "c_af_gate_3",
+          "label": "Ask Sorrel first what she knows of the Wolf Queen stories.",
+          "target": "af_brazier"
+        }
+      ]
+    },
+    {
+      "id": "af_call",
+      "body": "<<FILL role=rising words=100 beats='Up the bell-ladder with Sorrel to the signal shutter, working the lamp in the guild's long-short code, come in, come in, deep cold coming; one by one the far steadings answer, a lamp in a window here, a lantern swung on a barn beam there, the valley talking to itself in sparks; two lights do not answer, the Aldercroft and old aunt Bett's steading up the fell'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_call_1",
+          "label": "Take the sledge out to the Aldercroft, the nearer dark house.",
+          "target": "af_alder"
+        },
+        {
+          "id": "c_af_call_2",
+          "label": "Go up the fell path to aunt Bett's with Piet for company.",
+          "target": "af_bett"
+        }
+      ]
+    },
+    {
+      "id": "af_alder",
+      "body": "<<FILL role=rising words=95 beats='The Aldercroft dark because the family is already gone, door pegged the leaving way, byre empty, a chalked note on the lintel for whoever checks, gone in to sister's, beasts too; relief like warm water; on the way back a last look up the fell where one window still shows no light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_alder_1",
+          "label": "Go on up the fell to aunt Bett's yourself.",
+          "target": "af_bett"
+        },
+        {
+          "id": "c_af_alder_2",
+          "label": "Carry the good news back to Sorrel at the gate.",
+          "target": "af_tasks"
+        }
+      ]
+    },
+    {
+      "id": "af_bett",
+      "body": "<<FILL role=choice words=105 beats='Aunt Bett's steading, smoke thin from the chimney, and Bett herself at the door with a poker she does not need and a mind she has not changed in forty years: she wintered here through worse and will winter here again; write this re-entry-safe; persuading her is a job for better tools than argument, and the light is spending itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_bett_1",
+          "label": "Fetch Piet and Sorrel's word up the fell to persuade her together.",
+          "target": "af_fetch"
+        },
+        {
+          "id": "c_af_bett_2",
+          "label": "Offer to carry her cheeses and hens down, so leaving costs her less.",
+          "target": "af_hens"
+        }
+      ]
+    },
+    {
+      "id": "af_fetch",
+      "body": "<<FILL role=rising words=95 beats='Down and up the fell path again with Piet puffing alongside, because bringing help is what a runner is for; Sorrel's word does what no apprentice could, half order and half old friendship, and Bett begins packing with the fury of someone who intended to all along; her hens go into a basket swearing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_fetch_1",
+          "label": "Walk Bett and the basket down to the village gate.",
+          "target": "af_tasks"
+        }
+      ]
+    },
+    {
+      "id": "af_hens",
+      "body": "<<FILL role=rising words=95 beats='The bargain lands: dignity travels better with luggage; cheeses in the sledge crate space, hens in a lidded basket, Bett locking her door with ceremony and a key the size of a spoon; on the path down she names every steading light below like a woman counting her own silver'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_hens_1",
+          "label": "Deliver Bett, hens and all, to the gate lanterns.",
+          "target": "af_tasks"
+        }
+      ]
+    },
+    {
+      "id": "af_fold",
+      "body": "<<FILL role=rising words=100 beats='The fold round with Piet, cracking ice from the trough, driving the shaggy fell sheep down the lane with Bracken working wide like he was born to it instead of to harness; the herd pours into the village barns steaming; Piet talks the whole time about the tracks his father found by the mill and what half the village thinks they mean'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_fold_1",
+          "label": "Bed the herd in and go find Sorrel at the hall.",
+          "target": "af_trough"
+        },
+        {
+          "id": "c_af_fold_2",
+          "label": "Stay and help board the far byres against the drift first.",
+          "target": "af_byres"
+        }
+      ]
+    },
+    {
+      "id": "af_byres",
+      "body": "<<FILL role=rising words=95 beats='Boarding the far byres with Piet, hammering by lantern light, stuffing the gaps with straw until the wind loses every argument; hard, warm, plain work with a shape to it; from the last byre roof, the whole valley shows its lamps, every window that answered the signal burning steady'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_byres_1",
+          "label": "Climb down and find Sorrel at the hall.",
+          "target": "af_tasks"
+        },
+        {
+          "id": "c_af_byres_2",
+          "label": "Stay the evening to finish every byre with Piet.",
+          "target": "e_af_byres"
+        }
+      ]
+    },
+    {
+      "id": "af_stories",
+      "body": "<<FILL role=rising words=105 beats='Sorrel's telling, by the gate brazier, in the voice hearth-keepers save for true things wearing story clothes: the Wolf Queen who walked the passes when the five villages were one people, who took her share of every slaughter-month and in return no flock was ever troubled and no traveller lost; how the old wayfinders left her share at marked trees long after everyone else forgot; how Maren, asked once if the custom was real, only smiled and checked her tins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_stories_1",
+          "label": "Ask what became of the custom when Maren stopped running.",
+          "target": "af_tribute"
+        },
+        {
+          "id": "c_af_stories_2",
+          "label": "Leave the story by the fire and get on with the errand.",
+          "target": "af_tasks"
+        }
+      ]
+    },
+    {
+      "id": "af_tribute",
+      "body": "<<FILL role=rising words=100 beats='Sorrel banks the brazier and answers slowly: the custom died with Maren's last winter, no runner has stocked the old tribute trees in two years, and this is the second hard winter since; she says the white one has been seen thin, and that a starving old wolf that has never once troubled a flock is either a story going out, or a debt coming due; she looks at Rill as if the guild patch on the coat means something particular tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_tribute_1",
+          "label": "Carry that thought carefully and get back to the errand.",
+          "target": "af_tasks"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "af_tasks",
+      "body": "<<FILL role=choice words=100 beats='Ashfirth drawing itself in like a fist around a coal: herds barned, elders housed, the hall fire built high; write this entry-agnostic and re-entry-safe, whatever share of the gathering-in the runner did, the village is doing the rest and the scene reads the same; Sorrel's table is spread with replies to seal for the guild, and the kitchen is feeding everyone who worked'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_tasks_1",
+          "label": "Sit with Sorrel and take down the village's sealed answers.",
+          "target": "af_hallfire"
+        },
+        {
+          "id": "c_af_tasks_2",
+          "label": "Let the kitchen repack the sledge crate to full day-marks first.",
+          "target": "af_kitchen"
+        }
+      ]
+    },
+    {
+      "id": "af_kitchen",
+      "body": "<<FILL role=rising words=90 beats='The hall kitchen in full winter voice, bread and dripping pressed on the guild's runner, the crate repacked to full day-marks over Rill's polite objections because Ashfirth pays its debts in provisions; Bracken is fed scandalously by three separate grandmothers under three separate tables'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_kitchen_1",
+          "label": "Back to Sorrel's table for the sealed answers.",
+          "target": "af_answers"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "provisions",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "id": "af_answers",
+      "body": "<<FILL role=choice words=100 beats='Sorrel's replies sealed in oilcloth, births and stores and who winters where, the plain freight villages run on; and one postscript she seals last and will not explain, tell Edda Vane the white one is thin this winter, tell her in those words; the wax takes her thumbprint like it has ten thousand times; outside the light is turning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_answers_1",
+          "label": "Bag the answers and take the line home.",
+          "target": "af_seal"
+        },
+        {
+          "id": "c_af_answers_2",
+          "label": "Accept the guest-bed by the hearth and learn hearth-keeping till the morning bell.",
+          "target": "e_af_guest"
+        }
+      ]
+    },
+    {
+      "id": "af_done",
+      "body": "<<FILL role=choice words=115 beats='Leaving Ashfirth with the sealed answers riding the crate; write this entry-agnostic and neutral to how the leg went, the ledger is delivered, the village is drawing in, and the answers are aboard, those facts hold for every path; the cold has found a new edge while the work was happening, the first deep snap arriving off the north fells, and every doorstep in the valley knows it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_done_1",
+          "label": "Take the flagged line home to the guildhall board.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_af_done_2",
+          "label": "Cut across the fell path to the Thornmere stile, since the sledge is this side of the valley.",
+          "target": "th_stile"
+        },
+        {
+          "id": "c_af_done_3",
+          "label": "Make for the beacon knoll: the ridge muster is forming.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_af_done_4",
+          "label": "Pause at the crest first to watch the valley lamps come on.",
+          "target": "e_af_lamps"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "frost",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_af_turnback",
+      "body": "<<FILL role=failure words=90 beats='Back up the line ahead of the weather with the ledger undelivered; Edda takes the sky report without one word of blame, because a runner who reads a squall right and turns back easy is a runner who will grow old in the guild; another team goes out the long southern way instead; the pass-ledger reaches Ashfirth a half-day late and every household still comes in on time; a dignified early stop'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_af_turnback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Squall Report"
+      }
+    },
+    {
+      "id": "e_af_bothy",
+      "body": "<<FILL role=failure words=95 beats='The squall howls itself hoarse against stone and turf while the stove ticks and Bracken snores; Rill scratches two names among the generations on the beam, one runner, one dog; the ledger goes over the last stretch at first light, a night late and perfectly safe, and Sorrel's only comment is that Maren slept in this bothy more times than anyone alive; waiting out weather is not losing to it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_af_bothy",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Night in the Larch Bothy"
+      }
+    },
+    {
+      "id": "e_af_byres",
+      "body": "<<FILL role=ending words=95 beats='The last byre boarded as full dark comes down, and Piet's father walks the row testing each door like a captain; from the fell shoulder every window that answered the signal is burning, the whole valley gathered and counted; Sorrel sends the guild a one-line reply with the morning sledge, ledger received, village in, your runner stayed to finish; in the guild book that line is worth more than a medal'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_af_byres",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Every Lamp Answered"
+      }
+    },
+    {
+      "id": "e_af_guest",
+      "body": "<<FILL role=ending words=95 beats='An evening learning what hearth-keepers actually keep: not fires but the whole slow ledger of a village, who is born, who ails, who quarrels and who quietly mends it; Sorrel teaches the signal codes and the listening that goes with them; the answers travel home with the morning sledge under another runner's lashings, and Rill travels home knowing what the messages are actually for'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_af_guest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Hearth-Keeper's Guest"
+      }
+    },
+    {
+      "id": "e_af_lamps",
+      "body": "<<FILL role=ending words=90 beats='From the crest, the whole larch valley lights window by window as the gathered village settles, lamps answering lamps down the dark like the signal code slowed to the speed of supper; Bracken leans warm against Rill's leg while the cold deepens and the first stars come out iron-bright; some legs end not at a door but at a view, and this is the view; the answers go home safe at first light'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_af_lamps",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Valley Lamps"
+      }
+    },
+    {
+      "id": "sc_still",
+      "body": "<<FILL role=choice words=110 beats='The guild stillroom by the Scarpsett gate, shelves of stoppered brown bottles, and healer Iben's winter chest crated and corded on the bench, fever-bark, willow draughts, honey-salve, the labels in her upright hand; the chest is heavy as a calf and twice as awkward; the Scarpsett line climbs the scree in flagged switchbacks with a steeper ladder-line pinned straight up the crag for runners travelling light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_still_1",
+          "label": "Strap the chest aboard and take the flagged switchbacks, steady and sure.",
+          "target": "sc_low",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_sc_still_2",
+          "label": "Strap the chest aboard and go the long shelf road that never steepens.",
+          "target": "sc_shelf",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_sc_still_3",
+          "label": "Go up light first to check the line and send word ahead for carriers.",
+          "target": "sc_scout"
+        }
+      ]
+    },
+    {
+      "id": "sc_zig",
+      "body": "<<FILL role=rising words=100 beats='The lower switchbacks with the chest riding low amidships, the sledge leaning into each turn like a boat; Bracken hauls honest and the scree under the snow shifts its weight from foot to foot the way scree does; the wands stand good on the first three turns and then the fourth turn is simply gone, drifted wall to wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_zig_1",
+          "label": "Dig the fourth turn clear, wand by wand, the slow sure way.",
+          "target": "sc_dig"
+        },
+        {
+          "id": "c_sc_zig_2",
+          "label": "Back the sledge down and take the long shelf road instead.",
+          "target": "sc_shelf"
+        },
+        {
+          "id": "c_sc_zig_3",
+          "label": "Judge the drift too raw to trust today and take the report home.",
+          "target": "e_sc_turnback"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "sc_dig",
+      "body": "<<FILL role=rising words=95 beats='Digging the turn clear with the crate shovel, shoulders burning, Bracken flat and patient in the traces; the buried wands come up one by one like teeth, each sighted back to the last before the next cut; above, on the crag rim, a shape watches for the space of ten breaths and is gone before it can be named'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_dig_1",
+          "label": "Haul through the cleared turn and on up to the fork.",
+          "target": "sc_fork"
+        }
+      ]
+    },
+    {
+      "id": "sc_scout",
+      "body": "<<FILL role=rising words=95 beats='Climbing light and quick, just runner and dog and a coil of rope, the sledge left pegged at the stillroom; the crag line breathes out cold; at the first shoulder stands the guild signal-plate, a polished tin square for flashing word up to Scarpsett when the sun allows, and today it allows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_scout_1",
+          "label": "Flash word ahead: chest coming, send carriers and the crag basket.",
+          "target": "sc_plate"
+        },
+        {
+          "id": "c_sc_scout_2",
+          "label": "Save the signal and just climb to the fork to read the line.",
+          "target": "sc_fork"
+        }
+      ]
+    },
+    {
+      "id": "sc_plate",
+      "body": "<<FILL role=rising words=90 beats='The plate worked in long flashes till Scarpsett's answering glimmer comes off the crag top, seen, sending; somewhere up there a basket is being hooked to the hoist and two carriers are pulling on mitts; word travels faster than any sledge when the sun is willing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_plate_1",
+          "label": "Climb on to the fork under the crag.",
+          "target": "sc_basket"
+        }
+      ]
+    },
+    {
+      "id": "sc_fork",
+      "body": "<<FILL role=choice words=105 beats='The fork under the crag where the Scarpsett ways divide; write this entry-agnostic and neutral to what the sledge carries or whether there is a sledge at all, the fork is the same weathered signpost either way: the iron-pinned ladder-line straight up the crag for light runners, the flagged upper switchbacks winding on, and the old quarry bore cut through the crag's knee, dark as a pocket and out of the wind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_fork_1",
+          "label": "Take the upper switchbacks, the line that never betrays a load.",
+          "target": "sc_upper"
+        },
+        {
+          "id": "c_sc_fork_2",
+          "label": "Go straight up the iron ladder-line, quick and airy, travelling light.",
+          "target": "sc_ladder",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_sc_fork_3",
+          "label": "Light the lamp and take the quarry bore out of the wind, burning a day-mark.",
+          "target": "sc_bore",
+          "condition": {
+            ">=": [
+              {
+                "var": "provisions"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "provisions",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sc_ladder",
+      "body": "<<FILL role=rising words=95 beats='The ladder-line, iron pins and worn rungs up the crag face, rope clipped the guild way, Bracken taking the dog-ramp beside it like he invented it; air under the heels and the whole white valley swinging below; quick, honest, breath-stealing, and strictly for the unburdened'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_ladder_1",
+          "label": "Top out onto the saddle above the village.",
+          "target": "sc_top"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "sc_upper",
+      "body": "<<FILL role=rising words=95 beats='The upper switchbacks in the wind's teeth, wands humming, the gusts coming in threes the way Scarpsett weather does; between gusts the world is suddenly, ringingly still, and in one such stillness a line of big neat tracks crosses the path above, laid this morning, going up where nothing has business going'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_upper_1",
+          "label": "Wait out the next gust-set at the rest ledge.",
+          "target": "sc_rest"
+        },
+        {
+          "id": "c_sc_upper_2",
+          "label": "Push the last turns to the saddle between gusts.",
+          "target": "sc_gustrun"
+        }
+      ]
+    },
+    {
+      "id": "sc_rest",
+      "body": "<<FILL role=choice words=95 beats='The rest ledge, a bench of stone with a wind-wall stacked by generations of carriers, initials everywhere; the gusts card the snow off the crag rim overhead in white banners; the tracks are visible from here too, stitching up the impossible ground above the ladder, easy as a stroll'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_rest_1",
+          "label": "Between gust-sets, take the last turns to the saddle.",
+          "target": "sc_top"
+        },
+        {
+          "id": "c_sc_rest_2",
+          "label": "Judge the gusts too raw, wait for the morning team, and lose the day warm.",
+          "target": "e_sc_morning"
+        }
+      ]
+    },
+    {
+      "id": "sc_bore",
+      "body": "<<FILL role=rising words=95 beats='The quarry bore through the crag's knee, lamp-ring sliding along walls still bearing the tool marks of the cutters who made it, a hundred years of initials and one small carved wolf near knee height, old as any of them; the wind's roar drops to rumour; the dark is dry and kind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_bore_1",
+          "label": "Follow the lamp through to the mid-cliff mouth.",
+          "target": "sc_echo"
+        }
+      ]
+    },
+    {
+      "id": "sc_echo",
+      "body": "<<FILL role=rising words=90 beats='The bore's far mouth opens mid-cliff onto a railed gallery walk, and the crag throws every footstep back doubled; below, the shelf road shows like a chalk line; above, the saddle; chalked by the mouth in carrier's script, a tally of loads gone up this winter, and room for more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_echo_1",
+          "label": "Take the gallery walk up onto the saddle.",
+          "target": "sc_rail"
+        }
+      ]
+    },
+    {
+      "id": "sc_shelf",
+      "body": "<<FILL role=rising words=100 beats='The long shelf road, the laden way, wide as a cart and gentle as a story, curving out around the crag's whole shoulder; the valley opens and closes below like a held book; this is the road Maren always took with a load, slow is smooth and smooth is fast, her voice says, and the sledge runs smooth as poured cream'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_shelf_1",
+          "label": "Keep the steady pace round to the saddle.",
+          "target": "sc_bend"
+        },
+        {
+          "id": "c_sc_shelf_2",
+          "label": "Stop at the old wayside shrine tree on the bend.",
+          "target": "sc_shrine"
+        }
+      ]
+    },
+    {
+      "id": "sc_shrine",
+      "body": "<<FILL role=rising words=95 beats='The shrine tree on the bend, a thorn hung with travellers' tokens, ribbon and horn buttons and a tin whistle; and on its own peg, one of Maren's tins, polished bright by openings, empty as a rung bell; whoever opens it does not take tokens and does not leave any; Bracken noses the snow beneath and finds old pressed beds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_shrine_1",
+          "label": "Leave the tin closed and take the road on to the saddle.",
+          "target": "sc_top"
+        }
+      ]
+    },
+    {
+      "id": "sc_top",
+      "body": "<<FILL role=choice words=100 beats='The saddle above Scarpsett, and the village suddenly below in its terraces, smoke standing straight up from thirty chimneys in the windbreak of the crag; write this entry-agnostic, by ladder, bore, switchback, or shelf the saddle is the same gate of wind and the same first sight of home smoke; the fever house lamp burns yellow at the terrace end, the only lamp lit by day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_top_1",
+          "label": "Go down the terrace steps to the village gate.",
+          "target": "sc_steps"
+        },
+        {
+          "id": "c_sc_top_2",
+          "label": "Ring the saddle bell first so the carriers know to meet you.",
+          "target": "sc_bell"
+        }
+      ]
+    },
+    {
+      "id": "sc_bell",
+      "body": "<<FILL role=rising words=90 beats='The saddle bell, one clear stroke that falls down the terraces like a dropped coin, and Scarpsett answers the way a village answers a bell it has been waiting for: doors, voices, two carriers starting up the steps with a hand-barrow, a boy running ahead of them just for the running'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_bell_1",
+          "label": "Meet the carriers on the steps and go down together.",
+          "target": "sc_barrow"
+        },
+        {
+          "id": "c_sc_bell_2",
+          "label": "Stay at the hoist head and overhaul the crag basket with the carriers.",
+          "target": "e_sc_hoist"
+        }
+      ]
+    },
+    {
+      "id": "sc_gate",
+      "body": "<<FILL role=rising words=100 beats='Scarpsett's gate and the terrace street, snow packed to a polish between stone houses; write this neutral to how the chest travelled, on the sledge lashings, in the crag basket with the carriers, or word of it coming behind, the errand's business is the fever house lamp at the terrace end and everyone in the street knows it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_gate_1",
+          "label": "Go straight along the terrace to the fever house door.",
+          "target": "sc_terrace"
+        }
+      ]
+    },
+    {
+      "id": "sc_fever",
+      "body": "<<FILL role=choice words=105 beats='The fever house porch, and the chest passing into Iben's hands at last, her nod worth a paragraph; write this arrival-neutral, however the chest came up the hill it arrives here and is opened here, seals checked, bottles counted against the ledger, nothing broken; through the inner door, the low murmur of the sick-room and the smell of steam and pine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_fever_1",
+          "label": "Ask Iben for work: a runner's hands are clean and willing.",
+          "target": "sc_iben"
+        },
+        {
+          "id": "c_sc_fever_2",
+          "label": "Carry wood and water for the sick-room stove first.",
+          "target": "sc_water"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "laden",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "sc_iben",
+      "body": "<<FILL role=choice words=100 beats='Iben in the dispensary, measuring fever-bark by lamplight, glad of help that can read; the work is exact and calm, labels read aloud twice, doses carried on a tray with both hands, names checked at every cot; nothing here is hurried and nothing is careless, which is its own kind of lesson'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_iben_1",
+          "label": "Carry the dose rounds with her, cot to cot.",
+          "target": "sc_dose"
+        },
+        {
+          "id": "c_sc_iben_2",
+          "label": "Take the steam kettles round and keep them breathing.",
+          "target": "sc_water"
+        },
+        {
+          "id": "c_sc_iben_3",
+          "label": "Count the chest's bottles into Iben's ledger, label by label.",
+          "target": "sc_count"
+        }
+      ]
+    },
+    {
+      "id": "sc_dose",
+      "body": "<<FILL role=rising words=95 beats='The dose round at Iben's elbow, tray steady, voices low; the miller's little girl, hot-eyed but mending, takes her willow draught like a hero and wants to know, in a whisper, whether the White Wolf is real and whether it is cold up there; her window faces the crag and she watches it the way other children watch a door on a birthday'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_dose_1",
+          "label": "Settle the ward and step back to the dispensary.",
+          "target": "sc_window"
+        }
+      ]
+    },
+    {
+      "id": "sc_water",
+      "body": "<<FILL role=rising words=90 beats='Wood and water in a steady round, the stove fed, the steam kettles topped and set breathing again, the sick-room air kept soft; plain work done well while Iben's quick steps go up and down the row; through the steamed window the crag stands over the village like a grey coat hung on the sky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_water_1",
+          "label": "Round done, step back to the dispensary.",
+          "target": "sc_ward"
+        }
+      ]
+    },
+    {
+      "id": "sc_ward",
+      "body": "<<FILL role=choice words=100 beats='The ward gone quiet and mending, the chest's bottles ranked on Iben's shelf like soldiers paid and fed; write this entry-agnostic, whichever work the runner carried the evening ward is the same low-lamped calm; Iben stands a moment at the window that faces the crag, which is not like her, and seems to decide something'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_ward_1",
+          "label": "Ask Iben what she is looking for on the crag.",
+          "target": "sc_tale"
+        },
+        {
+          "id": "c_sc_ward_2",
+          "label": "Leave her to it and get ready for the line home.",
+          "target": "sc_leave"
+        }
+      ]
+    },
+    {
+      "id": "sc_tale",
+      "body": "<<FILL role=rising words=105 beats='Iben's story, told to the window: years back she splinted a shepherd dog's leg after a scree fall, high on the crag in failing light, and the whole time something big and pale watched from the rim, and nothing troubled them, and in the morning one line of tracks led away north; the fells keep an old nurse of their own, she says, and lately that nurse looks thin; she says it to the crag, like a message she hopes will be carried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_tale_1",
+          "label": "Carry it, then, and make ready for the line home.",
+          "target": "sc_leave"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "sc_leave",
+      "body": "<<FILL role=choice words=95 beats='The terrace at dusk-edge, sledge re-lashed light, Bracken fresh off a bowl of Scarpsett's best scraps; Iben's receipt for the chest signed and folded for Edda's ledger; the saddle above is going blue and the village lamps are coming on terrace by terrace under the crag'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_leave_1",
+          "label": "Take the saddle and the line for home.",
+          "target": "sc_dusk"
+        },
+        {
+          "id": "c_sc_leave_2",
+          "label": "Stay the evening as fever-house hands and go home with the morning carriers.",
+          "target": "e_sc_stay"
+        }
+      ]
+    },
+    {
+      "id": "sc_done",
+      "body": "<<FILL role=choice words=115 beats='Over the saddle with Iben's receipt in the oilcloth and Scarpsett's lamps dropping away behind; write this entry-agnostic and neutral to how the leg went, the chest is delivered and the fever house is stocked, those facts hold on every path; the cold has deepened its grip while the work was happening, another snap rolling down off the north fells, and the snow squeaks a new note under the runners'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_done_1",
+          "label": "Run the line home to the guildhall board.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_sc_done_2",
+          "label": "Drop down the river side to the Drumford bank, since the sledge is already high and the ways join.",
+          "target": "dr_bank"
+        },
+        {
+          "id": "c_sc_done_3",
+          "label": "Make for the beacon knoll: the ridge muster is forming.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_sc_done_4",
+          "label": "Stand a moment on the saddle and watch the smoke and bells settle.",
+          "target": "e_sc_bells"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "frost",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_sc_turnback",
+      "body": "<<FILL role=failure words=90 beats='Down the switchbacks ahead of the shifting drift with the chest still corded and undelivered; Edda hears the report, looks at the sky, and sends the chest up the long shelf road under two senior runners with shovels; it reaches Iben by lamplight, half a day late and whole; Rill spends the evening waxing harness and learning that a right turn-back is counted in the guild book as a save, not a failure'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_sc_turnback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Reported From the Fourth Turn"
+      }
+    },
+    {
+      "id": "e_sc_morning",
+      "body": "<<FILL role=failure words=95 beats='The gusts win the argument and the rest ledge keeps runner and dog till the carriers' morning team comes up singing and takes the load and the company over the saddle together; the chest reaches Iben a night late with every seal sound, and the carriers teach Rill their gust-counting song, which is worth a day of anyone's time; waiting with the mountain is not losing to it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_sc_morning",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Morning Team"
+      }
+    },
+    {
+      "id": "e_sc_stay",
+      "body": "<<FILL role=ending words=95 beats='An evening and a night as Iben's second pair of hands, kettles and doses and the small hours watch, learning how a healer listens to a ward the way a wayfinder listens to weather; by morning the miller's girl is cool-browed and imperious and the ward is over the worst; Rill goes home with the carriers owning a little of the stillness that good nursing is made of'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_sc_stay",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Fever-House Hands"
+      }
+    },
+    {
+      "id": "e_sc_bells",
+      "body": "<<FILL role=ending words=90 beats='From the saddle at dusk the village settles terrace by terrace, lamps lit, the saddle bell answered by the supper bell below, smoke standing straight in the windbreak like grey candles; the fever house lamp burns on, but easier now, stocked and sure; Bracken sits against Rill's knee and the two of them watch a village be safe for a long warm minute before the cold sends them home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_sc_bells",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Smoke and Bells"
+      }
+    },
+    {
+      "id": "e_sc_hoist",
+      "body": "<<FILL role=ending words=95 beats='The rest of the light spent with the carriers overhauling the crag hoist, new rope rove, the basket's wicker mended, the pulley greased till it purrs; all winter now, whatever Scarpsett needs can come up the crag in one smooth pull; the head carrier chalks the tally-mark herself and adds a small extra stroke, which among carriers is applause'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_sc_hoist",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Crag Basket"
+      }
+    },
+    {
+      "id": "dr_bank",
+      "body": "<<FILL role=choice words=105 beats='Drumford, the village that lives on both banks of the river, and this winter the river is a white road with a hole in its manners: the middle span of the winter bridge went down under ice-heave a week ago, and until the guild flags a crossing, two halves of one village wave at each other over the ice; Nan Plum the bridge-keeper's watch hut smokes on the near bank, and her flag barrels stand ready'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_bank_1",
+          "label": "Report to Nan Plum at the watch hut for the crossing work.",
+          "target": "dr_hut"
+        },
+        {
+          "id": "c_dr_bank_2",
+          "label": "Walk out and pole-test the flagged line first, the guild way.",
+          "target": "dr_test"
+        },
+        {
+          "id": "c_dr_bank_3",
+          "label": "Look over the fallen span from the bank to read the ice-heave.",
+          "target": "dr_span"
+        }
+      ]
+    },
+    {
+      "id": "dr_span",
+      "body": "<<FILL role=rising words=95 beats='The fallen middle span shouldered up out of the ice like a whale's back, planks sprung, the heave that took it written in pressure ridges either side; nothing to fix here till thaw, but plenty to learn: where the river fights the cold hardest is exactly where a crossing must not go; Maren's voice again, read the ice like an argument and stay out of the shouting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_span_1",
+          "label": "Take the reading to Nan Plum at the watch hut.",
+          "target": "dr_heave"
+        }
+      ]
+    },
+    {
+      "id": "dr_test",
+      "body": "<<FILL role=rising words=100 beats='Out on the flagged line with the pole, tapping and listening the way the guild drills it, ring for sound ice, dull for rot; the river booms once somewhere under its lid, houses away, the long harmless settling boom that still walks up a spine like a spider; most of the line rings true; near mid-river the pole finds a patch that answers wrong'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_test_1",
+          "label": "Mark the weak lens and re-flag the line around it.",
+          "target": "dr_reflag"
+        },
+        {
+          "id": "c_dr_test_2",
+          "label": "Note it, finish the test line, and report the whole read to Nan.",
+          "target": "dr_creak"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "dr_creak",
+      "body": "<<FILL role=choice words=100 beats='The full read, walked and listened end to end: one weak lens mid-river where a spring keeps the ice thin, the rest sound as a table; the honest question is what the reading is worth today, with people waiting to cross and the cold still deepening; a wayfinder's call, and no one else's'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_creak_1",
+          "label": "The line is workable if re-flagged: go do it properly.",
+          "target": "dr_reflag"
+        },
+        {
+          "id": "c_dr_creak_2",
+          "label": "The lens is spreading: post the warning flags and hold all crossings till the deeper freeze.",
+          "target": "e_dr_holdoff"
+        }
+      ]
+    },
+    {
+      "id": "dr_reflag",
+      "body": "<<FILL role=rising words=95 beats='Re-flagging the dogleg around the weak lens, red wands close-set the warning way, the new line poled and proved twice; from the hut doorway Nan Plum watches with her arms folded, which from Nan is a standing ovation; the crossing now bends like an elbow and betrays no one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_reflag_1",
+          "label": "In to the watch hut and the day's crossing list.",
+          "target": "dr_hut"
+        }
+      ]
+    },
+    {
+      "id": "dr_hut",
+      "body": "<<FILL role=choice words=110 beats='Nan Plum's watch hut, stove ticking, one wall all ledger, her ice-book open at today: thickness bores, boom times, who crossed and when; write this entry-agnostic and re-entry-safe, however the runner comes to it the hut is the same warm office of the river; the day's list is plain: folk to shepherd over the flagged line, and one name underlined, old Hetta at the near-bank cottages, promised to her daughter Mardy across the water before the deep cold, too stiff now to walk the ice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_hut_1",
+          "label": "Take the sledge along the cottages and bring Hetta over bundled in the lashings.",
+          "target": "dr_cottage",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_dr_hut_2",
+          "label": "Rig the guide rope-line across with Nan first, stake to stake.",
+          "target": "dr_stakes"
+        },
+        {
+          "id": "c_dr_hut_3",
+          "label": "Walk the crossing list to the near cottages and gather the crossers.",
+          "target": "dr_list"
+        },
+        {
+          "id": "c_dr_hut_4",
+          "label": "Run the morning bore-holes with Nan's auger and bring her ice-book up to date.",
+          "target": "dr_augur"
+        }
+      ]
+    },
+    {
+      "id": "dr_stakes",
+      "body": "<<FILL role=rising words=95 beats='Cutting and setting the rope-line stakes with Nan, augering the ice, freezing each stake in with a ladle of river water that grips like mortar in minutes; the rope pays out bank to bank at hip height, knotted every arm-span for mittened hands; slow guild work that turns a scary crossing into a handrail errand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_stakes_1",
+          "label": "Line rigged: back to the hut for the crossing list.",
+          "target": "dr_lantern"
+        }
+      ]
+    },
+    {
+      "id": "dr_lantern",
+      "body": "<<FILL role=rising words=90 beats='Lighting the line-lanterns with Nan as the light flattens, one hooded flame at each bank and one mid-river on the dogleg stake, the crossing drawn now in three beads of fire; Nan squints down the line and allows that it will do, which is her way of saying it is the best-flagged crossing on the river this winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_lantern_1",
+          "label": "Back along the bank to gather the crossers.",
+          "target": "dr_list"
+        }
+      ]
+    },
+    {
+      "id": "dr_list",
+      "body": "<<FILL role=choice words=100 beats='The near-bank cottage row, the crossing list worked door to door: a shepherd family with a hand-barrow of wool for the far bank, two aunties with baskets, a boy with skates he is firmly told to carry, not wear; and at the row's end, Hetta's blue door, her lamp already lit, her bag packed since Tuesday, her cat glaring from a lidded basket like a small storm in wicker'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_list_1",
+          "label": "Bundle Hetta into the sledge lashings, cat basket and all.",
+          "target": "dr_hetta",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_dr_list_2",
+          "label": "Walk the gathered crossers to the bank first and settle them.",
+          "target": "dr_boy"
+        }
+      ]
+    },
+    {
+      "id": "dr_cottage",
+      "body": "<<FILL role=rising words=95 beats='Along the cottage row with the empty sledge, past lit windows and shovelled steps, to the blue door at the end; Hetta has been ready for days, quilts aired, bag corded, the cat already furious in its travelling basket; she inspects sledge, dog, and apprentice with one sweep of a sixty-winter eye and pronounces the outfit adequate, which is high praise'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_cottage_1",
+          "label": "Bundle her into the lashings, quilts, cat, lamp and all.",
+          "target": "dr_hetta",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dr_hetta",
+      "body": "<<FILL role=rising words=100 beats='Hetta rides the sledge like a duchess in quilts, the cat basket on her lap and her lamp hooked to the rail, and she narrates the river the whole way down to the bank: sixty winters of crossings, the year the ice came in November, the year it sang all night like a kettle, the year her Mardy was born on the far bank in a snow so deep the midwife came over on skates'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_hetta_1",
+          "label": "Down to the bank and the flagged crossing.",
+          "target": "dr_cross"
+        }
+      ]
+    },
+    {
+      "id": "dr_walkers",
+      "body": "<<FILL role=rising words=95 beats='The crossers gathered at the bank in a cheerful shuffling knot, barrow and baskets and the boy swinging his skates; Nan counts heads like a hen counting chicks and sets the order, barrow first, baskets in the middle, the guild's runner and dog where they can see everyone; a crossing is a small parade if it is done right'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_walkers_1",
+          "label": "Lead the parade onto the flagged line.",
+          "target": "dr_order"
+        }
+      ]
+    },
+    {
+      "id": "dr_cross",
+      "body": "<<FILL role=choice words=105 beats='The flagged crossing from the near bank; write this entry-agnostic and neutral to the sledge's load, a bundled passenger, a walking parade, or a light sledge, the river reads the same: the main flagged line swings its dogleg wide and sure, the old plank-line over the millrace narrows cuts quick across for the unburdened, and the long island road runs the lee shore out of the wind but wants a lamp the whole way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_cross_1",
+          "label": "Take the main flagged line, slow and sure.",
+          "target": "dr_main"
+        },
+        {
+          "id": "c_dr_cross_2",
+          "label": "Cut over the millrace plank-line, quick and airy, travelling light.",
+          "target": "dr_plank",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_dr_cross_3",
+          "label": "Take the long island road in the lee, burning a day-mark of lamp-oil.",
+          "target": "dr_island",
+          "condition": {
+            ">=": [
+              {
+                "var": "provisions"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "provisions",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dr_main",
+      "body": "<<FILL role=rising words=100 beats='The main line, pole tapping the guild rhythm, Bracken pacing ahead wand to wand; the ice booms its long settling boom away downstream and every head comes up and Rill's voice stays level, the river talks in its sleep, keep the line; the dogleg bends around the weak lens and the wands hand the crossing along like relay runners'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_main_1",
+          "label": "Mid-river now: keep the rhythm.",
+          "target": "dr_dogleg"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "dr_mid",
+      "body": "<<FILL role=rising words=100 beats='Mid-river, the widest sky in the fells, both banks low and far and the wind combing the snow into travelling snakes; far downstream, where the river bends under the black alders, something pale crosses the ice in two long bounds and is gone into the far trees, unhurried, enormous, silent; Bracken watches it go with his ears forward and his hackles smooth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_mid_1",
+          "label": "Bring the crossing up the far-bank rise.",
+          "target": "dr_far"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "dr_plank",
+      "body": "<<FILL role=rising words=95 beats='The millrace plank-line, old bridge timbers laid stake to stake over the narrows where the race keeps the ice honest, a handrail rope and air under the boards and the water talking underneath; quick, bracing, strictly for light travellers; the far bank arrives all at once like a joke's ending'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_plank_1",
+          "label": "Up the far-bank rise to the lane.",
+          "target": "dr_racehut"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "dr_island",
+      "body": "<<FILL role=rising words=100 beats='The island road in the lee shore's quiet, lamp-ring sliding over grey ice, the wind shut out by the island's alder wall; the old fish-hut row stands on the shore, shuttered for winter; one hut door hangs open on banked snow, and the snow inside is pressed in one great bed-shape, with big neat prints going and coming; something large has been sheltering here on the worst nights, harming nothing, taking only the out-of-the-wind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_island_1",
+          "label": "Leave the hut in peace and follow the lamp to the far bank.",
+          "target": "dr_leeend"
+        }
+      ]
+    },
+    {
+      "id": "dr_far",
+      "body": "<<FILL role=choice words=95 beats='The far-bank rise and the lane up into Drumford-over-the-water; write this entry-agnostic, by main line, plank, or island road the rise is the same packed lane between snow walls, and whatever the crossing carried arrives with it; Mardy's house shows its gable lamp at the second turning, lit for a mother expected since noon'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_far_1",
+          "label": "Deliver everyone to their doors, Mardy's gable lamp first.",
+          "target": "dr_lane"
+        },
+        {
+          "id": "c_dr_far_2",
+          "label": "Send word up the lane by the ferry bell and let the doors open early.",
+          "target": "dr_bellpull"
+        }
+      ]
+    },
+    {
+      "id": "dr_bellpull",
+      "body": "<<FILL role=rising words=90 beats='The old ferry bell on the far bank, rung in the crossing code, over safe, over safe, and the lane answers door by door, lamps and voices and someone's accordion starting up out of pure relief; a village that has been holding its breath for a week lets it out all at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_bellpull_1",
+          "label": "Up the lane to Mardy's gable lamp.",
+          "target": "dr_mardy"
+        }
+      ]
+    },
+    {
+      "id": "dr_mardy",
+      "body": "<<FILL role=choice words=105 beats='Mardy's door, and the reunion the whole errand was for; write this arrival-neutral and neutral to the load, whether Hetta rode the lashings or a parade of crossers came up the lane, the door opens on lamplight and the kettle is swung over the fire before the snow is off anyone's boots; the cat exits its basket like an opinion and takes the hearth chair by right of conquest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_mardy_1",
+          "label": "Stay for the kettle ceremony: some things cannot be refused.",
+          "target": "dr_cat"
+        },
+        {
+          "id": "c_dr_mardy_2",
+          "label": "Take Mardy's word and counts for the guild while the tea draws.",
+          "target": "dr_word"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "laden",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "dr_kettle",
+      "body": "<<FILL role=rising words=95 beats='The kettle ceremony in full: Hetta enthroned by the fire, Mardy orbiting with bread and honey, three neighbours arriving by no-coincidence, the guild's runner fed to the eyebrows and Bracken given the warm brick spot as if he had crossed the river alone; sixty winters of stories, and every one of them lands somewhere warm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_kettle_1",
+          "label": "Rise before the third pot and take Mardy's word for the guild.",
+          "target": "dr_word"
+        },
+        {
+          "id": "c_dr_kettle_2",
+          "label": "Give the evening to the two kitchens and cross back with the morning watch.",
+          "target": "e_dr_kitchens"
+        }
+      ]
+    },
+    {
+      "id": "dr_word",
+      "body": "<<FILL role=rising words=95 beats='Mardy's word for the guild taken down at the table's end: the far-bank counts, who winters where, stores enough if the crossing holds, and a list of crossers waiting to come back over, because a river village's errands run both ways; outside, Nan's line-lanterns show through the window like three low stars on the ice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_word_1",
+          "label": "Gather the returners and shepherd the back-crossing.",
+          "target": "dr_gatherback"
+        }
+      ]
+    },
+    {
+      "id": "dr_back",
+      "body": "<<FILL role=choice words=100 beats='The back-crossing in the last good light, returners in Nan's counted order, the lanterns handing the line along, Bracken pacing the flank like a sheepdog who has decided people are sheep; the river booms once, everyone's shoulders learn that it is only talk, and the near bank takes the parade in with lamps and names'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_back_1",
+          "label": "Sign the crossing into Nan's ice-book and take the line home.",
+          "target": "dr_done"
+        },
+        {
+          "id": "c_dr_back_2",
+          "label": "Stay on as Nan's crossing-hand for the evening shuttles.",
+          "target": "e_dr_hand"
+        },
+        {
+          "id": "c_dr_back_3",
+          "label": "Take the lantern watch on the near bank while Nan works the far side.",
+          "target": "e_dr_lampline"
+        }
+      ]
+    },
+    {
+      "id": "dr_done",
+      "body": "<<FILL role=choice words=115 beats='Away from the river with Nan's ice-book signed and the crossing working; write this entry-agnostic and neutral to how the leg went, the two halves of Drumford can reach each other again and Hetta is where she promised to be, those facts hold on every path; the cold has stepped down another stair while the work was happening, and the ice behind sings one long new note, tightening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_done_1",
+          "label": "Run the line home to the guildhall board.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_dr_done_2",
+          "label": "Make for the beacon knoll: the ridge muster is forming.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_dr_done_3",
+          "label": "Climb the alder knoll first and look downriver where the pale shape crossed.",
+          "target": "e_dr_bounds"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "frost",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_dr_holdoff",
+      "body": "<<FILL role=failure words=95 beats='The warning flags go up in their red pairs and the crossing holds for a day while the freeze does its work; nobody thanks a runner for a closed road in the moment, and Nan Plum does it anyway, in writing, in the ice-book: line held on the guild's read, lens closed overnight, no one through, no one lost; Hetta crosses tomorrow on ice that argues with nobody; a wayfinder's no is still wayfinding'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dr_holdoff",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Ice Says No"
+      }
+    },
+    {
+      "id": "e_dr_kitchens",
+      "body": "<<FILL role=ending words=95 beats='An evening spent shuttling between Hetta's stories and Mardy's stove, a supper that refuses to end, the cat asleep on Bracken in defiance of all natural law; the guild's counts travel back over with the morning watch, one night late and none the worse; some errands are measured in delivered freight, and some in how gently a family is set back together'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dr_kitchens",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Two Grandmothers' Kitchens"
+      }
+    },
+    {
+      "id": "e_dr_hand",
+      "body": "<<FILL role=ending words=95 beats='The evening shuttles worked at Nan's side, lantern to lantern, load by load, the ice-book filling with safe strokes; by full dark the last barrow is over and Nan writes the day up and puts the pen in Rill's hand for the final line, which is how bridge-keepers knight people; the river is a road again because somebody flagged it, tested it, and walked it first'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dr_hand",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Crossing-Hand"
+      }
+    },
+    {
+      "id": "e_dr_bounds",
+      "body": "<<FILL role=ending words=90 beats='From the alder knoll in the last light, the bend where the pale shape crossed shows its story plain in the snow: two bounds, each longer than a sledge, laid light as stitching, no skid, no haste; an old animal that knows ice better than the guild does; Bracken reads the trail and then looks north to the high ground, and Rill looks north too, carrying the question home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dr_bounds",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Two Bounds on the River"
+      }
+    },
+    {
+      "id": "e_dr_lampline",
+      "body": "<<FILL role=ending words=90 beats='Full dark comes on with the crossing sound and lit, and Rill stays the last hour on the near bank tending the line-lanterns while Nan works the far side; three low stars on a white river, and every one of them somebody's safe way home; the ice-book gets its final stroke by lamplight, and the guild's runner learns that some legs end not with arriving but with keeping a light'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dr_lampline",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Three Low Stars"
+      }
+    },
+    {
+      "id": "th_stile",
+      "body": "<<FILL role=choice words=110 beats='The Thornmere stile, where Maren's own line leaves the fell road and runs up past the tarn to the shelter stone, two winters unflagged since she died and going blind under drift; Edda wants it read and re-pegged before the winter forgets it entirely; the wand bundle rides heavy and the copied route-book page rides light; below, the tarn lies white and still as a held plate, its black ice only now coming into its full bearing strength'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_stile_1",
+          "label": "Work the line wand by wand from the stile, the drill way.",
+          "target": "th_wands"
+        },
+        {
+          "id": "c_th_stile_2",
+          "label": "Sit on the stile and read Maren's page for this line first.",
+          "target": "th_book"
+        },
+        {
+          "id": "c_th_stile_3",
+          "label": "Cross the tarn straight over on the black ice, now the freeze has deepened enough to bear.",
+          "target": "th_tarn",
+          "condition": {
+            ">=": [
+              {
+                "var": "frost"
+              },
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "th_book",
+      "body": "<<FILL role=rising words=100 beats='Maren's page for the Thornmere line, copied in the map room: her cache marks pricked at the second pine, the knoll, and three trees on the far tops; her weather notes; and one margin line in her smallest hand that stops Rill's breath a moment, she meets me at the second pine most winters now, older, we neither of us hurry; no name, no explanation, just Maren being exact'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_book_1",
+          "label": "Take the line wand by wand and see what the page means.",
+          "target": "th_margin"
+        },
+        {
+          "id": "c_th_book_2",
+          "label": "Cross the tarn on the bearing black ice and come at the second pine direct.",
+          "target": "th_tarn",
+          "condition": {
+            ">=": [
+              {
+                "var": "frost"
+              },
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "th_wands",
+      "body": "<<FILL role=rising words=100 beats='Reading the buried line out of the land itself: an old wand stub here, a cairn stone there, the ghost of a trodden way that two winters of snow have not quite erased; each found mark gets a new red-willow wand, and the line comes back to life behind the sledge like a drawn thread; the first stretch climbs to a drifted gully that will want care'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_wands_1",
+          "label": "Cross the gully on the packed lee side, testing each step.",
+          "target": "th_gully"
+        },
+        {
+          "id": "c_th_wands_2",
+          "label": "Read Maren's wand-notch code on the stub first for her crossing note.",
+          "target": "th_notch"
+        },
+        {
+          "id": "c_th_wands_3",
+          "label": "Step off-line to the first pine and check its lesser tin.",
+          "target": "th_pine1"
+        }
+      ]
+    },
+    {
+      "id": "th_notch",
+      "body": "<<FILL role=rising words=95 beats='The notch code on the old stub, the guild's private shorthand: two cuts and a ring, cross high in drift years; Maren annotated the very ground; the high lee side goes easy where the straight line would have wallowed; a wayfinder two winters gone is still doing her job, which is a thing to feel in the chest and carry on up the fell'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_notch_1",
+          "label": "Cross the gully high on her mark.",
+          "target": "th_gully"
+        }
+      ]
+    },
+    {
+      "id": "th_gully",
+      "body": "<<FILL role=rising words=95 beats='The gully crossed on the packed lee, pole first, weight sideways, the drift holding like a good floor; on the far lip the moor opens white to the sky and a raven slides overhead and turns along the line ahead as if escorting the work; the moor stretch is long, open, and honest about the weather it is considering'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_gully_1",
+          "label": "Take the open moor stretch while the sky holds.",
+          "target": "th_cairn"
+        },
+        {
+          "id": "c_th_gully_2",
+          "label": "The sky is considering too much: mark what is done and carry the half-read line home.",
+          "target": "e_th_half"
+        }
+      ]
+    },
+    {
+      "id": "th_moor",
+      "body": "<<FILL role=rising words=100 beats='The moor stretch, wands going in every fifty paces, the raven still riding the line overhead; halfway across, tracks join the route from the north, the big neat single line of them, and run beside the buried way as faithfully as a rut beside a road; whatever laid them was not following Rill, it was following the line itself, and knew it under two winters of snow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_moor_1",
+          "label": "Follow line and tracks together to the second pine.",
+          "target": "th_hare"
+        },
+        {
+          "id": "c_th_moor_2",
+          "label": "Detour by the warm springs seep where the tracks water.",
+          "target": "th_springs"
+        }
+      ]
+    },
+    {
+      "id": "th_springs",
+      "body": "<<FILL role=rising words=95 beats='The warm springs seep, a stone bowl of dark open water in all the white where the fell's old heat keeps the ice off, rimed ferns, moss green as summer in the steam; every animal on the moor waters here in hard winters and the snow is a visitors' book, hare, fox, deer, grouse, and one set of prints bigger than all the rest together, pressed deep and calm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_springs_1",
+          "label": "Follow the big prints back to the line and the second pine.",
+          "target": "th_mosslight"
+        }
+      ]
+    },
+    {
+      "id": "th_tarn",
+      "body": "<<FILL role=rising words=100 beats='The tarn's black ice, bearing at last now the freeze has deepened, clear as bottle glass over three fathoms of dark, bubbles hanging in it like stopped stars; the crossing is the wild joy of the Thornmere line, runners' luxury, quick and ringing, with the whole white world doubled underfoot; Bracken's claws click and the ice sings its deep bearing note'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_tarn_1",
+          "label": "Run the singing line straight for the far shore and the pine.",
+          "target": "th_ring"
+        },
+        {
+          "id": "c_th_tarn_2",
+          "label": "Bear by the tarn islet and its old watch-hut midway.",
+          "target": "th_isle"
+        }
+      ]
+    },
+    {
+      "id": "th_isle",
+      "body": "<<FILL role=rising words=95 beats='The tarn islet, a knuckle of rock and three bent pines with the old watch-hut Maren kept, her spyglass nail still in the beam, her view of the whole line in one turn of the head; from here she watched weather, runners, and, the hut's scratched tally now suggests, something else: a column of small neat marks kept over years, each one dated in her code, each one simply, seen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_isle_1",
+          "label": "Cross the last ice to the far shore and the second pine.",
+          "target": "th_shore"
+        },
+        {
+          "id": "c_th_isle_2",
+          "label": "The wind is rising off the tops: bar the hut door and wait it out the night.",
+          "target": "e_th_hut"
+        }
+      ]
+    },
+    {
+      "id": "th_pine",
+      "body": "<<FILL role=choice words=105 beats='The second pine, Maren's biggest tribute tree, alone on its rise with the whole moor for company; write this entry-agnostic, by wand line, springs, or tarn ice the pine is the same great patient tree; her tin hangs at shoulder height, polished bright by openings, empty; and the snow around the roots is pressed with beds, layer under layer, the newest fresh this morning, still crisp at the edges; Bracken smells them all and sits down calm as church'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_pine_1",
+          "label": "Read the beds and the bark and take the full account.",
+          "target": "th_beds"
+        },
+        {
+          "id": "c_th_pine_2",
+          "label": "Leave the ground unbothered and carry the line on above the tarn.",
+          "target": "th_line2"
+        }
+      ]
+    },
+    {
+      "id": "th_beds",
+      "body": "<<FILL role=rising words=100 beats='The full account, taken the guild way without touching: beds going back many winters, the newest single, large, and lately thin, the bark scratch-marked low in old ritual lines; no kill sign anywhere, ever, not a bone, not a feather; whatever keeps this tree keeps it like an appointment, and has lately been keeping it hungry; the margin line from Maren's book stands up in the mind and will not sit back down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_beds_1",
+          "label": "Carry what the ground said up the line above the tarn.",
+          "target": "th_line2"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "th_line2",
+      "body": "<<FILL role=choice words=105 beats='The line above the tarn where Maren's route turns along the tops; write this entry-agnostic and re-entry-safe, the same wind-combed shoulder however it is reached; from here the ways divide: the guild cache-house on its knoll, stocked each autumn and squat as a good promise, the far loop over the tops where her last three tribute trees stand, long and lamp-hungry, and the fresh single track line running parallel to the route at a wolf's polite distance'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_line2_1",
+          "label": "Turn up to the cache-house knoll and its ledger.",
+          "target": "th_knoll"
+        },
+        {
+          "id": "c_th_line2_2",
+          "label": "Take the far loop over the tops to the last tribute trees, burning a day-mark.",
+          "target": "th_tops",
+          "condition": {
+            ">=": [
+              {
+                "var": "provisions"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "provisions",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_th_line2_3",
+          "label": "Parallel the fresh tracks at guild distance and read where they pause.",
+          "target": "th_tracks"
+        }
+      ]
+    },
+    {
+      "id": "th_cache",
+      "body": "<<FILL role=rising words=100 beats='The guild cache-house, turf-roofed, iron-hasped, smelling of oilcloth and oats; the autumn stock stands ranked and the sledge crate can be repacked to full day-marks against the guild's standing rule that no runner passes a cache hungry; on the shelf by the lamp, the cache ledger in its waxed wallet, Maren's hand filling most of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_cache_1",
+          "label": "Repack the crate to full day-marks and read the ledger by lamp.",
+          "target": "th_ledger",
+          "effects": [
+            {
+              "op": "set",
+              "var": "provisions",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": "c_th_cache_2",
+          "label": "Just the ledger: some pages matter more than supper.",
+          "target": "th_shelves"
+        }
+      ]
+    },
+    {
+      "id": "th_ledger",
+      "body": "<<FILL role=rising words=110 beats='The cache ledger read by lamp: forty winters of Maren's entries, stock in, stock out, and woven through them the other ledger she kept, meat, marrow bones, tallow, carried to the pine, the knoll, the tops, winter on winter; and the last entry, two winters old, in a hand gone careful: she is old now, as am I; we have kept each other's winters, whoever reads this, the custom is yours if you want it; the lamp hisses; Bracken sighs in his sleep; the words wait, exactly as she left them, to be wanted'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_ledger_1",
+          "label": "Close the ledger gently and carry the custom up the line.",
+          "target": "th_line3"
+        },
+        {
+          "id": "c_th_ledger_2",
+          "label": "Stay by the lamp and copy every tribute entry for the guild book.",
+          "target": "e_th_lists"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "th_tops",
+      "body": "<<FILL role=rising words=100 beats='The far loop over the tops, lamp lit against the early dark, the three last tribute trees standing one by one out of the blowing ground-snow; every tin polished, every tin empty, every tree bedded beneath with that same patient layering of winters; the pattern is past mistaking now, someone kept these full once, and something still comes, and hopes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_tops_1",
+          "label": "Turn along the crest for the long view before dropping back.",
+          "target": "th_crest"
+        },
+        {
+          "id": "c_th_tops_2",
+          "label": "Drop straight back to the line's high turn.",
+          "target": "th_line3"
+        }
+      ]
+    },
+    {
+      "id": "th_view",
+      "body": "<<FILL role=rising words=105 beats='From the crest, far below on the white moor, she is simply there: the White Wolf herself, out in the open, walking Maren's line as true as a compass needle, unhurried, stopping at the second pine the way a woman stops at a friend's gate; even at this distance the winter shows through her coat, the ribs, the careful gait of the old; she does not know she is watched, or does not mind; Bracken presses close and neither of them makes a sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_view_1",
+          "label": "Watch until she passes from sight, then drop to the line's turn.",
+          "target": "th_line3"
+        },
+        {
+          "id": "c_th_view_2",
+          "label": "Keep the long watch till dusk and map every cache she visits.",
+          "target": "e_th_watch"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "th_tracks",
+      "body": "<<FILL role=rising words=100 beats='Paralleling the fresh line at the guild's respectful distance, never closing, reading as it goes: the tracks pause at Maren's marks, the pine, the notched stub, the cache knoll's foot, and nowhere else, past hare trails and grouse packs without a flicker of interest; this is not hunting, it is rounds; it is what Rill has been doing all winter, in another shape'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_tracks_1",
+          "label": "Let the tracks go their way and take the line's high turn.",
+          "target": "th_partways"
+        }
+      ]
+    },
+    {
+      "id": "th_line3",
+      "body": "<<FILL role=choice words=105 beats='The line's high turn, where Maren's route faces north and the Queen's Ridge stands up across the valleys with the weather combing off its crest; write this entry-agnostic and re-entry-safe, and let the pieces sit in plain view without forcing them: the empty polished tins, the lists in her hand, the ledger's offer, the thin white shape that keeps her rounds; the ridge waits in the north like the last page of a book'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_line3_1",
+          "label": "Finish the flagging to the shelter stone and close the line.",
+          "target": "th_stone"
+        },
+        {
+          "id": "c_th_line3_2",
+          "label": "Take a long reading of the Queen's Ridge through the guild glass first.",
+          "target": "th_glass"
+        }
+      ]
+    },
+    {
+      "id": "th_glass",
+      "body": "<<FILL role=rising words=95 beats='The guild glass steadied on a wand: the Queen's Ridge leaps close, its cache stones plain along the crest, old worked stones from the tribute days; and in the lee of the largest, a pale shape bedded out of the wind, head up, watching the valleys the way a keeper watches a hearth; the glass comes down; the ridge goes far again; the knowing stays close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_glass_1",
+          "label": "Carry it to the shelter stone and close the line.",
+          "target": "th_stone"
+        }
+      ]
+    },
+    {
+      "id": "th_stone",
+      "body": "<<FILL role=rising words=100 beats='The shelter stone at the line's end, the last wand set and sighted, Maren's route alive again end to end, readable by any runner in any weather; two winters of silence undone in a day's work; the stone's lee holds the old fire-ring and the guild mark, and Rill adds the year to the tally chiselled small, because the line is kept, and keeping is a thing you sign'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_stone_1",
+          "label": "Turn for home with the line singing behind you.",
+          "target": "th_lee"
+        }
+      ]
+    },
+    {
+      "id": "th_done",
+      "body": "<<FILL role=choice words=115 beats='Leaving the Thornmere line re-flagged and readable; write this entry-agnostic and neutral to how the day went, the line is closed, the caches are read, and what walks Maren's route is known a little better, those facts hold on every path; the cold has stepped down again while the work was happening, the freeze going iron at the edges of the day, and the north shows the Queen's Ridge black against a green evening sky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_done_1",
+          "label": "Run the line home to the guildhall board.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_th_done_2",
+          "label": "Cross the fell shoulder to the High Shoulder route while the pass still opens.",
+          "target": "fg_shoulder",
+          "condition": {
+            "<": [
+              {
+                "var": "frost"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_th_done_3",
+          "label": "Make for the beacon knoll: the ridge muster is forming.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_th_done_4",
+          "label": "Stand at the stile a moment and take the ridge's bearing by heart.",
+          "target": "e_th_bearing"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "frost",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_th_half",
+      "body": "<<FILL role=failure words=95 beats='The sky makes its argument and wins, and Rill carries home a map of everything found so far, stubs, cairns, the gully's high crossing, honestly marked to the exact wand where the reading stopped; Edda spreads it on the board and calls it the best kind of unfinished; a line half-read and safely reported is a line another day can finish, and the fells keep all their appointments'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_th_half",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Half a Line Read"
+      }
+    },
+    {
+      "id": "e_th_hut",
+      "body": "<<FILL role=failure words=95 beats='The wind off the tops takes the tarn for the night and the old watch-hut keeps its newest guests the way it kept its first: snug, fed on crate rations, listening to the ice sing scales in the dark; Maren's spyglass nail holds a lamp now instead; the morning team finds runner and dog asleep in a nest of quilts and the line's work waiting patient under new snow, none the worse'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_th_hut",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Watch-Hut Night"
+      }
+    },
+    {
+      "id": "e_th_lists",
+      "body": "<<FILL role=ending words=95 beats='The night given to the ledger by cache-house lamp, every tribute entry copied fair into the guild book, forty winters of a custom nobody else knew was load-bearing; when Edda reads it she goes quiet for longer than anyone has ever seen her quiet, then files it under routes, standing, which in guild language means this was never a story, it was maintenance; the custom is on the record now, whoever takes it up'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_th_lists",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Maren's Lists"
+      }
+    },
+    {
+      "id": "e_th_watch",
+      "body": "<<FILL role=ending words=95 beats='The watch kept till dusk at the guild's long distance, and the map filled in cache by cache: she visits every one of Maren's marks and nothing else, a patrol old as habit, thin as hope; the map goes home to Edda with the truth laid out in pencil, and Edda pins it to the board next to the Queen's Ridge bearing where the whole guild will see it at morning muster; watching well is also wayfinding'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_th_watch",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Far Watcher"
+      }
+    },
+    {
+      "id": "e_th_bearing",
+      "body": "<<FILL role=ending words=90 beats='The bearing taken by heart at the stile: the Queen's Ridge black on green, the evening star hung over its north shoulder, the line of it fixed the way Maren taught, by land, sky, and the feel of the wind on one cheek; some knowledge rides in books and some has to be stood in; whatever the guild decides about what walks up there, its wayfinder's apprentice now knows the way to its door'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_th_bearing",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Ridge Bearing"
+      }
+    },
+    {
+      "id": "fg_shoulder",
+      "body": "<<FILL role=choice words=110 beats='The High Shoulder route while the pass still opens, the highest flagged line in the fells and the first the deep freeze will close; Fellgate sits beyond it in its stone bowl, quarry village, ice-cutters' village, and the errand rides urgent: two cutters, Ivo and Sel, overdue off the tarn galleries since yesterday; the climb offers its two honest ways and one honest question about the weather'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_shoulder_1",
+          "label": "Take the flagged zigzags straight up the shoulder.",
+          "target": "fg_zig"
+        },
+        {
+          "id": "c_fg_shoulder_2",
+          "label": "Take the old quarry bore through the shoulder's knee, out of the wind, burning a day-mark.",
+          "target": "fg_bore",
+          "condition": {
+            ">=": [
+              {
+                "var": "provisions"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "provisions",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_fg_shoulder_3",
+          "label": "Climb to the knee first and read the cornice line before committing.",
+          "target": "fg_knee"
+        }
+      ]
+    },
+    {
+      "id": "fg_knee",
+      "body": "<<FILL role=choice words=100 beats='From the knee the cornice line shows along the crest like piped cream, beautiful and treacherous, but the flagged line runs clear of it and the wind is workable, today; this pass has a few days of opening left at most; and high above, crossing the skyline with the tilted ease of something at home there, a pale shape moves along the crest and drops from sight beyond'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_knee_1",
+          "label": "Commit to the zigzags while the wind is workable.",
+          "target": "fg_zig"
+        },
+        {
+          "id": "c_fg_knee_2",
+          "label": "Take the bore instead, out of the wind, burning a day-mark.",
+          "target": "fg_bore",
+          "condition": {
+            ">=": [
+              {
+                "var": "provisions"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "provisions",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_fg_knee_3",
+          "label": "Judge the pass too near closing and carry the verdict home.",
+          "target": "e_fg_verdict"
+        }
+      ]
+    },
+    {
+      "id": "fg_zig",
+      "body": "<<FILL role=rising words=100 beats='The zigzags, wind waiting at each turn like a shouldering crowd, the wands leaning but true; the drill holds, count the paces, plant the pole, keep the dog on the uphill side; at the sixth turn the wind gets a full grip and everything stops mattering except the next wand and the wand after that'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_zig_1",
+          "label": "Work wand to wand through the gust-line to the cairns.",
+          "target": "fg_seventh"
+        },
+        {
+          "id": "c_fg_zig_2",
+          "label": "Duck into the shelter cleft below the turn and let the gust-set pass.",
+          "target": "fg_cleft"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fg_cleft",
+      "body": "<<FILL role=rising words=90 beats='The shelter cleft, a slot of stillness in the roaring day, floor packed by generations of waiting boots; the gust-set counts itself out in threes overhead while runner and dog share a heel of bread; on the cleft wall, small and old, someone has scratched a wolf with a crown of stars, and someone else, later, has scratched a bowl beneath it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_cleft_1",
+          "label": "Gusts spent: back onto the line and up to the cairns.",
+          "target": "fg_cairns"
+        }
+      ]
+    },
+    {
+      "id": "fg_cairns",
+      "body": "<<FILL role=rising words=95 beats='The cairn line along the crest, each stone-pile shouldering its load of rime, the fixed ropes strung cairn to cairn by the quarry folk; clipped on and moving, the world simplifies to rope, rime, and breath; at the third cairn one rope's anchor stake has frost-heaved loose and wants attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_cairns_1",
+          "label": "Stop and re-anchor the stake properly for whoever comes behind.",
+          "target": "fg_ropefix"
+        },
+        {
+          "id": "c_fg_cairns_2",
+          "label": "Note it for the quarrymaster and keep moving for the gap.",
+          "target": "fg_rime"
+        }
+      ]
+    },
+    {
+      "id": "fg_ropefix",
+      "body": "<<FILL role=rising words=90 beats='The stake re-driven in a better crack, the rope re-tensioned and its frost knocked off, ten cold minutes bought with someone else's safety in mind; the guild counts this the same as carrying a message, because a route is a message, written in wands and rope, that says you can get there from here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_ropefix_1",
+          "label": "On along the cairn line to the gap.",
+          "target": "fg_gap"
+        }
+      ]
+    },
+    {
+      "id": "fg_bore",
+      "body": "<<FILL role=rising words=100 beats='The quarry bore through the shoulder's knee, lamp-ring on hewn walls, the wind shut outside like a dog told to stay; the cutters' gallery, this, driven a hundred years ago to bring stone out level; tool marks herring-bone the walls and the lamp finds the chalked names of every crew that ever worked it, Ivo's and Sel's among the newest, chalked fat and confident'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_bore_1",
+          "label": "Follow the lamp down the long gallery to the far mouth.",
+          "target": "fg_lampway"
+        }
+      ]
+    },
+    {
+      "id": "fg_lampway",
+      "body": "<<FILL role=rising words=95 beats='The long gallery, breath smoking in the lamp-ring, the dark ahead giving way a room at a time; halfway, a side-chamber holds the cutters' winter gear-store, sledge chains, rope coils, a spare stretcher-board hung on pegs, everything a rescue might want, noted and left where it lives; the far mouth ahead shows as a coin of grey light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_lampway_1",
+          "label": "Out the far mouth and down to the gap above Fellgate.",
+          "target": "fg_mouth"
+        }
+      ]
+    },
+    {
+      "id": "fg_gap",
+      "body": "<<FILL role=choice words=100 beats='The gap above Fellgate, and the village below in its stone bowl, smoke rising from the gatehouse and the terrace of cutters' cottages; write this entry-agnostic, by zigzags or bore the gap is the same notch of wind and arrival; what is missing from the picture is sound, no saws, no sledge-chains, the quarry standing silent with its crews called in for the search that has not yet found Ivo and Sel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_gap_1",
+          "label": "Drop down to the gatehouse and report to quarrymaster Brand.",
+          "target": "fg_street"
+        }
+      ]
+    },
+    {
+      "id": "fg_gatehouse",
+      "body": "<<FILL role=choice words=110 beats='Quarrymaster Brand at the gatehouse table, map spread, voice level in the way of someone spending worry as work: Ivo and Sel went to the tarn galleries yesterday for clear ice and did not come back; the rule here is the guild's rule, nobody searches alone, teams, ropes, lamps, and a fresh pair of young legs and a route-dog are exactly what the search is short of; Brand offers the choices plainly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_gatehouse_1",
+          "label": "Join Brand's rope-team out along the tarn galleries.",
+          "target": "fg_team"
+        },
+        {
+          "id": "c_fg_gatehouse_2",
+          "label": "Run the bell-round to raise the second team from the far cottages.",
+          "target": "fg_raise"
+        },
+        {
+          "id": "c_fg_gatehouse_3",
+          "label": "Take Bracken along the cutters' own flag-line with Osk, Brand's daughter, and a rope.",
+          "target": "fg_line"
+        }
+      ]
+    },
+    {
+      "id": "fg_team",
+      "body": "<<FILL role=rising words=100 beats='Out with Brand's rope-team in called order, lamps hooded against the flat light, voices pitched to carry: Ivo, Sel; the tarn galleries open ahead, blue-white halls where the clear ice is cut, and the team works them methodically, rope-lengths apart, nobody out of anyone's sight, the way all mountain work is done that means to end well'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_team_1",
+          "label": "Work the gallery line with the team toward the cutting face.",
+          "target": "fg_ropeorder"
+        },
+        {
+          "id": "c_fg_team_2",
+          "label": "Take the anchor post at the gallery mouth and hold the team's line.",
+          "target": "e_fg_anchor"
+        }
+      ]
+    },
+    {
+      "id": "fg_raise",
+      "body": "<<FILL role=rising words=95 beats='The bell-round run at a dog-trot, the code hammered out at each cottage row, search, second team, gatehouse; doors bang, lamps kindle, and the second team forms up in the street with rope and stretcher-board almost before the last bell stroke dies; a village that cuts ice for a living knows exactly how to be quick and exactly how not to hurry'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_raise_1",
+          "label": "Guide the second team out to join the gallery search.",
+          "target": "fg_secondteam"
+        },
+        {
+          "id": "c_fg_raise_2",
+          "label": "Stay as bell-runner at the gatehouse, the search's voice and ears.",
+          "target": "e_fg_bell"
+        }
+      ]
+    },
+    {
+      "id": "fg_line",
+      "body": "<<FILL role=rising words=100 beats='The cutters' own flag-line with Osk, who knows her father's quarry like a kitchen, and Bracken working ahead on the long lead; the line runs the tarn's rim past the day-huts toward the galleries; at the second hut Bracken takes a hard interest in the ground, a scent line cutting away off the flags, fresh boots, two sets, angling toward the storm bothy above the galleries'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_line_1",
+          "label": "Trust the dog and follow the scent line to the storm bothy.",
+          "target": "fg_dayhuts"
+        },
+        {
+          "id": "c_fg_line_2",
+          "label": "Hold the flag-line to the galleries and signal the find to the team.",
+          "target": "fg_galleries"
+        }
+      ]
+    },
+    {
+      "id": "fg_scent",
+      "body": "<<FILL role=rising words=95 beats='The scent line followed at Bracken's pace, Osk reading the boot-sign aloud, walking steady, no limp yet, then here, one of them favouring a foot, they roped together, good lads; the storm bothy's roofline shows above the moraine with, sweetest sight in the fells, a thin standing thread of smoke'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_scent_1",
+          "label": "Up the moraine to the bothy door.",
+          "target": "fg_bothy2"
+        }
+      ]
+    },
+    {
+      "id": "fg_galleries",
+      "body": "<<FILL role=rising words=100 beats='The tarn galleries, blue halls of cut ice ringing underfoot, the search working them in rope-order; at the cutting face the story is written plain: yesterday's cut blocks sledged and stacked neat, tools racked, everything left in good deliberate order, no accident here, a choice; they finished, they read the weather, and they went up, toward the storm bothy; the search swings that way with one will'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_galleries_1",
+          "label": "Up the moraine path to the storm bothy.",
+          "target": "fg_moraine"
+        }
+      ]
+    },
+    {
+      "id": "fg_bothy2",
+      "body": "<<FILL role=rising words=95 beats='The storm bothy above the galleries, and smoke from its cranked tin chimney, and the door opening before anyone knocks; write this entry-agnostic, by scent line or gallery path the bothy is the same squat blessing of stone; inside, two ice-cutters in a fug of stove-heat and relief, one with his boot off and an ankle the size of a loaf, both talking at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_bothy2_1",
+          "label": "In, and let the whole story land.",
+          "target": "fg_found"
+        }
+      ]
+    },
+    {
+      "id": "fg_found",
+      "body": "<<FILL role=rising words=110 beats='Ivo and Sel, safe, sheepish, and exactly right: the ankle turned on the moraine at dusk yesterday, so they did the drilled thing, made the bothy, banked the stove, and stayed put; and then the other thing, told half sideways: at dusk a wolf, white, huge, old as the hills, stood on the gallery rim and watched them a long while, and they stayed put partly for the ankle and partly because something that big looking that thin and that calm puts awe in you like cold in a boot; she did nothing; she watched, and went'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_found_1",
+          "label": "Splint the ankle properly with Osk and rig the carry.",
+          "target": "fg_ankle"
+        },
+        {
+          "id": "c_fg_found_2",
+          "label": "Signal the find to the other searchers first and gather everyone.",
+          "target": "fg_signal"
+        }
+      ]
+    },
+    {
+      "id": "fg_ankle",
+      "body": "<<FILL role=rising words=95 beats='The splint rigged the guild way under Osk's approving eye, wands for want of better splints, which Maren would have found funny, and the stretcher-board lashed across the sledge as a chair-rig; Ivo installed like luggage that complains; Sel carries the tools because a cutter does not leave tools, injured mate or no'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_ankle_1",
+          "label": "Take the carry down in rope-order.",
+          "target": "fg_carry"
+        }
+      ]
+    },
+    {
+      "id": "fg_signal",
+      "body": "<<FILL role=rising words=90 beats='The find whistled down the line in guild code, found, two, safe, and the answer comes back up the wind in ragged cheering; searchers converge on the bothy from gallery and flag-line until the carry down has more hands than handles, which is exactly how a mountain village likes its rescues'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_signal_1",
+          "label": "Rig the carry and take it down together.",
+          "target": "fg_carry"
+        }
+      ]
+    },
+    {
+      "id": "fg_carry",
+      "body": "<<FILL role=rising words=95 beats='The carry down in rope-order, lamps hooded, the chair-rig handed round the steep steps with quiet exact words, Bracken pacing the flank like a sergeant; write this entry-agnostic, however the find was made the carry is the same shared weight; Fellgate's bowl opens below, every window lit now, the whole village standing out in the street to count its cutters home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_carry_1",
+          "label": "Down into the street and the counting.",
+          "target": "fg_streetlamps"
+        }
+      ]
+    },
+    {
+      "id": "fg_return",
+      "body": "<<FILL role=choice words=100 beats='Fellgate takes its cutters back with bell-ringing and a noise that is half cheer and half scold; Brand's hand lands on Rill's shoulder like a dropped beam, which among quarry folk is a formal decoration; the gatehouse stove is mobbed; Ivo, enthroned with his loaf of an ankle, is already telling it, and the room goes quiet when he reaches the rim of the gallery at dusk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_return_1",
+          "label": "Stay for the telling and hear the wolf's part done justice.",
+          "target": "fg_tale"
+        },
+        {
+          "id": "c_fg_return_2",
+          "label": "Slip out early and make ready for the line home.",
+          "target": "fg_wrap"
+        }
+      ]
+    },
+    {
+      "id": "fg_tale",
+      "body": "<<FILL role=rising words=105 beats='Ivo's telling, and it is not a monster story however hard the young ones want it to be: she stood on the rim, he says, thin as a rake under all that white, and she looked at the cut ice and at us and away north, like somebody counting stock; and old Sel, quiet till now, says his grandfather fed a white wolf at marked trees when Sel was a boy, and was laughed at for it, and the room does not laugh; the stove ticks; north sits in everyone's mind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_tale_1",
+          "label": "Carry the telling with you and make ready for the line home.",
+          "target": "fg_songs"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fg_wrap",
+      "body": "<<FILL role=choice words=95 beats='The gatehouse yard, sledge re-lashed, Brand's one-line report for Edda folded in the oilcloth, cutters home, guild runner assisted, pass near closing; write this entry-agnostic and re-entry-safe, the yard is the same lamplit square of stone whatever the evening held; the High Shoulder stands overhead with the last light on it, going iron'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_wrap_1",
+          "label": "Take the shoulder line for home.",
+          "target": "fg_done"
+        },
+        {
+          "id": "c_fg_wrap_2",
+          "label": "Stay for the cutters' thanks-feast and cross with the morning light.",
+          "target": "e_fg_feast"
+        }
+      ]
+    },
+    {
+      "id": "fg_done",
+      "body": "<<FILL role=choice words=115 beats='Over the High Shoulder for home with Brand's report aboard; write this entry-agnostic and neutral to how the leg went, the cutters are counted home and the pass's closing is read and reported, those facts hold on every path; the cold has gone another mark deeper while the work was happening, and behind, the pass draws its cornices together like a door easing shut for the winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_done_1",
+          "label": "Run the line home to the guildhall board.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_fg_done_2",
+          "label": "Make for the beacon knoll: the ridge muster is forming.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_fg_done_3",
+          "label": "Stand at the crest a moment where the pale shape crossed the skyline.",
+          "target": "e_fg_skyline"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "frost",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_fg_verdict",
+      "body": "<<FILL role=failure words=95 beats='The verdict carried home instead of the crossing: the High Shoulder is days from closing and the cornices are loading wrong; Edda takes the read, checks it against the sky, and sends the Fellgate word the long safe way round by Drumford relay, a day slower and sure; the search finds its cutters without the guild's runner, and the guild book logs a pass read right, which is the verdict that keeps runners alive to be wrong about easier things'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fg_verdict",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cornice Verdict"
+      }
+    },
+    {
+      "id": "e_fg_anchor",
+      "body": "<<FILL role=failure words=95 beats='The anchor post held at the gallery mouth, rope paid and belayed by the book while the find happens beyond, out of sight, other voices, other hands; when the cheering comes back down the line it comes down a rope that never went slack, and Brand notes exactly that in his report; not every rescue puts your name in the telling, and the telling happens because the anchor held; the walk home is quiet and the sleep is good'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fg_anchor",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Holding the Anchor"
+      }
+    },
+    {
+      "id": "e_fg_bell",
+      "body": "<<FILL role=ending words=95 beats='The gatehouse bell worked all evening as the search's voice and ears, codes in, codes out, the map kept current at Brand's table until the double stroke comes in off the moraine, found, two, safe, and Rill gets to be the one who rings the whole village's relief into the dark; the cutters come home to bells rung by the guild's runner, and Fellgate does not forget who rang them'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fg_bell",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Search's Voice"
+      }
+    },
+    {
+      "id": "e_fg_feast",
+      "body": "<<FILL role=ending words=90 beats='The thanks-feast in the gatehouse hall, quarry-style: loud, plain, endless, with Ivo's ankle propped on a stool like a guest of honour and Bracken fed to the shape of a barrel; songs about stone, songs about ice, and one old one nobody explains about a white queen on a ridge; the crossing home waits for morning light and a rested dog, which is exactly the guild way'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fg_feast",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Cutters' Feast"
+      }
+    },
+    {
+      "id": "e_fg_skyline",
+      "body": "<<FILL role=ending words=90 beats='At the crest, in the last light, the place where she crossed shows its single line of prints along the cornice edge, laid exactly where the wind has packed the snow to bearing, a route no guild book holds; an old queen's private pass; Rill memorises its shape against the sky the way Maren taught, by heart, and leaves the prints to the wind, and carries the route home unwritten'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fg_skyline",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Skyline Crossing"
+      }
+    },
+    {
+      "id": "gh_wax",
+      "body": "<<FILL role=rising words=90 beats='The wax bench in the harness room, runners tipped up and dressed the guild way, lashings gone over inch by inch, Bracken's paws checked pad by pad while he leans his whole opinionated weight into the work; small unhurried maintenance, the kind Maren called the cheapest rescue there is, the one you do before anything goes wrong'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gh_wax_1",
+          "label": "Back out to the route board.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "af_out",
+      "body": "<<FILL role=rising words=95 beats='Out of the yard on the Ashfirth line, the guild steps dropping to the fell road and the larch valley opening below in greys and whites; the pass-ledger snug in its oilcloth, the day's cold taking a first honest bite; write this re-entry-safe, the road out is the same road however many legs the winter has already held'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_out_1",
+          "label": "Down the fell road to where the Ashfirth ways divide.",
+          "target": "af_road"
+        }
+      ]
+    },
+    {
+      "id": "af_river",
+      "body": "<<FILL role=rising words=95 beats='The river-ice line under the alder banks, level as a table and quick as a whistle, the guild's daylight-only road; the ice talks its small settling talk and the alders lean over rimed to the last twig; wand to wand the valley slides by at double pace, the sledge running so sweet it hums'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_river_1",
+          "label": "Hold the fast line all the way down to the mill weir.",
+          "target": "af_alders"
+        }
+      ]
+    },
+    {
+      "id": "af_alders",
+      "body": "<<FILL role=rising words=90 beats='The alder narrows, where the banks pinch and the wands cross to the shadier side; otter slides groove the snow down every bank like children's chutes, and one set of bigger prints crosses the river in a straight unhurried line, older than this morning, going north; the weir's rail shows ahead through the trees'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_alders_1",
+          "label": "On to the weir and up toward the village.",
+          "target": "af_meet"
+        },
+        {
+          "id": "c_af_alders_2",
+          "label": "Pause at the otter slides a moment, because some things insist.",
+          "target": "af_otter"
+        }
+      ]
+    },
+    {
+      "id": "af_otter",
+      "body": "<<FILL role=rising words=85 beats='Two otters flow down their slide and across the ice like poured water, utterly unbothered by winter, dog, or guild business; Bracken quivers with professional interest and holds the line because he is a working dog and says so with his whole rigid body; thirty seconds of pure valley, spent well'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_otter_1",
+          "label": "Back to the line and on to the weir.",
+          "target": "af_meet"
+        }
+      ]
+    },
+    {
+      "id": "af_count",
+      "body": "<<FILL role=rising words=90 beats='The wand-count taken up the drilled way, fifty paces, flag, fifty paces, flag, the rhythm that keeps a line honest when the light goes flat; two wands lean, one is buried to its ribbon, and the drift is still building off the shoulder as the wind sorts itself for weather'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_count_1",
+          "label": "Stop at the buried stretch and take stock.",
+          "target": "af_drift"
+        }
+      ]
+    },
+    {
+      "id": "af_hush",
+      "body": "<<FILL role=rising words=90 beats='The wood's hush deepens past the first hundred paces, the boughs roofed with a winter's weight, the lamp-ring the only moving thing; somewhere off the line a bough sheds its load with a soft whump and the silence closes back over the sound like water; the compass needle sits steady as a kept promise'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_hush_1",
+          "label": "Settle into the count and follow the needle.",
+          "target": "af_compass"
+        }
+      ]
+    },
+    {
+      "id": "af_lane",
+      "body": "<<FILL role=rising words=90 beats='The lane up from the weir between snow walls shoulder-high, the village sounds arriving one by one, a dog, an axe, a door; write this entry-agnostic, by road, wood, or river the lane is the same climbing lane, and the gate lanterns show at its top like two low kind stars'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_lane_1",
+          "label": "Up to the gate lanterns.",
+          "target": "af_gate"
+        }
+      ]
+    },
+    {
+      "id": "af_lane2",
+      "body": "<<FILL role=rising words=85 beats='Up from the mill by the short path, past the sheeted millstones and the ice-locked wheel with its beard of icicles, joining the village lane where it crests; the gate lanterns are lit ahead and somewhere behind them a smith's hammer is keeping easy time with the evening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_lane2_1",
+          "label": "Join the lane at the crest and go up to the gate.",
+          "target": "af_gate"
+        }
+      ]
+    },
+    {
+      "id": "af_brazier",
+      "body": "<<FILL role=rising words=90 beats='The gate brazier's circle of warmth, mittens steaming on the rail, a couple of village elders already installed on the bench like punctuation; Sorrel feeds the fire a knot of root and the sparks go up among the first stars; a good place for a story, and she knows one is owed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_brazier_1",
+          "label": "Settle by the brazier and ask for the true telling.",
+          "target": "af_stories"
+        }
+      ]
+    },
+    {
+      "id": "af_trough",
+      "body": "<<FILL role=rising words=85 beats='The trough ice cracked and hauled out in grey slabs, the pump worked till it remembers its job, the beasts shouldering in to drink in their steaming order; Piet keeps up a commentary on every ewe by name and grievance; plain barn-warm work, and the day's cold left outside the door where it belongs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_trough_1",
+          "label": "Finish up and find Sorrel at the hall.",
+          "target": "af_tasks"
+        }
+      ]
+    },
+    {
+      "id": "af_hallfire",
+      "body": "<<FILL role=rising words=90 beats='The village hall fire built man-high, the gathered-in households sorting themselves along the benches with quilts and gossip; on the settle the oldest voices are already comparing this winter to the wolf-year winters of their childhoods, and not one of them sounds afraid; deep cold outside, deep talk inside, the village's oldest arithmetic'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_hallfire_1",
+          "label": "Through to Sorrel's table and the sealed answers.",
+          "target": "af_answers"
+        }
+      ]
+    },
+    {
+      "id": "af_seal",
+      "body": "<<FILL role=rising words=85 beats='The send-off at the gate, Sorrel's seal pressed warm into the last wax, the oilcloth packet knotted into the crate the guild way; she puts one hand flat on the sledge rail a moment, the hearth-keeper's blessing, which is not a word but a weight, and steps back into her lantern light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_af_seal_1",
+          "label": "Take the line away from Ashfirth.",
+          "target": "af_done"
+        }
+      ]
+    },
+    {
+      "id": "sc_yard",
+      "body": "<<FILL role=rising words=95 beats='Round to the stillroom yard under the guild wall, where the Scarpsett line starts its long look upward; the crag stands over the valley in grey ledges with the switchback wands stitched across it like tacking thread; write this re-entry-safe, the yard is the same cold anteroom whatever the winter has already held'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_yard_1",
+          "label": "In to the stillroom bench.",
+          "target": "sc_still"
+        }
+      ]
+    },
+    {
+      "id": "sc_low",
+      "body": "<<FILL role=rising words=90 beats='The lower turns with the load settling into its lashings, the sledge finding its new balance, Bracken adjusting his haul to the weight the way a good dog does, without being asked; the valley drops away a ledge at a time and the wind starts taking an interest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_low_1",
+          "label": "On up to where the fourth turn should be.",
+          "target": "sc_zig"
+        }
+      ]
+    },
+    {
+      "id": "sc_basket",
+      "body": "<<FILL role=rising words=90 beats='Partway to the fork the carriers' basket passes overhead on its long cable, two figures at the crag top paying it down hand over hand to meet the chest at the stillroom, the whole apparatus creaking like a patient animal; word sent, word answered, the crag already working; there is a particular pleasure in watching a plan become moving parts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_basket_1",
+          "label": "Climb on to the fork under the crag.",
+          "target": "sc_fork"
+        }
+      ]
+    },
+    {
+      "id": "sc_gustrun",
+      "body": "<<FILL role=rising words=90 beats='The run between gust-sets, counted and committed, three turns taken at a working trot with the wind drawing breath; the third gust arrives early and leans on sledge and runner like a tired horse, and then lets go, and the saddle's notch is suddenly there ahead, full of sky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_gustrun_1",
+          "label": "Through the notch onto the saddle.",
+          "target": "sc_top"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "sc_rail",
+      "body": "<<FILL role=rising words=85 beats='The railed gallery walk up the last of the crag, iron cold even through mitts, the valley swinging below in slow grey-white panels; the rail rings faintly in the wind, one long patient note, and the saddle opens overhead like a door standing ajar'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_rail_1",
+          "label": "Up the last rail-length onto the saddle.",
+          "target": "sc_top"
+        }
+      ]
+    },
+    {
+      "id": "sc_bend",
+      "body": "<<FILL role=rising words=90 beats='The great bend of the shelf road, where the whole southern fells unroll below in ranked white ridges and the road hangs its easy curve over all of it; Maren used to halt loads here a breath, not for rest, she said, for bookkeeping, to count what the work was for; the sledge runs the curve smooth as a signature'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_bend_1",
+          "label": "Round the bend and on to the saddle.",
+          "target": "sc_top"
+        }
+      ]
+    },
+    {
+      "id": "sc_steps",
+      "body": "<<FILL role=rising words=85 beats='The terrace steps down into the village's windbreak, snow packed to a polish and gritted with hearth-ash the Scarpsett way, houses rising on either hand with their backs to the crag; the fever house lamp grows from a yellow point to a yellow window as the steps go down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_steps_1",
+          "label": "Down the last flight to the gate.",
+          "target": "sc_gate"
+        }
+      ]
+    },
+    {
+      "id": "sc_terrace",
+      "body": "<<FILL role=rising words=85 beats='Along the terrace street, doors opening a hand's width as the guild patch passes, word travelling indoors faster than boots travel outdoors; an old man sweeping his step stands straight and touches his cap brim, which is Scarpsett for a speech of welcome; the fever house door is scrubbed and waiting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_terrace_1",
+          "label": "To the fever house porch.",
+          "target": "sc_fever"
+        }
+      ]
+    },
+    {
+      "id": "sc_count",
+      "body": "<<FILL role=rising words=90 beats='The counting-in, bottle by bottle against Iben's ledger, fever-bark, willow, salve, each label read aloud twice and each cork checked, the winter's medicine made certain the same way a route is made certain, mark by mark; Iben initials the page and allows that the guild teaches reading properly, which is a decoration'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_count_1",
+          "label": "Ledger squared: back to the ward.",
+          "target": "sc_ward"
+        }
+      ]
+    },
+    {
+      "id": "sc_window",
+      "body": "<<FILL role=rising words=90 beats='The miller's girl arranges herself to sleep facing her window and the crag, in the way of someone keeping an appointment; her whisper follows the tray out, if you see the White Wolf, tell her our window is the one with the blue jug; the ward settles, cot by cot, into the deep mending quiet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_window_1",
+          "label": "Draw the door to and step back to the dispensary.",
+          "target": "sc_ward"
+        }
+      ]
+    },
+    {
+      "id": "sc_dusk",
+      "body": "<<FILL role=rising words=90 beats='The climb back to the saddle through the dusk-blue terraces, lamps coming on below step by step as the village banks its fires; at the saddle notch the wind has dropped the way it does at day's end, as if the mountain too were drawing breath before night; the line home runs down pale and sure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_dusk_1",
+          "label": "Over the saddle and onto the line.",
+          "target": "sc_done"
+        }
+      ]
+    },
+    {
+      "id": "sc_barrow",
+      "body": "<<FILL role=rising words=85 beats='Down the steps behind the carriers' hand-barrow, which descends with the ceremony of a small parade, the boy running ahead announcing everything twice; write this neutral to what the sledge or basket carries, the steps and the welcome are the same; Scarpsett does not get many visitors in deep winter and means to enjoy this one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_barrow_1",
+          "label": "Down to the gate with the parade.",
+          "target": "sc_gate"
+        }
+      ]
+    },
+    {
+      "id": "dr_road",
+      "body": "<<FILL role=rising words=95 beats='The river road down from the guild yard, the valley flattening toward Drumford and the river showing at last, a broad white way between its black alder banks with the broken bridge mid-stream like a bitten seam; write this re-entry-safe, the road down is the same road whatever the winter has already held'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_road_1",
+          "label": "Down to the near bank and the watch hut smoke.",
+          "target": "dr_bank"
+        }
+      ]
+    },
+    {
+      "id": "dr_heave",
+      "body": "<<FILL role=rising words=90 beats='Close in along the bank the pressure ridges show their work, plates of ice thick as tabletops shouldered up on end where the river fought the cold and lost loudly; the fallen span sits wedged among them, sprung but whole, recoverable at thaw if the ice lets it down kindly; a reading worth exact words in Nan's book'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_heave_1",
+          "label": "Take the reading in to the watch hut.",
+          "target": "dr_hut"
+        }
+      ]
+    },
+    {
+      "id": "dr_augur",
+      "body": "<<FILL role=rising words=90 beats='The bore-holes drilled at Nan's marked stations, the auger biting down to water and the tape dropped in, thickness called and chalked, hand-spans of good grey ice under the flagged line and the one thin lens circled in red; the ice-book takes the day's truth in Nan's small columns, which is how a river gets a memory'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_augur_1",
+          "label": "Auger stowed: back to the hut and the day's list.",
+          "target": "dr_hut"
+        }
+      ]
+    },
+    {
+      "id": "dr_boy",
+      "body": "<<FILL role=rising words=85 beats='The boy with the skates argues his case the whole way down the row, cites precedent, offers character witnesses, and is overruled by every grown-up in earshot with the fondness of people who all once made the same argument; he settles for carrying the skates importantly, laces over his shoulder like a bandolier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_boy_1",
+          "label": "Gather the last crossers at the bank.",
+          "target": "dr_walkers"
+        }
+      ]
+    },
+    {
+      "id": "dr_order",
+      "body": "<<FILL role=rising words=85 beats='Nan sets the crossing order at the bank like a woman dealing cards she has dealt all her life, barrow first to prove the line, baskets in the middle, light feet last, the guild's runner and dog on the flank where eyes do the most good; everyone repeats their place back to her because that is the toll of her bridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_order_1",
+          "label": "Lead off onto the flagged line in order.",
+          "target": "dr_cross"
+        }
+      ]
+    },
+    {
+      "id": "dr_dogleg",
+      "body": "<<FILL role=rising words=90 beats='The dogleg taken wand by close-set wand around the red-ringed lens, the line bending like an elbow exactly as flagged, the pole tapping ring, ring, ring; somebody behind hums to keep their feet in rhythm and somebody else takes it up, and the crossing acquires a tune, as crossings do when they are going well'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_dogleg_1",
+          "label": "Straighten out mid-river and carry on.",
+          "target": "dr_mid"
+        }
+      ]
+    },
+    {
+      "id": "dr_racehut",
+      "body": "<<FILL role=rising words=85 beats='The millrace hut at the plank-line's end, wheel frozen mid-turn under a fringe of icicles like a stopped clock; the race mutters underneath about the spring it is planning; from the hut's corner the far-bank lane shows plain, and the plank-line's little thrill settles into the ordinary pleasure of arriving'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_racehut_1",
+          "label": "Up the rise into the lane.",
+          "target": "dr_far"
+        }
+      ]
+    },
+    {
+      "id": "dr_leeend",
+      "body": "<<FILL role=rising words=85 beats='The island's tail, where the lee shore lets go and the open river takes over for the last stretch, the lamp-ring paling as the sky's grey light comes back; a heron stands hunched at the ice edge like a folded umbrella, disapproving of everything, and does not trouble itself to move for dog or sledge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_leeend_1",
+          "label": "Cross the last open stretch to the far bank.",
+          "target": "dr_far"
+        }
+      ]
+    },
+    {
+      "id": "dr_lane",
+      "body": "<<FILL role=rising words=85 beats='The far-bank lane between its snow walls, doors already opening along it, and the crossing's arrival travelling ahead by that wireless every village runs on; write this entry-agnostic, by main line, plank, or island road the lane receives everyone the same, with lamplight and names called and the smell of bread let out of doorways on purpose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_lane_1",
+          "label": "Up to Mardy's gable lamp.",
+          "target": "dr_mardy"
+        }
+      ]
+    },
+    {
+      "id": "dr_cat",
+      "body": "<<FILL role=rising words=85 beats='The cat, released, makes one circuit of Mardy's kitchen at the speed of rumour, inspects Bracken and finds him adequate, and takes the hearth chair with the finality of a flag planted on a summit; write this neutral to who or what came over the ice, the kitchen's welcome is the same warm occupation either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_cat_1",
+          "label": "Surrender to the kettle ceremony.",
+          "target": "dr_kettle"
+        }
+      ]
+    },
+    {
+      "id": "dr_gatherback",
+      "body": "<<FILL role=rising words=85 beats='The returners gathered under the gable lamp, counted and quilted, a hand-barrow of far-bank wool for the near side because freight, like rivers, runs both ways; Nan's three line-lanterns show out on the ice, patient as buoys; the back-crossing forms up in the blue end of the light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dr_gatherback_1",
+          "label": "Out onto the line for the back-crossing.",
+          "target": "dr_back"
+        }
+      ]
+    },
+    {
+      "id": "th_fell",
+      "body": "<<FILL role=rising words=95 beats='The fell road north out of the yard, the quiet quarter of the fells where Maren's old line runs; the road carries no fresh sledge marks, nobody comes this way since her caches stopped being kept, and the snow lies unopened like a letter; write this re-entry-safe, the road out is the same road whatever the winter has already held'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_fell_1",
+          "label": "Along to the Thornmere stile.",
+          "target": "th_stile"
+        }
+      ]
+    },
+    {
+      "id": "th_margin",
+      "body": "<<FILL role=rising words=90 beats='The page turned over, and on its back a sketch in Maren's spare pencil, the Queen's Ridge drawn from this very stile, its crest of worked stones picked out carefully, and beneath it three words underlined twice, older than the routes; she never sketched anything she did not think a wayfinder would one day need to recognise'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_margin_1",
+          "label": "Fold the page away and take up the line.",
+          "target": "th_wands"
+        }
+      ]
+    },
+    {
+      "id": "th_pine1",
+      "body": "<<FILL role=rising words=90 beats='The first pine, a modest tree with a modest tin, polished like all the rest and empty like all the rest, the peg worn silky with openings; beneath it one older bed pressed in the needles' shelter, used this winter but not lately; the line's story is starting to read like rounds kept by something patient, oldest trees first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_pine1_1",
+          "label": "Back to the line and on toward the gully.",
+          "target": "th_gully"
+        }
+      ]
+    },
+    {
+      "id": "th_cairn",
+      "body": "<<FILL role=rising words=90 beats='A boundary cairn at the moor's edge, winter-toppled, its top stones scattered dark on the snow; ten minutes' cold masonry sets it right, the guild habit that says a route is everyone's furniture; the raven supervises from a rock with its collar ruffed, making remarks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_cairn_1",
+          "label": "Take the open moor stretch behind the mended cairn.",
+          "target": "th_moor"
+        }
+      ]
+    },
+    {
+      "id": "th_hare",
+      "body": "<<FILL role=rising words=90 beats='A white hare breaks from the heather almost underfoot and pours away across the moor, and Bracken, mid-stride, wants it with every hair and holds the line anyway, shivering with virtue; Maren's training two winters deep in him still; the tracks alongside the route never waver toward the hare line either, which is its own quiet information'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_hare_1",
+          "label": "On along the line to the second pine.",
+          "target": "th_pine"
+        }
+      ]
+    },
+    {
+      "id": "th_mosslight",
+      "body": "<<FILL role=rising words=85 beats='Away from the seep the moor's light does its winter trick, the low sun catching the blowing ground-snow so the whole surface smokes gold at ankle height; the big calm prints hold beside the buried line through all of it, and for a hundred paces runner, dog, and absent wolf all keep the same old road'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_mosslight_1",
+          "label": "Follow the golden smoke to the second pine.",
+          "target": "th_pine"
+        }
+      ]
+    },
+    {
+      "id": "th_ring",
+      "body": "<<FILL role=rising words=90 beats='Mid-tarn the ice rings underfoot like a struck bell, the deep bearing note Maren wrote of, and down in the black glass an oak leaf hangs frozen mid-sink, gold as a coin in three fathoms of dark; the far shore reeds stand rimed ahead, and out of them runs the single line of big neat tracks, making for the pine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_ring_1",
+          "label": "Follow the tracks' line off the ice to the pine.",
+          "target": "th_pine"
+        }
+      ]
+    },
+    {
+      "id": "th_shore",
+      "body": "<<FILL role=rising words=85 beats='Off the ice through the far shore reeds, each stem cased in rime and chiming faintly, the tarn's white plate stretching back to the islet behind; ahead on its rise the second pine stands with its arms full of winter, and the ground beneath it holds its patient shadows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_shore_1",
+          "label": "Up the rise to the pine.",
+          "target": "th_pine"
+        }
+      ]
+    },
+    {
+      "id": "th_knoll",
+      "body": "<<FILL role=rising words=85 beats='The knoll climb with the cache-house squatting at the top under its turf roof like a browsing beast, the guild's iron hasp bright with use against all the moor's abandonment; whoever else forgot this line, the autumn stocking crews did not; smoke-smell memory rises from the cold chimney stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_knoll_1",
+          "label": "Up to the cache-house door.",
+          "target": "th_cache"
+        }
+      ]
+    },
+    {
+      "id": "th_shelves",
+      "body": "<<FILL role=rising words=85 beats='The stock shelves read like a guild sermon, oats, lamp-oil, wax, dry socks, tinned tallow, everything ranked and dated and mouse-proofed, the standing rule burned into the shelf edge, take what the route needs, note what you take, leave it better; the ledger's waxed wallet waits by the lamp'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_shelves_1",
+          "label": "Open the ledger by the lamp.",
+          "target": "th_ledger"
+        }
+      ]
+    },
+    {
+      "id": "th_crest",
+      "body": "<<FILL role=rising words=85 beats='The crest walked with the wind combing snow off the edge in white banners, the whole north country stepping up ridge by ridge toward the Queen's Ridge, which stands above them all with the weather smoking off its crown; the far loop's three tins hang polished and empty behind, and the question they ask walks along the crest too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_crest_1",
+          "label": "Stop at the overlook and glass the moor below.",
+          "target": "th_view"
+        }
+      ]
+    },
+    {
+      "id": "th_partways",
+      "body": "<<FILL role=rising words=85 beats='Where the line turns for the shelter stone the tracks part company at last, swinging away north with the same unhurried stride, toward the high ground; at the parting place they pause once, printed deeper, as if their maker stood a moment looking back along the route; then north, and gone; Bracken watches the way they went'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_partways_1",
+          "label": "Take the line's high turn for the shelter stone.",
+          "target": "th_line3"
+        }
+      ]
+    },
+    {
+      "id": "th_lee",
+      "body": "<<FILL role=rising words=85 beats='The stone's lee out of the wind, the old fire-ring swept and the guild mark rechalked, the year added small to the chiselled tally of keepers; a route is a message, and this one reads again, end to end, in Maren's hand and one newer; the evening is going green and iron in the north'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_th_lee_1",
+          "label": "Turn for home down the finished line.",
+          "target": "th_done"
+        }
+      ]
+    },
+    {
+      "id": "fg_out",
+      "body": "<<FILL role=rising words=95 beats='Out on the Fellgate line while it still opens, the High Shoulder standing up ahead white on white with its zigzag wands like stitching up a sleeve; the errand rides urgent and the guild pace answers it, quick and steady and no quicker, because the mountain sets the terms; write this re-entry-safe for any state of the winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_out_1",
+          "label": "Up to the foot of the shoulder.",
+          "target": "fg_shoulder"
+        }
+      ]
+    },
+    {
+      "id": "fg_seventh",
+      "body": "<<FILL role=rising words=90 beats='The seventh turn, where the valley lets go all at once and becomes a map of itself far below, villages pinned to it by their own smoke; the wind here has the crest's full voice and the wands lean hard-tested; breath, count, plant, climb, the drill carrying legs that would rather discuss the drop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_seventh_1",
+          "label": "Top out onto the cairn line.",
+          "target": "fg_cairns"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fg_rime",
+      "body": "<<FILL role=rising words=85 beats='The cairns wear rime feathers a hand long, every one grown into the wind's eye like iron ferns, the guild's weather-sign that the crest has been colder longer than any valley knows; the fixed rope runs bright with use under its frost; ahead the line bends for the gap and the first far smell of quarry smoke'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_rime_1",
+          "label": "Along the last cairns to the gap.",
+          "target": "fg_gap"
+        }
+      ]
+    },
+    {
+      "id": "fg_mouth",
+      "body": "<<FILL role=rising words=85 beats='The bore's far mouth, and Fellgate's stone bowl suddenly framed in it like a picture hung in the dark, terraces and smoke and the tarn galleries beyond, all seen from inside the hill the way the old cutters saw it; a strange proud way to arrive, through the mountain's own front door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_mouth_1",
+          "label": "Out and down toward the gap.",
+          "target": "fg_gap"
+        }
+      ]
+    },
+    {
+      "id": "fg_street",
+      "body": "<<FILL role=rising words=90 beats='Down into the quarry street, and the silence has texture here, saws racked, sledge-chains hung, faces at windows counting who comes over the shoulder; a village that measures itself in stone knows exactly what a silent quarry weighs; the gatehouse door opens before the knock, as doors do on days like this'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_street_1",
+          "label": "In to the quarrymaster's table.",
+          "target": "fg_gatehouse"
+        }
+      ]
+    },
+    {
+      "id": "fg_dayhuts",
+      "body": "<<FILL role=rising words=85 beats='The day-huts checked in passing, stoves cold, gear racked, the cutters' order holding everywhere like a signature; Osk reads each hut at a glance and moves on; not here, and not here, and the flag-line runs on toward the galleries with Bracken pulling sure and low on the lead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_dayhuts_1",
+          "label": "Follow the dog's line past the last hut.",
+          "target": "fg_scent"
+        }
+      ]
+    },
+    {
+      "id": "fg_ropeorder",
+      "body": "<<FILL role=rising words=85 beats='Roping in at the gallery mouth in Brand's called order, lamps checked flame by flame, the rule said plain and short, rope-lengths apart, nobody out of sight, sing out early and often; a mountain rescue is mostly discipline wearing warm clothes, and this team wears it well'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_ropeorder_1",
+          "label": "Into the galleries on the line.",
+          "target": "fg_galleries"
+        }
+      ]
+    },
+    {
+      "id": "fg_secondteam",
+      "body": "<<FILL role=rising words=85 beats='Out along the rim path guiding the second team, rope coils and the stretcher-board swinging in step, the pace disciplined to the slowest and the slowest apologising and nobody letting him; the galleries open ahead blue and ringing and the first team's lamps show in them like fish in ice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_secondteam_1",
+          "label": "Join the search at the galleries.",
+          "target": "fg_galleries"
+        }
+      ]
+    },
+    {
+      "id": "fg_moraine",
+      "body": "<<FILL role=rising words=85 beats='The moraine path above the galleries, and the boot-sign confirming at every soft patch, two sets roped together, one favouring a foot, climbing deliberate and sensible toward the storm bothy; the search's lamps string out along the path and somebody ahead calls the smoke before Rill sees it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_moraine_1",
+          "label": "Up the last of the moraine to the bothy.",
+          "target": "fg_bothy2"
+        }
+      ]
+    },
+    {
+      "id": "fg_streetlamps",
+      "body": "<<FILL role=rising words=85 beats='The last steps down into the street with the chair-rig handed shoulder to shoulder, and Fellgate coming out of its doors in one long surge of lamplight and shouting relief; write this entry-agnostic, however the find was made the homecoming belongs to everyone now, and the street means to use all of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_streetlamps_1",
+          "label": "Into the crowd and the counting.",
+          "target": "fg_return"
+        }
+      ]
+    },
+    {
+      "id": "fg_songs",
+      "body": "<<FILL role=rising words=85 beats='Someone starts the old song about the white queen on the ridge, the one with the verses half the room half-remembers, and the gatehouse hall stumbles through it together, patching the gaps with humming; it is a kinder song than the fireside stories, older too, and it ends with a bowl set out in the snow, which nobody sings as a joke tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fg_songs_1",
+          "label": "Slip out while the last verse settles.",
+          "target": "fg_wrap"
+        }
+      ]
+    },
+    {
+      "id": "fin_muster",
+      "body": "<<FILL role=choice words=110 beats='The beacon knoll beside the guildhall, and the muster gathering in the blue end of the day; write this arrival-neutral for any state of the winter and any road in, the scene is the same whenever the reader reaches it: yard hands take whatever the sledge carries the moment it halts, dogs are staked and watered, and Edda Vane stands at the knoll's stone table with the hearth-keepers' lanterns converging on her from the fell roads like slow deliberate stars'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_muster_1",
+          "label": "Join the circle at the stone table.",
+          "target": "fin_gather"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "laden",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "fin_gather",
+      "body": "<<FILL role=rising words=105 beats='The circle at the stone table: hearth-keepers and elders in from the villages by their own roads, runners, dogs, steam off tea in the lantern light; keep the recap path-universal, cite only what the whole winter has given everyone: the deep freeze hardening over the fells, the passes closing one by one, and from every quarter, by whoever carried it, the same word arriving all season, a white wolf on the high ground, old, thin, troubling no flock and no traveller, seen along the old lines'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gather_1",
+          "label": "Listen as Edda lays the guild's evidence on the table.",
+          "target": "fin_book"
+        }
+      ]
+    },
+    {
+      "id": "fin_book",
+      "body": "<<FILL role=rising words=110 beats='Edda lays Maren's route-book and the guild's cache ledgersheets open on the stone: forty winters of entries in one steady hand, meat, marrow bones, tallow, carried to marked trees on every line of the fells; the tribute custom of the oldest stories, kept as plain maintenance by the old wayfinder and lapsed the winter she died; the hearth-keepers pass the pages hand to hand and the lanterns lean in, and nobody says nonsense, because the pages are in Maren's hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_book_1",
+          "label": "Hear the council's question said out loud.",
+          "target": "fin_council"
+        }
+      ]
+    },
+    {
+      "id": "fin_council",
+      "body": "<<FILL role=choice words=105 beats='The council's question, argued the way villages argue, slow and in the round: some fear for flocks and children and want the high ground shunned till spring; some hear an old debt in the ledger's lists; the hearth-keepers speak for their own valleys in turn; Edda ends it the guild way, we do not decide about a thing we have not looked at, we go up together, by daylight rule and lantern, adults and runners, and we look, at distance, and then we decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_council_1",
+          "label": "Stand with the muster: to the Queen's Ridge bearing.",
+          "target": "fin_bearing"
+        },
+        {
+          "id": "c_fin_council_2",
+          "label": "Ask Edda outright what Maren would have done.",
+          "target": "fin_edda"
+        }
+      ]
+    },
+    {
+      "id": "fin_edda",
+      "body": "<<FILL role=rising words=95 beats='Edda turns the route-book to its last written page and does not answer in her own words at all; Maren's hand, small and exact: the custom is yours if you want it; she lets the page speak its piece to the lantern light and then closes the book gently, and that is Edda's whole answer, and the muster forms up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_edda_1",
+          "label": "To the Queen's Ridge bearing with the muster.",
+          "target": "fin_bearing"
+        }
+      ]
+    },
+    {
+      "id": "fin_bearing",
+      "body": "<<FILL role=rising words=105 beats='The bearing laid on the stone table's compass rose: every flag-line of the five fells, drawn out on the map, points its first wands at the same high ground, the Queen's Ridge, the way spokes point at a hub; the old surveyors built the routes outward from the ridge cache stones and no one alive remembered why until tonight; the muster takes the shared bearing north, lanterns in file, dogs at heel, the freeze squeaking underfoot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_bearing_1",
+          "label": "Up the beacon path in the lantern file.",
+          "target": "fin_lanterns"
+        }
+      ]
+    },
+    {
+      "id": "fin_lanterns",
+      "body": "<<FILL role=rising words=100 beats='The lantern file on the beacon path, hooded flames swinging in step, breath pluming, the fells enormous and near under the early stars; hearth-keepers who have not walked together since the summer fair walk together now; behind and below, the villages keep their windows lit like people holding their breath politely; ahead the ridge stands black against the last green of the sky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_lanterns_1",
+          "label": "Climb with the file to the shoulder of the ridge.",
+          "target": "fin_climb"
+        }
+      ]
+    },
+    {
+      "id": "fin_climb",
+      "body": "<<FILL role=choice words=100 beats='The climb up the beacon path in called order, rope shared at the one steep step, lanterns handed hand to hand, the wind making its case and the muster making its slow answer; the weather is workable and being watched like a debtor; Edda sets the turning-back rule aloud for everyone, no shame in it, before the last pitch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_climb_1",
+          "label": "Take the last pitch to the shelf below the crest.",
+          "target": "fin_shelf"
+        },
+        {
+          "id": "c_fin_climb_2",
+          "label": "The wind rises hard: stand with Edda as she calls the try.",
+          "target": "e_fin_weather"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fin_shelf",
+      "body": "<<FILL role=choice words=100 beats='The shelf below the crest, out of the worst wind, the muster gathering its breath in a lantern half-ring; the youngest of the hearth-keepers' party is white-knuckled on her aunt's hand and pretending not to be; Edda hoods her own lantern and looks the party over, the glass in her mitt, the crest one easy rise above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shelf_1",
+          "label": "Go up the last rise with Edda to look over the crest.",
+          "target": "fin_sight"
+        },
+        {
+          "id": "c_fin_shelf_2",
+          "label": "Take the frightened youngest's other hand and walk her down to the bothy light with her aunt.",
+          "target": "e_fin_kind"
+        }
+      ]
+    },
+    {
+      "id": "fin_sight",
+      "body": "<<FILL role=rising words=110 beats='Over the crest at a crawl, hooded lanterns doused, and there, by the great cache stone in the last grey light, she is: the White Wolf, the Wolf Queen of every fireside in the five fells, standing where the tribute stones have stood a thousand years; old, enormous, thin as a winter branch, her coat taking the dusk like snow takes it; she turns her head and looks down the ridge at the gathered small lights of them, and does not run, and no one breathes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sight_1",
+          "label": "Be absolutely still, and watch, as the guild watches.",
+          "target": "fin_watch"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery",
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_watch",
+      "body": "<<FILL role=choice words=110 beats='The long watching, at distance, adult and witnessed and reverent, the guild glass passed mitt to mitt down the half-ring; through it the truth arrives one detail at a time: the grey gone deep in her muzzle, the ribs under the white, the way she stands with her weight saved up like an old woman at a gate, and around her forefeet, pressed in the snow, the wide bare circle where she has waited at the empty cache stone many nights; no threat in her anywhere, only winter, and patience wearing thin as she is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_watch_1",
+          "label": "Ease back off the crest with the muster to speak.",
+          "target": "fin_reveal"
+        },
+        {
+          "id": "c_fin_watch_2",
+          "label": "Volunteer to stay as first ridge-watch with old Sorrel and a shielded lantern.",
+          "target": "e_fin_ridgewatch"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_reveal",
+      "body": "<<FILL role=rising words=110 beats='Below the crest the muster speaks in low voices and the pieces close like a well-made box: she is real, she is the last of her line, and she has been walking the runners' routes all winter because the routes were built on her ground and an old wayfinder kept an old bargain at the marked trees until two winters ago; she has not been haunting the five fells, she has been keeping her side of a custom, and waiting for somebody to remember theirs; every face turns, the way faces do, to the one who wears Maren's guild patch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_reveal_1",
+          "label": "Step to the middle of the lantern ring.",
+          "target": "fin_choice"
+        }
+      ]
+    },
+    {
+      "id": "fin_choice",
+      "body": "<<FILL role=choice words=115 beats='The lantern ring and the waiting fells, Edda's voice level: Maren's book says the custom is yours if you want it, so the guild asks its wayfinder's apprentice, what do we do with your grandmother's inheritance; write this arrival-neutral and let the weight sit plainly; the choices are all real and all kind, and one of them belongs to the runner who has carried the whole deep winter on their own sledge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_choice_1",
+          "label": "Feed her: reopen Maren's cache line as the guild's winter tribute, starting tonight.",
+          "target": "fin_feed1"
+        },
+        {
+          "id": "c_fin_choice_2",
+          "label": "Ward her ground: lead the villages in closing the Queen's Ridge to traps and travel, a wide flagged way round.",
+          "target": "fin_ward1"
+        },
+        {
+          "id": "c_fin_choice_3",
+          "label": "Bring the full elder council of all five villages up to see her before anything is decided in her name.",
+          "target": "fin_see1"
+        },
+        {
+          "id": "c_fin_choice_4",
+          "label": "Answer with the whole winter: stand as the runner who worked every deepening week of it, and take the custom up as your own.",
+          "target": "fin_full1",
+          "condition": {
+            ">=": [
+              {
+                "var": "frost"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_fin_choice_5",
+          "label": "Slip back with Bracken and let the elders decide; some answers want a night's sleep.",
+          "target": "fin_home1"
+        }
+      ]
+    },
+    {
+      "id": "fin_feed1",
+      "body": "<<FILL role=rising words=100 beats='The decision lands like a log on a fire, light everywhere at once: the guild stores are opened that same night, marrow bones and tallow and good meat weighed out by lantern, the hearth-keepers dividing Maren's list among their villages the way they divide any winter work; the sledge is loaded at the hall with the first tribute in two years, and the loading feels like mending something'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_feed1_1",
+          "label": "Carry the first tribute out along Maren's marks with the muster.",
+          "target": "fin_feed2"
+        }
+      ]
+    },
+    {
+      "id": "fin_feed2",
+      "body": "<<FILL role=rising words=105 beats='The first tribute laid at the near cache stones by lantern, adults and runners together, tins filled and pegged open, the snow smoothed, the party withdrawing to the flagged line the guild way, no lingering, no calling; from the dark high ground, presently, a shape comes down to the stones without hurry, and the watching lanterns hold their breath, and the sound that crosses the snow to them is only this: an old animal, eating, at peace'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_feed2_1",
+          "label": "Stand with Edda while she writes the custom into the guild's standing routes.",
+          "target": "e_feed_line"
+        },
+        {
+          "id": "c_fin_feed2_2",
+          "label": "Watch until she finishes and goes, and keep that sight for your own.",
+          "target": "e_feed_bones"
+        }
+      ]
+    },
+    {
+      "id": "fin_ward1",
+      "body": "<<FILL role=rising words=100 beats='The wardship drawn on the stone table's map that night: the Queen's Ridge and its approaches ringed in guild red, closed to traps, snares, and idle travel, a wide flagged way laid out around its skirts so no sledge or herd need cross her ground; each hearth-keeper signs for their own valley's edge of it, because a boundary is a promise made by everyone who lives along it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_ward1_1",
+          "label": "Walk the first stretch of the new way-round with the keepers at dawn.",
+          "target": "fin_ward2"
+        }
+      ]
+    },
+    {
+      "id": "fin_ward2",
+      "body": "<<FILL role=rising words=100 beats='The way-round flagged at first light, wands going in along the ridge's skirts while the fells turn rose and iron; hard clean work with the whole muster at it; from the crest, once, a pale shape watches the small figures fencing themselves out of her ground, wand by wand, and whatever a wolf understands of maps, she watches until the line is done and then beds down in the lee of the great stone like an approval'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_ward2_1",
+          "label": "Stand at the last wand while Edda names the ground aloud.",
+          "target": "e_ward_way"
+        },
+        {
+          "id": "c_fin_ward2_2",
+          "label": "Carry the signed map down to hang in the guildhall.",
+          "target": "e_ward_ground"
+        }
+      ]
+    },
+    {
+      "id": "fin_see1",
+      "body": "<<FILL role=rising words=100 beats='The word goes down the fell roads that same night, and the full elder council answers it: five villages' worth of grey heads and good boots on the beacon path at first light, roped and lanterned and grumbling happily, some of them last up this ridge as children; nothing is to be decided in her name, Rill has argued, by anyone who has not stood and seen her, and the fells' oldest people climb to do exactly that'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_see1_1",
+          "label": "Bring the council to the crest, hooded and quiet, the guild way.",
+          "target": "fin_see2"
+        }
+      ]
+    },
+    {
+      "id": "fin_see2",
+      "body": "<<FILL role=rising words=105 beats='The council at the crest in the young light, and the White Wolf below at her stone, old and thin and past all denying; the effect on five villages' elders is the effect truth has on people who have argued about a rumour all winter: the arguing simply stops; someone starts the old song about the queen on the ridge, half under their breath, and does not get laughed at; the decision after this will belong to everyone, which was the whole point'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_see2_1",
+          "label": "Stand aside and let the council speak its mind up there.",
+          "target": "e_see_five"
+        },
+        {
+          "id": "c_fin_see2_2",
+          "label": "Walk down with the elders and hear the telling begin at every hearth.",
+          "target": "e_see_hearths"
+        }
+      ]
+    },
+    {
+      "id": "fin_full1",
+      "body": "<<FILL role=rising words=110 beats='Standing as the runner who worked the whole deepening winter, and the muster knows it because their own valleys kept the score; Edda opens the guild book on the stone table and reads the season's legs in order, each one a line in a runner's hand, and the iron-deep freeze standing over the fells tonight is the measure of how long and how faithfully the routes were kept open; then she takes Maren's route-book from her coat and does not hand it over so much as return it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_full1_1",
+          "label": "Take the book, and say what the custom will be in your keeping.",
+          "target": "fin_full2"
+        }
+      ]
+    },
+    {
+      "id": "fin_full2",
+      "body": "<<FILL role=rising words=110 beats='The custom named in the lantern ring by its new keeper: the caches fed, the ground warded, the story told true at every hearth, all three, because Maren's line was never one errand but a way of holding five villages and one old queen in a single map; the hearth-keepers answer for their valleys one by one, aye, and aye, and aye, and aye, and aye, and the fells stand around the small lanterned circle like the oldest listeners at the fire'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_full2_1",
+          "label": "Sign the standing route in Maren's book beneath her last entry.",
+          "target": "e_full_heir"
+        },
+        {
+          "id": "c_fin_full2_2",
+          "label": "Climb to the crest once more and let her see the book-bearer plainly.",
+          "target": "e_full_queen"
+        },
+        {
+          "id": "c_fin_full2_3",
+          "label": "Hand the book's copy-work to the guild's youngest, and begin teaching.",
+          "target": "e_full_book"
+        }
+      ]
+    },
+    {
+      "id": "fin_home1",
+      "body": "<<FILL role=rising words=95 beats='Down the beacon path with Bracken while the elders' voices go on quietly above, the lanterns of the muster a slow constellation behind; some answers do want a night's sleep, and a runner who has learned when to turn back has learned when to hand a question to more shoulders than their own; the guildhall windows rise up out of the dark like a bank of banked fires'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_home1_1",
+          "label": "In through the yard, dog fed first, the guild way.",
+          "target": "fin_home2"
+        }
+      ]
+    },
+    {
+      "id": "fin_home2",
+      "body": "<<FILL role=rising words=95 beats='The hall at night-quiet, soup kept warm on the hook, Bracken asleep before the fire with his paws still walking some line in his dreams; through the window the ridge lanterns come down the fell in file, unhurried, which means the muster ended well; whatever the elders have decided, the fells will still need runners in the morning, and the morning is not far'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_home2_1",
+          "label": "Bank the fire and be asleep before the muster's boots reach the yard.",
+          "target": "e_home_lamps"
+        },
+        {
+          "id": "c_fin_home2_2",
+          "label": "Wait up by the door to hear the decision from Edda herself.",
+          "target": "e_home_door"
+        }
+      ]
+    },
+    {
+      "id": "e_fin_weather",
+      "body": "<<FILL role=failure words=95 beats='Edda calls the try a hundred steps below the shelf, and no one argues with a guildmaster reading wind; the muster comes down in good order, lanterns counted, and the ridge keeps its secret one more night; at the hall Edda chalks tomorrow's try on the board before her coat is even off, because turning back and giving up are different words in the guild's language, and the first one is how the second never happens'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_weather",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned by the Weather"
+      }
+    },
+    {
+      "id": "e_fin_kind",
+      "body": "<<FILL role=failure words=95 beats='The walk down to the bothy light with the frightened youngest and her aunt, one small mittened hand in each of theirs, the crest and its answer left to others this night; the story of what stood by the cache stone arrives at the bothy later, in other voices, and loses nothing in the telling; some legs of a winter are about being the one who saw, and some are about being the hand somebody held, and the guild counts both in the book'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_kind",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Halfway Kindness"
+      }
+    },
+    {
+      "id": "e_fin_ridgewatch",
+      "body": "<<FILL role=ending words=95 beats='The first ridge-watch kept with old Sorrel behind the shielded lantern, the muster's voices fading downhill, the White Wolf a pale patience at her stone under the sharpening stars; nothing happens, which is the point of a watch, and everything is seen, which is the other point; by morning the guild has its first true page about her nights, and Rill's hand wrote it, stiff-fingered, by a hooded flame'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_ridgewatch",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "First Ridge-Watch"
+      }
+    },
+    {
+      "id": "e_feed_line",
+      "body": "<<FILL role=completion words=100 beats='The custom goes into the guild's standing routes in Edda's plain hand, the tribute line, kept weekly, assigned like any other leg, and the first assignment sheet has Rill's name on it in the place of honour; what was a secret kindness of one old woman is now a duty of the whole guild, which is how kindnesses survive their keepers; on the high ground an old queen will eat this winter, and the five fells are warmer for knowing why'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_feed_line",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Tribute Line"
+      }
+    },
+    {
+      "id": "e_feed_bones",
+      "body": "<<FILL role=ending words=95 beats='She feeds slowly, the way the old eat, and when she is done she stands a long moment over the tins with her head low, and then she looks down the dark at the watching lanterns, one long look, and goes up into the night ground that is hers; nobody speaks on the walk down; there are sights that turn into stories by morning, and sights that stay sights all your life, and Rill walks home carrying the second kind'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_feed_bones",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Marrow and Tallow"
+      }
+    },
+    {
+      "id": "e_ward_way",
+      "body": "<<FILL role=completion words=100 beats='At the last wand Edda names the ground aloud the old way, the Queen's Ground, hers as it was, and the keepers answer it valley by valley like a bell choir; the new way-round runs true and flagged and no longer trespasses on anyone; a map with mercy drawn into it, Maren would have said, is the only kind worth inking; the muster comes down with the sunrise on its shoulders and the fells feel wider and better ordered than they did last night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ward_way",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Wide Way Round"
+      }
+    },
+    {
+      "id": "e_ward_ground",
+      "body": "<<FILL role=completion words=95 beats='The signed map hung in the guildhall where every runner will pass it, five valley signatures around a red-ringed ridge and the plain words, closed ground, wide way flagged; not a story ending with trumpets, just a boundary that will hold because everyone who lives along it helped draw it; winters from now, runners who never saw her will keep the way-round without asking why, which is what a well-made rule is for'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ward_ground",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Queen's Ground"
+      }
+    },
+    {
+      "id": "e_see_five",
+      "body": "<<FILL role=ending words=95 beats='The council speaks its mind on the crest in the young light, low-voiced, bareheaded, five villages for once in one place and of one mind: she was here before the routes, the routes were laid kindly around her once, and they can be kind again; the decision is everyone's now, feed and ward both, carried by acclamation of the oldest voices in the fells, and Rill, who only asked them to look, gets the wayfinder's reward of watching people find the way themselves'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_see_five",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Five Villages on the Crest"
+      }
+    },
+    {
+      "id": "e_see_hearths",
+      "body": "<<FILL role=ending words=95 beats='Down the fell roads with the elders, and by dusk the telling has begun at every hearth in the five villages at once, the true version, old and thin and patient at her stone, not the fireside monster and not a fairy tale either; children who were afraid of the high passes ask to hear it twice; the Wolf Queen of the stories becomes, in one evening, the Wolf Queen of the neighbourhood, which is a different and better thing to be'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_see_hearths",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Telling at the Hearths"
+      }
+    },
+    {
+      "id": "e_full_heir",
+      "body": "<<FILL role=success words=105 beats='The signature goes in beneath Maren's last entry, the same page, the custom is yours if you want it, and then, in a newer hand, wanted; Edda witnesses it the guild way and the hearth-keepers stamp their marks around it like a seal of five villages; the book goes back in the map room, but the line it holds goes back out into the fells, fed, warded, and told true, in the keeping of the wayfinder's heir, who has a dog to feed and a route to run in the morning'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_full_heir",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Wayfinder's Heir"
+      }
+    },
+    {
+      "id": "e_full_queen",
+      "body": "<<FILL role=success words=105 beats='Once more to the crest, alone with Edda and the hooded lantern, and the old queen lifts her head at the small light and looks, long and level, at the one who carries the book now; nothing passes between them that a book could hold, and something passes all the same, the way it must have passed to Maren once, keeper to keeper, winter to winter; then she beds her head on her paws by the stone, easy as a hearth dog, and the new queen's-ward of the fells goes quietly down the mountain to begin'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_full_queen",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Queen's-Ward of the Fells"
+      }
+    },
+    {
+      "id": "e_full_book",
+      "body": "<<FILL role=success words=100 beats='The copy-work handed to the guild's youngest apprentice at the hall table that very night, Maren's lists set out fair for small careful fingers to learn by, because Rill has understood the last thing the route-book teaches: a custom kept by one pair of hands died once already, and a custom taught keeps itself; the tribute line, the way-round, the true telling, all of it goes into young heads with the winter still deep, and the fells' oldest bargain gets what it never had before, a next hand, and a next'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_full_book",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Book's Next Hand"
+      }
+    },
+    {
+      "id": "e_home_lamps",
+      "body": "<<FILL role=completion words=95 beats='Asleep before the muster's boots reach the yard, dog-warm and bone-tired, and the decision arrives at breakfast with the porridge: the council will feed and ward both, and wants its runners rested; the winter goes on, the routes go on, and the high ground keeps its old queen with the whole five fells quietly in the know; not every keeper of a great night has to be awake at the end of it, and the morning legs still need fresh arms'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_home_lamps",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Down Among the Lamps"
+      }
+    },
+    {
+      "id": "e_home_door",
+      "body": "<<FILL role=completion words=95 beats='Waiting up by the door when Edda's lantern crosses the yard, and hearing it from the guildmaster herself with the frost still on her collar: fed and warded, by everyone, beginning tomorrow; she looks at the apprentice a long moment and says only, Maren waited up for news the same way, and hangs her lantern, and that small sentence is worth the whole cold vigil; the fells settle for the night with their story finally true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_home_door",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Keeper at the Door"
+      }
+    }
+  ]
+}
