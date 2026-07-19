@@ -71,6 +71,38 @@ applied at all**, unlike the sibling LLM-review stage three lines away in the sa
 which *is* wrapped in `PiiGuardedProvider`. This is an inconsistency worth closing regardless
 of the free-text gap above.
 
+**On "we'll use parameterized inputs for the prompt": confirmed, and this materially narrows
+Phase 1's scope.** `ConceptBrief` (`generation/concept.py`) is already a fully typed,
+`extra="forbid"` Pydantic model with about fifteen named fields, each length-capped and
+control-character-stripped at intake, and `build_structure_prompt`
+(`generation/prompts.py:274-306`) inserts the whole brief into the prompt template as one
+delimited `{concept_brief}` JSON block, never by string-concatenating guardian text into
+instruction text. That's real, working parameterization, and it buys two things already: a
+guardian/child cannot inject content that redefines the prompt's structure (the same discipline
+`covers/prompt.py` uses, quote-delimited and framed as descriptive data), and every value has a
+known field name and a hard length cap.
+
+What it does not do on its own is screen the *content* inside a free-text field for another
+person's identifying information. Of the roughly fifteen `ConceptBrief` fields, only two carry
+genuinely open-ended prose: **`premise`** (2000 chars; confirmed as a direct, unmodified copy of
+the child's raw `story_request.request_text`, `story_requests/brief.py:187`, no rewriting or
+summarization step in between) and **`special_constraints`** (a list of up to 20 free-text
+items, 200 chars each). Everything else (`tone`, `themes_allowed`, `protagonist.role`, etc.) is
+short and effectively controlled-vocabulary in practice, even though it's typed as `str`.
+`protagonist.name` is a special case: it's free text too, but the existing guard already screens
+the *entire* assembled prompt (not just isolated fields) against registered real-child names, so
+if a guardian sets the protagonist's name to a registered child's exact name, generation already
+blocks on it today; it does not need new work.
+
+**This means Phase 1a below should target `premise` and `special_constraints` specifically, at
+the earliest point they exist** (`story_requests/brief.py`/`concept.py`, when the `ConceptBrief`
+is constructed), rather than trying to build a general-purpose PII detector over the whole
+assembled prompt string. Screening at that boundary, instead of only at the final
+prompt-assembly guard, has a real advantage: a hit can be rejected (or sent back to the
+guardian for edit) before the text is even persisted to `story_request.request_text` and
+`concept.brief`, not just before it's sent to a provider, which also helps the retention
+picture in Phase 4 (nothing to purge later if it's never stored in the first place).
+
 ### "Google [Gemini] and R2 contain stories and images, this is app info not user info."
 
 **Two separate systems, and this is where the real gap is.** Gemini ("nano banana", via
@@ -148,21 +180,26 @@ should actually build. Recommended defaults are given where there is a reasonabl
 answer for a project at this stage; the rest are genuinely yours to make. Full context for each
 is in Section 5.
 
-1. **Verifiable parental consent (VPC) method.** *Needed before Phase 2 can be built.*
-2. **Supabase project region.** *Needed before Phase 4's Supabase work, and cheapest to
-   decide now while the user base and data volume are both still small.*
+1. **Verifiable parental consent (VPC) method.** *Open.* No paid tier exists, but guardian
+   registration is already a mandatory gate before any child can use the app, which gives Phase
+   2 a concrete attachment point regardless of which VPC method is chosen. See the expanded
+   options in Section 5, Decision 1.
+2. **Supabase project region.** *Resolved: stay US.* You've confirmed Supabase stays in the US,
+   with a possible future move from `us-east-1` to a US-west region. See Section 5, Decision 2
+   for why this is compliance-neutral and needs no further analysis.
 3. **Does the product intend children to appear as themselves (named) in their own stories?**
-   *Needed before Phase 1's PII-guard hardening is scoped, since it changes what "identifying
-   content" even means for this product.*
+   *Resolved: no, self-naming is disallowed by design.* See Section 5, Decision 4 for the
+   requested impact analysis of both routes, kept for reference in case this is revisited later.
 4. **Who signs off on and owns the compliance artifacts** (privacy notice, DPIA, DPAs), and
-   **when does privacy counsel get engaged?** *Needed before Phase 2 and Phase 7 can start in
-   earnest; the engineering work in Phases 1, 3, 4, and 6 does not depend on counsel and can
-   start immediately.*
-5. **Retention windows per data category.** *Needed before Phase 4's purge jobs are built.*
-6. **DPO designation.** *Needs your projected user scale; can be assessed in parallel with
-   everything else and doesn't block any engineering work.*
+   **when does privacy counsel get engaged?** *Open, no answer yet.* Needed before Phase 2 and
+   Phase 7 can start in earnest; the engineering work in Phases 1, 3, 4, and 6 does not depend on
+   this and can proceed regardless.
+5. **Retention windows per data category.** *Open, no answer yet.* A proposed starting table is
+   in Section 5, Decision 3, for you to react to rather than starting from a blank page.
+6. **DPO designation.** *Open, no answer yet.* Needs your projected user scale; can be assessed
+   in parallel with everything else and doesn't block any engineering work.
 7. **Zero-data-retention (ZDR) terms with OpenRouter and the other LLM/classifier vendors.**
-   *ADR-018 already calls this "standing Blocker 1"; needed before Phase 5 can close.*
+   *Open.* ADR-018 already calls this "standing Blocker 1"; needed before Phase 5 can close.
 
 ---
 
@@ -176,12 +213,20 @@ waiting on any legal/business decision. Phase 2 needs decision 1 above. Phase 5 
 
 Directly addresses the gaps found in Section 1.
 
-- **1a. Extend the PII guard beyond exact-name matching.** Add pattern-based detection (email
-  addresses, phone numbers, street addresses, and a configurable "other family members'
-  names" list a guardian can register) to `generation/pii.py`, applied at the same
-  chokepoint. Document the residual risk explicitly (a general PII/named-entity detector will
-  never be perfect); this is defense-in-depth on top of the exact-match guard, not a
-  replacement for the consent/notice work in Phase 2.
+- **1a. Add field-targeted content screening at `ConceptBrief` intake**, not a general scan of
+  the assembled prompt. Per Section 1's parameterization note, only `premise` and
+  `special_constraints` are genuinely open-ended prose; apply pattern-based detection (email
+  addresses, phone numbers, street addresses, a configurable "other family members' names" list
+  a guardian can register) to those two fields specifically, in `story_requests/brief.py`
+  alongside the existing control-character strip, so a hit is rejected before the text is
+  persisted to `story_request.request_text`/`concept.brief` at all, not just before it reaches a
+  provider. Document the residual risk explicitly (a pattern/named-entity detector will never be
+  perfect); this is defense-in-depth on top of the exact-match guard, not a replacement for the
+  consent/notice work in Phase 2. Separately, strengthen the existing `protagonist.name` check
+  (already enforced today via the whole-prompt guard) to also catch close variants/nicknames of
+  a registered child's name, not just exact matches, since Decision 4 (Section 2/5) has now
+  confirmed self-naming is intentionally disallowed as product policy, not just an incidental
+  side effect of the guard.
 - **1b. Guard the cover-art path.** Wrap `covers/service.py`'s prompt assembly (which calls
   `covers/prompt.py::build_cover_prompt`) in the same `PiiGuardedProvider`/
   `assert_prompt_pii_safe` chokepoint the generation path already uses, using the same
@@ -336,40 +381,99 @@ marked **(no default)** genuinely need your input.
 
 **Gates Phase 2 (consent):**
 
-1. **VPC method.** FTC-recognized methods include a payment-card transaction, a signed consent
-   form, government-ID matching, knowledge-based authentication, or face-match-to-ID. Do you
-   have (or plan) a paid tier at all? If yes, a card transaction at signup is the
-   lowest-friction option and is the working recommendation already in ADR-018. If the product
-   stays free, or has a free tier that collects child data before any purchase, a different
-   method is needed for that path specifically. **(no default without knowing the monetization
-   plan)**
+1. **VPC method.** *Open, but now well-scoped: no paid tier exists, and a guardian must
+   register before any child can use the app.* That registration step is a real, existing
+   attachment point for consent (Phase 2's 2a already assumes it); what's still undecided is
+   *which* verification method runs at that step. Registration alone (an email/password or OAuth
+   signup) proves someone completed a signup, not that they're an adult, so it doesn't by itself
+   satisfy VPC under either COPPA 312.5 or GDPR Article 8(2). Options, since a payment-card
+   transaction isn't available without a paid tier:
+   - **A nominal, non-charging card-verification step** (e.g., a Stripe `SetupIntent`-style $0
+     authorization, not an actual charge) at registration. This satisfies COPPA's enumerated
+     "payment card" method without requiring you to sell anything or build billing; it only
+     needs card-present verification, not a transaction amount. Cheapest to build of the strong
+     options, and doesn't force a monetization decision you haven't made yet.
+   - **A third-party VPC vendor** (e.g., Persona, Yoti, Privo, k-ID, SuperAwesome, ID.me) doing
+     ID verification or knowledge-based authentication as a service. Higher cost and integration
+     effort, but several of these are purpose-built for child-directed apps and explicitly cover
+     COPPA, GDPR-K, and the UK AADC in one integration, which fits the "compliant from the start,
+     all three regimes" goal directly rather than requiring you to separately confirm each
+     method satisfies each regime.
+   - **Email-plus** (send a confirming email to the parent, 312.5(b)(2)): the FTC's own weakest
+     accepted method, and it's explicitly limited to cases where the collected information is
+     used only for internal purposes and not disclosed to third parties. Given this app calls
+     external LLM/moderation/image providers (even with the screening controls in Phase 1),
+     relying on email-plus alone is the option most likely to need a harder look from counsel
+     before you'd want to depend on it.
+   - **A signed consent form** (upload or e-sign at registration): lowest engineering cost, no
+     vendor dependency, but the highest guardian friction of the four.
+   Recommendation, non-binding: the $0 card-verification step is the best cost/rigor tradeoff for
+   where the product is today (no paid tier, small team), with a third-party VPC vendor as the
+   upgrade path if you want the COPPA+GDPR-K+AADC multi-jurisdiction coverage bundled rather than
+   assembled by hand. **(no default without your input on which tradeoff you'd rather make)**
 
 **Gates Phase 4 (retention/storage):**
 
-2. **Supabase region.** Stay on `us-east-1` and rely on SCCs for any future EU user's data
-   (cheaper now, and consistent with "all current users are US"), or proactively move to (or
-   dual-run in) an EU-capable Supabase region now, given the stated "compliant from the start"
-   goal? Recommendation: given the current user base is confirmed US-only and a region
-   migration is expensive later, staying on `us-east-1` now and having SCCs ready is the more
-   practical reading of "compliant from the start" than a premature region move, but this is
-   ultimately your call to make, not a default I'd assume without asking. **(recommend staying
-   US + SCC-ready, but flagging as your decision)**
-3. **Retention windows per data category.** How long should reading state, ratings, story
-   requests (including blocked/declined ones), generation reports, and the audit/event log be
-   kept after last activity or after account deactivation? **(no default; needs your input on
-   what "as long as needed to deliver the service" actually means for each category)**
+2. **Supabase region.** *Resolved.* Staying on US infrastructure (with a possible future
+   `us-east-1` to a US-west region move) is compliance-neutral either way: both are non-EEA for
+   GDPR purposes, so the SCC/transfer-mechanism need in Phase 5 is identical regardless of which
+   US region is active, and an east-to-west move raises no new compliance question on its own.
+   One practical note for whenever that move happens: it's a natural point to also land any
+   schema-level retention/deletion changes from Phase 3/4 in the same maintenance window, since
+   you'll already be touching the data at rest.
+3. **Retention windows per data category.** *Open; here's a starting point since you don't have
+   one yet, rather than leaving this blank.* A draft table to react to and adjust, not a final
+   answer:
 
-**Gates Phase 1 (PII-guard hardening) and touches product design:**
+   | Data category | Proposed window | Rationale |
+   |---|---|---|
+   | Active profile/reading data (reading state, completions, ratings) | Life of the active profile, plus 30-90 days after deactivation before purge | Grace period covers accidental deactivation/reactivation without permanent data loss |
+   | Approved/published story requests and their stories | Life of the active account (this is delivered content, not incidental collection) | Matches the product's core value; not "collection" in the retention-risk sense once it's the child's book |
+   | Blocked or declined story requests (raw `request_text`) | 30 days from decision, then purge raw text and keep only the redacted category/verdict | Short window covers guardian review/appeal; raw declined text has no ongoing purpose after that |
+   | `generation_job.report` (raw LLM output) | 30 days, or immediately on publish, whichever first | Already the ADR-007 design; just needs the pg_cron job built (Phase 4c) |
+   | Moderation reports | 1-2 years | Balances safety/audit value against indefinite retention |
+   | `pipeline_event` audit log | No fixed purge; retain under a documented Article 17(3)/312.10 safety-and-integrity justification (Phase 4d) | Already PII-scrubbed by allowlist contract (Section 3.5 of the COPPA audit), so the retention-risk profile is much lower than raw free text |
+   | Data after a deletion request | Purge within 30 days of the request | Comfortably inside GDPR's Article 12(3) one-month (extendable to three) response window |
+
+   **(needs your reaction to this table, not a from-scratch answer)**
+
+**Resolved, kept for reference:**
 
 4. **Will children ever appear as themselves (by their real name) as the protagonist of their
-   own story?** This is a genuine product question, not just a compliance one: if yes, that's a
-   deliberate personalization feature, and the guard's current behavior (block if it matches
-   the registered name) may be the *wrong* behavior for the intended feature and needs a
-   different design (e.g., explicitly allow it with the guardian's informed awareness, since
-   it's no longer "identifying content leaking unintentionally" but "identifying content the
-   feature is designed to produce"). If no, the current guard behavior is correct and Phase 1a's
-   hardening should extend the same "never allowed" posture to other family members' names.
-   **(no default; this is a product decision)**
+   own story?** *Resolved: no, disallowed by design.* Since you asked for the impact of either
+   route for the record:
+
+   **Route A: disallow self-naming (your plan).**
+   - The exact-match guard already enforces this today for registered display names, at no
+     extra engineering cost beyond Phase 1a's nickname/variant hardening.
+   - Keeps the "no real child PII in prompts" invariant airtight across every downstream
+     surface: generation, moderation classifiers, and cover art all inherit the same guarantee
+     once Phase 1 closes their respective gaps, with no per-field carve-out to maintain.
+   - Keeps the DPIA/Records-of-Processing story simple: "a child's real name never leaves the
+     database" is a much easier claim to make and defend than "a child's real name leaves the
+     database, but only in this one specific, carefully-scoped case."
+   - Cost: a personalized-story competitor that does let the child be the named hero has a
+     product feature this design doesn't offer. That's a product tradeoff, not a compliance one.
+
+   **Route B: allow self-naming.**
+   - Would require deliberately routing around the existing guard for exactly one field, which
+     means redesigning the guard's invariant ("this is the sole chokepoint preventing real-child
+     PII from reaching a provider") into "sole chokepoint, except this one intentional case",
+     which is a meaningfully different and harder-to-verify design.
+   - The real name would then be sent to every text/image provider in scope and *persisted* in
+     the finished story content itself (`storybook_version.blob`), not just transient prompt
+     content, which extends retention, export, and deletion obligations to cover story content
+     as PII-bearing, not just metadata.
+   - Would need its own explicit lawful basis and specific notice/consent language (GDPR
+     purpose-limitation, Article 5(1)(b)), since it's a distinct, higher-risk processing purpose
+     from the rest of the app's data-minimized design, and would likely raise the DPIA's risk
+     rating.
+   - Benefit: a materially more personalized reading experience, which is a real product
+     differentiator some competitors in this space lead with.
+
+   Route A is the more defensible default for a project building compliance in from the start,
+   and matches your stated plan; Route B remains available later as a deliberate, separately
+   scoped feature decision if the product calls for it.
 
 **Gates Phase 5 (processor paperwork):**
 
@@ -396,17 +500,18 @@ marked **(no default)** genuinely need your input.
 ## 6. Suggested sequencing
 
 ```text
-Now, in parallel, no dependencies:
-  Phase 1 (PII-egress hardening)
+Now, in parallel, no dependencies (Decisions 2 and 4 already resolved):
+  Phase 1 (PII-egress hardening, field-targeted per Section 1's parameterization note)
   Phase 3 (deletion cascades, export, access endpoints)
   Phase 6 (security hardening)
-  Decision-gathering: 1, 2, 3, 4, 5, 6, 7, 8 (Section 5)
+  Decision-gathering still open: 1 (VPC method), 3 (retention table reaction), 5 (ZDR owner),
+    6 (artifact owner), 7 (counsel timing), 8 (DPO)
 
 Once Decision 1 (VPC method) lands:
-  Phase 2 (consent + notice build)
+  Phase 2 (consent + notice build, attached to the existing mandatory guardian-registration step)
 
-Once Decision 2 (Supabase region) and 3 (retention windows) land:
-  Phase 4 (retention policy + purge jobs + region work)
+Once Decision 3 (retention table, Section 5) is confirmed or adjusted:
+  Phase 4 (retention policy + purge jobs; Supabase region work is already resolved, no gate)
 
 Once Decision 5 (ZDR owner) lands, in parallel with the above:
   Phase 5 (processor DPAs/SCCs)
