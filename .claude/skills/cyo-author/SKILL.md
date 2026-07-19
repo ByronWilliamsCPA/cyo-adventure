@@ -51,6 +51,26 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
   structure rules.
 - If no brief is supplied, fill the skeleton in its native theme (current behavior).
 
+2c. **Check for a theme contract (WS-2 parameterized skeletons).** If a
+   `<slug>.contract.json` sidecar exists next to the skeleton, it is parameterized: its
+   node bodies, ending titles, and choice labels carry `{SLOT}` tokens instead of a fixed
+   theme. Before filling, produce the bound skeleton and fill that, not the raw file:
+
+   ```bash
+   uv run python scripts/bind_theme.py skeletons/<band>/<slug>.json \
+       --bindings <bindings.json> --out-bound out/<slug>.bound.json \
+       --out-binding out/<slug>.binding.json
+   ```
+
+   Omit `--bindings` to render the contract's `default_binding` (the original theme)
+   instead of a fresh one. Fill `out/<slug>.bound.json` exactly as you would fill any
+   other skeleton (steps 3-4 below); the `{SLOT}` tokens are already resolved to final
+   theme values by this point, so no tokens should remain in what you fill. Record the
+   binding actually used (the contents of `--out-binding`, or the contract's
+   `default_binding` when `--bindings` was omitted) as `slot_bindings` alongside the
+   import, so the resume path (`resume_manual_fill`) re-renders the same bound skeleton
+   for its Stage 1 fidelity check instead of comparing against raw `{SLOT}` tokens.
+
 3. **Fill each `<<FILL role=... words=... beats='...'>>` body** with prose that:
 
    - matches the band's word target and reading level (keep vocabulary/sentence length
