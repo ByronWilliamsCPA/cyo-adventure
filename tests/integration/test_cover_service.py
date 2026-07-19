@@ -234,11 +234,11 @@ async def test_generate_cover_blocks_on_registered_child_name_in_prompt(sessions
     # always had.
     generate_called = {"count": 0}
 
-    def counting_generate(prompt, settings):
+    def counting_generate(prompt: str, settings: Settings) -> bytes:
         generate_called["count"] += 1
         return b"PNGSOURCE"
 
-    async def fake_upload(image_bytes, key, settings):
+    async def fake_upload(image_bytes: bytes, key: str, settings: Settings) -> str:
         return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
 
     async with sessions() as s:
@@ -280,11 +280,11 @@ async def test_generate_cover_blocks_on_email_shaped_content_in_prompt(sessions,
     # free-text field a guardian typed, not just a registered display name.
     generate_called = {"count": 0}
 
-    def counting_generate(prompt, settings):
+    def counting_generate(prompt: str, settings: Settings) -> bytes:
         generate_called["count"] += 1
         return b"PNGSOURCE"
 
-    async def fake_upload(image_bytes, key, settings):
+    async def fake_upload(image_bytes: bytes, key: str, settings: Settings) -> str:
         return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
 
     async with sessions() as s:
