@@ -544,6 +544,60 @@ async def test_repair_failing_gate_is_discarded_and_routes_to_human_review(
 
 
 @pytest.mark.unit
+async def test_repair_identity_mismatch_is_discarded(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A repair that is schema-valid, re-moderates clean, and passes the gate but
+    is a DIFFERENT story (identity swapped) is rejected, not adopted.
+
+    Models the all-mock-provider hazard: the imported content is one story, and
+    the mock generation provider returns its canned stub story (``_CANNED_STORY``,
+    a different id), which is schema-valid and gate-clean and would otherwise
+    wholesale-replace the imported blob (storybook.id no longer matching
+    version.blob.id). The identity guard must discard the stub so the pre-repair
+    soft-flagged report routes to human review (submit) with the original blob
+    intact.
+    """
+    story = _story()
+    # The imported content is a distinct story, not the mock stub.
+    imported_blob = copy.deepcopy(_BLOB)
+    imported_blob["id"] = "sk_imported_original"
+    version = StorybookVersion(
+        storybook_id="s1", version=1, blob=imported_blob, model="gen-model"
+    )
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    # The mock generation provider returns its canned stub (id "s_mock_generated"):
+    # schema-valid and gate-clean, but a different story than the import.
+    stub = copy.deepcopy(_BLOB)
+    generation_provider = MockProvider(responses=[json.dumps(stub)])
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    assert version.moderation_report is not None
+    assert version.moderation_report["summary"]["repaired"] is False
+    # The imported content is preserved, not silently swapped for the stub.
+    assert version.blob == imported_blob
+
+
+@pytest.mark.unit
 async def test_repair_passing_gate_is_adopted(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,

@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "fills": [
+    {
+      "id": "cave-sea",
+      "path": "tests/data/diversity_panel/fills/the-cave-of-echoes.sea-caves.filled.json",
+      "band": "8-11",
+      "skeleton_slug": "the-cave-of-echoes",
+      "brief": {
+        "premise": "two friends explore the glowing sea caves at low tide"
+      },
+      "provenance": "copied 2026-07-18 from out/the-cave-of-echoes.filled.json (initial inventory run)"
+    },
+    {
+      "id": "cave-space",
+      "path": "tests/data/diversity_panel/fills/the-cave-of-echoes.space-station.filled.json",
+      "band": "8-11",
+      "skeleton_slug": "the-cave-of-echoes",
+      "brief": {
+        "premise": "a space station rescue mission"
+      },
+      "provenance": "copied 2026-07-18 from out/pilot/fills/the-cave-of-echoes.space-station.filled.json (pilot parameterization run)"
+    },
+    {
+      "id": "cave-dino",
+      "path": "tests/data/diversity_panel/fills/the-cave-of-echoes.dino-dig.filled.json",
+      "band": "8-11",
+      "skeleton_slug": "the-cave-of-echoes",
+      "brief": {
+        "premise": "a dinosaur dig in the desert"
+      },
+      "provenance": "copied 2026-07-18 from out/pilot/fills/the-cave-of-echoes.dino-dig.filled.json (pilot parameterization run)"
+    },
+    {
+      "id": "clockwork",
+      "path": "tests/data/diversity_panel/fills/the-clockwork-menagerie.filled.json",
+      "band": "8-11",
+      "skeleton_slug": "the-clockwork-menagerie",
+      "brief": {
+        "premise": "a locked museum full of clockwork animals"
+      },
+      "provenance": "copied 2026-07-18 from out/the-clockwork-menagerie.filled.json (initial inventory run)"
+    },
+    {
+      "id": "skyship",
+      "path": "tests/data/diversity_panel/fills/the-sky-ship-stowaway.filled.json",
+      "band": "8-11",
+      "skeleton_slug": "the-sky-ship-stowaway",
+      "brief": {
+        "premise": "an airship crew discovers a stowaway among the clouds"
+      },
+      "provenance": "copied 2026-07-18 from out/the-sky-ship-stowaway.filled.json (initial inventory run)"
+    },
+    {
+      "id": "skyship-submarine",
+      "path": "tests/data/diversity_panel/fills/the-sky-ship-stowaway.deep-sea-submarine.filled.json",
+      "band": "8-11",
+      "skeleton_slug": "the-sky-ship-stowaway",
+      "brief": {
+        "premise": "a research submarine crew discovers a stowaway kid in the deep sea"
+      },
+      "provenance": "authored 2026-07-18 as a second, genuinely re-authored same-tree fill of the-sky-ship-stowaway, to retire the panel's single-skeleton-pair monoculture (docs/planning/ws0-phase2-harness-design.md section 7 risk 1); gates clean (check_fill_integrity.py, run_story_gate.py) and clears the anti-template guard PASS floor against 'skyship' (median 0.69, p25 0.612)"
+    },
+    {
+      "id": "clover",
+      "path": "tests/data/diversity_panel/fills/the-clover-and-the-butterfly.filled.json",
+      "band": "3-5",
+      "skeleton_slug": "the-clover-and-the-butterfly",
+      "brief": {
+        "premise": "a kitten chases a butterfly through a sunny garden"
+      },
+      "provenance": "copied 2026-07-18 from out/the-clover-and-the-butterfly.filled.json (initial inventory run)"
+    },
+    {
+      "id": "lantern",
+      "path": "tests/data/diversity_panel/fills/the-lantern-festival.filled.json",
+      "band": "5-8",
+      "skeleton_slug": "the-lantern-festival",
+      "brief": {
+        "premise": "a young hedgehog carries a lantern to the festival"
+      },
+      "provenance": "copied 2026-07-18 from out/the-lantern-festival.filled.json (initial inventory run)"
+    }
+  ],
+  "synthetic": [
+    {
+      "id": "cave-space-swap",
+      "base": "cave-space",
+      "kind": "noun_swap",
+      "swaps": {
+        "station": "burrow",
+        "drone": "ferret",
+        "airlock": "gate",
+        "hull": "wall",
+        "corridor": "tunnel",
+        "console": "desk",
+        "oxygen": "air",
+        "solar": "lunar",
+        "panel": "plank",
+        "module": "room",
+        "gravity": "weight",
+        "orbit": "circle",
+        "engine": "motor",
+        "signal": "whistle",
+        "metal": "wood",
+        "light": "lamp",
+        "door": "hatch",
+        "echo": "ring"
+      }
+    },
+    {
+      "id": "cave-space-identical",
+      "base": "cave-space",
+      "kind": "identity"
+    }
+  ],
+  "atg_pairs": [
+    {"a": "cave-sea", "b": "cave-space", "expected_verdict": "pass"},
+    {"a": "cave-sea", "b": "cave-dino", "expected_verdict": "pass"},
+    {"a": "cave-space", "b": "cave-dino", "expected_verdict": "pass"},
+    {"a": "cave-space", "b": "cave-space-swap", "expected_verdict": "fail"},
+    {"a": "cave-space", "b": "cave-space-identical", "expected_verdict": "fail"},
+    {"a": "skyship", "b": "skyship-submarine", "expected_verdict": "pass"}
+  ],
+  "cross_tree_pairs": [
+    ["cave-sea", "clockwork"],
+    ["cave-sea", "skyship"],
+    ["clockwork", "skyship"]
+  ],
+  "rar_sequence": [
+    "cave-sea",
+    "clockwork",
+    "skyship",
+    "cave-space",
+    "cave-dino",
+    "cave-space-swap"
+  ],
+  "brief_pairs": [
+    {
+      "a": {"premise": "a dragon who lost his fire"},
+      "b": {"premise": "dragon story please"},
+      "expected_similar": true
+    },
+    {
+      "a": {"premise": "a brave dragon guards her eggs"},
+      "b": {"premise": "the wyvern of the north mountain"},
+      "expected_similar": true
+    },
+    {
+      "a": {"premise": "a space station rescue mission"},
+      "b": {"premise": "astronauts stranded in orbit"},
+      "expected_similar": true
+    },
+    {
+      "a": {"premise": "a dinosaur dig in the desert"},
+      "b": {"premise": "fossils hidden in the canyon"},
+      "expected_similar": true
+    },
+    {
+      "a": {"premise": "a wizard's first spell goes wrong"},
+      "b": {"premise": "the witch of the forest school"},
+      "expected_similar": true
+    },
+    {
+      "a": {"premise": "a space station rescue mission"},
+      "b": {"premise": "an undersea mermaid kingdom"},
+      "expected_similar": false
+    },
+    {
+      "a": {"premise": "a robot learns to bake bread"},
+      "b": {"premise": "pirates hunt for buried treasure"},
+      "expected_similar": false
+    },
+    {
+      "a": {"premise": "a knight guards the old castle"},
+      "b": {"premise": "a pirate ship full of treasure"},
+      "expected_similar": false
+    }
+  ],
+  "lexical_gated_ids": ["cave-sea", "cave-space", "cave-dino", "clockwork", "skyship"]
+}

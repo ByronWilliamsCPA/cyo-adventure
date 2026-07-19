@@ -35,6 +35,7 @@ def test_candidates_for_cell_excludes_non_eligible_and_length_mismatch() -> None
     """10-13/short/prose excludes the non-eligible clocktower-cipher (which has no
     length/style at all) and every other length in the band."""
     assert candidates_for_cell("10-13", "short", "prose") == [
+        "the-cinderwick-exchange",
         "the-glass-comet",
         "the-midnight-frequency",
         "the-midnight-museum",
@@ -395,3 +396,66 @@ def test_selection_allows_out_of_cell_slug() -> None:
     selection = skeleton_match.Selection(slug="out-of-cell", alternatives=("a", "b"))
     assert selection.slug == "out-of-cell"
     assert selection.alternatives == ("a", "b")
+
+
+def test_blended_weight_matches_expected_values() -> None:
+    """_blended_weight = 1 / (1 + recent + 3*similar) (WS-4); pins the exact
+    formula documented in docs/planning/story-flexibility-plan.md."""
+    assert skeleton_match._blended_weight(0, 0) == pytest.approx(1.0)
+    assert skeleton_match._blended_weight(0, 1) == pytest.approx(0.25)
+    assert skeleton_match._blended_weight(2, 0) == pytest.approx(1 / 3)
+    assert skeleton_match._blended_weight(1, 1) == pytest.approx(0.2)
+
+
+def test_blended_weight_never_reaches_zero() -> None:
+    """The novelty floor also holds for the blended (similarity-aware) weight."""
+    assert skeleton_match._blended_weight(1000, 1000) > 0.0
+
+
+def test_select_skeleton_for_cell_similar_usage_none_matches_legacy_pick() -> None:
+    """similar_usage=None (the default) reproduces the pre-WS-4 pick exactly
+    under the same seeded RNG and recent_usage, pinning backward compat."""
+    candidates = ["cave-of-echoes", "clockwork-menagerie", "sky-ship-stowaway"]
+    recent_usage = {
+        "cave-of-echoes": 5,
+        "clockwork-menagerie": 0,
+        "sky-ship-stowaway": 0,
+    }
+    legacy = skeleton_match.select_skeleton_for_cell(
+        candidates, recent_usage, random.Random(42)
+    )
+    explicit_none = skeleton_match.select_skeleton_for_cell(
+        candidates, recent_usage, random.Random(42), similar_usage=None
+    )
+    assert legacy.slug == explicit_none.slug == "sky-ship-stowaway"
+
+
+def test_select_skeleton_for_cell_similar_usage_deweights_saturated_slug() -> None:
+    """A slug with a heavy similar-theme count is drawn far less often than an
+    equally-recent-count slug with no similar-theme history."""
+    candidates = ["saturated", "fresh"]
+    recent_usage = {"saturated": 0, "fresh": 0}
+    similar_usage = {"saturated": 5, "fresh": 0}
+    picks = [
+        skeleton_match.select_skeleton_for_cell(
+            candidates, recent_usage, random.Random(seed), similar_usage=similar_usage
+        ).slug
+        for seed in range(200)
+    ]
+    fresh_count = picks.count("fresh")
+    saturated_count = picks.count("saturated")
+    assert fresh_count > saturated_count
+    # Never fully excluded: the novelty floor still lets "saturated" be drawn.
+    assert saturated_count > 0
+
+
+def test_select_skeleton_for_cell_similar_usage_all_saturated_still_picks() -> None:
+    """Every candidate similar>0 still yields a pick (the novelty floor holds
+    even under maximal theme-reuse pressure)."""
+    candidates = ["a", "b", "c"]
+    recent_usage = {"a": 3, "b": 3, "c": 3}
+    similar_usage = {"a": 2, "b": 2, "c": 2}
+    selection = skeleton_match.select_skeleton_for_cell(
+        candidates, recent_usage, random.Random(0), similar_usage=similar_usage
+    )
+    assert selection.slug in candidates

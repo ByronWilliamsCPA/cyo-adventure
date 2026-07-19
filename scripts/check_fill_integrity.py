@@ -6,9 +6,17 @@ Usage:
 Three checks for the story-inventory authoring run (see
 ``docs/planning/story-inventory-initial-run.md`` section 5.1):
 
-1. Structural immutability: with every node ``body`` removed, the filled story
-   must be byte-identical (canonical JSON) to the skeleton. An author agent
-   only writes prose; any other difference is a hard fail.
+1. Structural immutability: with every node ``body`` and every choice
+   ``label`` removed, the filled story must be byte-identical (canonical
+   JSON) to the skeleton. An author agent only writes leaf prose (bodies and
+   labels); any other difference is a hard fail. Choice labels are leaf
+   content, aligned with ``diversity/structure.py``'s
+   ``structure_fingerprint`` (the WS-0 labels-are-leaves decision): the
+   automated fill contract (``generation/templates/fill.md``) rewrites
+   labels per theme, so this check no longer treats that rewrite as a
+   structural violation. A label's *action-semantic* (what the choice
+   means, as opposed to its surface wording) is not checked here at all;
+   that is a Stage 1 fidelity concern, not a byte-equality one.
 2. No ``<<FILL`` markers may remain anywhere in the filled file.
 3. Word stats: per-node counts vs the band's per-node hard max (fail) and the
    story mean vs the band's advisory range (warning only; PL-19 mirrors this).
@@ -49,14 +57,16 @@ def _load(path: str) -> dict[str, Any] | None:
     return data
 
 
-def _strip_bodies(story: dict[str, Any]) -> dict[str, Any]:
-    """Return a deep copy of a story with every node ``body`` removed.
+def _strip_leaf_fields(story: dict[str, Any]) -> dict[str, Any]:
+    """Return a deep copy of a story with body/label leaf fields removed.
 
     Args:
         story: The decoded story JSON.
 
     Returns:
-        A copy suitable for structure-only comparison.
+        A copy suitable for structure-only comparison: every node ``body``
+        and every choice ``label`` removed, leaving ids, targets,
+        conditions, effects, endings, variables, and metadata.
     """
     copy: dict[str, Any] = json.loads(json.dumps(story))
     nodes = copy.get("nodes")
@@ -64,6 +74,11 @@ def _strip_bodies(story: dict[str, Any]) -> dict[str, Any]:
         for node in nodes:
             if isinstance(node, dict):
                 node.pop("body", None)
+                choices = node.get("choices")
+                if isinstance(choices, list):
+                    for choice in choices:
+                        if isinstance(choice, dict):
+                            choice.pop("label", None)
     return copy
 
 
@@ -108,16 +123,17 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     failed = False
 
-    canonical_skeleton = json.dumps(_strip_bodies(skeleton), sort_keys=True)
-    canonical_filled = json.dumps(_strip_bodies(filled), sort_keys=True)
+    canonical_skeleton = json.dumps(_strip_leaf_fields(skeleton), sort_keys=True)
+    canonical_filled = json.dumps(_strip_leaf_fields(filled), sort_keys=True)
     if canonical_skeleton != canonical_filled:
         sys.stderr.write(
             "FAIL structure: filled story differs from skeleton outside node "
-            "bodies (ids, choices, targets, endings, variables, or metadata)\n"
+            "bodies and choice labels (ids, choices, targets, endings, "
+            "variables, or metadata)\n"
         )
         failed = True
     else:
-        sys.stdout.write("ok   structure: only node bodies differ\n")
+        sys.stdout.write("ok   structure: only node bodies and choice labels differ\n")
 
     raw = json.dumps(filled)
     if _FILL_MARKER in raw:

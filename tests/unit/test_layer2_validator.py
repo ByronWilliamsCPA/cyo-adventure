@@ -19,7 +19,9 @@ from pathlib import Path
 import pytest
 
 from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.validator import layer2
 from cyo_adventure.validator.layer2 import validate_layer2
+from cyo_adventure.validator.report import Severity
 
 # ---------------------------------------------------------------------------
 # Fixture helpers
@@ -775,3 +777,71 @@ def test_l2_11_message_format() -> None:
     assert "c_hidden" in l2_11.message
     assert "start" in l2_11.message
     assert "s_msg_test" in l2_11.message
+
+
+# ---------------------------------------------------------------------------
+# Test 7: L2-13 scale advisory (WARNING, non-blocking)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_l2_13_large_tier2_emits_scale_advisory_warning(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A completed-walk Tier-2 story past the hand-authoring ceiling gets exactly
+    one L2-13 WARNING, and it never blocks (report stays ok)."""
+    # 05_tier2_bottleneck is a clean 11-node Tier-2 fixture; drop the ceiling
+    # below its node count so the advisory fires without a 460-node fixture.
+    monkeypatch.setattr(layer2, "HAND_AUTHORING_NODE_CEILING", 5)
+    story = _load_fixture(_VALID / "05_tier2_bottleneck.json")
+
+    report = validate_layer2(story)
+
+    l2_13 = [f for f in report.findings if f.rule_id == "L2-13"]
+    assert len(l2_13) == 1
+    assert l2_13[0].severity is Severity.WARNING
+    assert "sole correctness guarantee" in l2_13[0].message
+    # WARNING is advisory: the report must remain ok (no error-severity finding),
+    # so the gate never blocks on it.
+    assert report.ok
+
+
+@pytest.mark.unit
+def test_l2_13_not_emitted_below_ceiling() -> None:
+    """A Tier-2 story at or below the ceiling gets no scale advisory."""
+    story = _load_fixture(_VALID / "05_tier2_bottleneck.json")
+
+    report = validate_layer2(story)
+
+    assert all(f.rule_id != "L2-13" for f in report.findings)
+
+
+@pytest.mark.unit
+def test_l2_13_not_emitted_for_tier1(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The scale advisory is Tier-2 only: a large Tier-1 story never triggers it
+    (Tier-1 short-circuits before the walk)."""
+    monkeypatch.setattr(layer2, "HAND_AUTHORING_NODE_CEILING", 1)
+    story = _tier1_story(
+        nodes=[
+            {
+                "id": "start",
+                "body": "b",
+                "choices": [{"id": "c1", "label": "go", "target": "end"}],
+            },
+            {
+                "id": "end",
+                "body": "b",
+                "is_ending": True,
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Done",
+                },
+                "choices": [],
+            },
+        ],
+        start="start",
+    )
+    report = validate_layer2(story)
+    assert report.findings == []

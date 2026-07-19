@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import random
 import uuid
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from pydantic import ValidationError as PydanticValidationError
@@ -10,7 +12,9 @@ from pydantic import ValidationError as PydanticValidationError
 from cyo_adventure.api.schemas import AuthoringPlanRequest
 from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
 from cyo_adventure.db.models import Concept, GenerationJob, StoryRequest
+from cyo_adventure.diversity.query import DifferentiationLevel, SimilarityContext
 from cyo_adventure.events import Actor
+from cyo_adventure.generation.skeleton_match import select_skeleton_for_cell
 from cyo_adventure.story_requests.authoring_plan import (
     build_authoring_plan,
     eligibility_warnings,
@@ -557,3 +561,225 @@ async def test_skeleton_fill_specified_length_no_default_warning() -> None:
     )
     assert not any("defaulted to" in w for w in result.warnings)
     assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
+
+
+def _sim_ctx(
+    *,
+    similar_count_per_slug: dict[str, int],
+    recommendation: DifferentiationLevel,
+) -> SimilarityContext:
+    """Build a SimilarityContext for mocking `similarity_context` (WS-4).
+
+    Only `similar_count_per_slug` and `recommendation` matter to
+    build_authoring_plan's auto-pick path; the other fields are filled with
+    innocuous defaults since nothing under test reads them.
+    """
+    return SimilarityContext(
+        neighbors=(),
+        cell_theme_saturation=0.0,
+        used_slugs=frozenset(),
+        similar_count_per_slug=similar_count_per_slug,
+        recommendation=recommendation,
+    )
+
+
+def _short_prose_8_11_concept() -> Concept:
+    """A concept with an explicit length, so no defaulted-length warning
+    pollutes the WS-4 warnings assertions below."""
+    return Concept(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        brief={
+            "age_band": "8-11",
+            "length": "short",
+            "premise": "a fox finds a lantern",
+        },
+    )
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_auto_pick_passes_similar_usage_to_selection() -> None:
+    """WS-4: the auto-pick path threads similarity_context's per-slug similar
+    counts into select_skeleton_for_cell, de-weighting a saturated slug -- the
+    same seed with and without similar_usage picks differently."""
+    saturated_slug = _CELL_8_11_SHORT_PROSE[0]
+    similar_counts = {saturated_slug: 5}
+    ctx = _sim_ctx(
+        similar_count_per_slug=similar_counts,
+        recommendation=DifferentiationLevel.TREE,
+    )
+    session = _FakeSession()
+    concept = _short_prose_8_11_concept()
+    with (
+        patch(
+            "cyo_adventure.story_requests.authoring_plan.similarity_context",
+            new=AsyncMock(return_value=ctx),
+        ),
+        patch(
+            "cyo_adventure.story_requests.authoring_plan.random.SystemRandom",
+            new=lambda: random.Random(42),
+        ),
+    ):
+        result = await build_authoring_plan(
+            session,
+            _request(),
+            concept,
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
+            actor=_admin_actor(),
+        )
+    expected = select_skeleton_for_cell(
+        _CELL_8_11_SHORT_PROSE,
+        {},
+        random.Random(42),
+        similar_usage=similar_counts,
+    )
+    assert result.skeleton_slug == expected.slug
+    # The blended weighting must pick differently from the legacy (no
+    # similar_usage) pick under the identical seed, proving the counts were
+    # actually threaded through rather than ignored: uniform weights consume
+    # the RNG's draw differently than [0.0625, 1, 1].
+    legacy = select_skeleton_for_cell(_CELL_8_11_SHORT_PROSE, {}, random.Random(42))
+    assert legacy.slug != result.skeleton_slug
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_auto_pick_tree_adds_no_warning() -> None:
+    """DifferentiationLevel.TREE (plenty of untouched trees) adds no warning."""
+    ctx = _sim_ctx(
+        similar_count_per_slug=dict.fromkeys(_CELL_8_11_SHORT_PROSE, 0),
+        recommendation=DifferentiationLevel.TREE,
+    )
+    session = _FakeSession()
+    concept = _short_prose_8_11_concept()
+    with patch(
+        "cyo_adventure.story_requests.authoring_plan.similarity_context",
+        new=AsyncMock(return_value=ctx),
+    ):
+        result = await build_authoring_plan(
+            session,
+            _request(),
+            concept,
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
+            actor=_admin_actor(),
+        )
+    assert result.warnings == []
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_auto_pick_leaf_saturation_warns_and_logs() -> None:
+    """DifferentiationLevel.LEAF (cell exhausted for this theme) appends the
+    leaf-differentiation warning and emits the saturation log line."""
+    ctx = _sim_ctx(
+        similar_count_per_slug=dict.fromkeys(_CELL_8_11_SHORT_PROSE, 1),
+        recommendation=DifferentiationLevel.LEAF,
+    )
+    session = _FakeSession()
+    concept = _short_prose_8_11_concept()
+    logged: list[tuple[str, dict[str, object]]] = []
+
+    class _CapturingLogger:
+        def info(self, event: str, **kwargs: object) -> None:
+            logged.append((event, kwargs))
+
+    with (
+        patch(
+            "cyo_adventure.story_requests.authoring_plan.similarity_context",
+            new=AsyncMock(return_value=ctx),
+        ),
+        patch(
+            "cyo_adventure.story_requests.authoring_plan.logger", new=_CapturingLogger()
+        ),
+    ):
+        result = await build_authoring_plan(
+            session,
+            _request(),
+            concept,
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
+            actor=_admin_actor(),
+        )
+    assert any(
+        "already been used for a similar-theme story" in w for w in result.warnings
+    )
+    assert any("relying on leaf-level differentiation" in w for w in result.warnings)
+    assert len(logged) == 1
+    event, kwargs = logged[0]
+    assert event == "selection.cell_theme_saturated"
+    assert kwargs["band"] == "8-11"
+    assert kwargs["level"] == "leaf"
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_auto_pick_catalog_saturation_warns_and_logs() -> None:
+    """DifferentiationLevel.CATALOG (multiple similar-theme uses per skeleton)
+    appends the catalog-growth warning and emits the saturation log line."""
+    ctx = _sim_ctx(
+        similar_count_per_slug=dict.fromkeys(_CELL_8_11_SHORT_PROSE, 2),
+        recommendation=DifferentiationLevel.CATALOG,
+    )
+    session = _FakeSession()
+    concept = _short_prose_8_11_concept()
+    logged: list[tuple[str, dict[str, object]]] = []
+
+    class _CapturingLogger:
+        def info(self, event: str, **kwargs: object) -> None:
+            logged.append((event, kwargs))
+
+    with (
+        patch(
+            "cyo_adventure.story_requests.authoring_plan.similarity_context",
+            new=AsyncMock(return_value=ctx),
+        ),
+        patch(
+            "cyo_adventure.story_requests.authoring_plan.logger", new=_CapturingLogger()
+        ),
+    ):
+        result = await build_authoring_plan(
+            session,
+            _request(),
+            concept,
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
+            actor=_admin_actor(),
+        )
+    assert any("saturated for this theme" in w for w in result.warnings)
+    assert any(
+        "consider authoring a new skeleton for the cell" in w for w in result.warnings
+    )
+    assert len(logged) == 1
+    event, kwargs = logged[0]
+    assert event == "selection.cell_theme_saturated"
+    assert kwargs["level"] == "catalog"
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_auto_pick_family_id_none_is_unchanged() -> None:
+    """WS-4 backward compat: family_id=None (admin/catalog request) short-
+    circuits similarity_context's history load to empty, so every similar
+    count is zero and no saturation warning appears -- identical to the
+    pre-WS-4 behavior. Uses the real similarity_context (not mocked)."""
+    session = _FakeSession()
+    concept = _short_prose_8_11_concept()
+    request = StoryRequest(
+        family_id=None,
+        profile_id=uuid.uuid4(),
+        request_text="a fox",
+        status="approved",
+    )
+    result = await build_authoring_plan(
+        session,
+        request,
+        concept,
+        AuthoringPlanRequest(
+            method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+        ),
+        actor=_admin_actor(),
+    )
+    assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
+    assert result.warnings == []

@@ -35,6 +35,7 @@ by narrative role.
 
 | Skeleton | Band | Length (min) | Tier | Topology | Nodes | Endings (+/n/-) | Diagram |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| The Cinderwick Exchange | 10-13 | 12 | 1 | sorting_hat | 99 | 8/5/7 | [svg](diagrams/skeletons/10-13/the-cinderwick-exchange.svg) |
 | The Clocktower Cipher | 10-13 | 18 | 1 | branch_and_bottleneck | 25 | 3/1/4 | [svg](diagrams/skeletons/10-13/the-clocktower-cipher.svg) |
 | The Envoy of Three Courts | 10-13 | 9 | 1 | sorting_hat | 159 | 18/6/6 | [svg](diagrams/skeletons/10-13/the-envoy-of-three-courts.svg) |
 | The Flooded Quarter | 10-13 | 10 | 2 | open_map | 155 | 12/9/7 | [svg](diagrams/skeletons/10-13/the-flooded-quarter.svg) |
@@ -58,6 +59,7 @@ by narrative role.
 | The Vanishing Orchard | 13-16 | 18 | 1 | branch_and_bottleneck | 177 | 5/5/23 | [svg](diagrams/skeletons/13-16/the-vanishing-orchard.svg) |
 | The Year of Four Banners | 13-16 | 26 | 1 | sorting_hat | 212 | 10/11/12 | [svg](diagrams/skeletons/13-16/the-year-of-four-banners.svg) |
 | The Ashfall Expedition | 16+ | 30 | 1 | branch_and_bottleneck | 505 | 3/0/140 | [svg](diagrams/skeletons/16+/the-ashfall-expedition.svg) |
+| The Blackwood Sanatorium | 16+ | 40 | 1 | open_map | 151 | 2/8/14 | [svg](diagrams/skeletons/16+/the-blackwood-sanatorium.svg) |
 | The Cinder Bazaar | 16+ | 40 | 2 | branch_and_bottleneck | 453 | 3/18/120 | [svg](diagrams/skeletons/16+/the-cinder-bazaar.svg) |
 | The Drowned Court | 16+ | 18 | 1 | branch_and_bottleneck | 314 | 5/2/98 | [svg](diagrams/skeletons/16+/the-drowned-court.svg) |
 | The Last Train North | 16+ | 14 | 1 | branch_and_bottleneck | 143 | 5/9/11 | [svg](diagrams/skeletons/16+/the-last-train-north.svg) |

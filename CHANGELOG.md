@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Story-diversity system (WS-0): an anti-template guard and a request-time
+  similarity query, plus a Phase 2 eval harness (ECS/PS/RAR and lexical metrics,
+  a committed fixture panel and baseline, the `run_diversity_eval` CLI, a
+  `diversity_eval` nox session, and a per-PR `diversity` CI regression gate)
+  (#300).
+- Similarity-driven skeleton auto-selection (WS-4): request-time selection
+  de-weights recently- and similar-theme-used skeletons and surfaces
+  TREE/LEAF/CATALOG escalation so a family's repeat similar-theme request is
+  steered to a different skeleton (#300).
+- `import_cli --series-id` links an imported book into a series on import;
+  an L2-13 large-Tier-2 scale advisory in the validator; two new skeletons,
+  `the-cinderwick-exchange` (10-13) and `the-blackwood-sanatorium` (16+) (#300).
+
+### Changed
+
+- Choice labels are now diversity leaf content: excluded from the
+  `structure_fingerprint` and folded into the anti-template guard's leaf
+  distance and entity masking, with `check_fill_integrity` aligned. The Stage 1
+  fidelity reviewer now also checks per-choice label intent, preserving the
+  semantic guarantee the removed byte-level label check nominally provided
+  (WS-1) (#300).
+
+### Fixed
+
+- Moderation auto-repair no longer silently replaces an imported story with a
+  mock stub: a repair that changes the story's identity (id, tier, node count)
+  is rejected and the story routes to review with its real content intact
+  (#300).
+
 ## [0.15.0] - 2026-07-18
 
 ## [0.14.0] - 2026-07-18

@@ -321,3 +321,7 @@ docs/qa/naive-ux-reports/*.md
 
 # Agent-session worktrees (auto-created by subagent isolation)
 .claude/worktrees/
+
+# Diversity eval live-fill and judge-calibration outputs (run_diversity_eval.py
+# --with-judge writes its cache here); never committed by accident.
+out/diversity/

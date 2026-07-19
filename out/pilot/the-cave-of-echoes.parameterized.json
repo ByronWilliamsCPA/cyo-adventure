@@ -1,0 +1,863 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cave_of_echoes",
+  "version": 1,
+  "title": "The Cave of Echoes",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "exploration",
+      "courage",
+      "wonder",
+      "nature"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 16,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=110 beats='{HERO} and {COMPANION} enter {THRESHOLD} at {OPENING_MOMENT}; three dark openings breathe cool air and each throws back its own signal, {ROUTE_A_LURE}, {ROUTE_B_LURE}, and {ROUTE_C_LURE}; {HERO} must choose which signal to follow before {DEADLINE}'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_left",
+          "label": "Follow the humming echo to the left.",
+          "target": "la_tunnel"
+        },
+        {
+          "id": "c_right",
+          "label": "Follow the dripping echo to the right.",
+          "target": "ra_drip"
+        },
+        {
+          "id": "c_down",
+          "label": "Follow the whispering echo straight down.",
+          "target": "da_dark"
+        }
+      ]
+    },
+    {
+      "id": "la_tunnel",
+      "body": "<<FILL role=rising words=95 beats='the first way, {ROUTE_A_CHAR}, draws them in as {ROUTE_A_LURE} steadies into a held note; {COMPANION} perks up; {HERO} edges toward a distant glow and a soft stirring ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_fork",
+          "label": "Press on toward the glow.",
+          "target": "la_fork"
+        }
+      ]
+    },
+    {
+      "id": "la_fork",
+      "body": "<<FILL role=choice words=100 beats='the way splits into two tracks: on one side {A1_SIGN} catches the light, on the other {A2_SIGN} deepens into a warm, pulling sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glitter",
+          "label": "Go toward the glittering wall.",
+          "target": "la_glitter"
+        },
+        {
+          "id": "c_hum",
+          "label": "Go toward the warm murmur.",
+          "target": "la_hum"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter",
+      "body": "<<FILL role=rising words=95 beats='the track toward {A1_SIGN} runs past {A1_LANDMARK} that catches {HERO}'s light; the floor slopes gently down toward a narrow gap breathing cold air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_slope",
+          "label": "Follow the sloping floor down.",
+          "target": "la_glitter2"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter2",
+      "body": "<<FILL role=rising words=95 beats='the slope opens into a small antechamber; {A1_ZONE_HINT} shows in the far wall and the air smells of clean wet stone, a sign the greater find lies just beyond'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_crack",
+          "label": "Approach the glowing crack.",
+          "target": "la_grotto_app"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto_app",
+      "body": "<<FILL role=choice words=100 beats='the gap is just wide enough to pass, but {A1_GATE} blocks easy passage as {DEADLINE_SIGN} begins to gather at their feet; {HERO} can press through toward the reward or turn back toward {ENTRANCE} while the way stays safe'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_squeeze",
+          "label": "Squeeze through the glowing crack.",
+          "target": "la_squeeze"
+        },
+        {
+          "id": "c_retreat",
+          "label": "Turn back before the water rises.",
+          "target": "la_retreat_pool"
+        }
+      ]
+    },
+    {
+      "id": "la_retreat_pool",
+      "body": "<<FILL role=ending words=85 beats='{HERO} and {COMPANION} make their way back toward {ENTRANCE} as {DEADLINE_SIGN} rises around them; they reach the open air damp and safe, the greater find left for a better return, promising to come back at the next {OPENING_MOMENT}'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {A1_GATE}"
+      }
+    },
+    {
+      "id": "la_squeeze",
+      "body": "<<FILL role=rising words=95 beats='they slip through {A1_GATE} and come out the other side; {COMPANION} shakes off and the glow ahead brightens into {A1_ZONE}'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_room",
+          "label": "Step into the shimmering room.",
+          "target": "la_grotto"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto",
+      "body": "<<FILL role=choice words=105 beats='{A1_ZONE} opens around them, full of light and wonder; within reach sits {A1_OFFER1}, while a deeper way, {A1_OFFER2}, pulls onward toward something greater'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take",
+          "label": "Gently take the loose crystal.",
+          "target": "la_crystal_take"
+        },
+        {
+          "id": "c_deeper",
+          "label": "Follow the humming archway deeper.",
+          "target": "la_crystal_deeper"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_take",
+      "body": "<<FILL role=rising words=90 beats='{HERO} carefully gathers {A1_OFFER1}; it is theirs to keep and lights a low passage that seems to curve back toward the way out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_up",
+          "label": "Follow the crystal's light back up.",
+          "target": "la_crystal_out"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_out",
+      "body": "<<FILL role=completion words=90 beats='the find lights their way up and out to {ENTRANCE}; {HERO} steps into the open carrying {A1_PRIZE1} for real, with {COMPANION} close behind, proud of the safe treasure won'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crystal",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A1_PRIZE1}"
+      }
+    },
+    {
+      "id": "la_crystal_deeper",
+      "body": "<<FILL role=rising words=95 beats='the deeper way, {A1_OFFER2}, grows stronger; the passage widens and its walls smooth into {A1_PRIZE2_PATH}, shaped as if to carry sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chord",
+          "label": "Follow the chord toward the sound.",
+          "target": "la_song_app"
+        }
+      ]
+    },
+    {
+      "id": "la_song_app",
+      "body": "<<FILL role=rising words=95 beats='ahead the walls curve into {A1_PRIZE2_ZONE}; every drip and footstep rings and layers; {COMPANION} gives a wondering sound that echoes back many times over'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_sing",
+          "label": "Step into the ringing chamber.",
+          "target": "la_song"
+        }
+      ]
+    },
+    {
+      "id": "la_song",
+      "body": "<<FILL role=completion words=90 beats='{HERO} makes a single sound and the whole place answers in shimmering harmony; they have found {A1_PRIZE2}, a secret almost no one knew, and carry the wonder of it all the way home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{A1_PRIZE2}"
+      }
+    },
+    {
+      "id": "la_hum",
+      "body": "<<FILL role=rising words=95 beats='{A2_SIGN} leads down a rounded way; the sound is not wind but {A2_LANDMARK}, coming from far below; {COMPANION} pads ahead confidently'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_ring",
+          "label": "Follow the ringing downward.",
+          "target": "la_hum2"
+        }
+      ]
+    },
+    {
+      "id": "la_hum2",
+      "body": "<<FILL role=rising words=95 beats='the way steepens; {A2_LANDMARK} steadies into a slow, deep pulse, and pale light leaks up from a chamber below where {A2_ZONE_HINT} catches the glow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chime",
+          "label": "Climb down toward the chiming light.",
+          "target": "la_bell_app"
+        }
+      ]
+    },
+    {
+      "id": "la_bell_app",
+      "body": "<<FILL role=choice words=100 beats='{A2_GATE} offers a way down, left behind by someone long ago; {HERO}'s sense of {DEADLINE} says time is short; they can go down toward the reward or climb back up while they still safely can'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bell",
+          "label": "Climb down the old rope ladder.",
+          "target": "la_bell"
+        },
+        {
+          "id": "c_humback",
+          "label": "Scramble back up to be safe.",
+          "target": "la_hum_back"
+        }
+      ]
+    },
+    {
+      "id": "la_hum_back",
+      "body": "<<FILL role=ending words=85 beats='{HERO} decides the find can wait for a safer day; they and {COMPANION} climb back up the rounded way and out to {ENTRANCE}, a little breathless but perfectly safe'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_hum",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {A2_GATE}"
+      }
+    },
+    {
+      "id": "la_bell",
+      "body": "<<FILL role=rising words=95 beats='{A2_GATE} holds; at the bottom waits {A2_FIND}, old and weathered, still faintly sounding as slow drips strike it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell2",
+          "label": "Walk up to the great bell.",
+          "target": "la_bell2"
+        }
+      ]
+    },
+    {
+      "id": "la_bell2",
+      "body": "<<FILL role=rising words=90 beats='marks are set into {A2_FIND}, {A2_DETAIL1}; nearby a dry ledge holds useful leftovers from an earlier visitor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell3",
+          "label": "Read the name and look behind the bell.",
+          "target": "la_bell3"
+        }
+      ]
+    },
+    {
+      "id": "la_bell3",
+      "body": "<<FILL role=rising words=90 beats='{HERO} records what {A2_DETAIL1} tells them; {A2_DETAIL2}, enough to help them climb back out the way they came'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell4",
+          "label": "Take the lantern and rope and head out.",
+          "target": "la_bell4"
+        }
+      ]
+    },
+    {
+      "id": "la_bell4",
+      "body": "<<FILL role=completion words=95 beats='with what {A2_FIND} revealed kept safe and the old gear put to use, {HERO} and {COMPANION} climb back to daylight; everyone will want to hear about {A2_PRIZE}'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A2_PRIZE}"
+      }
+    },
+    {
+      "id": "ra_drip",
+      "body": "<<FILL role=rising words=95 beats='the second way, {ROUTE_B_CHAR}, follows {ROUTE_B_LURE} deeper; {HERO}'s light shows a trickle running on into the dark and the air turns cold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_fork",
+          "label": "Follow the trickle deeper.",
+          "target": "ra_fork"
+        }
+      ]
+    },
+    {
+      "id": "ra_fork",
+      "body": "<<FILL role=choice words=100 beats='the trickle reaches a split: one way {B1_SIGN} grows louder, the other way {B2_SIGN} drifts from a low side-passage'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lake",
+          "label": "Head toward the lapping water.",
+          "target": "ra_lake_way"
+        },
+        {
+          "id": "c_pool",
+          "label": "Follow the briny smell.",
+          "target": "ra_pool_way"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_way",
+      "body": "<<FILL role=rising words=95 beats='following {B1_SIGN}, the floor turns to {B1_LANDMARK1} and the ceiling lifts away into a darkness {HERO}'s light cannot reach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_pebbles",
+          "label": "Cross the wet pebbles.",
+          "target": "ra_lake2"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake2",
+      "body": "<<FILL role=rising words=95 beats='the way gives onto {B1_LANDMARK2}; the sound is only {COMPANION} testing the cold edge with one paw'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shelf",
+          "label": "Edge along the rocky shelf.",
+          "target": "ra_lake_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_app",
+      "body": "<<FILL role=choice words=105 beats='the shelf narrows into {B1_GATE}; below waits {B1_ZONE}; {HERO} can climb carefully down toward it or back off before anyone slips'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_descend",
+          "label": "Climb down to the lake shore.",
+          "target": "ra_descend"
+        },
+        {
+          "id": "c_lakeback",
+          "label": "Back off the slippery shelf.",
+          "target": "ra_lake_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_back",
+      "body": "<<FILL role=ending words=85 beats='{B1_GATE} is too risky; {HERO} coaxes {COMPANION} back along the shelf and they retrace the way to {ENTRANCE}, arriving safe, the greater find left for braver footing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_lake",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {B1_GATE}"
+      }
+    },
+    {
+      "id": "ra_descend",
+      "body": "<<FILL role=rising words=95 beats='they pick their way down to {B1_ZONE}; here at the edge of it, something waits for a bold explorer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shore",
+          "label": "Walk along the gravel shore.",
+          "target": "ra_lakeshore"
+        }
+      ]
+    },
+    {
+      "id": "ra_lakeshore",
+      "body": "<<FILL role=choice words=105 beats='two chances appear: nearby rests {B1_OFFER1}, and further along {B1_OFFER2} beckons with its own promise'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_boat",
+          "label": "Examine the old rowboat.",
+          "target": "ra_boat"
+        },
+        {
+          "id": "c_wade",
+          "label": "Wade into the glowing shallows.",
+          "target": "ra_wade"
+        }
+      ]
+    },
+    {
+      "id": "ra_boat",
+      "body": "<<FILL role=rising words=95 beats='{B1_OFFER1} proves usable; {HERO} {B1_PRIZE1_PREP} until it is ready to carry them onward across {B1_ZONE}'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_row",
+          "label": "Climb in and push off.",
+          "target": "ra_row"
+        }
+      ]
+    },
+    {
+      "id": "ra_row",
+      "body": "<<FILL role=completion words=95 beats='{HERO} takes {COMPANION} across {B1_ZONE} to a far side where daylight leaks in; they climb out having done {B1_PRIZE1}, likely the first in a lifetime to manage it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rowboat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B1_PRIZE1}"
+      }
+    },
+    {
+      "id": "ra_wade",
+      "body": "<<FILL role=rising words=95 beats='{B1_OFFER2} lights up as {HERO} disturbs it, {B1_PRIZE2_PATH} leading toward a low, bright opening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_islet",
+          "label": "Follow the glowing shells.",
+          "target": "ra_islet"
+        }
+      ]
+    },
+    {
+      "id": "ra_islet",
+      "body": "<<FILL role=completion words=90 beats='the path leads to {B1_PRIZE2}, a hidden spot under open sky; {HERO} takes a small keepsake and makes their way back into daylight, sworn to keep the place secret'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_islet",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{B1_PRIZE2}"
+      }
+    },
+    {
+      "id": "ra_pool_way",
+      "body": "<<FILL role=rising words=95 beats='the side-passage toward {B2_SIGN} is tight; {HERO} crouches under dripping ledges while {COMPANION} squeezes ahead toward {B2_LANDMARK1}'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_crouch",
+          "label": "Crouch through toward the pale light.",
+          "target": "ra_pool2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool2",
+      "body": "<<FILL role=rising words=95 beats='the way opens a little; {B2_LANDMARK2} runs along the floor toward a rounded chamber ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_channel",
+          "label": "Follow the clear channel.",
+          "target": "ra_pool_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_app",
+      "body": "<<FILL role=choice words=100 beats='the channel ends at {B2_GATE}; beyond it the light is bright, but {DEADLINE_SIGN} is filling the way behind them, so {HERO} must choose quickly to press on or hurry back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter",
+          "label": "Push through the weed curtain.",
+          "target": "ra_pool_enter"
+        },
+        {
+          "id": "c_poolback",
+          "label": "Hurry back before the channel fills.",
+          "target": "ra_pool_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_back",
+      "body": "<<FILL role=ending words=85 beats='{HERO} will not risk {B2_GATE} closing behind them; they and {COMPANION} hurry back and reach {ENTRANCE} just as {DEADLINE_SIGN} pours in, hearts thumping, entirely safe'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {B2_GATE}"
+      }
+    },
+    {
+      "id": "ra_pool_enter",
+      "body": "<<FILL role=rising words=95 beats='through {B2_GATE} the chamber opens into {B2_ZONE}, its water so clear it looks like air, alive with small creatures'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_kneel",
+          "label": "Kneel by the clear tide-pool.",
+          "target": "ra_pool_chamber"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_chamber",
+      "body": "<<FILL role=choice words=105 beats='{B2_ZONE} is a whole tiny world; in one corner {B2_OFFER1} stands out, and on the far side {B2_OFFER2} leads to a deeper, darker basin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star",
+          "label": "Look closely at the orange starfish.",
+          "target": "ra_starfish"
+        },
+        {
+          "id": "c_deep",
+          "label": "Follow the crab-track to the dark basin.",
+          "target": "ra_pool_deep"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish",
+      "body": "<<FILL role=rising words=95 beats='{B2_OFFER1} is a rare thing; {HERO} {B2_PRIZE1_ACT}, leaving it exactly where it belongs and recording the wonder of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_sketch",
+          "label": "Finish the sketch and slip out.",
+          "target": "ra_starfish2"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish2",
+      "body": "<<FILL role=completion words=90 beats='{HERO} backs out with a full record of {B2_PRIZE1}; the experts will not believe it until they see the proof, and {HERO} and {COMPANION} climb out grinning'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_starfish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B2_PRIZE1}"
+      }
+    },
+    {
+      "id": "ra_pool_deep",
+      "body": "<<FILL role=rising words=95 beats='{B2_OFFER2} leads to a darker basin where the water is deep; {B2_PRIZE2_FIND} gleams at the bottom, half-buried, catching the last of the light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_reach",
+          "label": "Reach into the green basin.",
+          "target": "ra_pool_deep2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_deep2",
+      "body": "<<FILL role=completion words=95 beats='{HERO} lifts out {B2_PRIZE2}, the finest thing they have ever found, and carries it up into daylight like a trophy, {COMPANION} celebrating alongside'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B2_PRIZE2}"
+      }
+    },
+    {
+      "id": "da_dark",
+      "body": "<<FILL role=rising words=95 beats='the third way, {ROUTE_C_CHAR}, is the darkest; {ROUTE_C_LURE} turns out to be only a draft over stone; {HERO} keeps one hand on the wall and {COMPANION} close as they go down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_fork",
+          "label": "Feel along the wall downward.",
+          "target": "da_fork"
+        }
+      ]
+    },
+    {
+      "id": "da_fork",
+      "body": "<<FILL role=choice words=100 beats='the dark way forks: from one branch comes {C1_SIGN}, from the other {C2_SIGN}'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bat",
+          "label": "Go toward the squeaking and flutter.",
+          "target": "da_bat_way"
+        },
+        {
+          "id": "c_cache",
+          "label": "Go toward the creaking wood.",
+          "target": "da_cache_way"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_way",
+      "body": "<<FILL role=rising words=95 beats='{C1_SIGN} grows busier; the ceiling lifts and {HERO}'s light catches {C1_LANDMARK} above; {COMPANION} presses close, uncertain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_creep",
+          "label": "Creep on under the hanging shapes.",
+          "target": "da_bat2"
+        }
+      ]
+    },
+    {
+      "id": "da_bat2",
+      "body": "<<FILL role=rising words=95 beats='it is {C1_LANDMARK}, at rest in a great vaulted chamber; the air is warm and earthy, and {C1_ZONE_HINT} shows the way onward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_grey",
+          "label": "Move quietly toward the grey light.",
+          "target": "da_bat_app"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_app",
+      "body": "<<FILL role=choice words=105 beats='{C1_ZONE_HINT} may be a way up and out, but reaching it means {C1_GATE}; {HERO} can go carefully on toward the reward or back away and leave things undisturbed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_batenter",
+          "label": "Tiptoe across under the bats.",
+          "target": "da_bat_enter"
+        },
+        {
+          "id": "c_batback",
+          "label": "Back away and leave the bats be.",
+          "target": "da_bat_back"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_back",
+      "body": "<<FILL role=ending words=85 beats='{HERO} will not risk disturbing what rests here; they and {COMPANION} ease back out and return along the dark way to {ENTRANCE}, dusty and awed and safe'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_bat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {C1_GATE}"
+      }
+    },
+    {
+      "id": "da_bat_enter",
+      "body": "<<FILL role=rising words=95 beats='they cross carefully; nothing stirs; beyond lies {C1_CLIMB1}, a rough way up toward the light far above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_stair",
+          "label": "Start up the fallen-rock stair.",
+          "target": "da_roost"
+        }
+      ]
+    },
+    {
+      "id": "da_roost",
+      "body": "<<FILL role=rising words=95 beats='{C1_CLIMB1} is steep but solid; partway up {HERO} finds {C1_CLIMB2}, proof that someone came this secret way long before'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_climb",
+          "label": "Climb on past the old carving.",
+          "target": "da_roost2"
+        }
+      ]
+    },
+    {
+      "id": "da_roost2",
+      "body": "<<FILL role=rising words=90 beats='the way narrows to {C1_CLIMB3}; light and fresh air pour down; {HERO} boosts {COMPANION} ahead and hauls up the last stretch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_push",
+          "label": "Push up through the mossy funnel.",
+          "target": "da_skylight"
+        }
+      ]
+    },
+    {
+      "id": "da_skylight",
+      "body": "<<FILL role=completion words=95 beats='they climb out through {C1_PRIZE}, high above {THRESHOLD}, blinking in the light; {HERO} has found a secret way in and out, and a discovery worth telling'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bats",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{C1_PRIZE}"
+      }
+    },
+    {
+      "id": "da_cache_way",
+      "body": "<<FILL role=rising words=95 beats='{C2_SIGN} grows nearer; {HERO}'s light finds {C2_LANDMARK1} wedged into a side-cave, weathered and old'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_door",
+          "label": "Approach the leaning plank door.",
+          "target": "da_cache2"
+        }
+      ]
+    },
+    {
+      "id": "da_cache2",
+      "body": "<<FILL role=rising words=95 beats='{C2_LANDMARK1} gives way with a groan; behind it {C2_LANDMARK2} has been made by hand, a hiding place with shapes stacked in the shadows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_peer",
+          "label": "Peer into the walled-off hollow.",
+          "target": "da_cache_app"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_app",
+      "body": "<<FILL role=choice words=105 beats='it is {C2_ZONE}, forgotten for a long time; but {DEADLINE_SIGN} already glistens on the floor, so {HERO} can step in for a quick look or leave it for a drier day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cacheenter",
+          "label": "Step in for a quick look.",
+          "target": "da_cache_enter"
+        },
+        {
+          "id": "c_cacheback",
+          "label": "Leave the cache and beat the tide.",
+          "target": "da_cache_back"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_back",
+      "body": "<<FILL role=ending words=85 beats='{DEADLINE_SIGN} decides it; {HERO} marks the spot and hurries out with {COMPANION} ahead of the rising water, reaching {ENTRANCE} safe, the find saved for a better day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cache",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {C2_GATE}"
+      }
+    },
+    {
+      "id": "da_cache_enter",
+      "body": "<<FILL role=rising words=95 beats='inside, {C2_INNER}; most have crumbled, but two smaller boxes sit dry on a stone shelf, their lids stiff but whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_boxes",
+          "label": "Open the two dry boxes.",
+          "target": "da_cache_room"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_room",
+      "body": "<<FILL role=choice words=105 beats='the first box holds {C2_OFFER1}; the second is heavy and rattles like {C2_OFFER2}; the water is creeping in, and {HERO} can only carry one out cleanly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_compass",
+          "label": "Take the old brass compass.",
+          "target": "da_compass"
+        },
+        {
+          "id": "c_coins",
+          "label": "Take the heavy rattling box.",
+          "target": "da_coins"
+        }
+      ]
+    },
+    {
+      "id": "da_compass",
+      "body": "<<FILL role=rising words=95 beats='{HERO} cleans {C2_OFFER1}; {C2_PRIZE1_ACT}, pointing the quickest way back toward {ENTRANCE} and the fading light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_out",
+          "label": "Follow the compass out.",
+          "target": "da_compass2"
+        }
+      ]
+    },
+    {
+      "id": "da_compass2",
+      "body": "<<FILL role=completion words=95 beats='{C2_OFFER1} leads them straight out to {ENTRANCE} just as {DEADLINE_SIGN} returns; {HERO} carries {C2_PRIZE1}, and a story everyone will beg to hear'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_compass",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C2_PRIZE1}"
+      }
+    },
+    {
+      "id": "da_coins",
+      "body": "<<FILL role=rising words=95 beats='the heavy box holds {C2_OFFER2}; {HERO} cannot count them now, but can carry the whole box out if they go at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_carry",
+          "label": "Carry the box out quickly.",
+          "target": "da_coins2"
+        }
+      ]
+    },
+    {
+      "id": "da_coins2",
+      "body": "<<FILL role=completion words=95 beats='{HERO} hauls the box up to daylight just ahead of {DEADLINE_SIGN}; the experts will study {C2_PRIZE2} and put {HERO}'s name to the find'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coins",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C2_PRIZE2}"
+      }
+    }
+  ]
+}

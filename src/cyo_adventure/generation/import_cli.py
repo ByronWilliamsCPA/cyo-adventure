@@ -2,6 +2,7 @@
 
 Usage:
     uv run python -m cyo_adventure.generation.import_cli <path> --family <family-uuid> [--model <model-id>]
+    uv run python -m cyo_adventure.generation.import_cli <path> --family <family-uuid> --series-id <series-uuid>
     uv run python -m cyo_adventure.generation.import_cli <path> --job <job-uuid> [--model <model-id>]
 """
 
@@ -21,6 +22,14 @@ from cyo_adventure.generation.import_story import (
     import_filled_story,
     resume_manual_fill,
 )
+from cyo_adventure.generation.series_link import (
+    assign_book_index,
+    embed_series_block,
+)
+
+# The import path persists exactly one version (mirrors import_story._FIRST_VERSION
+# and generation/worker.py); embed_series_block writes the block for that version.
+_FIRST_VERSION = 1
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -40,14 +49,23 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--job", default=None, help="Resume this awaiting_manual_fill job by id."
     )
+    parser.add_argument(
+        "--series-id",
+        default=None,
+        help=(
+            "Link the imported book into this series (UUID): assign the next "
+            "book_index and write the embedded Series block. Ignored with --job."
+        ),
+    )
     return parser
 
 
-async def _run(
+async def _run(  # noqa: PLR0913 -- cohesive CLI dispatch; one optional id added
     blob: dict[str, object],
     family_id: uuid.UUID | None,
     model: str | None,
     job_id: uuid.UUID | None,
+    series_id: uuid.UUID | None = None,
 ) -> tuple[str, str | None]:
     """Validate and persist a filled story blob, or resume a parked job.
 
@@ -58,6 +76,9 @@ async def _run(
         model: Optional model identifier to record.
         job_id: When given, resume this "awaiting_manual_fill" job instead of
             a standalone import (see import_story.py::resume_manual_fill).
+        series_id: When given (standalone import path only), link the imported
+            book into this series after screening: assign the next book_index
+            and write the embedded Series block, in the import transaction.
 
     Returns:
         A ``(story_id, status)`` pair. For a resumed job, ``status`` is the
@@ -80,6 +101,20 @@ async def _run(
         # with --job (resume_manual_fill stamps skeleton_slug from the job).
         request = ImportRequest(blob=blob, family_id=family_id, model=model)
         story_id = await import_filled_story(session, request)
+        if series_id is not None:
+            # #CRITICAL: data-integrity: import_filled_story did no series linkage,
+            # so a skill-authored continuation imported as a standalone story and
+            # had to be linked by hand (F1). assign_book_index sets series_id + the
+            # next book_index; embed_series_block writes the embedded Series block.
+            # Both run in the caller's transaction, AFTER import_filled_story's
+            # gate + moderation (embed_series_block must follow moderation), and
+            # before the single commit below, so a linkage failure rolls the whole
+            # import back rather than leaving a half-linked book. Mirrors the
+            # request-driven linkage in generation/worker.py.
+            # #VERIFY: the wiring test test_run_links_series_when_series_id_given
+            # plus the worker series integration tests exercise linkage on a DB.
+            await assign_book_index(session, story_id=story_id, series_id=series_id)
+            await embed_series_block(session, story_id=story_id, version=_FIRST_VERSION)
         await session.commit()
         return story_id, None
 
@@ -168,6 +203,7 @@ def main(argv: list[str] | None = None) -> int:
     family: str | None = args.family
     model: str | None = args.model
     job: str | None = args.job
+    series: str | None = args.series_id
     if job is None and family is None:
         sys.stderr.write("error: --family is required unless --job is given\n")
         return 1
@@ -177,6 +213,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         job_id = _parse_optional_uuid("job", job)
         family_id = _parse_optional_uuid("family", family)
+        series_id = _parse_optional_uuid("series-id", series)
     except ValueError as exc:
         sys.stderr.write(str(exc))
         return 1
@@ -191,7 +228,7 @@ def main(argv: list[str] | None = None) -> int:
     # #VERIFY: test_arg_parser_* cover parsing; gate and moderation failures
     # both map to exit 1.
     try:
-        story_id, status = asyncio.run(_run(blob, family_id, model, job_id))
+        story_id, status = asyncio.run(_run(blob, family_id, model, job_id, series_id))
     except ProjectBaseError as exc:
         sys.stderr.write(f"import failed: {exc}\n")
         return 1

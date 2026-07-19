@@ -648,7 +648,7 @@
     },
     {
       "id": "r_notes_beat",
-      "body": "<<FILL role=rising words=130 beats='The logbook, the cards, the pinned notes all converge on one stubborn fact, a man named Alder has been transmitting from the headland for a lifetime, and Wren is holding the only thread that leads back to him'>>",
+      "body": "<<FILL role=rising words=130 beats='Everything she has found among her grandfather papers converges on one stubborn fact, a man named Alder has been transmitting from the headland for a lifetime, and Wren is holding the only thread that leads back to him'>>",
       "is_ending": false,
       "choices": [
         {
@@ -684,7 +684,7 @@
     },
     {
       "id": "n_b1_echo",
-      "body": "<<FILL role=rising words=130 beats='Wren pins Alder name to her corkboard beside the frequency and the torn word M; the loop cycles again in her headphones, patient and sad, and two ways forward open, to crack the coded numbers themselves or to learn who Alder really is'>>",
+      "body": "<<FILL role=rising words=130 beats='Wren pins Alder name to her corkboard beside the frequency she has traced; the loop cycles again in her headphones, patient and sad, and two ways forward open, to crack the coded numbers themselves or to learn who Alder really is'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1203,7 +1203,7 @@
     },
     {
       "id": "n_b3",
-      "body": "<<FILL role=discovery words=155 beats='Everything Wren has gathered snaps into one clear, ticking shape; the countdown ends this coming night, when the relay ancient power cell finally fails, and the moment it does a last message will play, Kell Alder recorded farewell to his daughter Marin, and then erase itself into silence with the storm rolling in behind it; thirty years of waiting come down to one hour, and Wren is the only person who knows'>>",
+      "body": "<<FILL role=discovery words=155 beats='Everything Wren has gathered snaps into one clear, ticking shape; the countdown ends this coming night, when the relay ancient power cell finally fails, and the moment it does a last message will play, Kell Alder recorded farewell to the one he has waited so long to reach, and then erase itself into silence with the storm rolling in behind it; thirty years of waiting come down to one hour, and Wren is the only person who knows'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1227,7 +1227,7 @@
     },
     {
       "id": "n_b3_choice",
-      "body": "<<FILL role=climax words=140 beats='One hour, three ways to spend it; Wren can race to the relay station itself and answer the signal at its source, she can use her grandfather rig to rebroadcast the message wide enough that Marin might hear it, or she can rouse the people who could reach the headland faster and surer than a girl on a bike in a gale'>>",
+      "body": "<<FILL role=climax words=140 beats='One hour, three ways to spend it; Wren can race to the relay station itself and answer the signal at its source, she can use her grandfather rig to rebroadcast the message wide enough that its intended listener might hear it, or she can rouse the people who could reach the headland faster and surer than a girl on a bike in a gale'>>",
       "is_ending": false,
       "choices": [
         {

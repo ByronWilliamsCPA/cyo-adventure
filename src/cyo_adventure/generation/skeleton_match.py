@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import select
@@ -25,6 +25,7 @@ from cyo_adventure.utils.logging import get_logger
 if TYPE_CHECKING:
     import random
     import uuid
+    from collections.abc import Mapping
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -281,10 +282,42 @@ def _weight(recent_count: int) -> float:
     return 1.0 / (1 + recent_count)
 
 
+# De-weights a similar-theme reuse of a tree like 3 plain recent uses (WS-4,
+# docs/planning/story-flexibility-plan.md section "WS-4: Similarity-driven,
+# escalating selection"): a family's second dragon story on a skeleton it
+# already used for a dragon story should feel like a much heavier repeat than
+# an unrelated-theme recent use of that same skeleton. A starting heuristic,
+# not calibrated data, tunable once WS-0 metrics accumulate; mirrors the
+# `_HARD_BANDS`-style heuristics in story_requests/authoring_plan.py.
+_THEME_REUSE_PENALTY: Final[int] = 3
+
+
+def _blended_weight(recent_count: int, similar_count: int) -> float:
+    """Return an inverse-frequency weight blending recency and theme reuse.
+
+    Args:
+        recent_count: How many times this slug appeared in the family's
+            recent storybook_version history (see recent_skeleton_usage).
+        similar_count: How many of the family's recent similar-theme
+            stories used this slug (see
+            diversity.query.similarity_context's
+            ``similar_count_per_slug``).
+
+    Returns:
+        1 / (1 + recent_count + _THEME_REUSE_PENALTY * similar_count): 1.0
+        for a wholly-unused candidate, strictly decreasing but never zero as
+        either count grows (the same never-zero novelty floor as
+        :func:`_weight`, decision C-4).
+    """
+    return 1.0 / (1 + recent_count + _THEME_REUSE_PENALTY * similar_count)
+
+
 def select_skeleton_for_cell(
     candidates: list[str],
     recent_usage: dict[str, int],
     rng: random.Random,
+    *,
+    similar_usage: Mapping[str, int] | None = None,
 ) -> Selection:
     """Weighted-random pick from an in-cell candidate list.
 
@@ -300,6 +333,13 @@ def select_skeleton_for_cell(
             behavior under a seeded instance (tests) and real randomness in
             production (see story_requests/authoring_plan.py, which passes a
             random.SystemRandom() rather than random.Random()).
+        similar_usage: {slug: count} of how many of the family's recent
+            similar-theme stories (WS-4, from
+            diversity.query.SimilarityContext.similar_count_per_slug) used
+            each slug. When None (the default), weights are exactly
+            ``_weight(recent_usage[slug])``, unchanged from the pre-WS-4
+            behavior. When provided, weights blend recency and theme reuse
+            via :func:`_blended_weight`.
 
     Returns:
         Selection: the weighted pick, plus every in-cell candidate as
@@ -315,7 +355,13 @@ def select_skeleton_for_cell(
     if not candidates:
         msg = "select_skeleton_for_cell requires at least one candidate"
         raise ValidationError(msg, field="candidates", value=None)
-    weights = [_weight(recent_usage.get(slug, 0)) for slug in candidates]
+    if similar_usage is None:
+        weights = [_weight(recent_usage.get(slug, 0)) for slug in candidates]
+    else:
+        weights = [
+            _blended_weight(recent_usage.get(slug, 0), similar_usage.get(slug, 0))
+            for slug in candidates
+        ]
     pick = rng.choices(candidates, weights=weights, k=1)[0]
     return Selection(slug=pick, alternatives=tuple(candidates))
 

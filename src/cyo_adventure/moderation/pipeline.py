@@ -7,7 +7,7 @@ stages, persists the aggregated report, and drives ``submit`` / ``auto_reject``.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import httpx
 from pydantic import ValidationError
@@ -179,34 +179,19 @@ async def run_moderation_pipeline(
                 # #VERIFY: report and version_row.blob are left unchanged here.
                 _logger.warning("moderation.repair_invalid_blob", story_id=story_id)
             else:
-                # #CRITICAL: data-integrity: the repair prompt asks the generator
-                # to "preserve node ids, choices, and branching structure" while
-                # revising prose, but nothing enforces that promise; a clean
-                # re-moderation pass says nothing about topology, forbidden
-                # endings, or the L1-7 node/word budget. The repaired blob's
-                # structure must be re-proven by the deterministic gate at this
-                # seam (the point it would replace version_row.blob), the same
-                # gate the original draft passed before it ever reached
-                # moderation, not just trusted because re-moderation was clean.
-                # #VERIFY: a blocked gate here is treated exactly like a
-                # schema-invalid revision: the revised blob is discarded and
-                # ``report``/``version_row.blob`` stay at their pre-repair
-                # values, so routing below falls through to the pre-repair
-                # report's own verdict (submit if soft-flagged, auto_reject if
-                # the pre-repair report already hard-blocked). This never
-                # silently accepts a structurally-broken repair and never
-                # auto-publishes.
-                # tests/unit/test_moderation_pipeline.py::
-                # test_repair_failing_gate_is_discarded_and_routes_to_human_review
-                # and ::test_repair_passing_gate_is_adopted assert both branches.
-                gate_result = run_gate(revised)
-                if gate_result.blocked:
-                    _logger.warning(
-                        "moderation.repair_failed_gate",
-                        story_id=story_id,
-                        rule_ids=[f.rule_id for f in gate_result.report.errors],
-                    )
-                else:
+                # A repair is adopted only if it re-proves its structure on the
+                # deterministic gate AND preserves the story's identity; both
+                # checks (and their rejection logging) live in
+                # _repair_is_adoptable. A rejected repair is discarded exactly
+                # like a schema-invalid one: report and version_row.blob stay at
+                # their pre-repair values, so routing falls through to the
+                # pre-repair report's own verdict. Never silently accepts a
+                # broken or swapped repair, never auto-publishes.
+                if _repair_is_adoptable(
+                    revised=revised,
+                    original=version_row.blob,
+                    story_id=story_id,
+                ):
                     repaired_report.repaired = True
                     report = repaired_report
                     version_row.blob = revised
@@ -260,6 +245,99 @@ async def run_moderation_pipeline(
             "counts": _verdict_counts(report),
         },
     )
+
+
+def _tier_of(blob: dict[str, object]) -> object:
+    """Return a blob's declared tier, or ``None`` if absent/malformed."""
+    metadata = blob.get("metadata")
+    if not isinstance(metadata, dict):
+        return None
+    return cast("dict[str, object]", metadata).get("tier")
+
+
+def _repair_preserves_identity(
+    original: dict[str, object], revised: dict[str, object]
+) -> bool:
+    """Return ``True`` only if the repaired blob is the same story, revised.
+
+    A soft-gate repair is contracted to revise prose while preserving the exact
+    node ids, choices, and branching structure, so the revised blob must keep the
+    original's identity: same story ``id``, same ``metadata.tier``, and the same
+    node count. This is a provider-agnostic backstop against a repair that
+    returns a schema-valid but UNRELATED story (e.g. a mock/stub generator whose
+    canned story passes the gate) silently replacing the imported content. Any of
+    the three mismatching is sufficient to reject the swap.
+
+    Args:
+        original: The pre-repair blob (the content being protected).
+        revised: The candidate repaired blob returned by the generator.
+
+    Returns:
+        ``True`` when id, tier, and node count all match; ``False`` otherwise.
+    """
+    if original.get("id") != revised.get("id"):
+        return False
+    if _tier_of(original) != _tier_of(revised):
+        return False
+    original_nodes = original.get("nodes")
+    revised_nodes = revised.get("nodes")
+    if not isinstance(original_nodes, list) or not isinstance(revised_nodes, list):
+        return False
+    return len(cast("list[object]", original_nodes)) == len(
+        cast("list[object]", revised_nodes)
+    )
+
+
+def _repair_is_adoptable(
+    *, revised: dict[str, object], original: dict[str, object], story_id: str
+) -> bool:
+    """Return ``True`` only if a repaired blob may replace the pre-repair one.
+
+    Two provider-agnostic gates, either failing rejects the swap:
+
+    1. **Structure re-proven.** The repair prompt asks the generator to preserve
+       node ids, choices, and branching structure while revising prose, but
+       nothing enforces that promise, and a clean re-moderation says nothing about
+       topology, forbidden endings, or the L1-7 budget. So the revised blob must
+       pass the deterministic validation gate here, the same gate the original
+       draft passed, not merely be trusted (owner ruling 2026-07-16).
+    2. **Identity preserved.** A repair revises prose only; it must not swap the
+       story's identity. A generation provider (notably an all-mock local setup,
+       whose stub story is schema-valid and gate-clean) can return an UNRELATED
+       story that would then wholesale-replace the imported blob. That silent swap
+       is the exact unreachable-version hazard import_story.py warns about
+       (storybook.id no longer matching version.blob.id) and breaks series
+       approval (SR-6) when a Tier-1 stub lands in a carries_state chain.
+
+    Rejection is logged and returns ``False``; the caller then keeps the
+    pre-repair report and blob, routing to the human guardian intact.
+
+    Args:
+        revised: The candidate repaired blob.
+        original: The pre-repair blob being protected.
+        story_id: The story id, for structured rejection logging.
+
+    Returns:
+        ``True`` when the revised blob passes the gate and preserves identity.
+
+    Notes:
+        tests/unit/test_moderation_pipeline.py::
+        test_repair_failing_gate_is_discarded_and_routes_to_human_review,
+        ::test_repair_identity_mismatch_is_discarded, and
+        ::test_repair_passing_gate_is_adopted assert all three branches.
+    """
+    gate_result = run_gate(revised)
+    if gate_result.blocked:
+        _logger.warning(
+            "moderation.repair_failed_gate",
+            story_id=story_id,
+            rule_ids=[f.rule_id for f in gate_result.report.errors],
+        )
+        return False
+    if not _repair_preserves_identity(original, revised):
+        _logger.warning("moderation.repair_identity_mismatch", story_id=story_id)
+        return False
+    return True
 
 
 def _overall_verdict(report: ModerationReport) -> str:

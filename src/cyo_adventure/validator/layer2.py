@@ -1,4 +1,4 @@
-"""Layer-2 state-space validator (rules L2-9 through L2-12).
+"""Layer-2 state-space validator (rules L2-9 through L2-13).
 
 Layer 2 runs only on Tier-2 stories and operates over the full reachable
 configuration space produced by :func:`~cyo_adventure.validator.walk.walk_configurations`.
@@ -15,6 +15,12 @@ L2-10 (stateful termination / loop escape)
     A reachable configuration has no path to any ending config.
 L2-11 (conditional usefulness / dead branch)
     A conditional choice is never visible in any reachable configuration.
+L2-13 (scale advisory)
+    A completed-walk Tier-2 story exceeds the ADR-011 hand-authoring node
+    ceiling, so the configuration walk is its sole correctness guarantee
+    (hand-review is no longer sufficient at this scale). WARNING only; never
+    blocks. Operationalises the dagger-cell finding (a large stateful story's
+    state-gated defects are caught only by the walk, not by inspection).
 
 All failure-message templates match the exact strings specified in
 ``docs/planning/validator-rules.md``.
@@ -66,6 +72,13 @@ class _WalkContext:
 # Public interface
 # ---------------------------------------------------------------------------
 
+# ADR-011 hand-authoring node ceiling. Past this size a stateful story can no
+# longer be reasoned correct by hand (the dagger-cell experiment: a best-win
+# outcome gated on an unreachable state was invisible to inspection and caught
+# only by walking every configuration), so the completed Layer-2 walk is the
+# sole correctness guarantee. L2-13 flags this as an advisory, never a block.
+HAND_AUTHORING_NODE_CEILING = 460
+
 
 def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport:
     """Run every Layer-2 rule over a Tier-2 story's reachable configuration space.
@@ -96,6 +109,15 @@ def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport
     if result.capped:
         report.add(_l2_12_finding(story.id, cap))
         return report
+
+    # L2-13: scale advisory (WARNING). The walk completed, and this Tier-2 story
+    # is past the hand-authoring ceiling, so the walk above is now its only
+    # correctness guarantee. Emitted regardless of whether the rule checks below
+    # find defects; it flags reviewability, not a defect. Never blocks.
+    if len(story.nodes) > HAND_AUTHORING_NODE_CEILING:
+        report.add(
+            _l2_13_finding(story.id, len(story.nodes), HAND_AUTHORING_NODE_CEILING)
+        )
 
     ctx = _WalkContext(
         story_id=story.id,
@@ -133,6 +155,30 @@ def _l2_12_finding(story_id: str, cap: int) -> ValidationFinding:
             f"L2-12 cap: reachable configuration set exceeded the ceiling "
             f"of {cap} configurations in story '{story_id}' (state space "
             f"too large; reduce variable count or tighten bounds)"
+        ),
+    )
+
+
+def _l2_13_finding(story_id: str, node_count: int, ceiling: int) -> ValidationFinding:
+    """Build the L2-13 scale-advisory finding (WARNING, non-blocking).
+
+    Args:
+        story_id: The story id.
+        node_count: The story's node count.
+        ceiling: The hand-authoring node ceiling that was exceeded.
+
+    Returns:
+        ValidationFinding: The formatted L2-13 advisory finding.
+    """
+    return ValidationFinding(
+        rule_id="L2-13",
+        severity=Severity.WARNING,
+        story_id=story_id,
+        message=(
+            f"L2-13 scale: Tier-2 story '{story_id}' has {node_count} nodes, past "
+            f"the hand-authoring ceiling of {ceiling}; the completed Layer-2 "
+            f"configuration walk is now its sole correctness guarantee "
+            f"(hand-review insufficient at this scale)"
         ),
     )
 

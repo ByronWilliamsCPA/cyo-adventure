@@ -1,0 +1,863 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cave_of_echoes",
+  "version": 1,
+  "title": "The Cave of Echoes",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "exploration",
+      "courage",
+      "wonder",
+      "nature"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 16,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Priya drifts through the docking airlock of the derelict station Halcyon, her repair-drone Pip humming along beside her. The station has powered down for its scheduled low-power drift, and for these quiet hours the corridors are hers to explore. Ahead, three dark openings breathe out stale, cool air, each one carrying its own signal. From the left comes a resonant power-hum, steady and low. From the right drifts a hiss of venting coolant. From straight ahead, faint and blinking, comes an intermittent beacon-ping. Priya knows the reactor will spin back up and seal the bulkheads before long. She has to choose a signal to follow, and choose it now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_left",
+          "label": "Follow the humming echo to the left.",
+          "target": "la_tunnel"
+        },
+        {
+          "id": "c_right",
+          "label": "Follow the dripping echo to the right.",
+          "target": "ra_drip"
+        },
+        {
+          "id": "c_down",
+          "label": "Follow the whispering echo straight down.",
+          "target": "da_dark"
+        }
+      ]
+    },
+    {
+      "id": "la_tunnel",
+      "body": "The first way is a narrow service corridor strung with conduit, snug but easy to pass. The resonant power-hum steadies into one long, held note as Priya and Pip move deeper. Pip's sensor lights perk up, swiveling toward the sound. Ahead, a distant glow flickers along the walls, and something stirs softly beyond it, like machinery breathing. Priya keeps her torch low and edges forward, following the glow and the steady hum, curious about what waits at the end of this quiet, humming corridor deep inside the sleeping station.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_fork",
+          "label": "Press on toward the glow.",
+          "target": "la_fork"
+        }
+      ]
+    },
+    {
+      "id": "la_fork",
+      "body": "The corridor splits into two tracks. On one side, a cluster of conduit lights catches the beam of Priya's torch, glittering like a wall of tiny stars. On the other, the hum deepens into a slow, warm pulse, almost like a heartbeat, pulling her attention downward and away. Pip's lights flick between the two paths, unsure which to follow. Priya pauses at the fork, weighing the glittering wall against the deep, steady murmur. Both promise something worth finding, but the low-power drift will not last forever, and she can only choose one track to follow first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glitter",
+          "label": "Go toward the glittering wall.",
+          "target": "la_glitter"
+        },
+        {
+          "id": "c_hum",
+          "label": "Go toward the warm murmur.",
+          "target": "la_hum"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter",
+      "body": "The glittering track runs past rows of dark control panels, their crystal-lattice cabling catching Priya's light in bright, scattered flashes. Pip glides close, scanning the panels as they pass. The floor slopes gently downward, the conduit lights growing thicker along the walls until they gather at a narrow gap in a bent hatch ahead. Cold air breathes out from the gap, carrying a faint hum with it. Priya slows her steps, feeling the slope steepen just slightly, and studies the gap for a way through toward whatever waits on the other side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_slope",
+          "label": "Follow the sloping floor down.",
+          "target": "la_glitter2"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter2",
+      "body": "The slope opens into a small antechamber, empty except for old cabling coiled along the walls. In the far wall, a warm blue glow leaks through a seam in a bent, jammed hatch, promising something bigger just beyond it. The air here smells faintly of recycled oxygen and warm metal, cleaner than the dusty corridor behind them. Pip hovers close to the hatch, his sensors pinging softly at the glow. Priya crosses the small chamber, certain now that whatever lies past that warped hatch is worth the trouble of squeezing through it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_crack",
+          "label": "Approach the glowing crack.",
+          "target": "la_grotto_app"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto_app",
+      "body": "The gap is just wide enough to pass, but the hatch is warped and jammed half-shut, blocking easy passage. As Priya studies it, a thin skin of coolant begins to weep from an overhead pipe, pooling slowly at their feet, a sign the reactor is stirring back to life. She could press through the narrow gap toward whatever glows beyond it, or turn back now toward the docking airlock while the corridor is still dry and safe. Pip waits at her shoulder, lights blinking, ready to follow whichever way she chooses. There is no time left to decide slowly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_squeeze",
+          "label": "Squeeze through the glowing crack.",
+          "target": "la_squeeze"
+        },
+        {
+          "id": "c_retreat",
+          "label": "Turn back before the water rises.",
+          "target": "la_retreat_pool"
+        }
+      ]
+    },
+    {
+      "id": "la_retreat_pool",
+      "body": "Priya decides the gap can wait. She and Pip turn back along the glittering corridor as coolant spreads thin and cold across the floor behind them. By the time they reach the docking airlock, warning lights have woken along the walls and the deep hum of the reactor fills the station. They step through into the safety of the open bay, damp at the ankles but unhurt. The blue glow beyond the hatch will still be there next time. Priya promises herself she will come back at the station's next low-power drift, better prepared.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {A1_GATE}"
+      }
+    },
+    {
+      "id": "la_squeeze",
+      "body": "Priya turns sideways and slips through the jammed hatch, scraping past the warped metal edge. Pip squeezes through after her, wobbling as he clears the gap and gives his casing a little shake, scattering droplets of condensation. On the other side, the glow they had followed brightens fast, spilling blue-white light down a short passage ahead. The hum grows steadier here, less like a signal and more like a held, singing note. Priya catches her breath, then moves toward the light, sure now that whatever waits ahead is close, and that it will be worth everything to see.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_room",
+          "label": "Step into the shimmering room.",
+          "target": "la_grotto"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto",
+      "body": "The crystal-lattice power core chamber opens around them, filled with soft blue light climbing every wall in glowing veins. Priya turns slowly, amazed, while Pip's sensors flash in wonder at the glittering ceiling. Within easy reach, a small power cell rests loose in a cradle, still faintly charged and humming gently. Farther in, a deeper archway breathes out a low, warm hum that pulls at her attention, promising something greater beyond it. Priya could take the little cell now and be satisfied, or follow that deeper hum to see what else this hidden chamber is keeping. Both feel like real discoveries.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take",
+          "label": "Gently take the loose crystal.",
+          "target": "la_crystal_take"
+        },
+        {
+          "id": "c_deeper",
+          "label": "Follow the humming archway deeper.",
+          "target": "la_crystal_deeper"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_take",
+      "body": "Priya reaches out and carefully lifts the small power cell from its cradle. It hums faintly against her glove, still warm with a trickle of old charge, and its glow lights up a low passage curving away from the chamber. She tucks it safely into her satchel, certain it is hers to keep now. Pip circles once around the cell's soft light, delighted, before leading the way. The curving passage seems to bend gently back toward the docking airlock, as though built long ago to guide someone home again after finding exactly this kind of treasure.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_up",
+          "label": "Follow the crystal's light back up.",
+          "target": "la_crystal_out"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_out",
+      "body": "The power cell's steady glow lights their way up through the curving passage and out to the docking airlock. Priya steps into the open bay carrying the little charged cell for real, its warmth still humming faintly against her hand. Pip drifts close behind, chirping proudly, his sensors still replaying the glittering chamber. It is a small thing, but a real one, carried safely out of the drifting station Halcyon and into daylight through the viewport. Priya cannot wait to show everyone back home exactly what she found glowing in the dark.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crystal",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A1_PRIZE1}"
+      }
+    },
+    {
+      "id": "la_crystal_deeper",
+      "body": "Priya leaves the little power cell where it rests and follows the deeper hum instead, curious what else this place is hiding. The archway's pull grows stronger with every step, and the passage widens as she goes. Its walls smooth out into long coils of copper, laid in careful loops as if built on purpose to carry sound from one end to the other. Pip's sensors hum along with the passage itself, and the deep note seems to gather strength around them, rising and falling like something almost, but not quite, like singing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chord",
+          "label": "Follow the chord toward the sound.",
+          "target": "la_song_app"
+        }
+      ]
+    },
+    {
+      "id": "la_song_app",
+      "body": "Ahead, the coiled walls curve into a wide, rounded chamber unlike anything Priya has seen on the station, a resonance vault built to hold and shape sound. Every footstep rings out and layers over itself, echoing back richer each time. A stray drip of condensation ticks against metal and multiplies into a soft chime. Pip lets out a small wondering beep, and the chamber answers with dozens of overlapping echoes, as though the whole room is listening and replying. Priya steps carefully inside, breathless at how alive the silence suddenly feels around them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_sing",
+          "label": "Step into the ringing chamber.",
+          "target": "la_song"
+        }
+      ]
+    },
+    {
+      "id": "la_song",
+      "body": "Priya makes a single soft sound, and the whole resonance vault answers back in shimmering, layered harmony, as if the station itself remembers every voice that ever passed through it. Old recorded fragments ripple through the echoes, faint scraps of long-gone crew chatter woven into the singing walls. She has found the voices of the resonance vault, a secret almost no one left alive knows about. Pip records every note quietly, and together they carry the wonder of it all the way back home, promising to return and listen again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{A1_PRIZE2}"
+      }
+    },
+    {
+      "id": "la_hum",
+      "body": "The warm murmur leads Priya down a rounded maintenance shaft, its walls smooth from years of hands and tools. The sound is not air moving through vents, she realizes, but a slow electronic pulse, like a heartbeat, drifting up from somewhere far below. It is the deep thrum of a great antenna, still faintly powered after all this time. Pip drifts ahead confidently, lights sweeping the dark shaft, unbothered by how far down the sound seems to travel. Priya follows, her torch beam swinging over old rungs bolted into the curving walls.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_ring",
+          "label": "Follow the ringing downward.",
+          "target": "la_hum2"
+        }
+      ]
+    },
+    {
+      "id": "la_hum2",
+      "body": "The shaft steepens, and the far-off thrum steadies into a slow, deep pulse that Priya can almost feel through the walls. Pale light leaks upward from an open chamber below, and as she leans over the edge, she sees why: pale light glints off a broad, bell-shaped dish far beneath her, tarnished but catching every stray beam. Pip's sensors flicker excitedly at the sight. Priya grips the rungs a little tighter, studying the long climb down, and starts working out the safest way to reach whatever waits at the bottom of the shaft.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chime",
+          "label": "Climb down toward the chiming light.",
+          "target": "la_bell_app"
+        }
+      ]
+    },
+    {
+      "id": "la_bell_app",
+      "body": "Bolted into the shaft wall is an old tether-rope, knotted years ago into rough rungs by some earlier crew member and left hanging ever since. It offers a way down toward the great dish below, sturdy despite its age. But Priya can feel the low hum of the station changing pitch, a sign the reactor is stirring earlier than expected, and she knows the safe window will not last much longer. She could climb down toward whatever waits at the bottom, or scramble back up now while the way above is still open and easy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bell",
+          "label": "Climb down the old rope ladder.",
+          "target": "la_bell"
+        },
+        {
+          "id": "c_humback",
+          "label": "Scramble back up to be safe.",
+          "target": "la_hum_back"
+        }
+      ]
+    },
+    {
+      "id": "la_hum_back",
+      "body": "Priya decides the antenna can wait for a safer visit. She and Pip scramble back up the rounded shaft, rungs creaking under their hands, and hurry along the humming corridor toward the docking airlock. They reach it just as the warning lights begin blinking fully awake along the walls, breathless but completely unharmed. The tarnished dish below will still be waiting, patient and undisturbed, whenever the station drifts quiet again. Priya marks the spot carefully in her notes, already planning her next low-power visit to Halcyon.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_hum",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {A2_GATE}"
+      }
+    },
+    {
+      "id": "la_bell",
+      "body": "The old tether-rope holds firm as Priya climbs down rung by rung, Pip drifting steadily beside her. At the bottom waits a towering antenna dish, tarnished and weathered but whole, shaped almost like a great bell hung from the shaft's ceiling. Slow drips of condensation strike its curved surface, ringing out soft, faint notes each time. Priya lands lightly on the deck beside it, craning her neck up at its enormous, patient shape. It has clearly been silent and waiting down here for a very long time, forgotten by everyone above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell2",
+          "label": "Walk up to the great bell.",
+          "target": "la_bell2"
+        }
+      ]
+    },
+    {
+      "id": "la_bell2",
+      "body": "Set into the base of the great dish, Priya finds a row of stenciled marks, a ship registry code worn but still readable beneath years of dust. She traces the letters with one gloved finger, wondering what vessel it once belonged to. Nearby, a dry ledge holds a small toolbox left behind by an earlier visitor, its latch stiff but unbroken. Pip noses at the box curiously, lights blinking. Priya kneels to open it, hoping whatever is inside might help her both understand this place and find her way back out again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell3",
+          "label": "Read the name and look behind the bell.",
+          "target": "la_bell3"
+        }
+      ]
+    },
+    {
+      "id": "la_bell3",
+      "body": "Priya carefully copies the stenciled registry code into her notebook, certain the experts back home will want every letter of it exactly right. Inside the toolbox she finds a working lantern, its beam steady when she flicks it on, and a coil of sturdy rope, still supple despite its age. Together they will make the climb back up the shaft much safer than the way down had been. Pip chirps approval, already nosing toward the tether-rope above. Priya packs the lantern and rope carefully, ready to begin the climb home with everything she needs.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell4",
+          "label": "Take the lantern and rope and head out.",
+          "target": "la_bell4"
+        }
+      ]
+    },
+    {
+      "id": "la_bell4",
+      "body": "With the registry code recorded safely in her notebook and the lantern lighting her way, Priya climbs back up the tether-rope, Pip guiding from just ahead. The old rope and rungs hold steady the whole way, just as they had for whoever left them there long ago. They reach the docking airlock and daylight together, tired but triumphant. Priya knows exactly what she is bringing home: the lost transponder ID of a ship no one has heard from in years. Everyone back home will want to hear every detail of the great bell-shaped antenna, forgotten far below.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A2_PRIZE}"
+      }
+    },
+    {
+      "id": "ra_drip",
+      "body": "The second way is a colder companionway, its walls beaded with condensation, but sound and steady underfoot. Priya follows the hiss of venting coolant deeper into the station, her torchlight sweeping over pipes that drip steadily onto the deck. A thin trickle of coolant runs on ahead of her into the dark, following the same path she is taking. The air turns noticeably colder here, and Pip's lights dim slightly to save power in the chill. Priya pulls her jacket tighter and keeps walking, curious where the trickle and the hissing sound are both leading her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_fork",
+          "label": "Follow the trickle deeper.",
+          "target": "ra_fork"
+        }
+      ]
+    },
+    {
+      "id": "ra_fork",
+      "body": "The trickle of coolant reaches a split in the corridor. Down one way, a low hiss grows louder and wider, echoing as though the space beyond opens into something vast. Down the other, a low side-passage breathes out a green, mineral-briny smell, faint but distinct from the plain metal-and-coolant scent of the main corridor. Pip hovers between the two openings, lights flicking back and forth. Priya crouches at the split, listening to the growing hiss on one side and sniffing the strange briny air drifting from the other, trying to decide which way to explore first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lake",
+          "label": "Head toward the lapping water.",
+          "target": "ra_lake_way"
+        },
+        {
+          "id": "c_pool",
+          "label": "Follow the briny smell.",
+          "target": "ra_pool_way"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_way",
+      "body": "Priya follows the growing hiss down the wider corridor. The floor beneath her boots turns to frost-dusted metal grating, each step ringing faintly and letting cold air rise up through the gaps. Above her, the ceiling lifts away entirely, opening into a darkness so vast her torchlight cannot find its far edge. The hiss echoes strangely in the open space, bouncing back from somewhere impossibly distant. Pip's sensors ping outward, searching for walls that do not answer. Priya slows her steps on the frosted grating, sensing she has reached the edge of something enormous.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_pebbles",
+          "label": "Cross the wet pebbles.",
+          "target": "ra_lake2"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake2",
+      "body": "The grating gives way onto a railed catwalk, stretched out over a vast, dark reservoir below. Priya grips the cold rail and leans out, trying to judge how far the space stretches in every direction. A soft, splashing sound makes her jump, but it is only Pip, testing the edge of the reservoir with one extended sensor strut, sending small ripples across the still surface. She laughs quietly, relieved, and steadies her breathing. The reservoir stretches on, dark and enormous, clearly the source of both the hiss and the deep, echoing cold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shelf",
+          "label": "Edge along the rocky shelf.",
+          "target": "ra_lake_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_app",
+      "body": "The catwalk narrows ahead into a frost-slick ledge, its metal surface glazed with a thin layer of ice from the venting coolant. Below, the zero-g coolant reservoir waits, vast and quiet, its surface barely rippling in the low gravity near its edge. Priya tests the ledge with one boot and feels it slip slightly beneath her weight. She could climb carefully down toward the reservoir's edge to see what waits there, or back off now, before the ice claims a footing and someone slips. Pip's lights flash a cautious amber, waiting for her decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_descend",
+          "label": "Climb down to the lake shore.",
+          "target": "ra_descend"
+        },
+        {
+          "id": "c_lakeback",
+          "label": "Back off the slippery shelf.",
+          "target": "ra_lake_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_back",
+      "body": "The frost-slick ledge feels too risky to trust. Priya decides the reservoir can wait for drier footing another time. She coaxes Pip back along the narrowing catwalk, gripping the rail carefully until the ice gives way to plain metal grating again. Together they retrace their steps through the cold companionway and back to the docking airlock, arriving safe and only a little chilled. The vast, dark reservoir stays exactly as they found it, waiting patiently for a visit when the ice has not made the ledge so treacherous. Priya adds a careful note about the slippery shelf.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_lake",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {B1_GATE}"
+      }
+    },
+    {
+      "id": "ra_descend",
+      "body": "Priya picks her way carefully down to the edge of the coolant reservoir, testing each foothold before trusting her weight to it. Pip drifts down beside her, lights sweeping the still, dark surface stretching away into the shadows. Here at the reservoir's edge, something waits, half-hidden in the low light: shapes that look deliberately left behind rather than simply lost. Priya's curiosity sharpens as she studies the shore, certain that whatever these shapes are, they were placed here for someone bold enough to come looking, exactly as she has.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shore",
+          "label": "Walk along the gravel shore.",
+          "target": "ra_lakeshore"
+        }
+      ]
+    },
+    {
+      "id": "ra_lakeshore",
+      "body": "Along the reservoir's frosted shore, two chances appear. Nearby rests a small service pod, powered down but intact, its rounded hull shaped almost like an old rowboat left waiting at a dock. Farther along the shore, a shallow channel glows faintly, lit from within by tiny drifting microbes that pulse soft green light with every ripple. Pip's sensors flicker toward both, uncertain which is more interesting. Priya weighs the pod's promise of crossing the whole dark reservoir against the glowing channel's invitation to follow its shallow, lit path instead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_boat",
+          "label": "Examine the old rowboat.",
+          "target": "ra_boat"
+        },
+        {
+          "id": "c_wade",
+          "label": "Wade into the glowing shallows.",
+          "target": "ra_wade"
+        }
+      ]
+    },
+    {
+      "id": "ra_boat",
+      "body": "The small service pod proves usable once Priya brushes the frost from its hull. She climbs inside, Pip settling into the copilot slot beside her, and gets to work waking its old thrusters, checking each seal by hand and listening for the faint hiss of a leak that never comes. Slowly, dim lights flicker on across the console, and the pod hums quietly to life around them. Priya grins, satisfied with her careful work, and eases the little craft off its frozen mooring, ready now to carry them both out across the dark reservoir.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_row",
+          "label": "Climb in and push off.",
+          "target": "ra_row"
+        }
+      ]
+    },
+    {
+      "id": "ra_row",
+      "body": "Priya guides the little service pod out across the coolant reservoir, its thrusters humming steadily while Pip keeps watch on the dark water stretching endlessly around them. Far ahead, a thin seam of daylight leaks through a distant viewport, marking the reservoir's far side. They reach it at last and climb out onto solid decking, cold but thrilled. Priya has crossed the whole coolant sea, likely the first person in years to manage it. She pats the little pod's hull once, grateful, before turning to record every detail of the crossing in her notebook.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rowboat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B1_PRIZE1}"
+      }
+    },
+    {
+      "id": "ra_wade",
+      "body": "Priya steps carefully into the shallow, glowing channel instead, and the water lights up around her boots, disturbed microbes flaring bright green with every ripple. Pip drifts just above the surface, delighted by the glowing trail spreading out beneath him. The lit path leads onward along the shallows, curving gently toward a low, bright opening in the reservoir wall ahead. Priya follows the glowing trail carefully, one careful step at a time, drawn forward by the soft light and the promise of whatever waits beyond that low, welcoming gap.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_islet",
+          "label": "Follow the glowing shells.",
+          "target": "ra_islet"
+        }
+      ]
+    },
+    {
+      "id": "ra_islet",
+      "body": "The glowing path leads Priya through the low opening and into a hidden observation blister, a small dome of scratched but intact viewport glass looking out on open stars. She catches her breath at the sight, utterly alone with the view, a secret spot almost no one on the station ever found. Priya takes a small keepsake, a smooth chip of scratched viewport glass, and makes her way carefully back into the corridor beyond. Pip records the blister's location quietly. Priya promises herself she will keep this glowing, star-lit place secret.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_islet",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{B1_PRIZE2}"
+      }
+    },
+    {
+      "id": "ra_pool_way",
+      "body": "The side-passage toward the briny smell is tight, forcing Priya to crouch low under dripping pipes and cable ledges. Condensation patters steadily onto her shoulders as she shuffles forward. Pip squeezes ahead of her, small enough to slip through gaps she cannot, his lights bobbing toward a soft green glow just visible farther on. The briny, mineral smell grows stronger with every step, mixing oddly with the ordinary metal scent of the corridor. Priya keeps crouching onward, following Pip's bobbing lights toward whatever is producing that faint green light ahead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_crouch",
+          "label": "Crouch through toward the pale light.",
+          "target": "ra_pool2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool2",
+      "body": "The passage opens up just enough for Priya to stand upright again, easing the strain in her back. A clear irrigation channel runs along the floor here, carrying trickling water toward a rounded chamber glowing softly ahead. Pip follows the channel eagerly, his lights reflecting off its clear surface. The green glow brightens with every step, and the briny smell sharpens into something almost like the scent of a well-tended garden. Priya quickens her pace slightly, curious what kind of chamber could smell so alive this deep inside a powered-down station.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_channel",
+          "label": "Follow the clear channel.",
+          "target": "ra_pool_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_app",
+      "body": "The channel ends at a curtain of loose cables and dangling insulation, tangled together like weeds hanging across the passage. Beyond it, bright green light spills through the gaps, promising something worth seeing. But behind Priya, the corridor she crouched through is filling fast with fresh coolant runoff, the warning lights already blinking along its walls. She has to choose quickly now: push through the tangled curtain toward the bright light ahead, or hurry back before the flooding channel closes the way behind her completely. Pip waits anxiously, lights flashing between both directions.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter",
+          "label": "Push through the weed curtain.",
+          "target": "ra_pool_enter"
+        },
+        {
+          "id": "c_poolback",
+          "label": "Hurry back before the channel fills.",
+          "target": "ra_pool_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_back",
+      "body": "Priya will not risk the tangled curtain if it means the channel behind her closes for good. She and Pip turn and hurry back through the narrow, dripping passage as coolant pours in fast behind them, soaking her boots by the time they clear it. They reach the docking airlock just as the flooding channel seals itself shut, hearts thumping but entirely safe. The bright green light beyond the curtain will have to wait for another low-power drift. Priya marks the spot carefully, already curious about what she nearly reached.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {B2_GATE}"
+      }
+    },
+    {
+      "id": "ra_pool_enter",
+      "body": "Priya pushes through the tangled curtain of cables, and the chamber opens wide beyond it into the station's old hydroponics pool, bright with growing things climbing every wall. The water inside is so clear it looks almost like empty air, alive with small shapes drifting through it. Pip drifts in behind her, lights reflecting brightly off the surface. Priya realizes with delight that this must be part of the old aquaponics tanks, kept running quietly all this time to help feed a long-departed crew, teeming with tiny life no one has seen in years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_kneel",
+          "label": "Kneel by the clear tide-pool.",
+          "target": "ra_pool_chamber"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_chamber",
+      "body": "The hydroponics pool is a whole tiny world of its own, humming quietly with life. In one corner, a small orange sea star glows faintly where it clings to the tank glass, a leftover of the old aquaponics system, somehow still thriving. On the far side, a trail of tiny tracks crosses the silty floor, leading toward a deeper, darker basin partly hidden in shadow. Pip's lights flick between the glowing star and the mysterious trail. Priya crouches at the water's edge, torn between studying the strange orange creature and following the tracks into darker water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star",
+          "label": "Look closely at the orange starfish.",
+          "target": "ra_starfish"
+        },
+        {
+          "id": "c_deep",
+          "label": "Follow the crab-track to the dark basin.",
+          "target": "ra_pool_deep"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish",
+      "body": "The little orange sea star is a rare thing this far from any ocean, somehow surviving for years in the station's forgotten tanks. Priya leans close, careful not to disturb the water, and sketches it slowly in her notebook, noting the faint glow along each of its five arms. Pip hovers nearby, recording quiet measurements of the water and light. Priya leaves the sea star exactly where it belongs, undisturbed on its patch of tank glass, satisfied that a careful drawing and a few notes will be proof enough of the strange, wonderful life still clinging on aboard Halcyon.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_sketch",
+          "label": "Finish the sketch and slip out.",
+          "target": "ra_starfish2"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish2",
+      "body": "Priya backs carefully away from the tank with a full page of sketches and notes, certain she has documented the glowing sea star exactly as she found it. She and Pip climb out of the hydroponics chamber and make their way back toward the docking airlock, grinning the whole way. The scientists back home will not believe such a creature survived alone aboard a dead station until they see her careful drawings themselves. Priya tucks the notebook safely into her satchel, already imagining everyone's astonished faces.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_starfish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B2_PRIZE1}"
+      }
+    },
+    {
+      "id": "ra_pool_deep",
+      "body": "Priya follows the trail of tiny tracks instead, curious where they lead. They wind across the silty floor toward a darker basin at the far side of the pool, where the water runs noticeably deeper. Peering down through the shadowed surface, she spots something gleaming faintly at the bottom, half-buried in soft silt. Pip's light dips low over the water, catching the glint clearly now: a smooth, crystalline shape catching the very last of the fading green glow. Priya rolls up her sleeve, ready to reach carefully down into the cool, deep basin water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_reach",
+          "label": "Reach into the green basin.",
+          "target": "ra_pool_deep2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_deep2",
+      "body": "Priya reaches into the dark basin and carefully lifts out a perfect data-crystal, cool and heavy in her palm, silt sliding off its smooth faceted surface. It is the finest thing she has ever found, still faintly glowing from whatever data it once held. She carries it up out of the hydroponics pool like a trophy, Pip circling and chirping in celebration beside her. Priya cannot wait to see what secrets are still locked inside it, certain that this quiet, forgotten corner of Halcyon has given up its very best treasure.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B2_PRIZE2}"
+      }
+    },
+    {
+      "id": "da_dark",
+      "body": "The third way is a powered-down corridor, darker than the rest, its overhead lights long dead. Priya follows the faint, blinking beacon-ping deeper, though up close it turns out to be nothing more than an old warning light stuttering weakly on backup power. She keeps one gloved hand trailing along the cold metal wall to guide herself, Pip pressed close at her shoulder, his small running lights the only glow in the darkness. Step by careful step, they move downward into the quiet, powered-down heart of the station, listening for anything else stirring in the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_fork",
+          "label": "Feel along the wall downward.",
+          "target": "da_fork"
+        }
+      ]
+    },
+    {
+      "id": "da_fork",
+      "body": "The dark corridor forks ahead. From one branch drifts a small clicking and squeaking, and the faint flutter of tiny solar wings unfolding somewhere close by. From the other comes a creak of old wood and the glint of tarnished metal fasteners, catching Priya's torchlight for just a moment before fading back into shadow. Pip's lights swing between the two openings, uncertain which sound to trust. Priya crouches at the fork, listening carefully to both branches, weighing the fluttering, clicking sound against the creaking, glinting one before choosing a direction to explore.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bat",
+          "label": "Go toward the squeaking and flutter.",
+          "target": "da_bat_way"
+        },
+        {
+          "id": "c_cache",
+          "label": "Go toward the creaking wood.",
+          "target": "da_cache_way"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_way",
+      "body": "Priya follows the clicking and fluttering sound, and it grows busier with every step, dozens of small noises layering over one another. The ceiling lifts away overhead, and her torchlight sweeps upward to catch the source: a whole swarm of dormant maintenance bots clinging to the ceiling, tiny solar wings folded, quietly charging on standby power. Pip presses close against her side, uncertain, his own lights dimmed low so as not to disturb them. Priya holds her breath, watching the sleeping swarm shift faintly in the dark, and steps as quietly as she can beneath it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_creep",
+          "label": "Creep on under the hanging shapes.",
+          "target": "da_bat2"
+        }
+      ]
+    },
+    {
+      "id": "da_bat2",
+      "body": "It is indeed the whole swarm, resting together in a great vaulted maintenance chamber built to house them during long, quiet drifts. The air here is warm, faintly earthy with the smell of old lubricant and dust. Priya moves slowly beneath the clinging bots, careful not to jostle a single one awake. Ahead, past the last resting shapes, a distant circle of starlight shows through a viewport, hinting at a way onward and upward. Pip's lights track the tiny glow eagerly, and Priya edges toward it, hopeful it might lead them safely out and up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_grey",
+          "label": "Move quietly toward the grey light.",
+          "target": "da_bat_app"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_app",
+      "body": "That distant circle of starlight may be a way up and out of the station entirely, but reaching it means crossing quietly beneath the whole charging swarm without waking a single bot. Priya weighs her options carefully, watching the tiny machines shift and click softly in their sleep. She could creep on toward the reward of that hidden viewport, moving slow and careful the whole way, or back away now and leave the swarm completely undisturbed, giving up the chance to see where that light leads. Pip waits silently, matching her stillness, ready either way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_batenter",
+          "label": "Tiptoe across under the bats.",
+          "target": "da_bat_enter"
+        },
+        {
+          "id": "c_batback",
+          "label": "Back away and leave the bats be.",
+          "target": "da_bat_back"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_back",
+      "body": "Priya decides she will not risk disturbing the sleeping swarm today. She and Pip ease back the way they came, moving slowly until the clicking and fluttering fades behind them, then hurry the rest of the way along the dark corridor to the docking airlock. They step out safely, dusty from the powered-down decks and thoroughly awed by the sight of so many tiny machines resting together. Priya notes the vaulted chamber's location carefully, determined to return one day when she can study the swarm without disturbing its rest.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_bat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {C1_GATE}"
+      }
+    },
+    {
+      "id": "da_bat_enter",
+      "body": "Priya crosses the vaulted chamber slowly, placing each step with care, and nothing stirs above her. The swarm sleeps on undisturbed, tiny lights blinking peacefully in the dark. Beyond the last resting bots, she finds a rough stair of fallen debris and old cable spools, stacked up haphazardly but climbable, leading up toward the distant circle of light far above. Pip drifts ahead, scanning the debris stair for loose footing. Priya exhales with relief at having crossed safely, then turns her attention upward, ready to begin the long climb toward daylight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_stair",
+          "label": "Start up the fallen-rock stair.",
+          "target": "da_roost"
+        }
+      ]
+    },
+    {
+      "id": "da_roost",
+      "body": "The debris stair is steep but solid under Priya's boots, each piece of fallen equipment wedged firmly enough to trust her weight. Partway up, her torchlight catches a name scratched crudely into the metal wall beside the stair, proof that someone else found this secret way long before her. She traces the rough letters with one finger, wondering who they belonged to and how long ago they climbed this same path. Pip pauses beside the carving too, lights flickering thoughtfully. Priya smiles, feeling a little less alone on this quiet, secret climb upward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_climb",
+          "label": "Climb on past the old carving.",
+          "target": "da_roost2"
+        }
+      ]
+    },
+    {
+      "id": "da_roost2",
+      "body": "The climb narrows into a tight shaft padded with soft green insulation, worn velvety smooth by whoever passed through here before. Fresh, cool air pours down from somewhere above, carrying real starlight with it for the first time since they entered the dark corridor. Priya boosts Pip up ahead of her through the narrow gap, then reaches up to haul herself along after him, muscles straining on the last stretch. The light grows brighter with every push upward, and she can almost taste the open air waiting just beyond the shaft's mouth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_push",
+          "label": "Push up through the mossy funnel.",
+          "target": "da_skylight"
+        }
+      ]
+    },
+    {
+      "id": "da_skylight",
+      "body": "Priya climbs out at last through the hull viewport onto the sail, high above the drifting shape of Halcyon, blinking against the sudden brightness of open stars all around her. Pip drifts out beside her, sensors sweeping the vast dark sky in delight. She has found a whole secret route through the station, one that led safely past a sleeping swarm of maintenance bots and straight up into daylight. It is a discovery worth telling everyone about, and Priya takes a long moment just to look at the view before starting the climb back down.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bats",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{C1_PRIZE}"
+      }
+    },
+    {
+      "id": "da_cache_way",
+      "body": "Priya follows the creaking, glinting sound instead, and it grows nearer with every careful step down the dark corridor. Her torchlight sweeps a side alcove and catches an old wooden crate, bolted into a recess in the wall, its boards weathered and creaking gently as the station drifts. Pip's sensors ping curiously at the unexpected wood, so out of place among all the metal and cable. Priya crosses to it slowly, studying the crate's dented, tarnished fasteners, wondering who would have brought something like this aboard a station in the first place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_door",
+          "label": "Approach the leaning plank door.",
+          "target": "da_cache2"
+        }
+      ]
+    },
+    {
+      "id": "da_cache2",
+      "body": "The old crate's lid gives way with a long groan as Priya works it loose, hinges stiff with years of disuse. Behind it, she finds a hollow built by hand, a hiding place made from stacked storage crates wedged carefully into a gap between wall panels. Pip's light sweeps the hidden space, revealing shapes stacked deep in the shadows, deliberately tucked out of sight. Priya leans in closer, heart quickening, certain that whoever built this hiding place meant for someone to find it eventually, long after they themselves had gone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_peer",
+          "label": "Peer into the walled-off hollow.",
+          "target": "da_cache_app"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_app",
+      "body": "It is a forgotten crew supply nook, sealed away and untouched for a very long time. But the warning lights along the corridor have already begun to blink steadily, and Priya knows the reactor is stirring back to life somewhere deep in the station. She could step inside for a quick look at whatever this hidden nook is hiding, or leave it undisturbed for a day when she has more time to explore safely. Pip hovers at the entrance, lights flashing amber, waiting for her to decide quickly before the bulkheads begin closing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cacheenter",
+          "label": "Step in for a quick look.",
+          "target": "da_cache_enter"
+        },
+        {
+          "id": "c_cacheback",
+          "label": "Leave the cache and beat the tide.",
+          "target": "da_cache_back"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_back",
+      "body": "The blinking warning lights decide it for Priya. She marks the hidden nook's exact location carefully in her notebook and hurries back along the dark corridor with Pip leading the way, the bulkheads groaning faintly as they near the docking airlock. They reach it just ahead of the closing doors, safe and only a little breathless. The forgotten supply nook and whatever it holds will still be waiting, sealed and undisturbed, for a better day when Priya can explore it without racing the reactor's return.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cache",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at {C2_GATE}"
+      }
+    },
+    {
+      "id": "da_cache_enter",
+      "body": "Priya steps carefully into the hidden nook. Inside, stacked ration crates line the walls, most of them collapsed long ago into soft, crumbling dust that puffs up around her boots. But two smaller cases sit dry and intact on a raised metal shelf, their lids stiff with age but whole and unbroken. Pip's lights settle on the pair, scanning each one curiously. Priya crouches before the shelf, brushing away a layer of dust, eager to see what these two surviving cases have managed to protect all this time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_boxes",
+          "label": "Open the two dry boxes.",
+          "target": "da_cache_room"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_room",
+      "body": "Priya pries open the first case and finds a brass-cased handheld navigator inside, its screen dark but its casing solid and undamaged. The second case is heavier, and when she tilts it, something inside rattles like a case of archival memory chips packed tightly together. Behind her, coolant runoff is already creeping steadily under the crate door, and she knows she can only carry one case out cleanly before the way back floods further. Pip's lights flick between both cases, waiting anxiously for Priya to choose which treasure to save.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_compass",
+          "label": "Take the old brass compass.",
+          "target": "da_compass"
+        },
+        {
+          "id": "c_coins",
+          "label": "Take the heavy rattling box.",
+          "target": "da_coins"
+        }
+      ]
+    },
+    {
+      "id": "da_compass",
+      "body": "Priya chooses the brass-cased handheld navigator and wipes the dust carefully from its screen, then taps it gently awake. To her surprise, a faint display flickers to life, tracing a thin glowing line across its cracked screen toward the docking airlock. Pip chirps in delight at the little device's stubborn resilience. Priya grips the navigator tightly, grateful for its guidance, and turns to follow the glowing line back the way they came, the fading corridor light ahead promising the safety of the airlock just beyond it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_out",
+          "label": "Follow the compass out.",
+          "target": "da_compass2"
+        }
+      ]
+    },
+    {
+      "id": "da_compass2",
+      "body": "The brass-cased navigator leads Priya and Pip straight back through the dark corridor to the docking airlock, just as the reactor's warning lights finish waking fully along every wall. They step through into the open bay, safe and triumphant, Priya clutching the navigator tightly against her chest. She has recovered the handheld navigator, still working after all these years, and a story about a hidden crew cache that everyone back home will beg to hear every detail of, again and again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_compass",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C2_PRIZE1}"
+      }
+    },
+    {
+      "id": "da_coins",
+      "body": "Priya chooses the heavier case instead, prying its stiff lid open to reveal a tightly packed set of archival memory chips, each one rattling softly against the others. There are far too many to count carefully right now, but the whole case is light enough to carry if she moves quickly. Pip nudges her toward the exit, sensors flashing urgently as coolant continues creeping across the floor behind them. Priya hefts the case against her hip and turns at once toward the corridor, determined to get every single chip safely out before the water can reach it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_carry",
+          "label": "Carry the box out quickly.",
+          "target": "da_coins2"
+        }
+      ]
+    },
+    {
+      "id": "da_coins2",
+      "body": "Priya hauls the heavy case up through the dark corridor and out to the docking airlock just ahead of the reactor's warning lights sweeping fully awake. She sets it down at last in the open bay, arms aching but triumphant, Pip circling in celebration beside her. The experts back home will spend weeks studying the archival memory chips inside, and Priya's name will be attached to the whole remarkable find. She grins at Pip, already imagining the stories locked inside that rattling case of old data.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coins",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C2_PRIZE2}"
+      }
+    }
+  ]
+}
