@@ -332,19 +332,33 @@ Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1
 
 ### Phase 6: Security hardening (engineering, no dependencies, start now)
 
-- **6a. Enable `TrustedHostMiddleware`** with `allowed_hosts` set, and confirm HTTPS redirect
-  is enforced somewhere in the request path (app-layer or reverse-proxy; document which).
-- **6b. Write a short internal information-security program document**: designated security
-  contact, a documented risk-assessment cadence, and a vendor-oversight process, satisfying both
-  COPPA 312.8's 2025-amendment expectation and GDPR Article 32(1)(d)'s "regularly testing,
-  assessing and evaluating" requirement in one artifact.
-- **6c. Draft a breach-notification runbook**, distinct from `SECURITY.md`'s external
-  vulnerability-reporting policy: an internal incident-classification rubric, an escalation
-  path, and the two clocks that start on discovery (GDPR Article 33's 72-hour
+**Status as of 2026-07-19: 6a and 6d shipped; 6b and 6c not started.**
+
+- **6a. DONE.** `TrustedHostMiddleware` wiring was already correctly implemented and tested
+  (verified, no change needed: `allowed_hosts` is env-configurable and conditionally wires the
+  middleware). HTTPS redirect was the real gap: `enable_https_redirect` was never passed to
+  `add_security_middleware`, so it was always off regardless of environment. Now enabled for
+  every non-local environment, gated the same way the rate limiter already is. This was only
+  safe to turn on because `forwarded_allow_ips` already makes uvicorn trust `X-Forwarded-Proto`
+  from the TLS-terminating reverse proxy (a separate, already-fixed trust boundary); without
+  that fix in place first, enabling this could have redirect-looped real HTTPS traffic instead
+  of closing a gap.
+- **6b. Not started.** Write a short internal information-security program document: designated
+  security contact, a documented risk-assessment cadence, and a vendor-oversight process,
+  satisfying both COPPA 312.8's 2025-amendment expectation and GDPR Article 32(1)(d)'s
+  "regularly testing, assessing and evaluating" requirement in one artifact.
+- **6c. Not started.** Draft a breach-notification runbook, distinct from `SECURITY.md`'s
+  external vulnerability-reporting policy: an internal incident-classification rubric, an
+  escalation path, and the two clocks that start on discovery (GDPR Article 33's 72-hour
   notification-to-authority duty, and Article 34's separate "high risk to individuals"
   notification duty).
-- **6d. Correct `SECURITY.md`**, which currently asserts a "no persistent PII without explicit
-  parental consent" control that doesn't exist yet, and is stale on the auth description.
+- **6d. DONE.** `SECURITY.md` corrected: the auth section no longer describes an unresolved
+  dev-only stub needing future Authentik JWT validation (real Supabase-issued JWT verification
+  is already implemented and enforced for every non-local environment); the child-safety bullet
+  no longer asserts "no persistent PII without explicit parental consent" (not implemented),
+  replaced with an accurate description of what's built (data minimization, the PII egress
+  guard) and what isn't yet (verifiable parental consent, a retention policy), pointing to the
+  compliance docs rather than asserting compliance inline.
 
 ### Phase 7: Formal compliance documentation (needs the artifact-owner and counsel-timing decisions)
 
