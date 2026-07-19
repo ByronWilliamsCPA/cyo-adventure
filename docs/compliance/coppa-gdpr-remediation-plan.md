@@ -290,22 +290,50 @@ all shipped (commit on `claude/gdpr-compliance-review-qzyvc2`).**
 
 ### Phase 3: Data-subject rights (engineering, no dependencies, start now)
 
-- **3a. Add FK cascades** (`ON DELETE CASCADE` via migration, or an explicit application-level
-  purge routine enumerating every child-linked and guardian-linked table, including the
-  `pipeline_event` rows that reference a profile) so a delete request can actually be executed
-  without orphaning rows or hitting a `NO ACTION` FK error.
-- **3b. Build an authenticated deletion endpoint** for a child profile and for the whole family
-  account, including guardian self-deletion (Article 17 applies to the guardian as a data
-  subject in their own right, not only as the parent exercising the child's rights).
-- **3c. Build a guardian-facing data export** assembling every record tied to the family and
-  each child profile (profile, reading state, completions, ratings, story requests, generation
-  reports where accessible) in a portable format, satisfying both COPPA 312.6(a) access and
-  GDPR Article 20 portability in one endpoint.
-- **3d. Add the missing `completion` read endpoint** (currently the one child-linked table with
-  no read path at all).
-- **3e. Run a deletion drill** once 3a-3b ship: create a test family, populate every table,
-  delete it, and verify nothing referencing that family/profile survives outside what a
-  documented retention exception (Phase 4) explicitly allows.
+**Status as of 2026-07-19: 3a-3e all shipped (commit on `claude/gdpr-compliance-review-qzyvc2`),
+with one verification caveat that applies to all five sub-items: this sandbox has no Docker, so
+none of the changes below have run against a live Postgres. `tests/integration/test_schema_parity.py`
+and the new `tests/integration/test_deletion_drill.py` are both written and exercise the exact
+behavior described, but need a CI run (or a local run with Docker available) before this phase is
+considered verified rather than just implemented.**
+
+- **3a. DONE.** Added `ondelete=` (`CASCADE` or `SET NULL`) to every FK in `db/models.py` that
+  sits on the family/child-profile ownership closure, mirrored in a new Supabase migration
+  (`supabase/migrations/20260719190000_add_erasure_cascades.sql`). Three edges needed
+  non-default handling, each documented with a `#CRITICAL` comment at its column:
+  `pipeline_event.actor_id`'s FK is dropped entirely (the table's append-only trigger blocks
+  the `UPDATE` a `SET NULL` cascade would issue, so it would otherwise block deleting any user
+  who has ever authored an event); `storybook.series_id`/`story_request.series_id` and
+  `kid_flag.resolved_by` are left off a bare `SET NULL` because each is paired with a sibling
+  column by a CHECK constraint that a same-transaction cascade could violate before the owning
+  row's own cascade removes it; the `kid_flag.resolved_by` case is the one that's actually
+  reachable in practice (a resolving admin need not belong to the flagged family), so it's
+  handled by an explicit application-level `UPDATE` in the family-deletion endpoint instead
+  (see 3b). `moderation_threshold_audit.changed_by` and `provider_model_allowlist_audit.changed_by`
+  were additionally relaxed from `NOT NULL` to nullable, since either would otherwise block a
+  guardian/admin's own self-deletion if they had ever touched a global admin-config surface.
+- **3b. DONE.** `DELETE /api/v1/profiles/{profile_id}` (guardian-only, own family, works even on
+  an already-deactivated profile) deletes a single child profile; `DELETE /api/v1/me/family`
+  (guardian-only) deletes the caller's entire family account, satisfying Article 17 for the
+  guardian as a data subject in their own right per ADR-018's already-decided framing ("account
+  deletion erases the family") rather than adding a separate narrower mechanism. The family
+  endpoint runs the `kid_flag.resolved_by` reopen step from 3a before the cascade delete.
+- **3c. DONE.** `GET /api/v1/me/export` (guardian-only) returns the family, every
+  guardian/admin/child login row, every child profile with nested reading state, completions,
+  ratings, and assignments, and every family story request, as one JSON document. Deliberately
+  excludes `generation_job.report` (raw multi-stage LLM output): that field is admin-only
+  everywhere else in this API, and the export must not become a side channel around that
+  restriction. A blocked story request's raw text is redacted, mirroring the guardian-facing
+  API's own redaction of that field.
+- **3d. DONE.** `GET /api/v1/completions/{profile_id}` (mirrors `GET /ratings/{profile_id}`)
+  lists a profile's completions; `completion` was the one child-linked table with no read path
+  at all before this.
+- **3e. DONE**, with the verification caveat above. `tests/integration/test_deletion_drill.py`
+  covers: profile deletion cascading reading state/completions/ratings/assignments/the child's
+  own login row while de-linking (not deleting) their story requests; family deletion cascading
+  everything family- and child-owned; the `kid_flag` cross-family reopen case from 3a; guardian-only
+  authorization on both delete endpoints and the export endpoint; and the export's blocked-request
+  redaction.
 
 ### Phase 4: Retention and storage governance (4a/4d startable now; 4b/4c need the retention-windows decision)
 
@@ -627,10 +655,12 @@ marked **(no default)** genuinely need your input.
 
 ```text
 Now, in parallel, no dependencies (Supabase region and self-naming already resolved):
-  Phase 1 (PII-egress hardening, field-targeted per Section 1's parameterization note)
-  Phase 3 (deletion cascades, export, access endpoints)
+  Phase 1 (PII-egress hardening, field-targeted per Section 1's parameterization note) - DONE
+  Phase 3 (deletion cascades, export, access endpoints) - DONE, pending a Docker-available
+    CI run to actually verify test_schema_parity.py and test_deletion_drill.py (see Phase 3's
+    status note)
   Phase 4a and 4d (Supabase region execution; audit-log retention justification)
-  Phase 6 (security hardening)
+  Phase 6 (security hardening) - 6a/6d DONE, 6b/6c not started
   Decision-gathering still open: VPC method, retention-table reaction, ZDR owner,
     artifact owner, counsel timing, DPO
 

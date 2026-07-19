@@ -192,6 +192,12 @@ class CompletionView(BaseModel):
     found_at: datetime
 
 
+class CompletionListView(BaseModel):
+    """A profile's recorded completions (COPPA 312.6(a) / GDPR Article 15 read path)."""
+
+    completions: list[CompletionView]
+
+
 class ReadingHistoryItem(BaseModel):
     """One storybook's reading-history summary for a profile (register K6/G9).
 
@@ -1451,6 +1457,37 @@ class MeResponse(BaseModel):
     is_admin: bool
     family_id: str
     profile_ids: list[str]
+
+
+class FamilyExportView(BaseModel):
+    """A guardian's full family data export.
+
+    COPPA 312.6(a) access / GDPR Article 20 portability (remediation plan
+    Phase 3c), in one endpoint: every record tied to the family and each
+    child profile, as a single machine-readable (portable) JSON document.
+    Nested entities are loosely-typed dicts, not per-entity Pydantic models:
+    this endpoint's job is completeness of the export, not a stable typed API
+    contract for any one entity (the normal per-resource endpoints already
+    serve that role); each dict's keys mirror the corresponding ORM row's
+    columns as built in ``api/me.py``.
+
+    Attributes:
+        exported_at: When this export was generated (UTC).
+        family: The family row (id, name, created_at).
+        guardians: Every guardian/admin/child login row in the family
+            (id, role, is_admin, email, created_at); no ``pin_hash`` or
+            ``authn_subject`` (credential material, never exported).
+        profiles: Every child profile, each with its own nested
+            ``reading_state``, ``completions``, ``ratings``, and
+            ``assignments`` lists.
+        story_requests: Every story request tied to the family.
+    """
+
+    exported_at: datetime
+    family: dict[str, object]
+    guardians: list[dict[str, object]]
+    profiles: list[dict[str, object]]
+    story_requests: list[dict[str, object]]
 
 
 # ---------------------------------------------------------------------------

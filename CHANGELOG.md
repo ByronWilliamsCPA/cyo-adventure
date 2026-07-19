@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Data-subject rights endpoints (GDPR Article 15/17/20, COPPA 312.6/312.10):
+  `DELETE /api/v1/profiles/{profile_id}` erases a single child profile and
+  every row linked to it; `DELETE /api/v1/me/family` erases a guardian's
+  entire family account; `GET /api/v1/me/export` returns a full, portable
+  JSON export of the family and its child profiles; `GET
+  /api/v1/completions/{profile_id}` fills the one remaining child-linked
+  table with no read path. Every family-/child-profile-owned foreign key in
+  the schema now cascades or nulls out on delete (previously all `NO
+  ACTION`, so a delete request could not have been executed at all without
+  hitting an FK violation).
+
 ### Security
 
 - The PII egress guard (`assert_prompt_pii_safe`) now also screens every

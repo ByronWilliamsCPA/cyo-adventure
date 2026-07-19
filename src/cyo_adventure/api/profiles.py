@@ -19,6 +19,7 @@ from cyo_adventure.api.deps import (
     Context,
     Principal,
     Role,
+    authorize_family,
     authorize_profile,
     parse_uuid,
 )
@@ -313,3 +314,50 @@ async def update_profile(
     _apply_g2_content_controls(row, body)
     await ctx.session.flush()
     return _view(row)
+
+
+@router.delete(
+    "/profiles/{profile_id}", status_code=204, responses=error_responses(404)
+)
+async def delete_profile(profile_id: str, ctx: Context) -> None:
+    """Permanently erase a child profile and all data linked to it.
+
+    GDPR Article 17 / COPPA 312.10 (remediation plan Phase 3b). Every table
+    keyed on this profile (reading state, completions, ratings, storybook
+    assignments, kid flags, and its own login row if the child has one)
+    cascades at the database level (Phase 3a); story requests the child
+    submitted are de-linked (``profile_id`` set null) rather than deleted,
+    since they remain family-owned content and may already have produced a
+    published story.
+
+    Unlike ``update_profile``, this deliberately checks family ownership
+    (``authorize_family``) rather than ``authorize_profile``: a profile a
+    guardian has already deactivated is excluded from
+    ``principal.profile_ids`` (see ``api/deps.py::_resolve_profiles``), but
+    an erasure request must still succeed for a deactivated profile -- that
+    is, if anything, the MORE likely case for a real deletion request.
+
+    Args:
+        profile_id: The child profile to delete (path).
+        ctx: The request context (principal + unit-of-work session).
+
+    Raises:
+        AuthorizationError: If the caller is not a guardian, or the profile
+            is not in the caller's family.
+        ResourceNotFoundError: If no profile with this id exists.
+    """
+    _require_guardian(ctx.principal)
+    parsed = parse_uuid(profile_id, "profile_id")
+    row = await ctx.session.get(ChildProfile, parsed)
+    if row is None:
+        msg = f"profile '{profile_id}' not found"
+        raise ResourceNotFoundError(msg)
+    # #CRITICAL: security: family ownership, not profile_ids membership (see
+    # docstring): a deactivated profile must still be deletable by its own
+    # family's guardian.
+    # #VERIFY: tests/integration/test_deletion_drill.py::
+    # test_delete_profile_removes_child_linked_rows,
+    # ::test_delete_profile_rejects_cross_family_profile.
+    authorize_family(ctx.principal, row.family_id)
+    await ctx.session.delete(row)
+    await ctx.session.flush()

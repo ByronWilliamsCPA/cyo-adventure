@@ -17,9 +17,15 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
 
-from cyo_adventure.api.deps import Context, authorize_family, authorize_profile
+from cyo_adventure.api.deps import (
+    Context,
+    authorize_family,
+    authorize_profile,
+    parse_uuid,
+)
 from cyo_adventure.api.schemas import (
     CompletionBody,
+    CompletionListView,
     CompletionView,
     ConflictView,
     ReadingStateBody,
@@ -491,3 +497,54 @@ def _new_completion(
     )
     ctx.session.add(row)
     return row
+
+
+def _completion_view(row: Completion) -> CompletionView:
+    """Build the response view from a Completion row."""
+    return CompletionView(
+        child_profile_id=str(row.child_profile_id),
+        storybook_id=row.storybook_id,
+        version=row.version,
+        ending_id=row.ending_id,
+        found_at=row.found_at,
+    )
+
+
+@router.get("/completions/{profile_id}")
+async def list_completions(profile_id: str, ctx: Context) -> CompletionListView:
+    """List every ending a child profile has completed.
+
+    Phase 3d (COPPA 312.6(a) access / GDPR Article 15): ``completion`` was
+    the one child-linked table with no read path at all before this endpoint;
+    a guardian requesting an access/export report for their child had no way
+    to retrieve it.
+
+    Args:
+        profile_id: The child profile whose completions are requested.
+        ctx: The request context (principal + session).
+
+    Returns:
+        CompletionListView: The profile's completions.
+
+    Raises:
+        ValidationError: If profile_id is not a UUID.
+        AuthorizationError: If the profile is not the caller's.
+    """
+    # #CRITICAL: security: a caller may only read completions for a profile it
+    # owns, mirroring ratings.py::list_ratings.
+    # #VERIFY: authorize_profile raises AuthorizationError -> 403.
+    parsed = parse_uuid(profile_id, "profile_id")
+    authorize_profile(ctx.principal, parsed)
+    # Stable order: most-recently-found first, storybook_id/ending_id as
+    # tie-breakers so the response is deterministic across calls (mirrors
+    # list_ratings's ordering rationale).
+    rows = await ctx.session.scalars(
+        select(Completion)
+        .where(Completion.child_profile_id == parsed)
+        .order_by(
+            Completion.found_at.desc(),
+            Completion.storybook_id.asc(),
+            Completion.ending_id.asc(),
+        )
+    )
+    return CompletionListView(completions=[_completion_view(row) for row in rows.all()])
