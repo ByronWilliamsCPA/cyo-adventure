@@ -87,7 +87,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import ChildProfile, Storybook, StorybookVersion
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.guarded import PiiGuardedProvider
-from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.review_provider import (
@@ -446,7 +446,7 @@ async def edit_node(
     # #VERIFY: tests/unit/test_node_edit.py patches build_review_provider /
     # run_classifiers exactly like tests/unit/test_moderation_pipeline.py.
     child_names = await _family_child_names(ctx.session, book.family_id)
-    pii = PiiContext(child_names=child_names, birthdates=frozenset())
+    pii = PiiContext(child_names=child_names)
     review_settings = resolve_review_settings(settings, None)
     review_provider, independent = build_review_provider(
         review_settings,
@@ -455,6 +455,14 @@ async def edit_node(
     )
     guarded_review = PiiGuardedProvider(review_provider, forbidden=pii)
     node_text = _node_text(node)
+    # #CRITICAL: security: the classifier call below is a distinct egress path
+    # from the LLM safety stage (which is protected structurally by
+    # PiiGuardedProvider via guarded_review). Screen the edited node text here
+    # so OpenAI Moderation and Google Perspective get the same guard the
+    # generation-time moderation pipeline applies (moderation/pipeline.py),
+    # instead of receiving an admin/guardian's raw edited prose unconditionally.
+    # #VERIFY: tests/unit/test_node_edit.py::test_classifier_call_blocked_on_pii_in_edited_text.
+    assert_prompt_pii_safe(node_text, forbidden=pii)
     fresh_findings: list[Finding] = []
     async with httpx.AsyncClient(timeout=30.0) as client:
         fresh_findings.extend(

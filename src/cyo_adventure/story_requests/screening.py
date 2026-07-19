@@ -80,7 +80,7 @@ async def screen_request_text(
     try:
         assert_prompt_pii_safe(
             request_text,
-            forbidden=PiiContext(child_names=child_names, birthdates=frozenset()),
+            forbidden=PiiContext(child_names=child_names),
         )
     except ValidationError:
         return ScreeningResult(

@@ -153,7 +153,7 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         )
     )
     child_names: frozenset[str] = frozenset(row for (row,) in child_result.all() if row)
-    pii = PiiContext(child_names=child_names, birthdates=frozenset())
+    pii = PiiContext(child_names=child_names)
 
     await run_moderation_pipeline(
         session=session,
@@ -407,7 +407,7 @@ async def resume_manual_fill(
             await session.commit()
             return story_id, "needs_review"
 
-        pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+        pii = PiiContext(child_names=frozenset())
         review_stage1_model = _str_meta(job.authoring_metadata, "review_stage1_model")
         violations = await run_stage1_gate(
             original_skeleton,

@@ -50,7 +50,7 @@ async def test_repair_returns_revised_blob_from_generator() -> None:
         blob={"id": "s1", "nodes": [{"id": "n1", "body": "hard"}]},
         report=_soft_report(),
         generation_provider=provider,
-        pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        pii=PiiContext(child_names=frozenset()),
         max_tokens=4096,
     )
     assert new_blob is not None
@@ -65,7 +65,7 @@ async def test_repair_returns_none_on_unparseable_output() -> None:
         blob={"id": "s1", "nodes": []},
         report=_soft_report(),
         generation_provider=provider,
-        pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        pii=PiiContext(child_names=frozenset()),
         max_tokens=4096,
     )
     assert new_blob is None
@@ -80,7 +80,7 @@ async def test_repair_returns_none_on_non_object_json() -> None:
         blob={"id": "s1", "nodes": []},
         report=_soft_report(),
         generation_provider=provider,
-        pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        pii=PiiContext(child_names=frozenset()),
         max_tokens=4096,
     )
     assert new_blob is None
@@ -95,7 +95,7 @@ async def test_repair_returns_none_without_soft_flags() -> None:
         blob={"id": "s1", "nodes": []},
         report=ModerationReport(),
         generation_provider=provider,
-        pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        pii=PiiContext(child_names=frozenset()),
         max_tokens=4096,
     )
     assert new_blob is None
@@ -125,7 +125,7 @@ async def test_repair_prompt_wraps_story_json_in_untrusted_delimiter() -> None:
         blob={"id": "s1", "nodes": [{"id": "n1", "body": "hard"}]},
         report=_soft_report(),
         generation_provider=provider,
-        pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        pii=PiiContext(child_names=frozenset()),
         max_tokens=4096,
     )
     assert len(provider.calls) == 1
@@ -150,7 +150,7 @@ async def test_repair_prompt_neutralizes_literal_closing_tag_in_story_json() -> 
         blob=malicious_blob,
         report=_soft_report(),
         generation_provider=provider,
-        pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        pii=PiiContext(child_names=frozenset()),
         max_tokens=4096,
     )
     assert len(provider.calls) == 1

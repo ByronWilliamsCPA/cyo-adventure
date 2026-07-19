@@ -455,7 +455,7 @@ async def test_embed_series_block_refuses_published_blob(
 
 def _pii() -> PiiContext:
     """An empty PiiContext; no real-child identifiers to guard in this test."""
-    return PiiContext(child_names=frozenset(), birthdates=frozenset())
+    return PiiContext(child_names=frozenset())
 
 
 async def test_embed_series_block_survives_moderation_repair(

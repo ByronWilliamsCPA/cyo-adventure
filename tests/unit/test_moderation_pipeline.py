@@ -32,6 +32,7 @@ import pytest
 from sqlalchemy.dialects import postgresql
 
 from cyo_adventure.core.config import Settings
+from cyo_adventure.core.exceptions import ValidationError as CoreValidationError
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
@@ -62,7 +63,7 @@ def _settings() -> Settings:
 
 def _pii() -> PiiContext:
     """Return an empty PiiContext with no real-child identifiers."""
-    return PiiContext(child_names=frozenset(), birthdates=frozenset())
+    return PiiContext(child_names=frozenset())
 
 
 def _story(status: str = "draft") -> Storybook:
@@ -309,6 +310,56 @@ async def test_hard_block_routes_to_auto_reject(
     submit.assert_not_awaited()
     assert version.moderation_report is not None
     assert version.moderation_report["summary"]["hard_block"] is True
+
+
+@pytest.mark.unit
+async def test_classifier_call_blocked_on_pii_in_node_body(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A registered real-child name in generated node prose blocks the
+    Stage-0 classifier calls before they reach the network, propagating
+    uncaught out of ``run_moderation_pipeline`` -- the same behavior a PII
+    trip in the guarded LLM review stages already has.
+
+    Regression test: OpenAI Moderation/Google Perspective previously received
+    raw node prose with no PII screening at all, unlike the sibling LLM
+    review stage (``guarded_review``) three lines away in the same function.
+    """
+    tainted_blob = copy.deepcopy(_BLOB)
+    nodes = cast("list[dict[str, object]]", tainted_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    start_node["body"] = "This story was written just for RealChildName today."
+
+    story = _story()
+    version = StorybookVersion(
+        storybook_id="s1", version=1, blob=tainted_blob, model="gen-model"
+    )
+    _load(mock_session, story, version)
+
+    classifier_called = {"count": 0}
+
+    def _handler(_request: httpx.Request) -> httpx.Response:
+        classifier_called["count"] += 1
+        return httpx.Response(
+            200,
+            json={
+                "results": [{"flagged": False, "categories": {}, "category_scores": {}}]
+            },
+        )
+
+    _install_canned_classifier_http(monkeypatch, _handler)
+
+    with pytest.raises(CoreValidationError):
+        await pipeline_mod.run_moderation_pipeline(
+            session=mock_session,
+            story_id="s1",
+            version=1,
+            settings=Settings(review_provider="mock", openai_api_key="k"),
+            generation_provider=MockProvider(responses=[]),
+            pii=PiiContext(child_names=frozenset({"RealChildName"})),
+        )
+
+    assert classifier_called["count"] == 0
 
 
 @pytest.mark.unit

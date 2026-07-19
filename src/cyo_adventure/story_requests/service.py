@@ -624,7 +624,7 @@ async def _build_concept(
     )
     assert_prompt_pii_safe(
         brief.model_dump_json(),
-        forbidden=PiiContext(child_names=child_names, birthdates=frozenset()),
+        forbidden=PiiContext(child_names=child_names),
     )
 
     concept = Concept(

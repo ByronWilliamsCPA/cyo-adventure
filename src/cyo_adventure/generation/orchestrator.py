@@ -623,7 +623,7 @@ async def generate_story(
         provider: The :class:`~cyo_adventure.generation.provider.GenerationProvider`
             to call for completions.
         pii: The :class:`~cyo_adventure.generation.pii.PiiContext` carrying
-            real-child names and birthdates that must not appear in any prompt.
+            real-child names that must not appear in any prompt.
         max_repairs: Maximum number of repair attempts before giving up.
             Defaults to 3.
         scale: Story-size profile (``"standard"`` or ``"compact"``) applied to
@@ -756,7 +756,7 @@ async def fill_skeleton(
         provider: The :class:`~cyo_adventure.generation.provider.GenerationProvider`
             to call for completions.
         pii: The :class:`~cyo_adventure.generation.pii.PiiContext` carrying
-            real-child names and birthdates that must not appear in any prompt.
+            real-child names that must not appear in any prompt.
         max_repairs: Maximum number of repair attempts before giving up.
             Defaults to 3.
         settings: Application settings enabling the Stage 1 fidelity gate. When

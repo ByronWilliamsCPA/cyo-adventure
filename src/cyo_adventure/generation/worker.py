@@ -204,8 +204,8 @@ async def _record_failure(
 # must never be passed here.
 
 # #CRITICAL: security: PII guard (assert_prompt_pii_safe) runs inside
-# generate_story before every provider.complete call. No child name or birthdate
-# reaches the provider unless the guard clears it. This chokepoint must not be
+# generate_story before every provider.complete call. No child name reaches
+# the provider unless the guard clears it. This chokepoint must not be
 # bypassed when wiring real providers in Phase 2b.
 # #VERIFY: integration test asserts PiiContext is populated from real child rows
 # and that mock story generation does not include any real-child name in prompts.
@@ -704,8 +704,7 @@ async def _load_concept_and_pii(
     Extracted from :func:`run_generation_job`'s concept-load section so that
     function's body stays under the file's line budget. Behavior is
     unchanged: the same missing-concept failure recording + re-raise, the
-    same brief validation, and the same PiiContext construction (ChildProfile
-    has no birthdate column, so ``birthdates`` is always empty).
+    same brief validation, and the same PiiContext construction.
 
     Args:
         session: Active async session.
@@ -732,14 +731,13 @@ async def _load_concept_and_pii(
 
     brief = ConceptBrief.model_validate(concept_row.brief)
 
-    # ChildProfile has no birthdate column; leave birthdates empty.
     child_result = await session.execute(
         select(ChildProfile.display_name).where(
             ChildProfile.family_id == concept_row.family_id
         )
     )
     child_names: frozenset[str] = frozenset(row for (row,) in child_result.all() if row)
-    pii = PiiContext(child_names=child_names, birthdates=frozenset())
+    pii = PiiContext(child_names=child_names)
     return concept_row, brief, pii
 
 

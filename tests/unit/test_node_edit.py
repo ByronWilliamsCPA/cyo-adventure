@@ -467,6 +467,48 @@ async def test_gate_failing_edit_rejected_with_unchanged_blob(
     session.add.assert_not_called()
 
 
+@pytest.mark.asyncio
+async def test_classifier_call_blocked_on_pii_in_edited_text(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A registered real-child name in the edited node body blocks the write
+    before the Stage-0 classifier call, mirroring
+    test_moderation_pipeline.py::test_classifier_call_blocked_on_pii_in_node_body.
+
+    Regression test: OpenAI Moderation/Google Perspective previously received
+    the edited prose with no PII screening at all, unlike the sibling LLM
+    safety stage (``guarded_review``) a few lines away in the same function.
+    """
+    story = _story("in_review")
+    version_row = _version_row()
+    original_blob = version_row.blob
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row, child_names=["Ada"])
+    ctx = _ctx("admin", session)
+
+    classifier_called = {"count": 0}
+
+    async def _counting_run_classifiers(*_a: object, **_kw: object) -> list[object]:
+        classifier_called["count"] += 1
+        return []
+
+    monkeypatch.setattr(node_edit, "run_classifiers", _counting_run_classifiers)
+
+    with pytest.raises(ValidationError):
+        await node_edit.edit_node(
+            "s1",
+            1,
+            _NODE_ID,
+            NodeEditBody(body="This page was written just for Ada today."),
+            ctx,
+        )
+
+    assert classifier_called["count"] == 0
+    # The stored blob is untouched: the mutation happened on a discarded copy.
+    assert version_row.blob is original_blob
+    session.add.assert_not_called()
+
+
 # ---------------------------------------------------------------------------
 # Moderation hard block: surfaced, never rejects the write (ADR-005)
 # ---------------------------------------------------------------------------

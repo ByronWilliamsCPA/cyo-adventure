@@ -103,7 +103,7 @@ def _make_brief(
 
 def _empty_pii() -> PiiContext:
     """Return a PiiContext with no forbidden tokens."""
-    return PiiContext(child_names=frozenset(), birthdates=frozenset())
+    return PiiContext(child_names=frozenset())
 
 
 # ---------------------------------------------------------------------------
@@ -328,10 +328,7 @@ async def test_pii_abort_raises_and_provider_not_called() -> None:
     # The real child's name is in the brief premise -- it flows into the
     # Stage A prompt via build_structure_prompt(brief).
     brief = _make_brief(premise=f"A story created for {real_child_name} the brave.")
-    pii = PiiContext(
-        child_names=frozenset({real_child_name}),
-        birthdates=frozenset(),
-    )
+    pii = PiiContext(child_names=frozenset({real_child_name}))
     provider = MockProvider(responses=[_valid_json(), _valid_json_2()])
 
     with pytest.raises(ValidationError):
@@ -667,7 +664,7 @@ async def test_fill_skeleton_returns_passed_on_clean_fill() -> None:
     skeleton = _skeleton_with_fill_placeholder()
     filled = copy.deepcopy(VALID_STORY)  # provider "fills" the placeholder cleanly
     provider = MockProvider(responses=[json.dumps(filled)])
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
 
     outcome = await fill_skeleton(skeleton, {"premise": "a fox"}, provider, pii)
 
@@ -693,7 +690,7 @@ async def test_fill_skeleton_repair_exhaustion_is_needs_review_not_failed() -> N
     """
     skeleton = _skeleton_with_fill_placeholder()
     provider = MockProvider(responses=["not json", "still not json", "nope"])
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
 
     outcome = await fill_skeleton(
         skeleton, {"premise": "a fox"}, provider, pii, max_repairs=2
@@ -744,7 +741,7 @@ async def test_fill_skeleton_stage1_fail_once_then_pass_returns_passed(
 
     skeleton = _skeleton_with_fill_placeholder()
     provider = MockProvider(responses=[_valid_variant(0), _valid_variant(1)])
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
 
     stage1_calls = 0
 
@@ -786,7 +783,7 @@ async def test_fill_skeleton_stage1_exhaustion_downgrades_with_key(
     provider = MockProvider(
         responses=[_valid_variant(0), _valid_variant(1), _valid_variant(2)]
     )
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
 
     stage1_calls = 0
 
@@ -822,7 +819,7 @@ async def test_fill_skeleton_stage1_repair_is_fidelity_aware(
 
     skeleton = _skeleton_with_fill_placeholder()
     provider = MockProvider(responses=[_valid_variant(0), _valid_variant(1)])
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
     violation = "node 'greeting' word count 3 outside [6, 14] for target 10"
 
     calls = 0
@@ -862,7 +859,7 @@ async def test_fill_skeleton_without_settings_never_runs_stage1(
     skeleton = _skeleton_with_fill_placeholder()
     filled = copy.deepcopy(VALID_STORY)
     provider = MockProvider(responses=[json.dumps(filled)])
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
 
     async def _boom(*_args: object, **_kwargs: object) -> list[str]:
         msg = "run_stage1_gate must not be called when settings is None"

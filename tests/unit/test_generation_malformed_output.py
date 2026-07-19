@@ -96,7 +96,7 @@ def _make_brief() -> ConceptBrief:
 
 def _empty_pii() -> PiiContext:
     """Return a PiiContext with no forbidden tokens."""
-    return PiiContext(child_names=frozenset(), birthdates=frozenset())
+    return PiiContext(child_names=frozenset())
 
 
 def _story_with_body(base: dict[str, object], body: str) -> dict[str, object]:
