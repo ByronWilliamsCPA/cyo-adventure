@@ -543,8 +543,8 @@ async def bind_theme_to_contract(  # noqa: PLR0913
         contract: The theme contract to bind against.
         theme_brief: The free-text (UNTRUSTED) child/guardian story request.
         provider: The generation provider to call for completions.
-        pii: The PII context carrying real-child names/birthdates that must
-            never appear in the bind prompt.
+        pii: The PII context carrying real-child names that must never
+            appear in the bind prompt.
         max_attempts: Maximum number of bind attempts (LLM calls). Defaults to
             2 (one bounded retry with violation feedback).
 

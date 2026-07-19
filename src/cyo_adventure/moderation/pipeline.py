@@ -17,6 +17,7 @@ from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.guarded import PiiGuardedProvider
+from cyo_adventure.generation.pii import assert_prompt_pii_safe
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.leaf_diversity import run_leaf_diversity_check
 from cyo_adventure.moderation.repair import attempt_repair
@@ -139,6 +140,7 @@ async def run_moderation_pipeline(
             blob=version_row.blob,
             settings=settings,
             review_provider=guarded_review,
+            pii=pii,
         )
     except ValidationError:
         _logger.warning("moderation.invalid_blob", story_id=story_id)
@@ -181,6 +183,7 @@ async def run_moderation_pipeline(
                     blob=revised,
                     settings=settings,
                     review_provider=guarded_review,
+                    pii=pii,
                 )
             except ValidationError:
                 # #ASSUME: data-integrity: attempt_repair guarantees only a JSON
@@ -426,6 +429,7 @@ async def _run_all_stages(
     blob: dict[str, object],
     settings: Settings,
     review_provider: ReviewProvider,
+    pii: PiiContext,
 ) -> None:
     """Run Stage 0 classifiers then the four LLM stages, appending to report.
 
@@ -434,6 +438,17 @@ async def _run_all_stages(
         blob: The story JSON blob to validate.
         settings: Application settings supplying classifier credentials.
         review_provider: The PII-guarded review provider for LLM stages.
+        pii: PII context for the egress guard on classifier inputs. The LLM
+            review stages get this protection structurally via
+            ``review_provider`` already being a ``PiiGuardedProvider``; the
+            classifier calls below are a separate egress path (OpenAI
+            Moderation, Google Perspective) that needs its own explicit check.
+
+    Raises:
+        cyo_adventure.core.exceptions.ValidationError: If a node body contains
+            a forbidden real-child identifier or PII-shaped content. Not
+            caught here; propagates like a ``guarded_review`` PII trip does,
+            so the caller's job-failure/retry handling applies uniformly.
     """
     # #ASSUME: data-integrity: blob was persisted as a valid Storybook JSON;
     # model_validate raises ValidationError if the schema was corrupted at rest.
@@ -441,6 +456,17 @@ async def _run_all_stages(
     # (initial -> hard-block + auto_reject; repair -> discard the revision).
     story = StoryModel.model_validate(blob)
     nodes = [(node.id, node.body) for node in story.nodes]
+
+    # #CRITICAL: security: the classifier calls below are a distinct egress path
+    # from the LLM review stages (which are protected structurally by
+    # PiiGuardedProvider via review_provider). Screen every node body here so
+    # OpenAI Moderation and Google Perspective get the same guard every other
+    # external call in this pipeline already has, instead of receiving raw
+    # generated prose unconditionally.
+    # #VERIFY: test_moderation_pipeline.py::test_classifier_call_blocked_on_pii_in_node_body
+    # asserts run_classifiers is never reached when a node body matches.
+    for _node_id, body in nodes:
+        assert_prompt_pii_safe(body, forbidden=pii)
 
     # #CRITICAL: external-resource: classifier APIs are network calls that can fail;
     # the pipeline degrades gracefully if both keys are None (both classifiers skip).

@@ -1,8 +1,8 @@
 """Tests for the PII egress guard (WP7).
 
-Verifies word-boundary name matching, birthdate substring matching, no-PII
-path, and the critical security property that the exception never echoes the
-actual PII value.
+Verifies word-boundary name matching, pattern-based email/phone/address
+screening, no-PII path, and the critical security property that the
+exception never echoes the actual PII value.
 """
 
 from __future__ import annotations
@@ -17,15 +17,9 @@ from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 # ---------------------------------------------------------------------------
 
 
-def make_ctx(
-    names: frozenset[str] | None = None,
-    birthdates: frozenset[str] | None = None,
-) -> PiiContext:
+def make_ctx(names: frozenset[str] | None = None) -> PiiContext:
     """Build a PiiContext with convenient defaults."""
-    return PiiContext(
-        child_names=names if names is not None else frozenset(),
-        birthdates=birthdates if birthdates is not None else frozenset(),
-    )
+    return PiiContext(child_names=names if names is not None else frozenset())
 
 
 # ---------------------------------------------------------------------------
@@ -102,40 +96,6 @@ def test_name_as_suffix_substring_does_not_raise() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Test 7: Prompt containing a seeded birthdate string raises ValidationError.
-# ---------------------------------------------------------------------------
-
-
-def test_birthdate_iso_format_raises() -> None:
-    """Prompt containing an ISO-format birthdate substring raises."""
-    ctx = make_ctx(birthdates=frozenset({"2018-04-07"}))
-    with pytest.raises(
-        ValidationError, match=r"prompt contains a forbidden real-child identifier"
-    ):
-        assert_prompt_pii_safe(
-            "The child was born on 2018-04-07 in the village.", forbidden=ctx
-        )
-
-
-def test_birthdate_rendered_format_raises() -> None:
-    """Prompt containing a rendered birthdate form raises."""
-    ctx = make_ctx(birthdates=frozenset({"April 7, 2018"}))
-    with pytest.raises(
-        ValidationError, match=r"prompt contains a forbidden real-child identifier"
-    ):
-        assert_prompt_pii_safe("The story is set around April 7, 2018.", forbidden=ctx)
-
-
-def test_birthdate_case_insensitive_raises() -> None:
-    """Birthdate substring match is case-insensitive."""
-    ctx = make_ctx(birthdates=frozenset({"april 7, 2018"}))
-    with pytest.raises(
-        ValidationError, match=r"prompt contains a forbidden real-child identifier"
-    ):
-        assert_prompt_pii_safe("Set around April 7, 2018 in a forest.", forbidden=ctx)
-
-
-# ---------------------------------------------------------------------------
 # Test 8: Clean prompt with empty PiiContext or no matches does NOT raise.
 # ---------------------------------------------------------------------------
 
@@ -149,22 +109,16 @@ def test_empty_context_no_raise() -> None:
 
 def test_no_match_no_raise() -> None:
     """A prompt that contains no forbidden tokens does not raise."""
-    ctx = make_ctx(
-        names=frozenset({"Mia", "Luca"}),
-        birthdates=frozenset({"2018-04-07"}),
-    )
-    # Prompt has no child names or birthdates.
+    ctx = make_ctx(names=frozenset({"Mia", "Luca"}))
+    # Prompt has no child names.
     assert_prompt_pii_safe(
         "The wizard cast a spell on the enchanted forest.", forbidden=ctx
     )
 
 
 def test_empty_name_strings_ignored() -> None:
-    """Empty strings in child_names/birthdates are skipped silently."""
-    ctx = make_ctx(
-        names=frozenset({""}),
-        birthdates=frozenset({""}),
-    )
+    """Empty strings in child_names are skipped silently."""
+    ctx = make_ctx(names=frozenset({""}))
     # Empty strings must not cause false positives.
     assert_prompt_pii_safe("Any prompt at all.", forbidden=ctx)
 
@@ -187,17 +141,6 @@ def test_exception_does_not_echo_name() -> None:
     assert secret_name.lower() not in str(exc_info.value).lower()
 
 
-def test_exception_does_not_echo_birthdate() -> None:
-    """The ValidationError message must not contain the actual birthdate."""
-    secret_date = "1999-12-31"
-    ctx = make_ctx(birthdates=frozenset({secret_date}))
-    with pytest.raises(
-        ValidationError, match=r"prompt contains a forbidden real-child identifier"
-    ) as exc_info:
-        assert_prompt_pii_safe(f"The event happened on {secret_date}.", forbidden=ctx)
-    assert secret_date not in str(exc_info.value)
-
-
 def test_exception_details_name_kind() -> None:
     """ValidationError raised on a name match includes kind='name' in details."""
     ctx = make_ctx(names=frozenset({"Rosa"}))
@@ -206,16 +149,6 @@ def test_exception_details_name_kind() -> None:
     ) as exc_info:
         assert_prompt_pii_safe("Rosa crossed the bridge.", forbidden=ctx)
     assert exc_info.value.details.get("kind") == "name"
-
-
-def test_exception_details_birthdate_kind() -> None:
-    """ValidationError raised on a birthdate match includes kind='birthdate'."""
-    ctx = make_ctx(birthdates=frozenset({"2020-01-15"}))
-    with pytest.raises(
-        ValidationError, match=r"prompt contains a forbidden real-child identifier"
-    ) as exc_info:
-        assert_prompt_pii_safe("Born on 2020-01-15 was a hero.", forbidden=ctx)
-    assert exc_info.value.details.get("kind") == "birthdate"
 
 
 # ---------------------------------------------------------------------------
@@ -384,16 +317,6 @@ def test_name_with_ligature_is_matched_via_nfkc() -> None:
         assert_prompt_pii_safe("A tale of \ufb01ona the brave.", forbidden=ctx)
 
 
-def test_birthdate_in_fullwidth_digits_is_matched_via_nfkc() -> None:
-    """A birthdate written in full-width digits is caught after NFKC folding."""
-    ctx = make_ctx(birthdates=frozenset({"2018-04-07"}))
-    # Full-width digits U+FF10.. -> NFKC ASCII digits.
-    # Full-width digits U+FF10..U+FF19 around ASCII hyphens.
-    fullwidth_date = "\uff12\uff10\uff11\uff18-\uff10\uff14-\uff10\uff17"
-    with pytest.raises(ValidationError):
-        assert_prompt_pii_safe(f"born on {fullwidth_date}", forbidden=ctx)
-
-
 def test_forbidden_name_carrying_invisible_char_still_screens() -> None:
     """Folding is symmetric: an invisible char in the stored name is handled.
 
@@ -438,3 +361,122 @@ def test_nfkc_fold_does_not_over_match_plain_unrelated_text() -> None:
     ctx = make_ctx(names=frozenset({"Emma"}))
     # 'dilemma' contains 'emma' but preceded by a word char -> anchors reject.
     assert_prompt_pii_safe("The hero faced a dilemma at dawn.", forbidden=ctx)
+
+
+# ---------------------------------------------------------------------------
+# Pattern-based content screening: email, phone, street address.
+#
+# Unlike name matching, these checks are unconditional: they run
+# regardless of what PiiContext carries, since they catch identifying content
+# no registered-identifier list could have anticipated (e.g. a sibling's
+# contact details typed into a free-text story premise).
+# ---------------------------------------------------------------------------
+
+
+def test_email_in_prompt_raises() -> None:
+    """A prompt containing an email address raises with kind='email'."""
+    ctx = make_ctx()
+    with pytest.raises(
+        ValidationError, match=r"prompt contains PII-shaped content"
+    ) as exc_info:
+        assert_prompt_pii_safe(
+            "Please email updates to parent.name@example.com about the story.",
+            forbidden=ctx,
+        )
+    assert exc_info.value.details.get("kind") == "email"
+
+
+def test_phone_number_in_prompt_raises() -> None:
+    """A prompt containing a US-shaped phone number raises with kind='phone'."""
+    ctx = make_ctx()
+    for candidate in ["555-123-4567", "(555) 123-4567", "+1 555.123.4567"]:
+        with pytest.raises(
+            ValidationError, match=r"prompt contains PII-shaped content"
+        ) as exc_info:
+            assert_prompt_pii_safe(f"Call us at {candidate} please.", forbidden=ctx)
+        assert exc_info.value.details.get("kind") == "phone"
+
+
+def test_street_address_in_prompt_raises() -> None:
+    """A prompt containing a house-number-plus-suffix address raises."""
+    ctx = make_ctx()
+    with pytest.raises(
+        ValidationError, match=r"prompt contains PII-shaped content"
+    ) as exc_info:
+        assert_prompt_pii_safe(
+            "We live at 123 Oak Street and love reading together.",
+            forbidden=ctx,
+        )
+    assert exc_info.value.details.get("kind") == "address"
+
+
+def test_street_address_short_form_in_prompt_raises() -> None:
+    """A common abbreviated street suffix (e.g. 'Ave') is still matched."""
+    ctx = make_ctx()
+    with pytest.raises(ValidationError, match=r"prompt contains PII-shaped content"):
+        assert_prompt_pii_safe("42 Elm Ave is where the story starts.", forbidden=ctx)
+
+
+def test_phone_in_fullwidth_digits_is_matched_via_nfkc() -> None:
+    """A phone number written in full-width digits is caught after NFKC folding.
+
+    Pins the module docstring's claim that folding protects the pattern-based
+    checks too, not just name matching.
+    """
+    ctx = make_ctx()
+    # Full-width digits U+FF10..U+FF19 -> NFKC ASCII digits; "555-123-4567".
+    fullwidth_phone = "\uff15\uff15\uff15-\uff11\uff12\uff13-\uff14\uff15\uff16\uff17"
+    with pytest.raises(
+        ValidationError, match=r"prompt contains PII-shaped content"
+    ) as exc_info:
+        assert_prompt_pii_safe(f"Call us at {fullwidth_phone} please.", forbidden=ctx)
+    assert exc_info.value.details.get("kind") == "phone"
+
+
+def test_bare_number_does_not_raise_as_address() -> None:
+    """A number with no street-suffix word does not falsely match as an address."""
+    ctx = make_ctx()
+    assert_prompt_pii_safe(
+        "Produce between 8 and 750 nodes total for this story.", forbidden=ctx
+    )
+
+
+def test_ordinary_prose_with_capitalized_words_does_not_raise() -> None:
+    """Ordinary story prose with numbers and proper nouns is not PII-shaped."""
+    ctx = make_ctx()
+    assert_prompt_pii_safe(
+        "The 3 friends explored Oak Forest and found 12 hidden gems.",
+        forbidden=ctx,
+    )
+
+
+def test_iso_birthdate_does_not_falsely_match_phone_pattern() -> None:
+    """An ISO date's 4-2-2 digit grouping must not collide with the 3-3-4 phone shape."""
+    ctx = make_ctx()
+    assert_prompt_pii_safe("The tale is set on 2018-04-07 at dawn.", forbidden=ctx)
+
+
+def test_pattern_check_does_not_echo_matched_text() -> None:
+    """The ValidationError for a pattern match must not contain the matched text."""
+    ctx = make_ctx()
+    secret_email = "realparent@example.com"
+    with pytest.raises(ValidationError) as exc_info:
+        assert_prompt_pii_safe(f"Reach me at {secret_email}.", forbidden=ctx)
+    assert secret_email not in str(exc_info.value)
+
+
+def test_pattern_check_runs_even_with_empty_pii_context() -> None:
+    """Pattern-based screening is unconditional on PiiContext contents."""
+    ctx = make_ctx(names=frozenset())
+    with pytest.raises(ValidationError, match=r"prompt contains PII-shaped content"):
+        assert_prompt_pii_safe("Email me at nobody@nowhere.org", forbidden=ctx)
+
+
+def test_pattern_check_applies_to_protagonist_name_field_content() -> None:
+    """Pattern-shaped content is caught even where the fictional protagonist
+    name field lives in the prompt, since an email/phone/address is never
+    legitimate story content regardless of which field carries it."""
+    ctx = make_ctx()
+    prompt = 'You are "captain.rosa@example.com", a brave explorer.'
+    with pytest.raises(ValidationError, match=r"prompt contains PII-shaped content"):
+        assert_prompt_pii_safe(prompt, forbidden=ctx)

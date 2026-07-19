@@ -61,7 +61,7 @@ def _contract() -> ThemeContract:
 
 
 def _empty_pii() -> PiiContext:
-    return PiiContext(child_names=frozenset(), birthdates=frozenset())
+    return PiiContext(child_names=frozenset())
 
 
 def _brief() -> dict[str, object]:
@@ -221,7 +221,7 @@ async def test_bind_pii_guard_fires_and_provider_never_called() -> None:
     """
     real_child_name = "SecretChildActualName"
     brief = {"premise": f"A story created for {real_child_name} the brave."}
-    pii = PiiContext(child_names=frozenset({real_child_name}), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset({real_child_name}))
     provider = MockProvider(responses=[_VALID_RESPONSE])
 
     with pytest.raises(ValidationError):

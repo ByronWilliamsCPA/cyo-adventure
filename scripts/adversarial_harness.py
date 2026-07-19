@@ -260,16 +260,12 @@ def _pii_context_of(item: Mapping[str, object]) -> PiiContext:
     """Build a PiiContext from an item's ``pii_context`` block."""
     raw = item.get("pii_context")
     names: list[str] = []
-    dates: list[str] = []
     if isinstance(raw, dict):
         ctx: dict[str, object] = raw  # pyright: ignore[reportUnknownVariableType,reportAssignmentType]
         raw_names = ctx.get("child_names")
-        raw_dates = ctx.get("birthdates")
         if isinstance(raw_names, list):
             names = [n for n in raw_names if isinstance(n, str)]  # pyright: ignore[reportUnknownVariableType]
-        if isinstance(raw_dates, list):
-            dates = [d for d in raw_dates if isinstance(d, str)]  # pyright: ignore[reportUnknownVariableType]
-    return PiiContext(child_names=frozenset(names), birthdates=frozenset(dates))
+    return PiiContext(child_names=frozenset(names))
 
 
 async def _observe_item(

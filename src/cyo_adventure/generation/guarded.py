@@ -41,7 +41,7 @@ class PiiGuardedProvider:
     Args:
         inner: The real provider to delegate to after the PII check passes.
         forbidden: The :class:`~cyo_adventure.generation.pii.PiiContext`
-            carrying real-child names and birthdates for this family.
+            carrying real-child names for this family.
     """
 
     # #CRITICAL: security: sole structural enforcement point that prevents
@@ -65,8 +65,9 @@ class PiiGuardedProvider:
             The raw text completion from the inner provider.
 
         Raises:
-            ValidationError: If either block contains a real-child name or
-                birthdate from ``forbidden``. The inner provider is not called.
+            ValidationError: If either block contains a real-child name from
+                ``forbidden``, or PII-shaped content. The inner provider is
+                not called.
         """
         assert_prompt_pii_safe(system, forbidden=self._forbidden)
         assert_prompt_pii_safe(prompt, forbidden=self._forbidden)

@@ -434,9 +434,24 @@ def create_app() -> FastAPI:
     # sets its fronting domain(s) so a spoofed Host/X-Forwarded-Host is rejected.
     # #VERIFY: tests/unit/test_app.py::TestTrustedHost.
     _allowed_hosts = [h.strip() for h in settings.allowed_hosts.split(",") if h.strip()]
+    # #CRITICAL: security: HTTPSRedirectMiddleware inspects request.url.scheme,
+    # which only reflects the original client's scheme (rather than always
+    # "http", since Pangolin/the reverse proxy terminates TLS and forwards
+    # plain HTTP to this container) because forwarded_allow_ips already makes
+    # uvicorn trust X-Forwarded-Proto from the proxy (see that Settings
+    # field's docstring, audit Group A2). Enabling this without that trust
+    # already in place would either redirect-loop real HTTPS traffic or do
+    # nothing useful; it is safe now that the proxy-trust boundary is fixed.
+    # Disabled ONLY in ENVIRONMENT=local, mirroring the rate-limiter gate
+    # immediately below: local dev/CI talk to this app directly over plain
+    # HTTP with no reverse proxy in front of it, so a redirect would break
+    # every local request.
+    # #VERIFY: tests/unit/test_app.py::TestHttpsRedirectByEnvironment asserts
+    # the middleware is absent in local and present otherwise.
     add_security_middleware(
         app,
         enable_rate_limiting=settings.environment != "local",
+        enable_https_redirect=settings.environment != "local",
         allowed_hosts=_allowed_hosts or None,
     )
     # #CRITICAL: observability: CorrelationMiddleware is added LAST so it is the

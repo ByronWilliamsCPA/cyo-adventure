@@ -526,7 +526,7 @@ async def test_run_skeleton_fill_missing_slug_raises() -> None:
                 authoring={"theme_brief": {}},  # no skeleton_slug key
                 brief=cast("ConceptBrief", object()),
                 effective_provider=cast("GenerationProvider", object()),
-                pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+                pii=PiiContext(child_names=frozenset()),
             )
         )
 
@@ -583,7 +583,7 @@ async def test_run_skeleton_fill_threads_stage1_params_into_fill_skeleton(
         "ConceptBrief", SimpleNamespace(age_band=SimpleNamespace(value="8-11"))
     )
     provider = cast("GenerationProvider", object())
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
     outcome = await _run_skeleton_fill(
         _SkeletonFillContext(
             authoring={
@@ -1114,7 +1114,7 @@ def _dispatch_brief() -> ConceptBrief:
 
 
 def _dispatch_pii() -> PiiContext:
-    return PiiContext(child_names=frozenset(), birthdates=frozenset())
+    return PiiContext(child_names=frozenset())
 
 
 async def _fail_if_fill_called(*_args: object, **_kwargs: object) -> GenerationOutcome:

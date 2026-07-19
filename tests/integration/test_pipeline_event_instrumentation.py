@@ -68,7 +68,7 @@ def _moderation_settings() -> Settings:
 
 def _pii() -> PiiContext:
     """Return an empty PiiContext with no real-child identifiers to guard against."""
-    return PiiContext(child_names=frozenset(), birthdates=frozenset())
+    return PiiContext(child_names=frozenset())
 
 
 @pytest.fixture
