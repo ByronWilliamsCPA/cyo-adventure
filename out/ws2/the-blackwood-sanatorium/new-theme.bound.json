@@ -35,64 +35,64 @@
   "nodes": [
     {
       "id": "n_arrival",
-      "body": "<<FILL role=setup words=185 beats='{HERO} cuts the padlock on {ENTRANCE} of the {THRESHOLD} the night before the wrecking {DEADLINE_SIGN}s arrive; her late aunt {KIN} died a patient here and {GOAL} are somewhere inside; a demolition {WATCHER} does a round every hour; {HERO} has a headlamp, a folding knife, and until {DEADLINE}; the rain is coming and the great house waits, dark and breathing, its central {HUB_NAME} the only room she remembers from the day they took {KIN} away'>>",
+      "body": "<<FILL role=setup words=185 beats='Petra Voss cuts the padlock on the maintenance hatch of the Kestrel Hollow Silo the night before the wrecking survey teams arrive; her late aunt Dorin died a patient here and the classified logs that could clear his name are somewhere inside; a demolition site guard does a round every hour; Petra Voss has a headlamp, a folding knife, and until sunrise; the rain is coming and the great house waits, dark and breathing, its central atrium the only room she remembers from the day they took Dorin away'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_arrival_hub",
-          "label": "Cross the overgrown court and step into the {HUB_NAME}.",
+          "label": "Cross the overgrown court and step into the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_hub",
-      "body": "<<FILL role=choice words=155 beats='the central {HUB_NAME} of {THRESHOLD}, a domed hall where every wing corridor opens off a ring of dead doorways; from here {HERO} can reach the flooded west stairwell, the hydrotherapy hall, the cold rooms, the chapel crypt, the boiler house, the superintendent's wing, the locked dormitories, the dispensary, and the attic wards, or turn back for {ENTRANCE}; write this so it reads on a first arrival or on any return between corners, the {WATCHER}'s hourly torch a distant sweep across the far windows'>>",
+      "body": "<<FILL role=choice words=155 beats='the central atrium of Kestrel Hollow Silo, a domed hall where every wing corridor opens off a ring of dead doorways; from here Petra Voss can reach the flooded west stairwell, the hydrotherapy hall, the cold rooms, the chapel crypt, the boiler house, the superintendent's wing, the locked dormitories, the dispensary, and the attic wards, or turn back for the maintenance hatch; write this so it reads on a first arrival or on any return between corners, the site guard's hourly torch a distant sweep across the far windows'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hub_stair",
-          "label": "Take the passage to {STAIR_NAME}.",
+          "label": "Take the passage to the flooded silo shaft.",
           "target": "n_stair_r1"
         },
         {
           "id": "c_hub_hydro",
-          "label": "Take the passage to {HYDRO_NAME}.",
+          "label": "Take the passage to the coolant plant.",
           "target": "n_hydro_r1"
         },
         {
           "id": "c_hub_morgue",
-          "label": "Take the passage to {MORGUE_NAME}.",
+          "label": "Take the passage to the cold war archive vault.",
           "target": "n_morgue_r1"
         },
         {
           "id": "c_hub_chapel",
-          "label": "Take the passage to {CHAPEL_NAME}.",
+          "label": "Take the passage to the memorial yard.",
           "target": "n_chapel_r1"
         },
         {
           "id": "c_hub_boiler",
-          "label": "Take the passage to {BOILER_NAME}.",
+          "label": "Take the passage to the generator hall.",
           "target": "n_boiler_r1"
         },
         {
           "id": "c_hub_office",
-          "label": "Take the passage to {OFFICE_NAME}.",
+          "label": "Take the passage to the commandant's suite.",
           "target": "n_office_r1"
         },
         {
           "id": "c_hub_ward",
-          "label": "Take the passage to {WARD_NAME}.",
+          "label": "Take the passage to the barracks block.",
           "target": "n_ward_r1"
         },
         {
           "id": "c_hub_dispensary",
-          "label": "Take the passage to {DISPENSARY_NAME}.",
+          "label": "Take the passage to the medical stores.",
           "target": "n_dispensary_r1"
         },
         {
           "id": "c_hub_attic",
-          "label": "Take the passage to {ATTIC_NAME}.",
+          "label": "Take the passage to the antenna loft.",
           "target": "n_attic_r1"
         },
         {
@@ -104,7 +104,7 @@
     },
     {
       "id": "e_abandon",
-      "body": "<<FILL role=ending words=140 beats='{HERO} stands in the {HUB_NAME} listening to the rain find its way through the dome and decides the dead cannot be helped by the dead; she walks out through {ENTRANCE} empty-handed as the first {DEADLINE_SIGN} trucks turn in, and reads about the demolition in the paper a week later, {KIN}'s name uncleared and the question closed with the building'>>",
+      "body": "<<FILL role=ending words=140 beats='Petra Voss stands in the atrium listening to the rain find its way through the dome and decides the dead cannot be helped by the dead; she walks out through the maintenance hatch empty-handed as the first survey team trucks turn in, and reads about the demolition in the paper a week later, Dorin's name uncleared and the question closed with the building'>>",
       "is_ending": true,
       "ending": {
         "id": "end_abandon",
@@ -115,7 +115,7 @@
     },
     {
       "id": "n_stair_r1",
-      "body": "<<FILL role=rising words=170 beats='{HERO} enters {STAIR_NAME}: the west stairwell drops into standing black water that laps the seventh step; a rope of knotted sheets hangs from the dark above, and the ledger room {HERO} wants is rumoured to be at the very top of {THRESHOLD}; then {HERO} wades the flooded landing, cold to the knee, feeling for the submerged rail with the toe of her boot'>>",
+      "body": "<<FILL role=rising words=170 beats='Petra Voss enters the flooded silo shaft: the west stairwell drops into standing black water that laps the seventh step; a rope of knotted sheets hangs from the dark above, and the ledger room Petra Voss wants is rumoured to be at the very top of Kestrel Hollow Silo; then Petra Voss wades the flooded landing, cold to the knee, feeling for the submerged rail with the toe of her boot'>>",
       "is_ending": false,
       "choices": [
         {
@@ -125,7 +125,7 @@
         },
         {
           "id": "c_stair_r1_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -142,7 +142,7 @@
         },
         {
           "id": "c_stair_r2_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -159,14 +159,14 @@
         },
         {
           "id": "c_stair_r3_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_stair_r4",
-      "body": "<<FILL role=rising words=170 beats='a linen chute {HERO} could climb if she trusts the rusted brackets to hold her weight'>>",
+      "body": "<<FILL role=rising words=170 beats='a linen chute Petra Voss could climb if she trusts the rusted brackets to hold her weight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -176,7 +176,7 @@
         },
         {
           "id": "c_stair_r4_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -193,14 +193,14 @@
         },
         {
           "id": "c_stair_r5_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_stair_r6",
-      "body": "<<FILL role=rising words=170 beats='a bricked-up doorway with fresh mortar; someone sealed this recently and {HERO} wonders what is behind it'>>",
+      "body": "<<FILL role=rising words=170 beats='a bricked-up doorway with fresh mortar; someone sealed this recently and Petra Voss wonders what is behind it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -210,7 +210,7 @@
         },
         {
           "id": "c_stair_r6_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -227,7 +227,7 @@
         },
         {
           "id": "c_stair_r7_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -244,7 +244,7 @@
         },
         {
           "id": "c_stair_r8_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -261,7 +261,7 @@
         },
         {
           "id": "c_stair_r9_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -278,7 +278,7 @@
         },
         {
           "id": "c_stair_r10_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -295,7 +295,7 @@
         },
         {
           "id": "c_stair_r11_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -312,7 +312,7 @@
         },
         {
           "id": "c_stair_r12_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -329,7 +329,7 @@
         },
         {
           "id": "c_stair_r13_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -346,7 +346,7 @@
         },
         {
           "id": "c_stair_r14_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -363,7 +363,7 @@
         },
         {
           "id": "c_stair_r15_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -380,14 +380,14 @@
         },
         {
           "id": "c_stair_r16_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_stair_term",
-      "body": "<<FILL role=choice words=170 beats='the sealed records tower at the top of {THRESHOLD}; here the patient ledgers are shelved by year, and {KIN}'s volume waits with the truth {HERO} came for, if she can carry it back down before the {WATCHER} or the {DEADLINE} or the failing floor ends her night'>>",
+      "body": "<<FILL role=choice words=170 beats='the sealed records tower at the top of Kestrel Hollow Silo; here the patient ledgers are shelved by year, and Dorin's volume waits with the truth Petra Voss came for, if she can carry it back down before the site guard or the sunrise or the failing floor ends her night'>>",
       "is_ending": false,
       "choices": [
         {
@@ -402,14 +402,14 @@
         },
         {
           "id": "c_stair_term_back",
-          "label": "Leave it and withdraw to the {HUB_NAME}.",
+          "label": "Leave it and withdraw to the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "e_stair_1",
-      "body": "<<FILL role=ending words=140 beats='{HERO} finds {KIN}'s volume, tucks it under her coat, and makes the long descent back through the flooded stair to {ENTRANCE} as the first {DEADLINE_SIGN} truck grinds up the drive; the record is out, the name will be cleared, and {THRESHOLD} can fall now that its worst secret is on its way to daylight'>>",
+      "body": "<<FILL role=ending words=140 beats='Petra Voss finds Dorin's volume, tucks it under her coat, and makes the long descent back through the flooded stair to the maintenance hatch as the first survey team truck grinds up the drive; the record is out, the name will be cleared, and Kestrel Hollow Silo can fall now that its worst secret is on its way to daylight'>>",
       "is_ending": true,
       "ending": {
         "id": "end_stair_1",
@@ -420,7 +420,7 @@
     },
     {
       "id": "e_stair_2",
-      "body": "<<FILL role=ending words=140 beats='the ledger for {KIN}'s year is here but her pages have been razored out clean; {HERO} photographs the stubs and the razor marks and leaves knowing exactly who to accuse, even without the words, one certainty carried down in place of the proof'>>",
+      "body": "<<FILL role=ending words=140 beats='the ledger for Dorin's year is here but her pages have been razored out clean; Petra Voss photographs the stubs and the razor marks and leaves knowing exactly who to accuse, even without the words, one certainty carried down in place of the proof'>>",
       "is_ending": true,
       "ending": {
         "id": "end_stair_2",
@@ -431,7 +431,7 @@
     },
     {
       "id": "n_hydro_r1",
-      "body": "<<FILL role=rising words=170 beats='{HERO} enters {HYDRO_NAME}: the hydrotherapy hall, a long vault of cracked green tile where iron tubs sit in rows under seized brass taps and canvas restraint straps rotted to threads; then {HERO} walks the row of tubs, each still ringed with a tide-line of mineral scale at a different, deliberate height'>>",
+      "body": "<<FILL role=rising words=170 beats='Petra Voss enters the coolant plant: the hydrotherapy hall, a long vault of cracked green tile where iron tubs sit in rows under seized brass taps and canvas restraint straps rotted to threads; then Petra Voss walks the row of tubs, each still ringed with a tide-line of mineral scale at a different, deliberate height'>>",
       "is_ending": false,
       "choices": [
         {
@@ -441,7 +441,7 @@
         },
         {
           "id": "c_hydro_r1_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -458,7 +458,7 @@
         },
         {
           "id": "c_hydro_r2_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -475,7 +475,7 @@
         },
         {
           "id": "c_hydro_r3_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -492,7 +492,7 @@
         },
         {
           "id": "c_hydro_r4_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -509,7 +509,7 @@
         },
         {
           "id": "c_hydro_r5_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -526,7 +526,7 @@
         },
         {
           "id": "c_hydro_r6_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -543,7 +543,7 @@
         },
         {
           "id": "c_hydro_r7_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -560,7 +560,7 @@
         },
         {
           "id": "c_hydro_r8_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -577,7 +577,7 @@
         },
         {
           "id": "c_hydro_r9_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -594,14 +594,14 @@
         },
         {
           "id": "c_hydro_r10_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_hydro_r11",
-      "body": "<<FILL role=rising words=170 beats='a maintenance crawlway under the tubs, {HERO}'s headlamp catching the glint of dropped instruments in the muck'>>",
+      "body": "<<FILL role=rising words=170 beats='a maintenance crawlway under the tubs, Petra Voss's headlamp catching the glint of dropped instruments in the muck'>>",
       "is_ending": false,
       "choices": [
         {
@@ -611,7 +611,7 @@
         },
         {
           "id": "c_hydro_r11_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -628,7 +628,7 @@
         },
         {
           "id": "c_hydro_r12_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -645,14 +645,14 @@
         },
         {
           "id": "c_hydro_r13_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_hydro_term",
-      "body": "<<FILL role=choice words=170 beats='the sluice control room above the drowned sub-basement; the greased valve here empties or floods the whole lower hall, and a demolition charge sits taped to the intake pipe with a {DEADLINE_SIGN} tag {HERO} was not meant to see'>>",
+      "body": "<<FILL role=choice words=170 beats='the sluice control room above the drowned sub-basement; the greased valve here empties or floods the whole lower hall, and a demolition charge sits taped to the intake pipe with a survey team tag Petra Voss was not meant to see'>>",
       "is_ending": false,
       "choices": [
         {
@@ -672,14 +672,14 @@
         },
         {
           "id": "c_hydro_term_back",
-          "label": "Leave it and withdraw to the {HUB_NAME}.",
+          "label": "Leave it and withdraw to the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "e_hydro_1",
-      "body": "<<FILL role=ending words=140 beats='the tag proves the {DEADLINE_SIGN} pre-set charges days early, before the required survey; {HERO} pockets the tag as evidence of corner-cutting and slips out, the ledgers still unfound but a different scandal now in her hand'>>",
+      "body": "<<FILL role=ending words=140 beats='the tag proves the survey team pre-set charges days early, before the required survey; Petra Voss pockets the tag as evidence of corner-cutting and slips out, the ledgers still unfound but a different scandal now in her hand'>>",
       "is_ending": true,
       "ending": {
         "id": "end_hydro_1",
@@ -690,7 +690,7 @@
     },
     {
       "id": "e_hydro_2",
-      "body": "<<FILL role=ending words=140 beats='the greased valve was a trap; the door drops behind {HERO} on a counterweight and the room begins to fill from the intake she opened, water at her ankles, then her knees, and no wheel on this side to turn it back before the {DEADLINE_SIGN} find her at {DEADLINE}'>>",
+      "body": "<<FILL role=ending words=140 beats='the greased valve was a trap; the door drops behind Petra Voss on a counterweight and the room begins to fill from the intake she opened, water at her ankles, then her knees, and no wheel on this side to turn it back before the survey team find her at sunrise'>>",
       "is_ending": true,
       "ending": {
         "id": "end_hydro_2",
@@ -701,7 +701,7 @@
     },
     {
       "id": "e_hydro_3",
-      "body": "<<FILL role=ending words=140 beats='{HERO} tugs the taped charge to read the {DEADLINE_SIGN} tag and the corroded trembler switch does the rest; the intake pipe lets go in a white hammer of pressure and the hydrotherapy hall becomes her grave hours before the {DEADLINE_SIGN}s would have brought it down themselves'>>",
+      "body": "<<FILL role=ending words=140 beats='Petra Voss tugs the taped charge to read the survey team tag and the corroded trembler switch does the rest; the intake pipe lets go in a white hammer of pressure and the hydrotherapy hall becomes her grave hours before the survey teams would have brought it down themselves'>>",
       "is_ending": true,
       "ending": {
         "id": "end_hydro_3",
@@ -712,7 +712,7 @@
     },
     {
       "id": "n_morgue_r1",
-      "body": "<<FILL role=rising words=170 beats='{HERO} enters {MORGUE_NAME}: the mortuary corridor, its double doors swinging on a draught that should not exist, the air ten degrees colder than the rest of {THRESHOLD} and smelling of old formalin; then {HERO} passes the drawer wall, thirty steel doors, one of them ajar and the runner drawn out a hand's width into the dark'>>",
+      "body": "<<FILL role=rising words=170 beats='Petra Voss enters the cold war archive vault: the mortuary corridor, its double doors swinging on a draught that should not exist, the air ten degrees colder than the rest of Kestrel Hollow Silo and smelling of old formalin; then Petra Voss passes the drawer wall, thirty steel doors, one of them ajar and the runner drawn out a hand's width into the dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -722,7 +722,7 @@
         },
         {
           "id": "c_morgue_r1_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -739,7 +739,7 @@
         },
         {
           "id": "c_morgue_r2_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -756,7 +756,7 @@
         },
         {
           "id": "c_morgue_r3_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -773,7 +773,7 @@
         },
         {
           "id": "c_morgue_r4_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -790,7 +790,7 @@
         },
         {
           "id": "c_morgue_r5_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -807,14 +807,14 @@
         },
         {
           "id": "c_morgue_r6_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_morgue_r7",
-      "body": "<<FILL role=rising words=170 beats='a passage of glazed brick where {HERO}'s own breath smokes and the headlamp beam seems to reach less far than it should'>>",
+      "body": "<<FILL role=rising words=170 beats='a passage of glazed brick where Petra Voss's own breath smokes and the headlamp beam seems to reach less far than it should'>>",
       "is_ending": false,
       "choices": [
         {
@@ -824,7 +824,7 @@
         },
         {
           "id": "c_morgue_r7_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -841,7 +841,7 @@
         },
         {
           "id": "c_morgue_r8_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -858,14 +858,14 @@
         },
         {
           "id": "c_morgue_r9_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_morgue_r10",
-      "body": "<<FILL role=rising words=170 beats='the far cold room where the temperature bottoms out and {HERO}'s fingers start to stop obeying her'>>",
+      "body": "<<FILL role=rising words=170 beats='the far cold room where the temperature bottoms out and Petra Voss's fingers start to stop obeying her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -875,7 +875,7 @@
         },
         {
           "id": "c_morgue_r10_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -892,14 +892,14 @@
         },
         {
           "id": "c_morgue_r11_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_morgue_r12",
-      "body": "<<FILL role=rising words=170 beats='the threshold of the death register vault, where the tally of who {THRESHOLD} killed is kept in the coldest room of all'>>",
+      "body": "<<FILL role=rising words=170 beats='the threshold of the death register vault, where the tally of who Kestrel Hollow Silo killed is kept in the coldest room of all'>>",
       "is_ending": false,
       "choices": [
         {
@@ -909,7 +909,7 @@
         },
         {
           "id": "c_morgue_r12_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -926,14 +926,14 @@
         },
         {
           "id": "c_morgue_r13_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_morgue_term",
-      "body": "<<FILL role=choice words=170 beats='the death register vault, kept cold to preserve the paper; here the true cause-of-death book contradicts every polished official record, and {KIN}'s entry is somewhere in these frozen stacks if {HERO} can read it before the cold reads her'>>",
+      "body": "<<FILL role=choice words=170 beats='the death register vault, kept cold to preserve the paper; here the true cause-of-death book contradicts every polished official record, and Dorin's entry is somewhere in these frozen stacks if Petra Voss can read it before the cold reads her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -953,14 +953,14 @@
         },
         {
           "id": "c_morgue_term_back",
-          "label": "Leave it and withdraw to the {HUB_NAME}.",
+          "label": "Leave it and withdraw to the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "e_morgue_1",
-      "body": "<<FILL role=ending words=140 beats='{HERO} finds the true entry: {KIN} did not die of the fever {THRESHOLD} claimed; she copies the page by headlamp, hands shaking with cold and rage, and carries one damning photograph out into the rain, enough to reopen everything'>>",
+      "body": "<<FILL role=ending words=140 beats='Petra Voss finds the true entry: Dorin did not die of the fever Kestrel Hollow Silo claimed; she copies the page by headlamp, hands shaking with cold and rage, and carries one damning photograph out into the rain, enough to reopen everything'>>",
       "is_ending": true,
       "ending": {
         "id": "end_morgue_1",
@@ -971,7 +971,7 @@
     },
     {
       "id": "e_morgue_2",
-      "body": "<<FILL role=ending words=140 beats='absorbed in the register, {HERO} does not hear the {WATCHER} until his torch pins her against the drawer wall; he is calling it in already, and there is no back way out of a vault with one iron door and her name now on a police report'>>",
+      "body": "<<FILL role=ending words=140 beats='absorbed in the register, Petra Voss does not hear the site guard until his torch pins her against the drawer wall; he is calling it in already, and there is no back way out of a vault with one iron door and her name now on a police report'>>",
       "is_ending": true,
       "ending": {
         "id": "end_morgue_2",
@@ -982,7 +982,7 @@
     },
     {
       "id": "e_morgue_3",
-      "body": "<<FILL role=ending words=140 beats='the cold store door swings shut on its brick and the latch takes; {HERO} works at the hinge until her fingers will not close, then sits, then does not get up, found in the spring thaw by the salvage men clearing the last of the steel'>>",
+      "body": "<<FILL role=ending words=140 beats='the cold store door swings shut on its brick and the latch takes; Petra Voss works at the hinge until her fingers will not close, then sits, then does not get up, found in the spring thaw by the salvage men clearing the last of the steel'>>",
       "is_ending": true,
       "ending": {
         "id": "end_morgue_3",
@@ -993,7 +993,7 @@
     },
     {
       "id": "n_chapel_r1",
-      "body": "<<FILL role=rising words=170 beats='{HERO} enters {CHAPEL_NAME}: the deconsecrated chapel, its roof half open to the coming storm, pews shoved to the walls and the altar stone dragged aside over a black rectangle of stair; then {HERO} crosses the nave under a rose window with every pane knocked out, rain beginning to spit through onto the flags'>>",
+      "body": "<<FILL role=rising words=170 beats='Petra Voss enters the memorial yard: the deconsecrated chapel, its roof half open to the coming storm, pews shoved to the walls and the altar stone dragged aside over a black rectangle of stair; then Petra Voss crosses the nave under a rose window with every pane knocked out, rain beginning to spit through onto the flags'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1003,7 +1003,7 @@
         },
         {
           "id": "c_chapel_r1_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1020,7 +1020,7 @@
         },
         {
           "id": "c_chapel_r2_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1037,7 +1037,7 @@
         },
         {
           "id": "c_chapel_r3_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1054,7 +1054,7 @@
         },
         {
           "id": "c_chapel_r4_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1071,7 +1071,7 @@
         },
         {
           "id": "c_chapel_r5_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1088,7 +1088,7 @@
         },
         {
           "id": "c_chapel_r6_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1105,7 +1105,7 @@
         },
         {
           "id": "c_chapel_r7_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1122,7 +1122,7 @@
         },
         {
           "id": "c_chapel_r8_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1139,7 +1139,7 @@
         },
         {
           "id": "c_chapel_r9_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1156,7 +1156,7 @@
         },
         {
           "id": "c_chapel_r10_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1173,14 +1173,14 @@
         },
         {
           "id": "c_chapel_r11_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_chapel_r12",
-      "body": "<<FILL role=rising words=170 beats='a bricked recess with newer mortar, and behind it, when {HERO} knocks, the flat sound of a filled cavity'>>",
+      "body": "<<FILL role=rising words=170 beats='a bricked recess with newer mortar, and behind it, when Petra Voss knocks, the flat sound of a filled cavity'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1190,14 +1190,14 @@
         },
         {
           "id": "c_chapel_r12_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_chapel_term",
-      "body": "<<FILL role=choice words=170 beats='the crypt's plot ledger and the sexton's map together, which match {THRESHOLD}'s nameless numbered graves to the patients who were never reported dead; {KIN}'s number is on the map, and the freshly bricked recess is exactly where it points'>>",
+      "body": "<<FILL role=choice words=170 beats='the crypt's plot ledger and the sexton's map together, which match Kestrel Hollow Silo's nameless numbered graves to the patients who were never reported dead; Dorin's number is on the map, and the freshly bricked recess is exactly where it points'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1217,14 +1217,14 @@
         },
         {
           "id": "c_chapel_term_back",
-          "label": "Leave it and withdraw to the {HUB_NAME}.",
+          "label": "Leave it and withdraw to the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "e_chapel_1",
-      "body": "<<FILL role=ending words=140 beats='the map ties {KIN}'s patient number to an unrecorded grave; {HERO} photographs map, ledger, and plaque together, the chain of proof complete, and climbs back into the storm with a truth the wrecking ball cannot bury now'>>",
+      "body": "<<FILL role=ending words=140 beats='the map ties Dorin's patient number to an unrecorded grave; Petra Voss photographs map, ledger, and plaque together, the chain of proof complete, and climbs back into the storm with a truth the wrecking ball cannot bury now'>>",
       "is_ending": true,
       "ending": {
         "id": "end_chapel_1",
@@ -1235,7 +1235,7 @@
     },
     {
       "id": "e_chapel_2",
-      "body": "<<FILL role=ending words=140 beats='the storm comes through the open roof in a sheet and the crypt stair turns to a running gutter; {HERO} is forced up and out with her photographs half taken, the graves' secret intact for one more night that she may not get again'>>",
+      "body": "<<FILL role=ending words=140 beats='the storm comes through the open roof in a sheet and the crypt stair turns to a running gutter; Petra Voss is forced up and out with her photographs half taken, the graves' secret intact for one more night that she may not get again'>>",
       "is_ending": true,
       "ending": {
         "id": "end_chapel_2",
@@ -1246,7 +1246,7 @@
     },
     {
       "id": "e_chapel_3",
-      "body": "<<FILL role=ending words=140 beats='{HERO} pulls the newer bricks to see the cavity and the old mortar above lets go, the recess collapsing to pen her in a space too small to turn, calling into a chapel where only the {WATCHER} will ever hear'>>",
+      "body": "<<FILL role=ending words=140 beats='Petra Voss pulls the newer bricks to see the cavity and the old mortar above lets go, the recess collapsing to pen her in a space too small to turn, calling into a chapel where only the site guard will ever hear'>>",
       "is_ending": true,
       "ending": {
         "id": "end_chapel_3",
@@ -1257,7 +1257,7 @@
     },
     {
       "id": "n_boiler_r1",
-      "body": "<<FILL role=rising words=170 beats='{HERO} enters {BOILER_NAME}: the boiler house, a cathedral of cold iron where three great furnaces stand dead and a maze of lagged pipes climbs into the roof dark, asbestos hanging in grey rags; then {HERO} threads the pipe maze, ducking runs of lagging that shed grey dust into her headlamp beam with every brush'>>",
+      "body": "<<FILL role=rising words=170 beats='Petra Voss enters the generator hall: the boiler house, a cathedral of cold iron where three great furnaces stand dead and a maze of lagged pipes climbs into the roof dark, asbestos hanging in grey rags; then Petra Voss threads the pipe maze, ducking runs of lagging that shed grey dust into her headlamp beam with every brush'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1267,7 +1267,7 @@
         },
         {
           "id": "c_boiler_r1_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1284,7 +1284,7 @@
         },
         {
           "id": "c_boiler_r2_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1301,7 +1301,7 @@
         },
         {
           "id": "c_boiler_r3_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1318,7 +1318,7 @@
         },
         {
           "id": "c_boiler_r4_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1335,7 +1335,7 @@
         },
         {
           "id": "c_boiler_r5_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1352,14 +1352,14 @@
         },
         {
           "id": "c_boiler_r6_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_boiler_r7",
-      "body": "<<FILL role=rising words=170 beats='a service tunnel branching toward every wing, the arteries of {THRESHOLD}, warm and lightless and long'>>",
+      "body": "<<FILL role=rising words=170 beats='a service tunnel branching toward every wing, the arteries of Kestrel Hollow Silo, warm and lightless and long'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1369,7 +1369,7 @@
         },
         {
           "id": "c_boiler_r7_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1386,14 +1386,14 @@
         },
         {
           "id": "c_boiler_r8_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_boiler_r9",
-      "body": "<<FILL role=rising words=170 beats='a wall of valve tags, and among them a fresh {DEADLINE_SIGN} tag reading do not charge until survey in a hand already ignored'>>",
+      "body": "<<FILL role=rising words=170 beats='a wall of valve tags, and among them a fresh survey team tag reading do not charge until survey in a hand already ignored'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1403,7 +1403,7 @@
         },
         {
           "id": "c_boiler_r9_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1420,7 +1420,7 @@
         },
         {
           "id": "c_boiler_r10_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1437,7 +1437,7 @@
         },
         {
           "id": "c_boiler_r11_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1454,14 +1454,14 @@
         },
         {
           "id": "c_boiler_r12_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_boiler_term",
-      "body": "<<FILL role=choice words=170 beats='the boiler-house control room, whose master board maps every tunnel in {THRESHOLD} and whose steel cabinet holds both the disposal ledger and the {DEADLINE_SIGN}'s early charge plan; from here {HERO} can reach any wing, or bring the whole building down early by accident'>>",
+      "body": "<<FILL role=choice words=170 beats='the boiler-house control room, whose master board maps every tunnel in Kestrel Hollow Silo and whose steel cabinet holds both the disposal ledger and the survey team's early charge plan; from here Petra Voss can reach any wing, or bring the whole building down early by accident'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1481,14 +1481,14 @@
         },
         {
           "id": "c_boiler_term_back",
-          "label": "Leave it and withdraw to the {HUB_NAME}.",
+          "label": "Leave it and withdraw to the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "e_boiler_1",
-      "body": "<<FILL role=ending words=140 beats='the catwalk grating gives under {HERO}'s boot mid-span and folds her through into the ash pit below; the fall breaks what needs to break, and {THRESHOLD} keeps her the way it kept the numbered graves, quietly and without a record'>>",
+      "body": "<<FILL role=ending words=140 beats='the catwalk grating gives under Petra Voss's boot mid-span and folds her through into the ash pit below; the fall breaks what needs to break, and Kestrel Hollow Silo keeps her the way it kept the numbered graves, quietly and without a record'>>",
       "is_ending": true,
       "ending": {
         "id": "end_boiler_1",
@@ -1499,7 +1499,7 @@
     },
     {
       "id": "e_boiler_2",
-      "body": "<<FILL role=ending words=140 beats='the fuel ledger's disposal column was never about coal; {HERO} reads what was fed to the furnaces and by whom, photographs the page, and carries out of the boiler house a proof heavier than any single name'>>",
+      "body": "<<FILL role=ending words=140 beats='the fuel ledger's disposal column was never about coal; Petra Voss reads what was fed to the furnaces and by whom, photographs the page, and carries out of the boiler house a proof heavier than any single name'>>",
       "is_ending": true,
       "ending": {
         "id": "end_boiler_2",
@@ -1510,7 +1510,7 @@
     },
     {
       "id": "e_boiler_3",
-      "body": "<<FILL role=ending words=140 beats='{HERO} ducks into the service tunnel to cross to another wing and a fire shutter drops behind her on a corroded fusible link; the far end is bricked and the near end shut, and she is sealed in the warm dark of {THRESHOLD}'s arteries with the trucks not due for hours and no one who knows she is here'>>",
+      "body": "<<FILL role=ending words=140 beats='Petra Voss ducks into the service tunnel to cross to another wing and a fire shutter drops behind her on a corroded fusible link; the far end is bricked and the near end shut, and she is sealed in the warm dark of Kestrel Hollow Silo's arteries with the trucks not due for hours and no one who knows she is here'>>",
       "is_ending": true,
       "ending": {
         "id": "end_boiler_3",
@@ -1521,7 +1521,7 @@
     },
     {
       "id": "n_office_r1",
-      "body": "<<FILL role=rising words=170 beats='{HERO} enters {OFFICE_NAME}: the administration wing, panelled and grand where the wards were bare, a run of offices climbing to the superintendent's rooms behind a door still bearing his brass nameplate; then {HERO} moves down the clerks' hall, typewriters shrouded in dust sheets like a row of small square ghosts'>>",
+      "body": "<<FILL role=rising words=170 beats='Petra Voss enters the commandant's suite: the administration wing, panelled and grand where the wards were bare, a run of offices climbing to the superintendent's rooms behind a door still bearing his brass nameplate; then Petra Voss moves down the clerks' hall, typewriters shrouded in dust sheets like a row of small square ghosts'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1531,7 +1531,7 @@
         },
         {
           "id": "c_office_r1_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1548,7 +1548,7 @@
         },
         {
           "id": "c_office_r2_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1565,7 +1565,7 @@
         },
         {
           "id": "c_office_r3_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1582,7 +1582,7 @@
         },
         {
           "id": "c_office_r4_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1599,7 +1599,7 @@
         },
         {
           "id": "c_office_r5_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1616,7 +1616,7 @@
         },
         {
           "id": "c_office_r6_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1633,7 +1633,7 @@
         },
         {
           "id": "c_office_r7_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1650,7 +1650,7 @@
         },
         {
           "id": "c_office_r8_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1667,7 +1667,7 @@
         },
         {
           "id": "c_office_r9_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1684,7 +1684,7 @@
         },
         {
           "id": "c_office_r10_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1701,7 +1701,7 @@
         },
         {
           "id": "c_office_r11_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1718,14 +1718,14 @@
         },
         {
           "id": "c_office_r12_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_office_r13",
-      "body": "<<FILL role=rising words=170 beats='the deeds and estates office, plans of {THRESHOLD}'s grounds pinned up, one plot inked over in red'>>",
+      "body": "<<FILL role=rising words=170 beats='the deeds and estates office, plans of Kestrel Hollow Silo's grounds pinned up, one plot inked over in red'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1735,7 +1735,7 @@
         },
         {
           "id": "c_office_r13_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1752,14 +1752,14 @@
         },
         {
           "id": "c_office_r14_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_office_r15",
-      "body": "<<FILL role=rising words=170 beats='the superintendent's outer office, a secretary's desk, an appointment book open to the week {KIN} died'>>",
+      "body": "<<FILL role=rising words=170 beats='the superintendent's outer office, a secretary's desk, an appointment book open to the week Dorin died'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1769,7 +1769,7 @@
         },
         {
           "id": "c_office_r15_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1786,14 +1786,14 @@
         },
         {
           "id": "c_office_r16_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_office_term",
-      "body": "<<FILL role=choice words=170 beats='the superintendent's study, where the private correspondence file explains in his own signed hand what {THRESHOLD} did and hid; the lamp is warm, which means someone was here tonight, and the file {HERO} needs is the one already half in the fire grate'>>",
+      "body": "<<FILL role=choice words=170 beats='the superintendent's study, where the private correspondence file explains in his own signed hand what Kestrel Hollow Silo did and hid; the lamp is warm, which means someone was here tonight, and the file Petra Voss needs is the one already half in the fire grate'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1808,14 +1808,14 @@
         },
         {
           "id": "c_office_term_back",
-          "label": "Leave it and withdraw to the {HUB_NAME}.",
+          "label": "Leave it and withdraw to the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "e_office_1",
-      "body": "<<FILL role=ending words=140 beats='{HERO} pulls the file from the grate before it catches, the superintendent's own signature on every damning line, and is gone through the study window and down the fire escape into the storm with the confession dry against her chest'>>",
+      "body": "<<FILL role=ending words=140 beats='Petra Voss pulls the file from the grate before it catches, the superintendent's own signature on every damning line, and is gone through the study window and down the fire escape into the storm with the confession dry against her chest'>>",
       "is_ending": true,
       "ending": {
         "id": "end_office_1",
@@ -1826,7 +1826,7 @@
     },
     {
       "id": "e_office_2",
-      "body": "<<FILL role=ending words=140 beats='she is a minute too late; the file is a curl of black flakes and the reading lamp still warm from whoever burned it; {HERO} leaves with nothing but the certainty that someone else is inside {THRESHOLD} tonight and knew exactly what to destroy'>>",
+      "body": "<<FILL role=ending words=140 beats='she is a minute too late; the file is a curl of black flakes and the reading lamp still warm from whoever burned it; Petra Voss leaves with nothing but the certainty that someone else is inside Kestrel Hollow Silo tonight and knew exactly what to destroy'>>",
       "is_ending": true,
       "ending": {
         "id": "end_office_2",
@@ -1837,7 +1837,7 @@
     },
     {
       "id": "n_ward_r1",
-      "body": "<<FILL role=rising words=170 beats='{HERO} enters {WARD_NAME}: the long dormitory ward, thirty iron beds in two rows under a vaulted ceiling, restraint rings still bolted to the frames and the wind moving the curtains that divide nothing from nothing; then {HERO} walks the aisle of beds, each with a slate at its foot still chalked with a number and a treatment she does not want to read'>>",
+      "body": "<<FILL role=rising words=170 beats='Petra Voss enters the barracks block: the long dormitory ward, thirty iron beds in two rows under a vaulted ceiling, restraint rings still bolted to the frames and the wind moving the curtains that divide nothing from nothing; then Petra Voss walks the aisle of beds, each with a slate at its foot still chalked with a number and a treatment she does not want to read'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1847,7 +1847,7 @@
         },
         {
           "id": "c_ward_r1_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1864,7 +1864,7 @@
         },
         {
           "id": "c_ward_r2_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1881,7 +1881,7 @@
         },
         {
           "id": "c_ward_r3_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1898,7 +1898,7 @@
         },
         {
           "id": "c_ward_r4_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1915,7 +1915,7 @@
         },
         {
           "id": "c_ward_r5_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1932,14 +1932,14 @@
         },
         {
           "id": "c_ward_r6_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_ward_r7",
-      "body": "<<FILL role=rising words=170 beats='a locked side ward, its door forced by someone before {HERO}, the wood splintered outward as if against a push from within'>>",
+      "body": "<<FILL role=rising words=170 beats='a locked side ward, its door forced by someone before Petra Voss, the wood splintered outward as if against a push from within'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1949,7 +1949,7 @@
         },
         {
           "id": "c_ward_r7_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1966,7 +1966,7 @@
         },
         {
           "id": "c_ward_r8_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -1983,14 +1983,14 @@
         },
         {
           "id": "c_ward_r9_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_ward_r10",
-      "body": "<<FILL role=rising words=170 beats='the isolation annex, colder and stiller, its four cells numbered in a sequence that skips {KIN}'s'>>",
+      "body": "<<FILL role=rising words=170 beats='the isolation annex, colder and stiller, its four cells numbered in a sequence that skips Dorin's'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2000,7 +2000,7 @@
         },
         {
           "id": "c_ward_r10_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2017,14 +2017,14 @@
         },
         {
           "id": "c_ward_r11_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_ward_term",
-      "body": "<<FILL role=choice words=170 beats='the ward matron's cabinet, holding the signed authorisations for what was done in these beds; {KIN}'s slate and her authorisation are filed together here, and reading them tells {HERO} everything and takes the time she does not have'>>",
+      "body": "<<FILL role=choice words=170 beats='the ward matron's cabinet, holding the signed authorisations for what was done in these beds; Dorin's slate and her authorisation are filed together here, and reading them tells Petra Voss everything and takes the time she does not have'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2044,14 +2044,14 @@
         },
         {
           "id": "c_ward_term_back",
-          "label": "Leave it and withdraw to the {HUB_NAME}.",
+          "label": "Leave it and withdraw to the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "e_ward_1",
-      "body": "<<FILL role=ending words=140 beats='there is a lifetime of authorisations here and {HERO} tries to take all of it, and the hour turns, and the {DEADLINE_SIGN} trucks are in the drive before she has chosen; she flees with an armful of the wrong papers and none of the right'>>",
+      "body": "<<FILL role=ending words=140 beats='there is a lifetime of authorisations here and Petra Voss tries to take all of it, and the hour turns, and the survey team trucks are in the drive before she has chosen; she flees with an armful of the wrong papers and none of the right'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ward_1",
@@ -2062,7 +2062,7 @@
     },
     {
       "id": "e_ward_2",
-      "body": "<<FILL role=ending words=140 beats='{KIN}'s authorisation carries a signature that should never have been near a patient; {HERO} photographs slate and paper together, one clean link in the chain, and is back to the {HUB_NAME} before her nerve gives out'>>",
+      "body": "<<FILL role=ending words=140 beats='Dorin's authorisation carries a signature that should never have been near a patient; Petra Voss photographs slate and paper together, one clean link in the chain, and is back to the atrium before her nerve gives out'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ward_2",
@@ -2073,7 +2073,7 @@
     },
     {
       "id": "e_ward_3",
-      "body": "<<FILL role=ending words=140 beats='the forced side-ward door swings to behind {HERO} on a wind she did not feel and the sprung lock takes; she is inside a room built to hold people who fought harder than she can, and the {WATCHER}'s torch is already sweeping the aisle'>>",
+      "body": "<<FILL role=ending words=140 beats='the forced side-ward door swings to behind Petra Voss on a wind she did not feel and the sprung lock takes; she is inside a room built to hold people who fought harder than she can, and the site guard's torch is already sweeping the aisle'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ward_3",
@@ -2084,7 +2084,7 @@
     },
     {
       "id": "n_dispensary_r1",
-      "body": "<<FILL role=rising words=170 beats='{HERO} enters {DISPENSARY_NAME}: the dispensary, a warren of shelving behind a marble counter, amber bottles racked floor to ceiling and a poison cupboard with its double lock hanging open; then {HERO} edges between shelves of stoppered bottles, their labels a pharmacopoeia of things no one prescribes any more'>>",
+      "body": "<<FILL role=rising words=170 beats='Petra Voss enters the medical stores: the dispensary, a warren of shelving behind a marble counter, amber bottles racked floor to ceiling and a poison cupboard with its double lock hanging open; then Petra Voss edges between shelves of stoppered bottles, their labels a pharmacopoeia of things no one prescribes any more'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2094,7 +2094,7 @@
         },
         {
           "id": "c_dispensary_r1_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2111,7 +2111,7 @@
         },
         {
           "id": "c_dispensary_r2_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2128,7 +2128,7 @@
         },
         {
           "id": "c_dispensary_r3_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2145,7 +2145,7 @@
         },
         {
           "id": "c_dispensary_r4_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2162,7 +2162,7 @@
         },
         {
           "id": "c_dispensary_r5_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2179,7 +2179,7 @@
         },
         {
           "id": "c_dispensary_r6_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2196,7 +2196,7 @@
         },
         {
           "id": "c_dispensary_r7_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2213,7 +2213,7 @@
         },
         {
           "id": "c_dispensary_r8_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2230,7 +2230,7 @@
         },
         {
           "id": "c_dispensary_r9_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2247,7 +2247,7 @@
         },
         {
           "id": "c_dispensary_r10_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2264,7 +2264,7 @@
         },
         {
           "id": "c_dispensary_r11_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2281,14 +2281,14 @@
         },
         {
           "id": "c_dispensary_r12_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_dispensary_term",
-      "body": "<<FILL role=choice words=170 beats='the controlled-drugs store behind the forced double lock, where the true withdrawal book records doses the official register never shows; the figures against {KIN}'s ward on the night she died are the proof, if the fumes and the failing air let {HERO} stay to read'>>",
+      "body": "<<FILL role=choice words=170 beats='the controlled-drugs store behind the forced double lock, where the true withdrawal book records doses the official register never shows; the figures against Dorin's ward on the night she died are the proof, if the fumes and the failing air let Petra Voss stay to read'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2303,14 +2303,14 @@
         },
         {
           "id": "c_dispensary_term_back",
-          "label": "Leave it and withdraw to the {HUB_NAME}.",
+          "label": "Leave it and withdraw to the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "e_dispensary_1",
-      "body": "<<FILL role=ending words=140 beats='the real book shows a dose against {KIN}'s ward that no illness could justify; {HERO} photographs the double columns side by side, the lie and the truth in one frame, and gets out before the fume room's air turns her head for good'>>",
+      "body": "<<FILL role=ending words=140 beats='the real book shows a dose against Dorin's ward that no illness could justify; Petra Voss photographs the double columns side by side, the lie and the truth in one frame, and gets out before the fume room's air turns her head for good'>>",
       "is_ending": true,
       "ending": {
         "id": "end_dispensary_1",
@@ -2321,7 +2321,7 @@
     },
     {
       "id": "e_dispensary_2",
-      "body": "<<FILL role=ending words=140 beats='{HERO} tips a demijohn to read its faded label and the disturbed sludge gives up a breath of gas that has waited twenty years in the dark; she is on the floor between the shelves before she understands, and the dispensary keeps its register private'>>",
+      "body": "<<FILL role=ending words=140 beats='Petra Voss tips a demijohn to read its faded label and the disturbed sludge gives up a breath of gas that has waited twenty years in the dark; she is on the floor between the shelves before she understands, and the dispensary keeps its register private'>>",
       "is_ending": true,
       "ending": {
         "id": "end_dispensary_2",
@@ -2332,7 +2332,7 @@
     },
     {
       "id": "n_attic_r1",
-      "body": "<<FILL role=rising words=170 beats='{HERO} enters {ATTIC_NAME}: the attic stair to the roof-space wards under the great slate gables, where the cheapest patients were kept hottest in summer and coldest in winter, the ceiling following the pitch of the roof; then {HERO} climbs into the roof-space, headlamp finding a low tunnel of iron cots between the rafters and the sloping slates'>>",
+      "body": "<<FILL role=rising words=170 beats='Petra Voss enters the antenna loft: the attic stair to the roof-space wards under the great slate gables, where the cheapest patients were kept hottest in summer and coldest in winter, the ceiling following the pitch of the roof; then Petra Voss climbs into the roof-space, headlamp finding a low tunnel of iron cots between the rafters and the sloping slates'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2342,7 +2342,7 @@
         },
         {
           "id": "c_attic_r1_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2359,7 +2359,7 @@
         },
         {
           "id": "c_attic_r2_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2376,7 +2376,7 @@
         },
         {
           "id": "c_attic_r3_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2393,7 +2393,7 @@
         },
         {
           "id": "c_attic_r4_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2410,7 +2410,7 @@
         },
         {
           "id": "c_attic_r5_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2427,7 +2427,7 @@
         },
         {
           "id": "c_attic_r6_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2444,7 +2444,7 @@
         },
         {
           "id": "c_attic_r7_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2461,7 +2461,7 @@
         },
         {
           "id": "c_attic_r8_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2478,7 +2478,7 @@
         },
         {
           "id": "c_attic_r9_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2495,7 +2495,7 @@
         },
         {
           "id": "c_attic_r10_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
@@ -2512,14 +2512,14 @@
         },
         {
           "id": "c_attic_r11_back",
-          "label": "Withdraw to the {HUB_NAME} and choose another wing.",
+          "label": "Withdraw to the atrium and choose another wing.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_attic_term",
-      "body": "<<FILL role=choice words=170 beats='the hidden attic strongbox under the ridge beam, the one cache the fire and the shredders never found; inside are the photographs and the unedited casebooks that make every other proof unnecessary, and the storm-broken roof is the only way the wind and the {WATCHER} both got in'>>",
+      "body": "<<FILL role=choice words=170 beats='the hidden attic strongbox under the ridge beam, the one cache the fire and the shredders never found; inside are the photographs and the unedited casebooks that make every other proof unnecessary, and the storm-broken roof is the only way the wind and the site guard both got in'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2534,14 +2534,14 @@
         },
         {
           "id": "c_attic_term_back",
-          "label": "Leave it and withdraw to the {HUB_NAME}.",
+          "label": "Leave it and withdraw to the atrium.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "e_attic_1",
-      "body": "<<FILL role=ending words=140 beats='{HERO} forces the strongbox and finds the casebooks whole, but the roof is open and the rain is already on them; she wraps what she can in oilcloth and goes down and out with a soaked, half-legible cache, proof and ruin bound in the same bundle, enough to start a reckoning and not enough to be sure of finishing it'>>",
+      "body": "<<FILL role=ending words=140 beats='Petra Voss forces the strongbox and finds the casebooks whole, but the roof is open and the rain is already on them; she wraps what she can in oilcloth and goes down and out with a soaked, half-legible cache, proof and ruin bound in the same bundle, enough to start a reckoning and not enough to be sure of finishing it'>>",
       "is_ending": true,
       "ending": {
         "id": "end_attic_1",
@@ -2552,7 +2552,7 @@
     },
     {
       "id": "e_attic_2",
-      "body": "<<FILL role=ending words=140 beats='the walkway board gives without warning and {HERO} goes through the ceiling into the ward below in a fall of lath and plaster; the strongbox stays hidden under its beam, and the wrecking {DEADLINE_SIGN}s find her in the morning under a snow of white dust'>>",
+      "body": "<<FILL role=ending words=140 beats='the walkway board gives without warning and Petra Voss goes through the ceiling into the ward below in a fall of lath and plaster; the strongbox stays hidden under its beam, and the wrecking survey teams find her in the morning under a snow of white dust'>>",
       "is_ending": true,
       "ending": {
         "id": "end_attic_2",

@@ -1,0 +1,674 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-ashfall-expedition",
+  "age_band": "16+",
+  "legacy_lexicon": [
+    "Mira Voss",
+    "Voss",
+    "ashfall expedition",
+    "ashfall",
+    "ash",
+    "caldera",
+    "base camp",
+    "the last living valley",
+    "cinder plains",
+    "obsidian ridge",
+    "sulfur marsh",
+    "lava-tube network",
+    "ridge pass",
+    "cairns",
+    "fumaroles",
+    "Ashstorm",
+    "Cinder Haze",
+    "Collapsed Tube",
+    "Lava Flow",
+    "Water Casks"
+  ],
+  "default_binding": {
+    "HERO": "Captain Mira Voss",
+    "PARTY_NAME": "the ashfall expedition",
+    "THRESHOLD": "the wasteland",
+    "ENTRANCE": "base camp",
+    "GOAL": "the last living valley",
+    "DEADLINE": "the caldera",
+    "HAZARD": "ash",
+    "LEG1_WAYPOINT": "the cinder plains",
+    "LEG1_TERRAIN": "grey ash dunes and buried cairns",
+    "LEG2_WAYPOINT": "the obsidian ridge",
+    "LEG2_TERRAIN": "glass ridges and knife-edge switchbacks",
+    "LEG3_WAYPOINT": "the sulfur marsh",
+    "LEG3_TERRAIN": "yellow fumaroles and sucking mud",
+    "LEG4_WAYPOINT": "the lava-tube network",
+    "LEG4_TERRAIN": "black tunnels and heat-cracked galleries",
+    "LEG5_WAYPOINT": "the ridge pass",
+    "LEG5_TERRAIN": "the high wind-scoured saddle above the caldera",
+    "LEG6_WAYPOINT": "the far valley",
+    "LEG6_TERRAIN": "the green rim of the last living valley",
+    "SETBACK1": "Ashstorm",
+    "SETBACK2": "Lava Flow",
+    "SETBACK3": "Ridge",
+    "SETBACK4": "Marsh",
+    "SETBACK5": "Cinder Haze",
+    "SETBACK6": "Collapsed Tube",
+    "SETBACK7": "Water Casks",
+    "SETBACK8": "Heat",
+    "SETBACK9": "Tremor",
+    "WIN_ALL": "The Whole Expedition Reaches the Valley",
+    "WIN_SCOUT": "The Careful Descent",
+    "WIN_COSTLY": "A Costly Crossing"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The expedition's leader.",
+      "guidance": "A single named leader (rank plus name); competent and protective of the group.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "PARTY_NAME"
+        ]
+      }
+    },
+    {
+      "id": "PARTY_NAME",
+      "scope": "global",
+      "meaning": "The proper name of the traveling group the hero leads throughout.",
+      "guidance": "A short named expedition/party/crew; the collective the whole story follows.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole hazardous region the six-leg journey crosses.",
+      "guidance": "One bounded, harsh region containing every leg of the crossing; never described as unbreathable or acid.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The starting camp the expedition leaves from, and the setback destination when driven all the way back.",
+      "guidance": "A safe, named starting point; always survivable to retreat to.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The destination the whole expedition is racing to reach.",
+      "guidance": "A vivid, safe destination (a place of relief and survival); the payoff of the whole crossing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The escalating natural hazard behind the party that eventually seals the route.",
+      "guidance": "A survivable, escalating threat; its worst outcome is a forced retreat or setback, never death.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HAZARD",
+      "scope": "global",
+      "meaning": "The falling or blanketing hazard material that fills the region and chokes the final descent.",
+      "guidance": "A short noun for the environmental fallout blanketing the region; unpleasant but breathable.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LEG1_WAYPOINT",
+      "scope": "track",
+      "meaning": "The named waypoint/landmark location for leg 1 of the six-leg crossing.",
+      "guidance": "A short place name, distinguishable from the other five legs' waypoints.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG2_WAYPOINT",
+          "LEG3_WAYPOINT",
+          "LEG4_WAYPOINT",
+          "LEG5_WAYPOINT",
+          "LEG6_WAYPOINT"
+        ]
+      }
+    },
+    {
+      "id": "LEG1_TERRAIN",
+      "scope": "track",
+      "meaning": "The hazardous ground character crossed off the safe line on leg 1.",
+      "guidance": "A short, evocative hazard-terrain phrase, distinguishable from the other five legs' terrain.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG2_TERRAIN",
+          "LEG3_TERRAIN",
+          "LEG4_TERRAIN",
+          "LEG5_TERRAIN",
+          "LEG6_TERRAIN"
+        ]
+      }
+    },
+    {
+      "id": "LEG2_WAYPOINT",
+      "scope": "track",
+      "meaning": "The named waypoint/landmark location for leg 2 of the six-leg crossing.",
+      "guidance": "A short place name, distinguishable from the other five legs' waypoints.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_WAYPOINT",
+          "LEG3_WAYPOINT",
+          "LEG4_WAYPOINT",
+          "LEG5_WAYPOINT",
+          "LEG6_WAYPOINT"
+        ]
+      }
+    },
+    {
+      "id": "LEG2_TERRAIN",
+      "scope": "track",
+      "meaning": "The hazardous ground character crossed off the safe line on leg 2.",
+      "guidance": "A short, evocative hazard-terrain phrase, distinguishable from the other five legs' terrain.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_TERRAIN",
+          "LEG3_TERRAIN",
+          "LEG4_TERRAIN",
+          "LEG5_TERRAIN",
+          "LEG6_TERRAIN"
+        ]
+      }
+    },
+    {
+      "id": "LEG3_WAYPOINT",
+      "scope": "track",
+      "meaning": "The named waypoint/landmark location for leg 3 of the six-leg crossing.",
+      "guidance": "A short place name, distinguishable from the other five legs' waypoints.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_WAYPOINT",
+          "LEG2_WAYPOINT",
+          "LEG4_WAYPOINT",
+          "LEG5_WAYPOINT",
+          "LEG6_WAYPOINT"
+        ]
+      }
+    },
+    {
+      "id": "LEG3_TERRAIN",
+      "scope": "track",
+      "meaning": "The hazardous ground character crossed off the safe line on leg 3.",
+      "guidance": "A short, evocative hazard-terrain phrase, distinguishable from the other five legs' terrain.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_TERRAIN",
+          "LEG2_TERRAIN",
+          "LEG4_TERRAIN",
+          "LEG5_TERRAIN",
+          "LEG6_TERRAIN"
+        ]
+      }
+    },
+    {
+      "id": "LEG4_WAYPOINT",
+      "scope": "track",
+      "meaning": "The named waypoint/landmark location for leg 4 of the six-leg crossing.",
+      "guidance": "A short place name, distinguishable from the other five legs' waypoints.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_WAYPOINT",
+          "LEG2_WAYPOINT",
+          "LEG3_WAYPOINT",
+          "LEG5_WAYPOINT",
+          "LEG6_WAYPOINT"
+        ]
+      }
+    },
+    {
+      "id": "LEG4_TERRAIN",
+      "scope": "track",
+      "meaning": "The hazardous ground character crossed off the safe line on leg 4.",
+      "guidance": "A short, evocative hazard-terrain phrase, distinguishable from the other five legs' terrain.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_TERRAIN",
+          "LEG2_TERRAIN",
+          "LEG3_TERRAIN",
+          "LEG5_TERRAIN",
+          "LEG6_TERRAIN"
+        ]
+      }
+    },
+    {
+      "id": "LEG5_WAYPOINT",
+      "scope": "track",
+      "meaning": "The named waypoint/landmark location for leg 5 of the six-leg crossing.",
+      "guidance": "A short place name, distinguishable from the other five legs' waypoints.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_WAYPOINT",
+          "LEG2_WAYPOINT",
+          "LEG3_WAYPOINT",
+          "LEG4_WAYPOINT",
+          "LEG6_WAYPOINT"
+        ]
+      }
+    },
+    {
+      "id": "LEG5_TERRAIN",
+      "scope": "track",
+      "meaning": "The hazardous ground character crossed off the safe line on leg 5.",
+      "guidance": "A short, evocative hazard-terrain phrase, distinguishable from the other five legs' terrain.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_TERRAIN",
+          "LEG2_TERRAIN",
+          "LEG3_TERRAIN",
+          "LEG4_TERRAIN",
+          "LEG6_TERRAIN"
+        ]
+      }
+    },
+    {
+      "id": "LEG6_WAYPOINT",
+      "scope": "track",
+      "meaning": "The named waypoint/landmark location for leg 6 of the six-leg crossing.",
+      "guidance": "A short place name, distinguishable from the other five legs' waypoints.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_WAYPOINT",
+          "LEG2_WAYPOINT",
+          "LEG3_WAYPOINT",
+          "LEG4_WAYPOINT",
+          "LEG5_WAYPOINT"
+        ]
+      }
+    },
+    {
+      "id": "LEG6_TERRAIN",
+      "scope": "track",
+      "meaning": "The hazardous ground character crossed off the safe line on leg 6.",
+      "guidance": "A short, evocative hazard-terrain phrase, distinguishable from the other five legs' terrain.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LEG1_TERRAIN",
+          "LEG2_TERRAIN",
+          "LEG3_TERRAIN",
+          "LEG4_TERRAIN",
+          "LEG5_TERRAIN"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK1",
+      "scope": "ending",
+      "meaning": "Ending-title noun naming one of the recurring non-lethal setback flavors.",
+      "guidance": "A short hazard noun for the low-line setback storm name for its position; the ending it names is always a setback, never death or capture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "toxic",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "SETBACK2",
+          "SETBACK3",
+          "SETBACK4",
+          "SETBACK5",
+          "SETBACK6",
+          "SETBACK7",
+          "SETBACK8",
+          "SETBACK9"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK2",
+      "scope": "ending",
+      "meaning": "Ending-title noun naming one of the recurring non-lethal setback flavors.",
+      "guidance": "A short hazard noun for the high-line setback hazard name for its position; the ending it names is always a setback, never death or capture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "toxic",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "SETBACK1",
+          "SETBACK3",
+          "SETBACK4",
+          "SETBACK5",
+          "SETBACK6",
+          "SETBACK7",
+          "SETBACK8",
+          "SETBACK9"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK3",
+      "scope": "ending",
+      "meaning": "Ending-title noun naming one of the recurring non-lethal setback flavors.",
+      "guidance": "A short hazard noun for a single-branch setback hazard name; the ending it names is always a setback, never death or capture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "toxic",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "SETBACK1",
+          "SETBACK2",
+          "SETBACK4",
+          "SETBACK5",
+          "SETBACK6",
+          "SETBACK7",
+          "SETBACK8",
+          "SETBACK9"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK4",
+      "scope": "ending",
+      "meaning": "Ending-title noun naming one of the recurring non-lethal setback flavors.",
+      "guidance": "A short hazard noun for a single-branch setback hazard name; the ending it names is always a setback, never death or capture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "toxic",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "SETBACK1",
+          "SETBACK2",
+          "SETBACK3",
+          "SETBACK5",
+          "SETBACK6",
+          "SETBACK7",
+          "SETBACK8",
+          "SETBACK9"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK5",
+      "scope": "ending",
+      "meaning": "Ending-title noun naming one of the recurring non-lethal setback flavors.",
+      "guidance": "A short hazard noun for a single-branch setback hazard name; the ending it names is always a setback, never death or capture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "toxic",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "SETBACK1",
+          "SETBACK2",
+          "SETBACK3",
+          "SETBACK4",
+          "SETBACK6",
+          "SETBACK7",
+          "SETBACK8",
+          "SETBACK9"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK6",
+      "scope": "ending",
+      "meaning": "Ending-title noun naming one of the recurring non-lethal setback flavors.",
+      "guidance": "A short hazard noun for a single-branch setback hazard name; the ending it names is always a setback, never death or capture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "toxic",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "SETBACK1",
+          "SETBACK2",
+          "SETBACK3",
+          "SETBACK4",
+          "SETBACK5",
+          "SETBACK7",
+          "SETBACK8",
+          "SETBACK9"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK7",
+      "scope": "ending",
+      "meaning": "Ending-title noun naming one of the recurring non-lethal setback flavors.",
+      "guidance": "A short hazard noun for a single-branch setback hazard name (plural noun; 'Fail' agrees); the ending it names is always a setback, never death or capture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "toxic",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "SETBACK1",
+          "SETBACK2",
+          "SETBACK3",
+          "SETBACK4",
+          "SETBACK5",
+          "SETBACK6",
+          "SETBACK8",
+          "SETBACK9"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK8",
+      "scope": "ending",
+      "meaning": "Ending-title noun naming one of the recurring non-lethal setback flavors.",
+      "guidance": "A short hazard noun for a single-branch setback hazard name; the ending it names is always a setback, never death or capture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "toxic",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "SETBACK1",
+          "SETBACK2",
+          "SETBACK3",
+          "SETBACK4",
+          "SETBACK5",
+          "SETBACK6",
+          "SETBACK7",
+          "SETBACK9"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK9",
+      "scope": "ending",
+      "meaning": "Ending-title noun naming one of the recurring non-lethal setback flavors.",
+      "guidance": "A short hazard noun for a single-branch setback hazard name; the ending it names is always a setback, never death or capture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "toxic",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "SETBACK1",
+          "SETBACK2",
+          "SETBACK3",
+          "SETBACK4",
+          "SETBACK5",
+          "SETBACK6",
+          "SETBACK7",
+          "SETBACK8"
+        ]
+      }
+    },
+    {
+      "id": "WIN_ALL",
+      "scope": "ending",
+      "meaning": "Ending title: the full-expedition success (completion), everyone crossing together.",
+      "guidance": "A short positive title naming the whole group's safe arrival.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "WIN_SCOUT",
+          "WIN_COSTLY"
+        ]
+      }
+    },
+    {
+      "id": "WIN_SCOUT",
+      "scope": "ending",
+      "meaning": "Ending title: the careful, scout-led success.",
+      "guidance": "A short positive title naming a slow but intact arrival.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "WIN_ALL",
+          "WIN_COSTLY"
+        ]
+      }
+    },
+    {
+      "id": "WIN_COSTLY",
+      "scope": "ending",
+      "meaning": "Ending title: the costly-but-successful crossing.",
+      "guidance": "A short positive title naming a battered but whole arrival.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "WIN_ALL",
+          "WIN_SCOUT"
+        ]
+      }
+    }
+  ]
+}

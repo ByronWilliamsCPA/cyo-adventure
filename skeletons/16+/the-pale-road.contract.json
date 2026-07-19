@@ -1,0 +1,437 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-pale-road",
+  "age_band": "16+",
+  "legacy_lexicon": [
+    "Bitter Wells",
+    "Bone Field",
+    "Brine Sink",
+    "Cairn Maze",
+    "Caustic Rime",
+    "Crust Bridge",
+    "Drifting Dunes",
+    "First Night",
+    "Hollow Ground",
+    "Last Water",
+    "Mirage Lake",
+    "Needle Flats",
+    "Pale Mile",
+    "Pilgrim Pass",
+    "Razor Pan",
+    "Rim Ascent",
+    "Salt Pillars",
+    "Salt Veil",
+    "Scouring Wind",
+    "Thirst Ridge",
+    "Threshold Crust",
+    "Weighing House",
+    "White Basin",
+    "White Noon",
+    "a pilgrim",
+    "last green",
+    "pale road",
+    "pilgrim",
+    "pilgrims",
+    "salt",
+    "salt desert",
+    "the White Shrine",
+    "the last green",
+    "the pale road",
+    "the salt",
+    "white shrine"
+  ],
+  "default_binding": {
+    "HERO": "a pilgrim",
+    "GOAL": "the White Shrine",
+    "THRESHOLD": "the pale road",
+    "ENTRANCE": "the last green",
+    "C01_HAZARD": "Threshold Crust",
+    "C02_HAZARD": "Weighing House",
+    "C03_HAZARD": "White Noon",
+    "C04_HAZARD": "Scouring Wind",
+    "C05_HAZARD": "Brine Sink",
+    "C06_HAZARD": "Bone Field",
+    "C07_HAZARD": "Mirage Lake",
+    "C08_HAZARD": "Needle Flats",
+    "C09_HAZARD": "First Night",
+    "C10_HAZARD": "Thirst Ridge",
+    "C11_HAZARD": "Bitter Wells",
+    "C12_HAZARD": "Crust Bridge",
+    "C13_HAZARD": "Salt Pillars",
+    "C14_HAZARD": "White Basin",
+    "C15_HAZARD": "Drifting Dunes",
+    "C16_HAZARD": "Cairn Maze",
+    "C17_HAZARD": "Caustic Rime",
+    "C18_HAZARD": "Razor Pan",
+    "C19_HAZARD": "Hollow Ground",
+    "C20_HAZARD": "Last Water",
+    "C21_HAZARD": "Rim Ascent",
+    "C22_HAZARD": "Pilgrim Pass",
+    "C23_HAZARD": "Salt Veil",
+    "C24_HAZARD": "Pale Mile"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The unnamed second-person protagonist's role/identity.",
+      "guidance": "A single solitary traveler undertaking a perilous crossing on foot; capable but not reckless; second person keeps them unnamed.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The physical sanctuary the hero is crossing the gauntlet to reach.",
+      "guidance": "A single named destination structure; a place of safety and completion at journey's end, not itself dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, lethal place the gauntlet happens inside.",
+      "guidance": "A single named road/wilderness crossing of sequential hazards; wonder-and-dread, no toxic/unbreathable air as a scripted hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single point of no return where the hero leaves safety and the crossing begins.",
+      "guidance": "A transitional marker/edge of civilization behind which there is no way back; the one-way threshold into the gauntlet.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C01_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 1 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C02_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 2 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C03_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 3 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C04_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 4 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C05_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 5 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C06_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 6 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C07_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 7 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C08_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 8 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C09_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 9 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C10_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 10 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C11_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 11 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C12_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 12 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C13_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 13 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C14_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 14 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C15_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 15 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C16_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 16 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C17_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 17 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C18_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 18 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C19_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 19 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C20_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 20 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C21_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 21 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C22_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 22 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C23_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 23 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C24_HAZARD",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint the hero must cross at station 24 of 24.",
+      "guidance": "A short, evocative hazard name (a proper-noun-style checkpoint title) establishing this station's danger before its mechanism is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    }
+  ]
+}

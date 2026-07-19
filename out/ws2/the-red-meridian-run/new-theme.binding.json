@@ -1,0 +1,22 @@
+{
+  "HERO": "the smuggler",
+  "VESSEL": "a low grey courier launch",
+  "STRAIT": "the Obsidian Narrows",
+  "CARGO": "the sealed dispatch case",
+  "ST01_OBSTACLE": "the river boom",
+  "ST02_OBSTACLE": "the marker floats",
+  "ST03_OBSTACLE": "the customs launch lane",
+  "ST04_OBSTACLE": "the cliff searchlight",
+  "ST05_OBSTACLE": "the sonar buoy",
+  "ST06_OBSTACLE": "the trap-line shallows",
+  "ST07_OBSTACLE": "the sunken barge",
+  "ST08_OBSTACLE": "the shore battery",
+  "ST09_OBSTACLE": "the mist bank",
+  "ST10_OBSTACLE": "the lantern picket",
+  "ST11_OBSTACLE": "the second boom",
+  "ST12_OBSTACLE": "the reef bar",
+  "ST13_OBSTACLE": "the staked cove",
+  "WIN_CLEAN_TITLE": "The Silent Delivery",
+  "WIN_COSTLY_TITLE": "The Hard-Won Crossing",
+  "WIN_QUIET_TITLE": "The Empty-Handed Landing"
+}

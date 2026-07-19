@@ -1,0 +1,3121 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_tricameral_city",
+  "version": 1,
+  "title": "The Tricameral City",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "institutions and complicity",
+      "the count and the counted",
+      "compromise as inheritance",
+      "what a city hides to survive"
+    ],
+    "estimated_minutes": 44,
+    "ending_count": 42,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "sorting_hat",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n01",
+  "nodes": [
+    {
+      "id": "a001",
+      "body": "<<FILL role=setback words=176 beats='the Tribunal voids the Waiver at the inspector's urging with nothing set in its place; the record is honest and the dole collapses faster than any chamber can answer, and the inspector learns what a clean stroke costs'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a001",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Clean Stroke"
+      },
+      "choices": []
+    },
+    {
+      "id": "a002",
+      "body": "<<FILL role=resolution words=168 beats='the inspector pulls the opinion back to draft the provision that must go with any void; the year ends with the work unfinished but rightly ordered, and the harder opinion carried into the next Audit'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a002",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What Fills the Space"
+      },
+      "choices": []
+    },
+    {
+      "id": "a003",
+      "body": "<<FILL role=choice words=184 beats='the Tribunal's oldest rule: never strike a standing instrument without weighing what fills the space it held; to void without provision is to mistake tidiness for justice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a003_0",
+          "label": "Void the ruling without provision.",
+          "target": "a001"
+        },
+        {
+          "id": "c_a003_1",
+          "label": "Withdraw the opinion and weigh the provision first.",
+          "target": "a002"
+        }
+      ]
+    },
+    {
+      "id": "a004",
+      "body": "<<FILL role=rising words=160 beats='the inspector sits with the draft opinion late into the night and feels the pull of the clean answer, the single stroke that makes the record honest, and the cold arithmetic underneath it that honesty alone does not feed anyone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a004_0",
+          "label": "Go on.",
+          "target": "a003"
+        }
+      ]
+    },
+    {
+      "id": "a005",
+      "body": "<<FILL role=rising words=192 beats='Dahl warns that a void with no provision for the four thousand liters does not conjure water; it only moves the winter's hunger from the ledger to the street'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a005_0",
+          "label": "Go on.",
+          "target": "a004"
+        }
+      ]
+    },
+    {
+      "id": "a006",
+      "body": "<<FILL role=rising words=172 beats='the inspector drafts an opinion urging the Tribunal to void the waiver order outright at the Audit, ending the Waiver by a single stroke'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a006_0",
+          "label": "Go on.",
+          "target": "a005"
+        }
+      ]
+    },
+    {
+      "id": "a007",
+      "body": "<<FILL role=resolution words=180 beats='the inspector tells Dahl of the crossing before it is discovered; Dahl is unsurprised, corrects the record of it, and keeps the inspector on, the error folded into a lesson about which lines the Compact actually holds'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a007",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Line Confessed"
+      },
+      "choices": []
+    },
+    {
+      "id": "a008",
+      "body": "<<FILL role=setback words=158 beats='the crossing is remembered when it is useful; at the Audit the inspector's certificate carries a quiet notation of a clerk who did not keep to the Tribunal, and no chamber will second the audit again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a008",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Across the Line"
+      },
+      "choices": []
+    },
+    {
+      "id": "a009",
+      "body": "<<FILL role=choice words=196 beats='the Compact forbids a clerk of one chamber to carry another chamber's fault across the line without leave; the inspector has done exactly that and can still choose how to stand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a009_0",
+          "label": "Report the crossing to Dahl yourself.",
+          "target": "a007"
+        },
+        {
+          "id": "c_a009_1",
+          "label": "Let it lie and hope the Archive forgets.",
+          "target": "a008"
+        }
+      ]
+    },
+    {
+      "id": "a010",
+      "body": "<<FILL role=rising words=166 beats='on the walk back to the Tribunal the inspector understands the size of the breach: the Compact's whole balance rests on each chamber airing its own faults, and a clerk who shortcuts that has weakened the thing being audited'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a010_0",
+          "label": "Go on.",
+          "target": "a009"
+        }
+      ]
+    },
+    {
+      "id": "a011",
+      "body": "<<FILL role=rising words=178 beats='Otieno receives it courteously and says only that the Archive knows its own numbers; the inspector has crossed a chamber line and feels the temperature drop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a011_0",
+          "label": "Go on.",
+          "target": "a010"
+        }
+      ]
+    },
+    {
+      "id": "a012",
+      "body": "<<FILL role=rising words=174 beats='the inspector takes the discrepancy to Keeper Otieno of the Archive instead of keeping it within the Tribunal, reasoning the count is the Archive's to own'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a012_0",
+          "label": "Go on.",
+          "target": "a011"
+        }
+      ]
+    },
+    {
+      "id": "a013",
+      "body": "<<FILL role=resolution words=176 beats='the inspector takes the brief back unfiled and spends the year learning why the Tribunal moves slowly; the knowing deepens, the record does not change, and Dahl marks the inspector as one who may yet be trusted with the whole of it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a013",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Question Held Open"
+      },
+      "choices": []
+    },
+    {
+      "id": "a014",
+      "body": "<<FILL role=setback words=168 beats='the brief sits on the Tribunal's roll answering nothing; it is noted, shelved, and outlived by the Waiver, and the inspector's year ends as a name against an unfinished line'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a014",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Complaint Without a Remedy"
+      },
+      "choices": []
+    },
+    {
+      "id": "a015",
+      "body": "<<FILL role=choice words=184 beats='the Tribunal does not act, it binds; a brief that names no remedy is a complaint, and a complaint the inspector cannot answer is a resignation of the question'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a015_0",
+          "label": "Withdraw the brief and stay to learn the remedy.",
+          "target": "a013"
+        },
+        {
+          "id": "c_a015_1",
+          "label": "Let the brief stand as a complaint on the roll.",
+          "target": "a014"
+        }
+      ]
+    },
+    {
+      "id": "a016",
+      "body": "<<FILL role=rising words=160 beats='the inspector discovers the brief has no answer to give; naming the fault is easy and naming the remedy is the whole difficulty, and the Tribunal has spent nineteen years in precisely that gap'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a016_0",
+          "label": "Go on.",
+          "target": "a015"
+        }
+      ]
+    },
+    {
+      "id": "a017",
+      "body": "<<FILL role=rising words=192 beats='Dahl reads it without heat and asks the one question the Tribunal always asks: by what instrument would you have me act, and against whom'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a017_0",
+          "label": "Go on.",
+          "target": "a016"
+        }
+      ]
+    },
+    {
+      "id": "a018",
+      "body": "<<FILL role=rising words=172 beats='instead of the closed Joint Session, the inspector drafts a private brief for the Tribunal alone, laying the waiver order beside the ledgered gap'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a018_0",
+          "label": "Go on.",
+          "target": "a017"
+        }
+      ]
+    },
+    {
+      "id": "a019",
+      "body": "<<FILL role=resolution words=180 beats='the inspector learns that Voss's fall was negotiated to close the Reclamation Cycle cleanly, a face for a fault with no single face; nothing is undone, but the inspector now reads every ruling for the bargain inside it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a019",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Instrument of a Resignation"
+      },
+      "choices": []
+    },
+    {
+      "id": "a020",
+      "body": "<<FILL role=setback words=158 beats='the inspector files Voss's resignation as a finding of fault; the Reclamation Cycle closes tidily, the true authorship stays unnamed, and a bookkeeper carries out the door what nineteen years of the Tribunal would not carry'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a020",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Face for the Fault"
+      },
+      "choices": []
+    },
+    {
+      "id": "a021",
+      "body": "<<FILL role=choice words=196 beats='a resignation drafted as a ruling is a thing the Tribunal can read as fact for all time; the inspector may enter it as written, or hold it back and ask what it truly finds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a021_0",
+          "label": "Hold it back and ask what it finds.",
+          "target": "a019"
+        },
+        {
+          "id": "c_a021_1",
+          "label": "Enter it as written and close the file.",
+          "target": "a020"
+        }
+      ]
+    },
+    {
+      "id": "a022",
+      "body": "<<FILL role=rising words=166 beats='the inspector asks to see Petra Voss's resignation before it is entered, and finds it drawn not as a confession but as a ruling, sealed like any judgment'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a022_0",
+          "label": "Go on.",
+          "target": "a021"
+        }
+      ]
+    },
+    {
+      "id": "a023",
+      "body": "<<FILL role=resolution words=178 beats='the inspector certifies the Tribunal's rulings and writes the Waiver into the certificate as a named standing exception, forcing the three chambers to answer it at the next Audit; nothing is undone this year, but for the first time the fault is on the record in the Tribunal's own hand, and the inspector's name stands under an honest ledger'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a023",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Exception Written In"
+      },
+      "choices": []
+    },
+    {
+      "id": "a024",
+      "body": "<<FILL role=resolution words=174 beats='the inspector refuses the certificate and compels the waiver order to be argued in open session; Dahl, cornered by his own procedure, hears it; the Waiver is not ended but it is no longer secret, and the inspector leaves the Tribunal having made its memory speak against itself'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a024",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Heard in Open Tribunal"
+      },
+      "choices": []
+    },
+    {
+      "id": "a025",
+      "body": "<<FILL role=choice words=176 beats='the Audit is convened; the inspector holds the whole of it and Dahl asks for the certificate; the last rule is the first one: the Tribunal certifies what it can defend as true, no more and no less'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a025_0",
+          "label": "Certify with the Waiver disclosed as a standing exception.",
+          "target": "a023"
+        },
+        {
+          "id": "c_a025_1",
+          "label": "Refuse to certify until the waiver order is heard in open Tribunal.",
+          "target": "a024"
+        }
+      ]
+    },
+    {
+      "id": "a026",
+      "body": "<<FILL role=rising words=168 beats='Dahl reads each draft and strikes only what cannot be defended, teaching by subtraction what the Tribunal will and will not say'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a026_0",
+          "label": "Go on.",
+          "target": "a025"
+        }
+      ]
+    },
+    {
+      "id": "a027",
+      "body": "<<FILL role=rising words=184 beats='the inspector drafts through the long nights, every ruling weighed against the ledgered gap, the waiver order last of all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a027_0",
+          "label": "Go on.",
+          "target": "a026"
+        }
+      ]
+    },
+    {
+      "id": "a028",
+      "body": "<<FILL role=setback words=160 beats='worn down by the deliberation, the inspector certifies the Tribunal's rulings without exception rather than reopen the whole; the year is survived, the seal is clean, and the Waiver passes untouched into its twentieth year under the inspector's own name'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a028",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The inspector Who Signed Clean"
+      },
+      "choices": []
+    },
+    {
+      "id": "a029",
+      "body": "<<FILL role=choice words=192 beats='Deep Cycle; the dole is cut; Dahl offers to let the inspector draft the Audit certificate or step back and merely witness it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a029_0",
+          "label": "Draft the certificate and carry it to the Audit.",
+          "target": "a027"
+        },
+        {
+          "id": "c_a029_1",
+          "label": "Step back and witness only.",
+          "target": "a028"
+        }
+      ]
+    },
+    {
+      "id": "a030",
+      "body": "<<FILL role=rising words=172 beats='the lesson lands cold: the Tribunal's mercy and the Tribunal's evasion are written in the same clean hand, and the inspector will never again read a tidy judgment without hunting for the bargain inside it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a030_0",
+          "label": "Go on.",
+          "target": "a029"
+        }
+      ]
+    },
+    {
+      "id": "a031",
+      "body": "<<FILL role=rising words=180 beats='the inspector sees Voss sign his own diminishment with a steady hand, a bookkeeper taking the weight of authors who will keep their names, and understands the resignation is a mercy and a lie folded into one sealed page'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a031_0",
+          "label": "Go on.",
+          "target": "a030"
+        }
+      ]
+    },
+    {
+      "id": "a032",
+      "body": "<<FILL role=rising words=158 beats='Dahl walks the inspector through the drafting the way a surgeon narrates a cut: which words bind, which words merely comfort, which words a later Tribunal will lean on when the truth becomes inconvenient again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a032_0",
+          "label": "Go on.",
+          "target": "a031"
+        }
+      ]
+    },
+    {
+      "id": "a033",
+      "body": "<<FILL role=rising words=196 beats='the inspector watches Voss's resignation drawn as an instrument, a fault given a face so the Reclamation Cycle can close without naming its author'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a033_0",
+          "label": "Go on.",
+          "target": "a032"
+        }
+      ]
+    },
+    {
+      "id": "a034",
+      "body": "<<FILL role=choice words=166 beats='the Joint Session has confessed the Waiver's age; Dahl asks whether the inspector will help draft Voss's resignation or keep clear of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a034_0",
+          "label": "Keep clear of the resignation.",
+          "target": "a022"
+        },
+        {
+          "id": "c_a034_1",
+          "label": "Stay in and read how the Tribunal closes a fault.",
+          "target": "a033"
+        }
+      ]
+    },
+    {
+      "id": "a035",
+      "body": "<<FILL role=rising words=178 beats='nineteen years, someone says, and no one corrects the number; the inspector writes it down and feels the year turn on the small violence of a fact spoken plainly for once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a035_0",
+          "label": "Go on.",
+          "target": "a034"
+        }
+      ]
+    },
+    {
+      "id": "a036",
+      "body": "<<FILL role=rising words=174 beats='the inspector, minuting, watches the three leads negotiate not whether to hide the fault but how to distribute the carrying of it, a bargain conducted in the practiced shorthand of people who have made it many times before'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a036_0",
+          "label": "Go on.",
+          "target": "a035"
+        }
+      ]
+    },
+    {
+      "id": "a037",
+      "body": "<<FILL role=rising words=176 beats='Kesh speaks of water, Otieno of counts, Dahl of instruments; three chambers describing one hole and each holding a different edge of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a037_0",
+          "label": "Go on.",
+          "target": "a036"
+        }
+      ]
+    },
+    {
+      "id": "a038",
+      "body": "<<FILL role=rising words=168 beats='the three leads sit close in a shuttered room; the inspector takes the minute no one will keep, and hears the Waiver named aloud for the first time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a038_0",
+          "label": "Go on.",
+          "target": "a037"
+        }
+      ]
+    },
+    {
+      "id": "a039",
+      "body": "<<FILL role=choice words=184 beats='the closed Joint Session nears; Dahl offers to bring the inspector as his clerk, or to have the inspector prepare the Tribunal's private position beforehand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a039_0",
+          "label": "Prepare the Tribunal's private brief instead.",
+          "target": "a018"
+        },
+        {
+          "id": "c_a039_1",
+          "label": "Attend the Joint Session as Dahl's clerk.",
+          "target": "a038"
+        }
+      ]
+    },
+    {
+      "id": "a040",
+      "body": "<<FILL role=rising words=160 beats='the pattern resolves into a chamber teaching itself to look away inside its own procedure, each generation handing the next a lighter conscience and a heavier debt'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a040_0",
+          "label": "Go on.",
+          "target": "a039"
+        }
+      ]
+    },
+    {
+      "id": "a041",
+      "body": "<<FILL role=rising words=192 beats='the inspector finds the one renewal that still argued, forty years back, a Justicar who set down half a page of unease before sealing it anyway, and feels across the decades the exact shape of a compromise being born'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a041_0",
+          "label": "Go on.",
+          "target": "a040"
+        }
+      ]
+    },
+    {
+      "id": "a042",
+      "body": "<<FILL role=rising words=172 beats='each renewal is briefer than the last, the reasoning worn smooth by repetition until the final ones cite nothing but the fact of the previous, a chamber outsourcing its conscience to its own back-catalogue'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a042_0",
+          "label": "Go on.",
+          "target": "a041"
+        }
+      ]
+    },
+    {
+      "id": "a043",
+      "body": "<<FILL role=rising words=180 beats='the inspector keeps the fault inside the chamber and reads instead how past Benches met it, tracing the renewals judgment by judgment'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a043_0",
+          "label": "Go on.",
+          "target": "a042"
+        }
+      ]
+    },
+    {
+      "id": "a044",
+      "body": "<<FILL role=choice words=158 beats='Dahl asks the inspector to whom the discrepancy belongs; the Archive keeps the count, and a clerk might carry it there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a044_0",
+          "label": "Carry it to the Archive.",
+          "target": "a012"
+        },
+        {
+          "id": "c_a044_1",
+          "label": "Keep it within the Tribunal, as remit requires.",
+          "target": "a043"
+        }
+      ]
+    },
+    {
+      "id": "a045",
+      "body": "<<FILL role=rising words=196 beats='the inspector sees how a rule meant for a scrivener's error grew, renewal by renewal, into a lid over a founding wound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a045_0",
+          "label": "Go on.",
+          "target": "a044"
+        }
+      ]
+    },
+    {
+      "id": "a046",
+      "body": "<<FILL role=rising words=166 beats='Dahl sits the inspector down with the Compact itself and reads the clause the Waiver leans on, an old provision for abating a discrepancy the record cannot resolve'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a046_0",
+          "label": "Go on.",
+          "target": "a045"
+        }
+      ]
+    },
+    {
+      "id": "a047",
+      "body": "<<FILL role=choice words=178 beats='Dahl, seeing the inspector has read the renewals, does not forbid it; he asks whether the inspector wishes to argue the ruling should be voided now, or to first learn what the Tribunal thinks it holds in place'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a047_0",
+          "label": "Argue for voiding it now.",
+          "target": "a006"
+        },
+        {
+          "id": "c_a047_1",
+          "label": "First learn what it holds in place.",
+          "target": "a046"
+        }
+      ]
+    },
+    {
+      "id": "a048",
+      "body": "<<FILL role=rising words=174 beats='Dahl answers not with denial but with a procedure: come, and I will show you how the Tribunal came to hold it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a048_0",
+          "label": "Go on.",
+          "target": "a047"
+        }
+      ]
+    },
+    {
+      "id": "a049",
+      "body": "<<FILL role=rising words=176 beats='the inspector asks Dahl plainly, before the other clerks, what the abating line covers; the room stills at a question asked out loud'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a049_0",
+          "label": "Go on.",
+          "target": "a048"
+        }
+      ]
+    },
+    {
+      "id": "a050",
+      "body": "<<FILL role=resolution words=168 beats='the inspector copies the abating line and hides the leaf; nothing changes this year, but somewhere now the renewal exists outside the Tribunal's own keeping, waiting for a reader with more standing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a050",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Copy Kept Against the Day"
+      },
+      "choices": []
+    },
+    {
+      "id": "a051",
+      "body": "<<FILL role=setback words=184 beats='the inspector resets the seal-chip and leaves the archive as found; at the Audit Dahl renews the ruling a nineteenth time and the inspector, knowing, signs the certificate clean'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "a051",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Renewed Silence"
+      },
+      "choices": []
+    },
+    {
+      "id": "a052",
+      "body": "<<FILL role=choice words=160 beats='the archivist's rule is plain: a clerk may read a ruling but may not copy a sealed instrument without the Justicar's leave; the inspector stands over the seal-chip with a blank leaf'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a052_0",
+          "label": "Copy the sealed line for the record.",
+          "target": "a050"
+        },
+        {
+          "id": "c_a052_1",
+          "label": "Reseal it and carry only what you remember.",
+          "target": "a051"
+        }
+      ]
+    },
+    {
+      "id": "a053",
+      "body": "<<FILL role=rising words=192 beats='the inspector works alone by a shuttered lamp, aware that the archive keeps a register of who reads what, and that this reading will be on record whatever the inspector does next'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a053_0",
+          "label": "Go on.",
+          "target": "a052"
+        }
+      ]
+    },
+    {
+      "id": "a054",
+      "body": "<<FILL role=rising words=172 beats='each renewal is a single sealed line abating four thousand liters; nowhere is the word water, nor the word missing, only the abatement of a discrepancy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a054_0",
+          "label": "Go on.",
+          "target": "a053"
+        }
+      ]
+    },
+    {
+      "id": "a055",
+      "body": "<<FILL role=rising words=180 beats='the inspector slips into the ruling-vault after the lamps are trimmed; the shelved renewals run back nineteen years in three hands, Dahl's the last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a055_0",
+          "label": "Go on.",
+          "target": "a054"
+        }
+      ]
+    },
+    {
+      "id": "a056",
+      "body": "<<FILL role=choice words=158 beats='the sealed waiver order lies open; the archivist's rule stands, that a clerk reads but does not copy without leave; the inspector may put the question to Dahl in the open, or trace the renewals alone tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a056_0",
+          "label": "Put the question to Dahl in open session.",
+          "target": "a049"
+        },
+        {
+          "id": "c_a056_1",
+          "label": "Trace the renewals yourself, quietly.",
+          "target": "a055"
+        }
+      ]
+    },
+    {
+      "id": "a057",
+      "body": "<<FILL role=rising words=196 beats='Dahl notices where the inspector's eyes have gone; he does not cover the instrument, which is somehow worse, and waits to see what the inspector will do with a thing not hidden'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a057_0",
+          "label": "Go on.",
+          "target": "a056"
+        }
+      ]
+    },
+    {
+      "id": "a058",
+      "body": "<<FILL role=rising words=166 beats='the seal-chip has been renewed many times, the last renewal in Dahl's own hand; the dates run back about nineteen years, one line each Audit, quiet as a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a058_0",
+          "label": "Go on.",
+          "target": "a057"
+        }
+      ]
+    },
+    {
+      "id": "a059",
+      "body": "<<FILL role=rising words=178 beats='sorting the day's instruments, the inspector finds one mis-shelved: a sealed waiver order from Dahl's predecessor authorizing an annual abatement of the same four thousand liters'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a059_0",
+          "label": "Go on.",
+          "target": "a058"
+        }
+      ]
+    },
+    {
+      "id": "a060",
+      "body": "<<FILL role=rising words=174 beats='Dahl watches the inspector learn to distrust tidiness, and remarks that the most dangerous instruments in the archive are the ones drawn most beautifully, because beauty is what stops a reader from asking what was decided'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a060_0",
+          "label": "Go on.",
+          "target": "a059"
+        }
+      ]
+    },
+    {
+      "id": "a061",
+      "body": "<<FILL role=rising words=176 beats='the inspector spends the first weeks simply reading old rulings, learning the Tribunal's grammar of sealed judgments, and how a single clean line can carry a decision no one alive remembers making'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a061_0",
+          "label": "Go on.",
+          "target": "a060"
+        }
+      ]
+    },
+    {
+      "id": "a062",
+      "body": "<<FILL role=rising words=168 beats='the Cistern reconciliation reaches the Tribunal as a request to bind fault for the four thousand liters gap; Dahl sets it aside to ripen, the way the Tribunal sets everything to ripen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a062_0",
+          "label": "Go on.",
+          "target": "a061"
+        }
+      ]
+    },
+    {
+      "id": "a063",
+      "body": "<<FILL role=rising words=184 beats='Dahl teaches that the Tribunal's whole power is the memory of its own word; every judgment is sealed and shelved, and the chamber is bound by what it once said as surely as any citizen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a063_0",
+          "label": "Go on.",
+          "target": "a062"
+        }
+      ]
+    },
+    {
+      "id": "a064",
+      "body": "<<FILL role=rising words=160 beats='the inspector is seated below the great Scale of the Tribunal, where Kestrel Station weighs disputes but never acts; Justicar Rennick Dahl presides, unhurried, and names the remit: certify the Tribunal's rulings against the ledgered facts before the Audit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a064_0",
+          "label": "Go on.",
+          "target": "a063"
+        }
+      ]
+    },
+    {
+      "id": "b065",
+      "body": "<<FILL role=resolution words=192 beats='the inspector carries the truth of the empty vault to the Audit; the substitution is entered, the outer sectors named at last, and the city forced to argue in the open whether it will feed the people it refuses to count; Kesh is broken by it and does not resent the inspector for the breaking'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b065",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Vault Walked Honest"
+      },
+      "choices": []
+    },
+    {
+      "id": "b066",
+      "body": "<<FILL role=resolution words=172 beats='the inspector climbs the stair and reports four thousand liters held; the sectors are fed one more winter, the ledger stays a lie, and the inspector learns how mercy and complicity share a stairwell'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b066",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Keeper's Peace"
+      },
+      "choices": []
+    },
+    {
+      "id": "b067",
+      "body": "<<FILL role=resolution words=180 beats='the inspector reports the substitution but keeps the sectors out of it; the Directorate takes the blame for a theft that was really a feeding, Kesh among the fallen, and the inspector carries the unsaid half home like a stone'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b067",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Half the Truth Up the Stair"
+      },
+      "choices": []
+    },
+    {
+      "id": "b068",
+      "body": "<<FILL role=choice words=158 beats='Kesh lays the whole of it out and asks what the inspector will carry up the stair; her rule holds even here, that a keeper answers for the count he reports'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b068_0",
+          "label": "Report the substitution to the Audit.",
+          "target": "b065"
+        },
+        {
+          "id": "c_b068_1",
+          "label": "Keep Kesh's peace and report the count as given.",
+          "target": "b066"
+        },
+        {
+          "id": "c_b068_2",
+          "label": "Report the empty vault but not the sectors.",
+          "target": "b067"
+        }
+      ]
+    },
+    {
+      "id": "b069",
+      "body": "<<FILL role=rising words=196 beats='the inspector stands between the empty vault below and the fed sectors above and understands that every number in the Directorate's books is a sentence someone will serve'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b069_0",
+          "label": "Go on.",
+          "target": "b068"
+        }
+      ]
+    },
+    {
+      "id": "b070",
+      "body": "<<FILL role=rising words=166 beats='she does not order the inspector to silence; she lays the whole weight down and steps back, which is worse than an order, because now the choosing is honestly the inspector's'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b070_0",
+          "label": "Go on.",
+          "target": "b069"
+        }
+      ]
+    },
+    {
+      "id": "b071",
+      "body": "<<FILL role=peril words=178 beats='Kesh says quietly that three Prefects before her kept this exact watch, and that every one of them learned the same lesson: the truth of the vault, spoken at the wrong moment, does not feed anyone, it only starves them faster'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b071_0",
+          "label": "Go on.",
+          "target": "b070"
+        }
+      ]
+    },
+    {
+      "id": "b072",
+      "body": "<<FILL role=rising words=174 beats='below the grate the sectors go about their evening, fed and unlisted, a whole quarter of the city living on water the roster swears is sitting in the vault the inspector just walked'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b072_0",
+          "label": "Go on.",
+          "target": "b071"
+        }
+      ]
+    },
+    {
+      "id": "b073",
+      "body": "<<FILL role=rising words=176 beats='she leads the inspector up a service stair to a grate above the outer sectors and names the number the Foundation Log never counts, the people Kestrel Station feeds without admitting they exist'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b073_0",
+          "label": "Go on.",
+          "target": "b072"
+        }
+      ]
+    },
+    {
+      "id": "b074",
+      "body": "<<FILL role=rising words=168 beats='she explains the arithmetic she has kept in her head for years: how much true water the counted city needs, how much the land yields, and the fixed shortfall between the two that no season has ever closed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b074_0",
+          "label": "Go on.",
+          "target": "b073"
+        }
+      ]
+    },
+    {
+      "id": "b075",
+      "body": "<<FILL role=rising words=184 beats='she walks the inspector through the lower aisles, pointing out which sacks were emptied first and how the substitution was dressed to survive an ordinary inspection from the stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b075_0",
+          "label": "Go on.",
+          "target": "b074"
+        }
+      ]
+    },
+    {
+      "id": "b076",
+      "body": "<<FILL role=rising words=160 beats='Kesh herself comes down, not angry, only tired, and does not pretend; she says the water that should be here has gone where the roster cannot follow it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b076_0",
+          "label": "Go on.",
+          "target": "b075"
+        }
+      ]
+    },
+    {
+      "id": "b077",
+      "body": "<<FILL role=peril words=192 beats='a watch-lantern turns at the stair; to be found counting the vault against orders is, by the Directorate's own code, to be counting against the Marshal'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b077_0",
+          "label": "Go on.",
+          "target": "b076"
+        }
+      ]
+    },
+    {
+      "id": "b078",
+      "body": "<<FILL role=rising words=172 beats='the marked sacks give under the hand like ballast; they are ballast, and sweepings, stacked to a height that reads full from the stair-head'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b078_0",
+          "label": "Go on.",
+          "target": "b077"
+        }
+      ]
+    },
+    {
+      "id": "b079",
+      "body": "<<FILL role=rising words=180 beats='the inspector descends past the last honest sacks into the deep aisles; the smell is wrong, dry as chaff and dust, not water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b079_0",
+          "label": "Go on.",
+          "target": "b078"
+        }
+      ]
+    },
+    {
+      "id": "b080",
+      "body": "<<FILL role=setback words=158 beats='the inspector's duty-roster is a monument to a count no one dares take; the Cistern is certified full and held, the audit clean, and the truth stays below the stair for a keeper braver than this one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b080",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Guarding an Empty Room"
+      },
+      "choices": []
+    },
+    {
+      "id": "b081",
+      "body": "<<FILL role=rising words=196 beats='at the Audit the inspector certifies a granary defended to the last man and empty at the heart, and does not know it, which is its own kind of ending'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b081_0",
+          "label": "Go on.",
+          "target": "b080"
+        }
+      ]
+    },
+    {
+      "id": "b082",
+      "body": "<<FILL role=rising words=166 beats='the inspector mistakes the intensity of the guarding for the value of the guarded, and files report after report praising the Cistern's security, each one another seal over the emptiness'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b082_0",
+          "label": "Go on.",
+          "target": "b081"
+        }
+      ]
+    },
+    {
+      "id": "b083",
+      "body": "<<FILL role=rising words=178 beats='not once does the inspector go down the lower stair; the count is guarded ferociously precisely because no one is meant to take it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b083_0",
+          "label": "Go on.",
+          "target": "b082"
+        }
+      ]
+    },
+    {
+      "id": "b084",
+      "body": "<<FILL role=rising words=174 beats='the duty-roster thickens through Reclamation Cycle; more keepers, more seals, more attestations that the water is where it is written to be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b084_0",
+          "label": "Go on.",
+          "target": "b083"
+        }
+      ]
+    },
+    {
+      "id": "b085",
+      "body": "<<FILL role=rising words=176 beats='the inspector sets the new watch on the Cistern and enters the count as the cistern-log gives it, four thousand liters held below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b085_0",
+          "label": "Go on.",
+          "target": "b084"
+        }
+      ]
+    },
+    {
+      "id": "b086",
+      "body": "<<FILL role=resolution words=168 beats='the inspector certifies the Cistern with a formal exception that its count rests on attestation, not on any weighing; it is the most honest paper anyone files this year and it still never learns what is actually below the stair'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b086",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Provenance That Wasn't"
+      },
+      "choices": []
+    },
+    {
+      "id": "b087",
+      "body": "<<FILL role=rising words=184 beats='the inspector cannot break the count on paper and will not walk the vault; the year ends with a formal exception noting the provenance is unproven, the nearest thing to truth that never touched the truth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b087_0",
+          "label": "Go on.",
+          "target": "b086"
+        }
+      ]
+    },
+    {
+      "id": "b088",
+      "body": "<<FILL role=rising words=160 beats='Kesh watches the inspector chase the paper in circles and says, not unkindly, that some counts are held up by belief, not by water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b088_0",
+          "label": "Go on.",
+          "target": "b087"
+        }
+      ]
+    },
+    {
+      "id": "b089",
+      "body": "<<FILL role=rising words=192 beats='the clerks produce attestations of attestations; nowhere a weighing, only keepers swearing to what prior keepers swore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b089_0",
+          "label": "Go on.",
+          "target": "b088"
+        }
+      ]
+    },
+    {
+      "id": "b090",
+      "body": "<<FILL role=rising words=172 beats='the inspector refuses to certify the count on attestation alone and demands the cistern-log's provenance, every entry sourced back to a weighing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b090_0",
+          "label": "Go on.",
+          "target": "b089"
+        }
+      ]
+    },
+    {
+      "id": "b091",
+      "body": "<<FILL role=choice words=180 beats='the cistern-log says four thousand liters held below; Kesh's rule for the watch is that a keeper reports the count he is given, not the count he takes; the inspector stands at the lower stair with the key'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b091_0",
+          "label": "Break the count and walk the lower vault yourself.",
+          "target": "b079"
+        },
+        {
+          "id": "c_b091_1",
+          "label": "Post the extra watch Kesh orders and log the count as held.",
+          "target": "b085"
+        },
+        {
+          "id": "c_b091_2",
+          "label": "Demand the cistern-log's provenance in writing before you certify.",
+          "target": "b090"
+        }
+      ]
+    },
+    {
+      "id": "b092",
+      "body": "<<FILL role=rising words=158 beats='Kesh's extra Reclamation Cycle watch settles in over the granary, more eyes on a count than any honest granary needs, and the inspector learns to read the size of a guard as the measure of a secret'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b092_0",
+          "label": "Go on.",
+          "target": "b091"
+        }
+      ]
+    },
+    {
+      "id": "b093",
+      "body": "<<FILL role=rising words=196 beats='the keepers work the Cistern in shifts that never overlap at the lower door, a rota built, the inspector slowly sees, so that no single keeper ever accounts for the whole of what is below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b093_0",
+          "label": "Go on.",
+          "target": "b092"
+        }
+      ]
+    },
+    {
+      "id": "b094",
+      "body": "<<FILL role=rising words=166 beats='the upper aisles are honest, fragrant, exactly as the cistern-log says; it is the lower stair, always locked, that the keepers grow quiet around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b094_0",
+          "label": "Go on.",
+          "target": "b093"
+        }
+      ]
+    },
+    {
+      "id": "b095",
+      "body": "<<FILL role=rising words=178 beats='the inspector takes the Cistern posting, where the disputed count physically sits; keepers, seals, and a lower vault no inspector is encouraged to enter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b095_0",
+          "label": "Go on.",
+          "target": "b094"
+        }
+      ]
+    },
+    {
+      "id": "b096",
+      "body": "<<FILL role=resolution words=174 beats='the inspector files a sector-by-sector reconciliation that exposes the water flowing to the uncounted sectors; the credit-balance can no longer hide it; Kesh answers for it at the Audit and the city is made to see whom it has been feeding in the dark'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b096",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Balanced to the Ward"
+      },
+      "choices": []
+    },
+    {
+      "id": "b097",
+      "body": "<<FILL role=rising words=176 beats='the inspector writes the reconciliation true, sector by sector, knowing whose name sits at the bottom of the honest column and choosing to sign beneath it anyway'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b097_0",
+          "label": "Go on.",
+          "target": "b096"
+        }
+      ]
+    },
+    {
+      "id": "b098",
+      "body": "<<FILL role=rising words=168 beats='Kesh does not interfere; she lets the inspector reach the bottom of the column alone, the way she reached it herself a long time ago'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b098_0",
+          "label": "Go on.",
+          "target": "b097"
+        }
+      ]
+    },
+    {
+      "id": "b099",
+      "body": "<<FILL role=rising words=184 beats='the inspector sits with the two ledgers, the tidy false one and the true rough one, and understands that filing the second is not an accusation of theft but a confession of the city's real shape'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b099_0",
+          "label": "Go on.",
+          "target": "b098"
+        }
+      ]
+    },
+    {
+      "id": "b100",
+      "body": "<<FILL role=rising words=160 beats='the clerk is not threatening, only weary; he has drafted honest reconciliations before and watched them softened into nothing, and he wants the inspector to know the cost before paying it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b100_0",
+          "label": "Go on.",
+          "target": "b099"
+        }
+      ]
+    },
+    {
+      "id": "b101",
+      "body": "<<FILL role=rising words=192 beats='a senior clerk warns that to name the flow is to name Kesh, and to name Kesh is to hand the Tribunal and the Archive a Marshal to blame for a fault all three chambers share'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b101_0",
+          "label": "Go on.",
+          "target": "b100"
+        }
+      ]
+    },
+    {
+      "id": "b102",
+      "body": "<<FILL role=rising words=172 beats='the outer sectors resolve into something the tithe-book was built to hide: not delinquents but dependents, a population the city taxes as a courtesy and feeds as a necessity'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b102_0",
+          "label": "Go on.",
+          "target": "b101"
+        }
+      ]
+    },
+    {
+      "id": "b103",
+      "body": "<<FILL role=rising words=180 beats='the inspector rebuilds each sector's true figure from the raw collection slips, going behind the balanced column to the weighings the clerks stopped copying forward years ago'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b103_0",
+          "label": "Go on.",
+          "target": "b102"
+        }
+      ]
+    },
+    {
+      "id": "b104",
+      "body": "<<FILL role=rising words=158 beats='the pattern is old and deliberate; water flows out to sectors the roster barely lists, and the tithe-book is balanced to make the flow invisible'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b104_0",
+          "label": "Go on.",
+          "target": "b103"
+        }
+      ]
+    },
+    {
+      "id": "b105",
+      "body": "<<FILL role=rising words=196 beats='the inspector works the tallies sector by sector and finds the outer sectors taxed lightly and fed heavily, a leak the credit-balance hides'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b105_0",
+          "label": "Go on.",
+          "target": "b104"
+        }
+      ]
+    },
+    {
+      "id": "b106",
+      "body": "<<FILL role=setback words=166 beats='the inspector certifies the tithe on the credit-balance and lets the water-flow lie; the Directorate's books are clean, its secret intact, and the inspector has learned exactly how a chamber buys silence with tidiness'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b106",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Closed on the Coin"
+      },
+      "choices": []
+    },
+    {
+      "id": "b107",
+      "body": "<<FILL role=rising words=178 beats='Kesh thanks the inspector for a clean close and means it; the Directorate rewards the keeper who does not ask where the water went'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b107_0",
+          "label": "Go on.",
+          "target": "b106"
+        }
+      ]
+    },
+    {
+      "id": "b108",
+      "body": "<<FILL role=rising words=174 beats='the books are tidy, the tithe certified, the flow to the outer sectors untouched and unnamed beneath a balanced column'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b108_0",
+          "label": "Go on.",
+          "target": "b107"
+        }
+      ]
+    },
+    {
+      "id": "b109",
+      "body": "<<FILL role=rising words=176 beats='the inspector closes the tithe on the credit-balance, the way the Directorate always closes it, and does not chase the water the coin does not track'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b109_0",
+          "label": "Go on.",
+          "target": "b108"
+        }
+      ]
+    },
+    {
+      "id": "b110",
+      "body": "<<FILL role=resolution words=168 beats='the inspector sees from the tithe side what the roster refuses: a fed, uncounted people at the city's edge; the truth is whole now but the choosing is not the inspector's alone, and the year ends holding a question three chambers have spent nineteen years not answering'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b110",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Who Eats in the Outer Wards"
+      },
+      "choices": []
+    },
+    {
+      "id": "b111",
+      "body": "<<FILL role=rising words=184 beats='Kesh finds the inspector at the sector-edge and does not explain herself; she only asks whether a true count would feed these people or merely name them for the winter's cut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b111_0",
+          "label": "Go on.",
+          "target": "b110"
+        }
+      ]
+    },
+    {
+      "id": "b112",
+      "body": "<<FILL role=rising words=160 beats='the inspector understands the shape of it now from the tithe side: the Directorate feeds the uncounted and the Archive refuses to count them, and the gap is the shape of that refusal'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b112_0",
+          "label": "Go on.",
+          "target": "b111"
+        }
+      ]
+    },
+    {
+      "id": "b113",
+      "body": "<<FILL role=rising words=192 beats='the thread runs out past the counted city to the outer sectors, to lines of people the Foundation Log never names, eating water the tithe-book swears is elsewhere'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b113_0",
+          "label": "Go on.",
+          "target": "b112"
+        }
+      ]
+    },
+    {
+      "id": "b114",
+      "body": "<<FILL role=resolution words=172 beats='the inspector files a proven, partial finding that stops at the sector-gate; it is honest and incomplete, names the leak without the reason, and leaves the founding wound for a bolder year'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b114",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "As Far as the Gate"
+      },
+      "choices": []
+    },
+    {
+      "id": "b115",
+      "body": "<<FILL role=rising words=180 beats='it is a careful, defensible document that names a leak and not a cause, a symptom and not the wound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b115_0",
+          "label": "Go on.",
+          "target": "b114"
+        }
+      ]
+    },
+    {
+      "id": "b116",
+      "body": "<<FILL role=rising words=158 beats='the inspector stops at the counted city's edge, unwilling to certify what cannot be weighed, and files only the proven flow to the gate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b116_0",
+          "label": "Go on.",
+          "target": "b115"
+        }
+      ]
+    },
+    {
+      "id": "b117",
+      "body": "<<FILL role=setback words=196 beats='the inspector reports the outer sector for under-tithe and hands the Directorate a tidy scapegoat; the winter's cut falls hardest on the sectors already fed in secret, and the inspector never learns the water was flowing the other way'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b117",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Ward Reported Delinquent"
+      },
+      "choices": []
+    },
+    {
+      "id": "b118",
+      "body": "<<FILL role=rising words=166 beats='the Directorate is happy to accept a clean story of a delinquent sector; it is a smaller lie that protects a larger one, and it costs the poorest the most'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b118_0",
+          "label": "Go on.",
+          "target": "b117"
+        }
+      ]
+    },
+    {
+      "id": "b119",
+      "body": "<<FILL role=rising words=178 beats='the inspector reads the light tithe as evasion and reports the outer sector for under-payment, not seeing the feeding underneath the figure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b119_0",
+          "label": "Go on.",
+          "target": "b118"
+        }
+      ]
+    },
+    {
+      "id": "b120",
+      "body": "<<FILL role=choice words=174 beats='the inspector follows a single sector's water out of the tithe-book and into the streets; Kesh's rule bends here, that a keeper who traces one thread had better be ready for the whole cloth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b120_0",
+          "label": "Follow it to the outer sectors and see who eats.",
+          "target": "b113"
+        },
+        {
+          "id": "c_b120_1",
+          "label": "Stop at the sector-gate and file what you can prove.",
+          "target": "b116"
+        },
+        {
+          "id": "c_b120_2",
+          "label": "Turn back and report the sector for under-tithe.",
+          "target": "b119"
+        }
+      ]
+    },
+    {
+      "id": "b121",
+      "body": "<<FILL role=choice words=176 beats='the tithe-ledgers show the water collected against the roster; Kesh's operational rule is that the tithe is closed when the coin balances, whatever the water does; the inspector holds the sector-by-sector tallies'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b121_0",
+          "label": "Reconcile the tithe sector by sector against the roster.",
+          "target": "b105"
+        },
+        {
+          "id": "c_b121_1",
+          "label": "Accept the credit-balance and close the tithe as Kesh's rule allows.",
+          "target": "b109"
+        },
+        {
+          "id": "c_b121_2",
+          "label": "Trace one sector's water-flow to its end before deciding.",
+          "target": "b120"
+        }
+      ]
+    },
+    {
+      "id": "b122",
+      "body": "<<FILL role=rising words=168 beats='Kesh looks in once, sees which books are open, and says only that the tithe feeds the city and the books feed the auditors, and that the inspector should be careful which one it is truly serving'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b122_0",
+          "label": "Go on.",
+          "target": "b121"
+        }
+      ]
+    },
+    {
+      "id": "b123",
+      "body": "<<FILL role=rising words=184 beats='the inspector pulls three years of tithe-ledgers and finds the same hand softening the same sectors, a quiet competence that has been managing this seam for longer than the inspector has been alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b123_0",
+          "label": "Go on.",
+          "target": "b122"
+        }
+      ]
+    },
+    {
+      "id": "b124",
+      "body": "<<FILL role=rising words=160 beats='the outer sectors recur at the bottom of every page, lightly levied and heavily provisioned, a discrepancy so consistent it has plainly stopped being an error and become a policy no one will name'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b124_0",
+          "label": "Go on.",
+          "target": "b123"
+        }
+      ]
+    },
+    {
+      "id": "b125",
+      "body": "<<FILL role=rising words=192 beats='an old ledger-clerk shows the inspector the house style: close on the coin, footnote the water, and never let the two columns be asked the same question in the same room'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b125_0",
+          "label": "Go on.",
+          "target": "b124"
+        }
+      ]
+    },
+    {
+      "id": "b126",
+      "body": "<<FILL role=rising words=172 beats='the coin totals reconcile to the last measure while the water totals are only ever asserted, and the inspector notices the Directorate proves what it collects and merely states what it holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b126_0",
+          "label": "Go on.",
+          "target": "b125"
+        }
+      ]
+    },
+    {
+      "id": "b127",
+      "body": "<<FILL role=rising words=180 beats='the balance is beautiful and the water beneath it does not behave; the inspector senses a second story running under the arithmetic'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b127_0",
+          "label": "Go on.",
+          "target": "b126"
+        }
+      ]
+    },
+    {
+      "id": "b128",
+      "body": "<<FILL role=rising words=158 beats='the inspector takes the tithe-ledgers, where the roster meets the collected water in long columns balanced to the coin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b128_0",
+          "label": "Go on.",
+          "target": "b127"
+        }
+      ]
+    },
+    {
+      "id": "b129",
+      "body": "<<FILL role=resolution words=196 beats='the inspector counts the haulers true and finds the Directorate's hidden distribution to the uncounted sectors; the operational truth is plain from the road even when the paper hides it, and the inspector comes back changed by having seen the city feed its own shadow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b129",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Second Distribution"
+      },
+      "choices": []
+    },
+    {
+      "id": "b130",
+      "body": "<<FILL role=rising words=166 beats='the inspector understands the operation is not chaos but a second, hidden distribution the Directorate runs alongside the counted one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b130_0",
+          "label": "Go on.",
+          "target": "b129"
+        }
+      ]
+    },
+    {
+      "id": "b131",
+      "body": "<<FILL role=rising words=178 beats='water is being delivered to places that do not appear on the provisioning rolls, quietly, competently, as if it were the most ordinary thing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b131_0",
+          "label": "Go on.",
+          "target": "b130"
+        }
+      ]
+    },
+    {
+      "id": "b132",
+      "body": "<<FILL role=rising words=174 beats='the inspector rides out with the haulers and counts each against the cargo-slip; past the counted city the cargo-slips thin and the haulers do not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b132_0",
+          "label": "Go on.",
+          "target": "b131"
+        }
+      ]
+    },
+    {
+      "id": "b133",
+      "body": "<<FILL role=resolution words=176 beats='the inspector reports the off-cargo-slip deliveries as diversion and the run is suspended pending the Audit; the paper is honest, the ledger corrected, and the outer sectors go hungry through the vote; the inspector certifies a true book and cannot forget the arithmetic of the choice'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b133",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Run That Stopped"
+      },
+      "choices": []
+    },
+    {
+      "id": "b134",
+      "body": "<<FILL role=rising words=168 beats='Kesh does not argue; she only asks the inspector to ride the run once more before deciding, and to count the faces this time, not the sacks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b134_0",
+          "label": "Go on.",
+          "target": "b133"
+        }
+      ]
+    },
+    {
+      "id": "b135",
+      "body": "<<FILL role=rising words=184 beats='the inspector weighs the clean report against the haulers it will halt, and learns that the honest word and the fed child are not always on the same side'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b135_0",
+          "label": "Go on.",
+          "target": "b134"
+        }
+      ]
+    },
+    {
+      "id": "b136",
+      "body": "<<FILL role=peril words=160 beats='a driver warns, flatly, that naming the run as theft will stop the run, and stopping the run will starve the sectors before any chamber votes a remedy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b136_0",
+          "label": "Go on.",
+          "target": "b135"
+        }
+      ]
+    },
+    {
+      "id": "b137",
+      "body": "<<FILL role=rising words=192 beats='the inspector documents the off-cargo-slip deliveries as diversion of levied water and prepares to lay them before the Audit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b137_0",
+          "label": "Go on.",
+          "target": "b136"
+        }
+      ]
+    },
+    {
+      "id": "b138",
+      "body": "<<FILL role=resolution words=172 beats='the inspector keeps the provisioning run alive and folds it into the books as an honest, named exception; no one starves and no one is deceived; the founding fault is now a line the Audit must answer, put there by a keeper who refused both the lie and the clean cruelty'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b138",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Run Written Down"
+      },
+      "choices": []
+    },
+    {
+      "id": "b139",
+      "body": "<<FILL role=rising words=180 beats='she tells the inspector it is the first time the true shape of the year will reach the Audit without a body attached to carry the blame, and perhaps the only clean thing done in this chamber in her tenure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b139_0",
+          "label": "Go on.",
+          "target": "b138"
+        }
+      ]
+    },
+    {
+      "id": "b140",
+      "body": "<<FILL role=rising words=158 beats='Kesh reads the exception line and, for once, looks something like relieved; a burden nineteen years carried is at last written down by someone willing to sign beneath it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b140_0",
+          "label": "Go on.",
+          "target": "b139"
+        }
+      ]
+    },
+    {
+      "id": "b141",
+      "body": "<<FILL role=rising words=196 beats='it is a keeper's compromise and the inspector knows it, feeding the sectors and forcing the reckoning at once, refusing both the comfortable lie and the clean cruelty of a truth dropped without a remedy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b141_0",
+          "label": "Go on.",
+          "target": "b140"
+        }
+      ]
+    },
+    {
+      "id": "b142",
+      "body": "<<FILL role=rising words=166 beats='the exception line, finished, does what nineteen years of silence never did: it makes the shortfall a fact the chambers can argue over instead of a secret they must protect'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b142_0",
+          "label": "Go on.",
+          "target": "b141"
+        }
+      ]
+    },
+    {
+      "id": "b143",
+      "body": "<<FILL role=rising words=178 beats='Petra Voss, in the days before his forced resignation, quietly checks the inspector's figures against the bookkeeping he can no longer defend, and confirms them without complaint'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b143_0",
+          "label": "Go on.",
+          "target": "b142"
+        }
+      ]
+    },
+    {
+      "id": "b144",
+      "body": "<<FILL role=rising words=174 beats='the inspector drafts and redrafts the exception through the last weeks of Reclamation Cycle, testing each wording against the objection the Tribunal will raise and the objection the Archive will raise'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b144_0",
+          "label": "Go on.",
+          "target": "b143"
+        }
+      ]
+    },
+    {
+      "id": "b145",
+      "body": "<<FILL role=rising words=176 beats='it means inventing a form the Directorate has never had, a line that records water going to people the Archive does not count, without either lying about the water or denying the people'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b145_0",
+          "label": "Go on.",
+          "target": "b144"
+        }
+      ]
+    },
+    {
+      "id": "b146",
+      "body": "<<FILL role=rising words=168 beats='the inspector keeps the haulers moving and begins the slow work of writing the hidden distribution into the books as a named exception, neither buried nor accused'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b146_0",
+          "label": "Go on.",
+          "target": "b145"
+        }
+      ]
+    },
+    {
+      "id": "b147",
+      "body": "<<FILL role=setback words=184 beats='the inspector hides the provisioning run inside the counted books so well that no future inspector will find it; the sectors eat, the Waiver deepens, and the inspector's skill has become the newest brick in a nineteen-year wall'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b147",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Smoothed Into the Columns"
+      },
+      "choices": []
+    },
+    {
+      "id": "b148",
+      "body": "<<FILL role=rising words=160 beats='the sectors stay fed and the secret stays kept, but now it is the inspector's craftsmanship holding the lid down, not just Kesh's'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b148_0",
+          "label": "Go on.",
+          "target": "b147"
+        }
+      ]
+    },
+    {
+      "id": "b149",
+      "body": "<<FILL role=rising words=192 beats='the inspector smooths the hidden water into the counted columns until the run vanishes into ordinary provisioning, tidy and untraceable'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b149_0",
+          "label": "Go on.",
+          "target": "b148"
+        }
+      ]
+    },
+    {
+      "id": "b150",
+      "body": "<<FILL role=resolution words=172 beats='the inspector keeps the run alive and hands the Audit an unsettled, honest mess rather than a false neatness; the sectors are fed and the choice is placed where it belongs, with the whole Compact, and the inspector's year ends having refused to be the one who decided alone'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "b150",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Left Open for the Audit"
+      },
+      "choices": []
+    },
+    {
+      "id": "b151",
+      "body": "<<FILL role=rising words=180 beats='it is neither lie nor accusation, only a keeper handing the whole tangled truth up the chain exactly as it is, and letting the chambers own the choice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b151_0",
+          "label": "Go on.",
+          "target": "b150"
+        }
+      ]
+    },
+    {
+      "id": "b152",
+      "body": "<<FILL role=rising words=158 beats='the inspector keeps the haulers rolling and refuses to settle the books at all, leaving the discrepancy raw and open for the Audit to see'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b152_0",
+          "label": "Go on.",
+          "target": "b151"
+        }
+      ]
+    },
+    {
+      "id": "b153",
+      "body": "<<FILL role=choice words=196 beats='Kesh's road-rule wins for now; but settling the books to protect the run means writing the off-cargo-slip water into the counted columns, and the inspector holds the pen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b153_0",
+          "label": "Fold the hidden run into an honest exception line.",
+          "target": "b146"
+        },
+        {
+          "id": "c_b153_1",
+          "label": "Bury the run in the counted columns to hide it entirely.",
+          "target": "b149"
+        },
+        {
+          "id": "c_b153_2",
+          "label": "Keep the run but leave the books unsettled for the Audit.",
+          "target": "b152"
+        }
+      ]
+    },
+    {
+      "id": "b154",
+      "body": "<<FILL role=choice words=166 beats='Kesh assigns the inspector to ride the provisioning run to the refinery and the outer sectors; her present-tense rule governs: on the road you keep the haulers moving and settle the books after'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b154_0",
+          "label": "Ride the run and count the haulers honestly against the cargo-slip.",
+          "target": "b132"
+        },
+        {
+          "id": "c_b154_1",
+          "label": "Report the off-cargo-slip deliveries to the Audit as diversion.",
+          "target": "b137"
+        },
+        {
+          "id": "c_b154_2",
+          "label": "Keep the run moving and settle the books to protect it.",
+          "target": "b153"
+        }
+      ]
+    },
+    {
+      "id": "b155",
+      "body": "<<FILL role=rising words=178 beats='the drivers treat the inspector with the wary courtesy of men who have seen inspectors before and know the run survives only if the paperwork never quite catches the wheels'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b155_0",
+          "label": "Go on.",
+          "target": "b154"
+        }
+      ]
+    },
+    {
+      "id": "b156",
+      "body": "<<FILL role=rising words=174 beats='at a waystation the inspector watches water unloaded to people who thank the drivers by name, a transaction so practiced and so unrecorded that it has clearly been the truest routine of the Directorate for years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b156_0",
+          "label": "Go on.",
+          "target": "b155"
+        }
+      ]
+    },
+    {
+      "id": "b157",
+      "body": "<<FILL role=rising words=176 beats='the inspector rides on with the discrepancy widening at every sector-edge, the paper saying one city and the wheels serving another, both of them Kestrel Station'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b157_0",
+          "label": "Go on.",
+          "target": "b156"
+        }
+      ]
+    },
+    {
+      "id": "b158",
+      "body": "<<FILL role=rising words=168 beats='then the road bends past the last counted street and the cargo-slips thin while the haulers do not, and a driver tells the inspector, without being asked, that some deliveries are better left uncounted for everyone's sake'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b158_0",
+          "label": "Go on.",
+          "target": "b157"
+        }
+      ]
+    },
+    {
+      "id": "b159",
+      "body": "<<FILL role=rising words=184 beats='the first days are ordinary, water to the refinery, water to the granary gates, every hauler matched to a line; the inspector almost relaxes into the rhythm of an honest job'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b159_0",
+          "label": "Go on.",
+          "target": "b158"
+        }
+      ]
+    },
+    {
+      "id": "b160",
+      "body": "<<FILL role=rising words=160 beats='Kesh says the run is where the inspector will actually see the shape of the year, if the inspector is willing to look past the paper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b160_0",
+          "label": "Go on.",
+          "target": "b159"
+        }
+      ]
+    },
+    {
+      "id": "b161",
+      "body": "<<FILL role=rising words=192 beats='the inspector takes the provisioning run to the refinery and the sectors, the Directorate at its most physical, haulers and cargo-slips and the road past the counted city'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b161_0",
+          "label": "Go on.",
+          "target": "b160"
+        }
+      ]
+    },
+    {
+      "id": "b162",
+      "body": "<<FILL role=choice words=172 beats='Kesh names the three postings the Directorate needs an inspector on before Reclamation Cycle, each with its own edge of the gap: the Cistern watch, the tithe-ledgers, or the outer-sector provisioning run'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b162_0",
+          "label": "Take the Cistern watch.",
+          "target": "b095"
+        },
+        {
+          "id": "c_b162_1",
+          "label": "Take the tithe-ledgers.",
+          "target": "b128"
+        },
+        {
+          "id": "c_b162_2",
+          "label": "Take the outer-sector provisioning run.",
+          "target": "b161"
+        }
+      ]
+    },
+    {
+      "id": "b163",
+      "body": "<<FILL role=rising words=180 beats='Kesh's first lesson is a shrug at the Tribunal's slowness; the Directorate does not weigh, it feeds the city tonight and answers for it tomorrow, and the Cistern's four thousand liters gap is a thing to be handled, not contemplated'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b163_0",
+          "label": "Go on.",
+          "target": "b162"
+        }
+      ]
+    },
+    {
+      "id": "b164",
+      "body": "<<FILL role=rising words=158 beats='the inspector reports to the Directorate, all motion and torchlight, where Marshal Imara Kesh runs the tithe, the watch, and the Cistern; the remit is spoken on the move: audit the tithe-ledgers and the duty-rosters, and find where the water and coin actually went'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b164_0",
+          "label": "Go on.",
+          "target": "b163"
+        }
+      ]
+    },
+    {
+      "id": "c165",
+      "body": "<<FILL role=setback words=196 beats='the inspector lets the roster be ratified unchanged, reasoning the count is the count and not the clerk's to question; the inflated Foundation Log passes into another decade, the winter's cut is apportioned on phantom measures, and the inspector's name stands under a number everyone now half-knows is false'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c165",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Ratified as Written"
+      },
+      "choices": []
+    },
+    {
+      "id": "c166",
+      "body": "<<FILL role=resolution words=166 beats='the inspector learns the Archive's deepest habit is deference to its own past entries; the count is inherited, not audited, and the year ends with the inspector understanding the shape of the silence without yet daring to break a custom older than any living Keeper'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c166",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Clerks Never Do"
+      },
+      "choices": []
+    },
+    {
+      "id": "c167",
+      "body": "<<FILL role=rising words=178 beats='an older clerk explains it almost gently: the Foundation Log is trusted precisely because it is never revised, and a chamber that started correcting its own memory would forfeit the one thing that makes its memory worth keeping'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c167_0",
+          "label": "Go on.",
+          "target": "c166"
+        }
+      ]
+    },
+    {
+      "id": "c168",
+      "body": "<<FILL role=rising words=174 beats='the answer is nobody; the Archive's clerks certify, they do not correct, and a clerk who reaches for the founding count is reaching past every hand that trained them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c168_0",
+          "label": "Go on.",
+          "target": "c167"
+        }
+      ]
+    },
+    {
+      "id": "c169",
+      "body": "<<FILL role=rising words=176 beats='the inspector lets the withdrawn brief lie and turns instead to the roster clerks, asking who, in living memory, has ever amended the Foundation Log rather than merely certified it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c169_0",
+          "label": "Go on.",
+          "target": "c168"
+        }
+      ]
+    },
+    {
+      "id": "c170",
+      "body": "<<FILL role=resolution words=168 beats='the inspector moves Frey's brief back onto the record in open session; the Archive cannot un-hear it; the recurring gap becomes a matter of deliberation instead of a matter of silence, and Nadia Frey's name is on the finding that finally forces the count to be argued in the light'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c170",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Memo Read Into the Foundation Log"
+      },
+      "choices": []
+    },
+    {
+      "id": "c171",
+      "body": "<<FILL role=setback words=184 beats='the inspector slips the brief out beyond the Archive's order; it is dismissed as improperly obtained, Frey is blamed for the breach, and the chamber closes ranks around its procedure while the true finding drowns in the argument over how it surfaced'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c171",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Circulated Out of Order"
+      },
+      "choices": []
+    },
+    {
+      "id": "c172",
+      "body": "<<FILL role=choice words=160 beats='the Archive's rule of order is that a suppressed paper is reintroduced only by motion, in session, on the record; to circulate it any other way is to break the very deliberation the chamber exists to protect'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c172_0",
+          "label": "Reintroduce the brief by motion, on the record.",
+          "target": "c170"
+        },
+        {
+          "id": "c_c172_1",
+          "label": "Circulate it quietly to force the question.",
+          "target": "c171"
+        }
+      ]
+    },
+    {
+      "id": "c173",
+      "body": "<<FILL role=rising words=192 beats='its arithmetic is quiet and total: the four thousand liters gap is not new but recurring across at least three Reckonings, each one abated and each one buried under the next'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c173_0",
+          "label": "Go on.",
+          "target": "c172"
+        }
+      ]
+    },
+    {
+      "id": "c174",
+      "body": "<<FILL role=rising words=172 beats='the inspector pulls the Archive's own field notes instead of waiting on the year's count, and there, misfiled among discharged drafts, is Nadia Frey's brief, unredacted'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c174_0",
+          "label": "Go on.",
+          "target": "c173"
+        }
+      ]
+    },
+    {
+      "id": "c175",
+      "body": "<<FILL role=resolution words=180 beats='the inspector takes Frey's full file on the promise to move it properly and keeps that promise; the disclosure is sequenced, the Compact holds the shock, and Nadia Frey is restored to the record as the one who was right and made to wait, not wrong and made to vanish'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c175",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Frey's File, Kept Faith"
+      },
+      "choices": []
+    },
+    {
+      "id": "c176",
+      "body": "<<FILL role=setback words=158 beats='the inspector takes Frey's file and then moves it faster than promised, certain of being right; the Compact reels, the disclosure is blamed for the panic, and Frey, twice used, gives no inspector her field notes ever again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c176",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Promise to Frey"
+      },
+      "choices": []
+    },
+    {
+      "id": "c177",
+      "body": "<<FILL role=resolution words=196 beats='the inspector declines to be bound and works only from the public Foundation Log; the finding is thinner without Frey's file but wholly the inspector's own, and Nadia Frey keeps her papers and her hard-won distrust intact for whoever comes after'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c177",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The File Refused"
+      },
+      "choices": []
+    },
+    {
+      "id": "c178",
+      "body": "<<FILL role=choice words=166 beats='Frey offers her file if the inspector will promise to move it through the Archive's order and not around it; a promise, she says, is the only instrument the Archive truly honours, and a broken one is the only thing it never forgives'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c178_0",
+          "label": "Promise to move it in order, and mean it.",
+          "target": "c175"
+        },
+        {
+          "id": "c_c178_1",
+          "label": "Take the file and move on your own judgment.",
+          "target": "c176"
+        },
+        {
+          "id": "c_c178_2",
+          "label": "Refuse the file rather than be bound by a promise.",
+          "target": "c177"
+        }
+      ]
+    },
+    {
+      "id": "c179",
+      "body": "<<FILL role=rising words=178 beats='she is neither bitter nor broken, only exact, a clerk who was right at the wrong time and has decided the being-right was worth the cost, and she wants to know whether the inspector has decided the same'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c179_0",
+          "label": "Go on.",
+          "target": "c178"
+        }
+      ]
+    },
+    {
+      "id": "c180",
+      "body": "<<FILL role=rising words=174 beats='she has kept her full field notes, every recurrence traced, and she will part with it only on a condition the inspector must weigh honestly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c180_0",
+          "label": "Go on.",
+          "target": "c179"
+        }
+      ]
+    },
+    {
+      "id": "c181",
+      "body": "<<FILL role=rising words=176 beats='she explains she was not silenced to bury the truth but to control its timing; Otieno feared an unsequenced disclosure would shatter the Compact before it could hold the shock'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c181_0",
+          "label": "Go on.",
+          "target": "c180"
+        }
+      ]
+    },
+    {
+      "id": "c182",
+      "body": "<<FILL role=rising words=168 beats='the inspector seeks out Nadia Frey herself, reassigned to a records annex at the cold end of the building, still certain of her arithmetic and wary of being used again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c182_0",
+          "label": "Go on.",
+          "target": "c181"
+        }
+      ]
+    },
+    {
+      "id": "c183",
+      "body": "<<FILL role=resolution words=184 beats='the inspector closes the Foundation Log knowing the oldest fact in Kestrel Station: the shortfall was never a theft, only a lie the city was founded telling itself and has abated ever since; the truth is whole and the inspector is entirely unsure any chamber wants it spoken aloud'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c183",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Founding Count, Read Plain"
+      },
+      "choices": []
+    },
+    {
+      "id": "c184",
+      "body": "<<FILL role=rising words=160 beats='the inspector sits alone with the oldest page in the city and does the arithmetic no Keeper has dared finish, watching every subsequent count inherit the original inflation and compound it, generation upon generation, into the gap the Directorate now hides and the Tribunal now abates'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c184_0",
+          "label": "Go on.",
+          "target": "c183"
+        }
+      ]
+    },
+    {
+      "id": "c185",
+      "body": "<<FILL role=rising words=192 beats='there it is, plain as a wound: the founding measures were never on the land, only on the parchment, an inflated count the first chambers wrote to make Kestrel Station larger than its fields could feed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c185_0",
+          "label": "Go on.",
+          "target": "c184"
+        }
+      ]
+    },
+    {
+      "id": "c186",
+      "body": "<<FILL role=rising words=172 beats='the inspector takes the founding Foundation Log down to its root alone, night after night, reading past every certified layer to the founding tally the city was born declaring'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c186_0",
+          "label": "Go on.",
+          "target": "c185"
+        }
+      ]
+    },
+    {
+      "id": "c187",
+      "body": "<<FILL role=setback words=180 beats='the inspector edits the sector counts until the roster and the tithe agree, and the gap vanishes into a clean total; the memory now lies more smoothly than before, the inspector's own arithmetic the newest layer over the founding fault'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c187",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Gap Closed on Paper"
+      },
+      "choices": []
+    },
+    {
+      "id": "c188",
+      "body": "<<FILL role=resolution words=158 beats='the inspector destroys the convenient reconciliation and leaves the discrepancy standing in the Foundation Log, unexplained and undeniable; nothing is solved, but nothing new is falsified, and the gap remains where the next honest reader can find it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c188",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Gap Left Visible"
+      },
+      "choices": []
+    },
+    {
+      "id": "c189",
+      "body": "<<FILL role=choice words=196 beats='the Archive's plainest rule is that the Foundation Log records what is counted, not what is convenient; to adjust a sector's figure to fit a total is to make the memory lie in a new and tidier hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c189_0",
+          "label": "Adjust the sector figures to close the gap.",
+          "target": "c187"
+        },
+        {
+          "id": "c_c189_1",
+          "label": "Tear up the draft and leave the gap visible.",
+          "target": "c188"
+        }
+      ]
+    },
+    {
+      "id": "c190",
+      "body": "<<FILL role=rising words=166 beats='it would be the easiest thing in the world and no one would ever check; the inspector sits with the blank correction and feels how a whole institution's dishonesty is really just this small act repeated by tired people who wanted the columns to agree'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c190_0",
+          "label": "Go on.",
+          "target": "c189"
+        }
+      ]
+    },
+    {
+      "id": "c191",
+      "body": "<<FILL role=rising words=178 beats='rather than take the finding to the chamber, the inspector drafts a private reconciliation reconciling the roster to the tithe by simply adjusting the sectors' figures to close the gap on paper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c191_0",
+          "label": "Go on.",
+          "target": "c190"
+        }
+      ]
+    },
+    {
+      "id": "c192",
+      "body": "<<FILL role=setback words=174 beats='the inspector lays the founding over-count before the Tribunal and the Directorate without the Archive's leave; the fault is aired, but so is the inspector's breach of courtesy, and the Archive spends the Audit defending its dignity instead of correcting its count'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c192",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Over the Keeper's Head"
+      },
+      "choices": []
+    },
+    {
+      "id": "c193",
+      "body": "<<FILL role=resolution words=176 beats='the inspector keeps the finding inside the Archive and presses Otieno to own it before the Audit; the Keeper is slow and the year runs out, but the fault stays the chamber's to correct, and the inspector leaves the Archive's standing intact for the harder fight ahead'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c193",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Kept Within the Chamber"
+      },
+      "choices": []
+    },
+    {
+      "id": "c194",
+      "body": "<<FILL role=choice words=168 beats='the Compact's oldest courtesy is that a chamber airs its own fault before another names it; to carry the Archive's failing to the Tribunal and Directorate unbidden is to spend the chamber's standing for a moment's leverage'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c194_0",
+          "label": "Carry it to the other chambers unbidden.",
+          "target": "c192"
+        },
+        {
+          "id": "c_c194_1",
+          "label": "Keep it within the Archive and press Otieno instead.",
+          "target": "c193"
+        }
+      ]
+    },
+    {
+      "id": "c195",
+      "body": "<<FILL role=rising words=184 beats='the temptation is real: the Tribunal abates the gap and the Directorate hides it, and here at last is the leverage to make all three own the founding lie in the same room at the same time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c195_0",
+          "label": "Go on.",
+          "target": "c194"
+        }
+      ]
+    },
+    {
+      "id": "c196",
+      "body": "<<FILL role=rising words=160 beats='the inspector considers taking the whole finding to the other two chambers at once, over Otieno's head, forcing all three to answer the founding count together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c196_0",
+          "label": "Go on.",
+          "target": "c195"
+        }
+      ]
+    },
+    {
+      "id": "c197",
+      "body": "<<FILL role=resolution words=192 beats='the inspector carries a motion to amend the founding count to what the land yields, paired with a provision for the sectors the old count fed in shadow; the Archive, hearing the whole of it in order, ratifies a true Foundation Log for the first time in nineteen years, and the city at last begins to believe something it can actually feed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c197",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Foundation Log Amended True"
+      },
+      "choices": []
+    },
+    {
+      "id": "c198",
+      "body": "<<FILL role=resolution words=172 beats='the inspector certifies the roster unchanged but enters a formal note of the founding over-count into the Foundation Log; nothing is amended this year, yet the memory now carries its own correction, waiting in the record for a chamber with the nerve to act on it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "c198",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Noted for the Record"
+      },
+      "choices": []
+    },
+    {
+      "id": "c199",
+      "body": "<<FILL role=choice words=180 beats='the Audit convenes; the roster must be ratified or amended; the Archive's final rule is the heaviest of all, that the Foundation Log is the city's memory and to amend it is to amend what Kestrel Station believes itself to be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c199_0",
+          "label": "Move to amend the Foundation Log to a true count, with provision.",
+          "target": "c197"
+        },
+        {
+          "id": "c_c199_1",
+          "label": "Certify the roster as-is and enter the flaw for the record.",
+          "target": "c198"
+        }
+      ]
+    },
+    {
+      "id": "c200",
+      "body": "<<FILL role=rising words=158 beats='on the eve of the Audit the draft sits complete, and for the first time the founding fault has a remedy attached and not merely an accusation'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c200_0",
+          "label": "Go on.",
+          "target": "c199"
+        }
+      ]
+    },
+    {
+      "id": "c201",
+      "body": "<<FILL role=rising words=196 beats='the inspector drafts the motion the whole year has pointed toward, the true count and the provision that must ride with it, ordered and ready for the Foundation Log'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c201_0",
+          "label": "Go on.",
+          "target": "c200"
+        }
+      ]
+    },
+    {
+      "id": "c202",
+      "body": "<<FILL role=rising words=166 beats='he shows the inspector how a founding correction, badly timed, has broken cities before; the Archive's slowness is scar tissue, not sloth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c202_0",
+          "label": "Go on.",
+          "target": "c201"
+        }
+      ]
+    },
+    {
+      "id": "c203",
+      "body": "<<FILL role=rising words=178 beats='Otieno, watching the care of it, finally trusts the inspector with the last of the story: the timing was always the point, and timing done right is not cowardice but the chamber's one real form of mercy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c203_0",
+          "label": "Go on.",
+          "target": "c202"
+        }
+      ]
+    },
+    {
+      "id": "c204",
+      "body": "<<FILL role=rising words=174 beats='the inspector holds the finding through the coldest weeks and spends them sequencing it, so that when it is spoken it lands as deliberation and not as an ambush'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c204_0",
+          "label": "Go on.",
+          "target": "c203"
+        }
+      ]
+    },
+    {
+      "id": "c205",
+      "body": "<<FILL role=choice words=176 beats='Deep Cycle; the dole is cut on the roster figure and the streets feel it; the inspector may press the founding over-count now, before the cut is apportioned, or hold it for the Audit where the whole Foundation Log is heard in order'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c205_0",
+          "label": "Take the finding to the other chambers now.",
+          "target": "c196"
+        },
+        {
+          "id": "c_c205_1",
+          "label": "Hold it for the Audit, in proper order.",
+          "target": "c204"
+        }
+      ]
+    },
+    {
+      "id": "c206",
+      "body": "<<FILL role=rising words=168 beats='Otieno asks the inspector, in front of the clerks, whether a memory can be both a duty and a lie at once, and does not pretend to know the answer himself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c206_0",
+          "label": "Go on.",
+          "target": "c205"
+        }
+      ]
+    },
+    {
+      "id": "c207",
+      "body": "<<FILL role=rising words=184 beats='the chamber sits with that, and the inspector sees the weight the Archive has carried in its slowness, neither innocent nor simply guilty'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c207_0",
+          "label": "Go on.",
+          "target": "c206"
+        }
+      ]
+    },
+    {
+      "id": "c208",
+      "body": "<<FILL role=rising words=160 beats='he does not defend it so much as explain the fear beneath it, that a city told the true size of itself might not survive the telling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c208_0",
+          "label": "Go on.",
+          "target": "c207"
+        }
+      ]
+    },
+    {
+      "id": "c209",
+      "body": "<<FILL role=rising words=192 beats='Otieno does not flinch; he confirms the founding over-count has been known and quietly managed for nineteen years, the Waiver its downstream shadow across all three chambers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c209_0",
+          "label": "Go on.",
+          "target": "c208"
+        }
+      ]
+    },
+    {
+      "id": "c210",
+      "body": "<<FILL role=rising words=172 beats='the inspector lays the recurring gap before Otieno and the assembled clerks and asks, on the record, what the Archive knew of it and when'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c210_0",
+          "label": "Go on.",
+          "target": "c209"
+        }
+      ]
+    },
+    {
+      "id": "c211",
+      "body": "<<FILL role=choice words=180 beats='the closed Joint Session has named the Waiver's age aloud, about nineteen years; the inspector must decide how the Archive meets its own share of it, and the chamber's rule holds that memory is amended only by the chamber, never by one clerk acting alone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c211_0",
+          "label": "Take the founding Foundation Log down to its root yourself.",
+          "target": "c186"
+        },
+        {
+          "id": "c_c211_1",
+          "label": "Draft a private reconciliation to close the gap.",
+          "target": "c191"
+        },
+        {
+          "id": "c_c211_2",
+          "label": "Bring the question to Otieno and the full chamber.",
+          "target": "c210"
+        }
+      ]
+    },
+    {
+      "id": "c212",
+      "body": "<<FILL role=rising words=158 beats='it is not drift and it is not fraud in any ordinary sense; it is a single old decision reasserting itself annually, patient as erosion, and the inspector sees that to answer it means going all the way back to where the decision was first made'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c212_0",
+          "label": "Go on.",
+          "target": "c211"
+        }
+      ]
+    },
+    {
+      "id": "c213",
+      "body": "<<FILL role=rising words=196 beats='the inspector requisitions the roster tallies from the surrounding decade and lays them side by side, and the gap stands in every column like a watermark pressed into the paper at the mill'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c213_0",
+          "label": "Go on.",
+          "target": "c212"
+        }
+      ]
+    },
+    {
+      "id": "c214",
+      "body": "<<FILL role=rising words=166 beats='Otieno watches the inspector arrive at the edge of the old question and, for once, does not steer away from it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c214_0",
+          "label": "Go on.",
+          "target": "c213"
+        }
+      ]
+    },
+    {
+      "id": "c215",
+      "body": "<<FILL role=rising words=178 beats='the steadiness points backward, to a count that was set rather than measured, and the inspector feels the year begin to lean toward the founding Foundation Log'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c215_0",
+          "label": "Go on.",
+          "target": "c214"
+        }
+      ]
+    },
+    {
+      "id": "c216",
+      "body": "<<FILL role=rising words=174 beats='the number is too clean to be an error; a mistake would wander from year to year, and this one holds as steady as a decision someone made and keeps making'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c216_0",
+          "label": "Go on.",
+          "target": "c215"
+        }
+      ]
+    },
+    {
+      "id": "c217",
+      "body": "<<FILL role=rising words=176 beats='the inspector reconciles this year's roster against the levied water, sector by sector, and confirms the four thousand liters gap is exactly as posted, neither more nor less'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c217_0",
+          "label": "Go on.",
+          "target": "c216"
+        }
+      ]
+    },
+    {
+      "id": "c218",
+      "body": "<<FILL role=choice words=168 beats='the harvest comes in light and the roster-tithe gap is past denying; the inspector may audit this year's roster against the tithe in the ordinary way, or dig back into the Archive's suppressed field notes where the pattern lives'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c218_0",
+          "label": "Dig into the suppressed field notes.",
+          "target": "c182"
+        },
+        {
+          "id": "c_c218_1",
+          "label": "Audit the current roster against the tithe.",
+          "target": "c217"
+        }
+      ]
+    },
+    {
+      "id": "c219",
+      "body": "<<FILL role=rising words=184 beats='the inspector reads it twice and understands that the paper was not wrong and so had to be withdrawn; in the Archive a false brief is corrected, but a true one out of season is simply made to wait'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c219_0",
+          "label": "Go on.",
+          "target": "c218"
+        }
+      ]
+    },
+    {
+      "id": "c220",
+      "body": "<<FILL role=rising words=160 beats='the brief names, in Frey's careful hand, every prior Audit where the gap recurred and was abated, a private history of the Archive's forgetting compiled by the one clerk who refused to forget'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c220_0",
+          "label": "Go on.",
+          "target": "c219"
+        }
+      ]
+    },
+    {
+      "id": "c221",
+      "body": "<<FILL role=rising words=192 beats='the inspector signs for it in the margin, now formally a reader of a thing the chamber tried to un-write'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c221_0",
+          "label": "Go on.",
+          "target": "c220"
+        }
+      ]
+    },
+    {
+      "id": "c222",
+      "body": "<<FILL role=rising words=172 beats='the brief is Nadia Frey's, and its arithmetic is unanswerable; the gap is not new, and the Archive has known and abated it Audit after Audit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c222_0",
+          "label": "Go on.",
+          "target": "c221"
+        }
+      ]
+    },
+    {
+      "id": "c223",
+      "body": "<<FILL role=rising words=180 beats='the request is granted slowly, with a supervisor present, the paper handed over as a matter of record rather than a matter of rescue'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c223_0",
+          "label": "Go on.",
+          "target": "c222"
+        }
+      ]
+    },
+    {
+      "id": "c224",
+      "body": "<<FILL role=rising words=158 beats='the inspector files the formal request for the withdrawn brief and waits, learning that patience is the Archive's native tongue and impatience its one unforgivable accent'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c224_0",
+          "label": "Go on.",
+          "target": "c223"
+        }
+      ]
+    },
+    {
+      "id": "c225",
+      "body": "<<FILL role=choice words=196 beats='High Orbit; the inspector learns a junior's brief was pulled from circulation before Reclamation Cycle; the Archive's rule of order governs how a withdrawn paper may be sought, and every way of reaching for it carries a different weight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c225_0",
+          "label": "Let the withdrawn brief lie and probe the chamber's habits.",
+          "target": "c169"
+        },
+        {
+          "id": "c_c225_1",
+          "label": "Search the field notes for the brief yourself.",
+          "target": "c174"
+        },
+        {
+          "id": "c_c225_2",
+          "label": "Request the withdrawn brief through the proper channel.",
+          "target": "c224"
+        }
+      ]
+    },
+    {
+      "id": "c226",
+      "body": "<<FILL role=rising words=166 beats='Otieno, passing the desk, sees which pages are open and says only that the inspector is reading in the right order now, which is the nearest the Keeper comes to a warning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c226_0",
+          "label": "Go on.",
+          "target": "c225"
+        }
+      ]
+    },
+    {
+      "id": "c227",
+      "body": "<<FILL role=rising words=178 beats='each year's abatement is entered in the same bloodless formula, a line so standardized it must have a template somewhere, a form for forgetting kept as carefully as any form for remembering'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c227_0",
+          "label": "Go on.",
+          "target": "c226"
+        }
+      ]
+    },
+    {
+      "id": "c228",
+      "body": "<<FILL role=rising words=174 beats='the inspector turns the ratified pages back a decade and finds the same gap, smaller, quieter, always abated, never explained'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c228_0",
+          "label": "Go on.",
+          "target": "c227"
+        }
+      ]
+    },
+    {
+      "id": "c229",
+      "body": "<<FILL role=rising words=176 beats='Otieno teaches that the Archive's power is memory held in common, and that a count, once ratified, becomes what the city knows of itself whether or not it is true'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c229_0",
+          "label": "Go on.",
+          "target": "c228"
+        }
+      ]
+    },
+    {
+      "id": "c230",
+      "body": "<<FILL role=rising words=168 beats='the year's numbers are orderly and the four thousand liters gap sits inside them like a stone in a clear stream, undeniable and unexplained'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c230_0",
+          "label": "Go on.",
+          "target": "c229"
+        }
+      ]
+    },
+    {
+      "id": "c231",
+      "body": "<<FILL role=rising words=184 beats='the inspector begins with the current roster, learning the Archive's grammar of counts, sectors, ratified figures, and the long habit of trusting last year's total'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c231_0",
+          "label": "Go on.",
+          "target": "c230"
+        }
+      ]
+    },
+    {
+      "id": "c232",
+      "body": "<<FILL role=choice words=160 beats='Launch Cycle; Keeper Otieno sets the inspector's first task and the Archive's first rule with it: the Foundation Log is read in order, from the year's roster inward, never skipping ahead to the root'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c232_0",
+          "label": "Ask to see the founding Foundation Log on the very first day.",
+          "target": "c165"
+        },
+        {
+          "id": "c_c232_1",
+          "label": "Begin with the year's roster, as instructed.",
+          "target": "c231"
+        }
+      ]
+    },
+    {
+      "id": "c233",
+      "body": "<<FILL role=rising words=192 beats='the other clerks move around the inspector with the practiced incuriosity of people who have learned not to ask what a fresh pair of eyes might find, and the inspector understands the assignment is trusted precisely because auditors before have looked and then looked away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c233_0",
+          "label": "Go on.",
+          "target": "c232"
+        }
+      ]
+    },
+    {
+      "id": "c234",
+      "body": "<<FILL role=rising words=172 beats='Otieno introduces the founding Foundation Log from a distance, the way one introduces a difficult elder, all reverence and a quiet instruction not to disturb it; the inspector notes that the most guarded document in the chamber is the oldest one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c234_0",
+          "label": "Go on.",
+          "target": "c233"
+        }
+      ]
+    },
+    {
+      "id": "c235",
+      "body": "<<FILL role=rising words=180 beats='the inspector is given a desk beneath shelves that hold every count Kestrel Station has ever made of itself, and the sense settles in early that the answer to this year's gap is somewhere in that height, waiting to be read in order'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c235_0",
+          "label": "Go on.",
+          "target": "c234"
+        }
+      ]
+    },
+    {
+      "id": "c236",
+      "body": "<<FILL role=rising words=158 beats='Otieno's chamber moves at the speed of deliberation; nothing is true here until it is on the Foundation Log in proper order, and the Cistern gap is, to the Archive, first of all and last of all a question about counting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c236_0",
+          "label": "Go on.",
+          "target": "c235"
+        }
+      ]
+    },
+    {
+      "id": "c237",
+      "body": "<<FILL role=rising words=196 beats='the inspector reports to the Archive, all quiet and paper and the smell of old ink, where Keeper Bram Otieno keeps the roster, the statutes, and the founding Foundation Log; the remit is set out in full, unhurried sentences: reconcile the roster against the tithe, and account for who was counted and who was not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c237_0",
+          "label": "Go on.",
+          "target": "c236"
+        }
+      ]
+    },
+    {
+      "id": "n01",
+      "body": "<<FILL role=setup words=212 beats='the Three-Council Station of Kestrel Station is governed under the Compact by three chambers that hold and check one another: the Tribunal weighs and binds, the Directorate acts and provisions, the Archive counts and remembers; no chamber may overrule another, and the city has kept its balance for generations by the friction between them; into this the inspector arrives, young, newly sworn, sent to certify one chamber through a single civic year'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n01_0",
+          "label": "Go on.",
+          "target": "n02"
+        }
+      ]
+    },
+    {
+      "id": "n02",
+      "body": "<<FILL role=setup words=206 beats='the year opens on a fault line: the Cistern reconciliation shows the roster-tithe water exceeding the Directorate's held stock by four thousand liters, and the decennial Audit waits at year's end to audit every chamber; the three chambers check and rival one another by design, and a gap none will own is exactly the kind of thing the Compact was built to survive and the kind of thing that can still break it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02_0",
+          "label": "Go on.",
+          "target": "n03"
+        }
+      ]
+    },
+    {
+      "id": "n03",
+      "body": "<<FILL role=choice words=196 beats='the Inspectorate Academy seconds the inspector for the Inspector's Rotation and names the three chambers and their leads: the Tribunal under Justicar Rennick Dahl, which weighs and binds but never acts; the Directorate under Marshal Imara Kesh, which collects the tithe and holds the Cistern; and the Archive under Keeper Bram Otieno, which keeps the roster and the founding Foundation Log; each offers the same year and a different door onto the four thousand liters gap, and the inspector must choose one chamber to certify'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03_0",
+          "label": "Take the Tribunal, and learn how the city weighs its own word.",
+          "target": "a064"
+        },
+        {
+          "id": "c_n03_1",
+          "label": "Take the Directorate, and walk the vaults where the water should be.",
+          "target": "b164"
+        },
+        {
+          "id": "c_n03_2",
+          "label": "Take the Archive, and read the count the city keeps of itself.",
+          "target": "c237"
+        }
+      ]
+    }
+  ]
+}

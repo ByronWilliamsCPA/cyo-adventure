@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "sup0",
-      "body": "<<FILL role=setup words=88 beats='second person; you are {HERO} at the head of {THRESHOLD}, the salt desert that unmakes the unprepared; the shrine lies a hard crossing away across a waste that has kept far more pilgrims than it has passed; grave stakes, stated plainly: the road is one line of markers and one law, walk it exactly or the salt has you'>>",
+      "body": "<<FILL role=setup words=88 beats='second person; you are a wanderer at the head of the frost causeway, the salt desert that unmakes the unprepared; the shrine lies a hard crossing away across a waste that has kept far more pilgrims than it has passed; grave stakes, stated plainly: the road is one line of markers and one law, walk it exactly or the salt has you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -46,7 +46,7 @@
     },
     {
       "id": "sup1",
-      "body": "<<FILL role=setup words=82 beats='{ENTRANCE} falls behind; the white waste opens flat and endless; the one rule of {THRESHOLD} is stated here: there is no water you did not carry and no way back, only the next marker and the next, all the way across or not at all'>>",
+      "body": "<<FILL role=setup words=82 beats='the last treeline falls behind; the white waste opens flat and endless; the one rule of the frost causeway is stated here: there is no water you did not carry and no way back, only the next marker and the next, all the way across or not at all'>>",
       "is_ending": false,
       "choices": [
         {
@@ -70,7 +70,7 @@
     },
     {
       "id": "c01_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C01_HAZARD}; the danger is stated plainly in the ground itself: a thin salt crust laid over black standing brine; it bears weight only where the old stakes mark the firm shelf, and the white sheen between is a lid over drowning'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Rime Threshold; the danger is stated plainly in the ground itself: a thin salt crust laid over black standing brine; it bears weight only where the old stakes mark the firm shelf, and the white sheen between is a lid over drowning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -226,7 +226,7 @@
     },
     {
       "id": "c01_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C01_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a thin salt crust laid over black standing brine; it bears weight only where the old stakes mark the firm shelf, and the white sheen between is a lid over drowning; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Rime Threshold; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a thin salt crust laid over black standing brine; it bears weight only where the old stakes mark the firm shelf, and the white sheen between is a lid over drowning; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -256,14 +256,14 @@
         },
         {
           "id": "ch_c01_gate_5",
-          "label": "Gamble it and press on against the {C01_HAZARD}.",
+          "label": "Gamble it and press on against the Rime Threshold.",
           "target": "c01_seen"
         }
       ]
     },
     {
       "id": "c01_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C01_HAZARD} {THRESHOLD} lets you on; the stakes hold true; the shelf bears you and {THRESHOLD} lets you onto it; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Rime Threshold the frost causeway lets you on; the stakes hold true; the shelf bears you and the frost causeway lets you onto it; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -275,22 +275,22 @@
     },
     {
       "id": "c01_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C01_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the white lid tilts and the black water shows at its edge'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Rime Threshold without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the white lid tilts and the black water shows at its edge'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c01_seen_0",
-          "label": "Hold your nerve and slip on past the {C01_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Rime Threshold while you still can.",
           "target": "c02_ap"
         },
         {
           "id": "ch_c01_seen_1",
-          "label": "Push your luck harder and drive on through the {C01_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Rime Threshold.",
           "target": "c01_fd_c0"
         },
         {
           "id": "ch_c01_seen_2",
-          "label": "Falter, and let the {C01_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Rime Threshold turn you from the road.",
           "target": "c01_lost"
         }
       ]
@@ -345,7 +345,7 @@
     },
     {
       "id": "c02_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C02_HAZARD}; the danger is stated plainly in the ground itself: the last well before the deep waste, where the keepers weigh a pilgrim's water; carry the measured skin and no more, for the overladen founder in the soft pan and the under-watered are drunk dry by the road'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Weigh Station; the danger is stated plainly in the ground itself: the last well before the deep waste, where the keepers weigh a pilgrim's water; carry the measured skin and no more, for the overladen founder in the soft pan and the under-watered are drunk dry by the road'>>",
       "is_ending": false,
       "choices": [
         {
@@ -501,7 +501,7 @@
     },
     {
       "id": "c02_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C02_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the last well before the deep waste, where the keepers weigh a pilgrim's water; carry the measured skin and no more, for the overladen founder in the soft pan and the under-watered are drunk dry by the road; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Weigh Station; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the last well before the deep waste, where the keepers weigh a pilgrim's water; carry the measured skin and no more, for the overladen founder in the soft pan and the under-watered are drunk dry by the road; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -531,14 +531,14 @@
         },
         {
           "id": "ch_c02_gate_5",
-          "label": "Gamble it and press on against the {C02_HAZARD}.",
+          "label": "Gamble it and press on against the Weigh Station.",
           "target": "c02_seen"
         }
       ]
     },
     {
       "id": "c02_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C02_HAZARD} {THRESHOLD} lets you on; the keeper nods you through; the weight is right and the waste ahead is only long, not yet lethal; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Weigh Station the frost causeway lets you on; the keeper nods you through; the weight is right and the waste ahead is only long, not yet lethal; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -550,22 +550,22 @@
     },
     {
       "id": "c02_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C02_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the skin at your side is wrong by the weight of a life'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Weigh Station without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the skin at your side is wrong by the weight of a life'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c02_seen_0",
-          "label": "Hold your nerve and slip on past the {C02_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Weigh Station while you still can.",
           "target": "c03_ap"
         },
         {
           "id": "ch_c02_seen_1",
-          "label": "Push your luck harder and drive on through the {C02_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Weigh Station.",
           "target": "c02_fd_c0"
         },
         {
           "id": "ch_c02_seen_2",
-          "label": "Falter, and let the {C02_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Weigh Station turn you from the road.",
           "target": "c02_lost"
         }
       ]
@@ -620,7 +620,7 @@
     },
     {
       "id": "c03_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C03_HAZARD}; the danger is stated plainly in the ground itself: the salt pan throws the sun back doubled; unshaded eyes burn to blindness by noon, and no blind pilgrim has ever crossed {THRESHOLD}'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Blind Noon; the danger is stated plainly in the ground itself: the salt pan throws the sun back doubled; unshaded eyes burn to blindness by noon, and no blind pilgrim has ever crossed the frost causeway'>>",
       "is_ending": false,
       "choices": [
         {
@@ -776,7 +776,7 @@
     },
     {
       "id": "c03_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C03_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the salt pan throws the sun back doubled; unshaded eyes burn to blindness by noon, and no blind pilgrim has ever crossed {THRESHOLD}; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Blind Noon; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the salt pan throws the sun back doubled; unshaded eyes burn to blindness by noon, and no blind pilgrim has ever crossed the frost causeway; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -806,14 +806,14 @@
         },
         {
           "id": "ch_c03_gate_5",
-          "label": "Gamble it and press on against the {C03_HAZARD}.",
+          "label": "Gamble it and press on against the Blind Noon.",
           "target": "c03_seen"
         }
       ]
     },
     {
       "id": "c03_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C03_HAZARD} {THRESHOLD} lets you on; the slit cuts the doubled light to a bearable line; you keep your eyes and the road under them; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Blind Noon the frost causeway lets you on; the slit cuts the doubled light to a bearable line; you keep your eyes and the road under them; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -825,22 +825,22 @@
     },
     {
       "id": "c03_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C03_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the white comes up into your eyes and does not leave them'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Blind Noon without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the white comes up into your eyes and does not leave them'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c03_seen_0",
-          "label": "Hold your nerve and slip on past the {C03_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Blind Noon while you still can.",
           "target": "c04_ap"
         },
         {
           "id": "ch_c03_seen_1",
-          "label": "Push your luck harder and drive on through the {C03_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Blind Noon.",
           "target": "c03_fd_c0"
         },
         {
           "id": "ch_c03_seen_2",
-          "label": "Falter, and let the {C03_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Blind Noon turn you from the road.",
           "target": "c03_lost"
         }
       ]
@@ -895,7 +895,7 @@
     },
     {
       "id": "c04_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C04_HAZARD}; the danger is stated plainly in the ground itself: a salt-laden wind that strips skin from the standing and buries the road under drift; only the low and wrapped come through it'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Howling Drift; the danger is stated plainly in the ground itself: a salt-laden wind that strips skin from the standing and buries the road under drift; only the low and wrapped come through it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1087,7 +1087,7 @@
     },
     {
       "id": "c04_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C04_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a salt-laden wind that strips skin from the standing and buries the road under drift; only the low and wrapped come through it; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Howling Drift; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a salt-laden wind that strips skin from the standing and buries the road under drift; only the low and wrapped come through it; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1122,14 +1122,14 @@
         },
         {
           "id": "ch_c04_gate_6",
-          "label": "Gamble it and press on against the {C04_HAZARD}.",
+          "label": "Gamble it and press on against the Howling Drift.",
           "target": "c04_seen"
         }
       ]
     },
     {
       "id": "c04_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C04_HAZARD} {THRESHOLD} lets you on; low in the furrow the scour passes over you; the wind spends itself on your back and the road stays under your hands; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Howling Drift the frost causeway lets you on; low in the furrow the scour passes over you; the wind spends itself on your back and the road stays under your hands; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1141,22 +1141,22 @@
     },
     {
       "id": "c04_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C04_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the wind finds every bared inch and files it away'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Howling Drift without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the wind finds every bared inch and files it away'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c04_seen_0",
-          "label": "Hold your nerve and slip on past the {C04_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Howling Drift while you still can.",
           "target": "c05_ap"
         },
         {
           "id": "ch_c04_seen_1",
-          "label": "Push your luck harder and drive on through the {C04_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Howling Drift.",
           "target": "c04_fd_c0"
         },
         {
           "id": "ch_c04_seen_2",
-          "label": "Falter, and let the {C04_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Howling Drift turn you from the road.",
           "target": "c04_lost"
         }
       ]
@@ -1211,7 +1211,7 @@
     },
     {
       "id": "c05_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C05_HAZARD}; the danger is stated plainly in the ground itself: a bog of bottomless brine hidden beneath a fair white skin; the smooth ground is the trap and the discolored hard salt is the only road'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Sink of Ice; the danger is stated plainly in the ground itself: a bog of bottomless brine hidden beneath a fair white skin; the smooth ground is the trap and the discolored hard salt is the only road'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1367,7 +1367,7 @@
     },
     {
       "id": "c05_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C05_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a bog of bottomless brine hidden beneath a fair white skin; the smooth ground is the trap and the discolored hard salt is the only road; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Sink of Ice; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a bog of bottomless brine hidden beneath a fair white skin; the smooth ground is the trap and the discolored hard salt is the only road; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1397,14 +1397,14 @@
         },
         {
           "id": "ch_c05_gate_5",
-          "label": "Gamble it and press on against the {C05_HAZARD}.",
+          "label": "Gamble it and press on against the Sink of Ice.",
           "target": "c05_seen"
         }
       ]
     },
     {
       "id": "c05_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C05_HAZARD} {THRESHOLD} lets you on; the stained salt bears; you follow its hard spine around the fair white death and it lets you by; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Sink of Ice the frost causeway lets you on; the stained salt bears; you follow its hard spine around the fair white death and it lets you by; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1416,22 +1416,22 @@
     },
     {
       "id": "c05_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C05_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the smooth white gives and there is nothing under it but cold going down'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Sink of Ice without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the smooth white gives and there is nothing under it but cold going down'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c05_seen_0",
-          "label": "Hold your nerve and slip on past the {C05_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Sink of Ice while you still can.",
           "target": "c06_ap"
         },
         {
           "id": "ch_c05_seen_1",
-          "label": "Push your luck harder and drive on through the {C05_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Sink of Ice.",
           "target": "c05_fd_c0"
         },
         {
           "id": "ch_c05_seen_2",
-          "label": "Falter, and let the {C05_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Sink of Ice turn you from the road.",
           "target": "c05_lost"
         }
       ]
@@ -1486,7 +1486,7 @@
     },
     {
       "id": "c06_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C06_HAZARD}; the danger is stated plainly in the ground itself: the road here is marked by the dead who strayed; the line of cairn-and-bone is the only true way, and to leave it is to lie down among them'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Bone Cairn Field; the danger is stated plainly in the ground itself: the road here is marked by the dead who strayed; the line of cairn-and-bone is the only true way, and to leave it is to lie down among them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1642,7 +1642,7 @@
     },
     {
       "id": "c06_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C06_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the road here is marked by the dead who strayed; the line of cairn-and-bone is the only true way, and to leave it is to lie down among them; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Bone Cairn Field; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the road here is marked by the dead who strayed; the line of cairn-and-bone is the only true way, and to leave it is to lie down among them; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1672,14 +1672,14 @@
         },
         {
           "id": "ch_c06_gate_5",
-          "label": "Gamble it and press on against the {C06_HAZARD}.",
+          "label": "Gamble it and press on against the Bone Cairn Field.",
           "target": "c06_seen"
         }
       ]
     },
     {
       "id": "c06_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C06_HAZARD} {THRESHOLD} lets you on; you hold the grim markers in a straight file; the dead point the way through and you take it; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Bone Cairn Field the frost causeway lets you on; you hold the grim markers in a straight file; the dead point the way through and you take it; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1691,22 +1691,22 @@
     },
     {
       "id": "c06_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C06_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the bones underfoot are pilgrims who left the line'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Bone Cairn Field without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the bones underfoot are pilgrims who left the line'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c06_seen_0",
-          "label": "Hold your nerve and slip on past the {C06_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Bone Cairn Field while you still can.",
           "target": "c07_ap"
         },
         {
           "id": "ch_c06_seen_1",
-          "label": "Push your luck harder and drive on through the {C06_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Bone Cairn Field.",
           "target": "c06_fd_c0"
         },
         {
           "id": "ch_c06_seen_2",
-          "label": "Falter, and let the {C06_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Bone Cairn Field turn you from the road.",
           "target": "c06_lost"
         }
       ]
@@ -1761,7 +1761,7 @@
     },
     {
       "id": "c07_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C07_HAZARD}; the danger is stated plainly in the ground itself: a sheet of false water that pulls the thirsting off the road to die dry at its retreating edge; it is light on salt and nothing more'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Mirage Floe; the danger is stated plainly in the ground itself: a sheet of false water that pulls the thirsting off the road to die dry at its retreating edge; it is light on salt and nothing more'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1917,7 +1917,7 @@
     },
     {
       "id": "c07_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C07_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a sheet of false water that pulls the thirsting off the road to die dry at its retreating edge; it is light on salt and nothing more; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Mirage Floe; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a sheet of false water that pulls the thirsting off the road to die dry at its retreating edge; it is light on salt and nothing more; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1947,14 +1947,14 @@
         },
         {
           "id": "ch_c07_gate_5",
-          "label": "Gamble it and press on against the {C07_HAZARD}.",
+          "label": "Gamble it and press on against the Mirage Floe.",
           "target": "c07_seen"
         }
       ]
     },
     {
       "id": "c07_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C07_HAZARD} {THRESHOLD} lets you on; you keep the true line; the false lake slides away at the corner of your eye and the road runs on dry and real; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Mirage Floe the frost causeway lets you on; you keep the true line; the false lake slides away at the corner of your eye and the road runs on dry and real; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1966,22 +1966,22 @@
     },
     {
       "id": "c07_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C07_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the shining you walked toward is dry salt when you reach it'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Mirage Floe without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the shining you walked toward is dry salt when you reach it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c07_seen_0",
-          "label": "Hold your nerve and slip on past the {C07_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Mirage Floe while you still can.",
           "target": "c08_ap"
         },
         {
           "id": "ch_c07_seen_1",
-          "label": "Push your luck harder and drive on through the {C07_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Mirage Floe.",
           "target": "c07_fd_c0"
         },
         {
           "id": "ch_c07_seen_2",
-          "label": "Falter, and let the {C07_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Mirage Floe turn you from the road.",
           "target": "c07_lost"
         }
       ]
@@ -2036,7 +2036,7 @@
     },
     {
       "id": "c08_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C08_HAZARD}; the danger is stated plainly in the ground itself: fields of salt spires honed sharp as glass; a fall onto them opens a pilgrim, and the opened do not walk on'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Needle Ice; the danger is stated plainly in the ground itself: fields of salt spires honed sharp as glass; a fall onto them opens a pilgrim, and the opened do not walk on'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2192,7 +2192,7 @@
     },
     {
       "id": "c08_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C08_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; fields of salt spires honed sharp as glass; a fall onto them opens a pilgrim, and the opened do not walk on; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Needle Ice; the safe way is narrow and the wrong ways are many, and the road has stated which is which; fields of salt spires honed sharp as glass; a fall onto them opens a pilgrim, and the opened do not walk on; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2222,14 +2222,14 @@
         },
         {
           "id": "ch_c08_gate_5",
-          "label": "Gamble it and press on against the {C08_HAZARD}.",
+          "label": "Gamble it and press on against the Needle Ice.",
           "target": "c08_seen"
         }
       ]
     },
     {
       "id": "c08_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C08_HAZARD} {THRESHOLD} lets you on; edgewise and patient you slip between the needles; the sharp field lets the careful body through unopened; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Needle Ice the frost causeway lets you on; edgewise and patient you slip between the needles; the sharp field lets the careful body through unopened; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2241,22 +2241,22 @@
     },
     {
       "id": "c08_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C08_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the spires stand ready under you like a bed of knives'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Needle Ice without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the spires stand ready under you like a bed of knives'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c08_seen_0",
-          "label": "Hold your nerve and slip on past the {C08_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Needle Ice while you still can.",
           "target": "c09_ap"
         },
         {
           "id": "ch_c08_seen_1",
-          "label": "Push your luck harder and drive on through the {C08_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Needle Ice.",
           "target": "c08_fd_c0"
         },
         {
           "id": "ch_c08_seen_2",
-          "label": "Falter, and let the {C08_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Needle Ice turn you from the road.",
           "target": "c08_lost"
         }
       ]
@@ -2311,7 +2311,7 @@
     },
     {
       "id": "c09_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C09_HAZARD}; the danger is stated plainly in the ground itself: the desert night freezes as hard as the day burned; the still and the unsheltered do not wake, and the walker in the dark strays off the road'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the First Frost Night; the danger is stated plainly in the ground itself: the desert night freezes as hard as the day burned; the still and the unsheltered do not wake, and the walker in the dark strays off the road'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2467,7 +2467,7 @@
     },
     {
       "id": "c09_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C09_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the desert night freezes as hard as the day burned; the still and the unsheltered do not wake, and the walker in the dark strays off the road; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the First Frost Night; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the desert night freezes as hard as the day burned; the still and the unsheltered do not wake, and the walker in the dark strays off the road; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2497,14 +2497,14 @@
         },
         {
           "id": "ch_c09_gate_5",
-          "label": "Gamble it and press on against the {C09_HAZARD}.",
+          "label": "Gamble it and press on against the First Frost Night.",
           "target": "c09_seen"
         }
       ]
     },
     {
       "id": "c09_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C09_HAZARD} {THRESHOLD} lets you on; the pan holds the day's heat a hand's depth down; wrapped in it you keep the little warmth that carries you to light; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the First Frost Night the frost causeway lets you on; the pan holds the day's heat a hand's depth down; wrapped in it you keep the little warmth that carries you to light; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2516,22 +2516,22 @@
     },
     {
       "id": "c09_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C09_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the cold comes down like a stone and does not lift'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the First Frost Night without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the cold comes down like a stone and does not lift'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c09_seen_0",
-          "label": "Hold your nerve and slip on past the {C09_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the First Frost Night while you still can.",
           "target": "c10_ap"
         },
         {
           "id": "ch_c09_seen_1",
-          "label": "Push your luck harder and drive on through the {C09_HAZARD}.",
+          "label": "Push your luck harder and drive on through the First Frost Night.",
           "target": "c09_fd_c0"
         },
         {
           "id": "ch_c09_seen_2",
-          "label": "Falter, and let the {C09_HAZARD} turn you from the road.",
+          "label": "Falter, and let the First Frost Night turn you from the road.",
           "target": "c09_lost"
         }
       ]
@@ -2586,7 +2586,7 @@
     },
     {
       "id": "c10_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C10_HAZARD}; the danger is stated plainly in the ground itself: a dry climb of a full day with no water on it; the road across the ridge is rationed by the count or not survived'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Thirst Climb; the danger is stated plainly in the ground itself: a dry climb of a full day with no water on it; the road across the ridge is rationed by the count or not survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2742,7 +2742,7 @@
     },
     {
       "id": "c10_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C10_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a dry climb of a full day with no water on it; the road across the ridge is rationed by the count or not survived; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Thirst Climb; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a dry climb of a full day with no water on it; the road across the ridge is rationed by the count or not survived; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2772,14 +2772,14 @@
         },
         {
           "id": "ch_c10_gate_5",
-          "label": "Gamble it and press on against the {C10_HAZARD}.",
+          "label": "Gamble it and press on against the Thirst Climb.",
           "target": "c10_seen"
         }
       ]
     },
     {
       "id": "c10_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C10_HAZARD} {THRESHOLD} lets you on; counted and unhurried the skin lasts the ridge; you come over the top with the road still ahead and water still in you; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Thirst Climb the frost causeway lets you on; counted and unhurried the skin lasts the ridge; you come over the top with the road still ahead and water still in you; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2791,22 +2791,22 @@
     },
     {
       "id": "c10_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C10_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the last of the skin is gone and the top is not near'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Thirst Climb without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the last of the skin is gone and the top is not near'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c10_seen_0",
-          "label": "Hold your nerve and slip on past the {C10_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Thirst Climb while you still can.",
           "target": "c11_ap"
         },
         {
           "id": "ch_c10_seen_1",
-          "label": "Push your luck harder and drive on through the {C10_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Thirst Climb.",
           "target": "c10_fd_c0"
         },
         {
           "id": "ch_c10_seen_2",
-          "label": "Falter, and let the {C10_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Thirst Climb turn you from the road.",
           "target": "c10_lost"
         }
       ]
@@ -2861,7 +2861,7 @@
     },
     {
       "id": "c11_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C11_HAZARD}; the danger is stated plainly in the ground itself: the wells here run with poison salt among the sweet; one untested draught folds a pilgrim, and only the tasted well is safe'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Bitter Springs; the danger is stated plainly in the ground itself: the wells here run with poison salt among the sweet; one untested draught folds a pilgrim, and only the tasted well is safe'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3017,7 +3017,7 @@
     },
     {
       "id": "c11_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C11_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the wells here run with poison salt among the sweet; one untested draught folds a pilgrim, and only the tasted well is safe; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Bitter Springs; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the wells here run with poison salt among the sweet; one untested draught folds a pilgrim, and only the tasted well is safe; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3047,14 +3047,14 @@
         },
         {
           "id": "ch_c11_gate_5",
-          "label": "Gamble it and press on against the {C11_HAZARD}.",
+          "label": "Gamble it and press on against the Bitter Springs.",
           "target": "c11_seen"
         }
       ]
     },
     {
       "id": "c11_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C11_HAZARD} {THRESHOLD} lets you on; the drop tells true; you pass the bitter and drink the sweet, and the road runs on with clean water in you; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Bitter Springs the frost causeway lets you on; the drop tells true; you pass the bitter and drink the sweet, and the road runs on with clean water in you; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3066,22 +3066,22 @@
     },
     {
       "id": "c11_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C11_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the water was wrong and it is already in you'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Bitter Springs without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the water was wrong and it is already in you'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c11_seen_0",
-          "label": "Hold your nerve and slip on past the {C11_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Bitter Springs while you still can.",
           "target": "c12_ap"
         },
         {
           "id": "ch_c11_seen_1",
-          "label": "Push your luck harder and drive on through the {C11_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Bitter Springs.",
           "target": "c11_fd_c0"
         },
         {
           "id": "ch_c11_seen_2",
-          "label": "Falter, and let the {C11_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Bitter Springs turn you from the road.",
           "target": "c11_lost"
         }
       ]
@@ -3136,7 +3136,7 @@
     },
     {
       "id": "c12_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C12_HAZARD}; the danger is stated plainly in the ground itself: a natural span of salt arched over a black fissure; it bears one light and even crossing and shatters under haste or weight'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Ice Bridge; the danger is stated plainly in the ground itself: a natural span of salt arched over a black fissure; it bears one light and even crossing and shatters under haste or weight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3292,7 +3292,7 @@
     },
     {
       "id": "c12_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C12_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a natural span of salt arched over a black fissure; it bears one light and even crossing and shatters under haste or weight; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Ice Bridge; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a natural span of salt arched over a black fissure; it bears one light and even crossing and shatters under haste or weight; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3322,14 +3322,14 @@
         },
         {
           "id": "ch_c12_gate_5",
-          "label": "Gamble it and press on against the {C12_HAZARD}.",
+          "label": "Gamble it and press on against the Ice Bridge.",
           "target": "c12_seen"
         }
       ]
     },
     {
       "id": "c12_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C12_HAZARD} {THRESHOLD} lets you on; even and unhurried you spread yourself across the arch; the span holds for the careful and sets you down on the far lip; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Ice Bridge the frost causeway lets you on; even and unhurried you spread yourself across the arch; the span holds for the careful and sets you down on the far lip; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3341,22 +3341,22 @@
     },
     {
       "id": "c12_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C12_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the arch under your foot answers with a crack'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Ice Bridge without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the arch under your foot answers with a crack'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c12_seen_0",
-          "label": "Hold your nerve and slip on past the {C12_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Ice Bridge while you still can.",
           "target": "c13_ap"
         },
         {
           "id": "ch_c12_seen_1",
-          "label": "Push your luck harder and drive on through the {C12_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Ice Bridge.",
           "target": "c12_fd_c0"
         },
         {
           "id": "ch_c12_seen_2",
-          "label": "Falter, and let the {C12_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Ice Bridge turn you from the road.",
           "target": "c12_lost"
         }
       ]
@@ -3411,7 +3411,7 @@
     },
     {
       "id": "c13_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C13_HAZARD}; the danger is stated plainly in the ground itself: a forest of leaning salt pillars standing in a killing crosswind; a toppled pillar crushes, and the wind is always working them loose'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Standing Pillars; the danger is stated plainly in the ground itself: a forest of leaning salt pillars standing in a killing crosswind; a toppled pillar crushes, and the wind is always working them loose'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3567,7 +3567,7 @@
     },
     {
       "id": "c13_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C13_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a forest of leaning salt pillars standing in a killing crosswind; a toppled pillar crushes, and the wind is always working them loose; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Standing Pillars; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a forest of leaning salt pillars standing in a killing crosswind; a toppled pillar crushes, and the wind is always working them loose; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3597,14 +3597,14 @@
         },
         {
           "id": "ch_c13_gate_5",
-          "label": "Gamble it and press on against the {C13_HAZARD}.",
+          "label": "Gamble it and press on against the Standing Pillars.",
           "target": "c13_seen"
         }
       ]
     },
     {
       "id": "c13_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C13_HAZARD} {THRESHOLD} lets you on; you time the gusts and keep the pillars upwind; the crosswind topples nothing onto you and the road runs on through the stone; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Standing Pillars the frost causeway lets you on; you time the gusts and keep the pillars upwind; the crosswind topples nothing onto you and the road runs on through the stone; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3616,22 +3616,22 @@
     },
     {
       "id": "c13_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C13_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: a pillar goes over somewhere in the wind, then another'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Standing Pillars without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: a pillar goes over somewhere in the wind, then another'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c13_seen_0",
-          "label": "Hold your nerve and slip on past the {C13_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Standing Pillars while you still can.",
           "target": "c14_ap"
         },
         {
           "id": "ch_c13_seen_1",
-          "label": "Push your luck harder and drive on through the {C13_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Standing Pillars.",
           "target": "c13_fd_c0"
         },
         {
           "id": "ch_c13_seen_2",
-          "label": "Falter, and let the {C13_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Standing Pillars turn you from the road.",
           "target": "c13_lost"
         }
       ]
@@ -3686,7 +3686,7 @@
     },
     {
       "id": "c14_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C14_HAZARD}; the danger is stated plainly in the ground itself: a low basin that holds the noon heat like a fired kiln; the floor of it cooks the crossing and only the shaded rim is passable'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Frozen Basin; the danger is stated plainly in the ground itself: a low basin that holds the noon heat like a fired kiln; the floor of it cooks the crossing and only the shaded rim is passable'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3842,7 +3842,7 @@
     },
     {
       "id": "c14_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C14_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a low basin that holds the noon heat like a fired kiln; the floor of it cooks the crossing and only the shaded rim is passable; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Frozen Basin; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a low basin that holds the noon heat like a fired kiln; the floor of it cooks the crossing and only the shaded rim is passable; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3872,14 +3872,14 @@
         },
         {
           "id": "ch_c14_gate_5",
-          "label": "Gamble it and press on against the {C14_HAZARD}.",
+          "label": "Gamble it and press on against the Frozen Basin.",
           "target": "c14_seen"
         }
       ]
     },
     {
       "id": "c14_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C14_HAZARD} {THRESHOLD} lets you on; high on the rim under your raised cloth you keep out of the bowl's heat; the basin bakes empty below you and lets you round it; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Frozen Basin the frost causeway lets you on; high on the rim under your raised cloth you keep out of the bowl's heat; the basin bakes empty below you and lets you round it; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3891,22 +3891,22 @@
     },
     {
       "id": "c14_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C14_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the air in the bowl is an oven with the door shut'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Frozen Basin without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the air in the bowl is an oven with the door shut'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c14_seen_0",
-          "label": "Hold your nerve and slip on past the {C14_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Frozen Basin while you still can.",
           "target": "c15_ap"
         },
         {
           "id": "ch_c14_seen_1",
-          "label": "Push your luck harder and drive on through the {C14_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Frozen Basin.",
           "target": "c14_fd_c0"
         },
         {
           "id": "ch_c14_seen_2",
-          "label": "Falter, and let the {C14_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Frozen Basin turn you from the road.",
           "target": "c14_lost"
         }
       ]
@@ -3961,7 +3961,7 @@
     },
     {
       "id": "c15_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C15_HAZARD}; the danger is stated plainly in the ground itself: salt dunes that shift and swallow; the road moves under them and only the wind-firmed windward faces bear a pilgrim'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Shifting Snowdrift; the danger is stated plainly in the ground itself: salt dunes that shift and swallow; the road moves under them and only the wind-firmed windward faces bear a pilgrim'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4117,7 +4117,7 @@
     },
     {
       "id": "c15_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C15_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; salt dunes that shift and swallow; the road moves under them and only the wind-firmed windward faces bear a pilgrim; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Shifting Snowdrift; the safe way is narrow and the wrong ways are many, and the road has stated which is which; salt dunes that shift and swallow; the road moves under them and only the wind-firmed windward faces bear a pilgrim; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4147,14 +4147,14 @@
         },
         {
           "id": "ch_c15_gate_5",
-          "label": "Gamble it and press on against the {C15_HAZARD}.",
+          "label": "Gamble it and press on against the Shifting Snowdrift.",
           "target": "c15_seen"
         }
       ]
     },
     {
       "id": "c15_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C15_HAZARD} {THRESHOLD} lets you on; the windward salt is packed hard; you keep to its firm shoulders and the drifting slopes stay off you as you cross; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Shifting Snowdrift the frost causeway lets you on; the windward salt is packed hard; you keep to its firm shoulders and the drifting slopes stay off you as you cross; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4166,22 +4166,22 @@
     },
     {
       "id": "c15_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C15_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the slope pours away and starts to take you with it'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Shifting Snowdrift without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the slope pours away and starts to take you with it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c15_seen_0",
-          "label": "Hold your nerve and slip on past the {C15_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Shifting Snowdrift while you still can.",
           "target": "c16_ap"
         },
         {
           "id": "ch_c15_seen_1",
-          "label": "Push your luck harder and drive on through the {C15_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Shifting Snowdrift.",
           "target": "c15_fd_c0"
         },
         {
           "id": "ch_c15_seen_2",
-          "label": "Falter, and let the {C15_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Shifting Snowdrift turn you from the road.",
           "target": "c15_lost"
         }
       ]
@@ -4236,7 +4236,7 @@
     },
     {
       "id": "c16_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C16_HAZARD}; the danger is stated plainly in the ground itself: too many cairns, most of them false, built by the lost for the lost; only the twin-capped pilgrim cairns mark the true road'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Cairn Labyrinth; the danger is stated plainly in the ground itself: too many cairns, most of them false, built by the lost for the lost; only the twin-capped pilgrim cairns mark the true road'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4392,7 +4392,7 @@
     },
     {
       "id": "c16_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C16_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; too many cairns, most of them false, built by the lost for the lost; only the twin-capped pilgrim cairns mark the true road; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Cairn Labyrinth; the safe way is narrow and the wrong ways are many, and the road has stated which is which; too many cairns, most of them false, built by the lost for the lost; only the twin-capped pilgrim cairns mark the true road; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4422,14 +4422,14 @@
         },
         {
           "id": "ch_c16_gate_5",
-          "label": "Gamble it and press on against the {C16_HAZARD}.",
+          "label": "Gamble it and press on against the Cairn Labyrinth.",
           "target": "c16_seen"
         }
       ]
     },
     {
       "id": "c16_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C16_HAZARD} {THRESHOLD} lets you on; you read the true double-capped stones and ignore the rest; the real markers carry you through the maze and out its far side; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Cairn Labyrinth the frost causeway lets you on; you read the true double-capped stones and ignore the rest; the real markers carry you through the maze and out its far side; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4441,22 +4441,22 @@
     },
     {
       "id": "c16_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C16_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the stone you followed leads to another, and another, into nothing'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Cairn Labyrinth without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the stone you followed leads to another, and another, into nothing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c16_seen_0",
-          "label": "Hold your nerve and slip on past the {C16_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Cairn Labyrinth while you still can.",
           "target": "c17_ap"
         },
         {
           "id": "ch_c16_seen_1",
-          "label": "Push your luck harder and drive on through the {C16_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Cairn Labyrinth.",
           "target": "c16_fd_c0"
         },
         {
           "id": "ch_c16_seen_2",
-          "label": "Falter, and let the {C16_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Cairn Labyrinth turn you from the road.",
           "target": "c16_lost"
         }
       ]
@@ -4511,7 +4511,7 @@
     },
     {
       "id": "c17_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C17_HAZARD}; the danger is stated plainly in the ground itself: a field crusted in caustic rime that burns lungs and skin near the ground; the tall and dry-breathing pass, the low do not'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Caustic Frost; the danger is stated plainly in the ground itself: a field crusted in caustic rime that burns lungs and skin near the ground; the tall and dry-breathing pass, the low do not'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4667,7 +4667,7 @@
     },
     {
       "id": "c17_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C17_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a field crusted in caustic rime that burns lungs and skin near the ground; the tall and dry-breathing pass, the low do not; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Caustic Frost; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a field crusted in caustic rime that burns lungs and skin near the ground; the tall and dry-breathing pass, the low do not; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4697,14 +4697,14 @@
         },
         {
           "id": "ch_c17_gate_5",
-          "label": "Gamble it and press on against the {C17_HAZARD}.",
+          "label": "Gamble it and press on against the Caustic Frost.",
           "target": "c17_seen"
         }
       ]
     },
     {
       "id": "c17_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C17_HAZARD} {THRESHOLD} lets you on; upright and filtered you keep above the worst of the rime; the caustic layer bites at your boots and no higher and lets you across; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Caustic Frost the frost causeway lets you on; upright and filtered you keep above the worst of the rime; the caustic layer bites at your boots and no higher and lets you across; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4716,22 +4716,22 @@
     },
     {
       "id": "c17_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C17_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the low air bites the lungs and will not let them go'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Caustic Frost without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the low air bites the lungs and will not let them go'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c17_seen_0",
-          "label": "Hold your nerve and slip on past the {C17_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Caustic Frost while you still can.",
           "target": "c18_ap"
         },
         {
           "id": "ch_c17_seen_1",
-          "label": "Push your luck harder and drive on through the {C17_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Caustic Frost.",
           "target": "c17_fd_c0"
         },
         {
           "id": "ch_c17_seen_2",
-          "label": "Falter, and let the {C17_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Caustic Frost turn you from the road.",
           "target": "c17_lost"
         }
       ]
@@ -4786,7 +4786,7 @@
     },
     {
       "id": "c18_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C18_HAZARD}; the danger is stated plainly in the ground itself: crust honed by the wind to blades; wrong steps flay the feet, and the footless die on {THRESHOLD}'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Razor Ice; the danger is stated plainly in the ground itself: crust honed by the wind to blades; wrong steps flay the feet, and the footless die on the frost causeway'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4942,7 +4942,7 @@
     },
     {
       "id": "c18_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C18_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; crust honed by the wind to blades; wrong steps flay the feet, and the footless die on {THRESHOLD}; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Razor Ice; the safe way is narrow and the wrong ways are many, and the road has stated which is which; crust honed by the wind to blades; wrong steps flay the feet, and the footless die on the frost causeway; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4972,14 +4972,14 @@
         },
         {
           "id": "ch_c18_gate_5",
-          "label": "Gamble it and press on against the {C18_HAZARD}.",
+          "label": "Gamble it and press on against the Razor Ice.",
           "target": "c18_seen"
         }
       ]
     },
     {
       "id": "c18_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C18_HAZARD} {THRESHOLD} lets you on; flat and slow on the worn line you keep off the honed edges; the razor pan spares the careful foot and lets you shuffle across; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Razor Ice the frost causeway lets you on; flat and slow on the worn line you keep off the honed edges; the razor pan spares the careful foot and lets you shuffle across; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4991,22 +4991,22 @@
     },
     {
       "id": "c18_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C18_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the crust cuts up through the sole and the foot will not bear you'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Razor Ice without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the crust cuts up through the sole and the foot will not bear you'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c18_seen_0",
-          "label": "Hold your nerve and slip on past the {C18_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Razor Ice while you still can.",
           "target": "c19_ap"
         },
         {
           "id": "ch_c18_seen_1",
-          "label": "Push your luck harder and drive on through the {C18_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Razor Ice.",
           "target": "c18_fd_c0"
         },
         {
           "id": "ch_c18_seen_2",
-          "label": "Falter, and let the {C18_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Razor Ice turn you from the road.",
           "target": "c18_lost"
         }
       ]
@@ -5061,7 +5061,7 @@
     },
     {
       "id": "c19_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C19_HAZARD}; the danger is stated plainly in the ground itself: undermined crust over a dry void; a heavy or sudden tread caves it, and the fall into the hollow does not come back up'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Hollow Snowpack; the danger is stated plainly in the ground itself: undermined crust over a dry void; a heavy or sudden tread caves it, and the fall into the hollow does not come back up'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5217,7 +5217,7 @@
     },
     {
       "id": "c19_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C19_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; undermined crust over a dry void; a heavy or sudden tread caves it, and the fall into the hollow does not come back up; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Hollow Snowpack; the safe way is narrow and the wrong ways are many, and the road has stated which is which; undermined crust over a dry void; a heavy or sudden tread caves it, and the fall into the hollow does not come back up; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5247,14 +5247,14 @@
         },
         {
           "id": "ch_c19_gate_5",
-          "label": "Gamble it and press on against the {C19_HAZARD}.",
+          "label": "Gamble it and press on against the Hollow Snowpack.",
           "target": "c19_seen"
         }
       ]
     },
     {
       "id": "c19_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C19_HAZARD} {THRESHOLD} lets you on; light along the solid vein you feel the firm ground under the shell; the hollow holds where it is thick and carries you over the dark; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Hollow Snowpack the frost causeway lets you on; light along the solid vein you feel the firm ground under the shell; the hollow holds where it is thick and carries you over the dark; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5266,22 +5266,22 @@
     },
     {
       "id": "c19_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C19_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the ground sounds hollow and then it is not there'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Hollow Snowpack without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the ground sounds hollow and then it is not there'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c19_seen_0",
-          "label": "Hold your nerve and slip on past the {C19_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Hollow Snowpack while you still can.",
           "target": "c20_ap"
         },
         {
           "id": "ch_c19_seen_1",
-          "label": "Push your luck harder and drive on through the {C19_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Hollow Snowpack.",
           "target": "c19_fd_c0"
         },
         {
           "id": "ch_c19_seen_2",
-          "label": "Falter, and let the {C19_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Hollow Snowpack turn you from the road.",
           "target": "c19_lost"
         }
       ]
@@ -5336,7 +5336,7 @@
     },
     {
       "id": "c20_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C20_HAZARD}; the danger is stated plainly in the ground itself: the final spring before the shrine; misjudge the fill or the onward line and the last dry stretch kills within sight of the end'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Last Spring; the danger is stated plainly in the ground itself: the final spring before the shrine; misjudge the fill or the onward line and the last dry stretch kills within sight of the end'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5492,7 +5492,7 @@
     },
     {
       "id": "c20_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C20_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the final spring before the shrine; misjudge the fill or the onward line and the last dry stretch kills within sight of the end; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Last Spring; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the final spring before the shrine; misjudge the fill or the onward line and the last dry stretch kills within sight of the end; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5522,14 +5522,14 @@
         },
         {
           "id": "ch_c20_gate_5",
-          "label": "Gamble it and press on against the {C20_HAZARD}.",
+          "label": "Gamble it and press on against the Last Spring.",
           "target": "c20_seen"
         }
       ]
     },
     {
       "id": "c20_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C20_HAZARD} {THRESHOLD} lets you on; watered to the brim and sighted on the marked line you leave the last spring right; the dry end is long but you carry enough to meet it; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Last Spring the frost causeway lets you on; watered to the brim and sighted on the marked line you leave the last spring right; the dry end is long but you carry enough to meet it; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5541,22 +5541,22 @@
     },
     {
       "id": "c20_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C20_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the skins are wrong and the last dry mile is ahead'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Last Spring without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the skins are wrong and the last dry mile is ahead'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c20_seen_0",
-          "label": "Hold your nerve and slip on past the {C20_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Last Spring while you still can.",
           "target": "c21_ap"
         },
         {
           "id": "ch_c20_seen_1",
-          "label": "Push your luck harder and drive on through the {C20_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Last Spring.",
           "target": "c20_fd_c0"
         },
         {
           "id": "ch_c20_seen_2",
-          "label": "Falter, and let the {C20_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Last Spring turn you from the road.",
           "target": "c20_lost"
         }
       ]
@@ -5611,7 +5611,7 @@
     },
     {
       "id": "c21_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C21_HAZARD}; the danger is stated plainly in the ground itself: a crumbling salt escarpment up to the high shelf; a wrong hold brings the whole face down onto the climber'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Rim Climb; the danger is stated plainly in the ground itself: a crumbling salt escarpment up to the high shelf; a wrong hold brings the whole face down onto the climber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5767,7 +5767,7 @@
     },
     {
       "id": "c21_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C21_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a crumbling salt escarpment up to the high shelf; a wrong hold brings the whole face down onto the climber; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Rim Climb; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a crumbling salt escarpment up to the high shelf; a wrong hold brings the whole face down onto the climber; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5797,14 +5797,14 @@
         },
         {
           "id": "ch_c21_gate_5",
-          "label": "Gamble it and press on against the {C21_HAZARD}.",
+          "label": "Gamble it and press on against the Rim Climb.",
           "target": "c21_seen"
         }
       ]
     },
     {
       "id": "c21_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C21_HAZARD} {THRESHOLD} lets you on; in the chimney the salt is sound; you test each hold before you trust it and the tested face carries you to the high shelf; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Rim Climb the frost causeway lets you on; in the chimney the salt is sound; you test each hold before you trust it and the tested face carries you to the high shelf; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5816,22 +5816,22 @@
     },
     {
       "id": "c21_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C21_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the hold you trusted comes away in your hand'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Rim Climb without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the hold you trusted comes away in your hand'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c21_seen_0",
-          "label": "Hold your nerve and slip on past the {C21_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Rim Climb while you still can.",
           "target": "c22_ap"
         },
         {
           "id": "ch_c21_seen_1",
-          "label": "Push your luck harder and drive on through the {C21_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Rim Climb.",
           "target": "c21_fd_c0"
         },
         {
           "id": "ch_c21_seen_2",
-          "label": "Falter, and let the {C21_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Rim Climb turn you from the road.",
           "target": "c21_lost"
         }
       ]
@@ -5886,7 +5886,7 @@
     },
     {
       "id": "c22_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C22_HAZARD}; the danger is stated plainly in the ground itself: a narrow salt defile where a mis-step wedges a pilgrim fast; the wedged die held upright in the cold throat of it'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Narrow Defile; the danger is stated plainly in the ground itself: a narrow salt defile where a mis-step wedges a pilgrim fast; the wedged die held upright in the cold throat of it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6042,7 +6042,7 @@
     },
     {
       "id": "c22_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C22_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a narrow salt defile where a mis-step wedges a pilgrim fast; the wedged die held upright in the cold throat of it; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Narrow Defile; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a narrow salt defile where a mis-step wedges a pilgrim fast; the wedged die held upright in the cold throat of it; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6072,14 +6072,14 @@
         },
         {
           "id": "ch_c22_gate_5",
-          "label": "Gamble it and press on against the {C22_HAZARD}.",
+          "label": "Gamble it and press on against the Narrow Defile.",
           "target": "c22_seen"
         }
       ]
     },
     {
       "id": "c22_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C22_HAZARD} {THRESHOLD} lets you on; empty-chested and turned edgewise you slip the throat; the pack goes first and the pass lets the narrow body follow it out; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Narrow Defile the frost causeway lets you on; empty-chested and turned edgewise you slip the throat; the pack goes first and the pass lets the narrow body follow it out; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6091,22 +6091,22 @@
     },
     {
       "id": "c22_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C22_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the walls close on your chest and will not give it back'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Narrow Defile without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the walls close on your chest and will not give it back'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c22_seen_0",
-          "label": "Hold your nerve and slip on past the {C22_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Narrow Defile while you still can.",
           "target": "c23_ap"
         },
         {
           "id": "ch_c22_seen_1",
-          "label": "Push your luck harder and drive on through the {C22_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Narrow Defile.",
           "target": "c22_fd_c0"
         },
         {
           "id": "ch_c22_seen_2",
-          "label": "Falter, and let the {C22_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Narrow Defile turn you from the road.",
           "target": "c22_lost"
         }
       ]
@@ -6161,7 +6161,7 @@
     },
     {
       "id": "c23_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C23_HAZARD}; the danger is stated plainly in the ground itself: a caustic salt-fog at the shrine's very edge that blinds and chokes the unready; only the veiled who follow the bell-rope come through'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Frost Veil; the danger is stated plainly in the ground itself: a caustic salt-fog at the shrine's very edge that blinds and chokes the unready; only the veiled who follow the bell-rope come through'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6317,7 +6317,7 @@
     },
     {
       "id": "c23_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C23_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a caustic salt-fog at the shrine's very edge that blinds and chokes the unready; only the veiled who follow the bell-rope come through; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Frost Veil; the safe way is narrow and the wrong ways are many, and the road has stated which is which; a caustic salt-fog at the shrine's very edge that blinds and chokes the unready; only the veiled who follow the bell-rope come through; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6347,14 +6347,14 @@
         },
         {
           "id": "ch_c23_gate_5",
-          "label": "Gamble it and press on against the {C23_HAZARD}.",
+          "label": "Gamble it and press on against the Frost Veil.",
           "target": "c23_seen"
         }
       ]
     },
     {
       "id": "c23_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C23_HAZARD} {THRESHOLD} lets you on; veiled against the fog and holding the rope you feel your way in; the bell draws you through the white and the shrine's edge takes shape; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Frost Veil the frost causeway lets you on; veiled against the fog and holding the rope you feel your way in; the bell draws you through the white and the shrine's edge takes shape; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6366,22 +6366,22 @@
     },
     {
       "id": "c23_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C23_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the white fog closes and the bell is nowhere in it'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Frost Veil without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the white fog closes and the bell is nowhere in it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c23_seen_0",
-          "label": "Hold your nerve and slip on past the {C23_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Frost Veil while you still can.",
           "target": "c24_ap"
         },
         {
           "id": "ch_c23_seen_1",
-          "label": "Push your luck harder and drive on through the {C23_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Frost Veil.",
           "target": "c23_fd_c0"
         },
         {
           "id": "ch_c23_seen_2",
-          "label": "Falter, and let the {C23_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Frost Veil turn you from the road.",
           "target": "c23_lost"
         }
       ]
@@ -6436,7 +6436,7 @@
     },
     {
       "id": "c24_ap",
-      "body": "<<FILL role=rising words=76 beats='the road reaches the {C24_HAZARD}; the danger is stated plainly in the ground itself: the last open mile in full sun with the shrine in plain sight; the spent who rush it fall short of the steps and do not rise'>>",
+      "body": "<<FILL role=rising words=76 beats='the road reaches the Final Mile; the danger is stated plainly in the ground itself: the last open mile in full sun with the shrine in plain sight; the spent who rush it fall short of the steps and do not rise'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6592,7 +6592,7 @@
     },
     {
       "id": "c24_gate",
-      "body": "<<FILL role=choice words=92 beats='here is the crossing of the {C24_HAZARD}; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the last open mile in full sun with the shrine in plain sight; the spent who rush it fall short of the steps and do not rise; choose, and be right'>>",
+      "body": "<<FILL role=choice words=92 beats='here is the crossing of the Final Mile; the safe way is narrow and the wrong ways are many, and the road has stated which is which; the last open mile in full sun with the shrine in plain sight; the spent who rush it fall short of the steps and do not rise; choose, and be right'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6622,14 +6622,14 @@
         },
         {
           "id": "ch_c24_gate_5",
-          "label": "Gamble it and press on against the {C24_HAZARD}.",
+          "label": "Gamble it and press on against the Final Mile.",
           "target": "c24_seen"
         }
       ]
     },
     {
       "id": "c24_pass",
-      "body": "<<FILL role=rising words=64 beats='past the {C24_HAZARD} {THRESHOLD} lets you on; counting each step with your eyes on the salt you spend the last of yourself evenly; steady and low, you cross the pale mile and reach the steps; the shrine is a little nearer and the crossing a little longer survived'>>",
+      "body": "<<FILL role=rising words=64 beats='past the Final Mile the frost causeway lets you on; counting each step with your eyes on the salt you spend the last of yourself evenly; steady and low, you cross the pale mile and reach the steps; the shrine is a little nearer and the crossing a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6641,22 +6641,22 @@
     },
     {
       "id": "c24_seen",
-      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the {C24_HAZARD} without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the shrine is right there and your legs are done'>>",
+      "body": "<<FILL role=choice words=80 beats='you have gambled and pressed into the Final Mile without the safe line; for a breath the salt has not taken you, and three ways open, only one of them onward: the shrine is right there and your legs are done'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "ch_c24_seen_0",
-          "label": "Hold your nerve and slip on past the {C24_HAZARD} while you still can.",
+          "label": "Hold your nerve and slip on past the Final Mile while you still can.",
           "target": "shr_ap0"
         },
         {
           "id": "ch_c24_seen_1",
-          "label": "Push your luck harder and drive on through the {C24_HAZARD}.",
+          "label": "Push your luck harder and drive on through the Final Mile.",
           "target": "c24_fd_c0"
         },
         {
           "id": "ch_c24_seen_2",
-          "label": "Falter, and let the {C24_HAZARD} turn you from the road.",
+          "label": "Falter, and let the Final Mile turn you from the road.",
           "target": "c24_lost"
         }
       ]
@@ -6711,7 +6711,7 @@
     },
     {
       "id": "shr_ap0",
-      "body": "<<FILL role=rising words=78 beats='the salt steps of {GOAL} stand out of the waste at last, pale and plain against the sky; {THRESHOLD} has one hazard more, the keeping of its own threshold, and it is as grave as any behind you'>>",
+      "body": "<<FILL role=rising words=78 beats='the salt steps of the Iron Monastery stand out of the waste at last, pale and plain against the sky; the frost causeway has one hazard more, the keeping of its own threshold, and it is as grave as any behind you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6805,7 +6805,7 @@
     },
     {
       "id": "shr_res",
-      "body": "<<FILL role=rising words=66 beats='you give the measure and kneel, and the rite is answered; the keeper draws the threshold open and the cool dark of the shrine breathes out over you; {THRESHOLD} is behind you and one thing only remains, how you come in'>>",
+      "body": "<<FILL role=rising words=66 beats='you give the measure and kneel, and the rite is answered; the keeper draws the threshold open and the cool dark of the shrine breathes out over you; the frost causeway is behind you and one thing only remains, how you come in'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6817,7 +6817,7 @@
     },
     {
       "id": "win_gate",
-      "body": "<<FILL role=choice words=86 beats='{GOAL} is open and you are alive at its door, which few are; the crossing has left its mark on you and how you cross the threshold is the last of the road; choose how {THRESHOLD} delivers you'>>",
+      "body": "<<FILL role=choice words=86 beats='the Iron Monastery is open and you are alive at its door, which few are; the crossing has left its mark on you and how you cross the threshold is the last of the road; choose how the frost causeway delivers you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6839,7 +6839,7 @@
     },
     {
       "id": "win_whole",
-      "body": "<<FILL role=resolution words=78 beats='you walk into {GOAL} on your own feet, water still in you and the road read true from the first marker to the last; the salt did not keep you; you are the rare pilgrim it passed, whole'>>",
+      "body": "<<FILL role=resolution words=78 beats='you walk into the Iron Monastery on your own feet, water still in you and the road read true from the first marker to the last; the salt did not keep you; you are the rare pilgrim it passed, whole'>>",
       "is_ending": true,
       "ending": {
         "id": "win_whole",
@@ -6851,7 +6851,7 @@
     },
     {
       "id": "win_broken",
-      "body": "<<FILL role=resolution words=78 beats='you come into the shrine broken by the crossing, blind-eyed or bled or spent to nothing, but alive and inside; {THRESHOLD} took its price and let you keep the rest; you arrived, and arriving is everything'>>",
+      "body": "<<FILL role=resolution words=78 beats='you come into the shrine broken by the crossing, blind-eyed or bled or spent to nothing, but alive and inside; the frost causeway took its price and let you keep the rest; you arrived, and arriving is everything'>>",
       "is_ending": true,
       "ending": {
         "id": "win_broken",
@@ -6863,7 +6863,7 @@
     },
     {
       "id": "win_offering",
-      "body": "<<FILL role=resolution words=76 beats='you cross the last threshold by giving yourself to the shrine's keeping, the crossing made and the self that made it laid down at the end of it; {THRESHOLD} is answered, grave and complete, in the only coin it takes'>>",
+      "body": "<<FILL role=resolution words=76 beats='you cross the last threshold by giving yourself to the shrine's keeping, the crossing made and the self that made it laid down at the end of it; the frost causeway is answered, grave and complete, in the only coin it takes'>>",
       "is_ending": true,
       "ending": {
         "id": "win_offering",

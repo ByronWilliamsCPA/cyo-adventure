@@ -1,0 +1,965 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-tricameral-city",
+  "age_band": "16+",
+  "legacy_lexicon": [
+    "Meridon",
+    "Tricameral",
+    "Concord",
+    "Concordance",
+    "Bench",
+    "Prefecture",
+    "Register",
+    "Reckoning",
+    "Deepstore",
+    "Roll",
+    "Abatement",
+    "Magister",
+    "Prefect",
+    "Recorder",
+    "Ossian Vale",
+    "Vale",
+    "Halda Roon",
+    "Roon",
+    "Ivo Sarn",
+    "Sarn",
+    "Corvin Ash",
+    "Ash",
+    "Tamsin Ledd",
+    "Ledd",
+    "Deepwinter",
+    "Sowing",
+    "Long Light",
+    "Harvest",
+    "Auditor's College",
+    "Auditor's Year",
+    "vault-book",
+    "watch-roll",
+    "levy-books",
+    "coin-balance",
+    "consent binding",
+    "binding-archive",
+    "charter-count",
+    "nine hundred measures"
+  ],
+  "default_binding": {
+    "HERO": "auditor",
+    "THRESHOLD": "Tricameral City",
+    "CITY": "Meridon",
+    "CHARTER": "Concord",
+    "CONCLAVE": "Concordance",
+    "DEADLINE": "Reckoning",
+    "DEADLINE_SIGN": "Deepwinter",
+    "ASSIGNING_BODY": "Auditor's College",
+    "OPENING_MOMENT": "Auditor's Year",
+    "GAP_QTY": "nine hundred measures",
+    "RESOURCE": "grain",
+    "CENSUS": "census",
+    "LEVY": "levy",
+    "ROLL": "Roll",
+    "ABATEMENT": "Abatement",
+    "DEEPSTORE": "Deepstore",
+    "WARD": "ward",
+    "SEASON_SOWING": "Sowing",
+    "SEASON_LONG_LIGHT": "Long Light",
+    "SEASON_HARVEST": "Harvest",
+    "ROUTE_A_NAME": "Bench",
+    "ROUTE_A_TITLE": "Magister",
+    "ROUTE_A_HEAD_NAME": "Ossian Vale",
+    "ROUTE_A_HEAD_SURNAME": "Vale",
+    "ROUTE_A_CLERK": "Corvin Ash",
+    "ROUTE_A_CLERK_SURNAME": "Ash",
+    "ROUTE_A_INSTRUMENT": "binding",
+    "ROUTE_B_NAME": "Prefecture",
+    "ROUTE_B_TITLE": "Prefect",
+    "ROUTE_B_HEAD_NAME": "Halda Roon",
+    "ROUTE_B_HEAD_SURNAME": "Roon",
+    "ROUTE_C_NAME": "Register",
+    "ROUTE_C_TITLE": "Recorder",
+    "ROUTE_C_HEAD_NAME": "Ivo Sarn",
+    "ROUTE_C_HEAD_SURNAME": "Sarn",
+    "ROUTE_C_CLERK": "Tamsin Ledd",
+    "ROUTE_C_CLERK_SURNAME": "Ledd",
+    "A_ARCHIVE": "binding-archive",
+    "A_BINDING": "consent binding",
+    "A_SEAL": "wax",
+    "B_VAULT_BOOK": "vault-book",
+    "B_WATCH_ROLL": "watch-roll",
+    "B_LEVY_BOOKS": "levy-books",
+    "B_COIN_BALANCE": "coin-balance",
+    "B_WAGON": "wagon",
+    "B_MANIFEST": "manifest",
+    "B_WORKS": "works",
+    "C_MEMO": "memorandum",
+    "C_WORKING_PAPERS": "working papers",
+    "C_CHARTER_COUNT": "charter-count"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The protagonist's professional role/title.",
+      "guidance": "A single, unnamed civic-service role a newcomer is sworn into for one year; competent, morally serious, never a source of violence.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_HEAD_SURNAME",
+          "ROUTE_B_HEAD_SURNAME",
+          "ROUTE_C_HEAD_SURNAME",
+          "ROUTE_A_CLERK_SURNAME",
+          "ROUTE_C_CLERK_SURNAME"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The governance-shape epithet for the whole city (its constitutional structure in miniature).",
+      "guidance": "A short epithet naming how the city's power is structurally divided; wonder/gravity over dread; no lethal or toxic connotation.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CITY",
+      "scope": "global",
+      "meaning": "The proper name of the city the whole story takes place in.",
+      "guidance": "A single invented place name; the seat of every chamber; must read as governable and inhabited, never as a lethal or toxic environment.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CHARTER",
+      "scope": "global",
+      "meaning": "The constitutional pact binding the three chambers together.",
+      "guidance": "The foundational agreement that lets three rival bodies check one another without one seizing control; abstract, institutional, non-violent.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "CONCLAVE"
+        ]
+      }
+    },
+    {
+      "id": "CONCLAVE",
+      "scope": "global",
+      "meaning": "The rare, closed joint meeting of all three chamber heads.",
+      "guidance": "A private session convened only when the chambers must face a shared problem together; procedural, tense, never physically dangerous.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "CHARTER"
+        ]
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The periodic, decennial audit/judgment event that closes the story's year.",
+      "guidance": "A recurring, survivable institutional reckoning, not a physical threat; everyone lives to see the next one either way.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic",
+          "toxic"
+        ],
+        "distinct_from": [
+          "DEADLINE_SIGN",
+          "SEASON_SOWING",
+          "SEASON_LONG_LIGHT",
+          "SEASON_HARVEST"
+        ]
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The season whose civic hardship (a benefits cut) signals the deadline is approaching.",
+      "guidance": "A named season, not a sensory omen; its 'sign' is an administrative hardship (a cut ration), never physical danger.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic",
+          "toxic"
+        ],
+        "distinct_from": [
+          "DEADLINE",
+          "SEASON_SOWING",
+          "SEASON_LONG_LIGHT",
+          "SEASON_HARVEST"
+        ]
+      }
+    },
+    {
+      "id": "ASSIGNING_BODY",
+      "scope": "global",
+      "meaning": "The institution that seconds/assigns the hero to a chamber for the year.",
+      "guidance": "A training or credentialing body named once at the outset; purely administrative.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The named span of the hero's one-year posting.",
+      "guidance": "A fixed-term appointment name; must read as a bounded, survivable stretch of civic service.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic",
+          "toxic"
+        ],
+        "distinct_from": [
+          "DEADLINE",
+          "DEADLINE_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "GAP_QTY",
+      "scope": "global",
+      "meaning": "The specific quantity of the shortfall every chamber investigates from its own angle.",
+      "guidance": "A concrete counted amount of the story's resource; must read as a countable civic quantity, never a body count.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RESOURCE",
+      "scope": "global",
+      "meaning": "The countable commodity whose shortfall drives the whole plot.",
+      "guidance": "A staple, storable, distributable good the city counts and rations; not a weapon, not a person.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CENSUS",
+      "scope": "global",
+      "meaning": "The population count the city keeps of itself.",
+      "guidance": "The record of who is officially counted as a resident; an administrative concept, not a person.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "LEVY"
+        ]
+      }
+    },
+    {
+      "id": "LEVY",
+      "scope": "global",
+      "meaning": "The tax/collection system that gathers the resource from the counted population.",
+      "guidance": "The administrative mechanism that collects the resource against the census; abstract and procedural.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "CENSUS"
+        ]
+      }
+    },
+    {
+      "id": "ROLL",
+      "scope": "global",
+      "meaning": "The ancient founding register the city keeps of its own true count.",
+      "guidance": "A single old, authoritative document; the object of reverence and secrecy at the root of the mystery.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "DEEPSTORE"
+        ]
+      }
+    },
+    {
+      "id": "ABATEMENT",
+      "scope": "global",
+      "meaning": "The standing exception/loophole that has quietly covered the shortfall for years.",
+      "guidance": "A named, renewable legal exception; a bureaucratic euphemism for looking away, not a violent act.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEEPSTORE",
+      "scope": "global",
+      "meaning": "The great granary/vault at the center of the shortfall.",
+      "guidance": "The physical site where the resource is supposed to be stored; a place of counting and guarding, not danger.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROLL"
+        ]
+      }
+    },
+    {
+      "id": "WARD",
+      "scope": "global",
+      "meaning": "The city's district unit; also names the uncounted population living at the city's edge.",
+      "guidance": "A civic district word, singular or pluralized with a trailing 's' in context; never a place of captivity.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SEASON_SOWING",
+      "scope": "global",
+      "meaning": "The invented calendar's opening-of-year season, when the hero's posting begins.",
+      "guidance": "A season name marking the story's start; agricultural or cyclical in flavor, never ominous.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic",
+          "toxic"
+        ],
+        "distinct_from": [
+          "SEASON_LONG_LIGHT",
+          "SEASON_HARVEST",
+          "DEADLINE_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "SEASON_LONG_LIGHT",
+      "scope": "global",
+      "meaning": "The invented calendar's mid-year season.",
+      "guidance": "A season name marking the story's midpoint; distinct in feel from the other named seasons.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic",
+          "toxic"
+        ],
+        "distinct_from": [
+          "SEASON_SOWING",
+          "SEASON_HARVEST",
+          "DEADLINE_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "SEASON_HARVEST",
+      "scope": "global",
+      "meaning": "The invented calendar's main, resource-gathering season.",
+      "guidance": "The season when the resource is brought in and the shortfall becomes undeniable; industrious, not threatening.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic",
+          "toxic"
+        ],
+        "distinct_from": [
+          "SEASON_SOWING",
+          "SEASON_LONG_LIGHT",
+          "DEADLINE_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_NAME",
+      "scope": "route",
+      "meaning": "The proper name of the first chamber, which judges and rules but never acts.",
+      "guidance": "A short institutional name for the deliberative/judicial chamber; grave, procedural.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_B_NAME",
+          "ROUTE_C_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_TITLE",
+      "scope": "route",
+      "meaning": "The bare office title of the first chamber's head.",
+      "guidance": "A single honorific word, used both alone and before the head's full name.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_B_TITLE",
+          "ROUTE_C_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_HEAD_NAME",
+      "scope": "route",
+      "meaning": "The first chamber head's full personal name (no title).",
+      "guidance": "A first-and-last invented name; the same person as ROUTE_A_HEAD_SURNAME's surname.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_B_HEAD_NAME",
+          "ROUTE_C_HEAD_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_HEAD_SURNAME",
+      "scope": "route",
+      "meaning": "The first chamber head's surname alone, used in the vast majority of references.",
+      "guidance": "Must be the surname consistent with ROUTE_A_HEAD_NAME.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_B_HEAD_SURNAME",
+          "ROUTE_C_HEAD_SURNAME",
+          "ROUTE_A_CLERK_SURNAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_CLERK",
+      "scope": "route",
+      "meaning": "The disgraced predecessor whose forced resignation closes one fault line in this chamber's story.",
+      "guidance": "A full invented name for a mid-level official; sympathetic, not villainous; never physically harmed.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_HEAD_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_CLERK_SURNAME",
+      "scope": "route",
+      "meaning": "That predecessor's surname alone.",
+      "guidance": "Must be the surname consistent with ROUTE_A_CLERK.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_HEAD_SURNAME",
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_INSTRUMENT",
+      "scope": "route",
+      "meaning": "This chamber's generic term for a sealed judgment/ruling.",
+      "guidance": "The chamber's word for one of its own binding decisions; bureaucratic, not physically restraining.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_NAME",
+      "scope": "route",
+      "meaning": "The proper name of the second chamber, which acts and provisions the city.",
+      "guidance": "A short institutional name for the executive/logistics chamber; busy, operational.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_NAME",
+          "ROUTE_C_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_TITLE",
+      "scope": "route",
+      "meaning": "The bare office title of the second chamber's head.",
+      "guidance": "A single honorific word, used both alone and before the head's full name.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_TITLE",
+          "ROUTE_C_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_HEAD_NAME",
+      "scope": "route",
+      "meaning": "The second chamber head's full personal name (no title).",
+      "guidance": "A first-and-last invented name; the same person as ROUTE_B_HEAD_SURNAME's surname.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_HEAD_NAME",
+          "ROUTE_C_HEAD_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_HEAD_SURNAME",
+      "scope": "route",
+      "meaning": "The second chamber head's surname alone, used in the vast majority of references.",
+      "guidance": "Must be the surname consistent with ROUTE_B_HEAD_NAME.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_HEAD_SURNAME",
+          "ROUTE_C_HEAD_SURNAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_NAME",
+      "scope": "route",
+      "meaning": "The proper name of the third chamber, which counts and remembers.",
+      "guidance": "A short institutional name for the record-keeping chamber; quiet, archival.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_NAME",
+          "ROUTE_B_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_TITLE",
+      "scope": "route",
+      "meaning": "The bare office title of the third chamber's head.",
+      "guidance": "A single honorific word, used both alone and before the head's full name.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_TITLE",
+          "ROUTE_B_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_HEAD_NAME",
+      "scope": "route",
+      "meaning": "The third chamber head's full personal name (no title).",
+      "guidance": "A first-and-last invented name; the same person as ROUTE_C_HEAD_SURNAME's surname.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_HEAD_NAME",
+          "ROUTE_B_HEAD_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_HEAD_SURNAME",
+      "scope": "route",
+      "meaning": "The third chamber head's surname alone, used in the vast majority of references.",
+      "guidance": "Must be the surname consistent with ROUTE_C_HEAD_NAME.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_HEAD_SURNAME",
+          "ROUTE_B_HEAD_SURNAME",
+          "ROUTE_C_CLERK_SURNAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_CLERK",
+      "scope": "route",
+      "meaning": "The junior clerk whose suppressed finding drives this chamber's central sub-plot.",
+      "guidance": "A full invented name for a junior official who was right too early; principled, never physically endangered.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_C_HEAD_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_CLERK_SURNAME",
+      "scope": "route",
+      "meaning": "That clerk's surname alone.",
+      "guidance": "Must be the surname consistent with ROUTE_C_CLERK.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROUTE_C_HEAD_SURNAME",
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "A_ARCHIVE",
+      "scope": "track",
+      "meaning": "The vault of sealed prior judgments the hero searches at night.",
+      "guidance": "A records room housing the chamber's own sealed history; atmospheric, not dangerous.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A_BINDING"
+        ]
+      }
+    },
+    {
+      "id": "A_BINDING",
+      "scope": "track",
+      "meaning": "The specific sealed instrument that has quietly authorized the shortfall for years.",
+      "guidance": "One particular old sealed ruling, distinct from the chamber's rulings in general.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A_ARCHIVE",
+          "ROUTE_A_INSTRUMENT"
+        ]
+      }
+    },
+    {
+      "id": "A_SEAL",
+      "scope": "track",
+      "meaning": "The physical seal on the archived instrument, renewed at each Reckoning.",
+      "guidance": "A small, tactile detail (a seal, stamp, or mark) the hero can read the age of.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_VAULT_BOOK",
+      "scope": "track",
+      "meaning": "The ledger that claims a count for what the Deepstore's vault actually holds.",
+      "guidance": "The specific book the Deepstore-watch posting audits against the physical vault.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B_LEVY_BOOKS",
+          "B_MANIFEST"
+        ]
+      }
+    },
+    {
+      "id": "B_WATCH_ROLL",
+      "scope": "track",
+      "meaning": "The roster/log of guards posted on the Deepstore.",
+      "guidance": "A duty roster whose thickness the hero learns to read as a clue.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_LEVY_BOOKS",
+      "scope": "track",
+      "meaning": "The tax ledgers reconciling the levy against the census, ward by ward.",
+      "guidance": "The specific ledgers the levy-books posting audits.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B_VAULT_BOOK",
+          "B_MANIFEST"
+        ]
+      }
+    },
+    {
+      "id": "B_COIN_BALANCE",
+      "scope": "track",
+      "meaning": "The ledger column that always reconciles even when the resource does not.",
+      "guidance": "A bookkeeping figure that can be made to balance regardless of the true resource flow.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_WAGON",
+      "scope": "track",
+      "meaning": "The transport used to move the resource on the provisioning run (used with a trailing 's' for the plural convoy).",
+      "guidance": "A single cart or transport unit; the convoy's basic unit.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_MANIFEST",
+      "scope": "track",
+      "meaning": "The shipping paperwork that is supposed to match every load (used with a trailing 's' for the plural).",
+      "guidance": "The paperwork the hero checks each transport against on the provisioning run.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_WORKS",
+      "scope": "track",
+      "meaning": "The worksite destination the provisioning run supplies.",
+      "guidance": "A place of labor the resource is delivered to; industrious, not dangerous.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_MEMO",
+      "scope": "track",
+      "meaning": "The junior clerk's suppressed written finding.",
+      "guidance": "A single short report documenting the recurring shortfall; a paper object, not a person.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C_WORKING_PAPERS"
+        ]
+      }
+    },
+    {
+      "id": "C_WORKING_PAPERS",
+      "scope": "track",
+      "meaning": "The clerk's full compiled backing evidence for the memo.",
+      "guidance": "A larger private file of supporting records kept by the clerk.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C_MEMO"
+        ]
+      }
+    },
+    {
+      "id": "C_CHARTER_COUNT",
+      "scope": "track",
+      "meaning": "The city's founding population/resource figure, inflated from the start.",
+      "guidance": "The oldest number in the Roll, the root of the recurring shortfall.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ROLL"
+        ]
+      }
+    }
+  ]
+}

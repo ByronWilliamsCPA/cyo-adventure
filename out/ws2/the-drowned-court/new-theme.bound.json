@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_ap_moat",
-      "body": "<<FILL role=rising words=70 beats='{HERO} swims {ROUTE_A_CHAR}, current dragging at her rebreather, and the {TIDEGATE} arch looms'>>",
+      "body": "<<FILL role=rising words=70 beats='Nadia swims the collapsed causeway, current dragging at her rebreather, and the sand-gate arch looms'>>",
       "is_ending": false,
       "choices": [
         {
@@ -46,7 +46,7 @@
     },
     {
       "id": "n_ap_sluice",
-      "body": "<<FILL role=rising words=68 beats='{HERO} forces {ROUTE_B_CHAR}, silt clouding her lamp, and comes up under the {TIDEGATE} arch'>>",
+      "body": "<<FILL role=rising words=68 beats='Nadia forces the old well shaft, silt clouding her lamp, and comes up under the sand-gate arch'>>",
       "is_ending": false,
       "choices": [
         {
@@ -58,7 +58,7 @@
     },
     {
       "id": "n_ap_scaff",
-      "body": "<<FILL role=rising words=66 beats='{HERO} climbs {ROUTE_C_CHAR}, rotted with disuse, and drops down beside the {TIDEGATE} arch'>>",
+      "body": "<<FILL role=rising words=66 beats='Nadia climbs the poacher's rope ladder, rotted with disuse, and drops down beside the sand-gate arch'>>",
       "is_ending": false,
       "choices": [
         {
@@ -70,7 +70,7 @@
     },
     {
       "id": "n_ap_undertow",
-      "body": "<<FILL role=failure words=62 beats='{ROUTE_D_CHAR} pulls {HERO} into a dead {CISTERN} pocket with no air, and she must surface, the dive aborted before it begins'>>",
+      "body": "<<FILL role=failure words=62 beats='the sand chute pulls Nadia into a dead cellar pocket with no air, and she must surface, the dive aborted before it begins'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_ap_undertow",
@@ -81,45 +81,45 @@
     },
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=92 beats='codename {HERO} reaches the black water over the sunken royal {COURT} at {OPENING_MOMENT}, the {RIVAL} expedition lights already burning on the far reef; three ways lead down to the {TIDEGATE}, {ROUTE_A_CHAR}, {ROUTE_B_CHAR}, and {ROUTE_C_CHAR}, plus one more, {ROUTE_D_CHAR}, that looks quick and wrong'>>",
+      "body": "<<FILL role=setup words=92 beats='codename Nadia reaches the black water over the sunken royal vault at calm winds, the poacher expedition lights already burning on the far reef; three ways lead down to the sand-gate, the collapsed causeway, the old well shaft, and the poacher's rope ladder, plus one more, the sand chute, that looks quick and wrong'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_start_1",
-          "label": "Swim {ROUTE_A_CHAR}.",
+          "label": "Swim the collapsed causeway.",
           "target": "n_ap_moat"
         },
         {
           "id": "c_n_start_2",
-          "label": "Force {ROUTE_B_CHAR}.",
+          "label": "Force the old well shaft.",
           "target": "n_ap_sluice"
         },
         {
           "id": "c_n_start_3",
-          "label": "Climb {ROUTE_C_CHAR}.",
+          "label": "Climb the poacher's rope ladder.",
           "target": "n_ap_scaff"
         },
         {
           "id": "c_n_start_4",
-          "label": "Chance {ROUTE_D_CHAR}.",
+          "label": "Chance the sand chute.",
           "target": "n_ap_undertow"
         }
       ]
     },
     {
       "id": "fan_tg_s0",
-      "body": "<<FILL role=failure words=62 beats='the counterweight shears and the {TIDEGATE} slams, pinning {HERO}'s gear until she cuts free and retreats to open water, empty-handed'>>",
+      "body": "<<FILL role=failure words=62 beats='the counterweight shears and the sand-gate slams, pinning Nadia's gear until she cuts free and retreats to open water, empty-handed'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_tg_s0",
         "valence": "negative",
         "kind": "setback",
-        "title": "Pinned at the {TIDEGATE_TITLE}"
+        "title": "Pinned at the Gate"
       }
     },
     {
       "id": "fan_tg_s1",
-      "body": "<<FILL role=failure words=62 beats='the air burst collapses the soft {TIDEGATE} arch and a slow ceiling-fall seals the passage behind her; {HERO} is forced back out to the sea'>>",
+      "body": "<<FILL role=failure words=62 beats='the air burst collapses the soft sand-gate arch and a slow ceiling-fall seals the passage behind her; Nadia is forced back out to the sea'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_tg_s1",
@@ -130,7 +130,7 @@
     },
     {
       "id": "n_tidegate_hub",
-      "body": "<<FILL role=choice words=84 beats='the {TIDEGATE} hangs half-shut, its old wards humming faint in the dark water; the winch chain, a flooded gallery mouth, and a maintenance crawl all lead inward'>>",
+      "body": "<<FILL role=choice words=84 beats='the sand-gate hangs half-shut, its old wards humming faint in the dark water; the winch chain, a flooded gallery mouth, and a maintenance crawl all lead inward'>>",
       "is_ending": false,
       "choices": [
         {
@@ -160,14 +160,14 @@
         },
         {
           "id": "c_n_tidegate_hub_x6",
-          "label": "Follow the {MOTIF_MARCH}.",
+          "label": "Follow the warded corridor.",
           "target": "pad22_b1"
         }
       ]
     },
     {
       "id": "n_tg_gallery",
-      "body": "<<FILL role=rising words=78 beats='beyond the {TIDEGATE} a submerged gallery opens, statues of drowned kings staring up through the green; two archways and a stair descend toward the {THRONE} level'>>",
+      "body": "<<FILL role=rising words=78 beats='beyond the sand-gate a submerged gallery opens, statues of drowned kings staring up through the green; two archways and a stair descend toward the audience hall level'>>",
       "is_ending": false,
       "choices": [
         {
@@ -204,7 +204,7 @@
     },
     {
       "id": "n_tg_left",
-      "body": "<<FILL role=rising words=60 beats='the left archway threads past a toppled colonnade, and the {THRONE} gallery glimmers ahead'>>",
+      "body": "<<FILL role=rising words=60 beats='the left archway threads past a toppled colonnade, and the audience hall gallery glimmers ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -216,7 +216,7 @@
     },
     {
       "id": "fan_tgr_s0",
-      "body": "<<FILL role=failure words=62 beats='the side door gives onto a flooded stair that drops without end into cold black; {HERO} loses her line and must claw back to the gallery, shaken and turned around, the dive lost'>>",
+      "body": "<<FILL role=failure words=62 beats='the side door gives onto a flooded stair that drops without end into cold black; Nadia loses her line and must claw back to the gallery, shaken and turned around, the dive lost'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_tgr_s0",
@@ -227,7 +227,7 @@
     },
     {
       "id": "n_tg_right",
-      "body": "<<FILL role=choice words=70 beats='the right archway bends past a caved refectory, a shortcut sign in old {COURT} script pointing down'>>",
+      "body": "<<FILL role=choice words=70 beats='the right archway bends past a caved refectory, a shortcut sign in old vault script pointing down'>>",
       "is_ending": false,
       "choices": [
         {
@@ -242,19 +242,19 @@
         },
         {
           "id": "c_n_tg_right_x3",
-          "label": "Detour through the {MOTIF_VAULT}.",
+          "label": "Detour through the sealed chamber.",
           "target": "pad3_b1"
         },
         {
           "id": "c_n_tg_right_x4",
-          "label": "Probe the {MOTIF_GALLERY}.",
+          "label": "Probe the buried colonnade.",
           "target": "pad24_b2"
         }
       ]
     },
     {
       "id": "n_tg_stair",
-      "body": "<<FILL role=rising words=58 beats='the grand stair spirals down through silt into the {THRONE} level, and the great gallery opens below'>>",
+      "body": "<<FILL role=rising words=58 beats='the grand stair spirals down through silt into the audience hall level, and the great gallery opens below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -266,7 +266,7 @@
     },
     {
       "id": "fan_throne_s0",
-      "body": "<<FILL role=failure words=62 beats='the mosaic floor gives way over a void and {HERO} barely kicks clear, but her lamp and spare line are gone; blind, she retreats to the gallery mouth'>>",
+      "body": "<<FILL role=failure words=62 beats='the mosaic floor gives way over a void and Nadia barely kicks clear, but her lamp and spare line are gone; blind, she retreats to the gallery mouth'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_throne_s0",
@@ -277,18 +277,18 @@
     },
     {
       "id": "fan_throne_s1",
-      "body": "<<FILL role=failure words=62 beats='the sarcophagus lids are trapped with old counterweights that drop a portcullis; {HERO} is walled off from the {CIRCLET} and must turn back'>>",
+      "body": "<<FILL role=failure words=62 beats='the sarcophagus lids are trapped with old counterweights that drop a portcullis; Nadia is walled off from the diadem and must turn back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_throne_s1",
         "valence": "negative",
         "kind": "setback",
-        "title": "Walled from the {CIRCLET_TITLE}"
+        "title": "Walled from the Diadem"
       }
     },
     {
       "id": "n_throne_hub",
-      "body": "<<FILL role=choice words=86 beats='the {THRONE} gallery yawns wide, the great chair drowned to its arms, and above it the {CIRCLET} of the last {QUEEN} catches {HERO}'s lamp; a {RIVAL} glow-stick already burns near the {THRONE} dais'>>",
+      "body": "<<FILL role=choice words=86 beats='the audience hall gallery yawns wide, the great chair drowned to its arms, and above it the diadem of the last pharaoh catches Nadia's lamp; a poacher glow-stick already burns near the audience hall dais'>>",
       "is_ending": false,
       "choices": [
         {
@@ -325,7 +325,7 @@
     },
     {
       "id": "n_throne_dais",
-      "body": "<<FILL role=climax words=88 beats='at the {THRONE} dais the {RIVAL} diver reaches for the {CIRCLET} too; {HERO} can race, feint, or cut the {RIVAL}'s tether and force a standoff'>>",
+      "body": "<<FILL role=climax words=88 beats='at the audience hall dais the poacher diver reaches for the diadem too; Nadia can race, feint, or cut the poacher's tether and force a standoff'>>",
       "is_ending": false,
       "choices": [
         {
@@ -345,25 +345,25 @@
         },
         {
           "id": "c_n_throne_dais_x4",
-          "label": "The {RIVAL} calls a false truce at the {THRONE} dais.",
+          "label": "The poacher calls a false truce at the audience hall dais.",
           "target": "ds_td_b0"
         }
       ]
     },
     {
       "id": "n_throne_race",
-      "body": "<<FILL role=failure words=62 beats='the {RIVAL} is faster and snatches the {CIRCLET}; {HERO} is outpaced at the first prize and forced to fall back to the gallery with nothing'>>",
+      "body": "<<FILL role=failure words=62 beats='the poacher is faster and snatches the diadem; Nadia is outpaced at the first prize and forced to fall back to the gallery with nothing'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_throne_race",
         "valence": "negative",
         "kind": "setback",
-        "title": "Outraced at the {THRONE_TITLE}"
+        "title": "Outraced at the Hall"
       }
     },
     {
       "id": "n_throne_feint",
-      "body": "<<FILL role=rising words=64 beats='the feint works, the {RIVAL} lunges wide, and {HERO} slips onto the {THRONE} dais with the {CIRCLET} in reach'>>",
+      "body": "<<FILL role=rising words=64 beats='the feint works, the poacher lunges wide, and Nadia slips onto the audience hall dais with the diadem in reach'>>",
       "is_ending": false,
       "choices": [
         {
@@ -375,7 +375,7 @@
     },
     {
       "id": "n_throne_cut",
-      "body": "<<FILL role=choice words=72 beats='the cut tether sends the {RIVAL} tumbling in the current; {HERO} can grab the {CIRCLET} now or secure the {RIVAL}'s gear first'>>",
+      "body": "<<FILL role=choice words=72 beats='the cut tether sends the poacher tumbling in the current; Nadia can grab the diadem now or secure the poacher's gear first'>>",
       "is_ending": false,
       "choices": [
         {
@@ -390,19 +390,19 @@
         },
         {
           "id": "c_n_throne_cut_x3",
-          "label": "Follow the {MOTIF_MARCH}.",
+          "label": "Follow the warded corridor.",
           "target": "pad6_b3"
         },
         {
           "id": "c_n_throne_cut_x4",
-          "label": "Detour through the {MOTIF_VAULT}.",
+          "label": "Detour through the sealed chamber.",
           "target": "pad27_b1"
         }
       ]
     },
     {
       "id": "n_throne_greed",
-      "body": "<<FILL role=failure words=62 beats='stripping the {RIVAL} costs seconds; a surge slams the gallery and the {CIRCLET} slides into a flooded fissure, gone beyond reach, and {HERO} retreats'>>",
+      "body": "<<FILL role=failure words=62 beats='stripping the poacher costs seconds; a surge slams the gallery and the diadem slides into a flooded fissure, gone beyond reach, and Nadia retreats'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_throne_greed",
@@ -413,7 +413,7 @@
     },
     {
       "id": "n_circlet_taken",
-      "body": "<<FILL role=rising words=66 beats='the drowned {CIRCLET} is {HERO}'s first {REGALIA} piece, cold and heavier than it looks; the gallery exit leads on toward the {RELIQUARY} halls'>>",
+      "body": "<<FILL role=rising words=66 beats='the drowned diadem is Nadia's first relics piece, cold and heavier than it looks; the gallery exit leads on toward the treasury halls'>>",
       "is_ending": false,
       "choices": [
         {
@@ -425,7 +425,7 @@
     },
     {
       "id": "fan_thex_s0",
-      "body": "<<FILL role=failure words=62 beats='{HERO} pauses too long and the rising tide floods the only exit; she is cut off and must blow her reserve to surface, the run over with a single piece'>>",
+      "body": "<<FILL role=failure words=62 beats='Nadia pauses too long and the rising tide floods the only exit; she is cut off and must blow her reserve to surface, the run over with a single piece'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_thex_s0",
@@ -436,7 +436,7 @@
     },
     {
       "id": "n_throne_exit",
-      "body": "<<FILL role=choice words=70 beats='past the {THRONE} the water darkens; a colonnade march and a servant crawl both bend toward the {RELIQUARY}'>>",
+      "body": "<<FILL role=choice words=70 beats='past the audience hall the water darkens; a colonnade march and a servant crawl both bend toward the treasury'>>",
       "is_ending": false,
       "choices": [
         {
@@ -468,7 +468,7 @@
     },
     {
       "id": "fan_reliq_s0",
-      "body": "<<FILL role=failure words=62 beats='the ward-lattice flares and a boom of pressure ruptures {HERO}'s ears; disoriented, she loses the {RELIQUARY} and gropes back the way she came'>>",
+      "body": "<<FILL role=failure words=62 beats='the ward-lattice flares and a boom of pressure ruptures Nadia's ears; disoriented, she loses the treasury and gropes back the way she came'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_reliq_s0",
@@ -479,7 +479,7 @@
     },
     {
       "id": "fan_reliq_s1",
-      "body": "<<FILL role=failure words=62 beats='the oubliette narrows to nothing and {HERO} wedges, freeing herself only by shedding her sample bag and the {CIRCLET} lead; she surfaces to regroup'>>",
+      "body": "<<FILL role=failure words=62 beats='the oubliette narrows to nothing and Nadia wedges, freeing herself only by shedding her sample bag and the diadem lead; she surfaces to regroup'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_reliq_s1",
@@ -490,7 +490,7 @@
     },
     {
       "id": "n_reliquary_hub",
-      "body": "<<FILL role=choice words=88 beats='the {RELIQUARY} is a drowned vault of niches, the {SCEPTER} floating tethered in a bubble of trapped air behind a lattice of old wards; a {RIVAL} marker buoy bobs at the ceiling'>>",
+      "body": "<<FILL role=choice words=88 beats='the treasury is a drowned vault of niches, the ceremonial staff floating tethered in a bubble of trapped air behind a lattice of old wards; a poacher marker buoy bobs at the ceiling'>>",
       "is_ending": false,
       "choices": [
         {
@@ -527,7 +527,7 @@
     },
     {
       "id": "n_reliq_study",
-      "body": "<<FILL role=rising words=84 beats='the wards answer to the old {COURT} cadence; {HERO} can time the lattice gaps, force it with a pry-bar, or flood the air bubble to drop the {SCEPTER}'>>",
+      "body": "<<FILL role=rising words=84 beats='the wards answer to the old vault cadence; Nadia can time the lattice gaps, force it with a pry-bar, or flood the air bubble to drop the ceremonial staff'>>",
       "is_ending": false,
       "choices": [
         {
@@ -547,7 +547,7 @@
         },
         {
           "id": "c_n_reliq_study_x4",
-          "label": "Probe the {MOTIF_GALLERY}.",
+          "label": "Probe the buried colonnade.",
           "target": "pad8_b1"
         },
         {
@@ -559,7 +559,7 @@
     },
     {
       "id": "n_reliq_time",
-      "body": "<<FILL role=rising words=62 beats='{HERO} slides through a ward-gap between pulses and closes on the {SCEPTER} tether'>>",
+      "body": "<<FILL role=rising words=62 beats='Nadia slides through a ward-gap between pulses and closes on the ceremonial staff tether'>>",
       "is_ending": false,
       "choices": [
         {
@@ -571,7 +571,7 @@
     },
     {
       "id": "n_reliq_force",
-      "body": "<<FILL role=failure words=62 beats='the pry-bar snaps the lattice and the wards discharge, boiling the bubble away; the {SCEPTER} sinks into a sealed niche and {HERO} is driven back'>>",
+      "body": "<<FILL role=failure words=62 beats='the pry-bar snaps the lattice and the wards discharge, boiling the bubble away; the ceremonial staff sinks into a sealed niche and Nadia is driven back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_reliq_force",
@@ -582,7 +582,7 @@
     },
     {
       "id": "n_reliq_flood",
-      "body": "<<FILL role=choice words=70 beats='flooding the bubble drops the {SCEPTER} into her hands but the inrush destabilizes the vault; take the {SCEPTER} and run, or shore the ceiling first'>>",
+      "body": "<<FILL role=choice words=70 beats='flooding the bubble drops the ceremonial staff into her hands but the inrush destabilizes the vault; take the ceremonial staff and run, or shore the ceiling first'>>",
       "is_ending": false,
       "choices": [
         {
@@ -602,14 +602,14 @@
         },
         {
           "id": "c_n_reliq_flood_x4",
-          "label": "Follow the {MOTIF_MARCH}.",
+          "label": "Follow the warded corridor.",
           "target": "pad30_b3"
         }
       ]
     },
     {
       "id": "n_reliq_shore",
-      "body": "<<FILL role=failure words=62 beats='shoring wastes the margin; the vault sloughs silt and pins {HERO}'s line, and she abandons the {SCEPTER} to cut loose and retreat'>>",
+      "body": "<<FILL role=failure words=62 beats='shoring wastes the margin; the vault sloughs silt and pins Nadia's line, and she abandons the ceremonial staff to cut loose and retreat'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_reliq_shore",
@@ -620,7 +620,7 @@
     },
     {
       "id": "n_scepter_taken",
-      "body": "<<FILL role=rising words=64 beats='the {SCEPTER} is {HERO}'s second {REGALIA} piece, its head crusted with pale coral; the way on drops toward the {CISTERN} vaults'>>",
+      "body": "<<FILL role=rising words=64 beats='the ceremonial staff is Nadia's second relics piece, its head crusted with pale coral; the way on drops toward the cellar vaults'>>",
       "is_ending": false,
       "choices": [
         {
@@ -632,7 +632,7 @@
     },
     {
       "id": "n_reliq_exit",
-      "body": "<<FILL role=choice words=74 beats='two ways lead down from the {RELIQUARY}: a spillway shaft running fast with current, and a slow silted stair'>>",
+      "body": "<<FILL role=choice words=74 beats='two ways lead down from the treasury: a spillway shaft running fast with current, and a slow silted stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -664,7 +664,7 @@
     },
     {
       "id": "n_reliq_spill",
-      "body": "<<FILL role=choice words=66 beats='the spillway is quick but wild; {HERO} can brace and ride it or grab a rung and slow down'>>",
+      "body": "<<FILL role=choice words=66 beats='the spillway is quick but wild; Nadia can brace and ride it or grab a rung and slow down'>>",
       "is_ending": false,
       "choices": [
         {
@@ -679,19 +679,19 @@
         },
         {
           "id": "c_n_reliq_spill_x3",
-          "label": "Detour through the {MOTIF_VAULT}.",
+          "label": "Detour through the sealed chamber.",
           "target": "pad11_b4"
         },
         {
           "id": "c_n_reliq_spill_x4",
-          "label": "Probe the {MOTIF_GALLERY}.",
+          "label": "Probe the buried colonnade.",
           "target": "pad32_b4"
         }
       ]
     },
     {
       "id": "n_reliq_ride_fail",
-      "body": "<<FILL role=failure words=62 beats='the spillway spits {HERO} into a debris grille and holds her against the flow until she cuts her fin harness free and blows to the surface, two pieces still below'>>",
+      "body": "<<FILL role=failure words=62 beats='the spillway spits Nadia into a debris grille and holds her against the flow until she cuts her fin harness free and blows to the surface, two pieces still below'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_reliq_ride_fail",
@@ -702,7 +702,7 @@
     },
     {
       "id": "fan_cist_s0",
-      "body": "<<FILL role=failure words=62 beats='the sump silt is bottomless and {HERO} sinks past her line length; she drops weights and rockets up, aborting the {CISTERN} run'>>",
+      "body": "<<FILL role=failure words=62 beats='the sump silt is bottomless and Nadia sinks past her line length; she drops weights and rockets up, aborting the cellar run'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_cist_s0",
@@ -713,7 +713,7 @@
     },
     {
       "id": "fan_cist_s1",
-      "body": "<<FILL role=failure words=62 beats='the chisel cracks the wrong stone and a cold flood-tunnel opens; the current takes {HERO}'s tools and patience, and she withdraws'>>",
+      "body": "<<FILL role=failure words=62 beats='the chisel cracks the wrong stone and a cold flood-tunnel opens; the current takes Nadia's tools and patience, and she withdraws'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_cist_s1",
@@ -724,7 +724,7 @@
     },
     {
       "id": "n_cistern_hub",
-      "body": "<<FILL role=choice words=88 beats='the {CISTERN} vaults are a cathedral of black water, pillars marching into dark, the {QUEEN} {RING} set in a drowned font at the far end; {RIVAL} bubbles trail up from somewhere near the font'>>",
+      "body": "<<FILL role=choice words=88 beats='the cellar vaults are a cathedral of black water, pillars marching into dark, the pharaoh signet ring set in a drowned font at the far end; poacher bubbles trail up from somewhere near the font'>>",
       "is_ending": false,
       "choices": [
         {
@@ -761,7 +761,7 @@
     },
     {
       "id": "n_cistern_font",
-      "body": "<<FILL role=climax words=86 beats='at the font the {RIVAL} is already prying the {RING} loose; {HERO} can confront, wait and shadow, or collapse the font arch to trap the {RING} in reach of only one of them'>>",
+      "body": "<<FILL role=climax words=86 beats='at the font the poacher is already prying the signet ring loose; Nadia can confront, wait and shadow, or collapse the font arch to trap the signet ring in reach of only one of them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -798,7 +798,7 @@
     },
     {
       "id": "n_cistern_confront",
-      "body": "<<FILL role=choice words=74 beats='the confrontation is all silt and slow blows in the cold; {HERO} can wrestle for the {RING} or knock loose the {RIVAL}'s lamp and take it in the dark'>>",
+      "body": "<<FILL role=choice words=74 beats='the confrontation is all silt and slow blows in the cold; Nadia can wrestle for the signet ring or knock loose the poacher's lamp and take it in the dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -813,19 +813,19 @@
         },
         {
           "id": "c_n_cistern_confront_x3",
-          "label": "Follow the {MOTIF_MARCH}.",
+          "label": "Follow the warded corridor.",
           "target": "pad14_b3"
         },
         {
           "id": "c_n_cistern_confront_x4",
-          "label": "Detour through the {MOTIF_VAULT}.",
+          "label": "Detour through the sealed chamber.",
           "target": "pad35_b5"
         }
       ]
     },
     {
       "id": "n_cistern_wrestle",
-      "body": "<<FILL role=failure words=62 beats='the wrestle wastes both their air; the {RIVAL} breaks off with the {RING} and {HERO}, gauge in the red, must surface with only two pieces'>>",
+      "body": "<<FILL role=failure words=62 beats='the wrestle wastes both their air; the poacher breaks off with the signet ring and Nadia, gauge in the red, must surface with only two pieces'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_cistern_wrestle",
@@ -836,7 +836,7 @@
     },
     {
       "id": "n_cistern_shadow",
-      "body": "<<FILL role=rising words=60 beats='shadowing pays off; the {RIVAL} fumbles the {RING} into the silt and {HERO} sweeps it up before the cloud settles'>>",
+      "body": "<<FILL role=rising words=60 beats='shadowing pays off; the poacher fumbles the signet ring into the silt and Nadia sweeps it up before the cloud settles'>>",
       "is_ending": false,
       "choices": [
         {
@@ -848,7 +848,7 @@
     },
     {
       "id": "n_cistern_collapse",
-      "body": "<<FILL role=choice words=70 beats='the arch comes down between them, sealing the {RIVAL} out; the {RING} is {HERO}'s to take, but the collapse has stirred the whole vault'>>",
+      "body": "<<FILL role=choice words=70 beats='the arch comes down between them, sealing the poacher out; the signet ring is Nadia's to take, but the collapse has stirred the whole vault'>>",
       "is_ending": false,
       "choices": [
         {
@@ -875,7 +875,7 @@
     },
     {
       "id": "n_cistern_cache",
-      "body": "<<FILL role=failure words=62 beats='the cache is a decoy; while {HERO} digs, the vault ceiling settles and floods the exit, and she barely surfaces with two pieces and a lesson'>>",
+      "body": "<<FILL role=failure words=62 beats='the cache is a decoy; while Nadia digs, the vault ceiling settles and floods the exit, and she barely surfaces with two pieces and a lesson'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_cistern_cache",
@@ -886,7 +886,7 @@
     },
     {
       "id": "n_ring_taken",
-      "body": "<<FILL role=rising words=66 beats='the {QUEEN} {RING} is the third and last piece; all three {REGALIA} are {HERO}'s now, but the {COURT} is waking and the water is rising toward the {OBSERVATORY}'>>",
+      "body": "<<FILL role=rising words=66 beats='the pharaoh signet ring is the third and last piece; all three relics are Nadia's now, but the vault is waking and the water is rising toward the star chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -898,7 +898,7 @@
     },
     {
       "id": "n_cistern_exit",
-      "body": "<<FILL role=choice words=76 beats='with the full {REGALIA} the way up runs through the drowned {OBSERVATORY}; a flooded orrery hall and a collapsed dome gallery both lead there'>>",
+      "body": "<<FILL role=choice words=76 beats='with the full relics the way up runs through the drowned star chamber; a flooded orrery hall and a collapsed dome gallery both lead there'>>",
       "is_ending": false,
       "choices": [
         {
@@ -918,7 +918,7 @@
         },
         {
           "id": "c_n_cistern_exit_x4",
-          "label": "Probe the {MOTIF_GALLERY}.",
+          "label": "Probe the buried colonnade.",
           "target": "pad16_b3"
         },
         {
@@ -930,7 +930,7 @@
     },
     {
       "id": "n_cist_orrery",
-      "body": "<<FILL role=rising words=62 beats='the orrery hall wheels of drowned brass turn slow in the current, and the {OBSERVATORY} opens beyond'>>",
+      "body": "<<FILL role=rising words=62 beats='the orrery hall wheels of drowned brass turn slow in the current, and the star chamber opens beyond'>>",
       "is_ending": false,
       "choices": [
         {
@@ -942,7 +942,7 @@
     },
     {
       "id": "fan_dome_s0",
-      "body": "<<FILL role=failure words=62 beats='a dome rib fails under {HERO} and a slab pins her against the gallery floor; she cuts free but the {REGALIA} bag tears and the {RING} is lost to the dark, and she surfaces with two'>>",
+      "body": "<<FILL role=failure words=62 beats='a dome rib fails under Nadia and a slab pins her against the gallery floor; she cuts free but the relics bag tears and the signet ring is lost to the dark, and she surfaces with two'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_dome_s0",
@@ -953,7 +953,7 @@
     },
     {
       "id": "n_cist_dome",
-      "body": "<<FILL role=choice words=66 beats='the collapsed dome gallery is a maze of leaning slabs; a low crawl and a high ledge both angle toward the {OBSERVATORY}'>>",
+      "body": "<<FILL role=choice words=66 beats='the collapsed dome gallery is a maze of leaning slabs; a low crawl and a high ledge both angle toward the star chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -975,7 +975,7 @@
     },
     {
       "id": "n_obs_deep_d",
-      "body": "<<FILL role=rising words=60 beats='the {OBSERVATORY} antechamber is a drowned clock of brass rings, the ascent shaft light a distant coin overhead'>>",
+      "body": "<<FILL role=rising words=60 beats='the star chamber antechamber is a drowned clock of brass rings, the ascent shaft light a distant coin overhead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -987,7 +987,7 @@
     },
     {
       "id": "n_obs_deep_c",
-      "body": "<<FILL role=rising words=58 beats='{HERO} threads the brass rings, the {RIVAL}'s lamp swinging somewhere ahead in the murk'>>",
+      "body": "<<FILL role=rising words=58 beats='Nadia threads the brass rings, the poacher's lamp swinging somewhere ahead in the murk'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1011,7 +1011,7 @@
     },
     {
       "id": "n_obs_deep_a",
-      "body": "<<FILL role=rising words=58 beats='past the {OBSERVATORY} threshold the water thins to a cold breath of trapped air'>>",
+      "body": "<<FILL role=rising words=58 beats='past the star chamber threshold the water thins to a cold breath of trapped air'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1023,7 +1023,7 @@
     },
     {
       "id": "fan_obs_s0",
-      "body": "<<FILL role=failure words=62 beats='the shutter mechanism fights back and a counterweight drops across the only stair; {HERO} is sealed below the {OBSERVATORY} and must ration back to the surface with the {REGALIA} but no way to seal the {COURT}'>>",
+      "body": "<<FILL role=failure words=62 beats='the shutter mechanism fights back and a counterweight drops across the only stair; Nadia is sealed below the star chamber and must ration back to the surface with the relics but no way to seal the vault'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fan_obs_s0",
@@ -1034,7 +1034,7 @@
     },
     {
       "id": "n_observatory_hub",
-      "body": "<<FILL role=choice words=90 beats='the drowned {OBSERVATORY} crowns the {COURT}, its shattered dome open to a shaft of surface light far above; here the old tide-mechanism could reseal the whole {COURT}, but the {RIVAL} has beaten {HERO} to the control ring and the water is still rising'>>",
+      "body": "<<FILL role=choice words=90 beats='the drowned star chamber crowns the vault, its shattered dome open to a shaft of surface light far above; here the old tide-mechanism could reseal the whole vault, but the poacher has beaten Nadia to the control ring and the water is still rising'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1059,14 +1059,14 @@
         },
         {
           "id": "c_n_observatory_hub_x5",
-          "label": "Follow the {MOTIF_MARCH}.",
+          "label": "Follow the warded corridor.",
           "target": "pad38_b2"
         }
       ]
     },
     {
       "id": "n_obs_control",
-      "body": "<<FILL role=climax words=90 beats='the {RIVAL} holds the {OBSERVATORY} control ring, the last obstacle between {HERO} and a clean ascent with the full {REGALIA}; she can bargain, out-climb, or race the rising water to the ascent shaft'>>",
+      "body": "<<FILL role=climax words=90 beats='the poacher holds the star chamber control ring, the last obstacle between Nadia and a clean ascent with the full relics; she can bargain, out-climb, or race the rising water to the ascent shaft'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1086,7 +1086,7 @@
         },
         {
           "id": "c_n_obs_control_x4",
-          "label": "The {RIVAL} feints toward the ascent shaft.",
+          "label": "The poacher feints toward the ascent shaft.",
           "target": "ds_obs_b0"
         },
         {
@@ -1108,17 +1108,17 @@
     },
     {
       "id": "n_obs_bargain",
-      "body": "<<FILL role=choice words=78 beats='the {RIVAL} will trade a clear ascent for one {REGALIA} piece; {HERO} can give up the {CIRCLET}, give up the {RING}, or refuse and gamble'>>",
+      "body": "<<FILL role=choice words=78 beats='the poacher will trade a clear ascent for one relics piece; Nadia can give up the diadem, give up the signet ring, or refuse and gamble'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_obs_bargain_1",
-          "label": "Trade away the {CIRCLET}.",
+          "label": "Trade away the diadem.",
           "target": "n_obs_trade_circlet"
         },
         {
           "id": "c_n_obs_bargain_2",
-          "label": "Trade away the {RING}.",
+          "label": "Trade away the signet ring.",
           "target": "n_obs_trade_ring"
         },
         {
@@ -1128,19 +1128,19 @@
         },
         {
           "id": "c_n_obs_bargain_x4",
-          "label": "Detour through the {MOTIF_VAULT}.",
+          "label": "Detour through the sealed chamber.",
           "target": "pad19_b2"
         },
         {
           "id": "c_n_obs_bargain_x5",
-          "label": "Probe the {MOTIF_GALLERY}.",
+          "label": "Probe the buried colonnade.",
           "target": "pad40_b2"
         }
       ]
     },
     {
       "id": "n_obs_refuse",
-      "body": "<<FILL role=failure words=62 beats='the gamble fails; the water beats them both to the shaft and the {RIVAL}, lighter, escapes first while {HERO} claws up last, empty-handed and outpaced to the surface'>>",
+      "body": "<<FILL role=failure words=62 beats='the gamble fails; the water beats them both to the shaft and the poacher, lighter, escapes first while Nadia claws up last, empty-handed and outpaced to the surface'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_obs_refuse",
@@ -1151,7 +1151,7 @@
     },
     {
       "id": "n_obs_climb",
-      "body": "<<FILL role=rising words=64 beats='{HERO} out-climbs the {RIVAL} up the {OBSERVATORY} ribs and reaches the control ring with the full {REGALIA} still slung'>>",
+      "body": "<<FILL role=rising words=64 beats='Nadia out-climbs the poacher up the star chamber ribs and reaches the control ring with the full relics still slung'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1163,7 +1163,7 @@
     },
     {
       "id": "n_obs_race",
-      "body": "<<FILL role=choice words=72 beats='racing the water, {HERO} reaches the shaft foot ahead of the {RIVAL} but the tide-mechanism is behind her; seal now and lose seconds, or climb now and leave the {COURT} open'>>",
+      "body": "<<FILL role=choice words=72 beats='racing the water, Nadia reaches the shaft foot ahead of the poacher but the tide-mechanism is behind her; seal now and lose seconds, or climb now and leave the vault open'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1190,7 +1190,7 @@
     },
     {
       "id": "n_obs_seal_choice",
-      "body": "<<FILL role=climax words=88 beats='at the control ring, with all three {REGALIA}, {HERO} can work the old tide-mechanism to reseal the drowned {COURT} behind her; she can seal fast and rough, seal slow and true, or skip the seal to guarantee her own ascent'>>",
+      "body": "<<FILL role=climax words=88 beats='at the control ring, with all three relics, Nadia can work the old tide-mechanism to reseal the drowned vault behind her; she can seal fast and rough, seal slow and true, or skip the seal to guarantee her own ascent'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1212,7 +1212,7 @@
     },
     {
       "id": "n_seal_fast",
-      "body": "<<FILL role=choice words=74 beats='the fast seal catches but the mechanism groans, half-set; {HERO} can force it home and lose air, or accept the partial seal and climb'>>",
+      "body": "<<FILL role=choice words=74 beats='the fast seal catches but the mechanism groans, half-set; Nadia can force it home and lose air, or accept the partial seal and climb'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1229,7 +1229,7 @@
     },
     {
       "id": "n_seal_force",
-      "body": "<<FILL role=rising words=60 beats='{HERO} forces the mechanism home; the {COURT} groans shut, wards flaring one last time, and the ascent shaft is clear above'>>",
+      "body": "<<FILL role=rising words=60 beats='Nadia forces the mechanism home; the vault groans shut, wards flaring one last time, and the ascent shaft is clear above'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1241,7 +1241,7 @@
     },
     {
       "id": "n_seal_true",
-      "body": "<<FILL role=rising words=62 beats='the slow true seal takes patience {HERO} barely has, but the {COURT} locks clean behind her, {REGALIA} and wards accounted for, and the shaft waits'>>",
+      "body": "<<FILL role=rising words=62 beats='the slow true seal takes patience Nadia barely has, but the vault locks clean behind her, relics and wards accounted for, and the shaft waits'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1253,7 +1253,7 @@
     },
     {
       "id": "n_ascent_full",
-      "body": "<<FILL role=resolution words=78 beats='the shaft climbs through cold decompression stops toward the far coin of surface light; {HERO} can hold the stops properly or push the ascent to beat the {RIVAL} up'>>",
+      "body": "<<FILL role=resolution words=78 beats='the shaft climbs through cold decompression stops toward the far coin of surface light; Nadia can hold the stops properly or push the ascent to beat the poacher up'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1270,7 +1270,7 @@
     },
     {
       "id": "n_ascent_push",
-      "body": "<<FILL role=resolution words=70 beats='pushing the stops is a gamble against her own blood; {HERO} can ease off at the last stop or commit to the fast surface'>>",
+      "body": "<<FILL role=resolution words=70 beats='pushing the stops is a gamble against her own blood; Nadia can ease off at the last stop or commit to the fast surface'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1287,7 +1287,7 @@
     },
     {
       "id": "n_end_full_best",
-      "body": "<<FILL role=resolution words=96 beats='{HERO} breaks the surface with the full {REGALIA} and the drowned {COURT} sealed clean behind her, the {RIVAL} left below to surface empty; the recovery is complete and the {COURT} will keep its dead in peace'>>",
+      "body": "<<FILL role=resolution words=96 beats='Nadia breaks the surface with the full relics and the drowned vault sealed clean behind her, the poacher left below to surface empty; the recovery is complete and the vault will keep its dead in peace'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_end_full_best",
@@ -1298,7 +1298,7 @@
     },
     {
       "id": "n_end_full_second",
-      "body": "<<FILL role=resolution words=88 beats='{HERO} surfaces with the full {REGALIA} and a good seal, a stop skipped and a headache to show for it, but the {COURT} is closed and the three pieces are recovered'>>",
+      "body": "<<FILL role=resolution words=88 beats='Nadia surfaces with the full relics and a good seal, a stop skipped and a headache to show for it, but the vault is closed and the three pieces are recovered'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_end_full_second",
@@ -1309,7 +1309,7 @@
     },
     {
       "id": "n_end_full_rough",
-      "body": "<<FILL role=resolution words=84 beats='{HERO} makes the surface fast and rough, {REGALIA} intact and {COURT} sealed, but the fast ascent costs her a hard week ashore; a win, paid for'>>",
+      "body": "<<FILL role=resolution words=84 beats='Nadia makes the surface fast and rough, relics intact and vault sealed, but the fast ascent costs her a hard week ashore; a win, paid for'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_end_full_rough",
@@ -1320,7 +1320,7 @@
     },
     {
       "id": "n_ascent_partial",
-      "body": "<<FILL role=resolution words=64 beats='with the {COURT} only half-sealed {HERO} climbs the shaft, {REGALIA} whole but the wards still murmuring below, a job mostly done'>>",
+      "body": "<<FILL role=resolution words=64 beats='with the vault only half-sealed Nadia climbs the shaft, relics whole but the wards still murmuring below, a job mostly done'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1332,7 +1332,7 @@
     },
     {
       "id": "n_end_partial_seal",
-      "body": "<<FILL role=resolution words=86 beats='{HERO} surfaces with all three {REGALIA} pieces but the {COURT} only half-sealed; the recovery stands, the sealing will need a second dive, a clever partial win'>>",
+      "body": "<<FILL role=resolution words=86 beats='Nadia surfaces with all three relics pieces but the vault only half-sealed; the recovery stands, the sealing will need a second dive, a clever partial win'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_end_partial_seal",
@@ -1343,7 +1343,7 @@
     },
     {
       "id": "n_obs_open_ascent",
-      "body": "<<FILL role=resolution words=74 beats='leaving the {COURT} open, {HERO} makes for the shaft with the full {REGALIA}; she can take the {RIVAL}'s trailing line up or climb her own'>>",
+      "body": "<<FILL role=resolution words=74 beats='leaving the vault open, Nadia makes for the shaft with the full relics; she can take the poacher's trailing line up or climb her own'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1360,18 +1360,18 @@
     },
     {
       "id": "n_open_rivalrope",
-      "body": "<<FILL role=failure words=62 beats='the {RIVAL}'s line is a trap, weighted to foul; {HERO} cuts free but loses the {REGALIA} bag in the tangle and surfaces with nothing but the story'>>",
+      "body": "<<FILL role=failure words=62 beats='the poacher's line is a trap, weighted to foul; Nadia cuts free but loses the relics bag in the tangle and surfaces with nothing but the story'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_open_rivalrope",
         "valence": "negative",
         "kind": "setback",
-        "title": "Fouled on the {RIVAL_TITLE} Line"
+        "title": "Fouled on the Poacher Line"
       }
     },
     {
       "id": "n_end_open_full",
-      "body": "<<FILL role=resolution words=84 beats='{HERO} surfaces with the full {REGALIA}, the {COURT} left open behind her for the tide to keep; the pieces are recovered, the sealing refused, a complete but colder victory'>>",
+      "body": "<<FILL role=resolution words=84 beats='Nadia surfaces with the full relics, the vault left open behind her for the tide to keep; the pieces are recovered, the sealing refused, a complete but colder victory'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_end_open_full",
@@ -1382,7 +1382,7 @@
     },
     {
       "id": "n_obs_trade_circlet",
-      "body": "<<FILL role=resolution words=62 beats='{HERO} hands the {CIRCLET} to the {RIVAL} and both climb the shaft under an uneasy truce, two pieces still hers'>>",
+      "body": "<<FILL role=resolution words=62 beats='Nadia hands the diadem to the poacher and both climb the shaft under an uneasy truce, two pieces still hers'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1394,7 +1394,7 @@
     },
     {
       "id": "n_end_trade_circlet",
-      "body": "<<FILL role=resolution words=82 beats='{HERO} surfaces with the {SCEPTER} and the {RING}, the {CIRCLET} gone to the {RIVAL}; two of three {REGALIA} recovered and a {RIVAL} owed a favor, a clever partial haul'>>",
+      "body": "<<FILL role=resolution words=82 beats='Nadia surfaces with the ceremonial staff and the signet ring, the diadem gone to the poacher; two of three relics recovered and a poacher owed a favor, a clever partial haul'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_end_trade_circlet",
@@ -1405,7 +1405,7 @@
     },
     {
       "id": "n_obs_trade_ring",
-      "body": "<<FILL role=resolution words=62 beats='{HERO} gives up the {RING} and takes the clear ascent, {CIRCLET} and {SCEPTER} secure against her chest'>>",
+      "body": "<<FILL role=resolution words=62 beats='Nadia gives up the signet ring and takes the clear ascent, diadem and ceremonial staff secure against her chest'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1417,7 +1417,7 @@
     },
     {
       "id": "n_end_trade_ring",
-      "body": "<<FILL role=resolution words=82 beats='{HERO} surfaces with the {CIRCLET} and the {SCEPTER}, the {RING} traded away; two {REGALIA} pieces home and the {COURT} still guarding its last, a measured partial win'>>",
+      "body": "<<FILL role=resolution words=82 beats='Nadia surfaces with the diadem and the ceremonial staff, the signet ring traded away; two relics pieces home and the vault still guarding its last, a measured partial win'>>",
       "is_ending": true,
       "ending": {
         "id": "e_n_end_trade_ring",
@@ -1428,7 +1428,7 @@
     },
     {
       "id": "xf_tg_e0",
-      "body": "<<FILL role=failure words=62 beats='the probe the winch chain gallery ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the probe the winch chain gallery ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_tg_e0",
@@ -1439,7 +1439,7 @@
     },
     {
       "id": "xf_tg_e1",
-      "body": "<<FILL role=failure words=62 beats='the follow the eel-run drain ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the follow the eel-run drain ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_tg_e1",
@@ -1450,7 +1450,7 @@
     },
     {
       "id": "xf_tg_e2",
-      "body": "<<FILL role=failure words=62 beats='the test the maintenance crawl ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the test the maintenance crawl ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_tg_e2",
@@ -1461,7 +1461,7 @@
     },
     {
       "id": "xf_tg_e3",
-      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and {HERO} loses her bearings, forced to give up the branch and fall back'>>",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Nadia loses her bearings, forced to give up the branch and fall back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_tg_e3",
@@ -1499,7 +1499,7 @@
     },
     {
       "id": "xf_tgg_e0",
-      "body": "<<FILL role=failure words=62 beats='the read the drowned king inscriptions ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the read the drowned king inscriptions ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_tgg_e0",
@@ -1510,7 +1510,7 @@
     },
     {
       "id": "xf_tgg_e1",
-      "body": "<<FILL role=failure words=62 beats='the pocket a loose gilt tessera ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the pocket a loose gilt tessera ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_tgg_e1",
@@ -1521,7 +1521,7 @@
     },
     {
       "id": "xf_tgg_e2",
-      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and {HERO} loses her bearings, forced to give up the branch and fall back'>>",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Nadia loses her bearings, forced to give up the branch and fall back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_tgg_e2",
@@ -1554,7 +1554,7 @@
     },
     {
       "id": "xf_th_e0",
-      "body": "<<FILL role=failure words=62 beats='the search the courtier galleries ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the search the courtier galleries ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_th_e0",
@@ -1565,7 +1565,7 @@
     },
     {
       "id": "xf_th_e1",
-      "body": "<<FILL role=failure words=62 beats='the dredge the offering pool ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the dredge the offering pool ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_th_e1",
@@ -1576,7 +1576,7 @@
     },
     {
       "id": "xf_th_e2",
-      "body": "<<FILL role=failure words=62 beats='the force the choir-screen ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the force the choir-screen ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_th_e2",
@@ -1587,7 +1587,7 @@
     },
     {
       "id": "xf_th_e3",
-      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and {HERO} loses her bearings, forced to give up the branch and fall back'>>",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Nadia loses her bearings, forced to give up the branch and fall back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_th_e3",
@@ -1625,7 +1625,7 @@
     },
     {
       "id": "xf_thx_e0",
-      "body": "<<FILL role=failure words=62 beats='the detour through the drowned kitchens ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the detour through the drowned kitchens ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_thx_e0",
@@ -1636,7 +1636,7 @@
     },
     {
       "id": "xf_thx_e1",
-      "body": "<<FILL role=failure words=62 beats='the climb the minstrel gallery ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the climb the minstrel gallery ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_thx_e1",
@@ -1647,7 +1647,7 @@
     },
     {
       "id": "xf_thx_e2",
-      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and {HERO} loses her bearings, forced to give up the branch and fall back'>>",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Nadia loses her bearings, forced to give up the branch and fall back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_thx_e2",
@@ -1680,7 +1680,7 @@
     },
     {
       "id": "xf_rl_e0",
-      "body": "<<FILL role=failure words=62 beats='the rifle the lesser niches ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the rifle the lesser niches ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_rl_e0",
@@ -1691,18 +1691,18 @@
     },
     {
       "id": "xf_rl_e1",
-      "body": "<<FILL role=failure words=62 beats='the chase the {RIVAL} marker buoy ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the chase the poacher marker buoy ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_rl_e1",
         "valence": "negative",
         "kind": "setback",
-        "title": "The {RIVAL_TITLE} Buoy"
+        "title": "The Poacher Buoy"
       }
     },
     {
       "id": "xf_rl_e2",
-      "body": "<<FILL role=failure words=62 beats='the pry the sealed ambry ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the pry the sealed ambry ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_rl_e2",
@@ -1713,7 +1713,7 @@
     },
     {
       "id": "xf_rl_e3",
-      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and {HERO} loses her bearings, forced to give up the branch and fall back'>>",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Nadia loses her bearings, forced to give up the branch and fall back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_rl_e3",
@@ -1734,7 +1734,7 @@
         },
         {
           "id": "c_xf_rl_dec_2",
-          "label": "Chase the {RIVAL} marker buoy.",
+          "label": "Chase the poacher marker buoy.",
           "target": "xf_rl_e1"
         },
         {
@@ -1751,7 +1751,7 @@
     },
     {
       "id": "xf_rlx_e0",
-      "body": "<<FILL role=failure words=62 beats='the take the flooded scriptorium turn ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the take the flooded scriptorium turn ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_rlx_e0",
@@ -1762,7 +1762,7 @@
     },
     {
       "id": "xf_rlx_e1",
-      "body": "<<FILL role=failure words=62 beats='the follow the rope of bubbles up ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the follow the rope of bubbles up ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_rlx_e1",
@@ -1773,7 +1773,7 @@
     },
     {
       "id": "xf_rlx_e2",
-      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and {HERO} loses her bearings, forced to give up the branch and fall back'>>",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Nadia loses her bearings, forced to give up the branch and fall back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_rlx_e2",
@@ -1806,7 +1806,7 @@
     },
     {
       "id": "xf_ci_e0",
-      "body": "<<FILL role=failure words=62 beats='the sound the pillar-forest for a shortcut ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the sound the pillar-forest for a shortcut ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_ci_e0",
@@ -1817,7 +1817,7 @@
     },
     {
       "id": "xf_ci_e1",
-      "body": "<<FILL role=failure words=62 beats='the drain-dive the overflow weir ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the drain-dive the overflow weir ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_ci_e1",
@@ -1828,7 +1828,7 @@
     },
     {
       "id": "xf_ci_e2",
-      "body": "<<FILL role=failure words=62 beats='the search the drowned wellhouse ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the search the drowned wellhouse ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_ci_e2",
@@ -1839,7 +1839,7 @@
     },
     {
       "id": "xf_ci_e3",
-      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and {HERO} loses her bearings, forced to give up the branch and fall back'>>",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Nadia loses her bearings, forced to give up the branch and fall back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_ci_e3",
@@ -1877,7 +1877,7 @@
     },
     {
       "id": "xf_cix_e0",
-      "body": "<<FILL role=failure words=62 beats='the cut through the sunken observatory stores ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the cut through the sunken observatory stores ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_cix_e0",
@@ -1888,7 +1888,7 @@
     },
     {
       "id": "xf_cix_e1",
-      "body": "<<FILL role=failure words=62 beats='the try the astronomer stair ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the try the astronomer stair ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_cix_e1",
@@ -1899,7 +1899,7 @@
     },
     {
       "id": "xf_cix_e2",
-      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and {HERO} loses her bearings, forced to give up the branch and fall back'>>",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Nadia loses her bearings, forced to give up the branch and fall back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_cix_e2",
@@ -1932,7 +1932,7 @@
     },
     {
       "id": "xf_ob_e0",
-      "body": "<<FILL role=failure words=62 beats='the salvage the shattered dome instruments ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the salvage the shattered dome instruments ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_ob_e0",
@@ -1943,7 +1943,7 @@
     },
     {
       "id": "xf_ob_e1",
-      "body": "<<FILL role=failure words=62 beats='the signal the surface too early ends badly and {HERO} is turned back into the cold, the run set back'>>",
+      "body": "<<FILL role=failure words=62 beats='the signal the surface too early ends badly and Nadia is turned back into the cold, the run set back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_ob_e1",
@@ -1954,7 +1954,7 @@
     },
     {
       "id": "xf_ob_e2",
-      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and {HERO} loses her bearings, forced to give up the branch and fall back'>>",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Nadia loses her bearings, forced to give up the branch and fall back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_xf_ob_e2",
@@ -1987,7 +1987,7 @@
     },
     {
       "id": "ds_obs_e0",
-      "body": "<<FILL role=failure words=62 beats='{HERO} follows the feint into a dead gallery and the rising water seals it; she surfaces late and empty'>>",
+      "body": "<<FILL role=failure words=62 beats='Nadia follows the feint into a dead gallery and the rising water seals it; she surfaces late and empty'>>",
       "is_ending": true,
       "ending": {
         "id": "e_ds_obs_e0",
@@ -1998,7 +1998,7 @@
     },
     {
       "id": "ds_obs_b0",
-      "body": "<<FILL role=rising words=58 beats='{HERO} commits: the {RIVAL} feints toward the ascent shaft, and the dark closes in'>>",
+      "body": "<<FILL role=rising words=58 beats='Nadia commits: the poacher feints toward the ascent shaft, and the dark closes in'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2010,7 +2010,7 @@
     },
     {
       "id": "ds_obs_e1",
-      "body": "<<FILL role=failure words=62 beats='the loose dome drives {HERO} off the control ring and she loses the seal window, forced up with the {REGALIA} but the {COURT} open'>>",
+      "body": "<<FILL role=failure words=62 beats='the loose dome drives Nadia off the control ring and she loses the seal window, forced up with the relics but the vault open'>>",
       "is_ending": true,
       "ending": {
         "id": "e_ds_obs_e1",
@@ -2021,7 +2021,7 @@
     },
     {
       "id": "ds_obs_b1",
-      "body": "<<FILL role=rising words=58 beats='{HERO} commits: a wing of the dome peels loose above the control ring, and the dark closes in'>>",
+      "body": "<<FILL role=rising words=58 beats='Nadia commits: a wing of the dome peels loose above the control ring, and the dark closes in'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2033,7 +2033,7 @@
     },
     {
       "id": "ds_cf_e0",
-      "body": "<<FILL role=failure words=62 beats='the deeper drop swallows {HERO}'s line and she hauls out with nothing, the {RING} still below'>>",
+      "body": "<<FILL role=failure words=62 beats='the deeper drop swallows Nadia's line and she hauls out with nothing, the signet ring still below'>>",
       "is_ending": true,
       "ending": {
         "id": "e_ds_cf_e0",
@@ -2044,7 +2044,7 @@
     },
     {
       "id": "ds_cf_b0",
-      "body": "<<FILL role=rising words=58 beats='{HERO} commits: the font silt hides a second, deeper drop, and the dark closes in'>>",
+      "body": "<<FILL role=rising words=58 beats='Nadia commits: the font silt hides a second, deeper drop, and the dark closes in'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2056,7 +2056,7 @@
     },
     {
       "id": "ds_td_e0",
-      "body": "<<FILL role=failure words=62 beats='the truce is a stall; the {RIVAL} slips the {CIRCLET} away while {HERO} waits, and the first piece is lost'>>",
+      "body": "<<FILL role=failure words=62 beats='the truce is a stall; the poacher slips the diadem away while Nadia waits, and the first piece is lost'>>",
       "is_ending": true,
       "ending": {
         "id": "e_ds_td_e0",
@@ -2067,7 +2067,7 @@
     },
     {
       "id": "ds_td_b0",
-      "body": "<<FILL role=rising words=58 beats='{HERO} commits: the {RIVAL} calls a false truce at the {THRONE} dais, and the dark closes in'>>",
+      "body": "<<FILL role=rising words=58 beats='Nadia commits: the poacher calls a false truce at the audience hall dais, and the dark closes in'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2079,7 +2079,7 @@
     },
     {
       "id": "pad1_end",
-      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and {HERO} is turned back from a {MOTIF_HALL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Nadia is turned back from a crumbling hall, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad1_end",
@@ -2090,7 +2090,7 @@
     },
     {
       "id": "pad1_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=56 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2102,7 +2102,7 @@
     },
     {
       "id": "pad1_b1",
-      "body": "<<FILL role=rising words=62 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2114,7 +2114,7 @@
     },
     {
       "id": "pad1_b2",
-      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2126,7 +2126,7 @@
     },
     {
       "id": "pad2_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk, and {HERO} is turned back from a {MOTIF_GALLERY}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a buried colonnade opens, statues watching from the green murk, and Nadia is turned back from a buried colonnade, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad2_end",
@@ -2137,7 +2137,7 @@
     },
     {
       "id": "pad2_b0",
-      "body": "<<FILL role=rising words=56 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2149,7 +2149,7 @@
     },
     {
       "id": "pad2_b1",
-      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2161,7 +2161,7 @@
     },
     {
       "id": "pad2_b2",
-      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2173,7 +2173,7 @@
     },
     {
       "id": "pad2_b3",
-      "body": "<<FILL role=rising words=74 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=74 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2185,7 +2185,7 @@
     },
     {
       "id": "pad3_end",
-      "body": "<<FILL role=failure words=62 beats='the passage narrows to a {MOTIF_CRAWL}, and {HERO} is turned back from the {MOTIF_CRAWL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a dust-choked tunnel, and Nadia is turned back from the dust-choked tunnel, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad3_end",
@@ -2196,7 +2196,7 @@
     },
     {
       "id": "pad3_b0",
-      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2208,7 +2208,7 @@
     },
     {
       "id": "pad3_b1",
-      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2220,7 +2220,7 @@
     },
     {
       "id": "pad4_end",
-      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and {HERO} is turned back from a {MOTIF_MARCH}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Nadia is turned back from a warded corridor, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad4_end",
@@ -2231,7 +2231,7 @@
     },
     {
       "id": "pad4_b0",
-      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2243,7 +2243,7 @@
     },
     {
       "id": "pad4_b1",
-      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2255,7 +2255,7 @@
     },
     {
       "id": "pad4_b2",
-      "body": "<<FILL role=rising words=68 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=68 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2267,7 +2267,7 @@
     },
     {
       "id": "pad4_b3",
-      "body": "<<FILL role=rising words=74 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=74 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2279,7 +2279,7 @@
     },
     {
       "id": "pad4_b4",
-      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2291,7 +2291,7 @@
     },
     {
       "id": "pad5_end",
-      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out, and {HERO} is turned back from a {MOTIF_STAIR}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Nadia's line paying out, and Nadia is turned back from a spiral stair, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad5_end",
@@ -2302,7 +2302,7 @@
     },
     {
       "id": "pad5_b0",
-      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2314,7 +2314,7 @@
     },
     {
       "id": "pad5_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=62 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2326,7 +2326,7 @@
     },
     {
       "id": "pad5_b2",
-      "body": "<<FILL role=rising words=68 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=68 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2338,7 +2338,7 @@
     },
     {
       "id": "pad6_end",
-      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near, and {HERO} is turned back from a {RIVAL} crossing, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the poacher somewhere near, and Nadia is turned back from a poacher crossing, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad6_end",
@@ -2349,7 +2349,7 @@
     },
     {
       "id": "pad6_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=56 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2361,7 +2361,7 @@
     },
     {
       "id": "pad6_b1",
-      "body": "<<FILL role=rising words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=62 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2373,7 +2373,7 @@
     },
     {
       "id": "pad6_b2",
-      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2385,7 +2385,7 @@
     },
     {
       "id": "pad6_b3",
-      "body": "<<FILL role=rising words=74 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=74 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2397,7 +2397,7 @@
     },
     {
       "id": "pad7_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark, and {HERO} is turned back from a {MOTIF_VAULT}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a sealed chamber forces a long detour through the dark, and Nadia is turned back from a sealed chamber, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad7_end",
@@ -2408,7 +2408,7 @@
     },
     {
       "id": "pad7_b0",
-      "body": "<<FILL role=rising words=56 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=56 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2420,7 +2420,7 @@
     },
     {
       "id": "pad7_b1",
-      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2432,7 +2432,7 @@
     },
     {
       "id": "pad7_b2",
-      "body": "<<FILL role=rising words=68 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=68 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2444,7 +2444,7 @@
     },
     {
       "id": "pad7_b3",
-      "body": "<<FILL role=rising words=74 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=74 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2456,7 +2456,7 @@
     },
     {
       "id": "pad7_b4",
-      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2468,7 +2468,7 @@
     },
     {
       "id": "pad7_b5",
-      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2480,7 +2480,7 @@
     },
     {
       "id": "pad8_end",
-      "body": "<<FILL role=failure words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds, and {HERO} is turned back from a {MOTIF_SURGE}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the sand slide shoves Nadia off her handholds, and Nadia is turned back from a sand slide, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad8_end",
@@ -2491,7 +2491,7 @@
     },
     {
       "id": "pad8_b0",
-      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2503,7 +2503,7 @@
     },
     {
       "id": "pad8_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=62 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2515,7 +2515,7 @@
     },
     {
       "id": "pad9_end",
-      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and {HERO} is turned back from a {MOTIF_HALL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Nadia is turned back from a crumbling hall, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad9_end",
@@ -2526,7 +2526,7 @@
     },
     {
       "id": "pad9_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=56 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2538,7 +2538,7 @@
     },
     {
       "id": "pad9_b1",
-      "body": "<<FILL role=rising words=62 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2550,7 +2550,7 @@
     },
     {
       "id": "pad9_b2",
-      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2562,7 +2562,7 @@
     },
     {
       "id": "pad9_b3",
-      "body": "<<FILL role=rising words=74 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=74 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2574,7 +2574,7 @@
     },
     {
       "id": "pad10_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk, and {HERO} is turned back from a {MOTIF_GALLERY}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a buried colonnade opens, statues watching from the green murk, and Nadia is turned back from a buried colonnade, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad10_end",
@@ -2585,7 +2585,7 @@
     },
     {
       "id": "pad10_b0",
-      "body": "<<FILL role=rising words=56 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2597,7 +2597,7 @@
     },
     {
       "id": "pad10_b1",
-      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2609,7 +2609,7 @@
     },
     {
       "id": "pad10_b2",
-      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2621,7 +2621,7 @@
     },
     {
       "id": "pad11_end",
-      "body": "<<FILL role=failure words=62 beats='the passage narrows to a {MOTIF_CRAWL}, and {HERO} is turned back from the {MOTIF_CRAWL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a dust-choked tunnel, and Nadia is turned back from the dust-choked tunnel, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad11_end",
@@ -2632,7 +2632,7 @@
     },
     {
       "id": "pad11_b0",
-      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2644,7 +2644,7 @@
     },
     {
       "id": "pad11_b1",
-      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2656,7 +2656,7 @@
     },
     {
       "id": "pad11_b2",
-      "body": "<<FILL role=rising words=68 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=68 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2668,7 +2668,7 @@
     },
     {
       "id": "pad11_b3",
-      "body": "<<FILL role=rising words=74 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=74 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2680,7 +2680,7 @@
     },
     {
       "id": "pad11_b4",
-      "body": "<<FILL role=rising words=56 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=56 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2692,7 +2692,7 @@
     },
     {
       "id": "pad12_end",
-      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and {HERO} is turned back from a {MOTIF_MARCH}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Nadia is turned back from a warded corridor, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad12_end",
@@ -2703,7 +2703,7 @@
     },
     {
       "id": "pad12_b0",
-      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2715,7 +2715,7 @@
     },
     {
       "id": "pad12_b1",
-      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2727,7 +2727,7 @@
     },
     {
       "id": "pad12_b2",
-      "body": "<<FILL role=rising words=68 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=68 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2739,7 +2739,7 @@
     },
     {
       "id": "pad13_end",
-      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out, and {HERO} is turned back from a {MOTIF_STAIR}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Nadia's line paying out, and Nadia is turned back from a spiral stair, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad13_end",
@@ -2750,7 +2750,7 @@
     },
     {
       "id": "pad13_b0",
-      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2762,7 +2762,7 @@
     },
     {
       "id": "pad13_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=62 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2774,7 +2774,7 @@
     },
     {
       "id": "pad14_end",
-      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near, and {HERO} is turned back from a {RIVAL} crossing, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the poacher somewhere near, and Nadia is turned back from a poacher crossing, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad14_end",
@@ -2785,7 +2785,7 @@
     },
     {
       "id": "pad14_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=56 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2797,7 +2797,7 @@
     },
     {
       "id": "pad14_b1",
-      "body": "<<FILL role=rising words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=62 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2809,7 +2809,7 @@
     },
     {
       "id": "pad14_b2",
-      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2821,7 +2821,7 @@
     },
     {
       "id": "pad14_b3",
-      "body": "<<FILL role=rising words=74 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=74 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2833,7 +2833,7 @@
     },
     {
       "id": "pad15_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark, and {HERO} is turned back from a {MOTIF_VAULT}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a sealed chamber forces a long detour through the dark, and Nadia is turned back from a sealed chamber, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad15_end",
@@ -2844,7 +2844,7 @@
     },
     {
       "id": "pad15_b0",
-      "body": "<<FILL role=rising words=56 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=56 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2856,7 +2856,7 @@
     },
     {
       "id": "pad15_b1",
-      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2868,7 +2868,7 @@
     },
     {
       "id": "pad15_b2",
-      "body": "<<FILL role=rising words=68 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=68 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2880,7 +2880,7 @@
     },
     {
       "id": "pad16_end",
-      "body": "<<FILL role=failure words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds, and {HERO} is turned back from a {MOTIF_SURGE}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the sand slide shoves Nadia off her handholds, and Nadia is turned back from a sand slide, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad16_end",
@@ -2891,7 +2891,7 @@
     },
     {
       "id": "pad16_b0",
-      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2903,7 +2903,7 @@
     },
     {
       "id": "pad16_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=62 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2915,7 +2915,7 @@
     },
     {
       "id": "pad16_b2",
-      "body": "<<FILL role=rising words=68 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=68 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2927,7 +2927,7 @@
     },
     {
       "id": "pad16_b3",
-      "body": "<<FILL role=rising words=74 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=74 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2939,7 +2939,7 @@
     },
     {
       "id": "pad17_end",
-      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and {HERO} is turned back from a {MOTIF_HALL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Nadia is turned back from a crumbling hall, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad17_end",
@@ -2950,7 +2950,7 @@
     },
     {
       "id": "pad17_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=56 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2962,7 +2962,7 @@
     },
     {
       "id": "pad17_b1",
-      "body": "<<FILL role=rising words=62 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2974,7 +2974,7 @@
     },
     {
       "id": "pad18_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk, and {HERO} is turned back from a {MOTIF_GALLERY}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a buried colonnade opens, statues watching from the green murk, and Nadia is turned back from a buried colonnade, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad18_end",
@@ -2985,7 +2985,7 @@
     },
     {
       "id": "pad18_b0",
-      "body": "<<FILL role=rising words=56 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2997,7 +2997,7 @@
     },
     {
       "id": "pad18_b1",
-      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3009,7 +3009,7 @@
     },
     {
       "id": "pad18_b2",
-      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3021,7 +3021,7 @@
     },
     {
       "id": "pad18_b3",
-      "body": "<<FILL role=rising words=74 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=74 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3033,7 +3033,7 @@
     },
     {
       "id": "pad18_b4",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=56 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3045,7 +3045,7 @@
     },
     {
       "id": "pad19_end",
-      "body": "<<FILL role=failure words=62 beats='the passage narrows to a {MOTIF_CRAWL}, and {HERO} is turned back from the {MOTIF_CRAWL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a dust-choked tunnel, and Nadia is turned back from the dust-choked tunnel, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad19_end",
@@ -3056,7 +3056,7 @@
     },
     {
       "id": "pad19_b0",
-      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3068,7 +3068,7 @@
     },
     {
       "id": "pad19_b1",
-      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3080,7 +3080,7 @@
     },
     {
       "id": "pad19_b2",
-      "body": "<<FILL role=rising words=68 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=68 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3092,7 +3092,7 @@
     },
     {
       "id": "pad20_end",
-      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and {HERO} is turned back from a {MOTIF_MARCH}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Nadia is turned back from a warded corridor, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad20_end",
@@ -3103,7 +3103,7 @@
     },
     {
       "id": "pad20_b0",
-      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3115,7 +3115,7 @@
     },
     {
       "id": "pad20_b1",
-      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3127,7 +3127,7 @@
     },
     {
       "id": "pad20_b2",
-      "body": "<<FILL role=rising words=68 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=68 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3139,7 +3139,7 @@
     },
     {
       "id": "pad20_b3",
-      "body": "<<FILL role=rising words=74 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=74 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3151,7 +3151,7 @@
     },
     {
       "id": "pad21_end",
-      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out, and {HERO} is turned back from a {MOTIF_STAIR}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Nadia's line paying out, and Nadia is turned back from a spiral stair, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad21_end",
@@ -3162,7 +3162,7 @@
     },
     {
       "id": "pad21_b0",
-      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3174,7 +3174,7 @@
     },
     {
       "id": "pad21_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=62 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3186,7 +3186,7 @@
     },
     {
       "id": "pad21_b2",
-      "body": "<<FILL role=rising words=68 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=68 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3198,7 +3198,7 @@
     },
     {
       "id": "pad21_b3",
-      "body": "<<FILL role=rising words=74 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=74 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3210,7 +3210,7 @@
     },
     {
       "id": "pad21_b4",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=56 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3222,7 +3222,7 @@
     },
     {
       "id": "pad21_b5",
-      "body": "<<FILL role=rising words=62 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3234,7 +3234,7 @@
     },
     {
       "id": "pad22_end",
-      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near, and {HERO} is turned back from a {RIVAL} crossing, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the poacher somewhere near, and Nadia is turned back from a poacher crossing, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad22_end",
@@ -3245,7 +3245,7 @@
     },
     {
       "id": "pad22_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=56 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3257,7 +3257,7 @@
     },
     {
       "id": "pad22_b1",
-      "body": "<<FILL role=rising words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=62 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3269,7 +3269,7 @@
     },
     {
       "id": "pad23_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark, and {HERO} is turned back from a {MOTIF_VAULT}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a sealed chamber forces a long detour through the dark, and Nadia is turned back from a sealed chamber, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad23_end",
@@ -3280,7 +3280,7 @@
     },
     {
       "id": "pad23_b0",
-      "body": "<<FILL role=rising words=56 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=56 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3292,7 +3292,7 @@
     },
     {
       "id": "pad23_b1",
-      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3304,7 +3304,7 @@
     },
     {
       "id": "pad23_b2",
-      "body": "<<FILL role=rising words=68 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=68 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3316,7 +3316,7 @@
     },
     {
       "id": "pad23_b3",
-      "body": "<<FILL role=rising words=74 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=74 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3328,7 +3328,7 @@
     },
     {
       "id": "pad24_end",
-      "body": "<<FILL role=failure words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds, and {HERO} is turned back from a {MOTIF_SURGE}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the sand slide shoves Nadia off her handholds, and Nadia is turned back from a sand slide, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad24_end",
@@ -3339,7 +3339,7 @@
     },
     {
       "id": "pad24_b0",
-      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3351,7 +3351,7 @@
     },
     {
       "id": "pad24_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=62 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3363,7 +3363,7 @@
     },
     {
       "id": "pad24_b2",
-      "body": "<<FILL role=rising words=68 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=68 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3375,7 +3375,7 @@
     },
     {
       "id": "pad25_end",
-      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and {HERO} is turned back from a {MOTIF_HALL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Nadia is turned back from a crumbling hall, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad25_end",
@@ -3386,7 +3386,7 @@
     },
     {
       "id": "pad25_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=56 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3398,7 +3398,7 @@
     },
     {
       "id": "pad25_b1",
-      "body": "<<FILL role=rising words=62 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3410,7 +3410,7 @@
     },
     {
       "id": "pad25_b2",
-      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3422,7 +3422,7 @@
     },
     {
       "id": "pad25_b3",
-      "body": "<<FILL role=rising words=74 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=74 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3434,7 +3434,7 @@
     },
     {
       "id": "pad25_b4",
-      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3446,7 +3446,7 @@
     },
     {
       "id": "pad26_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk, and {HERO} is turned back from a {MOTIF_GALLERY}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a buried colonnade opens, statues watching from the green murk, and Nadia is turned back from a buried colonnade, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad26_end",
@@ -3457,7 +3457,7 @@
     },
     {
       "id": "pad26_b0",
-      "body": "<<FILL role=rising words=56 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3469,7 +3469,7 @@
     },
     {
       "id": "pad26_b1",
-      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3481,7 +3481,7 @@
     },
     {
       "id": "pad26_b2",
-      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3493,7 +3493,7 @@
     },
     {
       "id": "pad27_end",
-      "body": "<<FILL role=failure words=62 beats='the passage narrows to a {MOTIF_CRAWL}, and {HERO} is turned back from the {MOTIF_CRAWL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a dust-choked tunnel, and Nadia is turned back from the dust-choked tunnel, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad27_end",
@@ -3504,7 +3504,7 @@
     },
     {
       "id": "pad27_b0",
-      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3516,7 +3516,7 @@
     },
     {
       "id": "pad27_b1",
-      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3528,7 +3528,7 @@
     },
     {
       "id": "pad28_end",
-      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and {HERO} is turned back from a {MOTIF_MARCH}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Nadia is turned back from a warded corridor, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad28_end",
@@ -3539,7 +3539,7 @@
     },
     {
       "id": "pad28_b0",
-      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3551,7 +3551,7 @@
     },
     {
       "id": "pad28_b1",
-      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3563,7 +3563,7 @@
     },
     {
       "id": "pad28_b2",
-      "body": "<<FILL role=rising words=68 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=68 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3575,7 +3575,7 @@
     },
     {
       "id": "pad28_b3",
-      "body": "<<FILL role=rising words=74 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=74 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3587,7 +3587,7 @@
     },
     {
       "id": "pad29_end",
-      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out, and {HERO} is turned back from a {MOTIF_STAIR}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Nadia's line paying out, and Nadia is turned back from a spiral stair, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad29_end",
@@ -3598,7 +3598,7 @@
     },
     {
       "id": "pad29_b0",
-      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3610,7 +3610,7 @@
     },
     {
       "id": "pad29_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=62 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3622,7 +3622,7 @@
     },
     {
       "id": "pad29_b2",
-      "body": "<<FILL role=rising words=68 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=68 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3634,7 +3634,7 @@
     },
     {
       "id": "pad30_end",
-      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near, and {HERO} is turned back from a {RIVAL} crossing, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the poacher somewhere near, and Nadia is turned back from a poacher crossing, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad30_end",
@@ -3645,7 +3645,7 @@
     },
     {
       "id": "pad30_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=56 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3657,7 +3657,7 @@
     },
     {
       "id": "pad30_b1",
-      "body": "<<FILL role=rising words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=62 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3669,7 +3669,7 @@
     },
     {
       "id": "pad30_b2",
-      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3681,7 +3681,7 @@
     },
     {
       "id": "pad30_b3",
-      "body": "<<FILL role=rising words=74 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=74 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3693,7 +3693,7 @@
     },
     {
       "id": "pad31_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark, and {HERO} is turned back from a {MOTIF_VAULT}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a sealed chamber forces a long detour through the dark, and Nadia is turned back from a sealed chamber, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad31_end",
@@ -3704,7 +3704,7 @@
     },
     {
       "id": "pad31_b0",
-      "body": "<<FILL role=rising words=56 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=56 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3716,7 +3716,7 @@
     },
     {
       "id": "pad31_b1",
-      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3728,7 +3728,7 @@
     },
     {
       "id": "pad32_end",
-      "body": "<<FILL role=failure words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds, and {HERO} is turned back from a {MOTIF_SURGE}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the sand slide shoves Nadia off her handholds, and Nadia is turned back from a sand slide, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad32_end",
@@ -3739,7 +3739,7 @@
     },
     {
       "id": "pad32_b0",
-      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3751,7 +3751,7 @@
     },
     {
       "id": "pad32_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=62 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3763,7 +3763,7 @@
     },
     {
       "id": "pad32_b2",
-      "body": "<<FILL role=rising words=68 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=68 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3775,7 +3775,7 @@
     },
     {
       "id": "pad32_b3",
-      "body": "<<FILL role=rising words=74 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=74 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3787,7 +3787,7 @@
     },
     {
       "id": "pad32_b4",
-      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3799,7 +3799,7 @@
     },
     {
       "id": "pad33_end",
-      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and {HERO} is turned back from a {MOTIF_HALL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Nadia is turned back from a crumbling hall, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad33_end",
@@ -3810,7 +3810,7 @@
     },
     {
       "id": "pad33_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=56 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3822,7 +3822,7 @@
     },
     {
       "id": "pad33_b1",
-      "body": "<<FILL role=rising words=62 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3834,7 +3834,7 @@
     },
     {
       "id": "pad33_b2",
-      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3846,7 +3846,7 @@
     },
     {
       "id": "pad34_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk, and {HERO} is turned back from a {MOTIF_GALLERY}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a buried colonnade opens, statues watching from the green murk, and Nadia is turned back from a buried colonnade, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad34_end",
@@ -3857,7 +3857,7 @@
     },
     {
       "id": "pad34_b0",
-      "body": "<<FILL role=rising words=56 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3869,7 +3869,7 @@
     },
     {
       "id": "pad34_b1",
-      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3881,7 +3881,7 @@
     },
     {
       "id": "pad34_b2",
-      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3893,7 +3893,7 @@
     },
     {
       "id": "pad34_b3",
-      "body": "<<FILL role=rising words=74 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=74 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3905,7 +3905,7 @@
     },
     {
       "id": "pad35_end",
-      "body": "<<FILL role=failure words=62 beats='the passage narrows to a {MOTIF_CRAWL}, and {HERO} is turned back from the {MOTIF_CRAWL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a dust-choked tunnel, and Nadia is turned back from the dust-choked tunnel, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad35_end",
@@ -3916,7 +3916,7 @@
     },
     {
       "id": "pad35_b0",
-      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3928,7 +3928,7 @@
     },
     {
       "id": "pad35_b1",
-      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3940,7 +3940,7 @@
     },
     {
       "id": "pad35_b2",
-      "body": "<<FILL role=rising words=68 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=68 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3952,7 +3952,7 @@
     },
     {
       "id": "pad35_b3",
-      "body": "<<FILL role=rising words=74 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=74 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3964,7 +3964,7 @@
     },
     {
       "id": "pad35_b4",
-      "body": "<<FILL role=rising words=56 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=56 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3976,7 +3976,7 @@
     },
     {
       "id": "pad35_b5",
-      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3988,7 +3988,7 @@
     },
     {
       "id": "pad36_end",
-      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and {HERO} is turned back from a {MOTIF_MARCH}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Nadia is turned back from a warded corridor, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad36_end",
@@ -3999,7 +3999,7 @@
     },
     {
       "id": "pad36_b0",
-      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, {HERO}'s line paying out; {HERO} presses deeper along a {MOTIF_STAIR}'>>",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Nadia's line paying out; Nadia presses deeper along a spiral stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4011,7 +4011,7 @@
     },
     {
       "id": "pad36_b1",
-      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4023,7 +4023,7 @@
     },
     {
       "id": "pad37_end",
-      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, {HERO}'s line paying out, and {HERO} is turned back from a {MOTIF_STAIR}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Nadia's line paying out, and Nadia is turned back from a spiral stair, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad37_end",
@@ -4034,7 +4034,7 @@
     },
     {
       "id": "pad37_b0",
-      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near; {HERO} presses deeper along a {RIVAL} crossing'>>",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the poacher somewhere near; Nadia presses deeper along a poacher crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4046,7 +4046,7 @@
     },
     {
       "id": "pad37_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=62 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4058,7 +4058,7 @@
     },
     {
       "id": "pad37_b2",
-      "body": "<<FILL role=rising words=68 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=68 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4070,7 +4070,7 @@
     },
     {
       "id": "pad37_b3",
-      "body": "<<FILL role=rising words=74 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=74 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4082,7 +4082,7 @@
     },
     {
       "id": "pad38_end",
-      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the {RIVAL} somewhere near, and {HERO} is turned back from a {RIVAL} crossing, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the poacher somewhere near, and Nadia is turned back from a poacher crossing, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad38_end",
@@ -4093,7 +4093,7 @@
     },
     {
       "id": "pad38_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_VAULT} forces a long detour through the dark; {HERO} presses deeper along a {MOTIF_VAULT}'>>",
+      "body": "<<FILL role=rising words=56 beats='a sealed chamber forces a long detour through the dark; Nadia presses deeper along a sealed chamber'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4105,7 +4105,7 @@
     },
     {
       "id": "pad38_b1",
-      "body": "<<FILL role=rising words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=62 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4117,7 +4117,7 @@
     },
     {
       "id": "pad38_b2",
-      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4129,7 +4129,7 @@
     },
     {
       "id": "pad39_end",
-      "body": "<<FILL role=failure words=62 beats='a {MOTIF_VAULT} forces a long detour through the dark, and {HERO} is turned back from a {MOTIF_VAULT}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='a sealed chamber forces a long detour through the dark, and Nadia is turned back from a sealed chamber, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad39_end",
@@ -4140,7 +4140,7 @@
     },
     {
       "id": "pad39_b0",
-      "body": "<<FILL role=rising words=56 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds; {HERO} presses deeper along a {MOTIF_SURGE}'>>",
+      "body": "<<FILL role=rising words=56 beats='the sand slide shoves Nadia off her handholds; Nadia presses deeper along a sand slide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4152,7 +4152,7 @@
     },
     {
       "id": "pad39_b1",
-      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4164,7 +4164,7 @@
     },
     {
       "id": "pad39_b2",
-      "body": "<<FILL role=rising words=68 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=68 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4176,7 +4176,7 @@
     },
     {
       "id": "pad39_b3",
-      "body": "<<FILL role=rising words=74 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=74 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4188,7 +4188,7 @@
     },
     {
       "id": "pad39_b4",
-      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; {HERO} presses deeper along a {MOTIF_MARCH}'>>",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Nadia presses deeper along a warded corridor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4200,7 +4200,7 @@
     },
     {
       "id": "pad40_end",
-      "body": "<<FILL role=failure words=62 beats='the {MOTIF_SURGE} shoves {HERO} off her handholds, and {HERO} is turned back from a {MOTIF_SURGE}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the sand slide shoves Nadia off her handholds, and Nadia is turned back from a sand slide, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad40_end",
@@ -4211,7 +4211,7 @@
     },
     {
       "id": "pad40_b0",
-      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; {HERO} presses deeper along a {MOTIF_HALL}'>>",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Nadia presses deeper along a crumbling hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4223,7 +4223,7 @@
     },
     {
       "id": "pad40_b1",
-      "body": "<<FILL role=rising words=62 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=62 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4235,7 +4235,7 @@
     },
     {
       "id": "pad40_b2",
-      "body": "<<FILL role=rising words=68 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=68 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4247,7 +4247,7 @@
     },
     {
       "id": "pad41_end",
-      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and {HERO} is turned back from a {MOTIF_HALL}, the recovery set back to another dive'>>",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Nadia is turned back from a crumbling hall, the recovery set back to another dive'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pad41_end",
@@ -4258,7 +4258,7 @@
     },
     {
       "id": "pad41_b0",
-      "body": "<<FILL role=rising words=56 beats='a {MOTIF_GALLERY} opens, statues watching from the green murk; {HERO} presses deeper along a {MOTIF_GALLERY}'>>",
+      "body": "<<FILL role=rising words=56 beats='a buried colonnade opens, statues watching from the green murk; Nadia presses deeper along a buried colonnade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4270,7 +4270,7 @@
     },
     {
       "id": "pad41_b1",
-      "body": "<<FILL role=rising words=62 beats='the passage narrows to a {MOTIF_CRAWL}; {HERO} presses deeper along the {MOTIF_CRAWL}'>>",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a dust-choked tunnel; Nadia presses deeper along the dust-choked tunnel'>>",
       "is_ending": false,
       "choices": [
         {

@@ -1,0 +1,1084 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-last-train-north",
+  "age_band": "16+",
+  "legacy_lexicon": [
+    "Vera",
+    "Vera Lindqvist",
+    "Lindqvist",
+    "the last northbound overnight train",
+    "punch-clock",
+    "sleeper berths",
+    "sleeper cars",
+    "dining-car",
+    "north terminus",
+    "north line",
+    "mountain tunnel",
+    "timetable",
+    "conductor",
+    "vestibule",
+    "ridgeline",
+    "snow",
+    "sleet"
+  ],
+  "default_binding": {
+    "HERO": "Vera Lindqvist",
+    "THRESHOLD": "the last northbound overnight train of the season",
+    "ENTRANCE": "the platform",
+    "OPENING_MOMENT": "sleet turns to snow",
+    "DEADLINE": "the mountain tunnel",
+    "DEADLINE_SIGN": "the first grey dawn",
+    "GOAL": "the question the whole train seems built around",
+    "TONE_MOTIF": "the carriage sways and the cold glass holds her reflection over the dark",
+    "TERMINUS": "the north terminus",
+    "G0A0_CHAR": "the night conductor and his silver punch-clock",
+    "G0A0_LURE": "the night conductor",
+    "G0A1_CHAR": "the long row of curtained sleeper berths",
+    "G0A1_LURE": "the sleeper cars",
+    "G0A2_CHAR": "the letter a stranger left folded on the seat",
+    "G0A2_LURE": "the left-behind letter",
+    "G0A3_CHAR": "the black country sliding past the window",
+    "G0A3_LURE": "the changing land",
+    "G1A0_CHAR": "the dining-car regulars who never seem to order",
+    "G1A0_LURE": "the dining-car regulars",
+    "G1A1_CHAR": "the small child awake at the end of the carriage",
+    "G1A1_LURE": "the child who never sleeps",
+    "G1A2_CHAR": "the man softly counting stations that never come",
+    "G1A2_LURE": "the man counting stations",
+    "G1A3_CHAR": "the woman in grey travelling in mourning",
+    "G1A3_LURE": "the woman in mourning",
+    "G2A0_CHAR": "the conductor pressed a second time near the tunnel",
+    "G2A0_LURE": "the conductor",
+    "G2A1_CHAR": "the faint map inked in the margins of the letter",
+    "G2A1_LURE": "the letter's map",
+    "G2A2_CHAR": "the signal lamps burning ahead of the tunnel mouth",
+    "G2A2_LURE": "the tunnel signal lights",
+    "G2A3_CHAR": "the passengers gathered to weigh the choice together",
+    "G2A3_LURE": "the passengers",
+    "G3A0_CHAR": "the conductor at last willing to explain the north line",
+    "G3A0_LURE": "the conductor",
+    "G3A1_CHAR": "the wakeful child offering to show the way through",
+    "G3A1_LURE": "the child",
+    "G3A2_CHAR": "the mourning woman's quiet request to carry a message on",
+    "G3A3_CHAR": "the timetable whose columns of stations never end",
+    "G3A3_LURE": "the endless timetable",
+    "R_PEACE_CHAR": "the plain act of riding on, wide awake",
+    "R_HELP_CHAR": "the traveler at the carriage end who needs a hand",
+    "R_HELP_LURE": "the traveler who needs you",
+    "R_TRUTH_CHAR": "the last unread lines of the stranger's letter",
+    "R_TRUTH_LURE": "the last of the truth",
+    "R_LEAVE_CHAR": "the cold vestibule door and the idea of stepping down",
+    "G3A1_PRIZE": "The Child Shows the Way",
+    "G3A2_PRIZE": "You Carried Her Message",
+    "PEACE_PRIZE": "The Last Train North",
+    "HELP_PRIZE": "A Seat Beside Her",
+    "TRUTH_PRIZE": "The Northbound Names",
+    "G0A3_PRIZE": "Lulled by the Snow",
+    "G2A0_PRIZE": "What the Conductor Won't Say",
+    "G3A0_PRIZE": "What the Conductor Carries",
+    "G3A3_PRIZE": "Lost Among the Columns",
+    "TRUTH_EARLY_PRIZE": "Half the Timetable",
+    "LEAVE_EARLY_PRIZE": "Back at the First Platform"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The lone adult protagonist riding the train.",
+      "guidance": "A single traveler's full name; capable, observant, alone for the night.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded journey/vehicle the story happens inside.",
+      "guidance": "A single overnight vehicle or passage running on a fixed, rare schedule; uncanny but never actually dangerous to be aboard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The boarding point / the single place the hero can return to.",
+      "guidance": "Always reachable; a retreat or early ending returns here, safely.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The condition/moment that makes this journey possible at all.",
+      "guidance": "A recurring, non-lethal seasonal or weather condition that opens the one-night window.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The mid-journey pressure point/obstacle the whole story builds toward.",
+      "guidance": "A survivable structural chokepoint (a tunnel, a border, a crossing); passing it is a decision point, never a lethal hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The escalating visible sign that the deadline/climax is near.",
+      "guidance": "A gradual, benign visual cue (dawn light, a brightening horizon) that gives fair warning as the night runs out.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The recurring phrase for the story's central unanswered question.",
+      "guidance": "Stated the same way every time it recurs; never resolved by force, only by understanding.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TONE_MOTIF",
+      "scope": "global",
+      "meaning": "The recurring sensory/atmosphere beat that opens every vignette.",
+      "guidance": "A calm, uncanny-not-frightening sensory anchor (motion, cold glass, reflection); wonder over dread.",
+      "constraints": {
+        "max_words": 16,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TERMINUS",
+      "scope": "global",
+      "meaning": "The mysterious ultimate destination that never quite arrives.",
+      "guidance": "Named consistently; its non-arrival is eerie, never a source of real danger or despair.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G0A0_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of n_start branch A: the conductor thread (G0A0), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G0A1_CHAR",
+          "G0A2_CHAR",
+          "G0A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G0A0_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of n_start branch A: the conductor thread (G0A0).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G0A1_LURE",
+          "G0A2_LURE",
+          "G0A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G0A1_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of n_start branch B: the sleeper-car thread (G0A1), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [],
+        "distinct_from": [
+          "G0A0_CHAR",
+          "G0A2_CHAR",
+          "G0A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G0A1_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of n_start branch B: the sleeper-car thread (G0A1).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "G0A0_LURE",
+          "G0A2_LURE",
+          "G0A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G0A2_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of n_start branch C: the letter thread (G0A2), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [],
+        "distinct_from": [
+          "G0A0_CHAR",
+          "G0A1_CHAR",
+          "G0A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G0A2_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of n_start branch C: the letter thread (G0A2).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "G0A0_LURE",
+          "G0A1_LURE",
+          "G0A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G0A3_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of n_start branch D: the passing-land thread (G0A3), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [],
+        "distinct_from": [
+          "G0A0_CHAR",
+          "G0A1_CHAR",
+          "G0A2_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G0A3_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of n_start branch D: the passing-land thread (G0A3).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "G0A0_LURE",
+          "G0A1_LURE",
+          "G0A2_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G1A0_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p1 branch A: the regulars thread (G1A0), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G1A1_CHAR",
+          "G1A2_CHAR",
+          "G1A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G1A0_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p1 branch A: the regulars thread (G1A0).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G1A1_LURE",
+          "G1A2_LURE",
+          "G1A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G1A1_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p1 branch B: the child thread (G1A1), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G1A0_CHAR",
+          "G1A2_CHAR",
+          "G1A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G1A1_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p1 branch B: the child thread (G1A1).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G1A0_LURE",
+          "G1A2_LURE",
+          "G1A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G1A2_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p1 branch C: the counting-man thread (G1A2), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G1A0_CHAR",
+          "G1A1_CHAR",
+          "G1A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G1A2_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p1 branch C: the counting-man thread (G1A2).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G1A0_LURE",
+          "G1A1_LURE",
+          "G1A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G1A3_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p1 branch D: the mourning-woman thread (G1A3), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G1A0_CHAR",
+          "G1A1_CHAR",
+          "G1A2_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G1A3_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p1 branch D: the mourning-woman thread (G1A3).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G1A0_LURE",
+          "G1A1_LURE",
+          "G1A2_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G2A0_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p2 branch A: the conductor thread, revisited (G2A0), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G2A1_CHAR",
+          "G2A2_CHAR",
+          "G2A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G2A0_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p2 branch A: the conductor thread, revisited (G2A0).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G2A1_LURE",
+          "G2A2_LURE",
+          "G2A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G2A1_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p2 branch B: the letter's map thread (G2A1), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [],
+        "distinct_from": [
+          "G2A0_CHAR",
+          "G2A2_CHAR",
+          "G2A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G2A1_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p2 branch B: the letter's map thread (G2A1).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "G2A0_LURE",
+          "G2A2_LURE",
+          "G2A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G2A2_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p2 branch C: the signal-lamps thread (G2A2), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [],
+        "distinct_from": [
+          "G2A0_CHAR",
+          "G2A1_CHAR",
+          "G2A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G2A2_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p2 branch C: the signal-lamps thread (G2A2).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "G2A0_LURE",
+          "G2A1_LURE",
+          "G2A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G2A3_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p2 branch D: the gathered-passengers thread (G2A3), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G2A0_CHAR",
+          "G2A1_CHAR",
+          "G2A2_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G2A3_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p2 branch D: the gathered-passengers thread (G2A3).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G2A0_LURE",
+          "G2A1_LURE",
+          "G2A2_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G3A0_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p3 branch A: the conductor thread, resolved (G3A0), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G3A1_CHAR",
+          "G3A2_CHAR",
+          "G3A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G3A0_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p3 branch A: the conductor thread, resolved (G3A0).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G3A1_LURE",
+          "G3A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G3A1_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p3 branch B: the child-guide thread (G3A1), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G3A0_CHAR",
+          "G3A2_CHAR",
+          "G3A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G3A1_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p3 branch B: the child-guide thread (G3A1).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G3A0_LURE",
+          "G3A3_LURE"
+        ]
+      }
+    },
+    {
+      "id": "G3A2_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p3 branch C: the mourning woman's request (G3A2), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "G3A0_CHAR",
+          "G3A1_CHAR",
+          "G3A3_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G3A3_CHAR",
+      "scope": "route",
+      "meaning": "The full recurring focus of p3 branch D: the endless-timetable thread (G3A3), as used in its beats.",
+      "guidance": "A short, specific noun phrase naming a person or detail aboard the train; benign, non-threatening, safe to look closely at.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [],
+        "distinct_from": [
+          "G3A0_CHAR",
+          "G3A1_CHAR",
+          "G3A2_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G3A3_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of p3 branch D: the endless-timetable thread (G3A3).",
+      "guidance": "A brief noun phrase (label-length); must read as distinct from its sibling choices at the same fork.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "G3A0_LURE",
+          "G3A1_LURE"
+        ]
+      }
+    },
+    {
+      "id": "R_PEACE_CHAR",
+      "scope": "route",
+      "meaning": "The resolution-arc focus for the 'stay present' choice.",
+      "guidance": "An inward, benign act (not a person or object); calm, not passive.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [],
+        "distinct_from": [
+          "R_HELP_CHAR",
+          "R_TRUTH_CHAR",
+          "R_LEAVE_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "R_HELP_CHAR",
+      "scope": "route",
+      "meaning": "The resolution-arc focus for the 'help a fellow traveler' choice.",
+      "guidance": "A fellow passenger in need of a small kindness; never a source of peril.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "R_PEACE_CHAR",
+          "R_TRUTH_CHAR",
+          "R_LEAVE_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "R_HELP_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of the 'help' resolution focus.",
+      "guidance": "Brief; matches the traveler-in-need framing.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "R_TRUTH_LURE"
+        ]
+      }
+    },
+    {
+      "id": "R_TRUTH_CHAR",
+      "scope": "route",
+      "meaning": "The resolution-arc focus for the 'chase the truth' choice.",
+      "guidance": "An unfinished piece of the story's own mystery (a letter, a record); readable, not hazardous.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [],
+        "distinct_from": [
+          "R_PEACE_CHAR",
+          "R_HELP_CHAR",
+          "R_LEAVE_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "R_TRUTH_LURE",
+      "scope": "route",
+      "meaning": "The short choice-label form of the 'truth' resolution focus.",
+      "guidance": "Brief; matches the unfinished-mystery framing.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "R_HELP_LURE"
+        ]
+      }
+    },
+    {
+      "id": "R_LEAVE_CHAR",
+      "scope": "route",
+      "meaning": "The resolution-arc focus for the 'try to leave' choice.",
+      "guidance": "A literal exit point (a door, a hatch); always physically safe to use.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "R_PEACE_CHAR",
+          "R_HELP_CHAR",
+          "R_TRUTH_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "G3A1_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: g3a1_end (positive completion).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A2_PRIZE",
+          "PEACE_PRIZE",
+          "HELP_PRIZE",
+          "TRUTH_PRIZE",
+          "G0A3_PRIZE",
+          "G2A0_PRIZE",
+          "G3A0_PRIZE",
+          "G3A3_PRIZE",
+          "TRUTH_EARLY_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "G3A2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: g3a2_end (positive success).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "PEACE_PRIZE",
+          "HELP_PRIZE",
+          "TRUTH_PRIZE",
+          "G0A3_PRIZE",
+          "G2A0_PRIZE",
+          "G3A0_PRIZE",
+          "G3A3_PRIZE",
+          "TRUTH_EARLY_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "PEACE_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: e_make_peace, the best ending (positive success).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "G3A2_PRIZE",
+          "HELP_PRIZE",
+          "TRUTH_PRIZE",
+          "G0A3_PRIZE",
+          "G2A0_PRIZE",
+          "G3A0_PRIZE",
+          "G3A3_PRIZE",
+          "TRUTH_EARLY_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "HELP_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: e_help_passenger (positive completion).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "G3A2_PRIZE",
+          "PEACE_PRIZE",
+          "TRUTH_PRIZE",
+          "G0A3_PRIZE",
+          "G2A0_PRIZE",
+          "G3A0_PRIZE",
+          "G3A3_PRIZE",
+          "TRUTH_EARLY_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "TRUTH_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: e_uncover_truth (positive discovery).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "G3A2_PRIZE",
+          "PEACE_PRIZE",
+          "HELP_PRIZE",
+          "G0A3_PRIZE",
+          "G2A0_PRIZE",
+          "G3A0_PRIZE",
+          "G3A3_PRIZE",
+          "TRUTH_EARLY_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "G0A3_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: g0a3_end (non-lethal setback).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "G3A2_PRIZE",
+          "PEACE_PRIZE",
+          "HELP_PRIZE",
+          "TRUTH_PRIZE",
+          "G2A0_PRIZE",
+          "G3A0_PRIZE",
+          "G3A3_PRIZE",
+          "TRUTH_EARLY_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "G2A0_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: g2a0_end (neutral discovery).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "G3A2_PRIZE",
+          "PEACE_PRIZE",
+          "HELP_PRIZE",
+          "TRUTH_PRIZE",
+          "G0A3_PRIZE",
+          "G3A0_PRIZE",
+          "G3A3_PRIZE",
+          "TRUTH_EARLY_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "G3A0_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: g3a0_end (neutral discovery).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "G3A2_PRIZE",
+          "PEACE_PRIZE",
+          "HELP_PRIZE",
+          "TRUTH_PRIZE",
+          "G0A3_PRIZE",
+          "G2A0_PRIZE",
+          "G3A3_PRIZE",
+          "TRUTH_EARLY_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "G3A3_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: g3a3_end (non-lethal setback).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "G3A2_PRIZE",
+          "PEACE_PRIZE",
+          "HELP_PRIZE",
+          "TRUTH_PRIZE",
+          "G0A3_PRIZE",
+          "G2A0_PRIZE",
+          "G3A0_PRIZE",
+          "TRUTH_EARLY_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "TRUTH_EARLY_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: e_truth_early (neutral discovery).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "G3A2_PRIZE",
+          "PEACE_PRIZE",
+          "HELP_PRIZE",
+          "TRUTH_PRIZE",
+          "G0A3_PRIZE",
+          "G2A0_PRIZE",
+          "G3A0_PRIZE",
+          "G3A3_PRIZE",
+          "LEAVE_EARLY_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "LEAVE_EARLY_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: e_leave_early (non-lethal setback).",
+      "guidance": "A short, evocative title naming this ending; the position's fixed ending is always non-lethal and non-graphic, so the title must read that way too.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "G3A1_PRIZE",
+          "G3A2_PRIZE",
+          "PEACE_PRIZE",
+          "HELP_PRIZE",
+          "TRUTH_PRIZE",
+          "G0A3_PRIZE",
+          "G2A0_PRIZE",
+          "G3A0_PRIZE",
+          "G3A3_PRIZE",
+          "TRUTH_EARLY_PRIZE"
+        ]
+      }
+    }
+  ]
+}
