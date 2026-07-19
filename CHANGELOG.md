@@ -21,7 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   advisory-only in `validate-dependencies`). Removed the `pull_request`
   trigger from `python-compatibility.yml`, which duplicated `ci.yml`'s
   required Python 3.12 test run on every PR; its weekly schedule and
-  push-to-main trigger still cover 3.11/3.13 compatibility drift. Together
+  push-to-main trigger still cover 3.11/3.13 compatibility drift. Also
+  removed the `pull_request` trigger from `sonarcloud.yml`: job-level timing
+  data from recent PRs showed it costing ~12 min per PR, of which ~11 min was
+  a duplicate full pytest run (on Python 3.14, for coverage.xml) rather than
+  the sonar-scanner analysis itself (under 90s); it was already advisory-only
+  outside `push` (`fail-on-quality-gate` forced off), so push-to-main keeps
+  full gate-enforced analysis on every merge with no PR-time cost. Together
   these remove the largest source of duplicate work between a PR's own CI run
   and the merge-queue's re-run of the same commit.
 

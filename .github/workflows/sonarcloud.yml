@@ -15,16 +15,19 @@ on:
     branches:
       - main
       - develop
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - main
-      - develop
-  # No merge_group: fail-on-quality-gate below is already forced off outside
-  # `push` specifically because a merge_group run can only ever be advisory
-  # noise (Sonar's PR decoration needs a pull_request context it doesn't
-  # have) - it re-runs the same analysis the PR already got with no way to
-  # act on the result. Dropped rather than left advisory-and-duplicate.
+  # No pull_request, no merge_group: fail-on-quality-gate below is already
+  # forced off outside `push`, meaning a PR/merge_group run is pure advisory
+  # noise with no way to act on the result. It is also expensive noise: the
+  # reusable workflow's `no-build: false` + `python-version: 3.14` means it
+  # reinstalls the project and runs the FULL pytest suite from scratch (a
+  # 4th test execution, after ci.yml's own unit/integration/security
+  # buckets) just to produce coverage.xml for Sonar to read -- measured at
+  # ~11-12 min of a ~12.5 min job, with the actual sonar-scanner analysis
+  # itself taking under 90s. Push-to-main still gets full, gate-enforced
+  # analysis on every merge.
+  # #VERIFY: if branch protection marks this job "required" for the
+  # pull_request context, remove that requirement in the ruleset first, or
+  # PRs will show a required check that never reports.
   workflow_dispatch:
 
 permissions:
