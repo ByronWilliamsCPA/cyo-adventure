@@ -3,8 +3,8 @@
 The ONLY impure ``diversity`` module (WS-0 design doc section 1.1): it
 imports ``db.models`` and SQLAlchemy and is the single I/O boundary the rest
 of the package stays free of. Mirrors the impure half of
-``generation/skeleton_match.py`` (``recent_skeleton_usage``): one read-only
-query, no writes, no caching.
+``generation/skeleton_match.py`` (``recent_skeleton_usage``): read-only
+queries, no writes, no caching.
 """
 
 from __future__ import annotations
@@ -177,3 +177,42 @@ async def load_family_history(
             )
         )
     return entries
+
+
+async def load_version_blob(
+    session: AsyncSession,
+    storybook_id: str,
+    version: int,
+) -> Mapping[str, object] | None:
+    """Return one storybook version's blob, or None when the row is absent.
+
+    The blob fetch WS-1's anti-template guard needs for its comparison
+    partner (see diversity/query.py::select_atg_comparison_partner):
+    HistoryEntry deliberately does not carry the blob, so the caller
+    resolves a selected partner to its content with this single read.
+
+    Args:
+        session: An open async session (the caller owns the transaction).
+        storybook_id: The partner story's id.
+        version: The partner version number.
+
+    Returns:
+        The version's ``blob`` JSONB mapping, or ``None`` when no such row
+        exists (deleted content, or a stale HistoryEntry).
+    """
+    # #ASSUME: external-resources: one read-only primary-key lookup on the
+    # caller's session; a closed session raises before the query runs, exactly
+    # like load_family_history above.
+    # #VERIFY: tests/unit/test_diversity_history.py::test_load_version_blob_missing_row_returns_none.
+    # #ASSUME: concurrency: StorybookVersion rows are immutable once written
+    # (db/models.py: "An immutable version of a story"), so this read needs no
+    # lock and cannot race the pipeline's FOR UPDATE on the *current* storybook.
+    # #VERIFY: no with_for_update() here; the pipeline locks only its own row.
+    # #EDGE: data-integrity: blob is loosely-typed JSONB; this loader does NOT
+    # validate it. The caller must coerce (diversity.normalize.coerce_storybook)
+    # and treat a validation failure as fail-open.
+    # #VERIFY: moderation/leaf_diversity.py catches the coerce ValidationError.
+    row = await session.get(StorybookVersion, (storybook_id, version))
+    if row is None:
+        return None
+    return row.blob

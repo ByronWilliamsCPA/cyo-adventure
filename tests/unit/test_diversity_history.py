@@ -14,7 +14,7 @@ from typing import Any
 
 import pytest
 
-from cyo_adventure.diversity.history import load_family_history
+from cyo_adventure.diversity.history import load_family_history, load_version_blob
 
 _Row = tuple[str, int, str | None, datetime, object, object]
 
@@ -39,6 +39,18 @@ class _FakeSession:
         """Return the canned rows regardless of the compiled statement."""
         _ = statement
         return _FakeResult(self._rows)
+
+
+class _FakeGetSession:
+    """Minimal async session double for load_version_blob's session.get."""
+
+    def __init__(self, row: Any) -> None:
+        self._row = row
+
+    async def get(self, model: Any, ident: Any) -> Any:
+        """Return the canned row regardless of the requested model/ident."""
+        _ = (model, ident)
+        return self._row
 
 
 @pytest.mark.unit
@@ -95,3 +107,33 @@ async def test_malformed_blob_degrades_to_empty_signature_not_error() -> None:
     assert len(entries) == 4
     for entry in entries:
         assert entry.theme_sig == frozenset()
+
+
+class _VersionRow:
+    """Minimal stand-in for a StorybookVersion row exposing only ``blob``."""
+
+    def __init__(self, blob: dict[str, object]) -> None:
+        self.blob = blob
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_load_version_blob_returns_blob() -> None:
+    """A present row's blob is returned as-is."""
+    blob = {"id": "book-1", "nodes": []}
+    session = _FakeGetSession(row=_VersionRow(blob))
+
+    result = await load_version_blob(session, "book-1", 1)  # type: ignore[arg-type]
+
+    assert result == blob
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_load_version_blob_missing_row_returns_none() -> None:
+    """A missing (storybook_id, version) row returns None, never raises."""
+    session = _FakeGetSession(row=None)
+
+    result = await load_version_blob(session, "book-missing", 7)  # type: ignore[arg-type]
+
+    assert result is None
