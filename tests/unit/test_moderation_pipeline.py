@@ -355,14 +355,17 @@ async def test_classifier_call_blocked_on_pii_in_node_body(
 
     _install_canned_classifier_http(monkeypatch, _handler)
 
+    settings = Settings(review_provider="mock", openai_api_key="k")
+    generation_provider = MockProvider(responses=[])
+    pii = PiiContext(child_names=frozenset({"RealChildName"}))
     with pytest.raises(CoreValidationError):
         await pipeline_mod.run_moderation_pipeline(
             session=mock_session,
             story_id="s1",
             version=1,
-            settings=Settings(review_provider="mock", openai_api_key="k"),
-            generation_provider=MockProvider(responses=[]),
-            pii=PiiContext(child_names=frozenset({"RealChildName"})),
+            settings=settings,
+            generation_provider=generation_provider,
+            pii=pii,
         )
 
     assert classifier_called["count"] == 0

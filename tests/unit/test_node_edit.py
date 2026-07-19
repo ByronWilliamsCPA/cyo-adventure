@@ -494,14 +494,9 @@ async def test_classifier_call_blocked_on_pii_in_edited_text(
 
     monkeypatch.setattr(node_edit, "run_classifiers", _counting_run_classifiers)
 
+    body = NodeEditBody(body="This page was written just for Ada today.")
     with pytest.raises(ValidationError):
-        await node_edit.edit_node(
-            "s1",
-            1,
-            _NODE_ID,
-            NodeEditBody(body="This page was written just for Ada today."),
-            ctx,
-        )
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
 
     assert classifier_called["count"] == 0
     # The stored blob is untouched: the mutation happened on a discarded copy.
