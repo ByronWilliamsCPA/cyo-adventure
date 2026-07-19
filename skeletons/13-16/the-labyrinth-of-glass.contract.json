@@ -1,0 +1,649 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-labyrinth-of-glass",
+  "age_band": "13-16",
+  "legacy_lexicon": [
+    "a boatman",
+    "a caller",
+    "a dresser in a half-mask",
+    "a keeper",
+    "a lampman",
+    "a linkboy",
+    "a machinist",
+    "a property-master",
+    "a rigger",
+    "a stagehand",
+    "a sweeper with a lantern",
+    "a warden",
+    "a watchman",
+    "an usher",
+    "boatman",
+    "caller",
+    "cracked pane",
+    "dark mirror that shows nothing",
+    "dresser",
+    "flooded pit door",
+    "glass labyrinth",
+    "keeper",
+    "lampman",
+    "linkboy",
+    "machinist",
+    "opera",
+    "opera house",
+    "prompter",
+    "prompter's box",
+    "property-master",
+    "rigger",
+    "stagehand",
+    "sweeper",
+    "the Candle Maze",
+    "the Chandelier Vault",
+    "the Cold Mirror",
+    "the Drowned Orchestra Pit",
+    "the Gallery of Masks",
+    "the Gallery of Twin Wardens",
+    "the Glass Bridge",
+    "the Hall of Echoing Names",
+    "the Hall of False Doors",
+    "the Hall of the Thousand Yous",
+    "the Hourglass Chamber",
+    "the Last Reflection",
+    "the Prompter's Box",
+    "the Shattered Proscenium",
+    "the Silvered Stair",
+    "the Turning Room",
+    "the Weeping Wall",
+    "the Whispering Gallery",
+    "the flesh warden",
+    "the labyrinth of glass",
+    "the prompter himself",
+    "usher",
+    "ushers",
+    "warden",
+    "wardens",
+    "watchman"
+  ],
+  "default_binding": {
+    "HERO": "a child of the opera house crew",
+    "GOAL": "records that clear your family's name",
+    "THRESHOLD": "the glass labyrinth",
+    "ENTRANCE": "the door below the stage",
+    "ST01_ROOM": "the Hall of False Doors",
+    "ST01_GUARD": "an usher",
+    "ST02_ROOM": "the Silvered Stair",
+    "ST02_GUARD": "a warden",
+    "ST03_ROOM": "the Whispering Gallery",
+    "ST03_GUARD": "a stagehand",
+    "ST04_ROOM": "the Chandelier Vault",
+    "ST04_GUARD": "a rigger",
+    "ST05_ROOM": "the Cold Mirror",
+    "ST05_GUARD": "a keeper",
+    "ST06_ROOM": "the Gallery of Twin Wardens",
+    "ST06_GUARD": "the flesh warden",
+    "ST07_ROOM": "the Drowned Orchestra Pit",
+    "ST07_GUARD": "a boatman",
+    "ST08_ROOM": "the Candle Maze",
+    "ST08_GUARD": "a linkboy",
+    "ST09_ROOM": "the Prompter's Box",
+    "ST09_GUARD": "the prompter himself",
+    "ST10_ROOM": "the Gallery of Masks",
+    "ST10_GUARD": "a dresser in a half-mask",
+    "ST11_ROOM": "the Hourglass Chamber",
+    "ST11_GUARD": "a sweeper with a lantern",
+    "ST12_ROOM": "the Glass Bridge",
+    "ST12_GUARD": "a watchman",
+    "ST13_ROOM": "the Hall of Echoing Names",
+    "ST13_GUARD": "a caller",
+    "ST14_ROOM": "the Shattered Proscenium",
+    "ST14_GUARD": "a property-master",
+    "ST15_ROOM": "the Weeping Wall",
+    "ST15_GUARD": "a lampman",
+    "ST16_ROOM": "the Turning Room",
+    "ST16_GUARD": "a machinist",
+    "ST17_ROOM": "the Last Reflection",
+    "ST17_GUARD": "a keeper",
+    "ST18_ROOM": "the Hall of the Thousand Yous",
+    "ST18_GUARD": "a stagehand",
+    "WIN_CLEAN": "the dark mirror that shows nothing",
+    "WIN_COSTLY": "the cracked pane",
+    "WIN_QUIET": "the flooded pit door"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The unnamed second-person protagonist's role/identity.",
+      "guidance": "A single teen protagonist role, kid-relatable and capable but not reckless; second person keeps them unnamed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "What the hero is descending the labyrinth to reach/recover.",
+      "guidance": "A tangible prize or proof that matters to the hero's life outside the labyrinth; positive, non-violent.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, lethal place the gauntlet happens inside.",
+      "guidance": "A single sealed structure of sequential rooms; wonder-and-dread, no toxic/unbreathable air as a scripted hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single sealing entry point the hero passes with no return.",
+      "guidance": "A door/hatch/gate that closes behind the hero at the very start; the one-way threshold into the gauntlet.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST01_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 1 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST01_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 1 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST02_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 2 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST02_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 2 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST03_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 3 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST03_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 3 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST04_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 4 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST04_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 4 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST05_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 5 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST05_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 5 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST06_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 6 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST06_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 6 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST07_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 7 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST07_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 7 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST08_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 8 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST08_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 8 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST09_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 9 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST09_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 9 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST10_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 10 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST10_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 10 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST11_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 11 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST11_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 11 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST12_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 12 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST12_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 12 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST13_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 13 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST13_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 13 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST14_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 14 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST14_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 14 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST15_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 15 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST15_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 15 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST16_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 16 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST16_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 16 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST17_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 17 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST17_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 17 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST18_ROOM",
+      "scope": "track",
+      "meaning": "The named chamber/checkpoint the hero reaches at station 18 of 18.",
+      "guidance": "A short, evocative room name (a proper-noun-style chamber title) establishing this checkpoint's flavor before its rule is explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST18_GUARD",
+      "scope": "track",
+      "meaning": "The staff figure/agent who takes the hero into custody on the capture-branch of station 18 (a non-lethal outcome).",
+      "guidance": "A single staff-role captor (never armed, never violent beyond seizing/holding); the capture is a locked room, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WIN_CLEAN",
+      "scope": "track",
+      "meaning": "The unmarked exit route naming the success ending.",
+      "guidance": "A safe-looking way out that is exactly what it appears; positive, no injury, no violence.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "WIN_COSTLY",
+          "WIN_QUIET"
+        ]
+      }
+    },
+    {
+      "id": "WIN_COSTLY",
+      "scope": "track",
+      "meaning": "The quicker but injuring exit route naming a completion ending.",
+      "guidance": "A faster way out with a minor, survivable cost (a scrape, a scare); never graphic, never a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "WIN_CLEAN",
+          "WIN_QUIET"
+        ]
+      }
+    },
+    {
+      "id": "WIN_QUIET",
+      "scope": "track",
+      "meaning": "The unseen exit route naming a completion ending.",
+      "guidance": "A discreet, unnoticed way out; positive, no injury.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "WIN_CLEAN",
+          "WIN_COSTLY"
+        ]
+      }
+    }
+  ]
+}

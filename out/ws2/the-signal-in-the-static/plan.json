@@ -1,0 +1,371 @@
+{
+  "beats": {
+    "n_start": "{HERO} cannot sleep, so she climbs to the attic and switches on {KIN}'s old radio set; out of {NOISE} comes {SIGNAL} she heard last night, a voice reading a string of numbers, then {DEADLINE_SIGN} that resets and begins again; three threads tug at her, {ROUTE_A_CLUE} buried in the numbers, {THRESHOLD}, and {ROUTE_C_CLUE} {KIN} kept",
+    "r_coord_1": "{HERO} copies the numbers onto graph paper and treats them as {ROUTE_A_CLUE}; two of them resolve to places she knows, {A1_ZONE} down the hill and {A2_ZONE} on the ridge, and she has to pick which to walk to before her handheld radio's batteries run out",
+    "r_coord_harbor": "{A1_ZONE} is asleep, ropes ticking against masts; {ROUTE_A_CLUE} point between {A1_OFFER1}, where a light still burns, and {A1_OFFER2} that everyone says was shut years ago",
+    "r_coord_notice": "{A1_LANDMARK} is layered with faded flyers, but {A1_FIND} is newer than the rest, inked by a careful hand with words claiming {SIGNAL} is real; someone has been leaving breadcrumbs for anyone who listens hard enough",
+    "r_coord_notice2": "{A1_FIND}'s frequency matches {SIGNAL} exactly, and the ink is barely dry; {HERO} can follow the slip as the deliberate clue it plainly is, or she can decide a weathered card proves nothing and let the wind have it",
+    "e_coord_notice": "{HERO} tells herself a scrap of card means nothing and lets it flap loose into the dark; only later does she wonder whose careful hand wrote it, and by then {SIGNAL} is just a sound she used to chase",
+    "r_coord_harbor_ask": "{A1_HELPER} listens to {SIGNAL} on {HERO}'s phone and frowns; he says a signal like that used to run off {THRESHOLD}, and that whoever kept it going was stubborn as barnacles, then he points her toward the truth without quite meaning to",
+    "r_coord_harbor_shed": "{A1_OFFER2} is padlocked but the window is cracked; inside, {A1_DETAIL1} blinks in time with {SIGNAL}, proof it reaches here too, and {HERO} weighs forcing the warped door against simply logging the frequency and going home",
+    "r_coord_shed_in": "The door gives with a groan; {A1_DETAIL1} is wired to a hand-drawn card reading relay {CALL_SIGN}, and {HERO} realizes this set is only an echo of something broadcasting from {THRESHOLD}",
+    "e_coord_shed_leave": "{HERO} writes the frequency neatly in her notebook and walks home, telling herself she will come back with a plan; she never quite does, and {SIGNAL} keeps counting down to no one, a light blinking over an empty {A1_ZONE}",
+    "r_coord_tower": "{A2_ZONE} stands rusted against the stars, a stub of antenna still bolted to its cap; {SIGNAL} is stronger here, and {HERO} can either climb {A2_OFFER1} or search {A2_OFFER2}",
+    "r_coord_climb": "Halfway up {A2_OFFER1} the wind shoves at {HERO}, but from the cap she sees {A2_DETAIL1} running toward the dark shape of {THRESHOLD}; {SIGNAL} is not here, it only passes through",
+    "r_coord_base": "{A2_OFFER2} is furred with rust; one panel is loose enough to pry, though it might take her whole night, while {A2_DETAIL2} simply points along the ridge toward {THRESHOLD}",
+    "r_coord_base_in": "Inside {A2_OFFER2} is a junction and a laminated tag reading {CALL_SIGN} RELAY, DO NOT DISCONNECT; {A2_ZONE} is only a repeater, and the real transmitter is further out at {THRESHOLD}",
+    "r_coord_base_out": "{A2_DETAIL2} leads {HERO} along a cracked service path toward {THRESHOLD}; whoever laid this trail wanted it followed, and {SIGNAL} grows steadier with every step",
+    "r_coord_beat": "{HERO} pieces together every clue on her graph paper; every arrow, every echo, points to one source at {THRESHOLD}, and {DEADLINE_SIGN} feels suddenly less like noise and more like a message with an address",
+    "r_coord_close": "The last leg of {ROUTE_A_CLUE}'s trail brings {HERO} to a wind-scoured overlook above {THRESHOLD}; {SIGNAL} is loudest here, unmistakably alive, and whatever it is, it is close enough now to touch",
+    "r_relay_1": "{HERO} wheels her bike toward {THRESHOLD}; it squats at the cliff edge, its mast a black needle against the moon, and two ways lead in, {B1_ZONE} or {B2_ZONE} that curves behind the compound",
+    "r_re_path": "{B1_ZONE} runs a hands-width from the fence above a long drop; the wind is vicious, and {HERO} spots {B1_GATE}, though part of her says to photograph the mast and retreat before she is blown off the ledge",
+    "r_re_gap": "{HERO} squeezes through {B1_GATE} into the compound; {B1_LANDMARK} reads RELAY {CALL_SIGN}, and {B1_DETAIL1}, the same rhythm as {SIGNAL}, someone or something inside still keeping it alive",
+    "e_re_photo": "The gust nearly takes {HERO} off her feet, so she snaps three blurred photos and pedals home, heart hammering; the pictures show only a dark tower, and {SIGNAL} plays on without her, a mystery she can describe but never solve",
+    "r_re_lane": "{B2_ZONE} is half under seawater but sheltered from the wind; ahead sits {B2_OFFER1} with {B2_DETAIL1} visible through the glass, while a side track detours to {B2_OFFER2} humming louder than the tide, and another path ducks into {B2_OFFER3}",
+    "r_re_cellar": "{B2_OFFER3}'s steps drop into ankle-deep seawater and brine; taped above the waterline is a sleeve holding {B2_FIND}, and the water keeps rising with every wave outside",
+    "r_re_cellar2": "{B2_FIND} reads a vow to keep the channel open, signed with the call sign {CALL_SIGN}; {HERO} can peel it free and pocket the proof, or she can feel {B2_GATE} climbing past her knees and scramble back before the cellar fills",
+    "e_re_cellar": "{B2_GATE} wins the argument; {HERO} backs up the streaming steps as the cellar swallows {B2_FIND} whole, and she stands dripping with nothing to show but a glimpse of a call sign and the certainty she was one wave too slow",
+    "r_re_gatehouse": "{B2_OFFER1} is unlocked and warm, as if just left; {B2_DETAIL1} logs transmissions by hand, the last line only hours old, when {B2_DETAIL2} sounds somewhere in the dark and {HERO} must decide to read on or grab what she can and slip out",
+    "r_re_log": "{B2_DETAIL1} is decades deep in one patient hand; the final entries repeat a single note, still no answer, and {HERO} understands {SIGNAL} is not automatic at all but tended by a real, waiting person",
+    "r_re_scrap": "{HERO} pockets a torn page and ducks out; under a streetlight she reads a single line addressed to {LISTENER}, still holding, and {SIGNAL} stops being a machine and becomes a message somebody meant for someone",
+    "r_re_hut": "{B2_OFFER2} throbs with power feeding the mast; {B2_DETAIL3} names {OPERATOR}, in handwriting {HERO} has already seen tonight on a dozen faded cards",
+    "r_relay_beat": "Standing in the dripping compound, {HERO} gathers what {THRESHOLD} has told her; {SIGNAL} is deliberate, tended, addressed, and it is counting toward something a real person set in motion and is still, somewhere, waiting on",
+    "r_relay_close": "{HERO} wipes the rain from her eyes and steps toward the one lit window; {SIGNAL} pulses through the wall in time with the glow, and she knows beyond this glass is the person who has been broadcasting into the dark all along",
+    "r_notes_1": "Back home, {HERO} hunts for {ROUTE_C_CLUE}; {KIN} listened to the airwaves for forty years and wrote it all down, and it could be in {C1_ZONE} or out in {C2_ZONE} with its wall of pinned notes",
+    "r_no_trunk": "{C1_ZONE} breathes out cedar and old paper; inside lie {C1_FIND1} and {C1_FIND2}, plus {C1_FIND3}, and {HERO} can only read one carefully before her eyes give out",
+    "r_no_letters": "Under the cards lies {C1_FIND3}, letters {KIN} never sent, all addressed to {THRESHOLD}; the top one begs {OPERATOR} to keep the channel open, and {HERO} realizes the two old men shared this vigil for years",
+    "r_no_letters2": "The letter names {OPERATOR} plainly and pleads with him not to give up on {LISTENER}; it feels like reading a stranger's heart, and {HERO} can press on because {SIGNAL} needs an answer, or she can retie the ribbon, deciding some grief is not hers to open",
+    "e_no_letters": "{HERO} reknots the ribbon and sets the letters gently back, unwilling to pry into two old men's sorrow; it is a kind choice and a final one, for the names and frequencies she needed were folded inside, and the trail simply ends",
+    "r_no_book": "{KIN} logged {SIGNAL} for years, always with the same underlined note asking why {OPERATOR} was still transmitting; the last page, dated the week he died, simply asks whether anyone will finally answer the poor man",
+    "r_no_cards": "{C1_FIND2} are from listeners all over the coast, all logging the same stubborn signal; one card, heavier than the rest, names an exact frequency and {C1_DETAIL1}, while the others are only friendly postcards she could set aside",
+    "r_no_freq": "{C1_DETAIL1} gives {HERO} a name to hang the mystery on, and a frequency matching {SIGNAL} to the decimal; whoever {OPERATOR} is, the whole coast of listeners has quietly heard him for years and no one ever answered",
+    "e_no_cards_end": "{HERO} stacks the postcards back in {C1_ZONE} and closes the lid, meaning to come back when she is less tired; morning brings school and ordinary noise, and the cards, and {SIGNAL}, slip quietly back into the past",
+    "r_no_shed": "{C2_ZONE} smells of solder and dust; {C2_DETAIL1} are pinned in ranks across one wall, but a padlocked filing cabinet is out of reach, and {HERO} weighs reading {C2_OFFER1} against forcing {C2_OFFER2}",
+    "r_no_tuning": "One yellowed note among {C2_DETAIL1} is circled twice, naming {THRESHOLD} and {OPERATOR}, do not give up on him; {KIN} had been trying to reach the sender for decades, and now the task, unfinished, has passed to {HERO}",
+    "e_no_locked": "{C2_OFFER2} will not yield and the hasp is screwed tight; without the key it keeps its secrets, and by the time {HERO} thinks to search for it the trail has gone cold, {SIGNAL} just one more thing {KIN} understood and she never will",
+    "r_notes_beat": "Everything {HERO} has found among {KIN}'s papers converges on one stubborn fact, {OPERATOR} has been transmitting from {THRESHOLD} for a lifetime, and she is holding the only thread that leads back to him",
+    "r_notes_close": "Papers spread across {KIN}'s desk, {HERO} traces the last line of his research to its end; there is nothing left to read and only one thing left to do, go to {THRESHOLD} and face the man {KIN} could never quite reach",
+    "n_b1": "However she got here, {HERO} arrives at the same certainty; {SIGNAL} is no accident and no machine left running, it is the deliberate work of one person, {OPERATOR}, {THRESHOLD}'s last operator, looping the same numbers and {DEADLINE_SIGN} for years because nobody has ever answered back; the who is settled, and it only sharpens the harder questions",
+    "n_b1_echo": "{HERO} pins {OPERATOR}'s name to her corkboard beside the frequency she has traced; {SIGNAL} cycles again in her headphones, patient and sad, and two ways forward open, to crack the coded numbers themselves or to learn who {OPERATOR} really is",
+    "n_b1_choice": "The mystery has a person at its center now, but a person is not an answer; {HERO} can bend her attention to the numbers {OPERATOR} reads, hunting the code hidden in them, or she can chase {OPERATOR} himself through the town records and the people who remember him",
+    "m_numbers_1": "{HERO} writes the number string out in full and stares; it could be {D_TOOL1} keyed to a text she already owns, {ROUTE_C_CLUE} maybe, or it could be {D_TOOL2}, ticking toward one fixed moment, and each theory needs a different tool",
+    "m_num_cipher": "Using {D1_KEY1}, {HERO} maps each figure to a word; fragments surface, {D1_FRAGMENT} and the letter {LISTENER}, enough to feel real, but one cluster stays gibberish and she must decide whether to keep forcing {D1_KEY1} or switch to {D1_KEY2}",
+    "m_num_cracked": "{D1_KEY1} holds; the numbers resolve into a plain, aching sentence, {D1_FRAGMENT} for {LISTENER}, and the final group is not a word at all but a running count, {SIGNAL} is measuring how long is left",
+    "m_num_book2": "{D1_KEY2} is battered, and against it the stubborn cluster finally speaks, a date and an hour; but the rest turns to noise on this key, and {HERO} must judge whether she has enough or has hit a wall",
+    "m_num_cracked2": "{D1_KEY2} gives {HERO} a single decoded certainty, a date and hour only days away, wrapped around {D1_FRAGMENT} for {LISTENER}; the numbers are a clock, and the clock is nearly run down",
+    "e_num_gibberish": "The cipher slips through {HERO}'s fingers, every new key spitting out fresh nonsense until the numbers blur together; she closes her notebooks well past midnight, no closer to the meaning, {SIGNAL} still counting in the dark toward a total she cannot read",
+    "m_num_time": "Treating the string as {D_TOOL2}, {HERO} logs the intervals between broadcasts; they are shrinking, each cycle a little shorter than the last, and she can either keep {D2_METHOD1} to project its end or {D2_METHOD2} against the pattern",
+    "m_num_intervals": "The intervals are collapsing on a curve; {HERO} plots them and the line drives toward zero within the week, {SIGNAL} is not eternal after all, it is counting down, and something happens when it reaches the bottom",
+    "m_num_pattern": "Laid over a calendar the intervals lock onto one date, and beside it in {SIGNAL} sits the repeated letter {LISTENER}; {HERO} can commit to that reading and push on, or she can decide she is forcing a pattern that is not really there and stop",
+    "m_num_countdown": "{HERO} circles the date twice; {SIGNAL} is a countdown to that exact night, threaded through with a name, and whatever {OPERATOR} set in motion is meant to finish then whether anyone is listening or not",
+    "e_num_giveup": "Doubt wins; {HERO} decides she has been reading shapes into {NOISE}, the way people see faces in clouds, and she puts her charts away for good; {SIGNAL} keeps its rhythm without her, and she never learns she was right all along",
+    "m_who_1": "To find {OPERATOR}, {HERO} needs someone who remembers; {E_SOURCE1} goes back a century, and {E_SOURCE2} has known that headland since before {THRESHOLD} was built",
+    "m_who_film": "The reader whirs; {HERO} finds {E1_FIND}, {THRESHOLD} closed, its staff let go, and a photograph of a lone technician who refused a transfer, but {E_SOURCE1} is shutting within the hour and she cannot read every reel",
+    "m_who_article": "The article names him, {OPERATOR}, the one operator who stayed on unpaid after the shutdown, insisting {THRESHOLD} still had a job to do; the reporter thought it a sad eccentricity, but {HERO} reads {SIGNAL} underneath it now",
+    "m_who_photo": "{HERO} shoots the pages just as the lights dim; later, zooming in, she reads the caption naming {OPERATOR}, and a margin note wondering if he ever stopped broadcasting, which tells her {SIGNAL} has outlived the whole town's memory",
+    "m_who_okafor": "{E_SOURCE2} hands {HERO} a mug of tea and studies her a long moment; she knew {OPERATOR}, she says, knew {E2_DETAIL}, then she pauses, weighing whether the girl truly wants to carry this or should be sent gently home to bed",
+    "m_who_story": "Satisfied, {E_SOURCE2} tells it plain; {OPERATOR}'s daughter left after a terrible quarrel and never wrote, and he swore he would keep a channel open for her until she answered, a promise he has kept alone for thirty years",
+    "e_who_warn": "{HERO} hesitates a beat too long, and {E_SOURCE2} kindly decides the past is too heavy for a school night; she walks {HERO} to the door with a pat and a thermos, and the story of {OPERATOR} stays sealed in an old woman's memory, {SIGNAL} still calling in the cold",
+    "n_b2": "The threads knot into one answer; {SIGNAL} repeats because it is a countdown that resets every time it goes unanswered, and it is not broadcast to the world at all, it is addressed, aimed at a single listener marked only {LISTENER} in {OPERATOR}'s logs; for thirty years he has held a channel open for someone who never called back, restarting {SIGNAL} each time the silence won",
+    "n_b2_echo": "{HERO} sits back, headphones warm against her ears, {SIGNAL} suddenly unbearably human; two questions remain and they braid together, who exactly is {LISTENER}, and what happens when this newest countdown finally reaches zero",
+    "n_b2_choice": "She cannot answer a signal she does not understand; {HERO} can hunt down who {LISTENER} really is, the one {OPERATOR} has waited a lifetime for, or she can work out exactly what the shrinking countdown is racing toward",
+    "mm_listener_1": "{LISTENER} could be a person or a place; {HERO} can try {F_METHOD1}, or she can {F_METHOD2}, a landfall he keeps naming for a ship or a soul that never arrives",
+    "mm_list_family": "{F1_LEAD1} shows a daughter gone from the county three decades back; there is also {F1_LEAD2}, still local, and {HERO} must choose which lead to pin her hope on with the clock already shrinking",
+    "mm_list_daughter": "{LISTENER} is {OPERATOR}'s daughter, who walked out after their last fight and has drifted from town to town since; {SIGNAL} is his standing apology, broadcast on the frequency they once shared, waiting for the day she tunes back in",
+    "mm_list_sister": "{F1_LEAD2}, reached by phone, weeps softly; she confirms {LISTENER} is {OPERATOR}'s only child, and gives {HERO} the last address she has, a long shot two towns west, and one plea before it is too late for them both",
+    "mm_list_place": "On the chart, {LISTENER} could mark {F2_LANDMARK} off the headland where a boat once went down; {HERO} can chase that reading, or she can admit the map is leading her in circles while the real answer is a person, not a place",
+    "mm_list_map": "{F2_LANDMARK}'s plaque carries a name, {LISTENER}, painted the year {OPERATOR}'s daughter vanished; {LISTENER} is not a place after all but a person the whole headland has quietly mourned, and she may yet be alive to hear him",
+    "e_list_deadend": "{HERO} chases the map in widening circles until every lead folds back on itself; exhausted, she saves a clean recording of {SIGNAL} to her phone and lets the search go, carrying a mystery she can play for people but never finish",
+    "mm_count_1": "To pin the countdown target, {HERO} can try {G_METHOD1}, or she can test her hunch it is timed to the coast itself, to {G2_WEATHER} swelling toward the headland this very week",
+    "mm_count_time": "The math lands the zero point on a night only days off; but a countdown needs a thing to reach, and {HERO} must decide whether zero marks {DEADLINE} finally failing or {FAREWELL} playing automatically when the wait runs out",
+    "mm_count_extrap": "{THRESHOLD} runs on {DEADLINE}, and {HERO}'s extrapolation matches its rated end almost to the hour; when it fails {SIGNAL} fails with it, and {OPERATOR}'s thirty-year channel to {LISTENER} goes dark unless someone acts first",
+    "mm_count_clock": "Buried in the logs {HERO} finds it, {FAREWELL}, {OPERATOR}'s goodbye to {LISTENER}, set to speak once into the dark and be gone",
+    "mm_count_tide": "The countdown does align with {G2_WEATHER} forecast for the headland; that could mean the storm will simply swamp {THRESHOLD}, and {HERO} can raise the alarm or hold back, unsure she has the story right",
+    "mm_count_warn": "{HERO} connects it, {G2_WEATHER} will swamp the headland the same night {DEADLINE} fails, ending {SIGNAL} twice over; the countdown is real and physical now, weather and machinery closing on one hour, and the window to act is almost shut",
+    "e_count_wait": "{HERO} decides she needs to be sure before she troubles anyone, so she waits one more night to double-check her figures; in the morning {SIGNAL} is gone, only clean {NOISE} where the countdown used to be, {THRESHOLD} silenced while she hesitated",
+    "n_b3": "Everything {HERO} has gathered snaps into one clear, ticking shape; the countdown ends this coming night, when {DEADLINE} finally fails, and the moment it does {FAREWELL} will play, {OPERATOR}'s recorded farewell to the one he has waited so long to reach, and then erase itself into silence with {G2_WEATHER} rolling in behind it; thirty years of waiting come down to one hour, and {HERO} is the only person who knows",
+    "n_b3_echo": "Rain begins to freckle the window as {HERO} weighs her options; {THRESHOLD} is a bike ride away, {KIN}'s transmitter still works, and the town has people who could move faster than she can, but every path runs against the same shrinking clock",
+    "n_b3_choice": "One hour, three ways to spend it; {HERO} can race to {THRESHOLD} itself and answer {SIGNAL} at its source, she can use {KIN}'s rig to rebroadcast {FAREWELL} wide enough that {LISTENER} might hear it, or she can rouse people who could reach the headland faster and surer than a girl on a bike in a gale",
+    "f_station_1": "{HERO} pedals into {G2_WEATHER} and reaches {H_ENTRY}; the mast light pulses with {SIGNAL} above her, minutes left on the clock, and she can go over the rattling fence into {H1_ZONE} or gamble on {H2_ZONE}",
+    "f_st_fence": "{HERO} tops the fence and drops into {H1_ZONE}; {H1_ROOM}'s door hangs ajar ahead, spilling faint light, but the exposed climb has cost her precious minutes and {H1_GATE} is trying to peel her off the concrete, so she can push straight for that door or catch her breath first",
+    "e_st_hesitate": "Pinned by {H1_GATE}, {HERO} loses her nerve and her seconds together; by the time she forces herself to the door the console has already gone dark, the countdown spent, and she is left in a dead {H1_ROOM} with a mystery solved one minute too late",
+    "f_st_control": "Inside, {H1_ROOM} is a shrine of dials and one glowing console counting down in red; {HERO} can seize {H1_CHOICE1} and answer the transmitter directly, or she can see {DEADLINE} guttering and try to stabilize it before it fails mid-message",
+    "f_st_answer": "The countdown reads under a minute; {HERO} finds {OPERATOR}'s contact list open on the desk, {H1_CONTACT} never dialed, and she can bridge that line and let {FAREWELL} finally reach a living ear, or simply key the transmitter to halt the wipe and save {H1_ARCHIVE}",
+    "e_st_reunite": "{HERO} dials {H1_CONTACT} and patches it through as the counter hits zero; across three towns a phone rings, a startled woman answers, and her father's recorded voice, thirty years patient, fills the line, still holding the channel open for {LISTENER}, and this time somebody is there to hear it",
+    "e_st_archive": "{HERO} keys the override a breath before the wipe; the countdown freezes, {SIGNAL} steadies, and thirty years of {OPERATOR}'s logs and messages are saved intact, {H1_ARCHIVE} preserved so that when {LISTENER} is found, every word he sent will still be waiting for her",
+    "f_st_power": "{DEADLINE} is a corroded brick barely holding voltage; {HERO} remembers {KIN}'s spare battery in her pack and can splice it in to buy {THRESHOLD} hours and then call the whole thing in properly, or she can nurse it by hand and pray it lasts through one last broadcast",
+    "e_st_stabilize": "The spliced cell catches and the console steadies; {HERO} gets {THRESHOLD} stable, then phones {I_GROUP} with the whole story, and by dawn {OPERATOR}'s loop is safe on backup power while volunteers begin the search for {LISTENER}, the countdown stopped and the waiting handed on to people who can finish it",
+    "e_st_record": "{HERO}'s hands are steady but {DEADLINE} is too far gone; it fails with a small final click just as {FAREWELL} begins, cutting {OPERATOR}'s farewell to a single word, {LISTENER}, before the room goes dark and silent, though {HERO}'s clean recording of that last word is all that survives the night",
+    "f_st_road": "{H2_ZONE} is longer but sheltered, and {HERO} pedals hard around to a back door standing open; a lamp burns inside, and there, hunched over the console he has tended for thirty years, is {OPERATOR} himself, or she finds {H2_GATE} after all and time bleeding away",
+    "f_st_alder": "{OPERATOR} turns, startled to find a girl dripping in his doorway; {HERO} blurts everything she has pieced together, {SIGNAL}, the countdown, {LISTENER}, and she can beg him to let {FAREWELL} go out live tonight while there is still power, or watch him shake his head, certain after thirty years no one is really listening",
+    "e_st_alder_send": "Something in {HERO}'s certainty reaches the old man; {OPERATOR} wipes his eyes, leans to {H1_CHOICE1}, and instead of the recording speaks live for the first time in decades, telling the open channel he is still here, still sorry, still waiting, and two towns west {LISTENER}, who never stopped listening, finally lifts the handset",
+    "e_st_alder_refuse": "{OPERATOR} only shakes his head; thirty years of silence have convinced him no answer is coming, and he will not risk hoping again tonight, not even for a stranger. {HERO} leaves her notebook of everything she found on his desk and bikes home in the rain, the choice, and {SIGNAL}, left in his tired hands",
+    "e_st_wait": "{H2_GATE} is bolted and no knock brings anyone; {HERO} huddles under the eave counting the minutes until the mast light stutters and goes still, the countdown finished on the far side of a locked door, so close she could hear the last tone fade through the wall",
+    "f_relay_1": "{HERO} stays home and runs for the attic instead; if she cannot reach {THRESHOLD} in time, she can amplify {FAREWELL} so far and wide that {LISTENER} might stumble on it, using {KIN}'s own transmitter, or she can wake {I_GROUP} to throw it across the whole county net",
+    "f_re_rig": "{KIN}'s rig hums to life under {HERO}'s hands, warm and familiar; she can boost {SIGNAL} and splice {LISTENER}'s name across every band she can legally reach, praying it carries, or she can push the old set past its limits for more range than it was ever built to give",
+    "f_re_boost": "{HERO} rebroadcasts {FAREWELL} on a steady boost, {LISTENER}'s name riding {SIGNAL} out across the dark coast; for a long minute there is only {NOISE}, and then she must decide whether the faint carrier swelling back is truly an answer or just her own hope, and whether to keep calling",
+    "e_re_answer": "The carrier resolves into a voice, hesitant and disbelieving, asking who is broadcasting her name; {HERO} explains in a rush, her father, {THRESHOLD}, thirty years, and hands the channel to {SIGNAL}, and {LISTENER} listens to her father's waiting message with a stranger girl as witness, the silence finally, gently broken",
+    "e_re_neighbor": "No answer comes for {LISTENER}, but a neighbor two streets over hears the whole broadcast and calls, shaken, promising to spread it through every relay and club she knows; {HERO} has not closed {SIGNAL} herself, yet she has thrown {FAREWELL} far past {THRESHOLD}, and now a hundred listeners will carry it on",
+    "e_re_fuse": "{HERO} pushes the old rig too hard and it dies in a wisp of blue smoke and the smell of scorched solder; the attic goes quiet, {KIN}'s transmitter finished the same night as {OPERATOR}'s loop, and she is left with a dark set and a message she could not send",
+    "f_re_club": "{HERO} rings {I_GROUP}'s emergency line; {I2_CONTACT} answers, then wakes fully as the story spills out, and he can throw {FAREWELL} onto the county-wide net at once for maximum reach, or she can hear that no one is on shift and only a recorder is listening at this hour",
+    "f_re_net": "{I_GROUP} fires {FAREWELL} across the whole county net, dozens of stations relaying {LISTENER}'s name into {G2_WEATHER}; within minutes reports trickle back, and {HERO} must judge whether {I2_LEAD} is the lead she has prayed for or a coincidence to chase",
+    "e_re_found": "The lead is real; the woman two ridges west is {LISTENER}, up late and idly scanning the bands she abandoned decades ago, and the sound of her own name in her father's old loop stops her cold. {I_GROUP} patches her through to {THRESHOLD}, and {OPERATOR}'s thirty-year wait ends in a single trembling hello",
+    "e_re_log": "{HERO} cannot be sure any single lead is {LISTENER}, so she logs them all and hands {I_GROUP} a complete file, the frequency, the story, every promising callback; the net keeps {FAREWELL} circulating night after night, and though {HERO} does not see the ending herself, {OPERATOR}'s loop is finally in a hundred searching hands",
+    "e_re_message": "Only the after-hours recorder answers, and {HERO} leaves the whole story into the void, hoping someone plays it back at dawn; but dawn is after the countdown, and by the time a club volunteer hears her message {THRESHOLD}'s loop has already fallen silent, her call arriving a night too late",
+    "f_help_1": "{HERO} decides she cannot do this alone against the clock; she can phone {J_METHOD1}, who treat any headland beacon seriously and can reach {THRESHOLD} by road in minutes, or she can track down {J_METHOD2}, a man who would understand every word of what she has found",
+    "f_he_cg": "{J1_HELPER} takes {HERO} seriously the moment she says a beacon on the headland is counting down in {G2_WEATHER}; he can dispatch a crew to {THRESHOLD} to secure it as a live signal, or he can hesitate, unable to log a mystery loop as a real emergency without more than a schoolgirl's word",
+    "e_he_dismiss": "Without a real emergency to log, {J1_HELPER} thanks {HERO} politely and files her call under curiosities; no crew rolls, and out on the headland the countdown runs down unwatched, {SIGNAL} dying in {G2_WEATHER} while the one report that could have saved it sits closed in a duty logbook",
+    "f_he_act": "A crew rolls for the headland with {HERO} guiding them by phone; reaching {THRESHOLD} ahead of {G2_WEATHER}, they radio back that the console is alive and counting, and {HERO} must tell them what matters most in the last minute, to trace {FAREWELL}'s intended listener or to preserve the failing station whole",
+    "e_he_escort": "The crew patches {HERO} straight into {THRESHOLD}, and with their gear behind {OPERATOR}'s thirty-year loop the signal leaps its old limits; they trace the return call to {LISTENER} within the hour and hold the channel open until father and daughter are, at last and across all that silence, speaking to each other",
+    "e_he_safe": "The crew secures {THRESHOLD} minutes before {G2_WEATHER} hits, swapping {DEADLINE} and locking {SIGNAL} safely onto backup power; nothing is lost, and with the station stable {J_METHOD1} opens a proper search for {LISTENER}, crediting the whole discovery to the girl who would not let a strange signal go",
+    "f_he_colleague": "{HERO} tracks down {J2_HELPER}; he goes quiet when she describes {SIGNAL}, then says he always feared {OPERATOR} would do this, and he can drive out to help her reach {THRESHOLD} in time, or she can learn his number is years dead and the man long moved away",
+    "f_he_join": "{J2_HELPER} meets {HERO} at {H_ENTRY} with keys he never returned; he knows the console cold, and together they can complete {OPERATOR}'s scheduled transmission the right way before {DEADLINE} fails, or {HERO} can step back and let the old professional take it from here, her part in the search already done",
+    "e_he_complete": "Side by side, {HERO} and {J2_HELPER} bring {THRESHOLD} to full power and send {FAREWELL} out clean and strong on the exact frequency {LISTENER} once knew; when the answer comes, faint then sure, {J2_HELPER} grips {HERO}'s shoulder, and {SIGNAL}, which counted down alone for thirty years, ends with two people there to hear it land",
+    "e_he_takeover": "{HERO} hands {J2_HELPER} the story and steps back, and he takes over with the ease of a man who built the place; she bikes home certain it is in good hands, yet she never hears how it ends, whether {LISTENER} answered or {SIGNAL} simply stopped, her long night closing on a question she will always carry",
+    "e_he_dead": "The number rings out to a stranger; {J2_HELPER} moved away years ago and left no forwarding line, and every other name from the relay days has scattered or passed on. {HERO} sits with the dead phone as the clock runs down, the one person who could have helped her already gone beyond reach"
+  },
+  "titles": {
+    "e_coord_notice": "A Scrap of Card",
+    "e_coord_shed_leave": "Filed and Forgotten",
+    "e_re_photo": "A Blurred Photograph",
+    "e_re_cellar": "One Wave Too Slow",
+    "e_no_letters": "Some Grief Stays Closed",
+    "e_no_cards_end": "Back in the Trunk",
+    "e_no_locked": "The Locked Cabinet",
+    "e_num_gibberish": "The Cipher Wins",
+    "e_num_giveup": "Seeing Faces in Static",
+    "e_who_warn": "Sent Home to Bed",
+    "e_list_deadend": "Circles on the Chart",
+    "e_count_wait": "One Night Too Long",
+    "e_st_reunite": "{H1_PRIZE1}",
+    "e_st_archive": "{H1_PRIZE2}",
+    "e_st_stabilize": "{H1_PRIZE3}",
+    "e_st_record": "One Word Saved",
+    "e_st_hesitate": "One Minute Too Late",
+    "e_st_alder_send": "{H2_PRIZE1}",
+    "e_st_alder_refuse": "He Would Not Hope",
+    "e_st_wait": "On the Wrong Side of the Door",
+    "e_re_answer": "{I1_PRIZE1}",
+    "e_re_neighbor": "{I1_PRIZE2}",
+    "e_re_fuse": "Blue Smoke",
+    "e_re_found": "{I2_PRIZE1}",
+    "e_re_log": "{I2_PRIZE2}",
+    "e_re_message": "Left on the Recorder",
+    "e_he_escort": "{J1_PRIZE1}",
+    "e_he_safe": "{J1_PRIZE2}",
+    "e_he_dismiss": "Filed Under Curiosities",
+    "e_he_complete": "{J2_PRIZE1}",
+    "e_he_takeover": "In Good Hands, Unknown End",
+    "e_he_dead": "No One Left to Call"
+  },
+  "labels": {
+    "n_start": {
+      "c_n_start_1": "Plot {ROUTE_A_CLUE} the voice keeps reading.",
+      "c_n_start_2": "Bike out to {THRESHOLD}.",
+      "c_n_start_3": "Dig out {ROUTE_C_CLUE}."
+    },
+    "r_coord_1": {
+      "c_r_coord_1_1": "Head down to {A1_ZONE}.",
+      "c_r_coord_1_2": "Climb to {A2_ZONE}."
+    },
+    "r_coord_harbor": {
+      "c_r_coord_harbor_1": "Knock at {A1_OFFER1}.",
+      "c_r_coord_harbor_2": "Cross to {A1_OFFER2}.",
+      "c_r_coord_harbor_3": "Check {A1_LANDMARK}."
+    },
+    "r_coord_notice": {
+      "c_r_coord_notice_1": "Examine {A1_FIND} more closely."
+    },
+    "r_coord_notice2": {
+      "c_r_coord_notice2_1": "Follow {A1_FIND}."
+    },
+    "r_coord_harbor_ask": {
+      "c_r_coord_harbor_ask_1": "Follow the thread back to {THRESHOLD}."
+    },
+    "r_coord_shed_in": {
+      "c_r_coord_shed_in_1": "Trace it to {THRESHOLD}."
+    },
+    "r_coord_tower": {
+      "c_r_coord_tower_2": "Search {A2_OFFER2}."
+    },
+    "r_coord_climb": {
+      "c_r_coord_climb_1": "Follow the cable to {THRESHOLD}."
+    },
+    "r_coord_base": {
+      "c_r_coord_base_2": "Follow {A2_DETAIL2} instead."
+    },
+    "r_coord_base_in": {
+      "c_r_coord_base_in_1": "Head for {THRESHOLD}."
+    },
+    "r_relay_1": {
+      "c_r_relay_1_1": "Take {B1_ZONE}.",
+      "c_r_relay_1_2": "Take {B2_ZONE}."
+    },
+    "r_re_path": {
+      "c_r_re_path_1": "Slip through {B1_GATE}."
+    },
+    "r_re_lane": {
+      "c_r_re_lane_1": "Try {B2_OFFER1}.",
+      "c_r_re_lane_2": "Wade to {B2_OFFER2}.",
+      "c_r_re_lane_3": "Duck into {B2_OFFER3}."
+    },
+    "r_re_cellar": {
+      "c_r_re_cellar_1": "Reach for {B2_FIND}."
+    },
+    "r_re_cellar2": {
+      "c_r_re_cellar2_1": "Salvage {B2_FIND}.",
+      "c_r_re_cellar2_2": "Retreat from {B2_GATE}."
+    },
+    "r_re_gatehouse": {
+      "c_r_re_gatehouse_1": "Study {B2_DETAIL1}."
+    },
+    "r_re_scrap": {
+      "c_r_re_scrap_1": "Chase down who {LISTENER} might be."
+    },
+    "r_re_hut": {
+      "c_r_re_hut_1": "Follow {OPERATOR}'s name inward."
+    },
+    "r_relay_beat": {
+      "c_r_relay_beat_1": "Face the source of {SIGNAL}."
+    },
+    "r_notes_1": {
+      "c_r_notes_1_1": "Open {C1_ZONE}.",
+      "c_r_notes_1_2": "Search {C2_ZONE}."
+    },
+    "r_no_trunk": {
+      "c_r_no_trunk_1": "Read {C1_FIND1}.",
+      "c_r_no_trunk_2": "Sort through {C1_FIND2}.",
+      "c_r_no_trunk_3": "Untie {C1_FIND3}."
+    },
+    "r_no_letters2": {
+      "c_r_no_letters2_1": "Read the letter that names {OPERATOR}."
+    },
+    "r_no_cards": {
+      "c_r_no_cards_1": "Chase the card naming {OPERATOR}."
+    },
+    "r_no_freq": {
+      "c_r_no_freq_1": "Find out who {OPERATOR} is."
+    },
+    "r_no_shed": {
+      "c_r_no_shed_1": "Read {C2_OFFER1}.",
+      "c_r_no_shed_2": "Try to force {C2_OFFER2}."
+    },
+    "r_notes_beat": {
+      "c_r_notes_beat_1": "Follow {OPERATOR}'s thread to the source."
+    },
+    "n_b1_choice": {
+      "c_n_b1_choice_2": "Find out who {OPERATOR} is."
+    },
+    "m_numbers_1": {
+      "c_m_numbers_1_1": "Test it as {D_TOOL1}.",
+      "c_m_numbers_1_2": "Test it as {D_TOOL2}."
+    },
+    "m_num_cipher": {
+      "c_m_num_cipher_1": "Keep forcing {D1_KEY1}.",
+      "c_m_num_cipher_2": "Switch to {D1_KEY2}."
+    },
+    "m_num_time": {
+      "c_m_num_time_1": "Keep {D2_METHOD1}.",
+      "c_m_num_time_2": "Try {D2_METHOD2}."
+    },
+    "m_who_1": {
+      "c_m_who_1_1": "Search {E_SOURCE1}.",
+      "c_m_who_1_2": "Ask {E_SOURCE2}."
+    },
+    "m_who_film": {
+      "c_m_who_film_1": "Read {E1_FIND} closely."
+    },
+    "m_who_photo": {
+      "c_m_who_photo_1": "Trace {SIGNAL}'s long life."
+    },
+    "n_b2_choice": {
+      "c_n_b2_choice_1": "Find out who {LISTENER} is.",
+      "c_n_b2_choice_2": "Find out what {DEADLINE_SIGN} reaches."
+    },
+    "mm_listener_1": {
+      "c_mm_listener_1_1": "Search {OPERATOR}'s family for {LISTENER}.",
+      "c_mm_listener_1_2": "Test {LISTENER} as a place on the map."
+    },
+    "mm_list_family": {
+      "c_mm_list_family_1": "Trace the daughter, {LISTENER}.",
+      "c_mm_list_family_2": "Trace {F1_LEAD2} instead."
+    },
+    "mm_list_daughter": {
+      "c_mm_list_daughter_1": "Fix on reaching {LISTENER}."
+    },
+    "mm_list_place": {
+      "c_mm_list_place_1": "Check {F2_LANDMARK}."
+    },
+    "mm_list_map": {
+      "c_mm_list_map_1": "Turn the search toward {LISTENER} herself."
+    },
+    "mm_count_1": {
+      "c_mm_count_1_1": "{G_METHOD1}.",
+      "c_mm_count_1_2": "{G_METHOD2}."
+    },
+    "mm_count_time": {
+      "c_mm_count_time_1": "Read zero as {DEADLINE} failing.",
+      "c_mm_count_time_2": "Read zero as {FAREWELL} firing."
+    },
+    "mm_count_tide": {
+      "c_mm_count_tide_1": "Warn someone about {G2_WEATHER} and the relay."
+    },
+    "n_b3_choice": {
+      "c_n_b3_choice_1": "Race to {THRESHOLD}.",
+      "c_n_b3_choice_2": "Rebroadcast {FAREWELL} yourself."
+    },
+    "f_station_1": {
+      "c_f_station_1_1": "Go over the fence into {H1_ZONE}.",
+      "c_f_station_1_2": "Take {H2_ZONE}."
+    },
+    "f_st_fence": {
+      "c_f_st_fence_1": "Push straight for {H1_ROOM}."
+    },
+    "f_st_control": {
+      "c_f_st_control_1": "Seize {H1_CHOICE1} and answer {SIGNAL}.",
+      "c_f_st_control_2": "Try to stabilize {DEADLINE}."
+    },
+    "f_st_answer": {
+      "c_f_st_answer_1": "Bridge the line to {LISTENER} and play it.",
+      "c_f_st_answer_2": "Halt the wipe and save {H1_ARCHIVE}."
+    },
+    "f_st_power": {
+      "c_f_st_power_2": "Nurse {DEADLINE} by hand."
+    },
+    "f_st_road": {
+      "c_f_st_road_1": "Find {OPERATOR} himself at {H1_ROOM}.",
+      "c_f_st_road_2": "Find {H2_GATE}, and wait."
+    },
+    "f_st_alder": {
+      "c_f_st_alder_1": "Convince {OPERATOR} to send it live."
+    },
+    "f_relay_1": {
+      "c_f_relay_1_1": "Use {KIN}'s transmitter.",
+      "c_f_relay_1_2": "Call {I_GROUP}'s net."
+    },
+    "f_re_rig": {
+      "c_f_re_rig_1": "{I1_ACTION1}.",
+      "c_f_re_rig_2": "{I1_ACTION2}."
+    },
+    "f_re_net": {
+      "c_f_re_net_2": "Log every lead for {I_GROUP} to follow."
+    },
+    "f_help_1": {
+      "c_f_help_1_1": "Call {J_METHOD1}.",
+      "c_f_help_1_2": "Find {J_METHOD2}."
+    },
+    "f_he_cg": {
+      "c_f_he_cg_2": "Watch him dismiss it as {NOISE}."
+    },
+    "f_he_act": {
+      "c_f_he_act_1": "Have them trace and reach {LISTENER}.",
+      "c_f_he_act_2": "Have them secure and save {THRESHOLD}."
+    },
+    "f_he_colleague": {
+      "c_f_he_colleague_1": "Team up with {J2_HELPER} to reach {THRESHOLD}."
+    },
+    "f_he_join": {
+      "c_f_he_join_2": "Step back and let {J2_HELPER} finish it."
+    }
+  }
+}

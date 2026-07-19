@@ -1,0 +1,1557 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-signal-in-the-static",
+  "age_band": "13-16",
+  "legacy_lexicon": [
+    "Wren",
+    "Wren Callahan",
+    "Callahan",
+    "Kell Alder",
+    "Alder",
+    "Marin",
+    "Okafor",
+    "Ruiz",
+    "KX",
+    "the loop",
+    "headland",
+    "shortwave radio"
+  ],
+  "default_binding": {
+    "HERO": "Wren",
+    "KIN": "her grandfather",
+    "OPERATOR": "Kell Alder",
+    "LISTENER": "Marin",
+    "SIGNAL": "the loop",
+    "NOISE": "the hiss",
+    "DEADLINE_SIGN": "a slow descending countdown tone",
+    "DEADLINE": "the relay's failing power cell",
+    "FAREWELL": "a final message queued to erase itself",
+    "THRESHOLD": "the headland relay station",
+    "CALL_SIGN": "KX",
+    "ROUTE_A_CLUE": "the coordinates",
+    "ROUTE_C_CLUE": "her grandfather's listening logbook",
+    "A1_ZONE": "the harbor",
+    "A1_OFFER1": "the harbormaster's hut",
+    "A1_OFFER2": "the old tide-gauge shed",
+    "A1_LANDMARK": "the pier notice-board",
+    "A1_FIND": "a pinned frequency card",
+    "A1_HELPER": "the harbormaster",
+    "A1_DETAIL1": "a dusty receiver",
+    "A2_ZONE": "the water tower",
+    "A2_OFFER1": "the maintenance ladder",
+    "A2_OFFER2": "the padlocked service box",
+    "A2_DETAIL1": "a thin cable running toward the ridge",
+    "A2_DETAIL2": "a faded stenciled arrow",
+    "B1_ZONE": "the exposed coast path",
+    "B1_GATE": "a peeled-back gap in the fence",
+    "B1_LANDMARK": "a weather-blistered sign",
+    "B1_DETAIL1": "a single glowing window",
+    "B2_ZONE": "the flooded service lane",
+    "B2_OFFER1": "the lit gatehouse",
+    "B2_OFFER2": "the humming transformer hut",
+    "B2_OFFER3": "the flooded cellar entrance",
+    "B2_GATE": "the rising cellar water",
+    "B2_FIND": "a taped operator's note",
+    "B2_DETAIL1": "a hand-inked log board",
+    "B2_DETAIL2": "a barking dog",
+    "B2_DETAIL3": "a maintenance sticker",
+    "C1_ZONE": "the cedar trunk",
+    "C1_FIND1": "a water-stained logbook",
+    "C1_FIND2": "a bundle of QSL cards",
+    "C1_FIND3": "a ribboned bundle of unsent letters",
+    "C1_DETAIL1": "a circled call sign",
+    "C2_ZONE": "the radio shed",
+    "C2_DETAIL1": "a wall of pinned tuning notes",
+    "C2_OFFER1": "the pinned tuning notes",
+    "C2_OFFER2": "the padlocked correspondence cabinet",
+    "D_TOOL1": "a book cipher",
+    "D_TOOL2": "a timestamp countdown",
+    "D1_KEY1": "the logbook's page numbers",
+    "D1_KEY2": "a second underlined tide table",
+    "D1_FRAGMENT": "a recurring plea to keep the channel open",
+    "D2_METHOD1": "timing the shrinking intervals",
+    "D2_METHOD2": "mapping the pattern onto a calendar",
+    "E_SOURCE1": "the county library microfilm archive",
+    "E_SOURCE2": "an old marina neighbor",
+    "E1_FIND": "a decommission notice",
+    "E2_DETAIL": "what the operator gave up long ago",
+    "F_METHOD1": "digging into the operator's family records",
+    "F_METHOD2": "testing whether the initial names a place instead",
+    "F1_LEAD1": "the estranged daughter's public record",
+    "F1_LEAD2": "a local relative listed as next of kin",
+    "F2_LANDMARK": "a memorial mooring buoy",
+    "G_METHOD1": "extrapolating the loop straight to zero",
+    "G_METHOD2": "testing the countdown against the tide and weather",
+    "G2_WEATHER": "an incoming storm",
+    "H_ENTRY": "the chained relay gate",
+    "H1_ZONE": "the flooded yard beyond the fence",
+    "H1_GATE": "the wind fighting her at the yard's edge",
+    "H1_ROOM": "the control room",
+    "H1_CHOICE1": "the microphone",
+    "H1_CONTACT": "the daughter's circled number",
+    "H1_ARCHIVE": "the whole waiting archive of logs",
+    "H2_ZONE": "the sheltered service road",
+    "H2_GATE": "the locked back door",
+    "I_GROUP": "the town amateur radio club",
+    "I1_ACTION1": "boosting the loop and calling the listener's name",
+    "I1_ACTION2": "pushing the old rig past its limits",
+    "I2_CONTACT": "a sleepy overnight club operator",
+    "I2_LEAD": "a strong signal report from two ridges west",
+    "J_METHOD1": "the coast guard auxiliary",
+    "J_METHOD2": "the operator's old relay colleague",
+    "J1_HELPER": "the auxiliary duty officer",
+    "J2_HELPER": "the retired colleague across the bay",
+    "H1_PRIZE1": "The Channel Answered",
+    "H1_PRIZE2": "Nothing Is Erased",
+    "H1_PRIZE3": "Bought More Time",
+    "H2_PRIZE1": "Live, After Thirty Years",
+    "I1_PRIZE1": "A Voice Comes Back",
+    "I1_PRIZE2": "Carried Onward",
+    "I2_PRIZE1": "Two Ridges West",
+    "I2_PRIZE2": "A Hundred Searching Hands",
+    "J1_PRIZE1": "Guided In",
+    "J1_PRIZE2": "Secured Before the Storm",
+    "J2_PRIZE1": "Two People There"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The teen protagonist.",
+      "guidance": "A resourceful teen investigator; capable, curious, not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "KIN",
+          "OPERATOR",
+          "LISTENER"
+        ]
+      }
+    },
+    {
+      "id": "KIN",
+      "scope": "global",
+      "meaning": "The hero's deceased relative whose equipment and notes anchor the mystery.",
+      "guidance": "A beloved family elder, no longer living; never a source of peril; papers and gear are the practical toolkit.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "OPERATOR",
+          "LISTENER"
+        ]
+      }
+    },
+    {
+      "id": "OPERATOR",
+      "scope": "global",
+      "meaning": "The long-time broadcaster who has kept the signal alive.",
+      "guidance": "An isolated, devoted older adult; sympathetic, not sinister; his vigil is the emotional core.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "KIN",
+          "LISTENER"
+        ]
+      }
+    },
+    {
+      "id": "LISTENER",
+      "scope": "global",
+      "meaning": "The estranged family member the signal has been trying to reach.",
+      "guidance": "The operator's long-lost relative; the reunion, not the searching, is the emotional payoff.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "KIN",
+          "OPERATOR"
+        ]
+      }
+    },
+    {
+      "id": "SIGNAL",
+      "scope": "global",
+      "meaning": "The recurring mysterious broadcast that hooks the hero.",
+      "guidance": "A looping radio transmission (numbers plus a tone); eerie but not menacing; wonder over dread.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "NOISE",
+      "scope": "global",
+      "meaning": "The ambient background hiss the signal emerges from.",
+      "guidance": "Ordinary interference or silence, not sinister on its own.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The audible sign that the countdown is real and running out.",
+      "guidance": "A steady, escalating cue (shrinking intervals, a descending tone); fair warning, not sudden peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The real-world thing running out that the countdown measures.",
+      "guidance": "A survivable ending point (equipment failing); consequences are lost chances, not harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FAREWELL",
+      "scope": "global",
+      "meaning": "The one-time farewell transmission queued to fire and erase when the countdown ends.",
+      "guidance": "A recorded goodbye, not a threat; the emotional target of the climax.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The bounded outdoor site where the signal originates and the climax unfolds.",
+      "guidance": "A weather-exposed, semi-abandoned installation; unsettling atmosphere, not actual danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CALL_SIGN",
+      "scope": "global",
+      "meaning": "The short broadcast identifier stamped on equipment and records tied to the signal.",
+      "guidance": "A brief code (letters/numbers), used as a label, not a name.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CLUE",
+      "scope": "route",
+      "meaning": "The numeric clue thread pursued in the coordinates route.",
+      "guidance": "A string of figures within the signal that resolves to real locations.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_CLUE",
+      "scope": "route",
+      "meaning": "The inherited record the hero searches in the logbook route.",
+      "guidance": "A journal/correspondence archive kept by the hero's deceased relative.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_ZONE",
+      "scope": "track",
+      "meaning": "The harbor sub-route's destination.",
+      "guidance": "A quiet working waterfront at night; safe to explore.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "A2_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "A1_OFFER1",
+      "scope": "track",
+      "meaning": "First location choice in the harbor.",
+      "guidance": "A lit, occupied building.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "A1_OFFER2",
+      "scope": "track",
+      "meaning": "Second location choice in the harbor.",
+      "guidance": "A disused monitoring shed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "A1_LANDMARK",
+      "scope": "track",
+      "meaning": "A minor fixture at the harbor worth checking.",
+      "guidance": "An ordinary public noticeboard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_FIND",
+      "scope": "track",
+      "meaning": "The clue object found at the harbor landmark.",
+      "guidance": "A small pinned note naming a frequency.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_HELPER",
+      "scope": "track",
+      "meaning": "The local adult the hero can ask at the harbor.",
+      "guidance": "A friendly, knowledgeable local; no threat.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_DETAIL1",
+      "scope": "track",
+      "meaning": "The receiving device found in the harbor shed.",
+      "guidance": "An old but harmless piece of equipment.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_ZONE",
+      "scope": "track",
+      "meaning": "The tower sub-route's destination.",
+      "guidance": "A tall disused structure; climbable, not derelict-dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "A1_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "A2_OFFER1",
+      "scope": "track",
+      "meaning": "First path choice at the tower.",
+      "guidance": "A fixed maintenance ladder.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "A2_OFFER2",
+      "scope": "track",
+      "meaning": "Second path choice at the tower.",
+      "guidance": "A locked equipment box at ground level.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "A2_DETAIL1",
+      "scope": "track",
+      "meaning": "The cable or line spotted from the tower top.",
+      "guidance": "A physical trace leading toward the threshold.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_DETAIL2",
+      "scope": "track",
+      "meaning": "The marked trail found at the tower base.",
+      "guidance": "A faded directional marker.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_ZONE",
+      "scope": "track",
+      "meaning": "The coast-path sub-route.",
+      "guidance": "An exposed but passable clifftop path.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "B2_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "B1_GATE",
+      "scope": "track",
+      "meaning": "The commit-or-turn-back obstacle on the coast path.",
+      "guidance": "A tight, windy squeeze; retreat is always safe, just costs the chance.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_GATE",
+          "H1_GATE",
+          "H2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "B1_LANDMARK",
+      "scope": "track",
+      "meaning": "The signage seen after entering the compound.",
+      "guidance": "An old, weathered sign.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_DETAIL1",
+      "scope": "track",
+      "meaning": "The sensory cue that someone is still inside.",
+      "guidance": "A faint, benign light.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_ZONE",
+      "scope": "track",
+      "meaning": "The service-lane sub-route.",
+      "guidance": "A sheltered but partly flooded access lane.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "B1_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "B2_OFFER1",
+      "scope": "track",
+      "meaning": "First location choice in the service lane.",
+      "guidance": "A warm, recently occupied building.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_OFFER2",
+          "B2_OFFER3"
+        ]
+      }
+    },
+    {
+      "id": "B2_OFFER2",
+      "scope": "track",
+      "meaning": "Second location choice in the service lane.",
+      "guidance": "A humming utility structure.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_OFFER1",
+          "B2_OFFER3"
+        ]
+      }
+    },
+    {
+      "id": "B2_OFFER3",
+      "scope": "track",
+      "meaning": "Third location choice in the service lane.",
+      "guidance": "A partly flooded low entrance.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_OFFER1",
+          "B2_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "B2_GATE",
+      "scope": "track",
+      "meaning": "The commit-or-retreat obstacle in the flooded entrance.",
+      "guidance": "Rising water; retreating before it climbs higher is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1_GATE",
+          "H1_GATE",
+          "H2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "B2_FIND",
+      "scope": "track",
+      "meaning": "The keepsake note found in the flooded entrance.",
+      "guidance": "A short, weatherproofed note.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DETAIL1",
+      "scope": "track",
+      "meaning": "The handwritten log kept at the first building.",
+      "guidance": "A patient, decades-long written record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DETAIL2",
+      "scope": "track",
+      "meaning": "The sudden sound that pressures the hero at the first building.",
+      "guidance": "A startling but harmless noise.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DETAIL3",
+      "scope": "track",
+      "meaning": "The label naming a past worker at the second structure.",
+      "guidance": "A maintenance sticker or tag.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_ZONE",
+      "scope": "track",
+      "meaning": "The storage container sub-route in the notes route.",
+      "guidance": "A homely storage container in the house.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "C2_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "C1_FIND1",
+      "scope": "track",
+      "meaning": "The primary logbook found in the container.",
+      "guidance": "A worn, handwritten journal.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C1_FIND2",
+          "C1_FIND3"
+        ]
+      }
+    },
+    {
+      "id": "C1_FIND2",
+      "scope": "track",
+      "meaning": "The bundle of confirmation cards found in the container.",
+      "guidance": "A stack of correspondence keepsakes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C1_FIND1",
+          "C1_FIND3"
+        ]
+      }
+    },
+    {
+      "id": "C1_FIND3",
+      "scope": "track",
+      "meaning": "The bundle of unsent letters found in the container.",
+      "guidance": "Personal, never-mailed correspondence.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C1_FIND1",
+          "C1_FIND2"
+        ]
+      }
+    },
+    {
+      "id": "C1_DETAIL1",
+      "scope": "track",
+      "meaning": "The identifying mark on one confirmation card.",
+      "guidance": "A short code written by hand.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_ZONE",
+      "scope": "track",
+      "meaning": "The workshop sub-route in the notes route.",
+      "guidance": "A cluttered but safe hobby workshop.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "C1_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "C2_DETAIL1",
+      "scope": "track",
+      "meaning": "The pinned working notes on the workshop wall.",
+      "guidance": "Handwritten technical notes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_OFFER1",
+      "scope": "track",
+      "meaning": "The accessible choice in the workshop.",
+      "guidance": "Notes anyone can read freely.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C2_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "C2_OFFER2",
+      "scope": "track",
+      "meaning": "The locked choice in the workshop.",
+      "guidance": "A locked storage cabinet.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C2_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "D_TOOL1",
+      "scope": "track",
+      "meaning": "First theory for decoding the number string.",
+      "guidance": "A substitution/reference-based code.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "D_TOOL2"
+        ]
+      }
+    },
+    {
+      "id": "D_TOOL2",
+      "scope": "track",
+      "meaning": "Second theory for decoding the number string.",
+      "guidance": "A time-based reading of the numbers.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "D_TOOL1"
+        ]
+      }
+    },
+    {
+      "id": "D1_KEY1",
+      "scope": "track",
+      "meaning": "The reference text used as the first cipher key.",
+      "guidance": "A book already owned by the family.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "D1_KEY2"
+        ]
+      }
+    },
+    {
+      "id": "D1_KEY2",
+      "scope": "track",
+      "meaning": "The reference text used as the second cipher key.",
+      "guidance": "A second underlined book.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "D1_KEY1"
+        ]
+      }
+    },
+    {
+      "id": "D1_FRAGMENT",
+      "scope": "track",
+      "meaning": "The recurring decoded phrase.",
+      "guidance": "A short, aching plea, not a threat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D2_METHOD1",
+      "scope": "track",
+      "meaning": "First approach to reading the numbers as timestamps.",
+      "guidance": "Directly timing the pattern.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "D2_METHOD2"
+        ]
+      }
+    },
+    {
+      "id": "D2_METHOD2",
+      "scope": "track",
+      "meaning": "Second approach to reading the numbers as timestamps.",
+      "guidance": "Mapping the pattern onto a calendar.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "D2_METHOD1"
+        ]
+      }
+    },
+    {
+      "id": "E_SOURCE1",
+      "scope": "track",
+      "meaning": "The archival research source.",
+      "guidance": "A public records archive.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "E_SOURCE2"
+        ]
+      }
+    },
+    {
+      "id": "E_SOURCE2",
+      "scope": "track",
+      "meaning": "The living-memory research source.",
+      "guidance": "A friendly local elder who remembers the past.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "E_SOURCE1"
+        ]
+      }
+    },
+    {
+      "id": "E1_FIND",
+      "scope": "track",
+      "meaning": "The archival document found.",
+      "guidance": "An old official notice.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E2_DETAIL",
+      "scope": "track",
+      "meaning": "What the living-memory source reveals about the operator's loss.",
+      "guidance": "An emotional but non-graphic detail.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_METHOD1",
+      "scope": "track",
+      "meaning": "First approach to identifying the listener.",
+      "guidance": "Researching the operator's family.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "F_METHOD2"
+        ]
+      }
+    },
+    {
+      "id": "F_METHOD2",
+      "scope": "track",
+      "meaning": "Second approach to identifying the listener.",
+      "guidance": "Testing whether the name is a place, not a person.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "F_METHOD1"
+        ]
+      }
+    },
+    {
+      "id": "F1_LEAD1",
+      "scope": "track",
+      "meaning": "The first family lead.",
+      "guidance": "A public record naming an estranged relative.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "F1_LEAD2"
+        ]
+      }
+    },
+    {
+      "id": "F1_LEAD2",
+      "scope": "track",
+      "meaning": "The second family lead.",
+      "guidance": "A local relative willing to talk.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "F1_LEAD1"
+        ]
+      }
+    },
+    {
+      "id": "F2_LANDMARK",
+      "scope": "track",
+      "meaning": "The geographic landmark tested as a false lead.",
+      "guidance": "A memorial marker with a name on it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_METHOD1",
+      "scope": "track",
+      "meaning": "First approach to pinning the countdown's target.",
+      "guidance": "Extrapolating the shrinking pattern.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "G_METHOD2"
+        ]
+      }
+    },
+    {
+      "id": "G_METHOD2",
+      "scope": "track",
+      "meaning": "Second approach to pinning the countdown's target.",
+      "guidance": "Checking it against weather and tide.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "G_METHOD1"
+        ]
+      }
+    },
+    {
+      "id": "G2_WEATHER",
+      "scope": "track",
+      "meaning": "The weather event reinforcing the deadline.",
+      "guidance": "An approaching storm; a survivable inconvenience, not a threat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H_ENTRY",
+      "scope": "track",
+      "meaning": "The barrier at the station's main entrance.",
+      "guidance": "A locked gate; passable via two other routes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H1_ZONE",
+      "scope": "track",
+      "meaning": "The yard reached via the fence route.",
+      "guidance": "A flooded but crossable open yard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "H2_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "H1_GATE",
+      "scope": "track",
+      "meaning": "The commit-or-hesitate obstacle at the yard's edge.",
+      "guidance": "Strong wind; hesitating costs the moment but causes no harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1_GATE",
+          "B2_GATE",
+          "H2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "H1_ROOM",
+      "scope": "track",
+      "meaning": "The station's control room.",
+      "guidance": "A cluttered but safe equipment room.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H1_CHOICE1",
+      "scope": "track",
+      "meaning": "The transmitting tool in the control room.",
+      "guidance": "A microphone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H1_CONTACT",
+      "scope": "track",
+      "meaning": "The listener's contact information found on the desk.",
+      "guidance": "A circled phone number.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H1_ARCHIVE",
+      "scope": "track",
+      "meaning": "The full archive of the operator's records.",
+      "guidance": "Decades of logs and messages.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H2_ZONE",
+      "scope": "track",
+      "meaning": "The route reached via the service road.",
+      "guidance": "A longer but sheltered access road.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "H1_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "H2_GATE",
+      "scope": "track",
+      "meaning": "The commit-or-wait obstacle at the back door.",
+      "guidance": "A locked door; waiting is safe but costs time.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1_GATE",
+          "B2_GATE",
+          "H1_GATE"
+        ]
+      }
+    },
+    {
+      "id": "I_GROUP",
+      "scope": "track",
+      "meaning": "The local volunteer group that can help spread the message.",
+      "guidance": "A friendly hobbyist radio club.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "I1_ACTION1",
+      "scope": "track",
+      "meaning": "First rebroadcast action available at the home rig.",
+      "guidance": "Boosting the signal and naming the listener.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "I1_ACTION2",
+      "scope": "track",
+      "meaning": "Second rebroadcast action available at the home rig.",
+      "guidance": "Pushing old equipment past its safe limits.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "I2_CONTACT",
+      "scope": "track",
+      "meaning": "The volunteer who answers the club emergency line.",
+      "guidance": "A drowsy but helpful volunteer.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "I2_LEAD",
+      "scope": "track",
+      "meaning": "The promising report that comes back over the club net.",
+      "guidance": "A strong signal report from a nearby town.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "J_METHOD1",
+      "scope": "track",
+      "meaning": "First outside-help option.",
+      "guidance": "An official coastal safety service.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "J_METHOD2"
+        ]
+      }
+    },
+    {
+      "id": "J_METHOD2",
+      "scope": "track",
+      "meaning": "Second outside-help option.",
+      "guidance": "A retired colleague of the operator.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "J_METHOD1"
+        ]
+      }
+    },
+    {
+      "id": "J1_HELPER",
+      "scope": "track",
+      "meaning": "The official who takes the hero's call.",
+      "guidance": "A dutiful safety officer.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "J2_HELPER"
+        ]
+      }
+    },
+    {
+      "id": "J2_HELPER",
+      "scope": "track",
+      "meaning": "The operator's old colleague.",
+      "guidance": "A retired, knowledgeable former coworker.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "J1_HELPER"
+        ]
+      }
+    },
+    {
+      "id": "H1_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: reaching the listener directly by phone (success).",
+      "guidance": "Positive; a warm reunion by voice.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE2",
+          "H1_PRIZE3",
+          "H2_PRIZE1",
+          "I1_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE1",
+          "I2_PRIZE2",
+          "J1_PRIZE1",
+          "J1_PRIZE2",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "H1_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: preserving the whole archive (completion).",
+      "guidance": "Positive; nothing meaningful is lost.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE3",
+          "H2_PRIZE1",
+          "I1_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE1",
+          "I2_PRIZE2",
+          "J1_PRIZE1",
+          "J1_PRIZE2",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "H1_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: stabilizing the station (completion).",
+      "guidance": "Positive; the crisis is bought time and handed on safely.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE2",
+          "H2_PRIZE1",
+          "I1_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE1",
+          "I2_PRIZE2",
+          "J1_PRIZE1",
+          "J1_PRIZE2",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "H2_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: the operator transmits live himself (success).",
+      "guidance": "Positive; the operator finds the courage to speak.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE2",
+          "H1_PRIZE3",
+          "I1_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE1",
+          "I2_PRIZE2",
+          "J1_PRIZE1",
+          "J1_PRIZE2",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "I1_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: a live voice answers the rebroadcast (success).",
+      "guidance": "Positive; direct human contact.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE2",
+          "H1_PRIZE3",
+          "H2_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE1",
+          "I2_PRIZE2",
+          "J1_PRIZE1",
+          "J1_PRIZE2",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "I1_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: the message is carried onward by a stranger (completion).",
+      "guidance": "Positive; hope passed to others.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE2",
+          "H1_PRIZE3",
+          "H2_PRIZE1",
+          "I1_PRIZE1",
+          "I2_PRIZE1",
+          "I2_PRIZE2",
+          "J1_PRIZE1",
+          "J1_PRIZE2",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "I2_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: the listener is found via the radio net (success).",
+      "guidance": "Positive; a located, living relative.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE2",
+          "H1_PRIZE3",
+          "H2_PRIZE1",
+          "I1_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE2",
+          "J1_PRIZE1",
+          "J1_PRIZE2",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "I2_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: every lead handed to the club (completion).",
+      "guidance": "Positive; the search continues in good hands.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE2",
+          "H1_PRIZE3",
+          "H2_PRIZE1",
+          "I1_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE1",
+          "J1_PRIZE1",
+          "J1_PRIZE2",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "J1_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: an official crew reunites the family (success).",
+      "guidance": "Positive; professional help closes the loop.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE2",
+          "H1_PRIZE3",
+          "H2_PRIZE1",
+          "I1_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE1",
+          "I2_PRIZE2",
+          "J1_PRIZE2",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "J1_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: the station is secured before the storm (completion).",
+      "guidance": "Positive; the site and search are both safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE2",
+          "H1_PRIZE3",
+          "H2_PRIZE1",
+          "I1_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE1",
+          "I2_PRIZE2",
+          "J1_PRIZE1",
+          "J2_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "J2_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: the old colleague and hero finish together (success).",
+      "guidance": "Positive; a shared human moment.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "H1_PRIZE1",
+          "H1_PRIZE2",
+          "H1_PRIZE3",
+          "H2_PRIZE1",
+          "I1_PRIZE1",
+          "I1_PRIZE2",
+          "I2_PRIZE1",
+          "I2_PRIZE2",
+          "J1_PRIZE1",
+          "J1_PRIZE2"
+        ]
+      }
+    }
+  ]
+}

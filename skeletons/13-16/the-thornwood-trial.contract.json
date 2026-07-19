@@ -1,0 +1,702 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-thornwood-trial",
+  "age_band": "13-16",
+  "legacy_lexicon": [
+    "Wren",
+    "Thornwood",
+    "Bramble Maze",
+    "Brambles",
+    "Sunken Grove",
+    "Grove",
+    "Beast-Warren",
+    "Warren",
+    "Elder-Tree Council",
+    "Council",
+    "Far Ridge",
+    "Ridge",
+    "Far Gate",
+    "Gate",
+    "lynx",
+    "Wild Ways"
+  ],
+  "default_binding": {
+    "HERO": "Wren",
+    "WARDEN": "warden",
+    "WARDEN_TITLE": "Warden",
+    "TRIAL": "Trial",
+    "THRESHOLD": "Thornwood",
+    "DEADLINE": "dusk",
+    "DEADLINE_SIGN": "horn",
+    "HAZARD_MOTIF": "thorn",
+    "SETTING_KIND": "forest",
+    "ALT_PATH": "Wild Ways",
+    "ROUTE_A_CHAR": "the old deer track",
+    "ROUTE_B_CHAR": "the dry stream bed",
+    "ROUTE_C_CHAR": "the charcoal-burners road",
+    "ROUTE_D_CHAR": "the broken boundary wall",
+    "Z1_NAME": "Bramble Maze",
+    "Z1_SHORT": "Brambles",
+    "Z1_TERRAIN": "thorn",
+    "Z2_NAME": "Sunken Grove",
+    "Z2_SHORT": "Grove",
+    "Z2_TERRAIN": "reed",
+    "Z2_GUARDIAN_DESC": "drowned stone",
+    "Z2_FEATURE": "black water",
+    "Z2_TEST": "patience",
+    "Z3_NAME": "Beast-Warren",
+    "Z3_SHORT": "Warren",
+    "Z3_TERRAIN": "den",
+    "Z3_FEATURE": "dens and dug tunnels",
+    "Z3_CREATURE": "lynx",
+    "Z4_NAME": "Elder-Tree Council",
+    "Z4_SHORT": "Council",
+    "Z4_TERRAIN": "root",
+    "Z4_GUARDIAN_DESC": "hooded",
+    "Z4_TEST": "judgement",
+    "Z4_LANDMARK": "the elder tree",
+    "Z5_NAME": "Far Ridge",
+    "Z5_SHORT": "Ridge",
+    "Z5_TERRAIN": "stone",
+    "Z5_FEATURE": "wind-scoured spine of rock",
+    "Z5_TEST": "nerve",
+    "Z6_NAME": "Far Gate",
+    "Z6_SHORT": "Gate",
+    "Z6_TERRAIN": "iron"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The teen protagonist attempting the trial.",
+      "guidance": "A single capable, determined teen; never armed, never reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WARDEN",
+      "scope": "global",
+      "meaning": "The generic singular noun for the trial's guide-figures and their trail-markings (used as 'the WARDEN marks', 'a WARDEN', 'the WARDENs').",
+      "guidance": "A person-type role (guide, judge, gatekeeper); never armed.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WARDEN_TITLE",
+      "scope": "ending",
+      "meaning": "Capitalized rank/title form of WARDEN, used only in the two named-success ending titles.",
+      "guidance": "A title of honor conferred on success; positive framing only.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TRIAL",
+      "scope": "global",
+      "meaning": "The proper name of the overarching one-day contest.",
+      "guidance": "A single formal event name; always preceded by fixed 'the'.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The proper name of the whole forest/place the trial crosses; also closes one success-ending title.",
+      "guidance": "A single evocative place name; wonder over dread; no toxic hazard implied.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic",
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The time of day the trial closes.",
+      "guidance": "A survivable time marker (e.g. a time of day); never framed as lethal.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The recurring sound/signal marking the deadline approaching or passing (used bare and with a literal trailing 's').",
+      "guidance": "A audible, non-lethal signal; gives fair warning.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HAZARD_MOTIF",
+      "scope": "global",
+      "meaning": "The generic thorny-undergrowth material used as flavor in off-path / wrong-turn beats, regardless of which zone the hero is in.",
+      "guidance": "A benign-but-thick plant material; never itself lethal or toxic.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SETTING_KIND",
+      "scope": "global",
+      "meaning": "The generic common noun for the kind of place the whole trial happens inside (used with fixed adjectives 'enchanted'/'darkening').",
+      "guidance": "A single common noun naming the setting's category (e.g. a bounded type of place); not a proper noun.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ALT_PATH",
+      "scope": "ending",
+      "meaning": "The lesser, harder alternate route offered at the very end; also closes one success-ending title ('WARDEN_TITLE of the ALT_PATH').",
+      "guidance": "A named harder-but-honorable alternate route; positive framing.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CHAR",
+      "scope": "route",
+      "meaning": "One of four approach paths into the trial's first zone.",
+      "guidance": "A passable, non-hazardous approach path; distinct from the other three.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_CHAR",
+          "ROUTE_C_CHAR",
+          "ROUTE_D_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "One of four approach paths into the trial's first zone.",
+      "guidance": "A passable, non-hazardous approach path; distinct from the other three.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_CHAR",
+          "ROUTE_C_CHAR",
+          "ROUTE_D_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_CHAR",
+      "scope": "route",
+      "meaning": "One of four approach paths into the trial's first zone.",
+      "guidance": "A passable, non-hazardous approach path; distinct from the other three.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_CHAR",
+          "ROUTE_B_CHAR",
+          "ROUTE_D_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_CHAR",
+      "scope": "route",
+      "meaning": "One of four approach paths into the trial's first zone.",
+      "guidance": "A passable, non-hazardous approach path; distinct from the other three.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_CHAR",
+          "ROUTE_B_CHAR",
+          "ROUTE_C_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "Z1_NAME",
+      "scope": "route",
+      "meaning": "The formal in-prose name of zone 1 of 6 (used in beat/label text; zone 6's also closes one setback ending title).",
+      "guidance": "A short evocative place name for this checkpoint zone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z2_NAME",
+          "Z3_NAME",
+          "Z4_NAME",
+          "Z5_NAME",
+          "Z6_NAME"
+        ]
+      }
+    },
+    {
+      "id": "Z1_SHORT",
+      "scope": "ending",
+      "meaning": "The bare, ending-title short form of zone 1's name (article 'the'/'The' is fixed template text, not part of the value).",
+      "guidance": "A single-word (or short) proper-noun form used only in ending titles.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z2_SHORT",
+          "Z3_SHORT",
+          "Z4_SHORT",
+          "Z5_SHORT",
+          "Z6_SHORT"
+        ]
+      }
+    },
+    {
+      "id": "Z1_TERRAIN",
+      "scope": "track",
+      "meaning": "The 'underfoot' ground-cover noun for zone 1, used in the repeated beat template.",
+      "guidance": "A single benign ground-material noun.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z2_NAME",
+      "scope": "route",
+      "meaning": "The formal in-prose name of zone 2 of 6 (used in beat/label text; zone 6's also closes one setback ending title).",
+      "guidance": "A short evocative place name for this checkpoint zone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_NAME",
+          "Z3_NAME",
+          "Z4_NAME",
+          "Z5_NAME",
+          "Z6_NAME"
+        ]
+      }
+    },
+    {
+      "id": "Z2_SHORT",
+      "scope": "ending",
+      "meaning": "The bare, ending-title short form of zone 2's name (article 'the'/'The' is fixed template text, not part of the value).",
+      "guidance": "A single-word (or short) proper-noun form used only in ending titles.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_SHORT",
+          "Z3_SHORT",
+          "Z4_SHORT",
+          "Z5_SHORT",
+          "Z6_SHORT"
+        ]
+      }
+    },
+    {
+      "id": "Z2_TERRAIN",
+      "scope": "track",
+      "meaning": "The 'underfoot' ground-cover noun for zone 2, used in the repeated beat template.",
+      "guidance": "A single benign ground-material noun.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z2_GUARDIAN_DESC",
+      "scope": "track",
+      "meaning": "The adjective describing zone 2's warden-figures in its hub sentence.",
+      "guidance": "A short descriptive adjective for a person-type figure; never implies a weapon.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z2_FEATURE",
+      "scope": "track",
+      "meaning": "The distinctive environmental feature named in zone 2's hub sentence.",
+      "guidance": "A short benign environmental noun phrase.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z2_TEST",
+      "scope": "track",
+      "meaning": "The name of the warden-test administered in zone 2.",
+      "guidance": "A single abstract virtue/skill noun (e.g. a quality being tested).",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z3_NAME",
+      "scope": "route",
+      "meaning": "The formal in-prose name of zone 3 of 6 (used in beat/label text; zone 6's also closes one setback ending title).",
+      "guidance": "A short evocative place name for this checkpoint zone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_NAME",
+          "Z2_NAME",
+          "Z4_NAME",
+          "Z5_NAME",
+          "Z6_NAME"
+        ]
+      }
+    },
+    {
+      "id": "Z3_SHORT",
+      "scope": "ending",
+      "meaning": "The bare, ending-title short form of zone 3's name (article 'the'/'The' is fixed template text, not part of the value).",
+      "guidance": "A single-word (or short) proper-noun form used only in ending titles.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_SHORT",
+          "Z2_SHORT",
+          "Z4_SHORT",
+          "Z5_SHORT",
+          "Z6_SHORT"
+        ]
+      }
+    },
+    {
+      "id": "Z3_TERRAIN",
+      "scope": "track",
+      "meaning": "The 'underfoot' ground-cover noun for zone 3, used in the repeated beat template.",
+      "guidance": "A single benign ground-material noun.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z3_FEATURE",
+      "scope": "track",
+      "meaning": "The distinctive environmental feature named in zone 3's hub sentence.",
+      "guidance": "A short benign environmental noun phrase.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z3_CREATURE",
+      "scope": "track",
+      "meaning": "The specific creature named in zone 3's hub sentence (compounded with WARDEN, e.g. 'CREATURE-WARDEN').",
+      "guidance": "A single real or fantastical animal name; never a weapon.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z4_NAME",
+      "scope": "route",
+      "meaning": "The formal in-prose name of zone 4 of 6 (used in beat/label text; zone 6's also closes one setback ending title).",
+      "guidance": "A short evocative place name for this checkpoint zone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_NAME",
+          "Z2_NAME",
+          "Z3_NAME",
+          "Z5_NAME",
+          "Z6_NAME"
+        ]
+      }
+    },
+    {
+      "id": "Z4_SHORT",
+      "scope": "ending",
+      "meaning": "The bare, ending-title short form of zone 4's name (article 'the'/'The' is fixed template text, not part of the value).",
+      "guidance": "A single-word (or short) proper-noun form used only in ending titles.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_SHORT",
+          "Z2_SHORT",
+          "Z3_SHORT",
+          "Z5_SHORT",
+          "Z6_SHORT"
+        ]
+      }
+    },
+    {
+      "id": "Z4_TERRAIN",
+      "scope": "track",
+      "meaning": "The 'underfoot' ground-cover noun for zone 4, used in the repeated beat template.",
+      "guidance": "A single benign ground-material noun.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z4_GUARDIAN_DESC",
+      "scope": "track",
+      "meaning": "The adjective describing zone 4's warden-figures in its hub sentence.",
+      "guidance": "A short descriptive adjective for a person-type figure; never implies a weapon.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z4_TEST",
+      "scope": "track",
+      "meaning": "The name of the warden-test administered in zone 4.",
+      "guidance": "A single abstract virtue/skill noun (e.g. a quality being tested).",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z4_LANDMARK",
+      "scope": "track",
+      "meaning": "The unique landmark object named in zone 4's hub sentence.",
+      "guidance": "A short benign landmark noun phrase, including its own article if needed.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z5_NAME",
+      "scope": "route",
+      "meaning": "The formal in-prose name of zone 5 of 6 (used in beat/label text; zone 6's also closes one setback ending title).",
+      "guidance": "A short evocative place name for this checkpoint zone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_NAME",
+          "Z2_NAME",
+          "Z3_NAME",
+          "Z4_NAME",
+          "Z6_NAME"
+        ]
+      }
+    },
+    {
+      "id": "Z5_SHORT",
+      "scope": "ending",
+      "meaning": "The bare, ending-title short form of zone 5's name (article 'the'/'The' is fixed template text, not part of the value).",
+      "guidance": "A single-word (or short) proper-noun form used only in ending titles.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_SHORT",
+          "Z2_SHORT",
+          "Z3_SHORT",
+          "Z4_SHORT",
+          "Z6_SHORT"
+        ]
+      }
+    },
+    {
+      "id": "Z5_TERRAIN",
+      "scope": "track",
+      "meaning": "The 'underfoot' ground-cover noun for zone 5, used in the repeated beat template.",
+      "guidance": "A single benign ground-material noun.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z5_FEATURE",
+      "scope": "track",
+      "meaning": "The distinctive environmental feature named in zone 5's hub sentence.",
+      "guidance": "A short benign environmental noun phrase.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z5_TEST",
+      "scope": "track",
+      "meaning": "The name of the warden-test administered in zone 5.",
+      "guidance": "A single abstract virtue/skill noun (e.g. a quality being tested).",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Z6_NAME",
+      "scope": "route",
+      "meaning": "The formal in-prose name of zone 6 of 6 (used in beat/label text; zone 6's also closes one setback ending title).",
+      "guidance": "A short evocative place name for this checkpoint zone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_NAME",
+          "Z2_NAME",
+          "Z3_NAME",
+          "Z4_NAME",
+          "Z5_NAME"
+        ]
+      }
+    },
+    {
+      "id": "Z6_SHORT",
+      "scope": "ending",
+      "meaning": "The bare, ending-title short form of zone 6's name (article 'the'/'The' is fixed template text, not part of the value).",
+      "guidance": "A single-word (or short) proper-noun form used only in ending titles.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "Z1_SHORT",
+          "Z2_SHORT",
+          "Z3_SHORT",
+          "Z4_SHORT",
+          "Z5_SHORT"
+        ]
+      }
+    },
+    {
+      "id": "Z6_TERRAIN",
+      "scope": "track",
+      "meaning": "The 'underfoot' ground-cover noun for zone 6, used in the repeated beat template.",
+      "guidance": "A single benign ground-material noun.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    }
+  ]
+}

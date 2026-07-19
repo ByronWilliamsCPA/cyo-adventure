@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "sup0",
-      "body": "<<FILL role=setup words=78 beats='second person; you are {HERO} who has slipped below the stage into {THRESHOLD} to reach the {GOAL}; the way out is one long spine of mirror rooms, each a killing test; state the grave stakes plainly, many go down and few come up, and a wrong step ends here'>>",
+      "body": "<<FILL role=setup words=78 beats='second person; you are a carnival worker's kid who has slipped below the stage into the flooded funhouse maze to reach the the deed that saves the pier; the way out is one long spine of mirror rooms, each a killing test; state the grave stakes plainly, many go down and few come up, and a wrong step ends here'>>",
       "is_ending": false,
       "choices": [
         {
@@ -46,7 +46,7 @@
     },
     {
       "id": "sup1",
-      "body": "<<FILL role=setup words=66 beats='second person; {ENTRANCE} seals cold behind you and the way is one long spine of mirror rooms falling deeper under the stage; there is no going back and no second try inside, only forward from room to room, and each room is a test that has kept better climbers than you; keep your nerve and your eyes'>>",
+      "body": "<<FILL role=setup words=66 beats='second person; the hatch beneath the boardwalk seals cold behind you and the way is one long spine of mirror rooms falling deeper under the stage; there is no going back and no second try inside, only forward from room to room, and each room is a test that has kept better climbers than you; keep your nerve and your eyes'>>",
       "is_ending": false,
       "choices": [
         {
@@ -58,7 +58,7 @@
     },
     {
       "id": "st01_ap0",
-      "body": "<<FILL role=rising words=55 beats='second person; you come to {ST01_ROOM}; you enter a round hall of a hundred bright doorways, all of them mirrors; the cold air smells of dust and old velvet from the theatre above'>>",
+      "body": "<<FILL role=rising words=55 beats='second person; you come to the Hall of Painted Doors; you enter a round hall of a hundred bright doorways, all of them mirrors; the cold air smells of dust and old velvet from the theatre above'>>",
       "is_ending": false,
       "choices": [
         {
@@ -321,7 +321,7 @@
     },
     {
       "id": "st01_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; hands in {ST01_GUARD}'s gloves take your arms from the dark and walk you up into a locked box above; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; hands in a ticket clerk's gloves take your arms from the dark and walk you up into a locked box above; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st01_cap",
@@ -333,7 +333,7 @@
     },
     {
       "id": "st02_ap0",
-      "body": "<<FILL role=rising words=58 beats='second person; you come to {ST02_ROOM}; a staircase drops away, reflected on both walls into a falling infinity of steps; a single candle burns at the bottom'>>",
+      "body": "<<FILL role=rising words=58 beats='second person; you come to the Rusted Stair; a staircase drops away, reflected on both walls into a falling infinity of steps; a single candle burns at the bottom'>>",
       "is_ending": false,
       "choices": [
         {
@@ -596,7 +596,7 @@
     },
     {
       "id": "st02_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST02_GUARD}'s lantern finds you frozen on the last true step and its owner does not mean to let you leave; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a night guide's lantern finds you frozen on the last true step and its owner does not mean to let you leave; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st02_cap",
@@ -608,7 +608,7 @@
     },
     {
       "id": "st03_ap0",
-      "body": "<<FILL role=rising words=61 beats='second person; you come to {ST03_ROOM}; a long mirrored gallery curves away; far above, an orchestra tunes for the evening and the sound leaks down through the stone'>>",
+      "body": "<<FILL role=rising words=61 beats='second person; you come to the Echoing Corridor; a long mirrored gallery curves away; far above, an orchestra tunes for the evening and the sound leaks down through the stone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -912,7 +912,7 @@
     },
     {
       "id": "st03_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST03_GUARD} hauls you through a side door as the glass falls, and the door locks from his side; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a ride mechanic hauls you through a side door as the glass falls, and the door locks from his side; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st03_cap",
@@ -924,7 +924,7 @@
     },
     {
       "id": "st04_ap0",
-      "body": "<<FILL role=rising words=64 beats='second person; you come to {ST04_ROOM}; the passage opens under a vast chandelier of glass drops, hung on one frayed chain over a floor of mirror'>>",
+      "body": "<<FILL role=rising words=64 beats='second person; you come to the Lantern Vault; the passage opens under a vast chandelier of glass drops, hung on one frayed chain over a floor of mirror'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1187,7 +1187,7 @@
     },
     {
       "id": "st04_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a rope drops from the dark above and {ST04_GUARD}'s hands haul you up out of the vault and do not set you free; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a rope drops from the dark above and a rope handler's hands haul you up out of the vault and do not set you free; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st04_cap",
@@ -1199,7 +1199,7 @@
     },
     {
       "id": "st05_ap0",
-      "body": "<<FILL role=rising words=52 beats='second person; you come to {ST05_ROOM}; a single tall mirror blocks the passage, rimed white with frost, the only way a door somewhere in its face'>>",
+      "body": "<<FILL role=rising words=52 beats='second person; you come to the Frosted Window; a single tall mirror blocks the passage, rimed white with frost, the only way a door somewhere in its face'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1462,7 +1462,7 @@
     },
     {
       "id": "st05_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST05_GUARD} wrapped against the cold lifts you off the frost half-frozen and carries you somewhere with a lock; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a torch-bearer wrapped against the cold lifts you off the frost half-frozen and carries you somewhere with a lock; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st05_cap",
@@ -1474,7 +1474,7 @@
     },
     {
       "id": "st06_ap0",
-      "body": "<<FILL role=rising words=55 beats='second person; you come to {ST06_ROOM}; two figures stand in the passage ahead, identical, one of glass and one of flesh, and only one will let you pass'>>",
+      "body": "<<FILL role=rising words=55 beats='second person; you come to the Gallery of Twin Statues; two figures stand in the passage ahead, identical, one of glass and one of flesh, and only one will let you pass'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1486,7 +1486,7 @@
     },
     {
       "id": "st06_gate",
-      "body": "<<FILL role=rising words=74 beats='second person; a real body casts a shadow on the floor and a reflection does not; {ST06_GUARD} guards the false path and the glass one stands before the true door; pass the figure that throws no shadow, and never the one that does'>>",
+      "body": "<<FILL role=rising words=74 beats='second person; a real body casts a shadow on the floor and a reflection does not; the twin barker guards the false path and the glass one stands before the true door; pass the figure that throws no shadow, and never the one that does'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1679,7 +1679,7 @@
     },
     {
       "id": "st06_seen",
-      "body": "<<FILL role=choice words=58 beats='second person; you reach out to the figure on your right; a cold palm is glass and safe, a warm one is {ST06_GUARD} and is not; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "body": "<<FILL role=choice words=58 beats='second person; you reach out to the figure on your right; a cold palm is glass and safe, a warm one is the twin barker and is not; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1737,7 +1737,7 @@
     },
     {
       "id": "st06_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST06_GUARD} marches you off down a corridor of mirrors to a door that only opens the one way; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; the twin barker marches you off down a corridor of mirrors to a door that only opens the one way; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st06_cap",
@@ -1749,7 +1749,7 @@
     },
     {
       "id": "st07_ap0",
-      "body": "<<FILL role=rising words=58 beats='second person; you come to {ST07_ROOM}; the floor falls into a flooded pit, black water doubling the mirrored walls so pit and reflection meet at a seam'>>",
+      "body": "<<FILL role=rising words=58 beats='second person; you come to the Flooded Engine Pit; the floor falls into a flooded pit, black water doubling the mirrored walls so pit and reflection meet at a seam'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2012,7 +2012,7 @@
     },
     {
       "id": "st07_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST07_GUARD} poles out of the dark, hauls you dripping from the pit, and rows you to a cell above the waterline; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a ferry pilot poles out of the dark, hauls you dripping from the pit, and rows you to a cell above the waterline; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st07_cap",
@@ -2024,7 +2024,7 @@
     },
     {
       "id": "st08_ap0",
-      "body": "<<FILL role=rising words=61 beats='second person; you come to {ST08_ROOM}; a low maze of glass walls runs ahead, some turns lit by candles set in the mirrors, some dark'>>",
+      "body": "<<FILL role=rising words=61 beats='second person; you come to the Lantern Maze; a low maze of glass walls runs ahead, some turns lit by candles set in the mirrors, some dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2287,7 +2287,7 @@
     },
     {
       "id": "st08_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST08_GUARD} with a shielded lamp finds you in the dark and leads you not out but up, to a barred room; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a lamp boy with a shielded lamp finds you in the dark and leads you not out but up, to a barred room; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st08_cap",
@@ -2299,7 +2299,7 @@
     },
     {
       "id": "st09_ap0",
-      "body": "<<FILL role=rising words=64 beats='second person; you come to {ST09_ROOM}; a trapdoor sits in the floor beneath the stage, a prompter's box half sunk in mirror, its lid keyed to the music above'>>",
+      "body": "<<FILL role=rising words=64 beats='second person; you come to the Barker's Booth; a trapdoor sits in the floor beneath the stage, a prompter's box half sunk in mirror, its lid keyed to the music above'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2562,7 +2562,7 @@
     },
     {
       "id": "st09_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST09_GUARD} is below, and he closes cold hands on your collar the moment you land in his box; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; the barker himself is below, and he closes cold hands on your collar the moment you land in his box; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st09_cap",
@@ -2574,7 +2574,7 @@
     },
     {
       "id": "st10_ap0",
-      "body": "<<FILL role=rising words=52 beats='second person; you come to {ST10_ROOM}; a wall of mirrored theatre masks hangs down the passage, each a doubled face, one of them an opening'>>",
+      "body": "<<FILL role=rising words=52 beats='second person; you come to the Gallery of Painted Faces; a wall of mirrored theatre masks hangs down the passage, each a doubled face, one of them an opening'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2878,7 +2878,7 @@
     },
     {
       "id": "st10_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST10_GUARD} steps from the wall, takes your arm, and fits you a room with no door of your own; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a costume tender steps from the wall, takes your arm, and fits you a room with no door of your own; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st10_cap",
@@ -2890,7 +2890,7 @@
     },
     {
       "id": "st11_ap0",
-      "body": "<<FILL role=rising words=55 beats='second person; you come to {ST11_ROOM}; a square room of mirror floors down which fine sand pours from the seams, the tiles going under grain by grain'>>",
+      "body": "<<FILL role=rising words=55 beats='second person; you come to the Sandglass Chamber; a square room of mirror floors down which fine sand pours from the seams, the tiles going under grain by grain'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3153,7 +3153,7 @@
     },
     {
       "id": "st11_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST11_GUARD} digs you out of the sand at the low end and the digging ends at a barred door; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a shovel hand digs you out of the sand at the low end and the digging ends at a barred door; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st11_cap",
@@ -3165,7 +3165,7 @@
     },
     {
       "id": "st12_ap0",
-      "body": "<<FILL role=rising words=58 beats='second person; you come to {ST12_ROOM}; a bridge of clear glass arches over a black drop, its span so clean it seems there is nothing there at all'>>",
+      "body": "<<FILL role=rising words=58 beats='second person; you come to the Rope Bridge; a bridge of clear glass arches over a black drop, its span so clean it seems there is nothing there at all'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3428,7 +3428,7 @@
     },
     {
       "id": "st12_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST12_GUARD} waits at the far abutment, and he lets you finish the bridge only to take you in hand at the end of it; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a bridge attendant waits at the far abutment, and he lets you finish the bridge only to take you in hand at the end of it; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st12_cap",
@@ -3440,7 +3440,7 @@
     },
     {
       "id": "st13_ap0",
-      "body": "<<FILL role=rising words=61 beats='second person; you come to {ST13_ROOM}; the mirrors down this hall murmur, and among the murmur you hear your own name spoken in your own voice'>>",
+      "body": "<<FILL role=rising words=61 beats='second person; you come to the Hall of Whispered Names; the mirrors down this hall murmur, and among the murmur you hear your own name spoken in your own voice'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3703,7 +3703,7 @@
     },
     {
       "id": "st13_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; the voice was {ST13_GUARD}'s, and {ST13_GUARD} steps out to take the arm of the one who answered and lead you away; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; the voice was an announcer's, and an announcer steps out to take the arm of the one who answered and lead you away; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st13_cap",
@@ -3715,7 +3715,7 @@
     },
     {
       "id": "st14_ap0",
-      "body": "<<FILL role=rising words=64 beats='second person; you come to {ST14_ROOM}; a broken arch of mirror frames the way, half its panes already smashed to a floor of shards, half still whole'>>",
+      "body": "<<FILL role=rising words=64 beats='second person; you come to the Broken Proscenium; a broken arch of mirror frames the way, half its panes already smashed to a floor of shards, half still whole'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3978,7 +3978,7 @@
     },
     {
       "id": "st14_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST14_GUARD} picks his way to you across the glass, wraps your bleeding feet, and locks you somewhere to heal for his own reasons; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a props handler picks his way to you across the glass, wraps your bleeding feet, and locks you somewhere to heal for his own reasons; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st14_cap",
@@ -3990,7 +3990,7 @@
     },
     {
       "id": "st15_ap0",
-      "body": "<<FILL role=rising words=52 beats='second person; you come to {ST15_ROOM}; a wall of mirror sweats a sheet of water down the whole passage, the way a single dry channel through the wet'>>",
+      "body": "<<FILL role=rising words=52 beats='second person; you come to the Weeping Pipe Wall; a wall of mirror sweats a sheet of water down the whole passage, the way a single dry channel through the wet'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4253,7 +4253,7 @@
     },
     {
       "id": "st15_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST15_GUARD} throws a dry hooked pole and drags you off the charged wall, then keeps the hook on you all the way to a cell; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a torch runner throws a dry hooked pole and drags you off the charged wall, then keeps the hook on you all the way to a cell; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st15_cap",
@@ -4265,7 +4265,7 @@
     },
     {
       "id": "st16_ap0",
-      "body": "<<FILL role=rising words=55 beats='second person; you come to {ST16_ROOM}; a drum of mirror turns slowly across the passage, its one doorway swinging past the opening once each revolution'>>",
+      "body": "<<FILL role=rising words=55 beats='second person; you come to the Spinning Room; a drum of mirror turns slowly across the passage, its one doorway swinging past the opening once each revolution'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4528,7 +4528,7 @@
     },
     {
       "id": "st16_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST16_GUARD} rides the drum round, catches your wrist on the turn, and rides you back to a room he keeps locked; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a gear turner rides the drum round, catches your wrist on the turn, and rides you back to a room he keeps locked; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st16_cap",
@@ -4540,7 +4540,7 @@
     },
     {
       "id": "st17_ap0",
-      "body": "<<FILL role=rising words=58 beats='second person; you come to {ST17_ROOM}; a single mirror stands at a low doorway, and in it your own reflection stands squarely between you and the way through'>>",
+      "body": "<<FILL role=rising words=58 beats='second person; you come to the Last Window; a single mirror stands at a low doorway, and in it your own reflection stands squarely between you and the way through'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4803,7 +4803,7 @@
     },
     {
       "id": "st17_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; as the lamp steadies {ST17_GUARD}'s arms come round you from the true dark, not the glass, and walk you back the way you fought in; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; as the lamp steadies a night watcher's arms come round you from the true dark, not the glass, and walk you back the way you fought in; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st17_cap",
@@ -4815,7 +4815,7 @@
     },
     {
       "id": "st18_ap0",
-      "body": "<<FILL role=rising words=61 beats='second person; you come to {ST18_ROOM}; the last hall opens into a sphere of mirror where a thousand of you stand in every direction, and only one direction is a way and not a wall'>>",
+      "body": "<<FILL role=rising words=61 beats='second person; you come to the Hall of a Thousand Masks; the last hall opens into a sphere of mirror where a thousand of you stand in every direction, and only one direction is a way and not a wall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5078,7 +5078,7 @@
     },
     {
       "id": "st18_cap",
-      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; {ST18_GUARD} steps out of the one true gap, turns you by the shoulder, and walks you off before you reach it yourself; the way up is a locked one now'>>",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a floor walker steps out of the one true gap, turns you by the shoulder, and walks you off before you reach it yourself; the way up is a locked one now'>>",
       "is_ending": true,
       "ending": {
         "id": "st18_cap",
@@ -5090,7 +5090,7 @@
     },
     {
       "id": "win_ap",
-      "body": "<<FILL role=rising words=58 beats='second person; the spine ends at a plain door in a plain wall of glass, and beyond it the empty stage of the opera house stands grey with dawn; {GOAL} are in your coat'>>",
+      "body": "<<FILL role=rising words=58 beats='second person; the spine ends at a plain door in a plain wall of glass, and beyond it the empty stage of the opera house stands grey with dawn; the deed that saves the pier are in your coat'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5102,22 +5102,22 @@
     },
     {
       "id": "win_gate",
-      "body": "<<FILL role=climax words=74 beats='second person; three ways lead up and out and each is real: {WIN_CLEAN} is the clean way, {WIN_COSTLY} is quicker but it will cut, and {WIN_QUIET} lets you out unseen; the only deaths here are the mirror you smash to be sure, and the wait for the house lights to prove a way that needs no proving'>>",
+      "body": "<<FILL role=climax words=74 beats='second person; three ways lead up and out and each is real: the painted door that opens easy is the clean way, the splintered plank is quicker but it will cut, and the drainage grate lets you out unseen; the only deaths here are the mirror you smash to be sure, and the wait for the house lights to prove a way that needs no proving'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_win_clean",
-          "label": "Step into {WIN_CLEAN}.",
+          "label": "Step into the painted door that opens easy.",
           "target": "win_clean"
         },
         {
           "id": "c_win_costly",
-          "label": "Go through {WIN_COSTLY}, quick and sharp.",
+          "label": "Go through the splintered plank, quick and sharp.",
           "target": "win_costly"
         },
         {
           "id": "c_win_quiet",
-          "label": "Slip out {WIN_QUIET}, unseen.",
+          "label": "Slip out the drainage grate, unseen.",
           "target": "win_quiet"
         },
         {
@@ -5139,7 +5139,7 @@
     },
     {
       "id": "win_clean",
-      "body": "<<FILL role=resolution words=62 beats='second person; {WIN_CLEAN} is an open door; you climb into the empty house as the dawn comes grey through the high windows, the records safe, your name your own again; you came up clean'>>",
+      "body": "<<FILL role=resolution words=62 beats='second person; the painted door that opens easy is an open door; you climb into the empty house as the dawn comes grey through the high windows, the records safe, your name your own again; you came up clean'>>",
       "is_ending": true,
       "ending": {
         "id": "win_clean",
@@ -5151,7 +5151,7 @@
     },
     {
       "id": "win_costly",
-      "body": "<<FILL role=resolution words=60 beats='second person; {WIN_COSTLY} opens the way but its edge lays your arm as you pass; you come up onto the stage bleeding and shaking, but you come up, and the records come up with you'>>",
+      "body": "<<FILL role=resolution words=60 beats='second person; the splintered plank opens the way but its edge lays your arm as you pass; you come up onto the stage bleeding and shaking, but you come up, and the records come up with you'>>",
       "is_ending": true,
       "ending": {
         "id": "win_costly",
@@ -5163,7 +5163,7 @@
     },
     {
       "id": "win_quiet",
-      "body": "<<FILL role=resolution words=60 beats='second person; {WIN_QUIET} lets you out below the stalls where no one watches; you leave the labyrinth the way water leaves, unseen and unremarked, and no one ever knows you went down'>>",
+      "body": "<<FILL role=resolution words=60 beats='second person; the drainage grate lets you out below the stalls where no one watches; you leave the labyrinth the way water leaves, unseen and unremarked, and no one ever knows you went down'>>",
       "is_ending": true,
       "ending": {
         "id": "win_quiet",

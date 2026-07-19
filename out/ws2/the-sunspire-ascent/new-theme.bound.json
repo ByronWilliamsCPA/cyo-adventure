@@ -34,63 +34,63 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=88 beats='{HERO} reaches the foot of the cursed {TOWER} as {OPENING_MOMENT} begins to fall, {GOAL} at its summit dark for a hundred years; four ways lead to the {TOWER} base, {AP1_NAME}, {AP2_NAME}, {AP3_NAME}, and {AP4_NAME}'>>",
+      "body": "<<FILL role=setup words=88 beats='Priya reaches the foot of the cursed Vaultspire as the lockdown window begins to fall, reactor at its summit dark for a hundred years; four ways lead to the Vaultspire base, the flooded loading dock, the maintenance scaffold, the janitor's shaft, and the grand entry ramp'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_start_1",
-          "label": "Cross {AP1_NAME}.",
+          "label": "Cross the flooded loading dock.",
           "target": "a_ap1"
         },
         {
           "id": "c_n_start_2",
-          "label": "Climb {AP2_NAME}.",
+          "label": "Climb the maintenance scaffold.",
           "target": "a_ap2"
         },
         {
           "id": "c_n_start_3",
-          "label": "Slip into {AP3_NAME}.",
+          "label": "Slip into the janitor's shaft.",
           "target": "a_ap3"
         },
         {
           "id": "c_n_start_4",
-          "label": "Take {AP4_NAME}.",
+          "label": "Take the grand entry ramp.",
           "target": "a_ap4"
         }
       ]
     },
     {
       "id": "a_ap1",
-      "body": "<<FILL role=rising words=60 beats='the causeway stones shift underfoot but hold, and the great {ENTRANCE} looms ahead, half open on darkness'>>",
+      "body": "<<FILL role=rising words=60 beats='the causeway stones shift underfoot but hold, and the great the atrium doors looms ahead, half open on darkness'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_ap1_1",
-          "label": "Reach {ENTRANCE}.",
+          "label": "Reach the atrium doors.",
           "target": "b_towergate"
         }
       ]
     },
     {
       "id": "a_ap2",
-      "body": "<<FILL role=rising words=64 beats='the ivy tears loose in {HERO} grip but a lower window gives onto the entry hall, and {ENTRANCE} stands just within'>>",
+      "body": "<<FILL role=rising words=64 beats='the ivy tears loose in Priya grip but a lower window gives onto the entry hall, and the atrium doors stands just within'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_ap2_1",
-          "label": "Drop down to {ENTRANCE}.",
+          "label": "Drop down to the atrium doors.",
           "target": "b_towergate"
         }
       ]
     },
     {
       "id": "a_ap3",
-      "body": "<<FILL role=choice words=70 beats='{AP3_NAME} forks in the dark, one branch sloping up toward {ENTRANCE}, the other dropping into {AP3_DEADEND}'>>",
+      "body": "<<FILL role=choice words=70 beats='the janitor's shaft forks in the dark, one branch sloping up toward the atrium doors, the other dropping into a sealed storage bay'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_ap3_1",
-          "label": "Climb toward {ENTRANCE}.",
+          "label": "Climb toward the atrium doors.",
           "target": "b_towergate"
         },
         {
@@ -102,29 +102,29 @@
     },
     {
       "id": "a_ap3_bad",
-      "body": "<<FILL role=failure words=58 beats='the downward branch ends in a collapsed sump full of black water, and {HERO} must turn back to wait for a safer night to try the climb again'>>",
+      "body": "<<FILL role=failure words=58 beats='the downward branch ends in a collapsed sump full of black water, and Priya must turn back to wait for a safer night to try the climb again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_a_ap3_bad",
         "valence": "negative",
         "kind": "setback",
-        "title": "{A_AP3_BAD}"
+        "title": "The Sealed Bay"
       }
     },
     {
       "id": "a_ap4",
-      "body": "<<FILL role=failure words=62 beats='{AP4_NAME} is a trap, its steps hinged over a pit, and {HERO} scrambles back to solid ground as the night thickens, driven off before the climb even starts'>>",
+      "body": "<<FILL role=failure words=62 beats='the grand entry ramp is a trap, its steps hinged over a pit, and Priya scrambles back to solid ground as the night thickens, driven off before the climb even starts'>>",
       "is_ending": true,
       "ending": {
         "id": "e_a_ap4",
         "valence": "negative",
         "kind": "setback",
-        "title": "{A_AP4}"
+        "title": "The Tilting Ramp"
       }
     },
     {
       "id": "b_towergate",
-      "body": "<<FILL role=choice words=78 beats='inside {ENTRANCE} the air is cold and old; a stair descends into the sound of water while a warmer draught rises from a side arch, and somewhere above {GOAL} waits'>>",
+      "body": "<<FILL role=choice words=78 beats='inside the atrium doors the air is cold and old; a stair descends into the sound of water while a warmer draught rises from a side arch, and somewhere above reactor waits'>>",
       "is_ending": false,
       "choices": [
         {
@@ -141,7 +141,7 @@
     },
     {
       "id": "b_gate_pod",
-      "body": "<<FILL role=rising words=66 beats='the warm draught leads to {B_FURNACE}, a dead end, but a maintenance ladder in the corner rejoins the descending stair'>>",
+      "body": "<<FILL role=rising words=66 beats='the warm draught leads to a sealed boiler room, a dead end, but a maintenance ladder in the corner rejoins the descending stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -153,19 +153,19 @@
     },
     {
       "id": "c_descent",
-      "body": "<<FILL role=rising words=60 beats='the stair spirals down worn and green with damp until it opens on the lapping edge of {TIER_U}, the first tier of the climb'>>",
+      "body": "<<FILL role=rising words=60 beats='the stair spirals down worn and green with damp until it opens on the lapping edge of the flooded archive, the first tier of the climb'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c_descent_1",
-          "label": "Enter {TIER_U}.",
+          "label": "Enter the flooded archive.",
           "target": "h_u"
         }
       ]
     },
     {
       "id": "h_u",
-      "body": "<<FILL role=hub words=82 beats='{HERO} wades into {TIER_U} where black water laps the drowned stair and three archways breathe cold air; the first {U_SHARD} is said to rest under the sluice'>>",
+      "body": "<<FILL role=hub words=82 beats='Priya wades into the flooded archive where black water laps the drowned stair and three archways breathe cold air; the first soaked chip is said to rest under the sluice'>>",
       "is_ending": false,
       "choices": [
         {
@@ -207,7 +207,7 @@
     },
     {
       "id": "s_u1",
-      "body": "<<FILL role=rising words=58 beats='the water rises to {HERO} waist as broken lantern-glass drifts past and a current tugs toward a {U_GATE} ahead'>>",
+      "body": "<<FILL role=rising words=58 beats='the water rises to Priya waist as broken lantern-glass drifts past and a current tugs toward a corroded bulkhead ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -219,7 +219,7 @@
     },
     {
       "id": "g_u",
-      "body": "<<FILL role=bottleneck words=84 beats='the {U_GATE} bars the way, its wheel seized with rust and weed; beyond it the {U_SHARD} glints on a submerged plinth'>>",
+      "body": "<<FILL role=bottleneck words=84 beats='the corroded bulkhead bars the way, its wheel seized with rust and weed; beyond it the soaked chip glints on a submerged plinth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -246,7 +246,7 @@
     },
     {
       "id": "s_u2",
-      "body": "<<FILL role=rising words=66 beats='the sluice grinds open and {HERO} hauls the {U_SHARD} free, one of three, then finds the spiral stair climbing out of the water toward warmer stone'>>",
+      "body": "<<FILL role=rising words=66 beats='the sluice grinds open and Priya hauls the soaked chip free, one of three, then finds the spiral stair climbing out of the water toward warmer stone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -258,7 +258,7 @@
     },
     {
       "id": "u_pa1",
-      "body": "<<FILL role=rising words=72 beats='the flanking passage skirts wide around {TIER_U} and rejoins the way just before the barrier'>>",
+      "body": "<<FILL role=rising words=72 beats='the flanking passage skirts wide around the flooded archive and rejoins the way just before the barrier'>>",
       "is_ending": false,
       "choices": [
         {
@@ -270,7 +270,7 @@
     },
     {
       "id": "u_pb1",
-      "body": "<<FILL role=rising words=61 beats='the side chamber of {TIER_U} is choked with wreckage that {HERO} must clear by hand'>>",
+      "body": "<<FILL role=rising words=61 beats='the side chamber of the flooded archive is choked with wreckage that Priya must clear by hand'>>",
       "is_ending": false,
       "choices": [
         {
@@ -299,18 +299,18 @@
     },
     {
       "id": "u_pb_bad",
-      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops {HERO} into a sealed vault below {TIER_U}, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
+      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops Priya into a sealed vault below the flooded archive, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_pb_bad",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sealed Under {TIER_U}"
+        "title": "Sealed Under the flooded archive"
       }
     },
     {
       "id": "u_pc1",
-      "body": "<<FILL role=rising words=69 beats='beyond the near door a corridor of {TIER_U} runs long and lightless, the ceiling dripping'>>",
+      "body": "<<FILL role=rising words=69 beats='beyond the near door a corridor of the flooded archive runs long and lightless, the ceiling dripping'>>",
       "is_ending": false,
       "choices": [
         {
@@ -339,7 +339,7 @@
     },
     {
       "id": "u_pc_bad1",
-      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and {HERO} backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
+      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and Priya backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_pc_bad1",
@@ -350,7 +350,7 @@
     },
     {
       "id": "u_pc_bad2",
-      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of {TOWER} vermin that swarm the light, and {HERO} retreats coughing into the dark, the way lost for tonight'>>",
+      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of Vaultspire vermin that swarm the light, and Priya retreats coughing into the dark, the way lost for tonight'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_pc_bad2",
@@ -361,7 +361,7 @@
     },
     {
       "id": "u_pd_p1",
-      "body": "<<FILL role=rising words=55 beats='the low path of {TIER_U} slopes down into standing water and colder air'>>",
+      "body": "<<FILL role=rising words=55 beats='the low path of the flooded archive slopes down into standing water and colder air'>>",
       "is_ending": false,
       "choices": [
         {
@@ -373,7 +373,7 @@
     },
     {
       "id": "u_pd_p2",
-      "body": "<<FILL role=rising words=63 beats='the passage narrows until {HERO} must turn sideways between wet stone'>>",
+      "body": "<<FILL role=rising words=63 beats='the passage narrows until Priya must turn sideways between wet stone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -397,18 +397,18 @@
     },
     {
       "id": "u_pd_end",
-      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and {HERO} is turned back from {TIER_U}, the climb halted before it truly began'>>",
+      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and Priya is turned back from the flooded archive, the climb halted before it truly began'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_pd_end",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lost in {TIER_U}"
+        "title": "Lost in the flooded archive"
       }
     },
     {
       "id": "u_pe1",
-      "body": "<<FILL role=rising words=60 beats='the far gallery of {TIER_U} is quiet, and in a dry alcove {HERO} finds an old climber cache of rope and chalk'>>",
+      "body": "<<FILL role=rising words=60 beats='the far gallery of the flooded archive is quiet, and in a dry alcove Priya finds an old climber cache of rope and chalk'>>",
       "is_ending": false,
       "choices": [
         {
@@ -425,7 +425,7 @@
     },
     {
       "id": "u_pe_rest",
-      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here {HERO} lets the hour slip; the night deepens and {TIER_U} must be left for a stronger attempt'>>",
+      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here Priya lets the hour slip; the night deepens and the flooded archive must be left for a stronger attempt'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_pe_rest",
@@ -448,7 +448,7 @@
     },
     {
       "id": "u_ga1",
-      "body": "<<FILL role=rising words=58 beats='the risky bypass climbs outside the barrier along a crumbling ledge of {TIER_U}'>>",
+      "body": "<<FILL role=rising words=58 beats='the risky bypass climbs outside the barrier along a crumbling ledge of the flooded archive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -460,7 +460,7 @@
     },
     {
       "id": "u_ga2",
-      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under {HERO} boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns {HERO} back'>>",
+      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under Priya boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns Priya back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_ga2",
@@ -471,7 +471,7 @@
     },
     {
       "id": "u_gb1",
-      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of {TIER_U}, {HERO} finds a release lever and a tangle of counterweights that could go either way'>>",
+      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of the flooded archive, Priya finds a release lever and a tangle of counterweights that could go either way'>>",
       "is_ending": false,
       "choices": [
         {
@@ -488,7 +488,7 @@
     },
     {
       "id": "u_gb_bad",
-      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and {HERO} climbs back down to try again'>>",
+      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and Priya climbs back down to try again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gb_bad",
@@ -499,7 +499,7 @@
     },
     {
       "id": "u_gc_p1",
-      "body": "<<FILL role=rising words=66 beats='the search for another handhold leads {HERO} out onto the raw face of {TIER_U}'>>",
+      "body": "<<FILL role=rising words=66 beats='the search for another handhold leads Priya out onto the raw face of the flooded archive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -523,18 +523,18 @@
     },
     {
       "id": "u_gc_end",
-      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so {HERO} retreats down a tier to find a safer night'>>",
+      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so Priya retreats down a tier to find a safer night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gc_end",
         "valence": "negative",
         "kind": "setback",
-        "title": "Turned Back at {TIER_U} Barrier"
+        "title": "Turned Back at the flooded archive Barrier"
       }
     },
     {
       "id": "u_gal",
-      "body": "<<FILL role=hub words=80 beats='the outer galleries of {TIER_U} spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
+      "body": "<<FILL role=hub words=80 beats='the outer galleries of the flooded archive spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
       "is_ending": false,
       "choices": [
         {
@@ -581,7 +581,7 @@
     },
     {
       "id": "u_gal_c1_p1",
-      "body": "<<FILL role=rising words=61 beats='passage 1 of {TIER_U} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=61 beats='passage 1 of the flooded archive narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -605,7 +605,7 @@
     },
     {
       "id": "u_gal_c1_p3",
-      "body": "<<FILL role=rising words=55 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=55 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -617,7 +617,7 @@
     },
     {
       "id": "u_gal_c1_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_U} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the flooded archive for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gal_c1_end",
@@ -628,7 +628,7 @@
     },
     {
       "id": "u_gal_c2_p1",
-      "body": "<<FILL role=rising words=63 beats='passage 2 of {TIER_U} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=63 beats='passage 2 of the flooded archive narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -652,7 +652,7 @@
     },
     {
       "id": "u_gal_c2_p3",
-      "body": "<<FILL role=rising words=60 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=60 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -664,7 +664,7 @@
     },
     {
       "id": "u_gal_c2_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_U} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the flooded archive for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gal_c2_end",
@@ -675,7 +675,7 @@
     },
     {
       "id": "u_gal_c3_p1",
-      "body": "<<FILL role=rising words=67 beats='passage 3 of {TIER_U} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=67 beats='passage 3 of the flooded archive narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -699,7 +699,7 @@
     },
     {
       "id": "u_gal_c3_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_U} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the flooded archive for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gal_c3_end",
@@ -710,7 +710,7 @@
     },
     {
       "id": "u_gal_c4_p1",
-      "body": "<<FILL role=rising words=66 beats='passage 4 of {TIER_U} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=66 beats='passage 4 of the flooded archive narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -734,7 +734,7 @@
     },
     {
       "id": "u_gal_c4_p3",
-      "body": "<<FILL role=rising words=61 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=61 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -746,7 +746,7 @@
     },
     {
       "id": "u_gal_c4_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_U} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the flooded archive for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gal_c4_end",
@@ -757,7 +757,7 @@
     },
     {
       "id": "u_gal_c5_p1",
-      "body": "<<FILL role=rising words=69 beats='passage 5 of {TIER_U} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=69 beats='passage 5 of the flooded archive narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -781,7 +781,7 @@
     },
     {
       "id": "u_gal_c5_p3",
-      "body": "<<FILL role=rising words=63 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=63 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -793,7 +793,7 @@
     },
     {
       "id": "u_gal_c5_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_U} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the flooded archive for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gal_c5_end",
@@ -804,7 +804,7 @@
     },
     {
       "id": "u_gal_c6_p1",
-      "body": "<<FILL role=rising words=74 beats='passage 6 of {TIER_U} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=74 beats='passage 6 of the flooded archive narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -828,7 +828,7 @@
     },
     {
       "id": "u_gal_c6_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_U} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the flooded archive for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gal_c6_end",
@@ -839,7 +839,7 @@
     },
     {
       "id": "u_gal_c7_p1",
-      "body": "<<FILL role=rising words=67 beats='passage 7 of {TIER_U} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=67 beats='passage 7 of the flooded archive narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -863,7 +863,7 @@
     },
     {
       "id": "u_gal_c7_p3",
-      "body": "<<FILL role=rising words=66 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=66 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -875,7 +875,7 @@
     },
     {
       "id": "u_gal_c7_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_U} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the flooded archive for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gal_c7_end",
@@ -886,7 +886,7 @@
     },
     {
       "id": "u_gal_c8_p1",
-      "body": "<<FILL role=rising words=72 beats='passage 8 of {TIER_U} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=72 beats='passage 8 of the flooded archive narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -910,7 +910,7 @@
     },
     {
       "id": "u_gal_c8_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_U} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the flooded archive for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_u_gal_c8_end",
@@ -921,7 +921,7 @@
     },
     {
       "id": "h_c",
-      "body": "<<FILL role=hub words=82 beats='{TIER_C} tick and turn, brass automata frozen mid-stride while great gears grind overhead; the {C_SHARD} sits locked in a stalled mechanism'>>",
+      "body": "<<FILL role=hub words=82 beats='the turbine deck tick and turn, brass automata frozen mid-stride while great gears grind overhead; the rotor chip sits locked in a stalled mechanism'>>",
       "is_ending": false,
       "choices": [
         {
@@ -963,7 +963,7 @@
     },
     {
       "id": "s_c1",
-      "body": "<<FILL role=rising words=69 beats='{HERO} edges between {C_DIRECT} that sweep the floor in slow bright arcs, timing each step to the ticking of the {TOWER} heart'>>",
+      "body": "<<FILL role=rising words=69 beats='Priya edges between spinning fan blades that sweep the floor in slow bright arcs, timing each step to the ticking of the Vaultspire heart'>>",
       "is_ending": false,
       "choices": [
         {
@@ -975,7 +975,7 @@
     },
     {
       "id": "g_c",
-      "body": "<<FILL role=bottleneck words=84 beats='a {C_GATE} blocks the gallery, teeth locked on a snapped brass key; the {C_SHARD} rides the hub of the wheel just out of reach'>>",
+      "body": "<<FILL role=bottleneck words=84 beats='a stalled turbine blocks the gallery, teeth locked on a snapped brass key; the rotor chip rides the hub of the wheel just out of reach'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1002,7 +1002,7 @@
     },
     {
       "id": "s_c2",
-      "body": "<<FILL role=rising words=55 beats='the freed gear turns with a shudder and the {C_SHARD} drops into {HERO} palm, two of three, as a brass stair unfolds toward the next tier'>>",
+      "body": "<<FILL role=rising words=55 beats='the freed gear turns with a shudder and the rotor chip drops into Priya palm, two of three, as a brass stair unfolds toward the next tier'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1014,7 +1014,7 @@
     },
     {
       "id": "c_pa1",
-      "body": "<<FILL role=rising words=63 beats='the flanking passage skirts wide around {TIER_C} and rejoins the way just before the barrier'>>",
+      "body": "<<FILL role=rising words=63 beats='the flanking passage skirts wide around the turbine deck and rejoins the way just before the barrier'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1026,7 +1026,7 @@
     },
     {
       "id": "c_pb1",
-      "body": "<<FILL role=rising words=74 beats='the side chamber of {TIER_C} is choked with wreckage that {HERO} must clear by hand'>>",
+      "body": "<<FILL role=rising words=74 beats='the side chamber of the turbine deck is choked with wreckage that Priya must clear by hand'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1055,18 +1055,18 @@
     },
     {
       "id": "c_pb_bad",
-      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops {HERO} into a sealed vault below {TIER_C}, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
+      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops Priya into a sealed vault below the turbine deck, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_pb_bad",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sealed Under {TIER_C}"
+        "title": "Sealed Under the turbine deck"
       }
     },
     {
       "id": "c_pc1",
-      "body": "<<FILL role=rising words=60 beats='beyond the near door a corridor of {TIER_C} runs long and lightless, the ceiling dripping'>>",
+      "body": "<<FILL role=rising words=60 beats='beyond the near door a corridor of the turbine deck runs long and lightless, the ceiling dripping'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1095,7 +1095,7 @@
     },
     {
       "id": "c_pc_bad1",
-      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and {HERO} backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
+      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and Priya backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_pc_bad1",
@@ -1106,7 +1106,7 @@
     },
     {
       "id": "c_pc_bad2",
-      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of {TOWER} vermin that swarm the light, and {HERO} retreats coughing into the dark, the way lost for tonight'>>",
+      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of Vaultspire vermin that swarm the light, and Priya retreats coughing into the dark, the way lost for tonight'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_pc_bad2",
@@ -1117,7 +1117,7 @@
     },
     {
       "id": "c_pd_p1",
-      "body": "<<FILL role=rising words=67 beats='the low path of {TIER_C} slopes down into standing water and colder air'>>",
+      "body": "<<FILL role=rising words=67 beats='the low path of the turbine deck slopes down into standing water and colder air'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1129,7 +1129,7 @@
     },
     {
       "id": "c_pd_p2",
-      "body": "<<FILL role=rising words=58 beats='the passage narrows until {HERO} must turn sideways between wet stone'>>",
+      "body": "<<FILL role=rising words=58 beats='the passage narrows until Priya must turn sideways between wet stone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1153,18 +1153,18 @@
     },
     {
       "id": "c_pd_end",
-      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and {HERO} is turned back from {TIER_C}, the climb halted before it truly began'>>",
+      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and Priya is turned back from the turbine deck, the climb halted before it truly began'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_pd_end",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lost in {TIER_C}"
+        "title": "Lost in the turbine deck"
       }
     },
     {
       "id": "c_pe1",
-      "body": "<<FILL role=rising words=72 beats='the far gallery of {TIER_C} is quiet, and in a dry alcove {HERO} finds an old climber cache of rope and chalk'>>",
+      "body": "<<FILL role=rising words=72 beats='the far gallery of the turbine deck is quiet, and in a dry alcove Priya finds an old climber cache of rope and chalk'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1181,7 +1181,7 @@
     },
     {
       "id": "c_pe_rest",
-      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here {HERO} lets the hour slip; the night deepens and {TIER_C} must be left for a stronger attempt'>>",
+      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here Priya lets the hour slip; the night deepens and the turbine deck must be left for a stronger attempt'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_pe_rest",
@@ -1204,7 +1204,7 @@
     },
     {
       "id": "c_ga1",
-      "body": "<<FILL role=rising words=69 beats='the risky bypass climbs outside the barrier along a crumbling ledge of {TIER_C}'>>",
+      "body": "<<FILL role=rising words=69 beats='the risky bypass climbs outside the barrier along a crumbling ledge of the turbine deck'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1216,7 +1216,7 @@
     },
     {
       "id": "c_ga2",
-      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under {HERO} boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns {HERO} back'>>",
+      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under Priya boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns Priya back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_ga2",
@@ -1227,7 +1227,7 @@
     },
     {
       "id": "c_gb1",
-      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of {TIER_C}, {HERO} finds a release lever and a tangle of counterweights that could go either way'>>",
+      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of the turbine deck, Priya finds a release lever and a tangle of counterweights that could go either way'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1244,7 +1244,7 @@
     },
     {
       "id": "c_gb_bad",
-      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and {HERO} climbs back down to try again'>>",
+      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and Priya climbs back down to try again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gb_bad",
@@ -1255,7 +1255,7 @@
     },
     {
       "id": "c_gc_p1",
-      "body": "<<FILL role=rising words=55 beats='the search for another handhold leads {HERO} out onto the raw face of {TIER_C}'>>",
+      "body": "<<FILL role=rising words=55 beats='the search for another handhold leads Priya out onto the raw face of the turbine deck'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1279,18 +1279,18 @@
     },
     {
       "id": "c_gc_end",
-      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so {HERO} retreats down a tier to find a safer night'>>",
+      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so Priya retreats down a tier to find a safer night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gc_end",
         "valence": "negative",
         "kind": "setback",
-        "title": "Turned Back at {TIER_C} Barrier"
+        "title": "Turned Back at the turbine deck Barrier"
       }
     },
     {
       "id": "c_gal",
-      "body": "<<FILL role=hub words=80 beats='the outer galleries of {TIER_C} spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
+      "body": "<<FILL role=hub words=80 beats='the outer galleries of the turbine deck spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1337,7 +1337,7 @@
     },
     {
       "id": "c_gal_c1_p1",
-      "body": "<<FILL role=rising words=74 beats='passage 1 of {TIER_C} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=74 beats='passage 1 of the turbine deck narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1361,7 +1361,7 @@
     },
     {
       "id": "c_gal_c1_p3",
-      "body": "<<FILL role=rising words=67 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=67 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1373,7 +1373,7 @@
     },
     {
       "id": "c_gal_c1_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_C} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the turbine deck for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gal_c1_end",
@@ -1384,7 +1384,7 @@
     },
     {
       "id": "c_gal_c2_p1",
-      "body": "<<FILL role=rising words=58 beats='passage 2 of {TIER_C} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=58 beats='passage 2 of the turbine deck narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1408,7 +1408,7 @@
     },
     {
       "id": "c_gal_c2_p3",
-      "body": "<<FILL role=rising words=72 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=72 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1420,7 +1420,7 @@
     },
     {
       "id": "c_gal_c2_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_C} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the turbine deck for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gal_c2_end",
@@ -1431,7 +1431,7 @@
     },
     {
       "id": "c_gal_c3_p1",
-      "body": "<<FILL role=rising words=61 beats='passage 3 of {TIER_C} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=61 beats='passage 3 of the turbine deck narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1455,7 +1455,7 @@
     },
     {
       "id": "c_gal_c3_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_C} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the turbine deck for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gal_c3_end",
@@ -1466,7 +1466,7 @@
     },
     {
       "id": "c_gal_c4_p1",
-      "body": "<<FILL role=rising words=55 beats='passage 4 of {TIER_C} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=55 beats='passage 4 of the turbine deck narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1490,7 +1490,7 @@
     },
     {
       "id": "c_gal_c4_p3",
-      "body": "<<FILL role=rising words=74 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=74 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1502,7 +1502,7 @@
     },
     {
       "id": "c_gal_c4_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_C} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the turbine deck for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gal_c4_end",
@@ -1513,7 +1513,7 @@
     },
     {
       "id": "c_gal_c5_p1",
-      "body": "<<FILL role=rising words=60 beats='passage 5 of {TIER_C} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=60 beats='passage 5 of the turbine deck narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1537,7 +1537,7 @@
     },
     {
       "id": "c_gal_c5_p3",
-      "body": "<<FILL role=rising words=58 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=58 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1549,7 +1549,7 @@
     },
     {
       "id": "c_gal_c5_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_C} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the turbine deck for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gal_c5_end",
@@ -1560,7 +1560,7 @@
     },
     {
       "id": "c_gal_c6_p1",
-      "body": "<<FILL role=rising words=66 beats='passage 6 of {TIER_C} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=66 beats='passage 6 of the turbine deck narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1584,7 +1584,7 @@
     },
     {
       "id": "c_gal_c6_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_C} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the turbine deck for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gal_c6_end",
@@ -1595,7 +1595,7 @@
     },
     {
       "id": "c_gal_c7_p1",
-      "body": "<<FILL role=rising words=61 beats='passage 7 of {TIER_C} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=61 beats='passage 7 of the turbine deck narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1619,7 +1619,7 @@
     },
     {
       "id": "c_gal_c7_p3",
-      "body": "<<FILL role=rising words=55 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=55 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1631,7 +1631,7 @@
     },
     {
       "id": "c_gal_c7_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_C} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the turbine deck for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gal_c7_end",
@@ -1642,7 +1642,7 @@
     },
     {
       "id": "c_gal_c8_p1",
-      "body": "<<FILL role=rising words=63 beats='passage 8 of {TIER_C} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=63 beats='passage 8 of the turbine deck narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1666,7 +1666,7 @@
     },
     {
       "id": "c_gal_c8_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_C} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the turbine deck for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_gal_c8_end",
@@ -1677,7 +1677,7 @@
     },
     {
       "id": "h_l",
-      "body": "<<FILL role=hub words=82 beats='{TIER_L} climbs into darkness, shelf upon shelf murmuring in dead languages while loose pages drift like moths; the {L_SHARD} is bound inside a locked ledger'>>",
+      "body": "<<FILL role=hub words=82 beats='the data stacks climbs into darkness, shelf upon shelf murmuring in dead languages while loose pages drift like moths; the index chip is bound inside a locked ledger'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1719,7 +1719,7 @@
     },
     {
       "id": "s_l1",
-      "body": "<<FILL role=rising words=60 beats='the whispers sharpen into half-heard warnings and {L_GATE} unfolds from the stacks, watching {HERO} with inkblot eyes'>>",
+      "body": "<<FILL role=rising words=60 beats='the whispers sharpen into half-heard warnings and the archive warden unfolds from the stacks, watching Priya with inkblot eyes'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1731,7 +1731,7 @@
     },
     {
       "id": "g_l",
-      "body": "<<FILL role=bottleneck words=84 beats='{L_GATE} blocks the ladder to the upper stacks and will not let a climber pass without answering the riddle carved in the reading-desk'>>",
+      "body": "<<FILL role=bottleneck words=84 beats='the archive warden blocks the ladder to the upper stacks and will not let a climber pass without answering the riddle carved in the reading-desk'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1758,7 +1758,7 @@
     },
     {
       "id": "s_l2",
-      "body": "<<FILL role=rising words=67 beats='the riddle answered, the ledger falls open and the {L_SHARD} lifts from the page, three of three, while a hidden stair spirals up toward the wind'>>",
+      "body": "<<FILL role=rising words=67 beats='the riddle answered, the ledger falls open and the index chip lifts from the page, three of three, while a hidden stair spirals up toward the wind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1770,7 +1770,7 @@
     },
     {
       "id": "l_pa1",
-      "body": "<<FILL role=rising words=58 beats='the flanking passage skirts wide around {TIER_L} and rejoins the way just before the barrier'>>",
+      "body": "<<FILL role=rising words=58 beats='the flanking passage skirts wide around the data stacks and rejoins the way just before the barrier'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1782,7 +1782,7 @@
     },
     {
       "id": "l_pb1",
-      "body": "<<FILL role=rising words=66 beats='the side chamber of {TIER_L} is choked with wreckage that {HERO} must clear by hand'>>",
+      "body": "<<FILL role=rising words=66 beats='the side chamber of the data stacks is choked with wreckage that Priya must clear by hand'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1811,18 +1811,18 @@
     },
     {
       "id": "l_pb_bad",
-      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops {HERO} into a sealed vault below {TIER_L}, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
+      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops Priya into a sealed vault below the data stacks, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_pb_bad",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sealed Under {TIER_L}"
+        "title": "Sealed Under the data stacks"
       }
     },
     {
       "id": "l_pc1",
-      "body": "<<FILL role=rising words=72 beats='beyond the near door a corridor of {TIER_L} runs long and lightless, the ceiling dripping'>>",
+      "body": "<<FILL role=rising words=72 beats='beyond the near door a corridor of the data stacks runs long and lightless, the ceiling dripping'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1851,7 +1851,7 @@
     },
     {
       "id": "l_pc_bad1",
-      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and {HERO} backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
+      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and Priya backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_pc_bad1",
@@ -1862,7 +1862,7 @@
     },
     {
       "id": "l_pc_bad2",
-      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of {TOWER} vermin that swarm the light, and {HERO} retreats coughing into the dark, the way lost for tonight'>>",
+      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of Vaultspire vermin that swarm the light, and Priya retreats coughing into the dark, the way lost for tonight'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_pc_bad2",
@@ -1873,7 +1873,7 @@
     },
     {
       "id": "l_pd_p1",
-      "body": "<<FILL role=rising words=61 beats='the low path of {TIER_L} slopes down into standing water and colder air'>>",
+      "body": "<<FILL role=rising words=61 beats='the low path of the data stacks slopes down into standing water and colder air'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1885,7 +1885,7 @@
     },
     {
       "id": "l_pd_p2",
-      "body": "<<FILL role=rising words=69 beats='the passage narrows until {HERO} must turn sideways between wet stone'>>",
+      "body": "<<FILL role=rising words=69 beats='the passage narrows until Priya must turn sideways between wet stone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1909,18 +1909,18 @@
     },
     {
       "id": "l_pd_end",
-      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and {HERO} is turned back from {TIER_L}, the climb halted before it truly began'>>",
+      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and Priya is turned back from the data stacks, the climb halted before it truly began'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_pd_end",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lost in {TIER_L}"
+        "title": "Lost in the data stacks"
       }
     },
     {
       "id": "l_pe1",
-      "body": "<<FILL role=rising words=63 beats='the far gallery of {TIER_L} is quiet, and in a dry alcove {HERO} finds an old climber cache of rope and chalk'>>",
+      "body": "<<FILL role=rising words=63 beats='the far gallery of the data stacks is quiet, and in a dry alcove Priya finds an old climber cache of rope and chalk'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1937,7 +1937,7 @@
     },
     {
       "id": "l_pe_rest",
-      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here {HERO} lets the hour slip; the night deepens and {TIER_L} must be left for a stronger attempt'>>",
+      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here Priya lets the hour slip; the night deepens and the data stacks must be left for a stronger attempt'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_pe_rest",
@@ -1960,7 +1960,7 @@
     },
     {
       "id": "l_ga1",
-      "body": "<<FILL role=rising words=60 beats='the risky bypass climbs outside the barrier along a crumbling ledge of {TIER_L}'>>",
+      "body": "<<FILL role=rising words=60 beats='the risky bypass climbs outside the barrier along a crumbling ledge of the data stacks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1972,7 +1972,7 @@
     },
     {
       "id": "l_ga2",
-      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under {HERO} boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns {HERO} back'>>",
+      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under Priya boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns Priya back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_ga2",
@@ -1983,7 +1983,7 @@
     },
     {
       "id": "l_gb1",
-      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of {TIER_L}, {HERO} finds a release lever and a tangle of counterweights that could go either way'>>",
+      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of the data stacks, Priya finds a release lever and a tangle of counterweights that could go either way'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2000,7 +2000,7 @@
     },
     {
       "id": "l_gb_bad",
-      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and {HERO} climbs back down to try again'>>",
+      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and Priya climbs back down to try again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gb_bad",
@@ -2011,7 +2011,7 @@
     },
     {
       "id": "l_gc_p1",
-      "body": "<<FILL role=rising words=67 beats='the search for another handhold leads {HERO} out onto the raw face of {TIER_L}'>>",
+      "body": "<<FILL role=rising words=67 beats='the search for another handhold leads Priya out onto the raw face of the data stacks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2035,18 +2035,18 @@
     },
     {
       "id": "l_gc_end",
-      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so {HERO} retreats down a tier to find a safer night'>>",
+      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so Priya retreats down a tier to find a safer night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gc_end",
         "valence": "negative",
         "kind": "setback",
-        "title": "Turned Back at {TIER_L} Barrier"
+        "title": "Turned Back at the data stacks Barrier"
       }
     },
     {
       "id": "l_gal",
-      "body": "<<FILL role=hub words=80 beats='the outer galleries of {TIER_L} spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
+      "body": "<<FILL role=hub words=80 beats='the outer galleries of the data stacks spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2093,7 +2093,7 @@
     },
     {
       "id": "l_gal_c1_p1",
-      "body": "<<FILL role=rising words=66 beats='passage 1 of {TIER_L} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=66 beats='passage 1 of the data stacks narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2117,7 +2117,7 @@
     },
     {
       "id": "l_gal_c1_p3",
-      "body": "<<FILL role=rising words=61 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=61 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2129,7 +2129,7 @@
     },
     {
       "id": "l_gal_c1_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_L} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the data stacks for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gal_c1_end",
@@ -2140,7 +2140,7 @@
     },
     {
       "id": "l_gal_c2_p1",
-      "body": "<<FILL role=rising words=69 beats='passage 2 of {TIER_L} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=69 beats='passage 2 of the data stacks narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2164,7 +2164,7 @@
     },
     {
       "id": "l_gal_c2_p3",
-      "body": "<<FILL role=rising words=63 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=63 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2176,7 +2176,7 @@
     },
     {
       "id": "l_gal_c2_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_L} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the data stacks for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gal_c2_end",
@@ -2187,7 +2187,7 @@
     },
     {
       "id": "l_gal_c3_p1",
-      "body": "<<FILL role=rising words=74 beats='passage 3 of {TIER_L} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=74 beats='passage 3 of the data stacks narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2211,7 +2211,7 @@
     },
     {
       "id": "l_gal_c3_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_L} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the data stacks for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gal_c3_end",
@@ -2222,7 +2222,7 @@
     },
     {
       "id": "l_gal_c4_p1",
-      "body": "<<FILL role=rising words=67 beats='passage 4 of {TIER_L} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=67 beats='passage 4 of the data stacks narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2246,7 +2246,7 @@
     },
     {
       "id": "l_gal_c4_p3",
-      "body": "<<FILL role=rising words=66 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=66 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2258,7 +2258,7 @@
     },
     {
       "id": "l_gal_c4_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_L} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the data stacks for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gal_c4_end",
@@ -2269,7 +2269,7 @@
     },
     {
       "id": "l_gal_c5_p1",
-      "body": "<<FILL role=rising words=72 beats='passage 5 of {TIER_L} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=72 beats='passage 5 of the data stacks narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2293,7 +2293,7 @@
     },
     {
       "id": "l_gal_c5_p3",
-      "body": "<<FILL role=rising words=69 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=69 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2305,7 +2305,7 @@
     },
     {
       "id": "l_gal_c5_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_L} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the data stacks for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gal_c5_end",
@@ -2316,7 +2316,7 @@
     },
     {
       "id": "l_gal_c6_p1",
-      "body": "<<FILL role=rising words=55 beats='passage 6 of {TIER_L} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=55 beats='passage 6 of the data stacks narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2340,7 +2340,7 @@
     },
     {
       "id": "l_gal_c6_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_L} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the data stacks for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gal_c6_end",
@@ -2351,7 +2351,7 @@
     },
     {
       "id": "l_gal_c7_p1",
-      "body": "<<FILL role=rising words=74 beats='passage 7 of {TIER_L} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=74 beats='passage 7 of the data stacks narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2375,7 +2375,7 @@
     },
     {
       "id": "l_gal_c7_p3",
-      "body": "<<FILL role=rising words=67 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=67 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2387,7 +2387,7 @@
     },
     {
       "id": "l_gal_c7_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_L} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the data stacks for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gal_c7_end",
@@ -2398,7 +2398,7 @@
     },
     {
       "id": "l_gal_c8_p1",
-      "body": "<<FILL role=rising words=58 beats='passage 8 of {TIER_L} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=58 beats='passage 8 of the data stacks narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2422,7 +2422,7 @@
     },
     {
       "id": "l_gal_c8_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_L} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the data stacks for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_l_gal_c8_end",
@@ -2433,7 +2433,7 @@
     },
     {
       "id": "h_r",
-      "body": "<<FILL role=hub words=82 beats='{TIER_R} ring the {TOWER} under a bruised sky, narrow ledges slick with spray and stone gargoyles crouched along {R_BRIDGE} that has half fallen away'>>",
+      "body": "<<FILL role=hub words=82 beats='the antenna spires ring the Vaultspire under a bruised sky, narrow ledges slick with spray and stone gargoyles crouched along the sagging catwalk that has half fallen away'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2475,7 +2475,7 @@
     },
     {
       "id": "s_r1",
-      "body": "<<FILL role=rising words=72 beats='the gale shoves {HERO} against the parapet and {R_BRIDGE} groans, one span still standing over a long dark drop to the clouds below'>>",
+      "body": "<<FILL role=rising words=72 beats='the gale shoves Priya against the parapet and the sagging catwalk groans, one span still standing over a long dark drop to the clouds below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2487,7 +2487,7 @@
     },
     {
       "id": "g_r",
-      "body": "<<FILL role=bottleneck words=84 beats='{R_GATE} wakes, a great stone sentinel that steps from the rampart wall to bar the last stair, eyes lit with the old {CURSE}'>>",
+      "body": "<<FILL role=bottleneck words=84 beats='the spire sentry wakes, a great stone sentinel that steps from the rampart wall to bar the last stair, eyes lit with the old glitch'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2514,7 +2514,7 @@
     },
     {
       "id": "s_r2",
-      "body": "<<FILL role=rising words=61 beats='the sentinel outwitted, it grinds back into the wall and the final stair stands open, {GOAL} chamber glowing faintly at the top of the world'>>",
+      "body": "<<FILL role=rising words=61 beats='the sentinel outwitted, it grinds back into the wall and the final stair stands open, reactor chamber glowing faintly at the top of the world'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2526,7 +2526,7 @@
     },
     {
       "id": "r_pa1",
-      "body": "<<FILL role=rising words=69 beats='the flanking passage skirts wide around {TIER_R} and rejoins the way just before the barrier'>>",
+      "body": "<<FILL role=rising words=69 beats='the flanking passage skirts wide around the antenna spires and rejoins the way just before the barrier'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2538,7 +2538,7 @@
     },
     {
       "id": "r_pb1",
-      "body": "<<FILL role=rising words=55 beats='the side chamber of {TIER_R} is choked with wreckage that {HERO} must clear by hand'>>",
+      "body": "<<FILL role=rising words=55 beats='the side chamber of the antenna spires is choked with wreckage that Priya must clear by hand'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2567,18 +2567,18 @@
     },
     {
       "id": "r_pb_bad",
-      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops {HERO} into a sealed vault below {TIER_R}, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
+      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops Priya into a sealed vault below the antenna spires, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_pb_bad",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sealed Under {TIER_R}"
+        "title": "Sealed Under the antenna spires"
       }
     },
     {
       "id": "r_pc1",
-      "body": "<<FILL role=rising words=63 beats='beyond the near door a corridor of {TIER_R} runs long and lightless, the ceiling dripping'>>",
+      "body": "<<FILL role=rising words=63 beats='beyond the near door a corridor of the antenna spires runs long and lightless, the ceiling dripping'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2607,7 +2607,7 @@
     },
     {
       "id": "r_pc_bad1",
-      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and {HERO} backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
+      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and Priya backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_pc_bad1",
@@ -2618,7 +2618,7 @@
     },
     {
       "id": "r_pc_bad2",
-      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of {TOWER} vermin that swarm the light, and {HERO} retreats coughing into the dark, the way lost for tonight'>>",
+      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of Vaultspire vermin that swarm the light, and Priya retreats coughing into the dark, the way lost for tonight'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_pc_bad2",
@@ -2629,7 +2629,7 @@
     },
     {
       "id": "r_pd_p1",
-      "body": "<<FILL role=rising words=74 beats='the low path of {TIER_R} slopes down into standing water and colder air'>>",
+      "body": "<<FILL role=rising words=74 beats='the low path of the antenna spires slopes down into standing water and colder air'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2641,7 +2641,7 @@
     },
     {
       "id": "r_pd_p2",
-      "body": "<<FILL role=rising words=60 beats='the passage narrows until {HERO} must turn sideways between wet stone'>>",
+      "body": "<<FILL role=rising words=60 beats='the passage narrows until Priya must turn sideways between wet stone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2665,18 +2665,18 @@
     },
     {
       "id": "r_pd_end",
-      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and {HERO} is turned back from {TIER_R}, the climb halted before it truly began'>>",
+      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and Priya is turned back from the antenna spires, the climb halted before it truly began'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_pd_end",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lost in {TIER_R}"
+        "title": "Lost in the antenna spires"
       }
     },
     {
       "id": "r_pe1",
-      "body": "<<FILL role=rising words=58 beats='the far gallery of {TIER_R} is quiet, and in a dry alcove {HERO} finds an old climber cache of rope and chalk'>>",
+      "body": "<<FILL role=rising words=58 beats='the far gallery of the antenna spires is quiet, and in a dry alcove Priya finds an old climber cache of rope and chalk'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2693,7 +2693,7 @@
     },
     {
       "id": "r_pe_rest",
-      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here {HERO} lets the hour slip; the night deepens and {TIER_R} must be left for a stronger attempt'>>",
+      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here Priya lets the hour slip; the night deepens and the antenna spires must be left for a stronger attempt'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_pe_rest",
@@ -2716,7 +2716,7 @@
     },
     {
       "id": "r_ga1",
-      "body": "<<FILL role=rising words=72 beats='the risky bypass climbs outside the barrier along a crumbling ledge of {TIER_R}'>>",
+      "body": "<<FILL role=rising words=72 beats='the risky bypass climbs outside the barrier along a crumbling ledge of the antenna spires'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2728,7 +2728,7 @@
     },
     {
       "id": "r_ga2",
-      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under {HERO} boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns {HERO} back'>>",
+      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under Priya boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns Priya back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_ga2",
@@ -2739,7 +2739,7 @@
     },
     {
       "id": "r_gb1",
-      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of {TIER_R}, {HERO} finds a release lever and a tangle of counterweights that could go either way'>>",
+      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of the antenna spires, Priya finds a release lever and a tangle of counterweights that could go either way'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2756,7 +2756,7 @@
     },
     {
       "id": "r_gb_bad",
-      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and {HERO} climbs back down to try again'>>",
+      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and Priya climbs back down to try again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gb_bad",
@@ -2767,7 +2767,7 @@
     },
     {
       "id": "r_gc_p1",
-      "body": "<<FILL role=rising words=61 beats='the search for another handhold leads {HERO} out onto the raw face of {TIER_R}'>>",
+      "body": "<<FILL role=rising words=61 beats='the search for another handhold leads Priya out onto the raw face of the antenna spires'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2791,18 +2791,18 @@
     },
     {
       "id": "r_gc_end",
-      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so {HERO} retreats down a tier to find a safer night'>>",
+      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so Priya retreats down a tier to find a safer night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gc_end",
         "valence": "negative",
         "kind": "setback",
-        "title": "Turned Back at {TIER_R} Barrier"
+        "title": "Turned Back at the antenna spires Barrier"
       }
     },
     {
       "id": "r_gal",
-      "body": "<<FILL role=hub words=80 beats='the outer galleries of {TIER_R} spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
+      "body": "<<FILL role=hub words=80 beats='the outer galleries of the antenna spires spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2849,7 +2849,7 @@
     },
     {
       "id": "r_gal_c1_p1",
-      "body": "<<FILL role=rising words=55 beats='passage 1 of {TIER_R} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=55 beats='passage 1 of the antenna spires narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2873,7 +2873,7 @@
     },
     {
       "id": "r_gal_c1_p3",
-      "body": "<<FILL role=rising words=74 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=74 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2885,7 +2885,7 @@
     },
     {
       "id": "r_gal_c1_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_R} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the antenna spires for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gal_c1_end",
@@ -2896,7 +2896,7 @@
     },
     {
       "id": "r_gal_c2_p1",
-      "body": "<<FILL role=rising words=60 beats='passage 2 of {TIER_R} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=60 beats='passage 2 of the antenna spires narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2920,7 +2920,7 @@
     },
     {
       "id": "r_gal_c2_p3",
-      "body": "<<FILL role=rising words=58 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=58 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2932,7 +2932,7 @@
     },
     {
       "id": "r_gal_c2_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_R} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the antenna spires for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gal_c2_end",
@@ -2943,7 +2943,7 @@
     },
     {
       "id": "r_gal_c3_p1",
-      "body": "<<FILL role=rising words=66 beats='passage 3 of {TIER_R} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=66 beats='passage 3 of the antenna spires narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2967,7 +2967,7 @@
     },
     {
       "id": "r_gal_c3_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_R} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the antenna spires for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gal_c3_end",
@@ -2978,7 +2978,7 @@
     },
     {
       "id": "r_gal_c4_p1",
-      "body": "<<FILL role=rising words=61 beats='passage 4 of {TIER_R} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=61 beats='passage 4 of the antenna spires narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3002,7 +3002,7 @@
     },
     {
       "id": "r_gal_c4_p3",
-      "body": "<<FILL role=rising words=55 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=55 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3014,7 +3014,7 @@
     },
     {
       "id": "r_gal_c4_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_R} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the antenna spires for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gal_c4_end",
@@ -3025,7 +3025,7 @@
     },
     {
       "id": "r_gal_c5_p1",
-      "body": "<<FILL role=rising words=63 beats='passage 5 of {TIER_R} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=63 beats='passage 5 of the antenna spires narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3049,7 +3049,7 @@
     },
     {
       "id": "r_gal_c5_p3",
-      "body": "<<FILL role=rising words=60 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=60 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3061,7 +3061,7 @@
     },
     {
       "id": "r_gal_c5_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_R} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the antenna spires for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gal_c5_end",
@@ -3072,7 +3072,7 @@
     },
     {
       "id": "r_gal_c6_p1",
-      "body": "<<FILL role=rising words=67 beats='passage 6 of {TIER_R} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=67 beats='passage 6 of the antenna spires narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3096,7 +3096,7 @@
     },
     {
       "id": "r_gal_c6_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_R} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the antenna spires for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gal_c6_end",
@@ -3107,7 +3107,7 @@
     },
     {
       "id": "r_gal_c7_p1",
-      "body": "<<FILL role=rising words=66 beats='passage 7 of {TIER_R} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=66 beats='passage 7 of the antenna spires narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3131,7 +3131,7 @@
     },
     {
       "id": "r_gal_c7_p3",
-      "body": "<<FILL role=rising words=61 beats='the way pinches down until {HERO} can barely squeeze ahead'>>",
+      "body": "<<FILL role=rising words=61 beats='the way pinches down until Priya can barely squeeze ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3143,7 +3143,7 @@
     },
     {
       "id": "r_gal_c7_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_R} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the antenna spires for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gal_c7_end",
@@ -3154,7 +3154,7 @@
     },
     {
       "id": "r_gal_c8_p1",
-      "body": "<<FILL role=rising words=69 beats='passage 8 of {TIER_R} narrows and turns, the light failing behind'>>",
+      "body": "<<FILL role=rising words=69 beats='passage 8 of the antenna spires narrows and turns, the light failing behind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3178,7 +3178,7 @@
     },
     {
       "id": "r_gal_c8_end",
-      "body": "<<FILL role=failure words=62 beats='the passage ends against blank {TOWER} stone with no way on, and {HERO} must back out and give up {TIER_R} for tonight, to climb again another night'>>",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank Vaultspire stone with no way on, and Priya must back out and give up the antenna spires for tonight, to climb again another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_r_gal_c8_end",
@@ -3189,12 +3189,12 @@
     },
     {
       "id": "h_b",
-      "body": "<<FILL role=hub words=86 beats='{GOAL} chamber crowns the {TOWER}, its great dark lantern cold at the center while {OPENING_MOMENT} gathers at the glass and the three {SHARD}s hum in {HERO}\u2019s hands'>>",
+      "body": "<<FILL role=hub words=86 beats='reactor chamber crowns the Vaultspire, its great dark lantern cold at the center while the lockdown window gathers at the glass and the three chips hum in Priya\u2019s hands'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_h_b_1",
-          "label": "Approach the lantern {CROWN}.",
+          "label": "Approach the lantern core.",
           "target": "s_b1"
         },
         {
@@ -3204,12 +3204,12 @@
         },
         {
           "id": "c_h_b_3",
-          "label": "Study {SHADOW}.",
+          "label": "Study security ghost.",
           "target": "b_pb1"
         },
         {
           "id": "c_h_b_4",
-          "label": "Search for the {KEEPER} remains.",
+          "label": "Search for the engineer remains.",
           "target": "b_pc1"
         },
         {
@@ -3221,125 +3221,125 @@
     },
     {
       "id": "s_b1",
-      "body": "<<FILL role=rising words=70 beats='the {SHARD}s must be set into the lantern {CROWN} in the right order or the {CURSE} will smother the {SPARK}; {GOAL} mechanism waits, patient and dark'>>",
+      "body": "<<FILL role=rising words=70 beats='the chips must be set into the lantern core in the right order or the glitch will smother the surge; reactor mechanism waits, patient and dark'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_b1_1",
-          "label": "Read the {CROWN} order.",
+          "label": "Read the core order.",
           "target": "g_b"
         }
       ]
     },
     {
       "id": "g_b",
-      "body": "<<FILL role=bottleneck words=88 beats='the {CURSE} itself rises as {SHADOW} across the lantern, whispering that the night is kinder than the climb and that {HERO} should set the {SHARD}s down'>>",
+      "body": "<<FILL role=bottleneck words=88 beats='the glitch itself rises as security ghost across the lantern, whispering that the night is kinder than the climb and that Priya should set the chips down'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_b_1",
-          "label": "Refuse {SHADOW} and set the {SHARD}s.",
+          "label": "Refuse security ghost and set the chips.",
           "target": "s_b2"
         },
         {
           "id": "c_g_b_2",
-          "label": "Bargain with {SHADOW}.",
+          "label": "Bargain with security ghost.",
           "target": "b_ga1"
         },
         {
           "id": "c_g_b_3",
-          "label": "Try to set the {SHARD}s blind.",
+          "label": "Try to set the chips blind.",
           "target": "b_gb1"
         }
       ]
     },
     {
       "id": "s_b2",
-      "body": "<<FILL role=climax words=84 beats='{HERO} refuses {SHADOW} and fits the three {SHARD}s to the {CROWN}, and the old mechanism drinks the light and begins to warm beneath both hands'>>",
+      "body": "<<FILL role=climax words=84 beats='Priya refuses security ghost and fits the three chips to the core, and the old mechanism drinks the light and begins to warm beneath both hands'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_b2_1",
-          "label": "Speak the old {KEEPER} words.",
+          "label": "Speak the old engineer words.",
           "target": "s_b3"
         },
         {
           "id": "c_s_b2_2",
-          "label": "Force the {SPARK} at once.",
+          "label": "Force the surge at once.",
           "target": "b_force"
         }
       ]
     },
     {
       "id": "s_b3",
-      "body": "<<FILL role=climax words=80 beats='the {CROWN} warms and the first true light in a hundred years gathers under {HERO}\u2019s hands, but {SHADOW} claws at the glass one last time and the order of the final turn must be chosen'>>",
+      "body": "<<FILL role=climax words=80 beats='the core warms and the first true light in a hundred years gathers under Priya\u2019s hands, but security ghost claws at the glass one last time and the order of the final turn must be chosen'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_b3_1",
-          "label": "Turn the {CROWN} sunwise, as the log said.",
+          "label": "Turn the core sunwise, as the log said.",
           "target": "e_relight"
         },
         {
           "id": "c_s_b3_2",
-          "label": "Turn the {CROWN} widdershins, to spite the {CURSE}.",
+          "label": "Turn the core widdershins, to spite the glitch.",
           "target": "b_widder"
         }
       ]
     },
     {
       "id": "e_relight",
-      "body": "<<FILL role=resolution words=96 beats='sunwise the {CROWN} turns and {GOAL} blazes gold across the whole coast, {OPENING_MOMENT} breaking apart and the {CURSE} unspooling into morning; the {TOWER} stands lit and free, and {HERO} is the {KEEPER} who climbed the whole cursed {TOWER} and brought the light back'>>",
+      "body": "<<FILL role=resolution words=96 beats='sunwise the core turns and reactor blazes gold across the whole coast, the lockdown window breaking apart and the glitch unspooling into morning; the Vaultspire stands lit and free, and Priya is the engineer who climbed the whole cursed Vaultspire and brought the light back'>>",
       "is_ending": true,
       "ending": {
         "id": "e_e_relight",
         "valence": "positive",
         "kind": "completion",
-        "title": "{RELIGHT_PRIZE}"
+        "title": "The Reactor Restored"
       }
     },
     {
       "id": "b_widder",
-      "body": "<<FILL role=failure words=74 beats='widdershins the {CROWN} fights back and the gathered light gutters out in a cold rush, {SHADOW} laughing as it fades, and {HERO} is left in the dark chamber having reached the very top yet failing the last turn, to rest and try the final ritual again'>>",
+      "body": "<<FILL role=failure words=74 beats='widdershins the core fights back and the gathered light gutters out in a cold rush, security ghost laughing as it fades, and Priya is left in the dark chamber having reached the very top yet failing the last turn, to rest and try the final ritual again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b_widder",
         "valence": "negative",
         "kind": "setback",
-        "title": "{B_WIDDER}"
+        "title": "The Wrong Switch"
       }
     },
     {
       "id": "b_force",
-      "body": "<<FILL role=failure words=70 beats='forced too soon {SPARK} leaps wild and throws {HERO} back from the {CROWN}, the {SHARD}s scattering across the floor; {GOAL} stays dark and {OPENING_MOMENT} holds, so the climber must gather the {SHARD}s and steady before trying once more'>>",
+      "body": "<<FILL role=failure words=70 beats='forced too soon surge leaps wild and throws Priya back from the core, the chips scattering across the floor; reactor stays dark and the lockdown window holds, so the climber must gather the chips and steady before trying once more'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b_force",
         "valence": "negative",
         "kind": "setback",
-        "title": "{B_FORCE}"
+        "title": "The Blown Fuse"
       }
     },
     {
       "id": "b_pa1",
-      "body": "<<FILL role=rising words=64 beats='circling {GOAL} chamber {HERO} finds the old {KEEPER} log open on a lectern, its last page describing the sunwise turn of the {CROWN}'>>",
+      "body": "<<FILL role=rising words=64 beats='circling reactor chamber Priya finds the old engineer log open on a lectern, its last page describing the sunwise turn of the core'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_pa1_1",
-          "label": "Read on, then approach the {CROWN}.",
+          "label": "Read on, then approach the core.",
           "target": "s_b1"
         }
       ]
     },
     {
       "id": "b_pb1",
-      "body": "<<FILL role=choice words=72 beats='studying {SHADOW}, {HERO} sees it flinches from the {SHARD}s light; there is a moment to strike past it or to keep watching and lose it'>>",
+      "body": "<<FILL role=choice words=72 beats='studying security ghost, Priya sees it flinches from the chips light; there is a moment to strike past it or to keep watching and lose it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_pb1_1",
-          "label": "Slip past to the {CROWN}.",
+          "label": "Slip past to the core.",
           "target": "s_b1"
         },
         {
@@ -3351,69 +3351,69 @@
     },
     {
       "id": "b_pb_bad",
-      "body": "<<FILL role=failure words=62 beats='watching {SHADOW} too long, {HERO} feels the night pour in and the cold take the chamber; the moment passes and the climb must be abandoned to the dark, to be attempted again'>>",
+      "body": "<<FILL role=failure words=62 beats='watching security ghost too long, Priya feels the night pour in and the cold take the chamber; the moment passes and the climb must be abandoned to the dark, to be attempted again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b_pb_bad",
         "valence": "negative",
         "kind": "setback",
-        "title": "{B_PB_BAD}"
+        "title": "Held by the Ghost"
       }
     },
     {
       "id": "b_pc1",
-      "body": "<<FILL role=rising words=60 beats='in a cold alcove {HERO} finds the last {KEEPER}, only bones and a ring of keys now, one key still fitting the {CROWN} housing'>>",
+      "body": "<<FILL role=rising words=60 beats='in a cold alcove Priya finds the last engineer, only bones and a ring of keys now, one key still fitting the core housing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_pc1_1",
-          "label": "Take the key to the {CROWN}.",
+          "label": "Take the key to the core.",
           "target": "s_b1"
         }
       ]
     },
     {
       "id": "b_pd1",
-      "body": "<<FILL role=discovery words=66 beats='bracing the great doors, {HERO} holds the night out for one long hour and buys the coast a little dawn, but {GOAL} stays dark behind and the true climb is left unfinished for a braver night'>>",
+      "body": "<<FILL role=discovery words=66 beats='bracing the great doors, Priya holds the night out for one long hour and buys the coast a little dawn, but reactor stays dark behind and the true climb is left unfinished for a braver night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b_pd1",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "{B_PD1}"
+        "title": "The Held Doors"
       }
     },
     {
       "id": "b_ga1",
-      "body": "<<FILL role=choice words=74 beats='bargaining, {HERO} offers {SHADOW} a single {SHARD} for safe passage, and it reaches out a smoke-cold hand to take the bargain'>>",
+      "body": "<<FILL role=choice words=74 beats='bargaining, Priya offers security ghost a single chip for safe passage, and it reaches out a smoke-cold hand to take the bargain'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_ga1_1",
-          "label": "Snatch the {SHARD} back and run for the {CROWN}.",
+          "label": "Snatch the chip back and run for the core.",
           "target": "s_b2b"
         },
         {
           "id": "c_b_ga1_2",
-          "label": "Let {SHADOW} take the {SHARD}.",
+          "label": "Let security ghost take the chip.",
           "target": "b_ga_bad"
         }
       ]
     },
     {
       "id": "b_ga_bad",
-      "body": "<<FILL role=failure words=64 beats='{SHADOW} takes the {SHARD} and swallows the light with it, and now only two {SHARD}s remain, not enough to wake the {CROWN}; {HERO} retreats down the {TOWER} to seek the lost {SHARD} another night'>>",
+      "body": "<<FILL role=failure words=64 beats='security ghost takes the chip and swallows the light with it, and now only two chips remain, not enough to wake the core; Priya retreats down the Vaultspire to seek the lost chip another night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b_ga_bad",
         "valence": "negative",
         "kind": "setback",
-        "title": "{B_GA_BAD}"
+        "title": "The Traded Chip"
       }
     },
     {
       "id": "b_gb1",
-      "body": "<<FILL role=rising words=62 beats='setting the {SHARD}s blind, {HERO} feels for the housings in the dark and gets two seated true before the third resists'>>",
+      "body": "<<FILL role=rising words=62 beats='setting the chips blind, Priya feels for the housings in the dark and gets two seated true before the third resists'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3425,36 +3425,36 @@
     },
     {
       "id": "b_gb2",
-      "body": "<<FILL role=failure words=60 beats='the third {SHARD} jams half-seated and the {CROWN} locks against it, refusing the light until it is cleared; {HERO} must climb down, rest, and come back to seat the {SHARD}s in the light'>>",
+      "body": "<<FILL role=failure words=60 beats='the third chip jams half-seated and the core locks against it, refusing the light until it is cleared; Priya must climb down, rest, and come back to seat the chips in the light'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b_gb2",
         "valence": "negative",
         "kind": "setback",
-        "title": "{B_GB2}"
+        "title": "The Stuck Socket"
       }
     },
     {
       "id": "s_b2b",
-      "body": "<<FILL role=climax words=78 beats='{SHARD}s snatched back and clutched tight, {HERO} sprints the last curve of the chamber ahead of {SHADOW} and reaches the {CROWN} from the far side, breath ragged, the housings open and waiting'>>",
+      "body": "<<FILL role=climax words=78 beats='chips snatched back and clutched tight, Priya sprints the last curve of the chamber ahead of security ghost and reaches the core from the far side, breath ragged, the housings open and waiting'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_b2b_1",
-          "label": "Set the {SHARD}s from the far side.",
+          "label": "Set the chips from the far side.",
           "target": "e_clever"
         }
       ]
     },
     {
       "id": "e_clever",
-      "body": "<<FILL role=resolution words=90 beats='from the far side {HERO} drives the three {SHARD}s home all at once and the {CROWN} catches with a roar of gold, {GOAL} flaring to life and {SHADOW} torn apart; it is not the {KEEPER} way but it is a lit {TOWER} and an ending to {OPENING_MOMENT}, won by nerve and a clever line'>>",
+      "body": "<<FILL role=resolution words=90 beats='from the far side Priya drives the three chips home all at once and the core catches with a roar of gold, reactor flaring to life and security ghost torn apart; it is not the engineer way but it is a lit Vaultspire and an ending to the lockdown window, won by nerve and a clever line'>>",
       "is_ending": true,
       "ending": {
         "id": "e_e_clever",
         "valence": "positive",
         "kind": "success",
-        "title": "{CLEVER_PRIZE}"
+        "title": "The Clever Reboot"
       }
     }
   ]
