@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- The PII egress guard (`assert_prompt_pii_safe`) now also screens every
+  prompt for email-, phone-, and street-address-shaped content, independent
+  of the registered-child-name allowlist, closing the gap where a free-typed
+  story premise could carry a sibling's contact details or a home address
+  past the exact-match-only guard. Two previously unguarded egress paths are
+  now covered by the same guard: the cover-art prompt sent to Google Gemini,
+  and the Stage-0 safety-classifier calls (OpenAI Moderation, Google
+  Perspective) in both the generation-time moderation pipeline and the
+  node-edit review path (#304).
+
+### Documentation
+
+- Added a GDPR-specific compliance review and a phased COPPA/GDPR/GDPR-K
+  remediation plan under `docs/compliance/`, companion documents to the
+  existing COPPA compliance audit (#304).
+
 ## [0.16.0] - 2026-07-19
 
 ### Added
