@@ -159,6 +159,20 @@ _BUNDLES: dict[str, frozenset[str]] = {
 # contribute zero terms to a slot's effective denylist).
 BUNDLE_IDS: frozenset[str] = frozenset(_BUNDLES)
 
+# Public: one representative denylisted phrase per bundle, so an acceptance
+# checker (scripts/check_theme_contract.py check 5) can synthesize a binding
+# that a given bundle MUST reject, proving a contract's constraints actually
+# bite rather than merely parse. Each phrase is deliberately built to trip only
+# its own bundle's word-boundary stems; keep it in sync with the bundles above.
+BUNDLE_PROBES: dict[str, str] = {
+    "lethal": "a chasm that kills anyone who falls",
+    "weapon": "a sharpened steel sword",
+    "toxic": "a cloud of choking poison",
+    "capture": "a locked cage no one escapes",
+    "graphic": "a deep wound dripping with blood",
+    "despair": "a hopeless, forsaken ruin",
+}
+
 # #CRITICAL: security: this union is the band-mandatory denylist floor
 # (ws2-parameterized-catalog-design.md section 3.1, mirrored against the real
 # fail-state policy in validator/band_profile.py:38-92: 3-5 and 5-8 forbid

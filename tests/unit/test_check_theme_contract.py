@@ -377,18 +377,74 @@ def test_no_fingerprint_manifest_prints_a_skip_note_without_failing(
     assert "note: --fingerprint-manifest not provided" in out
 
 
-def test_pick_lethal_target_slot_prefers_a_gate_slot() -> None:
+def test_pick_probe_prefers_a_gate_slot_with_lethal() -> None:
     contract = _well_configured_contract()
-    target = ctc._pick_lethal_target_slot(contract)
+    probe = ctc._pick_probe(contract)
+    assert probe is not None
+    target, bundle = probe
     assert target.id == "A1_GATE"
+    assert bundle == "lethal"
 
 
-def test_pick_lethal_target_slot_falls_back_to_first_slot_when_no_gate() -> None:
+def test_pick_probe_without_gate_at_empty_floor_uses_a_declared_bundle() -> None:
+    # 13-16 has no band floor; with the _GATE removed, the probe falls back to
+    # a slot that declares a forbid bundle (HERO declares weapon).
     contract = _well_configured_contract()
     slots = [
         slot.model_copy(update={"id": "NOGATEHERE"}) if slot.id == "A1_GATE" else slot
         for slot in contract.slots
     ]
     no_gate_contract = contract.model_copy(update={"slots": slots})
-    target = ctc._pick_lethal_target_slot(no_gate_contract)
-    assert target.id == no_gate_contract.slots[0].id
+    probe = ctc._pick_probe(no_gate_contract)
+    assert probe is not None
+    _target, bundle = probe
+    assert bundle in no_gate_contract.slots[0].constraints.forbid
+
+
+def test_gateless_weak_floor_band_passes_check_5_via_the_floor(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A gate-less 10-13 contract passes check 5 through its graphic floor.
+
+    Regression for the check-5 fix: the 10-13 band floor is ``graphic`` only,
+    so probing the (gate-less) first slot with ``lethal`` would have
+    false-failed a correct contract. The probe now uses the band floor, which
+    the validator enforces on every slot regardless of what the contract
+    declares.
+    """
+    contract = ThemeContract(
+        contract_version=1,
+        skeleton_slug="s_test_ctc",
+        age_band=AgeBand.BAND_10_13,
+        legacy_lexicon=[],
+        default_binding=dict(_FULL_BINDINGS),
+        slots=[
+            _slot("HERO", constraints=SlotConstraints(max_words=6, forbid=["weapon"])),
+            _slot("A1_GATE", scope=SlotScope.TRACK),
+            _slot("A1_OFFER", scope=SlotScope.TRACK),
+            _slot("PRIZE", scope=SlotScope.ENDING),
+        ],
+    )
+    # Rename A1_GATE so no _GATE slot exists, forcing the floor-probe path.
+    slots = [
+        slot.model_copy(update={"id": "A1_OBSTACLE"}) if slot.id == "A1_GATE" else slot
+        for slot in contract.slots
+    ]
+    contract = contract.model_copy(update={"slots": slots})
+    bindings = dict(_FULL_BINDINGS)
+    bindings["A1_OBSTACLE"] = bindings.pop("A1_GATE")
+    contract = contract.model_copy(update={"default_binding": bindings})
+
+    skeleton = _tiny_skeleton()
+    # Re-point the skeleton's {A1_GATE} token to {A1_OBSTACLE} so the token set
+    # still matches the contract's declared slot ids.
+    dumped = json.dumps(skeleton).replace("{A1_GATE}", "{A1_OBSTACLE}")
+    skeleton = json.loads(dumped)
+    skeleton_path = _write_pair(tmp_path, skeleton, contract)
+
+    exit_code = ctc.main([str(skeleton_path)])
+
+    out = capsys.readouterr().out
+    assert exit_code == 0, out
+    assert "PASS 5." in out
+    assert "graphic" in out  # the probe used the band floor, not lethal

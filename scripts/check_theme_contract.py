@@ -25,11 +25,14 @@ Checks:
    would otherwise silently contribute zero terms to a slot's denylist.
 4. ``validate_slot_bindings(contract, contract.default_binding) == []``: the
    original theme's own values pass its own contract.
-5. A synthesized lethal binding is rejected: one slot whose id ends in
-   ``_GATE`` (or, if none is declared, the contract's first slot) is
-   overwritten with a lethal phrase, and the resulting binding must draw a
-   ``forbid:lethal`` violation on that slot. This proves the contract's
-   constraints actually bite, not just parse.
+5. The contract's constraints actually bite: a slot is overwritten with a
+   value a denylist bundle must reject, and that ``forbid:<bundle>`` violation
+   must fire. A ``_GATE`` slot is probed with ``lethal`` (a retreat gate must
+   never render lethally, at any band); otherwise the band-mandatory floor,
+   else a declared bundle, is probed, so a gate-less skeleton at a weak-floor
+   band (e.g. 10-13) is not spuriously failed. A contract with no
+   deterministic denylist and no band floor skips this check (checks 1/2/4/6
+   still hold) rather than failing it. See :func:`_pick_probe`.
 6. ``render_bound_skeleton(skeleton, contract.default_binding)`` succeeds
    (all four post-conditions hold), and the result carries zero residual
    ``{SLOT}`` tokens.
@@ -63,7 +66,12 @@ from cyo_adventure.generation.binding import (
 )
 from cyo_adventure.storybook.theme_contract import SLOT_TOKEN_RE, ThemeContract
 from cyo_adventure.validator.gate import run_gate
-from cyo_adventure.validator.slots import BUNDLE_IDS, validate_slot_bindings
+from cyo_adventure.validator.slots import (
+    BUNDLE_IDS,
+    BUNDLE_PROBES,
+    band_mandatory_bundles,
+    validate_slot_bindings,
+)
 
 if TYPE_CHECKING:
     from cyo_adventure.storybook.theme_contract import SlotSpec
@@ -108,24 +116,57 @@ def _report(label: str, name: str, *, passed: bool, detail: str = "") -> None:
     print(line)
 
 
-def _pick_lethal_target_slot(contract: ThemeContract) -> SlotSpec:
-    """Return the slot check 5 will overwrite with a lethal phrase.
+def _pick_probe(contract: ThemeContract) -> tuple[SlotSpec, str] | None:
+    """Choose the ``(slot, bundle)`` pair check 5 uses to prove constraints bite.
 
-    Prefers a ``*_GATE`` slot (the "must be retreatable" position per design
-    section 8.3), falling back to the contract's first declared slot when no
-    ``_GATE`` slot exists.
+    Check 5 proves a contract's deterministic denylist actually rejects a bad
+    value, not merely that it parses. The probe target is chosen so the check
+    exercises a genuinely enforced constraint and never false-fails a correct
+    contract:
+
+    1. A ``*_GATE`` slot exists: probe it with ``lethal``. A commit-or-turn-back
+       gate is a retreatable obstacle whose own ending is a non-lethal setback,
+       so it must reject a lethal binding at every band (design section 8.3);
+       a ``_GATE`` that forgot ``lethal`` is the misconfiguration this check
+       exists to catch.
+    2. Else the band-mandatory floor is non-empty: probe the first slot with a
+       floor bundle (``lethal`` when the floor includes it, else the
+       lexicographically first floor bundle). The floor is applied to every
+       slot unconditionally, so this always exercises a real constraint. This
+       is what lets a gate-less skeleton at a weak-floor band (e.g. 10-13,
+       whose floor is only ``graphic``) prove its constraints bite without a
+       spurious lethal probe on a slot that legitimately does not forbid it.
+    3. Else some slot declares a ``forbid`` bundle: probe that slot with one of
+       its declared bundles.
+    4. Else the contract declares no deterministic denylist anywhere and its
+       band has no floor (a legitimately unconstrained mature-band reskin):
+       return ``None`` so check 5 is skipped, not failed.
 
     Args:
         contract: The theme contract under test.
 
     Returns:
-        The chosen slot spec.
+        The ``(slot, bundle_id)`` to probe, or ``None`` when no deterministic
+        denylist constraint exists to exercise.
     """
     gate_slots = sorted(
         (slot for slot in contract.slots if slot.id.endswith("_GATE")),
         key=lambda slot: slot.id,
     )
-    return gate_slots[0] if gate_slots else contract.slots[0]
+    if gate_slots:
+        return gate_slots[0], "lethal"
+
+    floor = band_mandatory_bundles(contract.age_band)
+    if floor:
+        bundle = "lethal" if "lethal" in floor else sorted(floor)[0]
+        return contract.slots[0], bundle
+
+    for slot in contract.slots:
+        declared = sorted(set(slot.constraints.forbid) & BUNDLE_IDS)
+        if declared:
+            return slot, declared[0]
+
+    return None
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -288,25 +329,41 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     # --- Check 5: the contract's constraints actually bite ------------------
-    target_slot = _pick_lethal_target_slot(contract)
-    lethal_bindings = dict(contract.default_binding)
-    lethal_bindings[target_slot.id] = "a chasm that kills anyone who falls"
-    lethal_violations = validate_slot_bindings(contract, lethal_bindings)
-    ok = any(
-        v.rule == "forbid:lethal" and v.slot_id == target_slot.id
-        for v in lethal_violations
-    )
-    all_passed &= ok
-    _report(
-        "5",
-        f"a synthesized lethal binding on '{target_slot.id}' is rejected",
-        passed=ok,
-        detail=(
-            ""
-            if ok
-            else "validate_slot_bindings did not flag forbid:lethal on the target slot"
-        ),
-    )
+    probe = _pick_probe(contract)
+    if probe is None:
+        # No _GATE, no band floor, and no declared forbid bundle anywhere: a
+        # legitimately unconstrained mature-band reskin with nothing
+        # deterministic to exercise. Skipped, not failed (checks 1/2/4/6 still
+        # guarantee structure, schema, self-consistency, and a clean render).
+        _report(
+            "5",
+            "constraints bite (no deterministic denylist to probe)",
+            passed=True,
+            detail=(
+                "skipped: contract declares no forbid bundles and its band has "
+                "no mandatory floor"
+            ),
+        )
+    else:
+        target_slot, probe_bundle = probe
+        probe_bindings = dict(contract.default_binding)
+        probe_bindings[target_slot.id] = BUNDLE_PROBES[probe_bundle]
+        probe_violations = validate_slot_bindings(contract, probe_bindings)
+        ok = any(
+            v.rule == f"forbid:{probe_bundle}" and v.slot_id == target_slot.id
+            for v in probe_violations
+        )
+        all_passed &= ok
+        fail_detail = (
+            f"validate_slot_bindings did not flag forbid:{probe_bundle} on the"
+            f" target slot"
+        )
+        _report(
+            "5",
+            f"a synthesized {probe_bundle} binding on '{target_slot.id}' is rejected",
+            passed=ok,
+            detail="" if ok else fail_detail,
+        )
 
     # --- Check 6: default_binding renders cleanly ---------------------------
     try:
