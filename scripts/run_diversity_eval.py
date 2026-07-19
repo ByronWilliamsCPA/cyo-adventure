@@ -45,7 +45,6 @@ from cyo_adventure.diversity.panel import (
     make_noun_swap_variant,
     run_panel,
 )
-from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.storybook.models import Storybook
 
 if TYPE_CHECKING:
@@ -572,6 +571,11 @@ def _run_judge_pass(
             "credentials before running the judge pass"
         )
         raise ValidationError(msg, field="generation_provider", value="mock")
+    # Imported lazily so the default and --check paths never load the generation
+    # provider stack (the anthropic SDK and its optional deps); only the judge
+    # pass needs a live provider. Keeps the offline CI gate lightweight.
+    from cyo_adventure.generation.provider import build_provider  # noqa: PLC0415
+
     provider = build_provider(settings)
 
     cache = _load_baseline(cache_path)  # same tolerant-load shape as a baseline
