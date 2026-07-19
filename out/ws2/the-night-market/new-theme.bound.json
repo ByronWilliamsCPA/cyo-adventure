@@ -1,0 +1,891 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_night_market",
+  "version": 1,
+  "title": "The Night Market",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "kindness",
+      "friendship",
+      "community",
+      "courage"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 13,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=85 beats='Theo and his grown-up grandpa Sam step through the carnival gate just as the lantern strings blink on overhead; warm steam drifts from the food stalls, paper crinkles at the craft tables, and somewhere a fiddle tunes up; tonight ends with the fireworks send-off, the part Theo loves best; near the carnival gate something small is sniffling behind a barrel; warm and twinkly, never spooky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_peek",
+          "label": "Peek behind the barrel.",
+          "target": "n_meet"
+        }
+      ]
+    },
+    {
+      "id": "n_meet",
+      "body": "<<FILL role=setup words=78 beats='behind the barrel is a small hedgehog curled almost into a ball, shy and small; her name is Quill and she is new to the boardwalk carnival and very shy; between sniffles she explains that she lost her little basket with the three things she needs for the closing the fireworks send-off, star stickers, silver ribbon, and a sparkler; Theo kneels down slowly and gently'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meet_promise",
+          "label": "Promise to help Quill before the fireworks send-off.",
+          "target": "n_promise"
+        }
+      ]
+    },
+    {
+      "id": "n_promise",
+      "body": "<<FILL role=setup words=70 beats='Theo promises they will sort it out together, and grandpa Sam nods; the stall keepers of the boardwalk carnival are the kindest anywhere, she says, and helping hands are always welcome here; a small kindness at a stall is worth more than coins; Quill uncurls a little and takes Theo by the hand; together the three of them walk into the carousel court'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_promise_hub",
+          "label": "Step into the carousel court.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL role=choice words=92 beats='the carousel court is the round heart of the boardwalk carnival, criss-crossed with strings of paper lanterns; lanes lead off to the popcorn cart wrapped in buttery popcorn smell, the pinwheel cart with his spinning pinwheels, the lemonade stand with its a bubbling lemonade urn, the prize booth bent over wind-up carnival games, the taffy stand stacked with towers of saltwater taffy, and the bandstand where a steel drum band; at the head of the square the fireworks pier glow, ready whenever they are; keep this scene general so it reads naturally on a first arrival or on any return trip between stalls; Quill stays close while Theo picks where to go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_dumpling",
+          "label": "Follow buttery popcorn smell to the popcorn cart.",
+          "target": "ds_entry"
+        },
+        {
+          "id": "c_hub_paper",
+          "label": "Visit the pinwheel cart and his pinwheels.",
+          "target": "pf_entry"
+        },
+        {
+          "id": "c_hub_tea",
+          "label": "Stop by the lemonade stand with a bubbling lemonade urn.",
+          "target": "tc_entry"
+        },
+        {
+          "id": "c_hub_toys",
+          "label": "Look in at the prize booth.",
+          "target": "tm_entry"
+        },
+        {
+          "id": "c_hub_fruit",
+          "label": "Wander over to the taffy stand.",
+          "target": "fs_entry"
+        },
+        {
+          "id": "c_hub_music",
+          "label": "Drift toward the bandstand.",
+          "target": "mc_entry"
+        },
+        {
+          "id": "c_hub_steps",
+          "label": "Head to the fireworks pier with Quill.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "ds_entry",
+      "body": "<<FILL role=choice words=78 beats='at the popcorn cart Mister Chen is a one-woman whirlwind, bamboo steamers puffing, orders calling, a wobbling tower of trays waiting to go out to the little tables; she spots Theo and Quill through the steam and laughs that she could use four more hands tonight; Theo decides whether to carry the warm trays out to the tables or to join the folding table and help pleat popcorn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_carry",
+          "label": "Carry the warm trays to the tables.",
+          "target": "ds_carry"
+        },
+        {
+          "id": "c_ds_fold",
+          "label": "Join the folding table and pleat popcorn.",
+          "target": "ds_fold"
+        }
+      ]
+    },
+    {
+      "id": "ds_carry",
+      "body": "<<FILL role=choice words=72 beats='the trays are warm as sunbaked stones and smell of popcorn spice; lantern-lit tables of hungry customers wave from every side; Quill trots alongside holding the napkins; Theo decides whether to take one tray at a time, slow and steady like a waiter in a fancy restaurant, or to stack three trays high and deliver everything in one heroic trip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_carry_steady",
+          "label": "Take one tray at a time, slow and steady.",
+          "target": "ds_happy"
+        },
+        {
+          "id": "c_ds_carry_stack",
+          "label": "Stack three trays high for one big trip.",
+          "target": "e_ds_spill"
+        }
+      ]
+    },
+    {
+      "id": "ds_happy",
+      "body": "<<FILL role=rising words=62 beats='tray by careful tray, every table gets its popcorn hot and perfect; customers cheer for the small waiter and his hedgehog napkin helper; Mister Chen watches from the steam and beams like a lantern herself; when the last tray lands she waves Theo and Quill back to the popcorn cart for a thank-you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_happy_gift",
+          "label": "Go collect Mister Chen's thank-you.",
+          "target": "ds_gift"
+        }
+      ]
+    },
+    {
+      "id": "ds_fold",
+      "body": "<<FILL role=rising words=68 beats='at the folding table Mister Chen shows Theo the pleat, pinch and fold, pinch and fold, like tucking a tiny blanket; Theo's first popcorn is wonky and his second is wonkier, but the tenth stands up almost proud; Quill pats the dough flat with careful paws; Mister Chen steams the whole wobbly batch anyway and calls them the night specials'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_fold_gift",
+          "label": "See what Mister Chen says next.",
+          "target": "ds_gift"
+        }
+      ]
+    },
+    {
+      "id": "ds_gift",
+      "body": "<<FILL role=rising words=75 beats='Mister Chen tucks two warm popcorn into a paper bag and presses it into Quill's paws, saying shy tummies are much braver when they are warm; she promises to close her steamers in time for the fireworks send-off and to cheer for Quill's lantern extra loud; Quill hugs the warm bag; Theo can head back to the carousel court or take Quill on toward the fireworks pier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_gift_hub",
+          "label": "Walk back to the carousel court.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ds_gift_steps",
+          "label": "Head for the fireworks pier with Quill.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "pf_entry",
+      "body": "<<FILL role=choice words=80 beats='the pinwheel cart is strung with pinwheels that turn slowly in the warm lantern air; the pinwheel maker looks up in dismay, his basket of colored paper has tipped and squares of red and gold and blue are drifting across the lane like slow butterflies; Theo decides whether to chase and gather the drifting paper squares or to help sort the crane papers back into their color trays'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_chase",
+          "label": "Chase the drifting paper squares.",
+          "target": "pf_scraps"
+        },
+        {
+          "id": "c_pf_sort",
+          "label": "Sort the pinwheels by color.",
+          "target": "pf_sort"
+        }
+      ]
+    },
+    {
+      "id": "pf_scraps",
+      "body": "<<FILL role=choice words=70 beats='Theo and Quill tiptoe after the paper squares, catching them gently so they do not crumple, off a bench, off a lantern pole, out of a sleepy dog's fur; soon only one runaway square is left, a gold one, resting high on the noodle cart's awning; Theo decides whether to ask the tall noodle cook for a boost or to wait for the breeze to bring it down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_scraps_boost",
+          "label": "Ask the tall noodle cook for a boost.",
+          "target": "pf_last"
+        },
+        {
+          "id": "c_pf_scraps_breeze",
+          "label": "Wait for the breeze to bring it down.",
+          "target": "pf_breeze"
+        }
+      ]
+    },
+    {
+      "id": "pf_last",
+      "body": "<<FILL role=rising words=60 beats='the noodle cook laughs, lifts Theo onto his shoulders like a sack of noodles, and Theo plucks the gold square safe and smooth; from up high all of the boardwalk carnival glitters; back on the ground Quill carries the rescued square to the pinwheel maker like a tiny flag'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_last_gift",
+          "label": "Bring the rescued papers back to the pinwheel maker.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_breeze",
+      "body": "<<FILL role=rising words=60 beats='Theo and Quill stand very still, palms up, and wait; the breeze thinks about it, then tips the gold square off the awning and floats it down in lazy zigzags right into Quill's open paws; Quill squeaks with delight, the first happy squeak of the night'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_breeze_gift",
+          "label": "Carry the gold square back to the pinwheel maker.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_sort",
+      "body": "<<FILL role=rising words=68 beats='Theo sorts the squares into their trays, reds with reds, golds with golds, blues with blues, while the pinwheel maker smooths each one flat with his thumb; as they work he folds a scrap into a crane right before their eyes, corner to corner, until it flaps; Quill watches so closely her nose nearly touches the paper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_sort_gift",
+          "label": "Hand the pinwheel maker the last tidy tray.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_gift",
+      "body": "<<FILL role=rising words=75 beats='the pinwheel maker thanks them, then cuts a fresh square of moon-white paper, creases it once into the special wish fold, and gives it to Quill, star stickers just like the one she lost; he promises to sit near the front at the fireworks send-off to watch it fly; Quill holds it flat like treasure; Theo can head back to the carousel court or on toward the fireworks pier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_gift_hub",
+          "label": "Walk back to the carousel court.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pf_gift_steps",
+          "label": "Head for the fireworks pier with Quill.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "tc_entry",
+      "body": "<<FILL role=choice words=78 beats='the lemonade stand glows with a tiny iron stove, and Miss Rosa pours amber lemonade in ribbons that steam in the night air; a line of thirsty stall keepers has formed and her kettle is running low all at once; she winks at Theo and Quill over her spectacles; Theo decides whether to help pass out the little clay cups or to help refill the big kettle from the water barrel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_cups",
+          "label": "Pass out the little clay cups.",
+          "target": "tc_cups"
+        },
+        {
+          "id": "c_tc_kettle",
+          "label": "Refill the big kettle from the barrel.",
+          "target": "tc_kettle"
+        }
+      ]
+    },
+    {
+      "id": "tc_cups",
+      "body": "<<FILL role=choice words=72 beats='the little clay cups are warm as held hands and full to their happy brims; the waiting stall keepers chat and stretch; Quill walks beside Theo announcing each cup in her small voice, which gets a tiny bit louder each time; Theo decides whether to carry two cups at a time, nice and level, or to load the whole tray up and serve everyone in one go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_cups_level",
+          "label": "Carry two cups at a time, nice and level.",
+          "target": "tc_warm"
+        },
+        {
+          "id": "c_tc_cups_tray",
+          "label": "Load up the whole tray in one go.",
+          "target": "e_tc_slosh"
+        }
+      ]
+    },
+    {
+      "id": "tc_warm",
+      "body": "<<FILL role=rising words=62 beats='two cups at a time, steady as a bridge, Theo delivers lemonade all down the line; keepers warm their hands and sigh happy sighs; the booth keeper toasts him with a raised cup and the drum captain hums a thank-you note; Miss Rosa calls them back to the cart with a smile brewing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_warm_gift",
+          "label": "Head back to Miss Rosa's cart.",
+          "target": "tc_gift"
+        }
+      ]
+    },
+    {
+      "id": "tc_kettle",
+      "body": "<<FILL role=rising words=66 beats='Theo ladles clear water from the barrel into the big kettle, one careful scoop after another, while Quill counts the scoops; Miss Rosa sets it on the tiny stove and shows them how she banks the coals so the fire stays cozy but calm all night; the kettle begins its low singing; she looks like she has an idea'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_kettle_gift",
+          "label": "See what Miss Rosa has in mind.",
+          "target": "tc_gift"
+        }
+      ]
+    },
+    {
+      "id": "tc_gift",
+      "body": "<<FILL role=rising words=75 beats='Miss Rosa lights a stubby candle from her stove and sets it inside a little tin with a hinged lid, a traveling flame for Quill's lantern, just like a sparkler she lost; she tucks it into Quill's paws and promises to bring her sweet lemonade to the fireworks pier; the tin is warm as a purring kitten; Theo can head back to the carousel court or on toward the fireworks pier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_gift_hub",
+          "label": "Walk back to the carousel court.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tc_gift_steps",
+          "label": "Head for the fireworks pier with Quill.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "tm_entry",
+      "body": "<<FILL role=choice words=78 beats='the prize booth is a tiny hospital for prizes, wind-up beetles, one-eared rabbits, a drum with a new skin; the booth keeper peers through a lens the size of a teacup, hunting for a runaway brass gear while his tin of tiny screws sits in a jumble; Theo decides whether to sort the tin of tiny screws by size or to hunt for the runaway gear under the stall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_screws",
+          "label": "Sort the tin of tiny screws by size.",
+          "target": "tm_screws"
+        },
+        {
+          "id": "c_tm_gear",
+          "label": "Hunt for the runaway gear under the stall.",
+          "target": "tm_gear"
+        }
+      ]
+    },
+    {
+      "id": "tm_screws",
+      "body": "<<FILL role=choice words=72 beats='the screws are small as sesame seeds and every size is different; Theo spreads them on the green felt while Quill sorts with the tips of her claws, which turn out to be perfect tweezers; nearby a shiny wind-up beetle sits waiting, its key just begging for a turn; Theo decides whether to keep lining the screws up in neat rows or to wind the beetle's key as far as it can go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_screws_rows",
+          "label": "Keep lining the screws up in neat rows.",
+          "target": "tm_neat"
+        },
+        {
+          "id": "c_tm_screws_wind",
+          "label": "Wind the beetle's key as far as it can go.",
+          "target": "e_tm_spring"
+        }
+      ]
+    },
+    {
+      "id": "tm_neat",
+      "body": "<<FILL role=rising words=60 beats='row by row the screws line up like a tiny parade, big to small; the booth keeper looks up from his lens and blinks at the tidy felt as if elves had visited; now he can fix three prizes in the time one used to take; he waves Theo and Quill closer, reaching for something on his shelf'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_neat_gift",
+          "label": "Come see what the booth keeper is reaching for.",
+          "target": "tm_gift"
+        }
+      ]
+    },
+    {
+      "id": "tm_gear",
+      "body": "<<FILL role=rising words=66 beats='under the stall it is a shadow-land of table legs and wood shavings; Theo borrows a lantern and Quill squeezes into the narrow places, and there, winking in a floorboard crack, is the brass gear; Quill hooks it out with one careful claw; the booth keeper cheers so loudly the one-eared rabbit falls over; he beckons them close, reaching for his shelf'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_gear_gift",
+          "label": "Come see what the booth keeper is reaching for.",
+          "target": "tm_gift"
+        }
+      ]
+    },
+    {
+      "id": "tm_gift",
+      "body": "<<FILL role=rising words=75 beats='the booth keeper notices the little dent in Quill's carrying lantern frame and taps it round again with three soft taps, then oils the tiny door until it swings like new; last of all he clips a tiny wind-up seagull to the handle, a night-light friend for a shy walker; he promises to watch the fireworks send-off from his stool; Theo can head back to the carousel court or on toward the fireworks pier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_gift_hub",
+          "label": "Walk back to the carousel court.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tm_gift_steps",
+          "label": "Head for the fireworks pier with Quill.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "fs_entry",
+      "body": "<<FILL role=choice words=80 beats='the taffy stand is a city of bright pyramids, oranges, star fruit, plums with dusty purple cheeks; a passing cart has bumped the corner and Miss Dot's grandest orange pyramid has tumbled into a rolling puddle of oranges; she is laughing about it, but her hands are full weighing plums; Theo decides whether to rebuild the orange pyramid or to help tie taffy bundles with her silver ribbon'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_stack",
+          "label": "Rebuild the orange pyramid.",
+          "target": "fs_stack"
+        },
+        {
+          "id": "c_fs_bundle",
+          "label": "Tie taffy bundles with silver ribbon.",
+          "target": "fs_bundle"
+        }
+      ]
+    },
+    {
+      "id": "fs_stack",
+      "body": "<<FILL role=choice words=70 beats='Theo and Quill herd the runaway oranges home, Quill rolling them in with her nose; now comes the fun engineering part; Theo decides whether to build it the classic way, biggest oranges on the bottom in a solid square, or to try a fancy pattern with stripes of orange and green star fruit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_stack_classic",
+          "label": "Build it the classic way, big ones on the bottom.",
+          "target": "fs_tower"
+        },
+        {
+          "id": "c_fs_stack_fancy",
+          "label": "Try a fancy striped pattern.",
+          "target": "fs_pattern"
+        }
+      ]
+    },
+    {
+      "id": "fs_tower",
+      "body": "<<FILL role=rising words=60 beats='big oranges on the bottom, smaller and smaller to the top, and the pyramid rises steady as a castle; Theo places the last orange like a crown and the whole stand seems to stand up straighter; Miss Dot whistles, impressed, and dusts off her hands to find them a thank-you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_tower_gift",
+          "label": "Go get Miss Dot's thank-you.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_pattern",
+      "body": "<<FILL role=rising words=62 beats='orange, green, orange, green, the stripes climb the pyramid like a lighthouse; a few customers stop just to look at it, and one takes a picture with a very long camera; Miss Dot declares it the prettiest pyramid the boardwalk carnival has ever grown and waves Theo and Quill over with a twinkle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_pattern_gift",
+          "label": "Go see what Miss Dot is twinkling about.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_bundle",
+      "body": "<<FILL role=rising words=66 beats='Miss Dot teaches Theo the bundle knot, loop, loop, pull, and soon plums and star fruit sit in tidy golden-tied bundles ready for shoppers; Quill holds the string spool and lets it spin; loop, loop, pull, Quill whispers along, learning it too; the spool of silver ribbon glints in the lantern light as Miss Dot reaches for her scissors'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_bundle_gift",
+          "label": "Watch what Miss Dot snips off the spool.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_gift",
+      "body": "<<FILL role=rising words=75 beats='Miss Dot measures out a long silver ribbon from her spool, just like the one Quill lost, and coils it into Quill's paws along with one perfect star fruit for luck; she promises to bring a taffy plate to the fireworks pier for after the lanterns fly; Quill practices the knot in the air, loop, loop, pull; Theo can head back to the carousel court or on toward the fireworks pier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_gift_hub",
+          "label": "Walk back to the carousel court.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_fs_gift_steps",
+          "label": "Head for the fireworks pier with Quill.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "mc_entry",
+      "body": "<<FILL role=choice words=78 beats='in the bandstand the drum captain, a flute player, and a girl with a drum are warming up the evening's songs, music like warm honey over the whole square; the breeze keeps flipping the songbook pages and the drummer's little brass bells sit waiting for extra hands; Theo decides whether to hold the songbook pages open against the breeze or to try the little brass bells with the drummer girl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_pages",
+          "label": "Hold the songbook pages against the breeze.",
+          "target": "mc_pages"
+        },
+        {
+          "id": "c_mc_bells",
+          "label": "Try the little brass bells with the drummer.",
+          "target": "mc_bells"
+        }
+      ]
+    },
+    {
+      "id": "mc_bells",
+      "body": "<<FILL role=choice words=72 beats='the drummer girl hands Theo the strap of little brass bells and shows him the trick, shake them soft on the drumbeat, like rain agreeing with thunder; beside the drum hangs a great shiny gong with a padded mallet that is very tempting; Theo decides whether to ring the bells softly in time with the drum or to give the big gong one mighty whack'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_bells_time",
+          "label": "Ring the bells softly in time.",
+          "target": "mc_time"
+        },
+        {
+          "id": "c_mc_bells_gong",
+          "label": "Give the big gong one mighty whack.",
+          "target": "e_mc_gong"
+        }
+      ]
+    },
+    {
+      "id": "mc_time",
+      "body": "<<FILL role=rising words=62 beats='shake, shake, on the beat, and the bells stitch a silver edge onto the drum song; the drum captain grins around his bow and the flute swoops happily; Quill taps her tail on the cobbles in perfect time, surprising herself; when the song lands, the whole corner applauds its two newest musicians'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_time_gift",
+          "label": "Take a bow with the band.",
+          "target": "mc_gift"
+        }
+      ]
+    },
+    {
+      "id": "mc_pages",
+      "body": "<<FILL role=rising words=64 beats='Theo stands like a music stand with very good manners, holding the pages flat while the breeze tries every trick it knows; he learns to turn the page exactly on the drum captain's nod; the songs pour out smooth with no flapping at all; between songs the drum captain leans down to ask Quill a question in a kind, quiet voice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_pages_gift",
+          "label": "Listen to what the drum captain asks Quill.",
+          "target": "mc_gift"
+        }
+      ]
+    },
+    {
+      "id": "mc_gift",
+      "body": "<<FILL role=rising words=75 beats='the band promises Quill they will play the fireworks send-off's song the moment her lantern rises, and right there they teach Theo and Quill the humming part, low and warm like a kettle thinking; Quill hums it once, a tiny brave sound, then again a little stronger; the drummer girl declares Quill an official member of the band; Theo can head back to the carousel court or on toward the fireworks pier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_gift_hub",
+          "label": "Walk back to the carousel court.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_mc_gift_steps",
+          "label": "Head for the fireworks pier with Quill.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "f_steps",
+      "body": "<<FILL role=choice words=95 beats='the fireworks pier glow under the thickest lantern strings, and the ceremony keepers are setting out the the fireworks send-off rack; on a long tray they lay spare star stickers, coils of silver ribbon, and little flames in tins, because no shy latecomer is ever left out at the boardwalk carnival; so whatever the evening has held, between Quill's basket and the keeper's tray, everything Quill's lantern needs is here; write this scene so it works no matter which stalls were visited or in what order; steam drifts up the steps, paper crinkles, string music floats over; helpers and stall keepers begin to gather; Quill takes a deep breath and looks to Theo, and three things could happen next, they could fold and write the wish, get the paper star lantern ready to fly, or gather the stall friends around Quill first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fsteps_paper",
+          "label": "Help Quill fold and write her wish.",
+          "target": "f_paper"
+        },
+        {
+          "id": "c_fsteps_lantern",
+          "label": "Help Quill get the paper star lantern ready to fly.",
+          "target": "f_lantern"
+        },
+        {
+          "id": "c_fsteps_friends",
+          "label": "Gather the stall friends around Quill first.",
+          "target": "f_friends"
+        }
+      ]
+    },
+    {
+      "id": "f_paper",
+      "body": "<<FILL role=rising words=68 beats='Theo and Quill smooth star stickers flat on the cool stone step, and a keeper lends them a thin brush and a pot of night-blue ink; all around, other families are folding their own wishes; Quill stares at the empty paper, wanting the wish to be exactly right, and shuffles a little closer to Theo'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fpaper_whisper",
+          "label": "Lean in so Quill can whisper her wish.",
+          "target": "f_whisper"
+        }
+      ]
+    },
+    {
+      "id": "f_whisper",
+      "body": "<<FILL role=rising words=66 beats='Quill cups her paws around Theo's ear and whispers the wish, so quiet it is almost only warm air; it is a good one, simple and kind, the sort of wish that makes you smile with your whole face; Theo nods solemnly, keeper of the secret; now there is just the writing to decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fwhisper_write",
+          "label": "Pick up the brush together.",
+          "target": "f_write"
+        }
+      ]
+    },
+    {
+      "id": "f_write",
+      "body": "<<FILL role=choice words=80 beats='the brush hovers over star stickers and the night-blue ink shines; Theo and Quill decide how the wish should go down; he can write Quill's wish exactly as she whispered it, or they can add a second line wishing something warm for all of the boardwalk carnival too, or Theo can hand Quill the brush so she writes it herself in her own wobbly letters; each way feels right in its own way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fwrite_pip",
+          "label": "Write Quill's wish just as she whispered it.",
+          "target": "e_wish_pip"
+        },
+        {
+          "id": "c_fwrite_market",
+          "label": "Add a second wish for all of the boardwalk carnival.",
+          "target": "e_wish_market"
+        },
+        {
+          "id": "c_fwrite_brave",
+          "label": "Hand Quill the brush to write it herself.",
+          "target": "e_wish_brave"
+        }
+      ]
+    },
+    {
+      "id": "f_lantern",
+      "body": "<<FILL role=rising words=68 beats='Theo settles the paper star lantern's little frame on his knees, its paper walls glowing faintly like a small moon waiting to happen; Quill crouches beside him, nose to nose with it; a keeper kneels to check the frame and pronounces it a fine flyer; there is string to tie and a flame to set before it can go anywhere'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flantern_string",
+          "label": "Tie on silver ribbon first.",
+          "target": "f_string"
+        }
+      ]
+    },
+    {
+      "id": "f_string",
+      "body": "<<FILL role=rising words=66 beats='silver ribbon goes on with a simple loop-loop-pull knot, easy enough for small paws, so the folded wish can hang beneath the paper star lantern like the clapper of a tiny bell; Quill pulls the last loop snug herself and checks it twice; the paper star lantern is dressed and ready; now only the flame is left, the biggest moment of all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fstring_flame",
+          "label": "Get ready to light the paper star lantern.",
+          "target": "f_flame"
+        }
+      ]
+    },
+    {
+      "id": "f_flame",
+      "body": "<<FILL role=choice words=80 beats='a small flame waits in its tin, steady and warm, and the paper star lantern's wick stands ready; the keepers say the lighting can be done any way the wisher likes best; Quill can touch the flame to the wick first, all by herself, or Theo and Quill can light it together on a count of three, or they can ask the oldest keeper to light it the old way with the long brass taper; Quill looks at each in turn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fflame_pip",
+          "label": "Let Quill light the wick all by herself.",
+          "target": "e_light_pip"
+        },
+        {
+          "id": "c_fflame_together",
+          "label": "Light it together on a count of three.",
+          "target": "e_light_together"
+        },
+        {
+          "id": "c_fflame_keeper",
+          "label": "Ask the oldest keeper to light it the old way.",
+          "target": "e_light_keeper"
+        }
+      ]
+    },
+    {
+      "id": "f_friends",
+      "body": "<<FILL role=rising words=70 beats='Theo trots around the carousel court gathering company for Quill, and the boardwalk carnival answers the way it always does; every stall keeper who waved to them tonight comes over, and plenty of neighbors who simply love a ceremony come too, wiping hands on aprons, carrying cups and stools; write this so it rings true no matter which stalls were visited; a warm crowd gathers at the steps around one small hedgehog'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ffriends_circle",
+          "label": "Bring everyone into a circle around Quill.",
+          "target": "f_circle"
+        }
+      ]
+    },
+    {
+      "id": "f_circle",
+      "body": "<<FILL role=rising words=66 beats='the circle of lantern-lit faces settles on the steps, aprons and spectacles and one drum, all smiling at Quill; and Quill, who began the evening curled behind a barrel, stands in the very middle holding her lantern and does not hide at all; she shines like a little lantern herself; the launch is moments away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fcircle_countdown",
+          "label": "Get ready to send the paper star lantern up.",
+          "target": "f_countdown"
+        }
+      ]
+    },
+    {
+      "id": "f_countdown",
+      "body": "<<FILL role=choice words=80 beats='the paper star lantern glows in Quill's paws, tugging gently upward like a puppy on a string, and the circle leans in; all that is left is choosing how to send it off; Quill can lead the count of three in her new brave voice, or the whole circle can count together like one big warm voice, or instead of counting everyone can hum the fireworks send-off's song and let the music lift it; Theo squeezes Quill's paw'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fcount_pip",
+          "label": "Let Quill lead the count of three.",
+          "target": "e_up_pip"
+        },
+        {
+          "id": "c_fcount_chorus",
+          "label": "Count down all together.",
+          "target": "e_up_chorus"
+        },
+        {
+          "id": "c_fcount_song",
+          "label": "Hum the fireworks send-off's song and let it lift.",
+          "target": "e_up_song"
+        }
+      ]
+    },
+    {
+      "id": "e_ds_spill",
+      "body": "<<FILL role=ending words=72 beats='three trays is two trays too many; the tower tips and popcorn bounce and roll everywhere like escaping ping-pong balls; nobody is hurt and Mister Chen laughs loudest of all, but the big cleanup eats the rest of the evening, and grandpa Sam calls it a night; the keepers promise to save Quill a lantern for the very next market night, and Quill walks home between Theo and grandpa Sam, already planning; gentle and warm, a try-again, never sad'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_spill",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Runaway Popcorn"
+      }
+    },
+    {
+      "id": "e_tc_slosh",
+      "body": "<<FILL role=ending words=72 beats='the whole tray at once is a wobbly idea; the cups slide, the cozy-warm lemonade sloshes over Theo's shoes, and half the cups need washing before anyone else can drink; no one is burned and Miss Rosa only chuckles, but by the time the washing is done grandpa Sam says it is home time; Miss Rosa sends them off with honey tea for the road and a promise of level-tray lessons next market night; Quill waves to the carousel court as they go, not one bit gloomy; gentle try-again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tc_slosh",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "One Cup Too Many"
+      }
+    },
+    {
+      "id": "e_tm_spring",
+      "body": "<<FILL role=ending words=72 beats='Theo winds the beetle's key one turn too far and SPROING, the spring pops out and the beetle does one heroic backflip and lies still; the booth keeper is not cross at all, springs pop every week, but the beetle needs a whole evening of careful surgery and the table becomes an operating room; grandpa Sam says that is their cue to head home; the booth keeper promises the beetle will be marching by next market night and saves Quill a front-row stool for the next ceremony; a funny, gentle try-again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tm_spring",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Clatter Goes the Claw Machine"
+      }
+    },
+    {
+      "id": "e_mc_gong",
+      "body": "<<FILL role=ending words=72 beats='the gong says BWOOONNNG so hugely that pigeons burst off every rooftop and the whole band stops mid-note; everyone laughs, even the drum captain, but ears are ringing and the band declares a long tea break to recover, and grandpa Sam decides that is the evening's big finish; the drummer girl tells Theo the gong gets everyone exactly once, and makes Quill promise to come hum with the band next market night; giggly, gentle try-again, no one upset'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mc_gong",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Big Drum Boom"
+      }
+    },
+    {
+      "id": "e_wish_pip",
+      "body": "<<FILL role=completion words=82 beats='Theo writes Quill's wish in careful night-blue letters, exactly as whispered, not one word changed, and Quill watches every stroke; the folded wish is tied beneath the paper star lantern, the flame set, and up it sails over the boardwalk carnival with dozens of others, but theirs is easy to spot because it carries a secret only two friends know; the stall keepers cheer from the steps as Quill leans on Theo's arm and watches her very own wish join the stars'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_pip",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Quill's Own Wish"
+      }
+    },
+    {
+      "id": "e_wish_market",
+      "body": "<<FILL role=completion words=82 beats='under Quill's wish Theo adds one more line, a warm wish for all of the boardwalk carnival, for its steam and songs and kind hands, and Quill nods hard at every word; when the paper star lantern rises the stall keepers on the steps cheer as if they can feel the extra wish riding along; the paper star lantern climbs until it is a gold freckle among the stars, carrying kindness up for everyone who traded a little of it tonight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_market",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Wish Big Enough for the Whole Pier"
+      }
+    },
+    {
+      "id": "e_wish_brave",
+      "body": "<<FILL role=completion words=82 beats='Theo hands Quill the brush and Quill, who whispered all evening, writes her own wish in wobbly, proud letters while the keepers pretend not to peek; the wobbliest letters, the oldest keeper says, always fly the truest; when the paper star lantern lifts off with Quill's own writing swinging beneath it, Quill discovers that her voice works out loud too, and she cheers, actually cheers, as her wish climbs the dark; the shy hedgehog from behind the barrel is gone for good'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_brave",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Quill's Wobbly Signature"
+      }
+    },
+    {
+      "id": "e_light_pip",
+      "body": "<<FILL role=completion words=82 beats='Quill touches the little flame to the wick all by herself, steady as anything, and the paper star lantern wakes up glowing like a small tame moon; the crowd on the steps hushes, then cheers as it rises from her open paws; Quill stands tall watching her light climb over the rooftops, and Theo thinks she does not look like a shy hedgehog at all anymore, she looks like a lighthouse keeper; warm, proud, glowing finish'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_pip",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Quill Lights the Way"
+      }
+    },
+    {
+      "id": "e_light_together",
+      "body": "<<FILL role=completion words=82 beats='one, two, three, and Theo and Quill touch the flame to the wick at the exact same moment, so the paper star lantern belongs to both of them forever; it rises trailing silver ribbon over the steam and the music and the lantern strings, and all of the boardwalk carnival seems to glow a shade brighter as it goes; best market night ever, Quill says, out loud, in a voice that does not whisper at all; two friends, one light, one sky'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_together",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Three, Two, One, Spark"
+      }
+    },
+    {
+      "id": "e_light_keeper",
+      "body": "<<FILL role=completion words=82 beats='the oldest keeper lights the wick with the long brass taper, the way it was done when the boardwalk carnival was young, and tells them the taper has lit a thousand first wishes; a thousand and one now, says Quill, and the old keeper laughs like dry leaves; the paper star lantern rises slow and stately, and the carousel court watches the newest wish go up the oldest way, with Quill and Theo standing right at the heart of the tradition'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_keeper",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Old Boardwalk Way"
+      }
+    },
+    {
+      "id": "e_up_pip",
+      "body": "<<FILL role=completion words=82 beats='Quill lifts her chin and counts, one, two, THREE, in a clear little voice that surprises even the pigeons, and the paper star lantern leaps for the sky as if it had been waiting for exactly that voice; the circle of stall keepers roars and the band strikes up; Theo cheers loudest, because he heard where that voice began tonight, in a whisper behind a barrel, and look at it now, leading all of the carousel court'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_pip",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Quill Counts Us Down"
+      }
+    },
+    {
+      "id": "e_up_chorus",
+      "body": "<<FILL role=completion words=82 beats='the whole circle counts together, one, two, three, aprons and spectacles and drum and all, one big warm voice under the lantern strings, and Quill's the paper star lantern sails up on the sound; it climbs past the rooftops with its wish swinging gently below, and the crowd keeps cheering long after; Quill spins slowly to look at every single face that counted for her, memorizing the best crowd a small hedgehog ever had'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_chorus",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Whole Pier Counts"
+      }
+    },
+    {
+      "id": "e_up_song",
+      "body": "<<FILL role=completion words=82 beats='nobody counts at all; instead the band begins the fireworks send-off's song and the whole circle hums the low warm part, and on the swell of the music Quill's the paper star lantern simply rises, as if the song itself were lifting it; it drifts up through the humming and the steam and the strings of little lights, glowing gold; Quill hums until the paper star lantern is a spark among the stars, and the music sends the wish the whole way up'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_song",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Hummed into the Sky"
+      }
+    }
+  ]
+}

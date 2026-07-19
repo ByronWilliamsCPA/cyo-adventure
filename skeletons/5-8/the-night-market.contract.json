@@ -1,0 +1,727 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-night-market",
+  "age_band": "5-8",
+  "legacy_lexicon": [
+    "Milo",
+    "Ada",
+    "Pip",
+    "pangolin",
+    "night market",
+    "lantern square",
+    "wish-lantern ceremony",
+    "ceremony steps",
+    "wish lantern",
+    "Auntie Mo",
+    "dumpling stall",
+    "paper folder",
+    "tea cart",
+    "Granny Osha",
+    "toy mender",
+    "Mr. Fez",
+    "fruit stand",
+    "Auntie Plum",
+    "musicians' corner",
+    "fiddler"
+  ],
+  "default_binding": {
+    "HERO": "Milo",
+    "COMPANION": "Pip",
+    "COMPANION_KIND": "pangolin",
+    "CHAPERONE": "cousin Ada",
+    "THRESHOLD": "the night market",
+    "ENTRANCE": "the gate of the night market",
+    "HUB": "the lantern square",
+    "GOAL": "the wish-lantern ceremony",
+    "GOAL_STEPS": "the ceremony steps",
+    "LANTERN": "the wish lantern",
+    "ITEM1": "wish paper",
+    "ITEM2": "golden string",
+    "ITEM3": "a candle",
+    "ROUTE_A_LURE": "ginger steam",
+    "ROUTE_A_STALL": "the dumpling stall",
+    "ROUTE_A_KEEPER": "Auntie Mo",
+    "ROUTE_A_GOOD": "dumplings",
+    "ROUTE_B_LURE": "drifting paper cranes",
+    "ROUTE_B_STALL": "the paper folder's stall",
+    "ROUTE_B_KEEPER": "the paper folder",
+    "ROUTE_B_GOOD": "paper cranes",
+    "ROUTE_C_LURE": "a tiny glowing stove",
+    "ROUTE_C_STALL": "the tea cart",
+    "ROUTE_C_KEEPER": "Granny Osha",
+    "ROUTE_C_GOOD": "tea",
+    "ROUTE_D_LURE": "wind-up toys",
+    "ROUTE_D_STALL": "the toy mender's table",
+    "ROUTE_D_KEEPER": "Mr. Fez",
+    "ROUTE_D_GOOD": "toys",
+    "ROUTE_D_CHARM": "a wind-up firefly",
+    "ROUTE_E_LURE": "bright fruit pyramids",
+    "ROUTE_E_STALL": "the fruit stand",
+    "ROUTE_E_KEEPER": "Auntie Plum",
+    "ROUTE_E_GOOD": "fruit",
+    "ROUTE_F_LURE": "strings that hum",
+    "ROUTE_F_STALL": "the musicians' corner",
+    "ROUTE_F_KEEPER": "the fiddler",
+    "ROUTE_F_GOOD": "music",
+    "ROUTE_A_MISHAP": "Dumplings",
+    "ROUTE_C_MISHAP": "One Tray Too Full",
+    "ROUTE_D_MISHAP": "Sproing Goes the Beetle",
+    "ROUTE_F_MISHAP": "The Mighty Gong Whack",
+    "WISH_PIP": "Pip's Own Wish",
+    "WISH_MARKET": "A Wish Big Enough to Share",
+    "WISH_BRAVE": "Wobbly Brave Letters",
+    "LIGHT_PIP": "Pip Lights the Way",
+    "LIGHT_TOGETHER": "One, Two, Three, Glow",
+    "LIGHT_KEEPER": "The Old Way",
+    "UP_PIP": "Pip Counts Us Down",
+    "UP_CHORUS": "The Whole Square Counts",
+    "UP_SONG": "Sung into the Sky"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A single kid-relatable child explorer (name); kind, capable, never reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COMPANION"
+        ]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The small, shy new friend the hero meets and helps throughout the story.",
+      "guidance": "A gentle, non-human or lightly-fantastical companion who needs help at the start and grows braver by the end; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "COMPANION_KIND",
+      "scope": "global",
+      "meaning": "The companion's species or kind, reused whenever the story refers to her generically rather than by name.",
+      "guidance": "A small, harmless, sympathetic creature; consistent with COMPANION throughout.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CHAPERONE",
+      "scope": "global",
+      "meaning": "The trusted grown-up who brings the hero to the event and is present at arrival and any early departure.",
+      "guidance": "A warm, unworried adult; never the source of any rule or danger, just steady company.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, festive place the evening happens inside.",
+      "guidance": "A safe, warmly lit gathering place; wonder over dread; no lethal hazards, no toxic air, nothing that truly threatens a child.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single gate/entry point the hero and companion arrive through.",
+      "guidance": "Always reachable and safe; the story opens here.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HUB",
+      "scope": "global",
+      "meaning": "The central gathering spot the hero returns to between stalls and from which every stall and the finale can be reached.",
+      "guidance": "A round, welcoming heart of the setting; safe to linger in at any time.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The closing communal celebration the whole evening builds toward (bare noun phrase, no leading article).",
+      "guidance": "A warm, inclusive, joyful gathering any small child would recognize as fun and safe; never competitive or exclusionary.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL_STEPS",
+      "scope": "global",
+      "meaning": "The specific spot where the closing celebration takes place.",
+      "guidance": "A welcoming focal point at the heart of THRESHOLD; always open to latecomers.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LANTERN",
+      "scope": "global",
+      "meaning": "The small object the companion carries and prepares to launch/complete at the celebration; must be an object with a wick and flame to light, since the fixed beats around it keep lantern-lighting vocabulary (frame, wick, flame) unslotted.",
+      "guidance": "A gentle, carriable object that can be dressed with a string and lit with a small flame; never hazardous to light or hold.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ITEM1",
+      "scope": "global",
+      "meaning": "The first of three small things the companion lost and needs before the celebration; recovered at ROUTE_B's stall.",
+      "guidance": "A short noun phrase for a simple, harmless craft item.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ITEM2",
+          "ITEM3"
+        ]
+      }
+    },
+    {
+      "id": "ITEM2",
+      "scope": "global",
+      "meaning": "The second of three small things the companion lost; recovered at ROUTE_E's stall.",
+      "guidance": "A short noun phrase for a simple, harmless craft item, distinct from ITEM1 and ITEM3.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ITEM1",
+          "ITEM3"
+        ]
+      }
+    },
+    {
+      "id": "ITEM3",
+      "scope": "global",
+      "meaning": "The third of three small things the companion lost; recovered at ROUTE_C's stall.",
+      "guidance": "A short noun phrase for a simple, harmless source of light or warmth, distinct from ITEM1 and ITEM2.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ITEM1",
+          "ITEM2"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_LURE",
+      "scope": "route",
+      "meaning": "the sensory cue announcing ROUTE_A at the hub.",
+      "guidance": "A distinct, benign sensory pull (a smell, sight, or sound); clearly different from the other five stalls.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_STALL",
+      "scope": "route",
+      "meaning": "the place/stall for ROUTE_A's errand.",
+      "guidance": "A benign, welcoming stall or table; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_KEEPER",
+      "scope": "route",
+      "meaning": "the keeper who runs ROUTE_A's stall.",
+      "guidance": "A kind, patient adult stall keeper; never a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_GOOD",
+      "scope": "route",
+      "meaning": "the food ROUTE_A's stall makes and serves.",
+      "guidance": "A simple, harmless good or craft appropriate to the stall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_LURE",
+      "scope": "route",
+      "meaning": "the sensory cue announcing ROUTE_B at the hub.",
+      "guidance": "A distinct, benign sensory pull (a smell, sight, or sound); clearly different from the other five stalls.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_STALL",
+      "scope": "route",
+      "meaning": "the place/stall for ROUTE_B's errand.",
+      "guidance": "A benign, welcoming stall or table; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_KEEPER",
+      "scope": "route",
+      "meaning": "the keeper who runs ROUTE_B's stall.",
+      "guidance": "A kind, patient adult stall keeper; never a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_GOOD",
+      "scope": "route",
+      "meaning": "the craft material ROUTE_B's stall works with.",
+      "guidance": "A simple, harmless good or craft appropriate to the stall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_LURE",
+      "scope": "route",
+      "meaning": "the sensory cue announcing ROUTE_C at the hub.",
+      "guidance": "A distinct, benign sensory pull (a smell, sight, or sound); clearly different from the other five stalls.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_STALL",
+      "scope": "route",
+      "meaning": "the place/stall for ROUTE_C's errand.",
+      "guidance": "A benign, welcoming stall or table; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_KEEPER",
+      "scope": "route",
+      "meaning": "the keeper who runs ROUTE_C's stall.",
+      "guidance": "A kind, patient adult stall keeper; never a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_GOOD",
+      "scope": "route",
+      "meaning": "the drink ROUTE_C's stall serves.",
+      "guidance": "A simple, harmless good or craft appropriate to the stall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_LURE",
+      "scope": "route",
+      "meaning": "the sensory cue announcing ROUTE_D at the hub.",
+      "guidance": "A distinct, benign sensory pull (a smell, sight, or sound); clearly different from the other five stalls.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_E_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_STALL",
+      "scope": "route",
+      "meaning": "the place/stall for ROUTE_D's errand.",
+      "guidance": "A benign, welcoming stall or table; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_KEEPER",
+      "scope": "route",
+      "meaning": "the keeper who runs ROUTE_D's stall.",
+      "guidance": "A kind, patient adult stall keeper; never a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_GOOD",
+      "scope": "route",
+      "meaning": "the objects ROUTE_D's stall repairs.",
+      "guidance": "A simple, harmless good or craft appropriate to the stall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_E_LURE",
+      "scope": "route",
+      "meaning": "the sensory cue announcing ROUTE_E at the hub.",
+      "guidance": "A distinct, benign sensory pull (a smell, sight, or sound); clearly different from the other five stalls.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_E_STALL",
+      "scope": "route",
+      "meaning": "the place/stall for ROUTE_E's errand.",
+      "guidance": "A benign, welcoming stall or table; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_E_KEEPER",
+      "scope": "route",
+      "meaning": "the keeper who runs ROUTE_E's stall.",
+      "guidance": "A kind, patient adult stall keeper; never a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_E_GOOD",
+      "scope": "route",
+      "meaning": "the produce ROUTE_E's stall sells.",
+      "guidance": "A simple, harmless good or craft appropriate to the stall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_F_LURE",
+      "scope": "route",
+      "meaning": "the sensory cue announcing ROUTE_F at the hub.",
+      "guidance": "A distinct, benign sensory pull (a smell, sight, or sound); clearly different from the other five stalls.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_F_STALL",
+      "scope": "route",
+      "meaning": "the place/stall for ROUTE_F's errand.",
+      "guidance": "A benign, welcoming stall or table; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_F_KEEPER",
+      "scope": "route",
+      "meaning": "the lead performer at ROUTE_F's stall.",
+      "guidance": "A kind, patient adult stall keeper; never a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_F_GOOD",
+      "scope": "route",
+      "meaning": "the art form ROUTE_F's stall practices.",
+      "guidance": "A simple, harmless good or craft appropriate to the stall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_CHARM",
+      "scope": "track",
+      "meaning": "The small keepsake ROUTE_D's keeper clips onto the companion's lantern as a repair gift.",
+      "guidance": "A tiny, harmless charm or trinket.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when ROUTE_A's risky choice is taken (setback). Names ending e_ds_spill via the template 'Runaway {ROUTE_A_MISHAP}'.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm; everyone heads home to try again next time.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when ROUTE_C's risky choice is taken (setback); the whole title. Names ending e_tc_slosh.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when ROUTE_D's risky choice is taken (setback); the whole title. Names ending e_tm_spring.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_F_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when ROUTE_F's risky choice is taken (setback); the whole title. Names ending e_mc_gong.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WISH_PIP",
+      "scope": "ending",
+      "meaning": "Ending: the companion's own wish written exactly as whispered (completion); the whole title. Names ending e_wish_pip.",
+      "guidance": "Positive; a private, tender moment between hero and companion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "WISH_MARKET",
+          "WISH_BRAVE"
+        ]
+      }
+    },
+    {
+      "id": "WISH_MARKET",
+      "scope": "ending",
+      "meaning": "Ending: a second wish added for the whole community (success); the whole title. Names ending e_wish_market.",
+      "guidance": "Positive; generous, communal in scope.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "WISH_PIP",
+          "WISH_BRAVE"
+        ]
+      }
+    },
+    {
+      "id": "WISH_BRAVE",
+      "scope": "ending",
+      "meaning": "Ending: the companion writes her own wish herself (discovery); the whole title. Names ending e_wish_brave.",
+      "guidance": "Positive; celebrates the companion finding her own voice/courage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "WISH_PIP",
+          "WISH_MARKET"
+        ]
+      }
+    },
+    {
+      "id": "LIGHT_PIP",
+      "scope": "ending",
+      "meaning": "Ending: the companion lights the lantern by herself (completion); the whole title. Names ending e_light_pip.",
+      "guidance": "Positive; a proud, confidence-building moment for the companion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "LIGHT_TOGETHER",
+          "LIGHT_KEEPER"
+        ]
+      }
+    },
+    {
+      "id": "LIGHT_TOGETHER",
+      "scope": "ending",
+      "meaning": "Ending: hero and companion light the lantern together (success); the whole title. Names ending e_light_together.",
+      "guidance": "Positive; a shared, joyful moment of friendship.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "LIGHT_PIP",
+          "LIGHT_KEEPER"
+        ]
+      }
+    },
+    {
+      "id": "LIGHT_KEEPER",
+      "scope": "ending",
+      "meaning": "Ending: the oldest keeper lights the lantern the traditional way (completion); the whole title. Names ending e_light_keeper.",
+      "guidance": "Positive; warm, tied to the setting's tradition.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "LIGHT_PIP",
+          "LIGHT_TOGETHER"
+        ]
+      }
+    },
+    {
+      "id": "UP_PIP",
+      "scope": "ending",
+      "meaning": "Ending: the companion leads the countdown to launch (success); the whole title. Names ending e_up_pip.",
+      "guidance": "Positive; the companion's new brave voice takes center stage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "UP_CHORUS",
+          "UP_SONG"
+        ]
+      }
+    },
+    {
+      "id": "UP_CHORUS",
+      "scope": "ending",
+      "meaning": "Ending: the whole gathered crowd counts down together (completion); the whole title. Names ending e_up_chorus.",
+      "guidance": "Positive; communal, everyone included.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "UP_PIP",
+          "UP_SONG"
+        ]
+      }
+    },
+    {
+      "id": "UP_SONG",
+      "scope": "ending",
+      "meaning": "Ending: the gathered musicians hum the launch instead of counting (success); the whole title. Names ending e_up_song.",
+      "guidance": "Positive; music carries the lantern up instead of a count.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "UP_PIP",
+          "UP_CHORUS"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,811 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_backyard_treasure_map",
+  "version": 1,
+  "title": "The Backyard Treasure Map",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "adventure",
+      "curiosity",
+      "discovery"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=85 beats='Mia and her cousin Sam find a hand-stitched cloth map inside a dusty jar under the tall pine tree in the family campsite; a hand-stitched cloth map is hand-drawn, showing the stitched trail and the golden star somewhere at the end; the friends grin and decide which landmark on the map to follow first; sunny, safe, and excited'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_oak",
+          "label": "Follow the map to the tall pine tree.",
+          "target": "o_intro"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Follow the map to the boathouse dock.",
+          "target": "r_intro"
+        },
+        {
+          "id": "c_start_stream",
+          "label": "Follow the map down to the meadow creek.",
+          "target": "s_intro"
+        }
+      ]
+    },
+    {
+      "id": "o_intro",
+      "body": "<<FILL role=rising words=68 beats='the stitched trail points first to the tall pine tree at the top of the family campsite; Mia holds a hand-stitched cloth map while her cousin Sam counts the paces; the tall pine tree is so big that three kids could hide behind it; the stitched trail seems to split near its roots'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_go",
+          "label": "Search around the roots of the tall pine tree.",
+          "target": "o_fork"
+        }
+      ]
+    },
+    {
+      "id": "o_fork",
+      "body": "<<FILL role=choice words=78 beats='at the foot of the tall pine tree the stitched trail splits into two faint trails; one wiggles toward the hollow tree stump where a cheerful chirping sound calls out, the other loops toward the old rope swing; the friends decide which way the map means'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow",
+          "label": "Take the trail to the hollow tree stump.",
+          "target": "o_hollow_1"
+        },
+        {
+          "id": "c_o_swing",
+          "label": "Take the trail to the old rope swing.",
+          "target": "o_swing_1"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_1",
+      "body": "<<FILL role=rising words=64 beats='they follow the trail to the hollow tree stump lying in the long grass; it is bigger than a barrel and one end is dark and cool; a cheerful chirping sound comes from somewhere deep inside it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_1",
+          "label": "Peek inside the hollow tree stump.",
+          "target": "o_hollow_2"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_2",
+      "body": "<<FILL role=rising words=70 beats='Mia peeks into the hollow tree stump with her flashlight while her cousin Sam checks a hand-stitched cloth map; the stitched trail seems to go right through the log and out the other side; a cheerful chirping sound grows busier, like a tiny cheerful crowd'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_2",
+          "label": "Follow the map through the hollow tree stump.",
+          "target": "o_hollow_app"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_app",
+      "body": "<<FILL role=choice words=80 beats='past the hollow tree stump a hand-stitched cloth map is smudged by an old raindrop and two little paths lead away; one is the rocky, narrow trail, the other is the soft, needle-covered trail; they must guess which one the mapmaker meant'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hollow_dry",
+          "label": "Try the rocky, narrow trail.",
+          "target": "e_set_hollow"
+        },
+        {
+          "id": "c_hollow_moss",
+          "label": "Try the soft, needle-covered trail.",
+          "target": "o_hollow_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_hollow",
+      "body": "<<FILL role=ending words=70 beats='the rocky, narrow trail just curves back to the fence and stops at a pile of old pinecones, with no the golden star and no treasure in sight; the friends laugh, roll up a hand-stitched cloth map, and skip back to the campfire circle for a mug of warm cocoa, happy to try again tomorrow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_hollow",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Back to the pinecones"
+      }
+    },
+    {
+      "id": "o_hollow_3",
+      "body": "<<FILL role=rising words=66 beats='the soft, needle-covered trail is springy and cool under their sneakers; ferns brush their knees and a cheerful chirping sound grows louder and happier; her cousin Sam whispers that it sounds like hundreds of tiny voices all talking at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_3",
+          "label": "Follow the soft, needle-covered trail deeper.",
+          "target": "o_hollow_4"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_4",
+      "body": "<<FILL role=rising words=68 beats='the path dips into a sunny clearing of pinecones where the ground is soft; each stone looks a little like a tiny doorway; the friends step carefully and follow the stitched trail deeper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_4",
+          "label": "Step into a sunny clearing of pinecones.",
+          "target": "o_hollow_5"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_5",
+      "body": "<<FILL role=rising words=64 beats='in a sunny clearing of pinecones they find a circle of smooth stones set out like a tiny wall; behind it, fluffy, striped chipmunks sit on leaf-thrones and lily-pad chairs; not one of them hops away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_5",
+          "label": "Tiptoe up to a circle of smooth stones.",
+          "target": "o_hollow_6"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_6",
+      "body": "<<FILL role=rising words=70 beats='the biggest chipmunk wears a crown of pine sprigs and blinks slowly at the visitors; Mia and her cousin Sam kneel down very gently so they will not frighten anyone; the golden star is drawn right here in the corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_6",
+          "label": "Kneel down by the biggest chipmunk.",
+          "target": "e_toad_king"
+        }
+      ]
+    },
+    {
+      "id": "e_toad_king",
+      "body": "<<FILL role=completion words=78 beats='the friends have found The Chipmunk Council hidden in a sunny clearing of pinecones, with the biggest chipmunk wearing a crown of pine sprigs on his leafy throne; they promise to keep it secret and safe, and leave a soft green leaf as a gift; all the way home they can hardly stop grinning'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_toad_king",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Chipmunk Council"
+      }
+    },
+    {
+      "id": "o_swing_1",
+      "body": "<<FILL role=rising words=66 beats='they follow the loop of the trail to the old rope swing hanging from a low branch of the tall pine tree; the tire turns slowly in the breeze; someone has tied colorful flags to the rope that flutter and shine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_1",
+          "label": "Look at colorful flags on the old rope swing.",
+          "target": "o_swing_2"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_2",
+      "body": "<<FILL role=rising words=70 beats='her cousin Sam gives the tire a gentle push and hears a light, whistling sound from higher up in the tall pine tree; Mia looks at a hand-stitched cloth map, where the stitched trail climbs the trunk toward the leaves; a light, whistling sound sounds just like tiny bells'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_2",
+          "label": "Listen for a light, whistling sound.",
+          "target": "o_swing_app"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_app",
+      "body": "<<FILL role=choice words=78 beats='the stitched trail splits at a knot in the trunk; one branch goes toward the sharp, rocky ledge, the other goes along the smooth, wide branch that is easy to walk; the friends choose which way to follow the ringing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_swing_left",
+          "label": "Climb toward the sharp, rocky ledge.",
+          "target": "e_set_swing"
+        },
+        {
+          "id": "c_swing_right",
+          "label": "Walk along the smooth, wide branch.",
+          "target": "o_swing_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_swing",
+      "body": "<<FILL role=ending words=68 beats='the sharp, rocky ledge is a tangle of twigs that leads nowhere but an empty empty nest; the friends give up on that route with a giggle, hop off the old rope swing, and head back to the campfire circle for a mug of warm cocoa and a rest, sure the golden star is hiding somewhere else'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_swing",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Just an Empty empty nest"
+      }
+    },
+    {
+      "id": "o_swing_3",
+      "body": "<<FILL role=rising words=64 beats='the smooth, wide branch is easy to balance along, and a light, whistling sound gets clearer with every step; Mia keeps one hand on the trunk while her cousin Sam watches a hand-stitched cloth map; the branch curves toward a breezy gap in the branches'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_3",
+          "label": "Balance along toward a light, whistling sound.",
+          "target": "o_swing_4"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_4",
+      "body": "<<FILL role=rising words=68 beats='they reach a breezy gap in the branches where hundreds of little things dangle from the twigs on bits of string; beads, bells, and charms all knock together in the wind; the whole tree seems to be singing softly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_4",
+          "label": "Look at the dangling things.",
+          "target": "o_swing_5"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_5",
+      "body": "<<FILL role=rising words=66 beats='someone long ago hung paper lanterns on every branch of this hidden corner of the tall pine tree; sunlight bounces off the shiny bits and scatters little rainbows on the leaves; the friends stand very still and just listen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_5",
+          "label": "Stand still and listen.",
+          "target": "o_swing_6"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_6",
+      "body": "<<FILL role=rising words=72 beats='in the middle of the singing branches hangs the largest lantern of all; the golden star floats right beside it; Mia reaches out and gives it the gentlest touch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_6",
+          "label": "Touch the largest lantern of all gently.",
+          "target": "e_chime"
+        }
+      ]
+    },
+    {
+      "id": "e_chime",
+      "body": "<<FILL role=completion words=76 beats='the friends have found The Lantern Pine, a tree that sings all by itself whenever the breeze blows; they add one small shell of their own to the branches so it will sing a little louder; they walk home humming its happy tune'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_chime",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Lantern Pine"
+      }
+    },
+    {
+      "id": "r_intro",
+      "body": "<<FILL role=rising words=68 beats='the stitched trail points next across the lawn to the boathouse dock near the fence; her cousin Sam hops over a flowerbed while Mia reads a hand-stitched cloth map; the shed door hangs open just a crack, and something inside gives a soft creak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_go",
+          "label": "Sneak up to the boathouse dock.",
+          "target": "r_fork"
+        }
+      ]
+    },
+    {
+      "id": "r_fork",
+      "body": "<<FILL role=choice words=78 beats='behind the boathouse dock the trail on a hand-stitched cloth map splits in two; one line slips inside the boathouse dock's open door into the cool shadows, the other runs off toward the tall wooden pilings stacked against the back fence; the friends pick which to explore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed",
+          "label": "Slip inside the boathouse dock's door.",
+          "target": "r_shed_1"
+        },
+        {
+          "id": "c_r_rock",
+          "label": "Head to the tall wooden pilings.",
+          "target": "r_rock_1"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_1",
+      "body": "<<FILL role=rising words=64 beats='they push the boathouse dock's door open and dusty golden light spills across old flowerpots and coiled hoses; it smells of soil and dry wood; the stitched trail leads to the shadowy back corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_1",
+          "label": "Follow the light to the shadowy back corner.",
+          "target": "r_shed_2"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_2",
+      "body": "<<FILL role=rising words=70 beats='Mia tiptoes past rakes and watering cans while her cousin Sam holds a hand-stitched cloth map steady; in the shadowy back corner a row of life jackets is piled up like steps, and a warm light near the rafters glows; something up there looks cozy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_2",
+          "label": "Look at a row of life jackets.",
+          "target": "r_shed_app"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_app",
+      "body": "<<FILL role=choice words=80 beats='a hand-stitched cloth map is torn right at this spot and two ways go on; the narrow gap beneath the dock leads into the dark, and the sturdy rope ladder climbs up toward a warm light near the rafters; the friends decide which way the golden star wants them to go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_back",
+          "label": "Crawl through the narrow gap beneath the dock.",
+          "target": "e_set_shed"
+        },
+        {
+          "id": "c_shed_in",
+          "label": "Climb the sturdy rope ladder up.",
+          "target": "r_shed_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_shed",
+      "body": "<<FILL role=ending words=70 beats='the narrow gap beneath the dock is just a cobwebby dead end with old plant pots and a curious minnow; the friends back out sneezing and laughing, dust a hand-stitched cloth map off, and trot back to the campfire circle for a mug of warm cocoa before trying another trail'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_shed",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Cobwebby Dead End"
+      }
+    },
+    {
+      "id": "r_shed_3",
+      "body": "<<FILL role=rising words=66 beats='the sturdy rope ladder wobbles just a little but holds, and the friends climb toward a warm light near the rafters; her cousin Sam goes first and gasps softly at what he sees; Mia scrambles up right behind him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_3",
+          "label": "Climb toward a warm light near the rafters.",
+          "target": "r_shed_4"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_4",
+      "body": "<<FILL role=rising words=68 beats='up past a warm light near the rafters someone has built a snug little lookout from soft cushions and a driftwood table and a lantern that runs on batteries; a carved wooden sign hangs above the doorway; it feels warm and secret'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_4",
+          "label": "Peek into a snug little lookout.",
+          "target": "r_shed_5"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_5",
+      "body": "<<FILL role=rising words=64 beats='inside a snug little lookout are two comfy seats, a shelf of adventure books, and a jar of shiny paper stars; a blanket is folded neatly in the corner as if it is waiting for visitors; the golden star is right here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_5",
+          "label": "Step into a snug little lookout.",
+          "target": "r_shed_6"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_6",
+      "body": "<<FILL role=rising words=72 beats='a carved wooden sign over the doorway reads Explorers Welcome in bright friendly letters; Mia and her cousin Sam realize this must be a secret fort built by kids long ago and left ready for whoever found the map next; they step inside like honored guests'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_6",
+          "label": "Read a carved wooden sign.",
+          "target": "e_fort"
+        }
+      ]
+    },
+    {
+      "id": "e_fort",
+      "body": "<<FILL role=completion words=78 beats='the friends have found The Hidden Lookout, snug and hidden in the top of the boathouse dock, all ready for new explorers; they write their own names in the little logbook on the shelf and promise to come back and take good care of it; this will be their headquarters from now on'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fort",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Hidden Lookout"
+      }
+    },
+    {
+      "id": "r_rock_1",
+      "body": "<<FILL role=rising words=66 beats='the other line leads to the tall wooden pilings, warm from the afternoon sun; a few marigolds grow in the cracks; the stitched trail points to the loose wooden plank near the bottom'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_1",
+          "label": "Look at the loose wooden plank.",
+          "target": "r_rock_2"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_2",
+      "body": "<<FILL role=rising words=70 beats='her cousin Sam taps the loose wooden plank and it sounds hollow, like there is a space underneath; Mia checks a hand-stitched cloth map, where the golden star sits just below the rocks; a little cluster of barnacles seems to mark the very spot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_2",
+          "label": "Tap the loose wooden plank.",
+          "target": "r_rock_app"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_app",
+      "body": "<<FILL role=choice words=78 beats='two small arrows are scratched faintly on the loose wooden plank; one arrow points toward the gap between the pilings, the other points down at the soft, sandy shallows right beneath the stone; the friends choose where to look'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rock_left",
+          "label": "Check the gap between the pilings.",
+          "target": "e_set_rock"
+        },
+        {
+          "id": "c_rock_dig",
+          "label": "Dig into the soft, sandy shallows.",
+          "target": "r_rock_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_rock",
+      "body": "<<FILL role=ending words=68 beats='the gap between the pilings is just a snug home for a line of busy minnows marching to and fro, with no treasure to be seen; the friends say a polite hello to the minnows, roll up a hand-stitched cloth map, and wander back to the campfire circle for a mug of warm cocoa'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_rock",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Only a Line of minnows"
+      }
+    },
+    {
+      "id": "r_rock_3",
+      "body": "<<FILL role=rising words=64 beats='they gently lift the loose wooden plank aside, and underneath the soft, sandy shallows is soft and easy to brush away; her cousin Sam digs with a garden trowel while Mia cups her hands; something smooth and round soon appears'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_3",
+          "label": "Brush away the soft, sandy shallows.",
+          "target": "r_rock_4"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_4",
+      "body": "<<FILL role=rising words=68 beats='a small glass jar with a rusty latch sits nestled in the sand, just where the golden star promised; it is exactly the size for two hands to lift; the friends carefully wiggle it free and blow the dust off the lid'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_4",
+          "label": "Wiggle a small glass jar free.",
+          "target": "r_rock_5"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_5",
+      "body": "<<FILL role=rising words=66 beats='the latch pops open with a happy click and inside, wrapped in a waterproof note, is a whole collection of sea glass; they catch the sunlight in swirls of blue, green, and gold; Mia gasps with delight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_5",
+          "label": "Open the rusty latch.",
+          "target": "r_rock_6"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_6",
+      "body": "<<FILL role=rising words=72 beats='there are cats-eyes, swirlies, and one big shooter as clear as a raindrop, dozens of marbles saved by some other kid years and years ago; a waterproof note simply says share and enjoy; the friends read it twice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_6",
+          "label": "Look closely at a whole collection of sea glass.",
+          "target": "e_marbles"
+        }
+      ]
+    },
+    {
+      "id": "e_marbles",
+      "body": "<<FILL role=completion words=76 beats='the friends have dug up The Jar of Sea Glass, left as treasure by a kid from long ago; they choose two favorites to keep and leave the rest tucked back with a note of their own for the next lucky finder; they walk home clinking a marble in each pocket'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_marbles",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Jar of Sea Glass"
+      }
+    },
+    {
+      "id": "s_intro",
+      "body": "<<FILL role=rising words=68 beats='the last part of the stitched trail runs down the sloping lawn to the meadow creek at the bottom of the family campsite where it meets the park; the water chatters over smooth stones; her cousin Sam holds a hand-stitched cloth map high so it will not get wet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_go",
+          "label": "Head down to the meadow creek.",
+          "target": "s_fork"
+        }
+      ]
+    },
+    {
+      "id": "s_fork",
+      "body": "<<FILL role=choice words=78 beats='down by the water the stitched trail splits one final time; one branch curves into the tall, whispering reeds along the bank, the other hops out across the flat crossing rocks to the far side of the stream; the friends decide which way the treasure lies'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble",
+          "label": "Follow the line into the tall, whispering reeds.",
+          "target": "s_bramble_1"
+        },
+        {
+          "id": "c_s_bank",
+          "label": "Cross the flat crossing rocks.",
+          "target": "s_bank_1"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_1",
+      "body": "<<FILL role=rising words=64 beats='they follow the line into the shade of the tall, whispering reeds, heavy with ripe purple berries; the leaves make a cool green tunnel; from somewhere deeper inside comes a soft, happy quack'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_1",
+          "label": "Follow a soft, happy quack into the bushes.",
+          "target": "s_bramble_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_2",
+      "body": "<<FILL role=rising words=70 beats='Mia holds a branch aside so no thorns catch their sleeves, and a soft, happy quack comes again, closer this time; her cousin Sam checks a hand-stitched cloth map, where the stitched trail winds right into the middle of the bramble patch; they step in gently'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_2",
+          "label": "Hold the thorns aside and go in.",
+          "target": "s_bramble_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_app",
+      "body": "<<FILL role=choice words=80 beats='inside the bushes the trail on a hand-stitched cloth map is faded and two little tunnels lead on through the leaves; one tunnel goes low toward the muddy, narrow gap, the other goes toward the dry, grassy path where a soft, happy quack sounds happiest; they pick a way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bramble_back",
+          "label": "Take the muddy, narrow gap.",
+          "target": "e_set_bramble"
+        },
+        {
+          "id": "c_bramble_push",
+          "label": "Take the dry, grassy path.",
+          "target": "s_bramble_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bramble",
+      "body": "<<FILL role=ending words=70 beats='the muddy, narrow gap just ends in a thick tangle of thorns too prickly to pass, with only a lost twig caught on a branch; the friends carefully back out without a single scratch, laugh at the silly twig, and head up to the campfire circle for a mug of warm cocoa'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bramble",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Lost twig"
+      }
+    },
+    {
+      "id": "s_bramble_3",
+      "body": "<<FILL role=rising words=66 beats='the dry, grassy path opens into a quiet little inlet right in the heart of the brambles, floored with soft dry leaves; a soft, happy quack turns into a rumbly purr; two green eyes blink at them from a warm nest of grass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_3",
+          "label": "Step into a quiet little inlet.",
+          "target": "s_bramble_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_4",
+      "body": "<<FILL role=rising words=68 beats='a fluffy white duck with white paws is curled up in a quiet little inlet, and it does not run away at all; instead it stretches, yawns, and pads right over to say hello; it wears a woven grass anklet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_4",
+          "label": "Say hello to a fluffy white duck.",
+          "target": "s_bramble_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_5",
+      "body": "<<FILL role=rising words=64 beats='a fluffy white duck winds around their ankles, purring like a tiny engine, and flops over for a belly rub; the friends laugh and stroke its soft fur; the golden star is drawn right where the cat has made its cozy hideaway'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_5",
+          "label": "Give a fluffy white duck a belly rub.",
+          "target": "s_bramble_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_6",
+      "body": "<<FILL role=rising words=72 beats='a woven grass anklet has a tiny carved charm that reads Pepper, please be my friend, but no address at all; the cat clearly knows a quiet little inlet well and treats the friends like old pals; Mia and her cousin Sam wonder if it has been waiting for the map to be found'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_6",
+          "label": "Read a tiny carved charm.",
+          "target": "e_cat"
+        }
+      ]
+    },
+    {
+      "id": "e_cat",
+      "body": "<<FILL role=completion words=78 beats='the friends have found Daisy the Creek Duck living happily in a quiet little inlet; they share their afternoon snack with their new pal and promise to visit every single day and help find where he belongs; he walks them halfway home with his tail held high'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_cat",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Daisy the Creek Duck"
+      }
+    },
+    {
+      "id": "s_bank_1",
+      "body": "<<FILL role=rising words=66 beats='the flat crossing rocks cross the chattering stream in a neat flat row, dry on top and easy to hop; the friends cross one careful stone at a time to the mossy far bank; the stitched trail points to the roots of the leaning birch tree'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_1",
+          "label": "Hop across to the far bank.",
+          "target": "s_bank_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_2",
+      "body": "<<FILL role=rising words=70 beats='on the far bank the leaning birch tree trails its long green fingers in the water, and the ground beneath its roots is soft and cool; her cousin Sam studies a hand-stitched cloth map, where the golden star sits tucked among the tangled roots; a faint shimmer among the roots shows in the shade'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_2",
+          "label": "Look among the roots of the leaning birch tree.",
+          "target": "s_bank_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_app",
+      "body": "<<FILL role=choice words=78 beats='two hollows show among the roots of the leaning birch tree; one is the soggy hollow right at the water's edge, the other is the dry, shaded nook a little higher up where a faint shimmer among the roots comes from; the friends choose where the golden star is pointing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bank_back",
+          "label": "Search the soggy hollow.",
+          "target": "e_set_bank"
+        },
+        {
+          "id": "c_bank_cross",
+          "label": "Search the dry, shaded nook.",
+          "target": "s_bank_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bank",
+      "body": "<<FILL role=ending words=68 beats='the soggy hollow at the water's edge holds nothing but a shiny wet pebble and one very surprised tadpole; the friends grin at their muddy sneakers, wave hello, and hop back across the stones for a mug of warm cocoa'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bank",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Surprised tadpole"
+      }
+    },
+    {
+      "id": "s_bank_3",
+      "body": "<<FILL role=rising words=64 beats='the dry, shaded nook is just the right size to kneel in, and a faint shimmer among the roots comes from something half-buried in the cool soil; Mia brushes the earth away gently while her cousin Sam holds the willow branches back; a corner of metal appears'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_3",
+          "label": "Brush away the cool soil.",
+          "target": "s_bank_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_4",
+      "body": "<<FILL role=rising words=68 beats='it is a small metal tackle box, green at the edges but still shut tight, exactly where the golden star promised; the friends work the stiff lid with careful fingers; at last it opens with a soft puff of old air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_4",
+          "label": "Open a small metal tackle box.",
+          "target": "s_bank_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_5",
+      "body": "<<FILL role=rising words=66 beats='inside a small metal tackle box, gleaming on a bed of faded velvet, is a heap of colorful fishing lures of every kind; brass buttons, glass buttons, and pearly ones shaped like little flowers; they sparkle like real jewels in the dappled light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_5",
+          "label": "Look at colorful fishing lures of every kind.",
+          "target": "s_bank_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_6",
+      "body": "<<FILL role=rising words=72 beats='someone has kept colorful fishing lures of every kind safe here for years, each one different and lovely, a true backyard treasure; a weathered note inside reads for the finder, with love; the friends feel like they have opened a chest of pirate gold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_6",
+          "label": "Read a weathered note.",
+          "target": "e_buttons"
+        }
+      ]
+    },
+    {
+      "id": "e_buttons",
+      "body": "<<FILL role=completion words=76 beats='the friends have unearthed The Box of Fishing Lures, the real treasure at the end of the map; they pick one gleaming button each to keep as a memory and rebury the tin with a new note for the next explorer; they cross the stepping stones home feeling rich as kings'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_buttons",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Box of Fishing Lures"
+      }
+    }
+  ]
+}

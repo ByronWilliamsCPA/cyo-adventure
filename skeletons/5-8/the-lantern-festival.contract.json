@@ -1,0 +1,582 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-lantern-festival",
+  "age_band": "5-8",
+  "legacy_lexicon": [
+    "Tansy",
+    "hedgehog",
+    "Woodland Lantern Festival",
+    "Lantern Festival",
+    "bramble patch",
+    "the old willow",
+    "willow",
+    "glowberry",
+    "glowberries",
+    "reed",
+    "reeds",
+    "reedy pond",
+    "honey cakes",
+    "the round hive",
+    "hive",
+    "bees",
+    "paper lanterns",
+    "garden shed",
+    "cricket band",
+    "festival meadow",
+    "great oak",
+    "still pond",
+    "Granny Hedgehog",
+    "Granny",
+    "dinner bell",
+    "lantern",
+    "lanterns",
+    "lantern song",
+    "mossy stump clearing"
+  ],
+  "default_binding": {
+    "HERO": "Tansy",
+    "SPECIES": "hedgehog",
+    "HOME": "her cozy mossy stump clearing",
+    "EVENT": "the Woodland Lantern Festival",
+    "VENUE": "the festival meadow",
+    "LANDMARK_TREE": "the great oak",
+    "WATER_FEATURE": "the still pond",
+    "LIGHT_SOURCE": "glowberries",
+    "LANTERN_ITEM": "lantern",
+    "SONG_NAME": "the lantern song",
+    "ROUTE_A_PLACE": "the bramble patch",
+    "ROUTE_A_HIGH": "a fatter cluster",
+    "ROUTE_A_MISHAP": "the soft ferns",
+    "ROUTE_B_PLACE": "the old willow",
+    "ROUTE_B_SUMMON": "the loud dinner bell",
+    "ROUTE_C_PLACE": "the reedy pond",
+    "ROUTE_C_ITEM": "reeds",
+    "ROUTE_D_PLACE": "the round hive",
+    "ROUTE_D_HELPER": "the bees",
+    "ROUTE_D_ITEM": "honey cakes",
+    "ROUTE_E_PLACE": "the garden shed",
+    "ROUTE_E_ITEM": "the old paper lanterns",
+    "ROUTE_F_PLACE": "the tall grass",
+    "ROUTE_F_HELPER": "the cricket band",
+    "ELDER": "Granny Hedgehog",
+    "H2_ELDER_DETAIL": "leaning on her cane, spines silvered by age",
+    "H2_LEGEND": "the tale of the very first lantern",
+    "H1_GAME": "riddle",
+    "A_MISHAP_TITLE": "Oops, Bouncing Berries",
+    "B_MISHAP_TITLE": "Oops, Too Loud a Bell",
+    "C_MISHAP_TITLE": "Oops, Soggy Reeds",
+    "FINALE_POND_TITLE": "Lanterns on the Water",
+    "FINALE_OAK_TITLE": "A Tree Full of Stars",
+    "FINALE_SONG_TITLE": "The Lantern Song",
+    "FINALE_WISH_TITLE": "One Warm Wish",
+    "FINALE_FEAST_TITLE": "The Glowing Feast",
+    "FINALE_RIDDLE_TITLE": "The Best Riddle of All",
+    "FINALE_STORY_TITLE": "Granny's Lantern Story"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist gathering supplies for the festival.",
+      "guidance": "A single kid-relatable young woodland creature; capable, warm, and never worried.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["ELDER"]
+      }
+    },
+    {
+      "id": "SPECIES",
+      "scope": "global",
+      "meaning": "The hero's species, named once at the story's opening.",
+      "guidance": "A gentle, kid-relatable creature type; benign, never predatory or frightening.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HOME",
+      "scope": "global",
+      "meaning": "The hero's cozy home base, returned to between every gathering trip.",
+      "guidance": "A warm, safe, welcoming little dwelling; always reachable, never dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "EVENT",
+      "scope": "global",
+      "meaning": "The name of the celebration the hero is gathering supplies for.",
+      "guidance": "A warm, communal, joyful seasonal gathering; wonder over dread.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "VENUE",
+      "scope": "global",
+      "meaning": "The open gathering place where the celebration is held.",
+      "guidance": "A safe, welcoming open space that everything converges on; no hazards.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LANDMARK_TREE",
+      "scope": "global",
+      "meaning": "The tall, central fixture of the venue where decorations are hung.",
+      "guidance": "A grand, climbable-by-adults-only or safely-reachable landmark; purely decorative peril-free backdrop.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["WATER_FEATURE"]
+      }
+    },
+    {
+      "id": "WATER_FEATURE",
+      "scope": "global",
+      "meaning": "The calm body of water at the venue used for the finale.",
+      "guidance": "Still, shallow-feeling, and safe; never a drowning or falling-in hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["LANDMARK_TREE", "ROUTE_C_PLACE"]
+      }
+    },
+    {
+      "id": "LIGHT_SOURCE",
+      "scope": "global",
+      "meaning": "The glowing gathered material used to light the festival decorations.",
+      "guidance": "A soft, warm, harmless natural glow; a keepsake, not a hazard.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LANTERN_ITEM",
+      "scope": "global",
+      "meaning": "The central decorative object of the festival (used singular and pluralized with a trailing 's').",
+      "guidance": "A small, warm, handheld light-holder; the story's title object; never a fire hazard.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SONG_NAME",
+      "scope": "global",
+      "meaning": "The traditional song sung at the festival's climax.",
+      "guidance": "A cheerful, communal, easy-to-join song; lower-case reference (contrast with FINALE_SONG_TITLE).",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_PLACE",
+      "scope": "route",
+      "meaning": "Where the hero gathers the glowing light-source material.",
+      "guidance": "A safe, sunlit foraging spot; nothing sharp or dangerous.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "ROUTE_B_PLACE",
+          "ROUTE_C_PLACE",
+          "ROUTE_D_PLACE",
+          "ROUTE_E_PLACE",
+          "ROUTE_F_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_HIGH",
+      "scope": "track",
+      "meaning": "The tempting, harder-to-reach cluster of the gathered material.",
+      "guidance": "A minor stretch, not a real fall risk; the story's comic-mishap trigger.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_MISHAP",
+      "scope": "track",
+      "meaning": "The soft place the bounced basket lands in the comic setback.",
+      "guidance": "Soft, harmless, faintly silly landing spot; nobody is ever hurt.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_PLACE",
+      "scope": "route",
+      "meaning": "Where the hero's friends are found and invited.",
+      "guidance": "A cozy communal dwelling or gathering spot for friends.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_C_PLACE",
+          "ROUTE_D_PLACE",
+          "ROUTE_E_PLACE",
+          "ROUTE_F_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_SUMMON",
+      "scope": "track",
+      "meaning": "The loud, comically wrong way to wake and invite the friends.",
+      "guidance": "Harmlessly too-loud; a noisy comic overcorrection, never harmful.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_PLACE",
+      "scope": "route",
+      "meaning": "Where the hero gathers stalks to weave into decoration frames.",
+      "guidance": "A calm, shallow waterside spot; safe footing throughout.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_B_PLACE",
+          "ROUTE_D_PLACE",
+          "ROUTE_E_PLACE",
+          "ROUTE_F_PLACE",
+          "WATER_FEATURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_ITEM",
+      "scope": "track",
+      "meaning": "The raw plant material cut and bent into decoration frames.",
+      "guidance": "A simple, bendable, harmless plant stalk.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": ["ROUTE_D_ITEM", "ROUTE_E_ITEM", "LIGHT_SOURCE"]
+      }
+    },
+    {
+      "id": "ROUTE_D_PLACE",
+      "scope": "route",
+      "meaning": "Where the hero asks a helper creature for festival food.",
+      "guidance": "A cozy, buzzing communal dwelling; welcoming, not swarming or threatening.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_B_PLACE",
+          "ROUTE_C_PLACE",
+          "ROUTE_E_PLACE",
+          "ROUTE_F_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_HELPER",
+      "scope": "track",
+      "meaning": "The helper creatures who prepare the festival food.",
+      "guidance": "A kindly, cooperative group of small creatures; never a stinging or biting threat.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_F_HELPER"]
+      }
+    },
+    {
+      "id": "ROUTE_D_ITEM",
+      "scope": "track",
+      "meaning": "The sweet festival food the helper creatures prepare.",
+      "guidance": "A warm, simple, shareable festival treat.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["ROUTE_C_ITEM", "ROUTE_E_ITEM", "LIGHT_SOURCE"]
+      }
+    },
+    {
+      "id": "ROUTE_E_PLACE",
+      "scope": "route",
+      "meaning": "Where last year's decorations are stored and reclaimed.",
+      "guidance": "A small, dusty, unthreatening storage spot.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_B_PLACE",
+          "ROUTE_C_PLACE",
+          "ROUTE_D_PLACE",
+          "ROUTE_F_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_E_ITEM",
+      "scope": "track",
+      "meaning": "Last year's reclaimed decorations, dusted off for reuse.",
+      "guidance": "Old but intact, decorative, and safe to handle.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["ROUTE_C_ITEM", "ROUTE_D_ITEM", "LIGHT_SOURCE"]
+      }
+    },
+    {
+      "id": "ROUTE_F_PLACE",
+      "scope": "route",
+      "meaning": "Where the hero asks the musicians to play at the festival.",
+      "guidance": "An open, sunny spot associated with the musician creatures.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_B_PLACE",
+          "ROUTE_C_PLACE",
+          "ROUTE_D_PLACE",
+          "ROUTE_E_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_F_HELPER",
+      "scope": "track",
+      "meaning": "The small musicians who play at the festival's climax.",
+      "guidance": "A cheerful, harmless group of small musical creatures.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["ROUTE_D_HELPER"]
+      }
+    },
+    {
+      "id": "ELDER",
+      "scope": "track",
+      "meaning": "The elder who tells the festival's origin story on the picnic branch.",
+      "guidance": "A warm, gentle, respected elder; storyteller, never a source of peril.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "H2_ELDER_DETAIL",
+      "scope": "track",
+      "meaning": "The elder's gentle physical appearance detail on arrival.",
+      "guidance": "Warm, age-marked, harmless physical detail; affectionate, not frail-as-peril.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H2_LEGEND",
+      "scope": "track",
+      "meaning": "The traditional origin story the elder tells about the festival.",
+      "guidance": "A short, warm, benign legend name; no frightening content implied.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H1_GAME",
+      "scope": "track",
+      "meaning": "The playful word-game the friends play during the picnic (singular; pluralized with a trailing 's').",
+      "guidance": "A light, silly, inclusive party game.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_MISHAP_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: the comic berry-gathering setback. Names ending end_berry_oops.",
+      "guidance": "Light, comic, reassuring setback title; nobody is hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic", "weapon"],
+        "distinct_from": ["B_MISHAP_TITLE", "C_MISHAP_TITLE"]
+      }
+    },
+    {
+      "id": "B_MISHAP_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: the comic too-loud-invitation setback. Names ending end_willow_oops.",
+      "guidance": "Light, comic, reassuring setback title; nobody is hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic", "weapon"],
+        "distinct_from": ["A_MISHAP_TITLE", "C_MISHAP_TITLE"]
+      }
+    },
+    {
+      "id": "C_MISHAP_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: the comic wrong-material setback. Names ending end_reed_oops.",
+      "guidance": "Light, comic, reassuring setback title; nobody is hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic", "weapon"],
+        "distinct_from": ["A_MISHAP_TITLE", "B_MISHAP_TITLE"]
+      }
+    },
+    {
+      "id": "FINALE_POND_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: floating the decorations on the water (success). Names ending end_finale_pond.",
+      "guidance": "Positive, gentle, wondrous completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "FINALE_OAK_TITLE",
+          "FINALE_SONG_TITLE",
+          "FINALE_WISH_TITLE",
+          "FINALE_FEAST_TITLE",
+          "FINALE_RIDDLE_TITLE",
+          "FINALE_STORY_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "FINALE_OAK_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: hanging the decorations in the landmark tree (success). Names ending end_finale_oak.",
+      "guidance": "Positive, warm, celebratory completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "FINALE_POND_TITLE",
+          "FINALE_SONG_TITLE",
+          "FINALE_WISH_TITLE",
+          "FINALE_FEAST_TITLE",
+          "FINALE_RIDDLE_TITLE",
+          "FINALE_STORY_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "FINALE_SONG_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: singing the traditional song together (completion). Names ending end_finale_song.",
+      "guidance": "Positive, joyful, musical completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "FINALE_POND_TITLE",
+          "FINALE_OAK_TITLE",
+          "FINALE_WISH_TITLE",
+          "FINALE_FEAST_TITLE",
+          "FINALE_RIDDLE_TITLE",
+          "FINALE_STORY_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "FINALE_WISH_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: making a wish together (success). Names ending end_finale_wish.",
+      "guidance": "Positive, warm, communal completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "FINALE_POND_TITLE",
+          "FINALE_OAK_TITLE",
+          "FINALE_SONG_TITLE",
+          "FINALE_FEAST_TITLE",
+          "FINALE_RIDDLE_TITLE",
+          "FINALE_STORY_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "FINALE_FEAST_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: sharing the festival feast (success). Names ending end_finale_feast.",
+      "guidance": "Positive, warm, communal-meal completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "FINALE_POND_TITLE",
+          "FINALE_OAK_TITLE",
+          "FINALE_SONG_TITLE",
+          "FINALE_WISH_TITLE",
+          "FINALE_RIDDLE_TITLE",
+          "FINALE_STORY_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "FINALE_RIDDLE_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: the best riddle of the night (success). Names ending end_finale_riddle.",
+      "guidance": "Positive, playful, funny completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "FINALE_POND_TITLE",
+          "FINALE_OAK_TITLE",
+          "FINALE_SONG_TITLE",
+          "FINALE_WISH_TITLE",
+          "FINALE_FEAST_TITLE",
+          "FINALE_STORY_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "FINALE_STORY_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: hearing the elder's origin story (completion). Names ending end_finale_story.",
+      "guidance": "Positive, warm, tradition-honoring completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "FINALE_POND_TITLE",
+          "FINALE_OAK_TITLE",
+          "FINALE_SONG_TITLE",
+          "FINALE_WISH_TITLE",
+          "FINALE_FEAST_TITLE",
+          "FINALE_RIDDLE_TITLE"
+        ]
+      }
+    }
+  ]
+}

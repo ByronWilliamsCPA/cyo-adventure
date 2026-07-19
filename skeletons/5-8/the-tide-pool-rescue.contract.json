@@ -1,0 +1,703 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-tide-pool-rescue",
+  "age_band": "5-8",
+  "legacy_lexicon": [
+    "Milo",
+    "Gran",
+    "Stella",
+    "Flick",
+    "Pinch",
+    "Winnie",
+    "sea star",
+    "periwinkle",
+    "tide pool",
+    "tide pools",
+    "tide-pool",
+    "low tide",
+    "low-tide",
+    "the tide",
+    "the beach",
+    "seaweed",
+    "picnic basket",
+    "red bucket",
+    "flat rock",
+    "beach hat"
+  ],
+  "default_binding": {
+    "HERO": "Milo",
+    "COMPANION": "Gran",
+    "THRESHOLD": "the low-tide rocks and pools",
+    "ENTRANCE": "Gran's flat rock",
+    "PLACE": "the beach",
+    "TOOL": "his red bucket",
+    "HAT": "her big beach hat",
+    "TOWEL": "her towel",
+    "PICNIC": "the picnic basket",
+    "OPENING_MOMENT": "low tide",
+    "DEADLINE": "the tide turns and comes back in",
+    "DEADLINE_SIGN": "the sparkling sea turning around to come home",
+    "TIDE": "the tide",
+    "Q1_NAME": "Stella",
+    "Q1_SPECIES": "sea star",
+    "Q1_PLIGHT": "stranded on a bare high ledge",
+    "Q1_HOME": "her deep cool pool",
+    "Q1_METHOD": "wet his hands and slide her down",
+    "Q1_ATTEMPT1": "toss water up to her with cupped hands",
+    "Q1_ATTEMPT2": "carry the full bucket up the little slope",
+    "Q2_NAME": "Flick",
+    "Q2_SPECIES": "fish",
+    "Q2_PLIGHT": "trapped in a shrinking sun-warmed puddle",
+    "Q2_HOME": "the big deep pool",
+    "Q2_METHOD": "dip the bucket and scoop him up together",
+    "Q2_ATTEMPT1": "try to catch him with his bare hands",
+    "Q2_ATTEMPT2": "dig a little river through the sand",
+    "Q2_SIGN": "a flappy splashing sound",
+    "Q3_NAME": "Pinch",
+    "Q3_SPECIES": "crab",
+    "Q3_PLIGHT": "tangled up in slippery seaweed ribbons",
+    "Q3_HOME": "the cool pool beside the seaweed",
+    "Q3_METHOD": "untangle one ribbon at a time, slowly",
+    "Q3_ATTEMPT1": "give the seaweed one quick tug",
+    "Q3_ATTEMPT2": "hold out the spoon for him to grab",
+    "Q3_SIGN": "a busy clack-clack-clack sound",
+    "Q4_NAME": "Winnie",
+    "Q4_SPECIES": "periwinkle",
+    "Q4_PLIGHT": "stranded far up a sunny dry rock",
+    "Q4_HOME": "her cool pool down the rock",
+    "Q4_METHOD": "offer her a slow ride on his palm",
+    "Q4_ATTEMPT1": "roll her along like a tiny wheel",
+    "Q4_ATTEMPT2": "cheer her on to walk faster",
+    "Q4_SIGN": "something tiny gleaming in the sunshine",
+    "BONUS1_FIND": "a hermit crab in a curly borrowed shell",
+    "BONUS2_FIND": "a perfect shell striped like a peppermint",
+    "SETBACK1_PRIZE": "The Tide Lends a Hand",
+    "SETBACK2_PRIZE": "The Periwinkle Rides the Waves",
+    "Q1_PRIZE": "Stella's Thank-You Cartwheel",
+    "RACE_PRIZE": "Racing the Friendly Tide",
+    "BONUS1_PRIZE": "The Hermit Crab Surprise",
+    "BONUS2_PRIZE": "The Glitter-Trail Shell",
+    "STORY_PRIZE": "The Best Beach Story",
+    "PATROL_PRIZE": "The Low-Tide Rescue Patrol"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist doing the rescuing.",
+      "guidance": "A single kid-relatable child; kind, capable, and never worried.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["COMPANION"]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The trusted grown-up who watches over the hero and offers tips.",
+      "guidance": "A warm, patient adult who stays at the base and only ever helps; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the story happens inside.",
+      "guidance": "A safe, self-contained outdoor place revealed by the opening moment; wonder over dread; no hazards.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ENTRANCE", "PLACE"]
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single safe home base the hero returns to for tips and to celebrate.",
+      "guidance": "Always reachable, always safe; where the companion waits and watches.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["THRESHOLD", "PLACE"]
+      }
+    },
+    {
+      "id": "PLACE",
+      "scope": "global",
+      "meaning": "A short, one-to-two-word name for the setting, used in titles and short references.",
+      "guidance": "The plain short noun for the whole setting; safe, wondrous, never a hazard.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["toxic"],
+        "distinct_from": ["THRESHOLD", "ENTRANCE"]
+      }
+    },
+    {
+      "id": "TOOL",
+      "scope": "global",
+      "meaning": "The small carried object the hero uses across every rescue.",
+      "guidance": "A harmless handheld container or carrying tool a child could plausibly carry.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HAT", "TOWEL", "PICNIC"]
+      }
+    },
+    {
+      "id": "HAT",
+      "scope": "global",
+      "meaning": "The companion's recurring headwear, mentioned at several points.",
+      "guidance": "A warm, ordinary piece of the companion's clothing; purely decorative.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["TOOL", "TOWEL", "PICNIC"]
+      }
+    },
+    {
+      "id": "TOWEL",
+      "scope": "global",
+      "meaning": "The companion's spread-out towel or blanket at the home base.",
+      "guidance": "A cozy, ordinary piece of the companion's gear; a place to sit and be wrapped up warm.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["TOOL", "HAT", "PICNIC"]
+      }
+    },
+    {
+      "id": "PICNIC",
+      "scope": "global",
+      "meaning": "The shared food container opened for the celebration.",
+      "guidance": "A simple, shareable food container; a treat, never a hazard.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["TOOL", "HAT", "TOWEL"]
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The recurring, non-lethal condition that makes the adventure possible.",
+      "guidance": "A repeatable, safe natural window; must read as something that happens again, so 'come back next time' is true.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The non-lethal, survivable process that eventually closes the safe window.",
+      "guidance": "A gentle, expected turning point; never a source of danger, only a reason to hurry a little.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The sensory sign the deadline is on its way, seen early in the story.",
+      "guidance": "A visible, gradual, gentle cue; gives fair warning without ever feeling scary.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TIDE",
+      "scope": "global",
+      "meaning": "A short, one-to-two-word name for the returning force/water, reused throughout and in titles.",
+      "guidance": "A friendly, short name for the thing that is coming back; never a hazard.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Q1_NAME",
+      "scope": "track",
+      "meaning": "The first rescued creature's personal name.",
+      "guidance": "A short, friendly, kid-relatable name.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q2_NAME", "Q3_NAME", "Q4_NAME", "HERO", "COMPANION"]
+      }
+    },
+    {
+      "id": "Q1_SPECIES",
+      "scope": "track",
+      "meaning": "The first rescued creature's species or type.",
+      "guidance": "A small, gentle, benign creature; never predatory or frightening.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q2_SPECIES", "Q3_SPECIES", "Q4_SPECIES"]
+      }
+    },
+    {
+      "id": "Q1_PLIGHT",
+      "scope": "track",
+      "meaning": "Where and how the first creature is stranded.",
+      "guidance": "A mild, non-scary stranding; uncomfortable, never dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["Q2_PLIGHT", "Q3_PLIGHT", "Q4_PLIGHT"]
+      }
+    },
+    {
+      "id": "Q1_HOME",
+      "scope": "track",
+      "meaning": "The first creature's safe destination.",
+      "guidance": "A cool, safe, welcoming spot the creature belongs in.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["Q2_HOME", "Q3_HOME", "Q4_HOME"]
+      }
+    },
+    {
+      "id": "Q1_METHOD",
+      "scope": "track",
+      "meaning": "The gentle, correct technique that rescues the first creature.",
+      "guidance": "A simple, safe, caring action a child could actually do.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Q1_ATTEMPT1",
+      "scope": "track",
+      "meaning": "The first creature's first well-meaning but ineffective rescue attempt.",
+      "guidance": "A harmless, comic near-miss; nobody and nothing is ever hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q1_ATTEMPT2"]
+      }
+    },
+    {
+      "id": "Q1_ATTEMPT2",
+      "scope": "track",
+      "meaning": "The first creature's second well-meaning but ineffective rescue attempt.",
+      "guidance": "A harmless, comic near-miss; nobody and nothing is ever hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q1_ATTEMPT1"]
+      }
+    },
+    {
+      "id": "Q2_NAME",
+      "scope": "track",
+      "meaning": "The second rescued creature's personal name.",
+      "guidance": "A short, friendly, kid-relatable name.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q1_NAME", "Q3_NAME", "Q4_NAME", "HERO", "COMPANION"]
+      }
+    },
+    {
+      "id": "Q2_SPECIES",
+      "scope": "track",
+      "meaning": "The second rescued creature's species or type.",
+      "guidance": "A small, gentle, benign creature; never predatory or frightening.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q1_SPECIES", "Q3_SPECIES", "Q4_SPECIES"]
+      }
+    },
+    {
+      "id": "Q2_PLIGHT",
+      "scope": "track",
+      "meaning": "Where and how the second creature is stranded.",
+      "guidance": "A mild, non-scary stranding; uncomfortable, never dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["Q1_PLIGHT", "Q3_PLIGHT", "Q4_PLIGHT"]
+      }
+    },
+    {
+      "id": "Q2_HOME",
+      "scope": "track",
+      "meaning": "The second creature's safe destination.",
+      "guidance": "A cool, safe, welcoming spot the creature belongs in.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["Q1_HOME", "Q3_HOME", "Q4_HOME"]
+      }
+    },
+    {
+      "id": "Q2_METHOD",
+      "scope": "track",
+      "meaning": "The gentle, correct technique that rescues the second creature.",
+      "guidance": "A simple, safe, caring action a child could actually do.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Q2_ATTEMPT1",
+      "scope": "track",
+      "meaning": "The second creature's first well-meaning but ineffective rescue attempt.",
+      "guidance": "A harmless, comic near-miss; nobody and nothing is ever hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q2_ATTEMPT2"]
+      }
+    },
+    {
+      "id": "Q2_ATTEMPT2",
+      "scope": "track",
+      "meaning": "The second creature's second well-meaning but ineffective rescue attempt.",
+      "guidance": "A harmless, comic near-miss; nobody and nothing is ever hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q2_ATTEMPT1"]
+      }
+    },
+    {
+      "id": "Q2_SIGN",
+      "scope": "track",
+      "meaning": "The sensory cue that draws the hero toward the second creature.",
+      "guidance": "A distinct, benign sound or sight; distinguishable from the other creatures' cues.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["Q3_SIGN", "Q4_SIGN"]
+      }
+    },
+    {
+      "id": "Q3_NAME",
+      "scope": "track",
+      "meaning": "The third rescued creature's personal name.",
+      "guidance": "A short, friendly, kid-relatable name.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q1_NAME", "Q2_NAME", "Q4_NAME", "HERO", "COMPANION"]
+      }
+    },
+    {
+      "id": "Q3_SPECIES",
+      "scope": "track",
+      "meaning": "The third rescued creature's species or type.",
+      "guidance": "A small, gentle, benign creature; never predatory or frightening.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q1_SPECIES", "Q2_SPECIES", "Q4_SPECIES"]
+      }
+    },
+    {
+      "id": "Q3_PLIGHT",
+      "scope": "track",
+      "meaning": "Where and how the third creature is stranded.",
+      "guidance": "A mild, non-scary stranding; uncomfortable, never dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["Q1_PLIGHT", "Q2_PLIGHT", "Q4_PLIGHT"]
+      }
+    },
+    {
+      "id": "Q3_HOME",
+      "scope": "track",
+      "meaning": "The third creature's safe destination.",
+      "guidance": "A cool, safe, welcoming spot the creature belongs in.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["Q1_HOME", "Q2_HOME", "Q4_HOME"]
+      }
+    },
+    {
+      "id": "Q3_METHOD",
+      "scope": "track",
+      "meaning": "The gentle, correct technique that rescues the third creature.",
+      "guidance": "A simple, safe, caring action a child could actually do.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Q3_ATTEMPT1",
+      "scope": "track",
+      "meaning": "The third creature's first well-meaning but ineffective rescue attempt.",
+      "guidance": "A harmless, comic near-miss; nobody and nothing is ever hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q3_ATTEMPT2"]
+      }
+    },
+    {
+      "id": "Q3_ATTEMPT2",
+      "scope": "track",
+      "meaning": "The third creature's second well-meaning but ineffective rescue attempt.",
+      "guidance": "A harmless, comic near-miss; nobody and nothing is ever hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q3_ATTEMPT1"]
+      }
+    },
+    {
+      "id": "Q3_SIGN",
+      "scope": "track",
+      "meaning": "The sensory cue that draws the hero toward the third creature.",
+      "guidance": "A distinct, benign sound or sight; distinguishable from the other creatures' cues.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["Q2_SIGN", "Q4_SIGN"]
+      }
+    },
+    {
+      "id": "Q4_NAME",
+      "scope": "track",
+      "meaning": "The fourth rescued creature's personal name.",
+      "guidance": "A short, friendly, kid-relatable name.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q1_NAME", "Q2_NAME", "Q3_NAME", "HERO", "COMPANION"]
+      }
+    },
+    {
+      "id": "Q4_SPECIES",
+      "scope": "track",
+      "meaning": "The fourth rescued creature's species or type.",
+      "guidance": "A small, gentle, benign, slow-moving creature; never predatory or frightening.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q1_SPECIES", "Q2_SPECIES", "Q3_SPECIES"]
+      }
+    },
+    {
+      "id": "Q4_PLIGHT",
+      "scope": "track",
+      "meaning": "Where and how the fourth creature is stranded.",
+      "guidance": "A mild, non-scary stranding; uncomfortable, never dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["Q1_PLIGHT", "Q2_PLIGHT", "Q3_PLIGHT"]
+      }
+    },
+    {
+      "id": "Q4_HOME",
+      "scope": "track",
+      "meaning": "The fourth creature's safe destination.",
+      "guidance": "A cool, safe, welcoming spot the creature belongs in.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["Q1_HOME", "Q2_HOME", "Q3_HOME"]
+      }
+    },
+    {
+      "id": "Q4_METHOD",
+      "scope": "track",
+      "meaning": "The gentle, correct technique that rescues the fourth creature.",
+      "guidance": "A simple, safe, caring action a child could actually do; unhurried.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "Q4_ATTEMPT1",
+      "scope": "track",
+      "meaning": "The fourth creature's first well-meaning but ineffective rescue attempt.",
+      "guidance": "A harmless, comic near-miss; nobody and nothing is ever hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q4_ATTEMPT2"]
+      }
+    },
+    {
+      "id": "Q4_ATTEMPT2",
+      "scope": "track",
+      "meaning": "The fourth creature's second well-meaning but ineffective rescue attempt.",
+      "guidance": "A harmless, comic near-miss; nobody and nothing is ever hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["Q4_ATTEMPT1"]
+      }
+    },
+    {
+      "id": "Q4_SIGN",
+      "scope": "track",
+      "meaning": "The sensory cue that reveals the fourth creature.",
+      "guidance": "A distinct, benign sight or sound; distinguishable from the other creatures' cues.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["Q2_SIGN", "Q3_SIGN"]
+      }
+    },
+    {
+      "id": "BONUS1_FIND",
+      "scope": "track",
+      "meaning": "The extra, already-safe creature discovered on the bonus branch.",
+      "guidance": "A benign small creature that needs no rescue at all; purely a happy surprise.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["BONUS2_FIND"]
+      }
+    },
+    {
+      "id": "BONUS2_FIND",
+      "scope": "track",
+      "meaning": "The extra keepsake object discovered on the bonus branch.",
+      "guidance": "A small, harmless, pretty found object; a keepsake, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["BONUS1_FIND"]
+      }
+    },
+    {
+      "id": "SETBACK1_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the deadline itself finishes the remaining rescues after the first (neutral setback). Names ending e_tide_star.",
+      "guidance": "Light, reassuring, neutral setback title; nobody is hurt and nothing is truly lost.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "SETBACK2_PRIZE", "Q1_PRIZE", "RACE_PRIZE", "BONUS1_PRIZE",
+          "BONUS2_PRIZE", "STORY_PRIZE", "PATROL_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "SETBACK2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the deadline finishes the fourth rescue after the first three succeed (neutral setback). Names ending e_tide_snail.",
+      "guidance": "Light, reassuring, neutral setback title; nobody is hurt and nothing is truly lost.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "SETBACK1_PRIZE", "Q1_PRIZE", "RACE_PRIZE", "BONUS1_PRIZE",
+          "BONUS2_PRIZE", "STORY_PRIZE", "PATROL_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "Q1_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the first creature's own thank-you celebration (success). Names ending e_cartwheel.",
+      "guidance": "Positive, warm, joyful completion title celebrating the first rescued creature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "SETBACK1_PRIZE", "SETBACK2_PRIZE", "RACE_PRIZE", "BONUS1_PRIZE",
+          "BONUS2_PRIZE", "STORY_PRIZE", "PATROL_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "RACE_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: racing the returning water up the sand for fun (success). Names ending e_race_win.",
+      "guidance": "Positive, playful, energetic completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "SETBACK1_PRIZE", "SETBACK2_PRIZE", "Q1_PRIZE", "BONUS1_PRIZE",
+          "BONUS2_PRIZE", "STORY_PRIZE", "PATROL_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "BONUS1_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: discovering the already-safe bonus creature (discovery). Names ending e_hermit.",
+      "guidance": "Positive, gentle, wondrous discovery title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "SETBACK1_PRIZE", "SETBACK2_PRIZE", "Q1_PRIZE", "RACE_PRIZE",
+          "BONUS2_PRIZE", "STORY_PRIZE", "PATROL_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "BONUS2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: discovering the bonus keepsake object (discovery). Names ending e_shell.",
+      "guidance": "Positive, gentle, wondrous discovery title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "SETBACK1_PRIZE", "SETBACK2_PRIZE", "Q1_PRIZE", "RACE_PRIZE",
+          "BONUS1_PRIZE", "STORY_PRIZE", "PATROL_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "STORY_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: recounting the whole rescue day as a story (completion). Names ending e_story.",
+      "guidance": "Positive, warm, tradition-honoring completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "SETBACK1_PRIZE", "SETBACK2_PRIZE", "Q1_PRIZE", "RACE_PRIZE",
+          "BONUS1_PRIZE", "BONUS2_PRIZE", "PATROL_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "PATROL_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: planning the next rescue outing together (success). Names ending e_patrol.",
+      "guidance": "Positive, warm, forward-looking completion title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "SETBACK1_PRIZE", "SETBACK2_PRIZE", "Q1_PRIZE", "RACE_PRIZE",
+          "BONUS1_PRIZE", "BONUS2_PRIZE", "STORY_PRIZE"
+        ]
+      }
+    }
+  ]
+}
