@@ -308,6 +308,29 @@ def test_legacy_lexicon_tolerates_a_blank_entry_without_matching_everything():
     assert not any(v.rule == "legacy_lexicon" for v in violations)
 
 
+def test_is_default_binding_skips_only_the_legacy_lexicon_check():
+    """``is_default=True`` exempts the default binding from the leak check only.
+
+    The original theme's identity terms belong in ``legacy_lexicon`` so a NEW
+    theme cannot reintroduce them, but the contract's own ``default_binding``
+    IS that original theme and must pass its own contract. So the same value
+    reusing a legacy term is rejected on the runtime path (a new binding) yet
+    exempted when validated as the default binding; every other constraint is
+    unaffected either way.
+    """
+    contract = _make_contract()  # legacy_lexicon=["Maya"]
+    bindings = dict(contract.default_binding)
+    bindings["HERO"] = "Maya"
+
+    runtime_violations = validate_slot_bindings(contract, bindings)
+    assert any(
+        v.rule == "legacy_lexicon" and v.slot_id == "HERO" for v in runtime_violations
+    )
+
+    default_violations = validate_slot_bindings(contract, bindings, is_default=True)
+    assert not any(v.rule == "legacy_lexicon" for v in default_violations)
+
+
 def test_distinct_from_handles_both_sibling_values_blank():
     """Both siblings blank exercises the empty-token-set Jaccard branch."""
     contract = _make_contract()

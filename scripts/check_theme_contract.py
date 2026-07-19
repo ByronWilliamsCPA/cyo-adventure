@@ -271,7 +271,13 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     # --- Check 4: the original theme passes its own contract ---------------
-    default_violations = validate_slot_bindings(contract, contract.default_binding)
+    # is_default=True: the default_binding IS the original theme, so its
+    # identity terms are exactly what legacy_lexicon lists to block in NEW
+    # bindings; exempt only that leak check here (every other constraint,
+    # including the band-mandatory denylist floor, still applies).
+    default_violations = validate_slot_bindings(
+        contract, contract.default_binding, is_default=True
+    )
     ok = not default_violations
     all_passed &= ok
     _report(

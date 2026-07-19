@@ -492,8 +492,13 @@ def _distinct_from_violations(
     return violations
 
 
-def _semantic_slot_violations(
-    contract: ThemeContract, slot: SlotSpec, value: str, bindings: Mapping[str, str]
+def _semantic_slot_violations(  # noqa: PLR0913
+    contract: ThemeContract,
+    slot: SlotSpec,
+    value: str,
+    bindings: Mapping[str, str],
+    *,
+    is_default: bool,
 ) -> list[SlotViolation]:
     """Return the normalized-matching violations for one bound slot's value.
 
@@ -508,6 +513,12 @@ def _semantic_slot_violations(
         value: The raw candidate value bound to this slot.
         bindings: The full proposed slot-value map, for `distinct_from`
             sibling lookups.
+        is_default: When True, the `legacy_lexicon` leak check is skipped for
+            this slot. The leak check exists to stop a NEW theme's binding
+            reintroducing the ORIGINAL theme's identity terms; the contract's
+            own `default_binding` IS that original theme, so those terms
+            (the hero name, the setting) belong in `legacy_lexicon` yet must
+            not fail the default binding against its own contract.
 
     Returns:
         Zero or more semantic violations.
@@ -528,7 +539,9 @@ def _semantic_slot_violations(
     violations.extend(_forbid_violations(contract, slot, normalized_value))
     violations.extend(_distinct_from_violations(slot, normalized_value, bindings))
 
-    if any(_contains_stem(normalized_value, term) for term in contract.legacy_lexicon):
+    if not is_default and any(
+        _contains_stem(normalized_value, term) for term in contract.legacy_lexicon
+    ):
         violations.append(
             SlotViolation(
                 slot.id,
@@ -550,8 +563,13 @@ def _semantic_slot_violations(
     return violations
 
 
-def _slot_violations(
-    contract: ThemeContract, slot_id: str, value: str, bindings: Mapping[str, str]
+def _slot_violations(  # noqa: PLR0913
+    contract: ThemeContract,
+    slot_id: str,
+    value: str,
+    bindings: Mapping[str, str],
+    *,
+    is_default: bool,
 ) -> list[SlotViolation]:
     """Return every rule violation for one bound slot's value.
 
@@ -561,18 +579,23 @@ def _slot_violations(
         value: The raw candidate value bound to this slot.
         bindings: The full proposed slot-value map (for `distinct_from`
             sibling lookups).
+        is_default: Forwarded to :func:`_semantic_slot_violations`; when True
+            the `legacy_lexicon` leak check is skipped for this slot.
 
     Returns:
         Zero or more violations for this slot.
     """
     slot = next(s for s in contract.slots if s.id == slot_id)
     return _structural_slot_violations(slot_id, value) + _semantic_slot_violations(
-        contract, slot, value, bindings
+        contract, slot, value, bindings, is_default=is_default
     )
 
 
 def validate_slot_bindings(
-    contract: ThemeContract, bindings: Mapping[str, str]
+    contract: ThemeContract,
+    bindings: Mapping[str, str],
+    *,
+    is_default: bool = False,
 ) -> list[SlotViolation]:
     """Deterministically check a proposed theme binding against its contract.
 
@@ -590,6 +613,15 @@ def validate_slot_bindings(
         contract: The theme contract to validate against.
         bindings: The proposed ``{slot_id: value}`` map, as produced (and
             possibly re-produced, on retry) by the LLM binding step.
+        is_default: Set True ONLY when validating the contract's own
+            ``default_binding`` (e.g. the migration acceptance check). It
+            skips the ``legacy_lexicon`` leak check, which exists to stop a
+            NEW theme reintroducing the ORIGINAL theme's identity terms: the
+            default binding IS that original theme, so its hero name and
+            setting legitimately appear in ``legacy_lexicon`` yet must not
+            fail the binding against its own contract. Every runtime bind (a
+            new theme) leaves this False, so a new binding is always fully
+            leak-checked.
 
     Returns:
         A list of every :class:`SlotViolation` found, in a fixed,
@@ -602,6 +634,8 @@ def validate_slot_bindings(
         if slot.id not in bindings:
             continue  # already reported by _completeness_violations
         violations.extend(
-            _slot_violations(contract, slot.id, bindings[slot.id], bindings)
+            _slot_violations(
+                contract, slot.id, bindings[slot.id], bindings, is_default=is_default
+            )
         )
     return violations
