@@ -1,0 +1,115 @@
+{
+  "beats": {
+    "n_start": "{HERO} spreads {ENTRANCE} in {THRESHOLD} for a {GOAL}; {CONTAINER} is empty and no {GUESTS} are here yet; she claps her paws and decides what to fetch first",
+    "n_honey1": "{HERO} pads to {ROUTE_A_CHAR} to ask for {ROUTE_A_OFFER}; {ROUTE_A_LURE} hum kindly in the sun; she can ask nicely and wait or poke {ROUTE_A_CHAR} to hurry them along",
+    "n_honey2": "{ROUTE_A_LURE} fill {ROUTE_A_OFFER} and {HERO} hugs it close; the {GOAL} is growing; she can carry it back to {ENTRANCE} or call {GUESTS} and start the {GOAL} now",
+    "e_honey_oops": "{HERO} pokes {ROUTE_A_CHAR} and out floats {ROUTE_A_MISHAP} that chase her in a silly circle round {THRESHOLD}; nobody is stung and she giggles, trotting back to {ENTRANCE} to try again the gentle way",
+    "n_berry1": "{HERO} skips to {ROUTE_B_CHAR} for {ROUTE_B_OFFER}; plump ripe ones sit low and shiny; she can pick the easy low berries or stretch up for the wobbly high ones",
+    "n_berry2": "{HERO}'s basket fills with sweet {ROUTE_B_LURE} that stain her paws pink; the {GOAL} keeps growing; she can carry them back to {ENTRANCE} or call {GUESTS} and start the {GOAL} now",
+    "e_berry_oops": "{HERO} stretches for the high {ROUTE_B_LURE}, the branch springs back, and {ROUTE_B_OFFER} tips into the soft grass with a plop; {ROUTE_B_MISHAP} roll everywhere and she laughs, heading back to {ENTRANCE} to start over",
+    "n_ball1": "{HERO} remembers {ROUTE_C_LURE} is somewhere in {ROUTE_C_CHAR}; she hunts for it happily; she can follow the little bounce marks or just dive into the grass headfirst",
+    "n_ball2": "there in {ROUTE_C_CHAR} sits {ROUTE_C_LURE}, just right for a {GOAL} game; the fun is growing; she can roll it back to {ENTRANCE} or call {GUESTS} and start the {GOAL} now",
+    "e_ball_oops": "{HERO} dives into {ROUTE_C_CHAR} and pops up with {ROUTE_C_MISHAP} on her nose instead of {ROUTE_C_LURE}; she sneezes a giggly sneeze and trots back to {ENTRANCE} to look for {ROUTE_C_LURE} again later",
+    "n_kite1": "{HERO} wants {ROUTE_D_LURE} for the breezy {THRESHOLD}; it lies folded by {ROUTE_D_CHAR}; she can carry it gently under her arm or let it flap wide open in the wind",
+    "n_kite2": "{HERO} tucks {ROUTE_D_LURE} safely under her arm, ready for flying; the {GOAL} keeps growing; she can bring it back to {ENTRANCE} or call {GUESTS} and start the {GOAL} now",
+    "e_kite_oops": "{HERO} lets {ROUTE_D_LURE} flap open and a gust tugs it into {ROUTE_D_MISHAP} that wraps the string around a fence post; she untangles the muddle, laughing, and heads back to {ENTRANCE} to try again",
+    "n_owl1": "{ROUTE_E_LURE} dozes on {ROUTE_E_CHAR} and {HERO} wants to invite him to the {GOAL}; his round eyes are shut tight; she can hoot softly to wake him gently or shake the whole branch",
+    "n_owl2": "{ROUTE_E_LURE} blinks his big eyes, yawns, and says yes to the {GOAL} with a happy hoot; {GUESTS} are growing; {HERO} can walk him back to {ENTRANCE} or call {GUESTS} and start the {GOAL} now",
+    "e_owl_oops": "{HERO} shakes the branch and {ROUTE_E_MISHAP} tumbles down and buries her in a giggly pile; {ROUTE_E_LURE} only snores a little louder; she brushes off the leaves and heads back to {ENTRANCE} to try again",
+    "n_music1": "{HERO} looks for {ROUTE_F_LURE} to play {GOAL} tunes; it sits closed on {ROUTE_F_CHAR}; she can lift the lid carefully and peek inside or give the handle a big fast wind",
+    "n_music2": "{ROUTE_F_LURE} tinkles a soft, sweet {GOAL} tune and {HERO} hums along; the {GOAL} keeps growing; she can carry it back to {ENTRANCE} or call {GUESTS} and start the {GOAL} now",
+    "e_music_oops": "{HERO} winds the handle too fast and {ROUTE_F_LURE} plays {ROUTE_F_MISHAP} that makes her paws dance all wrong; she giggles at the muddle and heads back to {ENTRANCE} to try again slowly",
+    "n_gather": "{HERO} rings {SIGNAL} and {GUESTS} come waddling from every corner of {THRESHOLD}; {ENTRANCE} is ready at last; she waves them all over to {ENTRANCE}",
+    "n_welcome": "{GUESTS} settle in a happy ring on {ENTRANCE}, wiggling with excitement; everything {HERO} fetched is piled up in the middle; she looks at the growing feast and gets ready to begin",
+    "n_arrange": "{HERO} spreads out {ROUTE_A_OFFER}, {ROUTE_B_OFFER}, and all the treats in the warm sun; {GUESTS} lick their lips and wiggle their paws; she decides how to start the {GOAL} fun",
+    "n_share": "{ROUTE_A_OFFER} and {ROUTE_B_OFFER} go round the circle and everyone munches happily in the sunshine; the {GOAL} is merry and full; {HERO} thinks of the coziest way to keep the good fun going",
+    "n_game": "{GUESTS} are ready to play in the breezy {THRESHOLD} and {HERO} claps with joy; the {GOAL} is a happy, growing party; she decides which cheerful game {GUESTS} should have",
+    "e_song": "everyone joins paws and sings {SONG_PRIZE} under the warm sun, swaying together in {THRESHOLD}; {HERO}'s {GOAL} has come together just perfectly, and her heart is as full as {ROUTE_A_OFFER}",
+    "e_music_finale": "{ROUTE_F_LURE} tinkles its sweet tune and all {GUESTS} sway and hum along on {ENTRANCE}; {HERO}'s {GOAL} is cozy and complete, and she beams at every one of her happy friends",
+    "e_nap": "full of {ROUTE_A_OFFER} and {ROUTE_B_OFFER}, {GUESTS} and {HERO} curl up in a soft heap on {ENTRANCE} for a happy afternoon nap; the {GOAL} she built piece by piece is perfect and peaceful",
+    "e_ball_game": "{ROUTE_C_LURE} rolls round and round the giggling ring of {GUESTS} in {THRESHOLD}; {HERO}'s {GOAL} is a bouncy, happy success and all {GUESTS} cheer for one more roll",
+    "e_kite_game": "{ROUTE_D_LURE} dips and soars over {THRESHOLD} while {GUESTS} cheer from {ENTRANCE}; {HERO}'s {GOAL} has come together beautifully and she flies {ROUTE_D_LURE} proudly in the warm breeze"
+  },
+  "titles": {
+    "e_honey_oops": "Oops, {ROUTE_A_MISHAP}",
+    "e_berry_oops": "Oops, {ROUTE_B_MISHAP}",
+    "e_ball_oops": "Oops, {ROUTE_C_MISHAP}",
+    "e_kite_oops": "Oops, {ROUTE_D_MISHAP}",
+    "e_owl_oops": "Oops, {ROUTE_E_MISHAP}",
+    "e_music_oops": "Oops, {ROUTE_F_MISHAP}",
+    "e_song": "{SONG_PRIZE}",
+    "e_music_finale": "{ROUTE_F_PRIZE}",
+    "e_nap": "{NAP_PRIZE}",
+    "e_ball_game": "{ROUTE_C_PRIZE}",
+    "e_kite_game": "{ROUTE_D_PRIZE}"
+  },
+  "labels": {
+    "n_start": {
+      "c_start_honey": "Go ask {ROUTE_A_LURE} for {ROUTE_A_OFFER}.",
+      "c_start_berry": "Go pick {ROUTE_B_LURE} at {ROUTE_B_CHAR}.",
+      "c_start_ball": "Go find {ROUTE_C_LURE}.",
+      "c_start_kite": "Go fetch {ROUTE_D_LURE}.",
+      "c_start_owl": "Go wake {ROUTE_E_LURE} in {ROUTE_E_CHAR}.",
+      "c_start_music": "Go find {ROUTE_F_LURE}."
+    },
+    "n_honey1": {
+      "c_honey_ask": "Ask {ROUTE_A_LURE} nicely and wait.",
+      "c_honey_poke": "Poke {ROUTE_A_CHAR} to hurry."
+    },
+    "n_honey2": {
+      "c_honey_back": "Carry {ROUTE_A_OFFER} back to {ENTRANCE}.",
+      "c_honey_start": "Ring {SIGNAL} and start the {GOAL}."
+    },
+    "n_berry1": {
+      "c_berry_low": "Pick the easy low {ROUTE_B_LURE}."
+    },
+    "n_berry2": {
+      "c_berry_back": "Carry {ROUTE_B_OFFER} back to {ENTRANCE}.",
+      "c_berry_start": "Ring {SIGNAL} and start the {GOAL}."
+    },
+    "n_ball1": {
+      "c_ball_dive": "Dive into {ROUTE_C_CHAR}."
+    },
+    "n_ball2": {
+      "c_ball_back": "Roll {ROUTE_C_LURE} back to {ENTRANCE}.",
+      "c_ball_start": "Ring {SIGNAL} and start the {GOAL}."
+    },
+    "n_kite1": {
+      "c_kite_carry": "Carry {ROUTE_D_LURE} gently under her arm.",
+      "c_kite_flap": "Let {ROUTE_D_LURE} flap open in the wind."
+    },
+    "n_kite2": {
+      "c_kite_back": "Bring {ROUTE_D_LURE} back to {ENTRANCE}.",
+      "c_kite_start": "Ring {SIGNAL} and start the {GOAL}."
+    },
+    "n_owl1": {
+      "c_owl_hoot": "Hoot softly to wake {ROUTE_E_LURE} gently."
+    },
+    "n_owl2": {
+      "c_owl_back": "Walk {ROUTE_E_LURE} back to {ENTRANCE}.",
+      "c_owl_start": "Ring {SIGNAL} and start the {GOAL}."
+    },
+    "n_music2": {
+      "c_music_back": "Carry {ROUTE_F_LURE} back to {ENTRANCE}.",
+      "c_music_start": "Ring {SIGNAL} and start the {GOAL}."
+    },
+    "n_gather": {
+      "c_gather_welcome": "Welcome {GUESTS} in."
+    },
+    "n_welcome": {
+      "c_welcome_arrange": "Lay out all the {GOAL} treats."
+    },
+    "n_arrange": {
+      "c_arrange_share": "Share {ROUTE_A_OFFER} and {ROUTE_B_OFFER}.",
+      "c_arrange_game": "Start a {GOAL} game."
+    },
+    "n_share": {
+      "c_share_song": "Sing {SONG_PRIZE}.",
+      "c_share_music": "Wind up {ROUTE_F_LURE} and sway."
+    },
+    "n_game": {
+      "c_game_ball": "Roll {ROUTE_C_LURE} around the ring.",
+      "c_game_kite": "Fly {ROUTE_D_LURE} in the breeze."
+    }
+  }
+}

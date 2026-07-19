@@ -34,81 +34,81 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=45 beats='Clover the little kitten sees a bright blue butterfly in the sunny garden; it flutters past the daisies, past the little pond, and toward the tall grass; Clover wants to follow it'>>",
+      "body": "<<FILL role=setup words=45 beats='{HERO} sees {GOAL} in {THRESHOLD}; it flutters past {ROUTE_A_ZONE}, past {ROUTE_B_ZONE}, and toward {ROUTE_C_ZONE}; {HERO} wants to follow it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_daisies",
-          "label": "Follow it to the daisy patch.",
+          "label": "Follow it to {ROUTE_A_ZONE}.",
           "target": "n_daisies"
         },
         {
           "id": "c_pond",
-          "label": "Follow it to the little pond.",
+          "label": "Follow it to {ROUTE_B_ZONE}.",
           "target": "n_pond"
         },
         {
           "id": "c_grass",
-          "label": "Follow it to the tall grass.",
+          "label": "Follow it to {ROUTE_C_ZONE}.",
           "target": "n_grass"
         }
       ]
     },
     {
       "id": "n_daisies",
-      "body": "<<FILL role=choice words=40 beats='the butterfly dances over white daisies where a soft, fuzzy bumblebee hums a happy tune; then it floats on toward the stone birdbath; Clover can watch the bee or keep following'>>",
+      "body": "<<FILL role=choice words=40 beats='{GOAL} dances over {ROUTE_A_ZONE} where a soft, fuzzy {A1_LURE} hums a happy tune; then it floats on toward {A2_LANDMARK}; {HERO} can watch the {A1_LURE} or keep following'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_watch_bee",
-          "label": "Stop and watch the bumblebee.",
+          "label": "Stop and watch the {A1_LURE}.",
           "target": "n_bee_end"
         },
         {
           "id": "c_to_birdbath",
-          "label": "Keep following the butterfly.",
+          "label": "Keep following {GOAL}.",
           "target": "n_birdbath"
         }
       ]
     },
     {
       "id": "n_bee_end",
-      "body": "<<FILL role=ending words=40 beats='Clover watches the happy bumblebee bumble from flower to flower; when Clover looks up, the blue butterfly is gone; Clover trots back to the sunny porch, warm and glad anyway'>>",
+      "body": "<<FILL role=ending words=40 beats='{HERO} watches the happy {A1_LURE} bumble from flower to flower; when {HERO} looks up, {GOAL} is gone; {HERO} trots back to {ENTRANCE}, warm and glad anyway'>>",
       "is_ending": true,
       "ending": {
         "id": "e_bee_setback",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Busy Bumblebee"
+        "title": "{A1_SETBACK}"
       }
     },
     {
       "id": "n_birdbath",
-      "body": "<<FILL role=rising words=38 beats='at the stone birdbath a little robin splashes and shakes bright drops in the sun; the blue butterfly rests on the rim, then drifts on toward the ripe red strawberries'>>",
+      "body": "<<FILL role=rising words=38 beats='at {A2_LANDMARK} a little {A2_DETAIL1} splashes and shakes bright drops in the sun; {GOAL} rests on the rim, then drifts on toward the {A2_LANDMARK2}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_to_strawberries",
-          "label": "Follow the butterfly to the strawberries.",
+          "label": "Follow {GOAL} to {A2_LANDMARK2}.",
           "target": "n_strawberries"
         }
       ]
     },
     {
       "id": "n_strawberries",
-      "body": "<<FILL role=rising words=38 beats='sweet red strawberries hide under cool green leaves; the butterfly loops around them and flutters deeper into the garden toward a soft, grassy clover nook'>>",
+      "body": "<<FILL role=rising words=38 beats='the {A2_LANDMARK2} hide under cool green leaves; {GOAL} loops around them and flutters deeper into {THRESHOLD} toward {A2_ZONE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_to_meadow",
-          "label": "Tiptoe after the butterfly.",
+          "label": "Tiptoe after {GOAL}.",
           "target": "n_meadow"
         }
       ]
     },
     {
       "id": "n_meadow",
-      "body": "<<FILL role=choice words=40 beats='in a cozy patch of clover and grass the butterfly slows down and floats gently, right in front of Clover’s little nose; nearby sits a tiny ring of flowers; Clover holds very still'>>",
+      "body": "<<FILL role=choice words=40 beats='in {A2_ZONE} {GOAL} slows down and floats gently, right in front of {HERO}'s little nose; nearby sits {A2_OFFER1}; {HERO} holds very still'>>",
       "is_ending": false,
       "choices": [
         {
@@ -118,111 +118,111 @@
         },
         {
           "id": "c_flower_ring",
-          "label": "Peek at the little flower ring.",
+          "label": "Peek at {A2_OFFER1}.",
           "target": "n_crown_end"
         }
       ]
     },
     {
       "id": "n_nose_end",
-      "body": "<<FILL role=completion words=40 beats='the gentle butterfly lands softly right on the tip of Clover’s nose; its wings open and close like two tiny blue fans; Clover giggles, still as can be, the happiest kitten in the whole garden'>>",
+      "body": "<<FILL role=completion words=40 beats='the gentle {GOAL} lands softly right on the tip of {HERO}'s {A2_PRIZE1}; its wings open and close like two tiny blue fans; {HERO} giggles, still as can be, the happiest kitten in {THRESHOLD}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_nose",
         "valence": "positive",
         "kind": "completion",
-        "title": "On Clover’s Nose"
+        "title": "On {HERO}'s {A2_PRIZE1}"
       }
     },
     {
       "id": "n_crown_end",
-      "body": "<<FILL role=completion words=40 beats='beside the clover patch Clover finds a little ring of daisies, a tiny flower crown just her size; the butterfly circles it once, and Clover wears the crown proudly, a sweet garden treasure'>>",
+      "body": "<<FILL role=completion words=40 beats='beside {A2_ZONE} {HERO} finds {A2_OFFER1}, a tiny flower crown just her size; {GOAL} circles it once, and {HERO} wears the crown proudly, a sweet garden treasure'>>",
       "is_ending": true,
       "ending": {
         "id": "e_crown",
         "valence": "positive",
         "kind": "success",
-        "title": "The Daisy Crown"
+        "title": "{A2_PRIZE2}"
       }
     },
     {
       "id": "n_pond",
-      "body": "<<FILL role=choice words=40 beats='by the little pond a green frog sits on a lily pad and blinks; the blue butterfly skims over the water toward the tall reeds; Clover can play with the frog or follow on'>>",
+      "body": "<<FILL role=choice words=40 beats='by {ROUTE_B_ZONE} a green {B1_LURE} sits on a lily pad and blinks; {GOAL} skims over the water toward {B2_LANDMARK1}; {HERO} can play with the {B1_LURE} or follow on'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_play_frog",
-          "label": "Play peekaboo with the frog.",
+          "label": "Play peekaboo with the {B1_LURE}.",
           "target": "n_frog_end"
         },
         {
           "id": "c_to_reeds",
-          "label": "Follow the butterfly to the reeds.",
+          "label": "Follow {GOAL} to {B2_LANDMARK1}.",
           "target": "n_reeds"
         }
       ]
     },
     {
       "id": "n_frog_end",
-      "body": "<<FILL role=ending words=40 beats='Clover and the frog play a giggly game of peekaboo around the lily pad, splish, splash, hop; by the time the game ends the butterfly has floated away, and Clover pads home for a cozy nap, content'>>",
+      "body": "<<FILL role=ending words=40 beats='{HERO} and the {B1_LURE} play a giggly game of peekaboo around the lily pad, splish, splash, hop; by the time the game ends {GOAL} has floated away, and {HERO} pads home for a cozy nap, content'>>",
       "is_ending": true,
       "ending": {
         "id": "e_frog_setback",
         "valence": "negative",
         "kind": "setback",
-        "title": "Peekaboo Frog"
+        "title": "{B1_SETBACK}"
       }
     },
     {
       "id": "n_reeds",
-      "body": "<<FILL role=rising words=38 beats='the butterfly weaves between the whispering green reeds; a shiny dragonfly zips by like a tiny helicopter; the butterfly leads Clover onward toward a soft, mossy log'>>",
+      "body": "<<FILL role=rising words=38 beats='{GOAL} weaves between {B2_LANDMARK1}; a shiny {B2_DETAIL1} zips by like a tiny helicopter; {GOAL} leads {HERO} onward toward a soft, {B2_LANDMARK2}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_to_hedgehog",
-          "label": "Follow past the mossy log.",
+          "label": "Follow past the {B2_LANDMARK2}.",
           "target": "n_hedgehog"
         }
       ]
     },
     {
       "id": "n_hedgehog",
-      "body": "<<FILL role=rising words=38 beats='under the mossy log a small hedgehog snoozes in a ball of soft prickles; Clover steps quietly so it can sleep, and follows the butterfly into a cool, shady corner'>>",
+      "body": "<<FILL role=rising words=38 beats='under the {B2_LANDMARK2} a small {B2_DETAIL2} snoozes in a ball of soft prickles; {HERO} steps quietly so it can sleep, and follows {GOAL} into {B2_ZONE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_to_friend",
-          "label": "Tiptoe into the shady corner.",
+          "label": "Tiptoe into {B2_ZONE}.",
           "target": "n_friend"
         }
       ]
     },
     {
       "id": "n_friend",
-      "body": "<<FILL role=rising words=38 beats='in the shady corner Clover meets Pip, a friendly little bunny nibbling sweet clover leaves; the butterfly rests on a leaf above them, and Pip smiles a shy hello'>>",
+      "body": "<<FILL role=rising words=38 beats='in {B2_ZONE} {HERO} meets {B2_OFFER1}, {B2_DETAIL3}; {GOAL} rests on a leaf above them, and {B2_OFFER1} smiles a shy hello'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_share_berries",
-          "label": "Share the sweet berries with Pip.",
+          "label": "Share the sweet berries with {B2_OFFER1}.",
           "target": "n_share_end"
         }
       ]
     },
     {
       "id": "n_share_end",
-      "body": "<<FILL role=completion words=42 beats='Clover and Pip share ripe red strawberries that grow nearby while the blue butterfly watches from a leaf; two happy new friends, sticky little paws, and a lovely, sunny garden afternoon together'>>",
+      "body": "<<FILL role=completion words=42 beats='{HERO} and {B2_OFFER1} share {B2_DETAIL4} that grow nearby while {GOAL} watches from a leaf; two happy new friends, sticky little paws, and a lovely, sunny garden afternoon together'>>",
       "is_ending": true,
       "ending": {
         "id": "e_share",
         "valence": "positive",
         "kind": "completion",
-        "title": "Berries to Share"
+        "title": "{B2_PRIZE}"
       }
     },
     {
       "id": "n_grass",
-      "body": "<<FILL role=choice words=40 beats='in the tall, tickly grass the butterfly bounces up and down like a little kite; Clover can dash after it fast, or tiptoe slow and quiet through the soft green blades'>>",
+      "body": "<<FILL role=choice words=40 beats='in {ROUTE_C_ZONE} {GOAL} bounces up and down like a little kite; {HERO} can dash after it fast, or tiptoe slow and quiet through the soft green blades'>>",
       "is_ending": false,
       "choices": [
         {
@@ -239,7 +239,7 @@
     },
     {
       "id": "n_lost_end",
-      "body": "<<FILL role=ending words=40 beats='Clover pounces and dashes, paws thumping, so fast that the surprised butterfly zips high over the fence; Clover cannot follow up there, so she trots back to the warm porch, tail high and happy'>>",
+      "body": "<<FILL role=ending words=40 beats='{HERO} pounces and dashes, paws thumping, so fast that the surprised {GOAL} zips high over {C1_LANDMARK}; {HERO} cannot follow up there, so she trots back to {ENTRANCE}, tail high and happy'>>",
       "is_ending": true,
       "ending": {
         "id": "e_lost_setback",
@@ -250,49 +250,49 @@
     },
     {
       "id": "n_sunflower",
-      "body": "<<FILL role=rising words=38 beats='stepping softly, Clover follows the butterfly under a row of tall golden sunflowers nodding in the breeze; the butterfly floats on toward a little wooden garden gate'>>",
+      "body": "<<FILL role=rising words=38 beats='stepping softly, {HERO} follows {GOAL} under {C2_LANDMARK1}; {GOAL} floats on toward {C2_LANDMARK2}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_to_gate",
-          "label": "Follow toward the garden gate.",
+          "label": "Follow toward {C2_LANDMARK2}.",
           "target": "n_gate"
         }
       ]
     },
     {
       "id": "n_gate",
-      "body": "<<FILL role=rising words=38 beats='the butterfly slips through the small wooden gate into a quiet flower corner full of purple and pink blooms; Clover squeezes gently after it, whiskers twitching'>>",
+      "body": "<<FILL role=rising words=38 beats='{GOAL} slips through {C2_LANDMARK2} into {C2_ZONE}, full of purple and pink blooms; {HERO} squeezes gently after it, whiskers twitching'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_to_arch",
-          "label": "Follow into the flower corner.",
+          "label": "Follow into {C2_ZONE}.",
           "target": "n_arch"
         }
       ]
     },
     {
       "id": "n_arch",
-      "body": "<<FILL role=rising words=38 beats='in the flower corner a green leafy arch curves overhead, dripping with sweet honeysuckle; the butterfly circles the arch and slows, as if it is waiting just for Clover'>>",
+      "body": "<<FILL role=rising words=38 beats='in {C2_ZONE} a green leafy {C2_LANDMARK3} curves overhead, dripping with sweet honeysuckle; {GOAL} circles the {C2_LANDMARK3} and slows, as if it is waiting just for {HERO}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_sit_arch",
-          "label": "Sit quietly beneath the arch.",
+          "label": "Sit quietly beneath the {C2_LANDMARK3}.",
           "target": "n_perch_end"
         }
       ]
     },
     {
       "id": "n_perch_end",
-      "body": "<<FILL role=completion words=42 beats='Clover sits very still beneath the flowery arch, and the blue butterfly settles on her soft ear like a little bow; they rest together in the sweet-smelling shade, calm and cozy and glad'>>",
+      "body": "<<FILL role=completion words=42 beats='{HERO} sits very still beneath the flowery {C2_LANDMARK3}, and {GOAL} settles on {HERO}'s soft ear like a little bow; they rest together in the sweet-smelling shade, calm and cozy and glad'>>",
       "is_ending": true,
       "ending": {
         "id": "e_perch",
         "valence": "positive",
         "kind": "success",
-        "title": "Under the Flower Arch"
+        "title": "{C2_PRIZE}"
       }
     }
   ]

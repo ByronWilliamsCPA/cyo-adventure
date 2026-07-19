@@ -35,31 +35,31 @@
   "nodes": [
     {
       "id": "n_window",
-      "body": "<<FILL role=setup words=42 beats='rain patters on the window while Milo watches; the big rain softens to a gentle drizzle; Grandma smiles and says today is Puddle Jumping Day; Milo cheers and runs to find his rain things'>>",
+      "body": "<<FILL role=setup words=42 beats='rain patters on the window while {HERO} watches; {OPENING_MOMENT}; {COMPANION} smiles and says today is {OCCASION}; {HERO} cheers and runs to find his rain things'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_get_ready",
-          "label": "Put on boots and raincoat.",
+          "label": "Put on {READY_GEAR}.",
           "target": "n_door"
         }
       ]
     },
     {
       "id": "n_door",
-      "body": "<<FILL role=setup words=40 beats='Milo tugs on his red rubber boots and his yellow raincoat, zip; Grandma opens the door to a drippy, shiny world that smells like wet leaves; the wet sidewalk sparkles as if it is waiting just for them'>>",
+      "body": "<<FILL role=setup words=40 beats='{HERO} tugs on {READY_GEAR}, zip; {COMPANION} opens {ENTRANCE} to a drippy, shiny world that smells like wet leaves; the wet sidewalk sparkles as if it is waiting just for them'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_step_out",
-          "label": "Step outside with Grandma.",
+          "label": "Step outside with {COMPANION}.",
           "target": "n_gate"
         }
       ]
     },
     {
       "id": "n_gate",
-      "body": "<<FILL role=setup words=38 beats='by the garden gate waits the very first puddle, small and round like a cookie; Milo does a warm-up hop, splish; Grandma laughs and takes his hand, and they walk down to the corner'>>",
+      "body": "<<FILL role=setup words=38 beats='{FIRST_PUDDLE} waits, round like a cookie, right at the start of {THRESHOLD}; {HERO} does a warm-up hop, splish; {COMPANION} laughs and takes his hand, and they walk down to the corner'>>",
       "is_ending": false,
       "choices": [
         {
@@ -71,76 +71,76 @@
     },
     {
       "id": "n_corner",
-      "body": "<<FILL role=choice words=44 beats='at the corner the walk splits two ways; down the quiet lane, trees drip and little puddles dot the path like polka dots; down the hill, rainwater hurries along the curb in a chattering little stream; Grandma says Milo gets to pick'>>",
+      "body": "<<FILL role=choice words=44 beats='at the corner the walk splits two ways; down {ROUTE_A_LURE}, trees drip and little puddles dot the path like polka dots; down {ROUTE_B_LURE}, rainwater hurries along the curb in a chattering little stream; {COMPANION} says {HERO} gets to pick'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lane",
-          "label": "Take the drippy tree lane.",
+          "label": "Take {ROUTE_A_LURE}.",
           "target": "n_lane"
         },
         {
           "id": "c_hill",
-          "label": "Take the hill with the stream.",
+          "label": "Take {ROUTE_B_LURE}.",
           "target": "n_hill"
         }
       ]
     },
     {
       "id": "n_lane",
-      "body": "<<FILL role=rising words=40 beats='under the dripping trees, raindrops go plip plop on Milo’s hood; he hops puddle to puddle down the polka-dot lane; then he stops, because something small and pink is wiggling on the wet path just ahead'>>",
+      "body": "<<FILL role=rising words=40 beats='under the dripping trees, raindrops go plip plop on {HERO}'s hood; he hops puddle to puddle down the polka-dot lane; then he stops, because {A_FORK_SIGN} catches his eye on the wet path just ahead'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_look_close",
-          "label": "Look closer at the wiggle.",
+          "label": "Look closer at {A_FORK_SIGN}.",
           "target": "n_wiggle"
         }
       ]
     },
     {
       "id": "n_wiggle",
-      "body": "<<FILL role=choice words=44 beats='it is a little earthworm, wiggling on the hard wet path far from any dirt; just past it shines a huge flat puddle, smooth as a mirror; Grandma asks what Milo wants to do, help the worm get home or tiptoe to the giant mirror puddle'>>",
+      "body": "<<FILL role=choice words=44 beats='it is {A1_CREATURE}, wiggling on the hard wet path far from any dirt; just past it shines {A2_LANDMARK}, smooth as a mirror; {COMPANION} asks what {HERO} wants to do, help {A1_CREATURE} get home or tiptoe to {A2_LANDMARK}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_help_worm",
-          "label": "Help the worm home.",
+          "label": "Help {A1_CREATURE} home.",
           "target": "n_worm_carry"
         },
         {
           "id": "c_mirror",
-          "label": "Tiptoe to the mirror puddle.",
+          "label": "Tiptoe to {A2_LANDMARK}.",
           "target": "n_mirror"
         }
       ]
     },
     {
       "id": "n_worm_carry",
-      "body": "<<FILL role=rising words=38 beats='Milo finds a big wet leaf and Grandma helps him scoot the worm gently onto it, like a tiny stretcher; slow and careful, step by step, they carry the worm over to the soft brown dirt of the flower bed'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} finds {A1_CARRY_ITEM} and {COMPANION} helps him scoot {A1_CREATURE} gently onto it, like a tiny stretcher; slow and careful, step by step, they carry {A1_CREATURE} over to {A1_DESTINATION}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_set_down",
-          "label": "Set the worm down gently.",
+          "label": "Set {A1_CREATURE} down gently.",
           "target": "n_worm_end"
         }
       ]
     },
     {
       "id": "n_worm_end",
-      "body": "<<FILL role=completion words=45 beats='the worm slides into the soft rainy dirt and does a happy wiggle, home at last; Grandma gives Milo a high five with a squelchy glove; they splash all the way home for warm cocoa, and Milo tells the worm story at dinner'>>",
+      "body": "<<FILL role=completion words=45 beats='{A1_CREATURE} slides into {A1_DESTINATION} and does a happy wiggle, home at last; {COMPANION} gives {HERO} a high five with a squelchy glove; they splash all the way home for warm cocoa, and {HERO} tells the story of {A1_CREATURE} at dinner'>>",
       "is_ending": true,
       "ending": {
         "id": "e_worm_home",
         "valence": "positive",
         "kind": "completion",
-        "title": "A Home for the Worm"
+        "title": "A Home for {A1_PRIZE}"
       }
     },
     {
       "id": "n_mirror",
-      "body": "<<FILL role=rising words=38 beats='the mirror puddle is the biggest puddle Milo has ever seen, flat and shiny, holding a whole upside-down sky with clouds and their two smiling faces; Milo backs up three big steps and bends his knees'>>",
+      "body": "<<FILL role=rising words=38 beats='{A2_LANDMARK} is the biggest puddle {HERO} has ever seen, flat and shiny, holding a whole upside-down sky with {A2_SKY_DETAIL}; {HERO} backs up three big steps and bends his knees'>>",
       "is_ending": false,
       "choices": [
         {
@@ -152,30 +152,30 @@
     },
     {
       "id": "n_mirror_climax",
-      "body": "<<FILL role=rising words=36 beats='Grandma counts one, two, three; Milo runs, boots thumping, raincoat flapping, and jumps as high as he can over the shining sky puddle; for one whole second he is flying'>>",
+      "body": "<<FILL role=rising words=36 beats='{COMPANION} counts one, two, three; {HERO} runs, boots thumping, raincoat flapping, and jumps as high as he can over {A2_LANDMARK}; for one whole second he is flying'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_splash",
-          "label": "Come down with a great big splash.",
+          "label": "Come down with a great big {A2_PRIZE}.",
           "target": "n_splash_end"
         }
       ]
     },
     {
       "id": "n_splash_end",
-      "body": "<<FILL role=completion words=45 beats='SPLASH; silver drops fly up like fireworks and patter down on their hoods; the mirror puddle wobbles into giggly rings; Milo is soaked and Grandma is soaked and nobody minds one bit, because that was the biggest splash of the whole day'>>",
+      "body": "<<FILL role=completion words=45 beats='SPLASH; silver drops fly up like fireworks and patter down on their hoods; {A2_LANDMARK} wobbles into giggly rings; {HERO} is soaked and {COMPANION} is soaked and nobody minds one bit, because that was the biggest {A2_PRIZE} of the whole day'>>",
       "is_ending": true,
       "ending": {
         "id": "e_biggest_splash",
         "valence": "positive",
         "kind": "success",
-        "title": "The Biggest Splash"
+        "title": "The Biggest {A2_PRIZE}"
       }
     },
     {
       "id": "n_hill",
-      "body": "<<FILL role=rising words=40 beats='rainwater hurries along the curb in a busy little stream, burbling downhill; a leaf sails past like a tiny boat, spins, and zooms away; far down at the bottom of the hill, the clouds are opening and one warm sunbeam pokes through'>>",
+      "body": "<<FILL role=rising words=40 beats='rainwater hurries along the curb in a busy little stream, burbling downhill; {B1_BOAT} sails past, spins, and zooms away; far down at the bottom of the hill, the clouds are opening and {B2_SIGN} pokes through'>>",
       "is_ending": false,
       "choices": [
         {
@@ -187,24 +187,24 @@
     },
     {
       "id": "n_stream_fork",
-      "body": "<<FILL role=choice words=44 beats='Milo trots beside the chattering stream; Grandma spots a big shiny leaf that would make a splendid boat, and far below the sunbeam grows brighter and warmer; Milo can race a leaf boat down the stream, or follow the sunbeam all the way down the hill'>>",
+      "body": "<<FILL role=choice words=44 beats='{HERO} trots beside the chattering stream; {COMPANION} spots {B1_BOAT} in the making, and far below {B2_SIGN} grows brighter and warmer; {HERO} can race {B1_BOAT} down the stream, or follow {B2_SIGN} all the way down the hill'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_race",
-          "label": "Race a leaf boat.",
+          "label": "Race {B1_BOAT}.",
           "target": "n_race"
         },
         {
           "id": "c_sun",
-          "label": "Follow the sunbeam down.",
+          "label": "Follow {B2_SIGN} down.",
           "target": "n_downhill"
         }
       ]
     },
     {
       "id": "n_race",
-      "body": "<<FILL role=rising words=38 beats='Milo sets the leaf boat on the stream and it zips off, bobbing and twirling through tiny rapids, past a twig and around a pebble; Milo runs alongside in his red boots, cheering his boat on'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} sets {B1_BOAT} on the stream and it zips off, bobbing and twirling through tiny rapids, past a twig and around a pebble; {HERO} runs alongside, cheering his boat on'>>",
       "is_ending": false,
       "choices": [
         {
@@ -216,30 +216,30 @@
     },
     {
       "id": "n_race_finish",
-      "body": "<<FILL role=rising words=36 beats='near the bottom of the hill the water swirls toward a drain grate, the finish line; the leaf boat wobbles, tips, then rights itself and shoots ahead; Milo reaches out his hand just in time'>>",
+      "body": "<<FILL role=rising words=36 beats='near the bottom of the hill the water swirls toward {B1_FINISH_LANDMARK}, the finish line; {B1_BOAT} wobbles, tips, then rights itself and shoots ahead; {HERO} reaches out his hand just in time'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_catch",
-          "label": "Catch the leaf boat.",
+          "label": "Catch {B1_BOAT}.",
           "target": "n_race_end"
         }
       ]
     },
     {
       "id": "n_race_end",
-      "body": "<<FILL role=completion words=45 beats='got it; Milo scoops up the champion leaf boat right at the finish line, drippy and proud; Grandma cheers hooray; Milo tucks the winning leaf into his pocket like a shiny medal, and they stomp-splash all the way home to tell everyone'>>",
+      "body": "<<FILL role=completion words=45 beats='got it; {HERO} scoops up the champion {B1_PRIZE} right at the finish line, drippy and proud; {COMPANION} cheers hooray; {HERO} tucks the winning leaf into his pocket like a shiny medal, and they stomp-splash all the way home to tell everyone'>>",
       "is_ending": true,
       "ending": {
         "id": "e_leaf_boat",
         "valence": "positive",
         "kind": "success",
-        "title": "Champion Leaf Boat"
+        "title": "Champion {B1_PRIZE}"
       }
     },
     {
       "id": "n_downhill",
-      "body": "<<FILL role=rising words=38 beats='they follow the sunbeam down the hill as the drizzle turns to sprinkles and then to nothing at all; every puddle turns gold in the new light, like little mirrors full of treasure, and the wet street begins to sparkle'>>",
+      "body": "<<FILL role=rising words=38 beats='they follow {B2_SIGN} down the hill as the drizzle turns to sprinkles and then to nothing at all; every puddle turns gold in the new light, like little mirrors full of treasure, and the wet street begins to sparkle'>>",
       "is_ending": false,
       "choices": [
         {
@@ -251,7 +251,7 @@
     },
     {
       "id": "n_sky",
-      "body": "<<FILL role=rising words=34 beats='Grandma stops at the bottom of the hill and points up over the rooftops; Milo tips his head way back, holds Grandma’s hand tight, and looks up, up, up'>>",
+      "body": "<<FILL role=rising words=34 beats='{COMPANION} stops at the bottom of the hill and points up over the rooftops; {HERO} tips his head way back, holds {COMPANION}'s hand tight, and looks up, up, up'>>",
       "is_ending": false,
       "choices": [
         {
@@ -263,13 +263,13 @@
     },
     {
       "id": "n_rainbow_end",
-      "body": "<<FILL role=completion words=45 beats='a whole rainbow arches over the town, red and orange and yellow and green and blue and purple, glowing in the washed-clean sky; Milo and Grandma name every color together and walk home right under it, the best surprise of Puddle Jumping Day'>>",
+      "body": "<<FILL role=completion words=45 beats='a whole {B2_PRIZE} arches over the town, its bands of color glowing in the washed-clean sky; {HERO} and {COMPANION} name every color together and walk home right under it, the best surprise of {OCCASION}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_rainbow",
         "valence": "positive",
         "kind": "discovery",
-        "title": "The Rainbow Surprise"
+        "title": "The {B2_PRIZE} Surprise"
       }
     }
   ]

@@ -1,0 +1,75 @@
+{
+  "beats": {
+    "n_start": "{HERO} sees {GOAL} in {THRESHOLD}; it flutters past {ROUTE_A_ZONE}, past {ROUTE_B_ZONE}, and toward {ROUTE_C_ZONE}; {HERO} wants to follow it",
+    "n_daisies": "{GOAL} dances over {ROUTE_A_ZONE} where a soft, fuzzy {A1_LURE} hums a happy tune; then it floats on toward {A2_LANDMARK}; {HERO} can watch the {A1_LURE} or keep following",
+    "n_bee_end": "{HERO} watches the happy {A1_LURE} bumble from flower to flower; when {HERO} looks up, {GOAL} is gone; {HERO} trots back to {ENTRANCE}, warm and glad anyway",
+    "n_birdbath": "at {A2_LANDMARK} a little {A2_DETAIL1} splashes and shakes bright drops in the sun; {GOAL} rests on the rim, then drifts on toward the {A2_LANDMARK2}",
+    "n_strawberries": "the {A2_LANDMARK2} hide under cool green leaves; {GOAL} loops around them and flutters deeper into {THRESHOLD} toward {A2_ZONE}",
+    "n_meadow": "in {A2_ZONE} {GOAL} slows down and floats gently, right in front of {HERO}'s little nose; nearby sits {A2_OFFER1}; {HERO} holds very still",
+    "n_nose_end": "the gentle {GOAL} lands softly right on the tip of {HERO}'s {A2_PRIZE1}; its wings open and close like two tiny blue fans; {HERO} giggles, still as can be, the happiest kitten in {THRESHOLD}",
+    "n_crown_end": "beside {A2_ZONE} {HERO} finds {A2_OFFER1}, a tiny flower crown just her size; {GOAL} circles it once, and {HERO} wears the crown proudly, a sweet garden treasure",
+    "n_pond": "by {ROUTE_B_ZONE} a green {B1_LURE} sits on a lily pad and blinks; {GOAL} skims over the water toward {B2_LANDMARK1}; {HERO} can play with the {B1_LURE} or follow on",
+    "n_frog_end": "{HERO} and the {B1_LURE} play a giggly game of peekaboo around the lily pad, splish, splash, hop; by the time the game ends {GOAL} has floated away, and {HERO} pads home for a cozy nap, content",
+    "n_reeds": "{GOAL} weaves between {B2_LANDMARK1}; a shiny {B2_DETAIL1} zips by like a tiny helicopter; {GOAL} leads {HERO} onward toward a soft, {B2_LANDMARK2}",
+    "n_hedgehog": "under the {B2_LANDMARK2} a small {B2_DETAIL2} snoozes in a ball of soft prickles; {HERO} steps quietly so it can sleep, and follows {GOAL} into {B2_ZONE}",
+    "n_friend": "in {B2_ZONE} {HERO} meets {B2_OFFER1}, {B2_DETAIL3}; {GOAL} rests on a leaf above them, and {B2_OFFER1} smiles a shy hello",
+    "n_share_end": "{HERO} and {B2_OFFER1} share {B2_DETAIL4} that grow nearby while {GOAL} watches from a leaf; two happy new friends, sticky little paws, and a lovely, sunny garden afternoon together",
+    "n_grass": "in {ROUTE_C_ZONE} {GOAL} bounces up and down like a little kite; {HERO} can dash after it fast, or tiptoe slow and quiet through the soft green blades",
+    "n_lost_end": "{HERO} pounces and dashes, paws thumping, so fast that the surprised {GOAL} zips high over {C1_LANDMARK}; {HERO} cannot follow up there, so she trots back to {ENTRANCE}, tail high and happy",
+    "n_sunflower": "stepping softly, {HERO} follows {GOAL} under {C2_LANDMARK1}; {GOAL} floats on toward {C2_LANDMARK2}",
+    "n_gate": "{GOAL} slips through {C2_LANDMARK2} into {C2_ZONE}, full of purple and pink blooms; {HERO} squeezes gently after it, whiskers twitching",
+    "n_arch": "in {C2_ZONE} a green leafy {C2_LANDMARK3} curves overhead, dripping with sweet honeysuckle; {GOAL} circles the {C2_LANDMARK3} and slows, as if it is waiting just for {HERO}",
+    "n_perch_end": "{HERO} sits very still beneath the flowery {C2_LANDMARK3}, and {GOAL} settles on {HERO}'s soft ear like a little bow; they rest together in the sweet-smelling shade, calm and cozy and glad"
+  },
+  "titles": {
+    "n_bee_end": "{A1_SETBACK}",
+    "n_nose_end": "On {HERO}'s {A2_PRIZE1}",
+    "n_crown_end": "{A2_PRIZE2}",
+    "n_frog_end": "{B1_SETBACK}",
+    "n_share_end": "{B2_PRIZE}",
+    "n_lost_end": "Too Fast!",
+    "n_perch_end": "{C2_PRIZE}"
+  },
+  "labels": {
+    "n_start": {
+      "c_daisies": "Follow it to {ROUTE_A_ZONE}.",
+      "c_pond": "Follow it to {ROUTE_B_ZONE}.",
+      "c_grass": "Follow it to {ROUTE_C_ZONE}."
+    },
+    "n_daisies": {
+      "c_watch_bee": "Stop and watch the {A1_LURE}.",
+      "c_to_birdbath": "Keep following {GOAL}."
+    },
+    "n_birdbath": {
+      "c_to_strawberries": "Follow {GOAL} to {A2_LANDMARK2}."
+    },
+    "n_strawberries": {
+      "c_to_meadow": "Tiptoe after {GOAL}."
+    },
+    "n_meadow": {
+      "c_flower_ring": "Peek at {A2_OFFER1}."
+    },
+    "n_pond": {
+      "c_play_frog": "Play peekaboo with the {B1_LURE}.",
+      "c_to_reeds": "Follow {GOAL} to {B2_LANDMARK1}."
+    },
+    "n_reeds": {
+      "c_to_hedgehog": "Follow past the {B2_LANDMARK2}."
+    },
+    "n_hedgehog": {
+      "c_to_friend": "Tiptoe into {B2_ZONE}."
+    },
+    "n_friend": {
+      "c_share_berries": "Share the sweet berries with {B2_OFFER1}."
+    },
+    "n_sunflower": {
+      "c_to_gate": "Follow toward {C2_LANDMARK2}."
+    },
+    "n_gate": {
+      "c_to_arch": "Follow into {C2_ZONE}."
+    },
+    "n_arch": {
+      "c_sit_arch": "Sit quietly beneath the {C2_LANDMARK3}."
+    }
+  }
+}

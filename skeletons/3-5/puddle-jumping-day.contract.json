@@ -1,0 +1,293 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "puddle-jumping-day",
+  "age_band": "3-5",
+  "legacy_lexicon": [
+    "Milo",
+    "Puddle Jumping Day",
+    "earthworm",
+    "leaf boat",
+    "mirror puddle",
+    "rainbow"
+  ],
+  "default_binding": {
+    "HERO": "Milo",
+    "COMPANION": "Grandma",
+    "OCCASION": "Puddle Jumping Day",
+    "OPENING_MOMENT": "the big rain softening to a gentle drizzle",
+    "ENTRANCE": "the front door",
+    "THRESHOLD": "their rainy neighborhood puddle walk",
+    "READY_GEAR": "red rubber boots and a yellow raincoat",
+    "FIRST_PUDDLE": "the first puddle by the garden gate",
+    "ROUTE_A_LURE": "the quiet, dripping tree lane",
+    "ROUTE_B_LURE": "the hill with its chattering stream",
+    "A_FORK_SIGN": "a tiny wiggle",
+    "A1_CREATURE": "the little earthworm",
+    "A1_CARRY_ITEM": "a big wet leaf",
+    "A1_DESTINATION": "the soft brown dirt of the flower bed",
+    "A1_PRIZE": "the Worm",
+    "A2_LANDMARK": "the huge, mirror-flat puddle",
+    "A2_SKY_DETAIL": "clouds and their two smiling faces",
+    "A2_PRIZE": "Splash",
+    "B1_BOAT": "a leaf boat",
+    "B1_FINISH_LANDMARK": "a drain grate",
+    "B1_PRIZE": "Leaf Boat",
+    "B2_SIGN": "the warm sunbeam",
+    "B2_PRIZE": "Rainbow"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A single kid-relatable explorer (name or role); curious and gentle, never reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["COMPANION"]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The trusted adult who accompanies the hero throughout.",
+      "guidance": "A warm, unhurried grown-up (grandparent, parent, aunt/uncle); always encouraging, never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "OCCASION",
+      "scope": "global",
+      "meaning": "The named special day or ritual that gives the outing its reason.",
+      "guidance": "A short, joyful, kid-facing occasion name (e.g. a weather- or season-linked play day).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The moment/condition that makes the outing possible.",
+      "guidance": "A gentle, safe change in the weather or setting that signals it is time to go out and play; must read as ordinary and repeatable, not a one-off emergency.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The doorway the hero and companion step out from.",
+      "guidance": "The home's own door/gate; always safe and reachable, a simple threshold, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the walk happens inside.",
+      "guidance": "A familiar, safe neighborhood route; wonder over dread; no hazards, no traffic peril, no getting lost.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "READY_GEAR",
+      "scope": "global",
+      "meaning": "The weather gear the hero puts on before heading out.",
+      "guidance": "Simple, kid-sized outdoor gear appropriate to the occasion; putting it on is part of the fun ritual.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FIRST_PUDDLE",
+      "scope": "global",
+      "meaning": "The very first small discovery right by the entrance, before the route forks.",
+      "guidance": "A small, safe, delightful first taste of the day's play; sets the tone for what is ahead.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LURE",
+      "scope": "route",
+      "meaning": "The inviting description of the first route offered at the fork.",
+      "guidance": "A gentle, distinct pull (a quiet, tree-lined, dripping feel); distinguishable from route B.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["ROUTE_B_LURE"]
+      }
+    },
+    {
+      "id": "ROUTE_B_LURE",
+      "scope": "route",
+      "meaning": "The inviting description of the second route offered at the fork.",
+      "guidance": "A gentle, distinct pull (an open, streaming, downhill feel); distinguishable from route A.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["ROUTE_A_LURE"]
+      }
+    },
+    {
+      "id": "A_FORK_SIGN",
+      "scope": "track",
+      "meaning": "The small sensory cue on route A that leads to its internal two-way choice.",
+      "guidance": "A brief, curious, benign notice (a small movement, sound, or glint); safe to approach.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_CREATURE",
+      "scope": "track",
+      "meaning": "The small creature found needing gentle help home.",
+      "guidance": "A tiny, harmless, real backyard/garden creature; never dangerous, never harmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_CARRY_ITEM",
+      "scope": "track",
+      "meaning": "The simple object used to carry the creature gently.",
+      "guidance": "A soft, everyday found object usable as a tiny stretcher; harms nothing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_DESTINATION",
+      "scope": "track",
+      "meaning": "The safe home the creature is carried to.",
+      "guidance": "A soft, natural spot suited to the creature; a clear, satisfying homecoming.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the creature safely returned home (success). Names the ending 'A Home for ___'.",
+      "guidance": "A short title-fragment naming the creature, consistent with A1_CREATURE; warm, positive.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A2_PRIZE", "B1_PRIZE", "B2_PRIZE"]
+      }
+    },
+    {
+      "id": "A2_LANDMARK",
+      "scope": "track",
+      "meaning": "The very large, mirror-smooth puddle at the heart of route A's second track.",
+      "guidance": "Wonder-inducing but shallow and safe; a puddle for jumping, never deep water.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_SKY_DETAIL",
+      "scope": "track",
+      "meaning": "What the reflection in the big puddle shows.",
+      "guidance": "A cheerful reflected detail (sky, clouds, faces); purely visual wonder, no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the biggest jump of the day (success). Names the ending 'The Biggest ___'.",
+      "guidance": "A short title-fragment naming the joyful splash/jump moment; positive, playful.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A1_PRIZE", "B1_PRIZE", "B2_PRIZE"]
+      }
+    },
+    {
+      "id": "B1_BOAT",
+      "scope": "track",
+      "meaning": "The small floating plaything raced down the stream.",
+      "guidance": "A simple, found, floatable toy (a leaf, a twig-craft); harmless, disposable, no choking risk implied.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_FINISH_LANDMARK",
+      "scope": "track",
+      "meaning": "The landmark marking the race's finish line.",
+      "guidance": "A safe, ordinary street feature the water swirls toward; no fall or suction hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the winning race (success). Names the ending 'Champion ___'.",
+      "guidance": "A short title-fragment naming the raced toy, consistent with B1_BOAT; celebratory.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A1_PRIZE", "A2_PRIZE", "B2_PRIZE"]
+      }
+    },
+    {
+      "id": "B2_SIGN",
+      "scope": "track",
+      "meaning": "The sensory cue drawing the hero down route B's second track.",
+      "guidance": "A warm, gentle, benign light or weather cue; inviting, never blinding or startling.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the sky's surprise discovery (success). Names the ending 'The ___ Surprise'.",
+      "guidance": "A short title-fragment naming a benign sky phenomenon revealed at the end; wonder, not fear.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A1_PRIZE", "A2_PRIZE", "B1_PRIZE"]
+      }
+    }
+  ]
+}
