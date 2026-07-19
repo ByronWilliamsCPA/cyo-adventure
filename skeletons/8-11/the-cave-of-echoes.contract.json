@@ -1,0 +1,1194 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-cave-of-echoes",
+  "age_band": "8-11",
+  "legacy_lexicon": [
+    "Maya",
+    "Biscuit",
+    "lighthouse",
+    "rockpool",
+    "rockpools",
+    "starfish",
+    "seawater",
+    "sea cave",
+    "sea caves",
+    "tidepool",
+    "tidepools",
+    "tide",
+    "cove"
+  ],
+  "default_binding": {
+    "HERO": "Maya",
+    "COMPANION": "her dog Biscuit",
+    "THRESHOLD": "the sea caves under the old lighthouse",
+    "ENTRANCE": "the cave mouth",
+    "OPENING_MOMENT": "low tide",
+    "DEADLINE": "the tide turns",
+    "DEADLINE_SIGN": "seawater rising around their feet",
+    "ROUTE_A_LURE": "a humming echo",
+    "ROUTE_A_CHAR": "a low, narrow tunnel",
+    "ROUTE_B_LURE": "a dripping echo",
+    "ROUTE_B_CHAR": "a wet, dripping passage",
+    "ROUTE_C_LURE": "a whispering echo",
+    "ROUTE_C_CHAR": "the darkest of the three ways",
+    "A1_SIGN": "a glittering wall",
+    "A1_LANDMARK": "tiny flecks of quartz",
+    "A1_ZONE_HINT": "a crack glowing with soft blue light",
+    "A1_GATE": "a narrow, water-slicked crack",
+    "A1_ZONE": "a shimmering crystal grotto",
+    "A1_OFFER1": "a loose glowing crystal",
+    "A1_OFFER2": "a humming archway leading deeper",
+    "A1_PRIZE1": "The Glowing Crystal",
+    "A1_PRIZE2_PATH": "smooth ribbed walls",
+    "A1_PRIZE2_ZONE": "a great round chamber",
+    "A1_PRIZE2": "The Chamber That Sings",
+    "A2_SIGN": "a warm murmur",
+    "A2_LANDMARK": "something ringing like a struck bell",
+    "A2_ZONE_HINT": "something metal catching the glow",
+    "A2_GATE": "an old rope ladder",
+    "A2_FIND": "a huge old ship's bell, green with age",
+    "A2_DETAIL1": "the name of a ship lost long ago",
+    "A2_DETAIL2": "a rusted lantern and a coil of rope",
+    "A2_PRIZE": "The Bell of the Lost Ship",
+    "B1_SIGN": "a hollow lapping sound",
+    "B1_LANDMARK1": "smooth wet pebbles",
+    "B1_LANDMARK2": "a rocky shelf above black, still water",
+    "B1_GATE": "a weed-slick, narrowing shelf",
+    "B1_ZONE": "a vast underground lake",
+    "B1_OFFER1": "an old wooden rowboat",
+    "B1_OFFER2": "shallows glowing with tiny pale shells",
+    "B1_PRIZE1_PREP": "tips out the rainwater",
+    "B1_PRIZE1": "Across the Hidden Lake",
+    "B1_PRIZE2_PATH": "a trail of glowing shells",
+    "B1_PRIZE2": "The Glowing Islet",
+    "B2_SIGN": "a sharp briny smell",
+    "B2_LANDMARK1": "a paler light ahead",
+    "B2_LANDMARK2": "a shallow channel of clear seawater",
+    "B2_GATE": "a curtain of hanging weed",
+    "B2_ZONE": "a bright hidden tide-pool",
+    "B2_OFFER1": "the orange starfish",
+    "B2_OFFER2": "a crab-track leading to a deeper, darker basin",
+    "B2_PRIZE1_ACT": "sketches it carefully",
+    "B2_PRIZE1": "The Rare Starfish",
+    "B2_PRIZE2_FIND": "a perfect spiral shell, pearled pink inside",
+    "B2_PRIZE2": "The Great Spiral Shell",
+    "C1_SIGN": "a papery squeaking and flutter",
+    "C1_LANDMARK": "hundreds of roosting bats",
+    "C1_ZONE_HINT": "a faint circle of grey light",
+    "C1_GATE": "crossing beneath the sleeping bats",
+    "C1_CLIMB1": "a jumble of fallen rock",
+    "C1_CLIMB2": "an old carved arrow and initials",
+    "C1_CLIMB3": "a mossy funnel",
+    "C1_PRIZE": "The Skylight in the Meadow",
+    "C2_SIGN": "the creak of old wood",
+    "C2_LANDMARK1": "a leaning door of grey planks",
+    "C2_LANDMARK2": "a dry hollow walled off by hand",
+    "C2_GATE": "the tide-wet floor of the cache",
+    "C2_ZONE": "a forgotten smuggler's cache",
+    "C2_INNER": "dust-furred, mostly rotted crates",
+    "C2_OFFER1": "an old brass compass",
+    "C2_OFFER2": "a heavy box of blackened old coins",
+    "C2_PRIZE1_ACT": "wipes away the crust; the needle swings true",
+    "C2_PRIZE1": "The Smuggler's Compass",
+    "C2_PRIZE2": "The Smuggler's Coins"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A single kid-relatable explorer (name or role); capable but not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COMPANION"
+        ]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The hero's companion who travels with them throughout.",
+      "guidance": "Loyal, non-speaking or lightly-expressive sidekick; never a source of peril; reacts to mood (perks up, presses close).",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the story happens inside.",
+      "guidance": "One entrance, three internal routes, self-contained; wonder over dread; no lethal hazards, no open drops to death, no toxic/unbreathable air.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single entry/exit point the hero returns to on a setback.",
+      "guidance": "The mouth/airlock/trailhead of the threshold; always reachable and safe to reach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The moment/condition that makes entry possible.",
+      "guidance": "A recurring, non-lethal window; must be repeatable so 'come back next time' reads true.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The non-lethal time pressure that closes the safe window.",
+      "guidance": "A survivable deadline: the way out gets harder, not fatal; being caught by it means a damp or dusty retreat, never harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The sensory sign the deadline is arriving, used at gates and retreats.",
+      "guidance": "A visible, gradual cue; gives fair warning and escalates slowly enough to retreat safely.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LURE",
+      "scope": "route",
+      "meaning": "The sensory signal drawing the hero down route A.",
+      "guidance": "A distinct, benign pull (a hum, a light, a smell); distinguishable from B and C.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_CHAR",
+      "scope": "route",
+      "meaning": "The physical character of route A's corridor.",
+      "guidance": "A passable way (narrow but crossable); no dead-end hazards.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_LURE",
+      "scope": "route",
+      "meaning": "The sensory signal for route B.",
+      "guidance": "Distinct from A and C.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_C_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "The character of route B's corridor.",
+      "guidance": "Passable; may be wetter/colder but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_LURE",
+      "scope": "route",
+      "meaning": "The sensory signal for route C.",
+      "guidance": "Distinct from A and B; the darkest/least obvious pull.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_CHAR",
+      "scope": "route",
+      "meaning": "The character of route C's corridor.",
+      "guidance": "Passable; the darkest route, but navigable with care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for A1 (something that catches the light).",
+      "guidance": "Benign visual cue.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "A2_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A1_LANDMARK",
+      "scope": "track",
+      "meaning": "The glinting feature passed on the way down.",
+      "guidance": "Wonder, not hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_ZONE_HINT",
+      "scope": "track",
+      "meaning": "First glow/promise of the zone through a far wall.",
+      "guidance": "Inviting, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_GATE",
+      "scope": "ending",
+      "meaning": "The narrow-gap commit obstacle (squeeze through vs turn back).",
+      "guidance": "Non-lethal; a tight but passable gap; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_GATE",
+          "B1_GATE",
+          "B2_GATE",
+          "C1_GATE",
+          "C2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "A1_ZONE",
+      "scope": "track",
+      "meaning": "The reward zone (a light-filled chamber of wonder).",
+      "guidance": "Safe, awe-inducing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_OFFER1",
+      "scope": "track",
+      "meaning": "The near, takeable reward in the zone.",
+      "guidance": "A keepsake the hero can carry out; taking it harms nothing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "A1_OFFER2",
+      "scope": "track",
+      "meaning": "The deeper pull toward the greater reward.",
+      "guidance": "A safe onward passage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "A1_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the carried keepsake (success).",
+      "guidance": "Positive; a real object brought home. Names ending e_crystal.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2",
+          "C1_PRIZE",
+          "C2_PRIZE1",
+          "C2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A1_PRIZE2_PATH",
+      "scope": "track",
+      "meaning": "The transition passage toward the deeper prize.",
+      "guidance": "Safe; sound-shaping motif.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_PRIZE2_ZONE",
+      "scope": "track",
+      "meaning": "The deeper wonder-chamber.",
+      "guidance": "Safe, marvelous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the deep discovery (completion).",
+      "guidance": "Positive; an experience or secret. Names ending e_song.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2",
+          "C1_PRIZE",
+          "C2_PRIZE1",
+          "C2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A2_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for A2 (a warm, pulling sound).",
+      "guidance": "Benign.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "A1_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A2_LANDMARK",
+      "scope": "track",
+      "meaning": "The resonant thing sensed far below.",
+      "guidance": "Intriguing, not threatening.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_ZONE_HINT",
+      "scope": "track",
+      "meaning": "The metallic/gleaming glimpse from the chamber below.",
+      "guidance": "Safe promise.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_GATE",
+      "scope": "ending",
+      "meaning": "The descent aid left by a prior visitor (climb down vs climb back).",
+      "guidance": "Non-lethal descent; retreat safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_GATE",
+          "B1_GATE",
+          "B2_GATE",
+          "C1_GATE",
+          "C2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "A2_FIND",
+      "scope": "track",
+      "meaning": "The large old artifact discovered at the bottom.",
+      "guidance": "A historical object; no danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_DETAIL1",
+      "scope": "track",
+      "meaning": "The markings/inscription on the find plus nearby useful leftovers.",
+      "guidance": "Readable clue plus benign gear.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_DETAIL2",
+      "scope": "track",
+      "meaning": "What those leftovers provide (light plus a way to climb out).",
+      "guidance": "Practical, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the recovered history (success).",
+      "guidance": "Positive; a shareable discovery. Names ending e_bell.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2",
+          "C1_PRIZE",
+          "C2_PRIZE1",
+          "C2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B1_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for B1 (a growing open-space sound).",
+      "guidance": "Benign.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "B2_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "B1_LANDMARK1",
+      "scope": "track",
+      "meaning": "Underfoot change as the space opens.",
+      "guidance": "Passable footing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_LANDMARK2",
+      "scope": "track",
+      "meaning": "The edge/shelf above the open expanse.",
+      "guidance": "Safe vantage; no forced drop.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_GATE",
+      "scope": "ending",
+      "meaning": "The slippery narrowing shelf (descend vs back off).",
+      "guidance": "Non-lethal; 'before anyone slips' retreat is safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_GATE",
+          "A2_GATE",
+          "B2_GATE",
+          "C1_GATE",
+          "C2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "B1_ZONE",
+      "scope": "track",
+      "meaning": "The vast open expanse below.",
+      "guidance": "Safe to reach and stand beside.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_OFFER1",
+      "scope": "track",
+      "meaning": "A vehicle/means to cross the expanse.",
+      "guidance": "Usable, safe when prepared.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "B1_OFFER2",
+      "scope": "track",
+      "meaning": "A glowing shallow path along the edge.",
+      "guidance": "Ankle-deep and safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "B1_PRIZE1_PREP",
+      "scope": "track",
+      "meaning": "The action that readies the crossing means.",
+      "guidance": "Simple, safe prep.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: crossing the expanse (success).",
+      "guidance": "Positive achievement. Names ending e_rowboat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2",
+          "C1_PRIZE",
+          "C2_PRIZE1",
+          "C2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B1_PRIZE2_PATH",
+      "scope": "track",
+      "meaning": "The glowing trail across the shallows.",
+      "guidance": "Safe, shallow.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the hidden spot under open sky (completion).",
+      "guidance": "Positive; a secret place plus keepsake. Names ending e_islet.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B2_PRIZE1",
+          "B2_PRIZE2",
+          "C1_PRIZE",
+          "C2_PRIZE1",
+          "C2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B2_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for B2 (a distinct smell from a side-passage).",
+      "guidance": "Benign.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "B1_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "B2_LANDMARK1",
+      "scope": "track",
+      "meaning": "The tight passage's first pale light.",
+      "guidance": "Passable crouch.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_LANDMARK2",
+      "scope": "track",
+      "meaning": "The clear channel along the floor.",
+      "guidance": "Shallow, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_GATE",
+      "scope": "ending",
+      "meaning": "A curtain/threshold with the deadline filling behind (press on vs hurry back).",
+      "guidance": "Non-lethal; retreat beats the deadline safely. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_GATE",
+          "A2_GATE",
+          "B1_GATE",
+          "C1_GATE",
+          "C2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "B2_ZONE",
+      "scope": "track",
+      "meaning": "The bright hidden chamber full of small creatures.",
+      "guidance": "Safe micro-world; creatures harmless.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_OFFER1",
+      "scope": "track",
+      "meaning": "A rare, glowing creature to record.",
+      "guidance": "Observed, not harmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "B2_OFFER2",
+      "scope": "track",
+      "meaning": "A track to a deeper darker basin.",
+      "guidance": "Safe to follow.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "B2_PRIZE1_ACT",
+      "scope": "track",
+      "meaning": "The recording/observation action, leaving the creature in place.",
+      "guidance": "Non-destructive.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the documented rare creature (success).",
+      "guidance": "Positive; a record, not a captured animal. Names ending e_starfish.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE2",
+          "C1_PRIZE",
+          "C2_PRIZE1",
+          "C2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B2_PRIZE2_FIND",
+      "scope": "track",
+      "meaning": "The gleaming object half-buried in the basin.",
+      "guidance": "Safe to lift; inert.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the recovered object (success).",
+      "guidance": "Positive keepsake. Names ending e_shell.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "C1_PRIZE",
+          "C2_PRIZE1",
+          "C2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C1_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for C1 (a small fluttering/skittering sound).",
+      "guidance": "Benign but distinct.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "C2_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "C1_LANDMARK",
+      "scope": "track",
+      "meaning": "The many resting living things overhead.",
+      "guidance": "Harmless if undisturbed; the peril is only to them being disturbed, not to the hero; no attack, no injury.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_ZONE_HINT",
+      "scope": "track",
+      "meaning": "The distant circle of daylight (a way up).",
+      "guidance": "Safe promise.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_GATE",
+      "scope": "ending",
+      "meaning": "Crossing quietly beneath the resting colony (cross vs back away).",
+      "guidance": "Non-lethal; worst case is a noisy retreat, never harm. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_GATE",
+          "A2_GATE",
+          "B1_GATE",
+          "B2_GATE",
+          "C2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C1_CLIMB1",
+      "scope": "track",
+      "meaning": "The rough natural stair upward.",
+      "guidance": "Solid, climbable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_CLIMB2",
+      "scope": "track",
+      "meaning": "Evidence a prior explorer climbed here (a carving).",
+      "guidance": "Reassuring, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_CLIMB3",
+      "scope": "track",
+      "meaning": "The final soft/mossy funnel to the surface.",
+      "guidance": "Passable with a boost.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the hidden surface exit plus colony to report (completion).",
+      "guidance": "Positive; a secret route plus a discovery. Names ending e_bats.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2",
+          "C2_PRIZE1",
+          "C2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C2_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for C2 (creak of old material, glint of old metal).",
+      "guidance": "Benign.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "C1_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "C2_LANDMARK1",
+      "scope": "track",
+      "meaning": "The old barrier/door into the side-cave.",
+      "guidance": "Openable by a kid; no trap.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_LANDMARK2",
+      "scope": "track",
+      "meaning": "The hand-made walled-off hiding place behind it.",
+      "guidance": "Safe to enter.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_GATE",
+      "scope": "ending",
+      "meaning": "Stepping in as the deadline wets the floor (quick look vs leave it).",
+      "guidance": "Non-lethal; leaving is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_GATE",
+          "A2_GATE",
+          "B1_GATE",
+          "B2_GATE",
+          "C1_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C2_ZONE",
+      "scope": "track",
+      "meaning": "The forgotten store/cache itself.",
+      "guidance": "Historical, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_INNER",
+      "scope": "track",
+      "meaning": "The state of the interior (mostly-crumbled containers, two dry ones).",
+      "guidance": "Dusty, harmless.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_OFFER1",
+      "scope": "track",
+      "meaning": "The first recoverable object (a guiding instrument).",
+      "guidance": "Inert, useful.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C2_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "C2_OFFER2",
+      "scope": "track",
+      "meaning": "The second, heavier recoverable object (a rattling hoard).",
+      "guidance": "Inert, carriable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C2_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "C2_PRIZE1_ACT",
+      "scope": "track",
+      "meaning": "Cleaning/using the first object to find the way out.",
+      "guidance": "Safe, clever.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the working recovered instrument (success).",
+      "guidance": "Positive keepsake plus story. Names ending e_compass.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2",
+          "C1_PRIZE",
+          "C2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C2_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the recovered hoard studied by experts (success).",
+      "guidance": "Positive; historical find, not stolen loot in a harmful sense. Names ending e_coins.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2",
+          "C1_PRIZE",
+          "C2_PRIZE1"
+        ]
+      }
+    }
+  ]
+}
