@@ -1,0 +1,563 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lantern_festival",
+  "version": 1,
+  "title": "The Lantern Festival",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "community",
+      "celebration",
+      "perseverance"
+    ],
+    "estimated_minutes": 6,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=90 beats='Pip the young kit fox stands in his sandy burrow den; tonight is the Desert Star Bazaar and there is still so much to gather; Pip counts on her paws what she needs and decides where to set out first; warm and excited, never worried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_berries",
+          "label": "Go pick firefly beetles by the cactus grove.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_willow",
+          "label": "Go invite your friends at the rock burrow.",
+          "target": "n_willow1"
+        },
+        {
+          "id": "c_start_reeds",
+          "label": "Go cut yucca stalks for beacon frames.",
+          "target": "n_reed1"
+        },
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the harvester ants for mesquite cakes.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Go fetch the old star banners.",
+          "target": "n_shed1"
+        },
+        {
+          "id": "c_start_crickets",
+          "label": "Go ask the coyote trio to play.",
+          "target": "n_cricket1"
+        }
+      ]
+    },
+    {
+      "id": "n_berry1",
+      "body": "<<FILL role=choice words=80 beats='at the cactus grove the low firefly beetles are ripe and glowing softly, but a shinier cluster hangs high on a wobbly branch; Pip decides whether to fill her basket with the easy low ones or stretch up for the high ones'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the ripe low firefly beetles.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Climb for the high cluster.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "<<FILL role=rising words=80 beats='Pip fills her basket with glowing firefly beetles that light her chin from below; the gathering is beginning to grow; Pip can carry the firefly beetles onward to the canyon square or trot back to his sandy burrow den to fetch more things first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_meadow",
+          "label": "Carry the firefly beetles to the canyon square.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_berry_back",
+          "label": "Go back to his sandy burrow den for more.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_willow1",
+      "body": "<<FILL role=choice words=80 beats='under the rock burrow Pip finds her friends dozing in the warm afternoon; Pip wants to invite them all to the Desert Star Bazaar; Pip decides whether to knock gently and wake them softly or clang a booming drum to hurry things along'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_knock",
+          "label": "Knock gently on the rock burrow door.",
+          "target": "n_willow2"
+        },
+        {
+          "id": "c_willow_bell",
+          "label": "Clang a booming drum.",
+          "target": "e_willow_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_willow2",
+      "body": "<<FILL role=rising words=80 beats='her friends yawn, smile, and say yes at once, grabbing their little beacons; the group is growing; Pip can lead the happy troop straight to the canyon square or swing back by his sandy burrow den to grab the next thing on her list'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_meadow",
+          "label": "Lead your friends to the canyon square.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_willow_back",
+          "label": "Pop back to his sandy burrow den first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed1",
+      "body": "<<FILL role=choice words=80 beats='at the dry wash Pip needs stalks to bend into beacon frames; the tall dry yucca stalks rustle on the bank while fresh green ones lean out over the water; Pip decides which yucca stalks to cut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_dry",
+          "label": "Cut the tall dry yucca stalks.",
+          "target": "n_reed2"
+        },
+        {
+          "id": "c_reed_wet",
+          "label": "Cut the fresh green yucca stalks.",
+          "target": "e_reed_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_reed2",
+      "body": "<<FILL role=rising words=80 beats='the dry yucca stalks snap free in a neat golden bundle, perfect for bending; Pip can start weaving the beacon frames right here by the dry wash or lug the whole bundle back to his sandy burrow den to work by her stump'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_weave",
+          "label": "Weave the frames here by the dry wash.",
+          "target": "n_reed3"
+        },
+        {
+          "id": "c_reed_back",
+          "label": "Carry the bundle back to his sandy burrow den.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed3",
+      "body": "<<FILL role=rising words=75 beats='Pip bends the yucca stalks into round little beacon frames, humming as she works; a stack of them balances in her arms; there is only one thing to do now, carry the finished frames to the canyon square'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_meadow",
+          "label": "Carry the beacon frames to the canyon square.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "<<FILL role=choice words=80 beats='at the mesquite thicket Pip asks the harvester ants for a few mesquite cakes for the festival feast; the harvester ants buzz kindly; Pip decides whether to wait politely for them to pack a basket or dash back to his sandy burrow den and come by for the cakes later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_wait",
+          "label": "Wait politely for mesquite cakes.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_back",
+          "label": "Head back to his sandy burrow den for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "<<FILL role=rising words=75 beats='the harvester ants load a basket with warm golden mesquite cakes that smell of clover; the feast is coming together; Pip thanks them and carries the sweet-smelling basket straight to the canyon square'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_meadow",
+          "label": "Carry the mesquite cakes to the canyon square.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_shed1",
+      "body": "<<FILL role=choice words=80 beats='in the tool shed the old star banners from last year sit dusty on a shelf; Pip decides whether to dust each one off carefully now or scoot back to his sandy burrow den and fetch them on the next trip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_dust",
+          "label": "Dust off the old star banners.",
+          "target": "n_shed2"
+        },
+        {
+          "id": "c_shed_back",
+          "label": "Go back to his sandy burrow den for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_shed2",
+      "body": "<<FILL role=rising words=75 beats='the old star banners come up bright and pretty under Pip's little cloth, their painted patterns good as new; her armful of festival treasures keeps growing; Pip carries them off toward the canyon square'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_meadow",
+          "label": "Carry the old star banners to the canyon square.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket1",
+      "body": "<<FILL role=choice words=80 beats='by the wide dunes the coyote trio tunes their tiny fiddles; Pip asks if they will play at the Desert Star Bazaar; they chirp eagerly; Pip decides whether to lead them along right away or pop back to his sandy burrow den to gather one more thing first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_lead",
+          "label": "Ask the coyote trio to follow you now.",
+          "target": "n_cricket2"
+        },
+        {
+          "id": "c_cricket_back",
+          "label": "Go back to his sandy burrow den first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket2",
+      "body": "<<FILL role=rising words=75 beats='the coyote trio forms a cheerful little parade behind Pip, fiddles under their arms; music will make the night complete; Pip leads the chirping players all the way to the canyon square'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_meadow",
+          "label": "Lead the coyote trio to the canyon square.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "<<FILL role=choice words=90 beats='the canyon square opens wide at dusk, ringed by the tall saguaro and the quiet spring; everything Pip has gathered is piling up and friends are arriving; Pip decides whether to start setting the festival up now or make one last trip back to his sandy burrow den for anything forgotten'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meadow_setup",
+          "label": "Start setting up the festival.",
+          "target": "n_setup"
+        },
+        {
+          "id": "c_meadow_back",
+          "label": "Make one last trip to his sandy burrow den.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_setup",
+      "body": "<<FILL role=choice words=85 beats='in the canyon square the beacon frames get wrapped in bright paper and the firefly beetles tucked inside to shimmer; friends bustle everywhere; Pip decides whether to hang the beacons up in the tall saguaro or spread out the picnic feast first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup_hang",
+          "label": "Hang the beacons in the tall saguaro.",
+          "target": "n_hang"
+        },
+        {
+          "id": "c_setup_picnic",
+          "label": "Spread out the picnic feast.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_hang",
+      "body": "<<FILL role=choice words=85 beats='friends lift the finished beacons into the branches of the tall saguaro, where they sway like sleepy fireflies; the sky is turning purple; Pip decides whether to light them right this moment or wait for the very first star to appear'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hang_light",
+          "label": "Light the beacons right now.",
+          "target": "n_light"
+        },
+        {
+          "id": "c_hang_star",
+          "label": "Wait for the first star.",
+          "target": "n_star"
+        }
+      ]
+    },
+    {
+      "id": "n_light",
+      "body": "<<FILL role=choice words=85 beats='one by one the beacons wake up with warm firefly beetles light and the canyon square glows entirely gold; everyone gasps with delight; Pip decides whether to set some beacons floating out across the quiet spring or keep them all glowing high in the tall saguaro'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_light_pond",
+          "label": "Float beacons on the quiet spring.",
+          "target": "e_finale_pond"
+        },
+        {
+          "id": "c_light_oak",
+          "label": "Keep the beacons in the tall saguaro.",
+          "target": "e_finale_oak"
+        }
+      ]
+    },
+    {
+      "id": "n_star",
+      "body": "<<FILL role=rising words=80 beats='everyone grows hushed and watches the darkening sky until the first tiny star blinks awake over the canyon square; a happy cheer goes up; that is the signal, and Pip lights the very first beacon to begin the festival glow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star_glow",
+          "label": "Light the first beacon and begin.",
+          "target": "n_glow"
+        }
+      ]
+    },
+    {
+      "id": "n_glow",
+      "body": "<<FILL role=choice words=85 beats='beacon after beacon flickers on until the canyon square is a sea of soft golden light and the quiet spring mirrors it all; the coyote trio lift their fiddles; Pip decides whether to start the bazaar chant for everyone or gather her friends to make a wish together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glow_song",
+          "label": "Start the bazaar chant.",
+          "target": "n_song"
+        },
+        {
+          "id": "c_glow_wish",
+          "label": "Make a wish together.",
+          "target": "n_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_song",
+      "body": "<<FILL role=rising words=75 beats='the coyote trio strike up a bouncy tune and Pip leads the first verse of the bazaar chant; friends join line by line until the canyon square rings with song, the tall saguaro glowing overhead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_song_end",
+          "label": "Sing the festival into the night.",
+          "target": "e_finale_song"
+        }
+      ]
+    },
+    {
+      "id": "n_wish",
+      "body": "<<FILL role=rising words=75 beats='the friends gather in a ring around the brightest beacon, close their eyes, and hold paws; Pip counts softly to three so everyone can make the same warm wish for the woodland at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wish_end",
+          "label": "Make the wish all together.",
+          "target": "e_finale_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "<<FILL role=choice words=85 beats='Pip spreads a checked cloth on the grass and lays out mesquite cakes and berry treats while beacons glow softly overhead; friends settle around; Pip decides whether to start sharing mesquite cakes now or wait for old Uncle Badger to arrive and bless the feast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_feast",
+          "label": "Start sharing mesquite cakes.",
+          "target": "n_feast"
+        },
+        {
+          "id": "c_picnic_bless",
+          "label": "Wait for Uncle Badger.",
+          "target": "n_bless"
+        }
+      ]
+    },
+    {
+      "id": "n_feast",
+      "body": "<<FILL role=choice words=80 beats='mesquite cakes go round the glowing circle and everyone munches happily under the swaying beacons; the feast is a merry success; Pip decides whether to let the feast roll on into the night or start a round of giggly a shadow-guesss between bites'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_feast_end",
+          "label": "Let the happy feast roll on.",
+          "target": "e_finale_feast"
+        },
+        {
+          "id": "c_feast_riddle",
+          "label": "Start a round of a shadow-guesss.",
+          "target": "n_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_riddle",
+      "body": "<<FILL role=rising words=75 beats='between bites of mesquite cakes the friends trade silly a shadow-guesss, each one sillier than the last, until everyone is laughing so hard the beacon light seems to giggle too; Pip saves the very best one for the end'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_riddle_end",
+          "label": "Tell the very best a shadow-guess.",
+          "target": "e_finale_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_bless",
+      "body": "<<FILL role=rising words=80 beats='Uncle Badger arrives, wrapped in a woven blanket, whiskers dusted with sand; the friends make room and grow quiet; Uncle Badger smiles and begins the legend of the first bazaar star, just as she does every year'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bless_end",
+          "label": "Listen to Uncle Badger's beacon story.",
+          "target": "e_finale_story"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "<<FILL role=ending words=75 beats='Pip stretches for a shinier cluster, the wobbly branch springs back, and her whole basket of firefly beetles bounces away into a heap of soft sand with a comic boing; nobody is hurt and Pip laughs, dusting off to trot back to his sandy burrow den and start her gathering again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Sandy Tumble"
+      }
+    },
+    {
+      "id": "e_willow_oops",
+      "body": "<<FILL role=ending words=75 beats='a booming drum clangs and every sleepy friend tumbles out of the rock burrow at once in a giggly, grumbly heap, blankets over their heads; it takes ages to sort out the muddle, so Pip decides to start over and invite them the gentle way next time'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_willow_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Way Too Loud"
+      }
+    },
+    {
+      "id": "e_reed_oops",
+      "body": "<<FILL role=ending words=75 beats='the fresh green yucca stalks are far too soft and wet to hold a shape; every frame Pip bends just flops over like cooked noodles and drips on her paws; Pip laughs at the soggy mess and heads back to his sandy burrow den to begin again with the right yucca stalks'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_reed_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Bent Stalks"
+      }
+    },
+    {
+      "id": "e_finale_pond",
+      "body": "<<FILL role=completion words=85 beats='Pip and her friends set glowing beacons adrift on the quiet spring, where they float like little golden moons doubled in the water; everyone in the canyon square ohhs together; the festival is beautiful and complete, and Pip glows as bright as her beacons'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_pond",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Beacons on the Spring"
+      }
+    },
+    {
+      "id": "e_finale_oak",
+      "body": "<<FILL role=completion words=85 beats='the tall saguaro blazes with hanging beacons like a tree full of warm stars, and everyone dances slowly beneath its golden branches; Pip looks up at all she and her friends have made together, her heart as full and bright as the festival glow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_oak",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Cactus Full of Light"
+      }
+    },
+    {
+      "id": "e_finale_song",
+      "body": "<<FILL role=completion words=85 beats='the canyon square rings with the bazaar chant, the tall saguaro glowing above and the coyote trio fiddles sailing over every voice; the music rolls out over the quiet spring and into the night; Pip sings loudest of all, proud of the festival her gathering has grown into'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Bazaar Chant"
+      }
+    },
+    {
+      "id": "e_finale_wish",
+      "body": "<<FILL role=completion words=85 beats='in the ring of beacon light the friends make one warm wish together for a happy woodland year, then open their eyes to the canyon square glowing all around them; Pip squeezes her friends' paws, sure that this is the best festival there ever was'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_wish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One Bright Wish"
+      }
+    },
+    {
+      "id": "e_finale_feast",
+      "body": "<<FILL role=completion words=85 beats='mesquite cakes and berry treats go round and round beneath the swaying beacons while everyone laughs and nibbles late into the glowing night; the feast Pip gathered piece by piece has brought the whole woodland together, warm and merry'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_feast",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Desert Feast"
+      }
+    },
+    {
+      "id": "e_finale_riddle",
+      "body": "<<FILL role=completion words=85 beats='Pip tells the very best a shadow-guess of all and the whole glowing circle roars with laughter, mesquite cakes nearly forgotten; the beacons seem to twinkle along with the giggling; it is the merriest festival night the woodland friends can remember'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_riddle",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Best Guess of the Night"
+      }
+    },
+    {
+      "id": "e_finale_story",
+      "body": "<<FILL role=completion words=85 beats='Uncle Badger finishes the legend of the first bazaar star just as every beacon in the canyon square glows its brightest, and the friends clap softly; Pip leans against Uncle Badger, happy that her gathering has kept the gentle festival alive one more year'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Uncle Badger's Old Tale"
+      }
+    }
+  ]
+}

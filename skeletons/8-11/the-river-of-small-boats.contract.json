@@ -1,0 +1,1393 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-river-of-small-boats",
+  "age_band": "8-11",
+  "legacy_lexicon": [
+    "Wren",
+    "The Acorn",
+    "Acorn",
+    "Tam",
+    "Beetle",
+    "Priya",
+    "Rocket",
+    "Millbrook",
+    "Three Willows",
+    "weir chute",
+    "mill race",
+    "meadow bend",
+    "old lock cut",
+    "lock cut",
+    "mill island",
+    "willow",
+    "wheelpool",
+    "splash arch",
+    "Warden Ivy",
+    "Ivy",
+    "Dev",
+    "Whirligig",
+    "Duckweed Pool",
+    "Minnow twins",
+    "Maren",
+    "Firefly",
+    "Marta",
+    "Bram",
+    "plum cake",
+    "ribbon table",
+    "cattle-drink",
+    "heron shallows"
+  ],
+  "default_binding": {
+    "HERO": "Wren",
+    "COMPANION": "The Acorn",
+    "FRIEND": "Tam",
+    "FRIEND_BOAT": "Beetle",
+    "RIVAL": "Priya",
+    "RIVAL_BOAT": "Rocket",
+    "TOWN": "Millbrook",
+    "SPLIT_LANDMARK": "Three Willows",
+    "ENTRANCE": "the weir chute",
+    "DEADLINE": "the last bell",
+    "OFFICIAL": "the mayor",
+    "TREAT": "plum cake",
+    "FINISH": "the finish meadow",
+    "AWARD_TABLE": "the ribbon table",
+    "TWINS": "the Minnow twins",
+    "ROUTE_A_NAME": "the mill race",
+    "ROUTE_A_LURE": "fast and white toward the millwheel",
+    "ROUTE_A_CHAR": "hard-packed towpath, water pleated and quick",
+    "ROUTE_B_NAME": "the meadow bend",
+    "ROUTE_B_LURE": "slow and green",
+    "ROUTE_B_CHAR": "wide slow water the color of weak tea",
+    "ROUTE_C_NAME": "the old lock cut",
+    "ROUTE_C_LURE": "straight and stone-walled",
+    "ROUTE_C_CHAR": "a straight stone channel in cool poplar shadow",
+    "A_WILLOW": "willow",
+    "A_ISLAND": "mill island",
+    "A_MILLER": "Bram",
+    "A1_WHEEL_ARCH": "splash arch",
+    "A1_WHEEL_ZONE": "wheelpool",
+    "A1_WHEEL_PRIZE1": "Second, and a Friend",
+    "A1_WHEEL_PRIZE2": "The River Ribbon",
+    "A1_WALL_CHUTE": "chute",
+    "A1_WALL_PRIZE1": "Keeper of the Chute",
+    "A1_WALL_PRIZE2": "The View From Up High",
+    "A1_WALL_PRIZE3": "Spun Out",
+    "A2_BRANCH_SEAM": "seam",
+    "A2_BRANCH_PRIZE1": "Crew of Two",
+    "A2_BRANCH_PRIZE2": "After the Last Bell",
+    "A2_BRIDGE_SPARE": "stubby spare net",
+    "A2_BRIDGE_PRIZE1": "The Willow Curtain",
+    "A2_BRIDGE_PRIZE2": "An Inch Short",
+    "B1_HERON": "heron shallows",
+    "B1_STONES_NEST": "nest tunnel",
+    "B1_WARDEN": "Warden Ivy",
+    "B1_STONES_PRIZE1": "The Blue Flash",
+    "B1_STONES_PRIZE2": "Eleventh Place, First Nest",
+    "B1_SPRINT_NARROWS": "cattle-drink narrows",
+    "B1_SPRINT_PRIZE1": "Four Hands and a Spade",
+    "B1_SPRINT_PRIZE2": "Warden of the Narrows",
+    "B1_SPRINT_PRIZE3": "Two at Once",
+    "B2_POOL": "Duckweed Pool",
+    "B2_RIVAL2": "Dev",
+    "B2_RIVAL2_BOAT": "Whirligig",
+    "B2_RIVAL2_MECH": "paddle fan",
+    "B2_CLEAR_CHANNEL": "punt channel",
+    "B2_CLEAR_PRIZE1": "The Green Lane",
+    "B2_CLEAR_PRIZE2": "Traffic in the Green",
+    "B2_WEED_BOOM": "weed boom",
+    "B2_BOOM_PIN": "rusted keeper pin",
+    "B2_BOOM_PRIZE1": "The Silver Thread",
+    "B2_BOOM_PRIZE2": "When the Gate Swung Wide",
+    "C_KEEPER": "Maren",
+    "C_KEEPER_BOAT": "Firefly",
+    "C_LOCK": "lock",
+    "C_GATES": "gates",
+    "C_CHAMBER": "chamber",
+    "C_WINDLASS": "windlass",
+    "C1_FIREFLY_PRIZE1": "Firefly, Boat No. 7",
+    "C1_FIREFLY_PRIZE2": "The Escort",
+    "C1_WINDLASS_PRIZE1": "The Lock Talks Back",
+    "C1_WINDLASS_PRIZE2": "On the Last Bell",
+    "C2_BYWASH": "bywash",
+    "C2_FAN": "gravel fan",
+    "C2_GRATING": "grating",
+    "C2_GRATING_PIN": "tipping pin",
+    "C2_PORTAGE_POST": "portage post",
+    "C2_RAPIDS_PRIZE1": "Captain of the Minnow Fleet",
+    "C2_RAPIDS_PRIZE2": "Fifth, With an Echo",
+    "C2_ISLAND_TRADER": "Marta",
+    "C2_ISLAND_ITEM": "dragonfly-blue silk",
+    "C2_ISLAND_PRIZE1": "The Dragonfly Stitch",
+    "C2_ISLAND_PRIZE2": "The Torn Leaf"
+  },
+  "slots": [
+    {
+      "id": "A1_WALL_CHUTE",
+      "scope": "track",
+      "meaning": "The narrow finish-adjacent channel on the wall-side fork.",
+      "guidance": "A narrow but passable channel; retreat or waiting is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_WALL_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: keeps the finish channel clear for others (success).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_WHEEL_PRIZE1",
+          "A1_WHEEL_PRIZE2",
+          "A1_WALL_PRIZE2",
+          "A1_WALL_PRIZE3",
+          "A2_BRANCH_PRIZE1",
+          "A2_BRANCH_PRIZE2",
+          "A2_BRIDGE_PRIZE1",
+          "A2_BRIDGE_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A1_WALL_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: misses the finish helping from a vantage point (setback).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_WHEEL_PRIZE1",
+          "A1_WHEEL_PRIZE2",
+          "A1_WALL_PRIZE1",
+          "A1_WALL_PRIZE3",
+          "A2_BRANCH_PRIZE1",
+          "A2_BRANCH_PRIZE2",
+          "A2_BRIDGE_PRIZE1",
+          "A2_BRIDGE_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A1_WALL_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending: threads a risky gap but finishes just short (setback).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_WHEEL_PRIZE1",
+          "A1_WHEEL_PRIZE2",
+          "A1_WALL_PRIZE1",
+          "A1_WALL_PRIZE2",
+          "A2_BRANCH_PRIZE1",
+          "A2_BRANCH_PRIZE2",
+          "A2_BRIDGE_PRIZE1",
+          "A2_BRIDGE_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A1_WHEEL_ARCH",
+      "scope": "track",
+      "meaning": "The spray-filled archway on the wheel-side fork.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_WHEEL_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: places second, gains a friend (success).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_WHEEL_PRIZE2",
+          "A1_WALL_PRIZE1",
+          "A1_WALL_PRIZE2",
+          "A1_WALL_PRIZE3",
+          "A2_BRANCH_PRIZE1",
+          "A2_BRANCH_PRIZE2",
+          "A2_BRIDGE_PRIZE1",
+          "A2_BRIDGE_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A1_WHEEL_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: wins the race on the wheel side (success).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_WHEEL_PRIZE1",
+          "A1_WALL_PRIZE1",
+          "A1_WALL_PRIZE2",
+          "A1_WALL_PRIZE3",
+          "A2_BRANCH_PRIZE1",
+          "A2_BRANCH_PRIZE2",
+          "A2_BRIDGE_PRIZE1",
+          "A2_BRIDGE_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A1_WHEEL_ZONE",
+      "scope": "track",
+      "meaning": "The circular pool that catches boats on the wheel side.",
+      "guidance": "A safe circular current; boats spin but never capsize dangerously.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_BRANCH_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: crews up with the friend and finishes together (completion).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_WHEEL_PRIZE1",
+          "A1_WHEEL_PRIZE2",
+          "A1_WALL_PRIZE1",
+          "A1_WALL_PRIZE2",
+          "A1_WALL_PRIZE3",
+          "A2_BRANCH_PRIZE2",
+          "A2_BRIDGE_PRIZE1",
+          "A2_BRIDGE_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A2_BRANCH_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: repairs the friend's boat, finishes unplaced but glad (completion).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_WHEEL_PRIZE1",
+          "A1_WHEEL_PRIZE2",
+          "A1_WALL_PRIZE1",
+          "A1_WALL_PRIZE2",
+          "A1_WALL_PRIZE3",
+          "A2_BRANCH_PRIZE1",
+          "A2_BRIDGE_PRIZE1",
+          "A2_BRIDGE_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A2_BRANCH_SEAM",
+      "scope": "track",
+      "meaning": "The leaking seam in the friend's boat hull.",
+      "guidance": "A minor, fixable leak; never a sinking hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_BRIDGE_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: frees the whole snag, becomes a minor local hero (completion).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_WHEEL_PRIZE1",
+          "A1_WHEEL_PRIZE2",
+          "A1_WALL_PRIZE1",
+          "A1_WALL_PRIZE2",
+          "A1_WALL_PRIZE3",
+          "A2_BRANCH_PRIZE1",
+          "A2_BRANCH_PRIZE2",
+          "A2_BRIDGE_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A2_BRIDGE_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: a borrowed net proves just barely too short (negative setback).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_WHEEL_PRIZE1",
+          "A1_WHEEL_PRIZE2",
+          "A1_WALL_PRIZE1",
+          "A1_WALL_PRIZE2",
+          "A1_WALL_PRIZE3",
+          "A2_BRANCH_PRIZE1",
+          "A2_BRANCH_PRIZE2",
+          "A2_BRIDGE_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "A2_BRIDGE_SPARE",
+      "scope": "track",
+      "meaning": "The small spare net offered in a trade.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "AWARD_TABLE",
+      "scope": "global",
+      "meaning": "Where finishers gather and prizes are shared out.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_ISLAND",
+      "scope": "track",
+      "meaning": "The island the fast route forks around.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_MILLER",
+      "scope": "track",
+      "meaning": "The miller's helper who appears along route A.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_WILLOW",
+      "scope": "track",
+      "meaning": "The fallen tree obstacle blocking route A.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_HERON",
+      "scope": "track",
+      "meaning": "The shallow stretch a heron watches over on route B.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_SPRINT_NARROWS",
+      "scope": "track",
+      "meaning": "The shallow narrows where boats run aground on route B.",
+      "guidance": "Shallow water where boats ground gently; never a hazard to a racer.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_SPRINT_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: helps shore up the nest bank with the warden (completion).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B1_STONES_PRIZE1",
+          "B1_STONES_PRIZE2",
+          "B1_SPRINT_PRIZE2",
+          "B1_SPRINT_PRIZE3",
+          "B2_CLEAR_PRIZE1",
+          "B2_CLEAR_PRIZE2",
+          "B2_BOOM_PRIZE1",
+          "B2_BOOM_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B1_SPRINT_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: frees every grounded boat at the narrows (success).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B1_STONES_PRIZE1",
+          "B1_STONES_PRIZE2",
+          "B1_SPRINT_PRIZE1",
+          "B1_SPRINT_PRIZE3",
+          "B2_CLEAR_PRIZE1",
+          "B2_CLEAR_PRIZE2",
+          "B2_BOOM_PRIZE1",
+          "B2_BOOM_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B1_SPRINT_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending: a rescue priority costs the hero's own placing (neutral setback).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B1_STONES_PRIZE1",
+          "B1_STONES_PRIZE2",
+          "B1_SPRINT_PRIZE1",
+          "B1_SPRINT_PRIZE2",
+          "B2_CLEAR_PRIZE1",
+          "B2_CLEAR_PRIZE2",
+          "B2_BOOM_PRIZE1",
+          "B2_BOOM_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B1_STONES_NEST",
+      "scope": "track",
+      "meaning": "A riverbank nesting tunnel threatened by erosion.",
+      "guidance": "Wildlife in need of a gentle, non-dramatic rescue; no predators, no danger to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_STONES_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: saves a nest, becomes a junior river warden (discovery).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B1_STONES_PRIZE2",
+          "B1_SPRINT_PRIZE1",
+          "B1_SPRINT_PRIZE2",
+          "B1_SPRINT_PRIZE3",
+          "B2_CLEAR_PRIZE1",
+          "B2_CLEAR_PRIZE2",
+          "B2_BOOM_PRIZE1",
+          "B2_BOOM_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B1_STONES_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: finishes the race unranked but proud of the rescue (completion).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B1_STONES_PRIZE1",
+          "B1_SPRINT_PRIZE1",
+          "B1_SPRINT_PRIZE2",
+          "B1_SPRINT_PRIZE3",
+          "B2_CLEAR_PRIZE1",
+          "B2_CLEAR_PRIZE2",
+          "B2_BOOM_PRIZE1",
+          "B2_BOOM_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B1_WARDEN",
+      "scope": "track",
+      "meaning": "The river warden who oversees route B's wildlife.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_BOOM_PIN",
+      "scope": "track",
+      "meaning": "The rusted pin securing the weed boom's hinge.",
+      "guidance": "A small rusted fastener; works loose with effort, never breaks dangerously.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_BOOM_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: swings the boom partway, finishes well (success).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B1_STONES_PRIZE1",
+          "B1_STONES_PRIZE2",
+          "B1_SPRINT_PRIZE1",
+          "B1_SPRINT_PRIZE2",
+          "B1_SPRINT_PRIZE3",
+          "B2_CLEAR_PRIZE1",
+          "B2_CLEAR_PRIZE2",
+          "B2_BOOM_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B2_BOOM_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: frees the pin for a full swing, whole fleet benefits (completion).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B1_STONES_PRIZE1",
+          "B1_STONES_PRIZE2",
+          "B1_SPRINT_PRIZE1",
+          "B1_SPRINT_PRIZE2",
+          "B1_SPRINT_PRIZE3",
+          "B2_CLEAR_PRIZE1",
+          "B2_CLEAR_PRIZE2",
+          "B2_BOOM_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "B2_CLEAR_CHANNEL",
+      "scope": "track",
+      "meaning": "The old channel that can be raked clear of weed.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_CLEAR_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: clears a lane the whole fleet uses to finish (success).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B1_STONES_PRIZE1",
+          "B1_STONES_PRIZE2",
+          "B1_SPRINT_PRIZE1",
+          "B1_SPRINT_PRIZE2",
+          "B1_SPRINT_PRIZE3",
+          "B2_CLEAR_PRIZE2",
+          "B2_BOOM_PRIZE1",
+          "B2_BOOM_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B2_CLEAR_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: two boats are stranded when the lane jams (neutral setback).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B1_STONES_PRIZE1",
+          "B1_STONES_PRIZE2",
+          "B1_SPRINT_PRIZE1",
+          "B1_SPRINT_PRIZE2",
+          "B1_SPRINT_PRIZE3",
+          "B2_CLEAR_PRIZE1",
+          "B2_BOOM_PRIZE1",
+          "B2_BOOM_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B2_POOL",
+      "scope": "track",
+      "meaning": "The weed-choked pool every route-B boat must cross.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_RIVAL2",
+      "scope": "track",
+      "meaning": "A second racer, an engineer-minded rival, met at the pool.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_RIVAL2_BOAT",
+      "scope": "track",
+      "meaning": "The second rival's paddle-driven boat.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_RIVAL2_MECH",
+      "scope": "track",
+      "meaning": "The mechanism on the second rival's boat that clogs in weed.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_WEED_BOOM",
+      "scope": "track",
+      "meaning": "The wardens' hinged barrier that can widen the clear water.",
+      "guidance": "A safe, waist-height mechanism; no pinch or fall hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_FIREFLY_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the keeper's old boat finally finishes, officially (completion).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C1_FIREFLY_PRIZE2",
+          "C1_WINDLASS_PRIZE1",
+          "C1_WINDLASS_PRIZE2",
+          "C2_RAPIDS_PRIZE1",
+          "C2_RAPIDS_PRIZE2",
+          "C2_ISLAND_PRIZE1",
+          "C2_ISLAND_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C1_FIREFLY_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the keeper's old boat finishes as honorary escort (discovery).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C1_FIREFLY_PRIZE1",
+          "C1_WINDLASS_PRIZE1",
+          "C1_WINDLASS_PRIZE2",
+          "C2_RAPIDS_PRIZE1",
+          "C2_RAPIDS_PRIZE2",
+          "C2_ISLAND_PRIZE1",
+          "C2_ISLAND_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C1_WINDLASS_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: becomes the lock's first junior keeper in years (completion).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C1_FIREFLY_PRIZE1",
+          "C1_FIREFLY_PRIZE2",
+          "C1_WINDLASS_PRIZE2",
+          "C2_RAPIDS_PRIZE1",
+          "C2_RAPIDS_PRIZE2",
+          "C2_ISLAND_PRIZE1",
+          "C2_ISLAND_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C1_WINDLASS_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: races the lock's released current home in time (success).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C1_FIREFLY_PRIZE1",
+          "C1_FIREFLY_PRIZE2",
+          "C1_WINDLASS_PRIZE1",
+          "C2_RAPIDS_PRIZE1",
+          "C2_RAPIDS_PRIZE2",
+          "C2_ISLAND_PRIZE1",
+          "C2_ISLAND_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C2_BYWASH",
+      "scope": "track",
+      "meaning": "The rowdy side-channel that bypasses the lock.",
+      "guidance": "Fast but safe water; a rowdy ride, never a lethal drop.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_FAN",
+      "scope": "track",
+      "meaning": "The gravelly spreading area where the bywash's current fans out.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_GRATING",
+      "scope": "track",
+      "meaning": "A metal grate where capsized boats can wash up.",
+      "guidance": "A safe grate at water level; capsized boats wash up gently, no one is trapped.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_GRATING_PIN",
+      "scope": "track",
+      "meaning": "The pin that tips the grate to right a capsized boat.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_ISLAND_ITEM",
+      "scope": "track",
+      "meaning": "A distinctive scrap of cloth used to mend a torn sail.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_ISLAND_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: a mended sail carries the boat to a strong finish (success).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C1_FIREFLY_PRIZE1",
+          "C1_FIREFLY_PRIZE2",
+          "C1_WINDLASS_PRIZE1",
+          "C1_WINDLASS_PRIZE2",
+          "C2_RAPIDS_PRIZE1",
+          "C2_RAPIDS_PRIZE2",
+          "C2_ISLAND_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C2_ISLAND_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the sail tears again near the finish (negative setback).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C1_FIREFLY_PRIZE1",
+          "C1_FIREFLY_PRIZE2",
+          "C1_WINDLASS_PRIZE1",
+          "C1_WINDLASS_PRIZE2",
+          "C2_RAPIDS_PRIZE1",
+          "C2_RAPIDS_PRIZE2",
+          "C2_ISLAND_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "C2_ISLAND_TRADER",
+      "scope": "track",
+      "meaning": "A fellow racer who repairs sails and gear on the portage island.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_PORTAGE_POST",
+      "scope": "track",
+      "meaning": "The marked post where a racer may carry her own boat past an obstacle.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_RAPIDS_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: rescues two capsized boats, becomes their hero (completion).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C1_FIREFLY_PRIZE1",
+          "C1_FIREFLY_PRIZE2",
+          "C1_WINDLASS_PRIZE1",
+          "C1_WINDLASS_PRIZE2",
+          "C2_RAPIDS_PRIZE2",
+          "C2_ISLAND_PRIZE1",
+          "C2_ISLAND_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C2_RAPIDS_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: finishes well after helping from a distance (success).",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "C1_FIREFLY_PRIZE1",
+          "C1_FIREFLY_PRIZE2",
+          "C1_WINDLASS_PRIZE1",
+          "C1_WINDLASS_PRIZE2",
+          "C2_RAPIDS_PRIZE1",
+          "C2_ISLAND_PRIZE1",
+          "C2_ISLAND_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The hero's own small racing boat, with her, always.",
+      "guidance": "The hero's boat; always with her; never itself a source of danger.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "C_CHAMBER",
+      "scope": "track",
+      "meaning": "The lock's water-filled working chamber.",
+      "guidance": "A gently sinking or rising chamber; never a submersion risk.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_GATES",
+      "scope": "track",
+      "meaning": "The lock's heavy gates.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_KEEPER",
+      "scope": "track",
+      "meaning": "The lock keeper who tends route C's mechanism.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_KEEPER_BOAT",
+      "scope": "track",
+      "meaning": "The lock keeper's own long-retired racing boat.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_LOCK",
+      "scope": "track",
+      "meaning": "The lock mechanism that lowers boats between river levels.",
+      "guidance": "A safe, slow water-level mechanism; always supervised by the keeper.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_WINDLASS",
+      "scope": "track",
+      "meaning": "The hand-cranked mechanism that works the lock gates.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The closing signal after which a boat is logged home with no placing.",
+      "guidance": "A survivable closing signal; missing it never means real harm, only no placing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single launch point where the race begins.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FINISH",
+      "scope": "global",
+      "meaning": "The finish area where the race ends and ribbons are given.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FRIEND",
+      "scope": "global",
+      "meaning": "The hero's best friend, estranged since an unnamed quarrel.",
+      "guidance": "A once-close friend; the estrangement is left unspecified, never dramatized as conflict.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FRIEND_BOAT",
+      "scope": "global",
+      "meaning": "The friend's own small racing boat, patched and leaky.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist racing her small boat down the river.",
+      "guidance": "A single kid-relatable racer; capable, kind, and level-headed under pressure.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COMPANION"
+        ]
+      }
+    },
+    {
+      "id": "OFFICIAL",
+      "scope": "global",
+      "meaning": "The town official who starts and presides over the race.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RIVAL",
+      "scope": "global",
+      "meaning": "The fast rival racer competing for the same lead.",
+      "guidance": "A friendly rival, not an antagonist; competitive but sporting.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RIVAL_BOAT",
+      "scope": "global",
+      "meaning": "The rival's own small racing boat.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CHAR",
+      "scope": "route",
+      "meaning": "The physical character of route A's course.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LURE",
+      "scope": "route",
+      "meaning": "The sensory pull of route A, sensed at the three-way split.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_NAME",
+      "scope": "route",
+      "meaning": "The fast branch of the river race route.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "The physical character of route B's course.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_LURE",
+      "scope": "route",
+      "meaning": "The sensory pull of route B, sensed at the split.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_C_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_NAME",
+      "scope": "route",
+      "meaning": "The slow, scenic branch of the river race route.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_CHAR",
+      "scope": "route",
+      "meaning": "The physical character of route C's course.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_LURE",
+      "scope": "route",
+      "meaning": "The sensory pull of route C, sensed at the split.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_NAME",
+      "scope": "route",
+      "meaning": "The quiet, mechanical branch of the river race route.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SPLIT_LANDMARK",
+      "scope": "global",
+      "meaning": "The landmark where the river, and the race route, splits three ways.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TOWN",
+      "scope": "global",
+      "meaning": "The town hosting the boat race.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TREAT",
+      "scope": "global",
+      "meaning": "A shareable treat carried and traded across the race day.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TWINS",
+      "scope": "global",
+      "meaning": "A pair of young sibling racers who share one boat.",
+      "guidance": "",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    }
+  ]
+}

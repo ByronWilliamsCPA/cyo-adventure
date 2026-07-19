@@ -1,0 +1,593 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-school-garden-mystery",
+  "age_band": "5-8",
+  "legacy_lexicon": [
+    "Priya",
+    "Ms. Flores",
+    "Marco",
+    "rabbit",
+    "rabbits",
+    "bunny",
+    "bunnies",
+    "willow",
+    "willow corner",
+    "lettuce",
+    "lettuce beds",
+    "compost corner",
+    "tool shed",
+    "sunflower row",
+    "pond edge",
+    "path circle",
+    "bean teepee",
+    "school garden"
+  ],
+  "default_binding": {
+    "HERO": "Priya",
+    "MENTOR": "Ms. Flores",
+    "FRIEND": "Marco",
+    "NOTEBOOK": "her detective notebook",
+    "THRESHOLD": "the school garden",
+    "HUB": "the round path circle",
+    "DESTINATION": "the willow corner",
+    "DESTINATION_SCREEN": "the bean teepee",
+    "DESTINATION_LANDMARK": "a low round burrow",
+    "MYSTERY_SIGN": "tiny half-moon bites",
+    "CREATURE_SIGN": "tiny hoppy footprints",
+    "CREATURE_TRACE": "a wisp of gray fluff",
+    "CREATURE": "rabbit",
+    "CREATURE_ADULT": "a mother rabbit",
+    "CREATURE_YOUNG": "two round baby bunnies",
+    "CROP": "lettuce",
+    "ROUTE_A_ZONE": "the lettuce beds",
+    "ROUTE_B_ZONE": "the compost corner",
+    "ROUTE_C_ZONE": "the tool shed",
+    "ROUTE_D_ZONE": "the sunflower row",
+    "ROUTE_E_ZONE": "the pond edge",
+    "B_LANDMARK": "a fresh little tunnel",
+    "B2_DETAIL": "a patch of dandelions",
+    "C_FIND": "a battered blue lunchbox",
+    "C_DETAIL1": "a bag of tipped-over seeds",
+    "C1_DETAIL": "a name tag",
+    "C2_DETAIL": "a trail of shredded scraps",
+    "D_LANDMARK": "a narrow secret path under the stems",
+    "D1_DETAIL": "a cozy flattened rest spot",
+    "D2_DETAIL": "a garden bench",
+    "E_LANDMARK": "the muddy pond edge",
+    "E1_DETAIL": "a nibbled patch of clover",
+    "E2_CHAR": "a sleepy toad",
+    "A1_ACT": "sketches the footprints slowly and neatly",
+    "A2_ACT": "scoots along and smudges a few",
+    "F1_ACT": "waits still as a garden statue",
+    "F2_ACT": "holds out a green leaf, low and still",
+    "G_ACT": "rows of clover and crunchy greens",
+    "H_ACT": "a knee-high fence with a small gate",
+    "I_ACT": "walks the class through the case",
+    "B3_SETBACK": "The Wiggly Worm Detour",
+    "E3_SETBACK": "One Squishy Boot",
+    "F3_SETBACK": "A Flash of White Tail",
+    "G_PRIZE": "The Bunny Buffet",
+    "H_PRIZE": "A Fence with a Gate",
+    "I1_PRIZE": "The Shared Garden",
+    "I2_PRIZE": "Rabbit Watchers on Duty"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist, a junior garden detective.",
+      "guidance": "A single kid-relatable detective (name or role); curious and gentle, never reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MENTOR",
+      "scope": "global",
+      "meaning": "The adult who supervises the garden and the class.",
+      "guidance": "A warm, trusted grown-up (teacher/gardener); present at the start and at the kind ending.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FRIEND",
+      "scope": "global",
+      "meaning": "The classmate who was secretly feeding the mystery visitor.",
+      "guidance": "A kind, slightly embarrassed peer; the name tag reveals the identity, never a source of blame.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "NOTEBOOK",
+      "scope": "global",
+      "meaning": "The hero's recurring detective prop for recording clues.",
+      "guidance": "A small, carried notebook or equivalent tool the hero checks and adds to throughout.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the story happens inside.",
+      "guidance": "A safe, familiar daytime place with distinct corners; wonder over dread; no hazards.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HUB",
+      "scope": "global",
+      "meaning": "The central junction the hero returns to between every corner.",
+      "guidance": "A single easy-to-picture landmark (a circle, a gate, a crossroads) reachable from every branch.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DESTINATION",
+      "scope": "global",
+      "meaning": "The quiet corner every branch's clues point toward, where the mystery is solved.",
+      "guidance": "A hushed, cozy nook; safe to approach; never dark or frightening.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DESTINATION_SCREEN",
+      "scope": "global",
+      "meaning": "The small structure the hero hides behind near the destination.",
+      "guidance": "A garden-scale screen (a trellis, a teepee of plants); nothing to squeeze through unsafely.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DESTINATION_LANDMARK",
+      "scope": "global",
+      "meaning": "The creature's home, found at the destination.",
+      "guidance": "A small, tidy dwelling (a burrow, a nest); cozy, never described as a trap or hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MYSTERY_SIGN",
+      "scope": "global",
+      "meaning": "The recurring bite-mark clue found on plants across several corners.",
+      "guidance": "A small, gentle, repeatable physical trace; never gory or alarming.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["CREATURE_SIGN"]
+      }
+    },
+    {
+      "id": "CREATURE_SIGN",
+      "scope": "global",
+      "meaning": "The recurring footprint clue found across several corners.",
+      "guidance": "A small, cute track pattern distinct from the bite-mark clue; playful, not threatening.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["MYSTERY_SIGN"]
+      }
+    },
+    {
+      "id": "CREATURE_TRACE",
+      "scope": "global",
+      "meaning": "The recurring fur/feather clue found caught on twigs and roots.",
+      "guidance": "A soft, tiny wisp of the creature's covering; a gentle keepsake-like clue.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CREATURE",
+      "scope": "global",
+      "meaning": "The mystery visitor's species, used as a casual bare noun in labels and endings.",
+      "guidance": "A small, harmless, garden-friendly animal; never predatory or frightening.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CREATURE_ADULT",
+      "scope": "global",
+      "meaning": "The adult member of the creature family revealed at the destination.",
+      "guidance": "A gentle parent figure; described tenderly, never as dangerous.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["CREATURE_YOUNG"]
+      }
+    },
+    {
+      "id": "CREATURE_YOUNG",
+      "scope": "global",
+      "meaning": "The offspring of the creature family revealed at the destination.",
+      "guidance": "Small, playful young; the emotional payoff of the reveal.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["CREATURE_ADULT"]
+      }
+    },
+    {
+      "id": "CROP",
+      "scope": "global",
+      "meaning": "The garden plant the creature has been nibbling.",
+      "guidance": "A common, kid-familiar edible garden plant; the motive is hunger, never mischief.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_ZONE",
+      "scope": "route",
+      "meaning": "The first corner reachable from the hub, where the case begins.",
+      "guidance": "A planted growing-bed area; safe to search on hands and knees.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_B_ZONE", "ROUTE_C_ZONE", "ROUTE_D_ZONE", "ROUTE_E_ZONE"]
+      }
+    },
+    {
+      "id": "ROUTE_B_ZONE",
+      "scope": "route",
+      "meaning": "The second corner reachable from the hub, a decomposing-material area.",
+      "guidance": "A warm, earthy work corner; safe to poke through.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_A_ZONE", "ROUTE_C_ZONE", "ROUTE_D_ZONE", "ROUTE_E_ZONE"]
+      }
+    },
+    {
+      "id": "ROUTE_C_ZONE",
+      "scope": "route",
+      "meaning": "The third corner reachable from the hub, a small storage structure.",
+      "guidance": "A cluttered but kid-safe shed or shelter; nothing sharp emphasized.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_A_ZONE", "ROUTE_B_ZONE", "ROUTE_D_ZONE", "ROUTE_E_ZONE"]
+      }
+    },
+    {
+      "id": "ROUTE_D_ZONE",
+      "scope": "route",
+      "meaning": "The fourth corner reachable from the hub, a tall-growing plant row.",
+      "guidance": "A green, corridor-like row of tall plants; passable underneath or beside.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_A_ZONE", "ROUTE_B_ZONE", "ROUTE_C_ZONE", "ROUTE_E_ZONE"]
+      }
+    },
+    {
+      "id": "ROUTE_E_ZONE",
+      "scope": "route",
+      "meaning": "The fifth corner reachable from the hub, a water's-edge area.",
+      "guidance": "A shallow, muddy water's edge; safe footing, no deep or fast water.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_A_ZONE", "ROUTE_B_ZONE", "ROUTE_C_ZONE", "ROUTE_D_ZONE"]
+      }
+    },
+    {
+      "id": "B_LANDMARK",
+      "scope": "track",
+      "meaning": "The dug passage found at the second corner.",
+      "guidance": "A small, tidy animal-sized passage; never a collapse hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DETAIL",
+      "scope": "track",
+      "meaning": "The nibbled plant patch found on the far side of the second corner's passage.",
+      "guidance": "A small patch of a second plant the creature also eats; benign.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_FIND",
+      "scope": "track",
+      "meaning": "The out-of-place container discovered at the third corner.",
+      "guidance": "A small carried container that doesn't belong on the shelf; safe to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_DETAIL1",
+      "scope": "track",
+      "meaning": "The spilled item found beside the out-of-place container.",
+      "guidance": "A small tipped-over supply (seeds, snacks); a suspicious but harmless detail.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_DETAIL",
+      "scope": "track",
+      "meaning": "The written detail inside the container that names the friend.",
+      "guidance": "A simple readable label (a name tag, a note).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_DETAIL",
+      "scope": "track",
+      "meaning": "The trail of scraps leading out of the third corner.",
+      "guidance": "A small, followable trail of crumbs or scraps.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_LANDMARK",
+      "scope": "track",
+      "meaning": "The pressed-down secret path found at the fourth corner.",
+      "guidance": "A narrow, knee-high path under the plants; passable by crawling.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_DETAIL",
+      "scope": "track",
+      "meaning": "The cozy rest spot found along the fourth corner's secret path.",
+      "guidance": "A small flattened resting nook; cozy, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D2_DETAIL",
+      "scope": "track",
+      "meaning": "The elevated vantage point at the fourth corner.",
+      "guidance": "A simple, stable place to stand and look over the row (a bench, a step).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E_LANDMARK",
+      "scope": "track",
+      "meaning": "The physical description of the fifth corner's ground.",
+      "guidance": "A soft, muddy edge good for footprints; shallow and safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E1_DETAIL",
+      "scope": "track",
+      "meaning": "The nibbled plant detail found in the mud trail at the fifth corner.",
+      "guidance": "A small patch of a plant the creature snacked on; benign.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E2_CHAR",
+      "scope": "track",
+      "meaning": "The harmless false-alarm creature found in the reeds.",
+      "guidance": "A small, sleepy, friendly animal unrelated to the mystery; a gentle red herring.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_ACT",
+      "scope": "track",
+      "meaning": "The careful way the hero records the footprint clue at the first corner.",
+      "guidance": "A patient, careful action (sketching, tracing); rewards care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["A2_ACT"]
+      }
+    },
+    {
+      "id": "A2_ACT",
+      "scope": "track",
+      "meaning": "The hasty way the hero follows the footprint clue at the first corner.",
+      "guidance": "A quick, slightly clumsy action with a gentle lesson about slowing down.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["A1_ACT"]
+      }
+    },
+    {
+      "id": "F1_ACT",
+      "scope": "track",
+      "meaning": "The still-and-wait approach the hero takes at the destination.",
+      "guidance": "A calm, patient waiting action; rewarded by the creature's approach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["F2_ACT"]
+      }
+    },
+    {
+      "id": "F2_ACT",
+      "scope": "track",
+      "meaning": "The offer-a-snack approach the hero takes at the destination.",
+      "guidance": "A gentle offering action using the crop; rewarded by the creature's approach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["F1_ACT"]
+      }
+    },
+    {
+      "id": "G_ACT",
+      "scope": "track",
+      "meaning": "What the class plants to feed the creature family going forward.",
+      "guidance": "A small planted patch of things the creature likes to eat; cooperative and kind.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["H_ACT", "I_ACT"]
+      }
+    },
+    {
+      "id": "H_ACT",
+      "scope": "track",
+      "meaning": "What the class builds to keep the crop safe while sharing the garden.",
+      "guidance": "A small, low, kid-buildable barrier with a gate; fair to both hero and creature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["G_ACT", "I_ACT"]
+      }
+    },
+    {
+      "id": "I_ACT",
+      "scope": "track",
+      "meaning": "What the hero does to share the solved mystery with the class.",
+      "guidance": "A simple show-and-tell action using the notebook's clues.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["G_ACT", "H_ACT"]
+      }
+    },
+    {
+      "id": "B3_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: digging through the second corner for clues turns up nothing (setback).",
+      "guidance": "A warm, funny setback title; the ending must still feel content, not sad.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E3_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: leaning too far at the fifth corner ends the search early (setback).",
+      "guidance": "A light, funny setback title about getting a little wet; never scary.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F3_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: rushing the destination startles the creature away (setback).",
+      "guidance": "A gentle setback title naming the startled creature's retreat; a friendly miss, not a scare.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the class plants a feeding patch for the creature family (success).",
+      "guidance": "Positive; a shared, kind solution. Names ending e_patch.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["H_PRIZE", "I1_PRIZE", "I2_PRIZE"]
+      }
+    },
+    {
+      "id": "H_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the class builds a shared, gated barrier (success).",
+      "guidance": "Positive; a fair compromise for hero and creature. Names ending e_fence.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["G_PRIZE", "I1_PRIZE", "I2_PRIZE"]
+      }
+    },
+    {
+      "id": "I1_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the class puts up a friendly sign and shares the garden (success).",
+      "guidance": "Positive; a welcoming, community solution. Names ending e_share.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["G_PRIZE", "H_PRIZE", "I2_PRIZE"]
+      }
+    },
+    {
+      "id": "I2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the class makes watching the creature family an ongoing job (success).",
+      "guidance": "Positive; an ongoing, gentle stewardship role. Names ending e_watch.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["G_PRIZE", "H_PRIZE", "I1_PRIZE"]
+      }
+    }
+  ]
+}

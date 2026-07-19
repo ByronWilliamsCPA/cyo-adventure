@@ -1,0 +1,412 @@
+{
+  "beats": {
+    "n_start": "the river kingdom of {KINGDOM} on the Long Night of Midwinter, snow on the {GREY_COLOR} walls of {CAPITAL}; {OLD_KING} is dead in the {ROYAL_SIGIL} Keep with no grown heir, only his grandson Prince {HEIR_NAME}, nine years old, last of the {HEIR_HOUSE}; the gold {ROYAL_SIGIL} banner lowered to half its staff over the keep while three bells toll across the frozen {RIVER_NAME}; you are a youth in service in the capital, old enough this year to be trusted with letters and secrets and too young to be blamed for either; a whole succession year is turning on the death of one old king and the childhood of one small boy, and men are already counting banners in the dark",
+    "n_council": "First Thaw; the great houses converge on {CAPITAL} for the reading of the will and the naming of a regent; the {GREY_COLOR} Banner of House {GREY_LEADER}, a {GREY_COLOR} {GREY_SIGIL}, borne by Lord {GREY_TITLE} {GREY_LEADER_GIVEN} {GREY_LEADER} who held the old king household and now holds the capital; the {RED_COLOR} Banner of House {RED_LEADER}, a {RED_COLOR} {RED_SIGIL}, borne by {RED_TITLE} {RED_LEADER_GIVEN} {RED_LEADER} who rides in from the marches with a border army to honor a king he barely obeyed; the {GREEN_COLOR} Banner of House {GREEN_LEADER}, a {GREEN_COLOR} {GREEN_SIGIL}, borne by {GREEN_TITLE} {GREEN_LEADER_GIVEN} {GREEN_LEADER} who speaks for the river guilds and the drowned poor of the fords; above them all the empty gold {ROYAL_SIGIL} of the boy who cannot yet rule; four banners for one throne, and the year has not even begun",
+    "n_sort": "the choosing that decides which betrayals you will witness and which you will never see; three households will take you in and each guards a different half of the year truth; serve under {GREY_TITLE} {GREY_LEADER_GIVEN} {GREY_LEADER} and hold the {GREY_COLOR} capital, where the old order keeps its secrets and spends what it must to survive; serve under {RED_TITLE} {RED_LEADER_GIVEN} {RED_LEADER} in the {RED_COLOR} war-camp, where ambition wears the mask of protection and you alone will learn what it hides; serve under {GREEN_TITLE} {GREEN_LEADER_GIVEN} {GREEN_LEADER} in the {GREEN_COLOR} chancery, where the river folk count their dead and the proof of everything passes through your ink; one banner, one vantage, one conscience, and whose do you carry into the year",
+    "g_a1": "the {GREY_TITLE} household in the old wing of the {ROYAL_SIGIL} Keep; you are {GREY_LEADER_GIVEN} {GREY_LEADER} {GREY_ROLE}, trusted with the wax and the seal-ring; Captain Roderic {GUARD_CAPTAIN}, grim and loyal, runs the {GREY_SIGIL}-banner guard; {GREY_LEADER} is {GREY_COLOR}-haired, exact, a man who has served the crown so long he cannot tell where the crown ends and he begins",
+    "g_a2": "the great houses gathering in the {GREY_COLOR} hall for the reading; the will sealed on the table under the founder portrait; {RED_LEADER} arriving with more guards than a mourner needs, {GREEN_TITLE} {GREEN_LEADER} with a folder of river-town petitions; the whole capital waiting to learn who will hold the boy-king and the year",
+    "g_a3": "the will read aloud; it names {GREY_LEADER_GIVEN} {GREY_LEADER} regent but binds the regency to a three-house co-signing of {HEIR_NAME} protection, so no banner may hold the boy alone; {RED_LEADER} co-signs with a smile that does not reach his eyes; {GREEN_TITLE} {GREEN_LEADER} asks for a Council of Banners and is refused; {GREY_LEADER} turns to you and asks, quietly, what posture the {GREY_COLOR} house should strike in the days to come",
+    "g_will": "the first counsel you help the {GREY_TITLE} choose, and it will shape the whole {GREY_COLOR} year; hold the capital by strength and shut the gates against {RED_LEADER} border army before it can crowd the walls; keep strictly to the letter of the will and let law, not force, answer every challenge; or offer {RED_LEADER} a share of the regency now, buying peace with power before either turns to war; the honor rule of the {GREY_COLOR} house, spoken by {GREY_LEADER} himself, is that a steward guards, he does not grasp, so remember it, because each road tests it differently",
+    "g_xa1": "the gates of {CAPITAL} barred; {RED_LEADER} {RED_COLOR} army camped in the water-meadows across the {RIVER_NAME}, close enough to hear their horns at dawn; {GUARD_CAPTAIN} speaks of the {KINGSBRIDGE}, the one crossing that lets the border army reach the capital; the river runs high with the thaw and the old sluice-gate could be opened to flood the fords below the bridge",
+    "g_xa2": "{GUARD_CAPTAIN} lays it out flat; open the gate, drown the fords, and {RED_LEADER} cannot cross for a week; but the fords carry a {GREEN_COLOR} grain convoy and the river folk who work it, crossing at dusk, and the flood will take them; the {GREY_TITLE} order is already written and waits only for a hand to carry it",
+    "g_x_bridge": "the {KINGSBRIDGE} crisis, and the {GREY_COLOR} house darkest hour; carry the {GREY_TITLE} order to open the river-gate and drown the lower fords so {RED_LEADER} cannot cross, though a {GREEN_COLOR} convoy and forty river folk are on the water; the honor rule stands plainly before you, a steward man does not spend the innocent to win a crossing; carry the order as given, or refuse it and warn the {GREY_TITLE} what it truly costs",
+    "gE1_t1": "the sluice hauled up in the dark; the {RIVER_NAME} pouring brown over the lower fords; the {GREEN_COLOR} convoy lanterns going out one by one downriver as the water climbs the pilings and the shouting stops",
+    "gE1_t2": "forty river folk taken by the flood that saved the capital a week of siege; {RED_LEADER} army turned back at the drowned crossing; the walls safe and the cost written on no ledger any lord will read aloud",
+    "gE1_t3": "{GUARD_CAPTAIN} will not meet your eyes on the wall the next morning; the {GREY_TITLE} thanks you, and you learn thanks is the wage they pay for a thing that cannot be undone; you carry the wax back through a keep gone very quiet",
+    "gE1": "the year the {GREY_COLOR} house won the bridge and lost its name; the capital safe, the fords a grave, and you the hand that turned the gate; no siege came, and no forgiveness either; you keep the {GREY_TITLE} seal and the memory of lanterns going dark, and you know now what order costs when it is paid in other people lives",
+    "g_xb1": "you refuse {GUARD_CAPTAIN} and go straight to {GREY_LEADER} with the whole of it, the convoy, the river folk, the forty who would drown for a week delay; the {GREY_TITLE} hears you out in silence and for once looks his age; he lets the gate stay shut and the fords stay dry, and {RED_LEADER} army begins to cross the {KINGSBRIDGE} unopposed",
+    "g_xb2": "the {RED_COLOR} columns on the near bank now, the easy crossing lost by choice; the capital must be held another way, with less time and no clever cruelty to buy it; {GREY_LEADER} asks you to help him choose the last honest road, and there are only two of them left",
+    "g_x_council": "{RED_LEADER} {RED_COLOR} columns on the near bank and the capital decision forced; stand a siege behind {CAPITAL} {GREY_COLOR} walls and make the border army pay for every stone; or yield the capital without a battle and slip the boy-king {HEIR_NAME} out through the water-gate to a safer keep before the trap closes; the {GREY_COLOR} house will be remembered for one or the other, and there is no third road left now that the river runs free",
+    "gE2_t1": "the gates shut and barred, the granaries counted grain by grain, the wells sounded, the {GREY_COLOR} {GREY_SIGIL} banner nailed to the highest tower where the whole meadow can see it stand",
+    "gE2_t2": "{RED_LEADER} army settles to a siege in the water-meadows; horns at dawn and dusk, a ring of {RED_COLOR} tents, no storm and no yielding, only the slow arithmetic of which house runs out of winter first",
+    "gE2_t3": "short rations and shorter tempers; the boy-king kept to the inner rooms and told it is a long winter game; you carry the {GREY_TITLE} orders down cold stairs and learn the weight of simply not losing",
+    "gE2_t4": "midwinter deep; a sally against the {RED_COLOR} lines that costs more than it wins; the walls hold; the household thins; the {GREY_COLOR} house learns to measure victory in mornings survived and nothing more",
+    "gE2_t5": "first thaw; {RED_LEADER} army worn and hungry too, drawn off at last toward troubles on the marches it left unguarded; the ring of tents empties; the siege loosens more abandoned than lifted",
+    "gE2_t6": "spring over {CAPITAL}, the meadows bare of {RED_COLOR} tents; the boy-king still in the keep, still breathing, still the realm rightful heir; nothing won but survival, and survival held with both cold hands until the light came back",
+    "gE2": "the year the {GREY_COLOR} capital simply refused to fall; no triumph, no rout, only a long siege outlasted and a small king kept alive behind {GREY_COLOR} stone; the war is not ended, the question of the throne not answered, but {CAPITAL} stands and {HEIR_NAME} breathes, and you learn that holding the line is its own quiet kind of victory",
+    "gE3_t1": "the water-gate at the third bell of the night; Prince {HEIR_NAME} woken and wrapped against the cold and told it is a game of quiet; the {GREY_SIGIL}-guard picked and few and sworn to the barge",
+    "gE3_t2": "down the river stairs to a waiting barge; the capital left behind for {RED_LEADER} to hold empty; its true prize slipping onto the black {RIVER_NAME} while the {RED_COLOR} horns sleep in the meadows",
+    "gE3_t3": "the barge running silent past the sleeping fords, oars muffled, no lantern lit; the boy asleep against your shoulder before the first {GREY_COLOR} of dawn touches the water",
+    "gE3_t4": "a chain of small {GREY_COLOR} keeps upriver, loyal to {GREY_LEADER} by old oath and older debt, none of which will sell a child; the barge passed hand to hand up the friendly current",
+    "gE3_t5": "the upriver keep, gates open to the {GREY_SIGIL} banner at first light; {HEIR_NAME} handed to guardians who owe the {GREY_TITLE} their lives; {RED_LEADER} left ruling walls with no king inside them",
+    "gE3_t6": "the {GREY_COLOR} house poorer by a city and richer by a crown it did not have to grasp to keep; you stand on the keep wall as the sun comes up and understand at last what a guardian is meant to guard",
+    "gE3": "the year the {GREY_TITLE} gave away a capital to save a king; {CAPITAL} lost, {HEIR_NAME} safe and free among loyal keeps, the {GREY_COLOR} house proven a guardian and not a jailer; you rowed the heir out of a closing trap and kept the honor rule whole, a steward guards and does not grasp, and the realm still has a rightful crown to grow into",
+    "g_ya1": "you help {GREY_LEADER} hold to the will to the letter; the three-house co-signing of {HEIR_NAME} protection honored in full, every seal witnessed, every clause read aloud so no house can later claim it was tricked; it is slow and bloodless and it makes {RED_LEADER} grind his teeth",
+    "g_ya2": "you spend the spring carrying witnessed copies between the houses, binding each lord to the same written protection of the boy; the law becomes a slow net around the year; {RED_LEADER} signs everything and means none of it, and you learn to read a smile that agrees in order to betray later",
+    "g_ya3": "Midsummer brings the {ROYAL_SIGIL} Feast, a truce feast where all banners sit at one table and the boy-king is shown to the realm; the hall bright, the wine poured, every house watching every other over the rims of their cups; {RED_LEADER} keeps his own taster very close and you note it without knowing yet why",
+    "g_y_feast": "the {ROYAL_SIGIL} Feast turned to poison; {RED_LEADER} food-taster collapses and dies over the boy-king cup, and {RED_LEADER} rises to accuse the {GREY_COLOR} house of trying to poison the prince and pin it on the marches; you saw the cup was {RED_LEADER} own man, not {HEIR_NAME}, but from the {GREY_COLOR} vantage you cannot yet prove the {RED_TITLE} staged it; the honor rule holds, the {GREY_COLOR} house answers with truth, not with a louder lie; demand proof and try to expose the staging, or let the {GREY_TITLE} answer the charge with cold restraint and let the lie starve",
+    "g_yb1": "you work the feast-hall backward, the cup, the taster, the order of the pouring; every thread says the doctored cup was {RED_LEADER} own and never near the prince, but the proof stops at the edge of the {RED_TITLE} tent where no {GREY_COLOR} hand can reach; you have enough to clear the {GREY_TITLE} and never enough to hang the {RED_TITLE}",
+    "g_yb2": "half a truth in your hand and the council waiting; enough to clear a name, never enough to name a guilty man; what you do with it will decide how the realm reads the whole year, and {GREY_LEADER} leaves the choosing to you because you are the one who gathered it",
+    "g_y_trial": "half a truth in your hand and the council waiting; bring what you have before the full Council of Banners and clear {GREY_LEADER} name in the open, though you cannot name the {RED_TITLE}; or hold the proof close and use the threat of it to force {RED_LEADER} to a truce that spares the realm a war; clearing a name or keeping a peace, and you cannot do both",
+    "gE4_t1": "the Council of Banners in full session; you lay out the cup, the taster, the pouring, enough to clear the {GREY_TITLE} of any hand in the death; {RED_LEADER} sits stone-faced as the charge against {GREY_COLOR} collapses under the plain order of the evening",
+    "gE4_t2": "{GREY_LEADER} cleared, the {GREY_COLOR} house vindicated, the {RED_TITLE} untouched; the proof will not reach far enough to name him, and every lord in the room knows it and says nothing; a half-justice that keeps one honest name and lets a guilty man keep his sword",
+    "gE4_t3": "you carry the record home knowing the difference now between the truth you hold and the truth you can hang a man with; the {GREY_COLOR} house honest and the {RED_COLOR} house free; the whole design locked in a vantage your ink could not reach",
+    "gE4": "the year you cleared the {GREY_TITLE} and could not touch the {RED_TITLE}; the {GREY_COLOR} house honest and the {RED_COLOR} house unpunished, the whole truth of the staged poisoning locked in a vantage you could not reach; you kept the honor rule and answered with proof, and you learned that a proven truth and a known truth are not the same weapon",
+    "gE5_t1": "you take the half-proof to {RED_LEADER} privately, not to hang him but to bargain; enough that he knows the {GREY_COLOR} house could make the feast-poison stink follow the {RED_COLOR} banner all year if it chose; the {RED_TITLE} listens, and for once the smile is gone",
+    "gE5_t2": "a truce struck in the space between what you can prove and what he cannot deny; no war over the feast, no name cleared in the open either; the {GREY_TITLE} keeps a peace and swallows a vindication in the same breath",
+    "gE5_t3": "the truce holds through the harvest; the {RED_COLOR} banner careful, the {GREY_COLOR} banner quiet, the realm buying a season of calm with a secret nobody outside the tent will ever read",
+    "gE5_t4": "you brokered it with a threat you never had to carry out; the household praises a calm they do not understand and you let them; a peace kept by a letter that must never be opened, and you the only one who knows its weight",
+    "gE5_t5": "the proof locked away, spent without being used, a coin held over the year like weather that never breaks; the honor rule kept whole, truth answered with truth and never with the sword, and the realm the safer for a thing it cannot see",
+    "gE5": "the year a secret bought a peace; the {GREY_COLOR} house never cleared in the open and never at war either, the {RED_TITLE} leashed by proof he could not let surface; you traded justice for calm and kept the honor rule whole by answering with truth instead of the sword, and the realm breathed easier for a season without ever knowing why",
+    "gE6_t1": "{GREY_LEADER} rises before the feast and answers {RED_LEADER} not with denial but with the will itself, read again clause by clause, the co-signing, the shared protection, the law that binds every banner including {RED_COLOR}; he does not accuse, he only stands inside the law and lets the false charge break against it",
+    "gE6_t2": "{RED_LEADER} has a dead taster and no cup that ever touched the prince; the accusation curdles as the {GREY_COLOR} house simply refuses to shout back; the hall turns, slowly, from the accuser toward the accused",
+    "gE6_t3": "by the feast turning it is the {RED_TITLE} who looks the schemer and the {GREY_TITLE} who looks the crown true servant; no blood spilled to prove it, only patience and the plain reading of a page every lord already signed",
+    "gE6_t4": "you keep near {HEIR_NAME} through the rest of the feast, the small king pale and frightened by the shouting; the {GREY_COLOR} house closes quietly around him, guardian and not jailer, and the realm sees the difference",
+    "gE6_t5": "the feast ends with the three-house protection unbroken and the {GREY_COLOR} house the stronger for having stayed quiet; {RED_LEADER} withdraws his charge in all but words, and words are all he has left",
+    "gE6_t6": "the harvest comes in under a calmer sky; the law {GREY_LEADER} read aloud stands as the year spine, the boy safe, the houses bound; you learn that the hardest answer to a lie is often no answer at all but the truth left standing",
+    "gE6_t7": "winter again, and the {GREY_COLOR} {GREY_SIGIL} banner flying over a realm that kept its head; the honor rule kept in the hardest place, where a lie begged to be answered with a lie and was answered only with the law",
+    "gE6_t8": "the realm remembers the feast as the night the {GREY_COLOR} house would not stoop; you carry the {GREY_TITLE} wax into another year knowing that a house can win by refusing the very weapon that was used against it",
+    "gE6": "the year the {GREY_COLOR} house won by refusing to lie; {RED_LEADER} staged poisoning turned back on him by nothing but the plain law read aloud and the {GREY_TITLE} cold patience; you helped an honest man hold his name without a sword or a counter-lie, and the realm saw which banner served the crown and which served itself",
+    "g_za1": "you become the {GREY_COLOR} house go-between, carrying {GREY_LEADER} offer of a shared regency to the other banners; to {GREEN_TITLE} {GREEN_LEADER} it sounds like the Council she has begged for; to {RED_TITLE} {RED_LEADER} it sounds like weakness he can widen; the honor rule whispers a warning you will need later, that {RED_LEADER} keeps whatever he is given and asks for more",
+    "g_za2": "you spend a fortnight reading rooms; the {GREEN_COLOR} chancery hungry for any seat at the table, the {RED_COLOR} camp hungry for the whole table, the {GREY_COLOR} household weary and wanting only to keep the boy safe and the year quiet; three roads open from one offer and each ends the {GREY_COLOR} year in a different place",
+    "g_za3": "you lay the choices before the {GREY_TITLE}; ally openly with {GREEN_COLOR} and build a Council that binds even {RED_LEADER}, deal privately with the {RED_TITLE} house to house, or keep the {GREY_COLOR} house above every faction and hold the balance alone; {GREY_LEADER}, tired, asks which road keeps the honor rule whole, and you are not certain any of them does",
+    "g_z_offer": "the shared regency taking shape three ways; ally the {GREY_COLOR} house openly with {GREEN_TITLE} {GREEN_LEADER} {GREEN_COLOR} banner and press for a true Council of Banners that binds even {RED_LEADER}; or deal privately with the {RED_TITLE}, hand for hand, and settle the regency between the two strong houses over {GREEN_LEADER} head; or keep the {GREY_TITLE} above every faction and let him hold the balance alone; the warning stands, {RED_LEADER} keeps what he is given, so weigh what you would hand him",
+    "gE7_t1": "you carry the alliance back and forth until it holds; {GREY_COLOR} order and {GREEN_COLOR} legitimacy joined, the river guilds and the old household speaking with one voice; the two banners together outweigh the {RED_COLOR} at last",
+    "gE7_t2": "for the first time the {RED_TITLE} meets a thing he cannot simply lean his weight against; {GREY_COLOR} and {GREEN_COLOR} interlocked, each covering the other blind side; the {RED_COLOR} house held not by a sword but by a knot it cannot pick",
+    "gE7_t3": "you sit up nights with the {GREEN_COLOR} scribes writing the shared regency, every power balanced against another, the boy-king made ward of all and prisoner of none; a document built to survive the men who signed it",
+    "gE7_t4": "the Council of Banners convened in the {ROYAL_SIGIL} hall, every seat filled, the commons among the great for the first time in the realm memory; the war that hung over the fords all year folds up unfought before it starts",
+    "gE7_t5": "{HEIR_NAME} under the protection of a Council instead of a single grasping house; safe because no one banner can move him without the others; the honor rule kept and made into law, a steward guards and does not grasp",
+    "gE7_t6": "the {GREY_TITLE} private honor written now into the realm public rule, no house permitted to hold the boy alone; you helped turn one man restraint into a thing every banner must keep whether it wishes to or not",
+    "gE7_t7": "{HEIR_NAME} shown to the realm not as a prize between armies but as a ward of them all; the fear goes out of the small king shoulders by degrees through the autumn; you learn a crown guarded by many is a lighter thing to wear than one clutched by one",
+    "gE7_t8": "winter again over a realm that chose a Council over a crown; the {GREY_COLOR} {GREY_SIGIL} and the {GREEN_COLOR} {GREEN_SIGIL} flying together, the {RED_COLOR} {RED_SIGIL} hemmed by both, the gold {ROYAL_SIGIL} safe above them all; you learn that the strongest guard is many hands, not one fist",
+    "gE7": "the year {GREY_COLOR} and {GREEN_COLOR} built a Council no single banner could break; the boy-king warded by all houses and owned by none, {RED_LEADER} hemmed in by law instead of beaten by war; you carried the alliance that turned the {GREY_TITLE} private honor into the realm public rule, and the crown is safer for it than a sword could make it",
+    "gE8_t1": "you carry the private deal into {RED_LEADER} tent; the two strong houses to split the regency and leave {GREEN_LEADER} outside the door; the {RED_TITLE} agrees at once, too easily, and asks only that the {GREY_COLOR} house send a surety of good faith into his keeping, a hostage by a politer name",
+    "gE8_t2": "the ink is not dry before the {RED_TITLE} widens every clause; the surety becomes leverage, the shared regency becomes his in all but the writing, and the {GREY_COLOR} house finds itself the junior partner of a man who never keeps a bargain smaller than he can grow it",
+    "gE8_t3": "the warning was true and came too late; {RED_LEADER} keeps what he is given, and you gave him the {GREY_COLOR} house piece by piece, thinking each piece the last; by winter the {GREY_TITLE} is a guest in his own regency and you the messenger who carried him there",
+    "gE8": "the year the {GREY_COLOR} house bargained itself into a cage; the private deal made {RED_LEADER} master of the regency and made the {GREY_TITLE} his hostage in fact, {GREEN_LEADER} locked out and the boy-king a bargaining chip between two houses; the honor rule warned you plainly, {RED_LEADER} keeps what he is given, and you gave him the {GREY_COLOR} house one clause at a time",
+    "g_zb1": "you help {GREY_LEADER} refuse both the {GREEN_COLOR} alliance and the {RED_COLOR} deal, holding the {GREY_COLOR} house above the fray as the one banner that grasps at nothing; it is a lonely place and a proud one, and by the year end it costs; a crown held too tight cuts the hand, the old man says, half to himself, and you are not sure he still hears his own rule",
+    "g_zb2": "the year closes in around the {GREY_TITLE}; the houses that were courted turn cold, the boy-king harder to protect alone, the {GREY_COLOR} house proud and isolated on its high ground; it all narrows to a single last question about how {GREY_LEADER_GIVEN} {GREY_LEADER} will let go of the regency, or whether he will let go at all",
+    "g_z_end": "the last {GREY_COLOR} choice of the year; counsel the {GREY_TITLE} to resign the regency into a Council hands while he still can, stepping down with the honor whole; or back him in clinging to the regency to the last, holding the boy and the crown alone against every other banner; the rule he taught you cuts both ways now, a steward guards and does not grasp, and a crown held too tight cuts the hand that will not open",
+    "gE9_t1": "you help the {GREY_TITLE} write his own stepping-down; the regency surrendered to a Council of Banners before any house can wrench it from him; {GREY_LEADER} signs it steady-handed and looks, for the first time all year, unburdened",
+    "gE9_t2": "{HEIR_NAME} handed to a Council instead of clutched by a fist; the {GREY_COLOR} house keeps the one thing it came in with, its honor, and loses only power, which the old man says was never his to keep in the first place",
+    "gE9_t3": "the {GREY_SIGIL} banner lowered by choice, not by defeat; the old man walking out of the {ROYAL_SIGIL} Keep a private lord again, the crown left safer than he found it, the household quiet with a kind of relief",
+    "gE9_t4": "you learn that the hardest guarding is knowing when to let the guarded thing go; the {GREY_TITLE} taught you the rule with his life and kept it with his last act of office",
+    "gE9_t5": "winter over a realm that got its Council without a war; the {GREY_COLOR} house smaller and cleaner than it began; you carry the seal into next year knowing exactly what it is worth, and what it is not worth keeping at any cost",
+    "gE9": "the year the {GREY_TITLE} proved his own rule by keeping it; the regency laid down into a Council before it could be seized, the boy-king safe in shared hands, the {GREY_COLOR} house diminished in power and whole in honor; you helped an old man open his hand before the crown could cut it, and he walked out a guardian to the end",
+    "gE10_t1": "the {GREY_TITLE} will not let go; he holds the regency and the boy alone against {GREY_COLOR} counsel and every other banner, and the houses close on him like weather; you stand at his shoulder to the last as the Council votes him down and the {RED_COLOR} and {GREEN_COLOR} banners take the keep between them",
+    "gE10_t2": "{GREY_LEADER_GIVEN} {GREY_LEADER} broken by the year and the weight, dead of it before the spring, the household says of a stopped heart and the truer say of a hand that would not open; the regency lost, the boy passed to other keeping, the {GREY_SIGIL} banner furled; the death is recounted quietly, with the gravity a long service is owed",
+    "gE10": "the year the {GREY_TITLE} could not let go and it killed him; the regency clutched to the last, the Council turned against him, the old man gone before spring with the crown still in his cold grip; you carry his seal and the lesson he taught and broke, a crown held too tight cuts the hand, and you bury a guardian who forgot to open his",
+    "r_s1": "the {RED_TITLE} war-camp on the marches, {RED_COLOR} {RED_SIGIL} banners snapping over a sea of tents; you are {RED_LEADER_GIVEN} {RED_LEADER} young {RED_ROLE}, the boy who carries his words where they must not be written; the camp is all iron and appetite, and the {RED_TITLE} at its center is charming, generous, and never once idle",
+    "r_s2": "{RED_LEADER} by the fire, naming the great houses for you like a man laying out a board; {GREY_COLOR} {GREY_LEADER} the tired old guardian, {GREEN_COLOR} {GREEN_LEADER} the dreamer with her guilds, the boy-king {HEIR_NAME} a crown on legs too short to run; the {RED_TITLE} says the realm needs a strong hand and lets you understand whose hand he means",
+    "r_s3": "First Thaw; {RED_LEADER} rides for {CAPITAL} at the head of the marches, banners forward, to honor a king he fought half his life; the army is too large for a funeral and everyone knows it; you carry his letters ahead, warm and dutiful on the page, and see the distance between what your master writes and what he means",
+    "r_s4": "the will read in the {GREY_COLOR} hall; it names {GREY_LEADER} regent and binds the boy protection to all three houses; {RED_LEADER} signs it with a flourish and a smile, co-signing the very leash he means to slip; you watch him agree to everything he intends to break and file it with the other things you were not meant to see",
+    "r_s5": "a sealed letter pressed into your hand for a hard ride south to the {SELLSWORD_BASE}, to the sellsword companies who fight for coin and no banner; you are told only to deliver it and forget it, but you saw the seal and you know the {SELLSWORD_BASE}, and you understand your master is buying an army under the table of a truce he just signed",
+    "r_s6": "word comes of the {KINGSBRIDGE}, the river-gate opened, the lower fords drowned, forty river folk and a grain convoy lost; the camp roars that {GREY_LEADER} did it, and {RED_LEADER} believes it, cursing the {GREY_COLOR} house for butchers; the {RED_COLOR} vantage never learns the truth of the bridge, only the {GREY_COLOR} house wears that crime in secret; you carry a rage built on a fact you cannot check",
+    "r_s7": "the border army halts within a day of the capital and the houses agree to a truce feast at Midsummer, the {ROYAL_SIGIL} Feast, where the boy-king will be shown and every banner will sit at one table and pretend; {RED_LEADER} grows quiet and busy in the days before, and the quiet is the kind you have learned to fear",
+    "r_s8": "the second secret only the {RED_COLOR} vantage holds; you overhear {RED_LEADER} arranging it, his own taster to drink a doctored cup at the feast and die of it, so the {RED_TITLE} can cry that {GREY_LEADER} tried to poison the prince and seize the boy as his protector; a staged murder of his own man to buy a child; you carry it out of the tent like a coal in your fist",
+    "r_s9": "the {ROYAL_SIGIL} Feast; the taster drinks and dies, though the staging goes wrong and the man dies harder and truer than planned; {RED_LEADER} rises white-faced and accuses the {GREY_COLOR} house of poisoning the prince; the hall erupts; you alone in all that room know the cup was the {RED_TITLE} own design, and you hold your tongue because a {RED_ROLE} who speaks now does not leave the hall alive",
+    "r_s10": "in the uproar {RED_LEADER} moves fast; he sweeps up Prince {HEIR_NAME} under the banner of protection, claiming {GREY_LEADER} cannot keep the child safe, and rides for the border fortress of {RED_FORTRESS} with the boy and the gold {ROYAL_SIGIL} in {RED_COLOR} hands; you ride in the column that carries a king away from his keepers",
+    "r_s11": "{RED_FORTRESS} on its crag above the marches, {RED_COLOR} falcons on every tower and the small gold {ROYAL_SIGIL} flying below them now, a captured banner; Prince {HEIR_NAME} lodged in the high rooms, guarded and gilded and alone; the realm splits clean, {GREY_COLOR} holding the empty capital, {GREEN_COLOR} holding the rivers, {RED_COLOR} holding the child",
+    "r_s12": "winter closes on {RED_FORTRESS}; {GREY_LEADER} marches to recover the prince and {RED_LEADER} digs in to keep him, the boy the pivot of both; the {RED_TITLE} means to crown {HEIR_NAME} under {RED_COLOR} protection or hold him as a shield, and you carry messages between men deciding a nine-year-old life like a move in a long game",
+    "r_s13": "the eve of the siege; {GREY_LEADER} {GREY_COLOR} host in the snow below and {RED_FORTRESS} sealed above; {RED_LEADER} turns to you at last and asks plainly where your loyalty lies, {RED_ROLE}, with the {RED_SIGIL} or with your own conscience; the honor rule of the {RED_ROLE}, the one thing you brought into this camp, is that a {RED_ROLE} word is his house honor and must never carry a lie; every choice from here tests it",
+    "r_c1": "the first turn of the siege; {RED_LEADER} wants a forged proclamation that Prince {HEIR_NAME} named him protector with the boy own seal, to make the capture look like the child wish; the honor rule is plain, a {RED_ROLE} word is his house honor and must never carry a lie; forge the proclamation in the boy-king name, or refuse the lie and hold your word clean",
+    "rE1_t1": "you write it, the boy-king voice in your master design, the gold {ROYAL_SIGIL} seal pressed to a lie; the proclamation goes out and the realm reads it as {HEIR_NAME} own choosing; the {RED_ROLE} word is spent and cannot be bought back, and you feel the honor you came in with go out of you like heat",
+    "rE1": "the year you signed away your only honor; the forged proclamation made the capture look like the child wish and made you the liar who wrote it; the rule you brought into the {RED_COLOR} camp is broken, a {RED_ROLE} word is his house honor, and you carry the {RED_SIGIL} now with nothing of your own left underneath it",
+    "r_c2": "the second turn; the garrison mutters and you could break the whole siege with one sentence, the truth that the feast-poisoning was {RED_LEADER} own staging, a secret only you hold; speak it to the garrison and watch the {RED_COLOR} house turn on itself, though you will be named traitor first and fast; or keep the coal in your fist and stay useful and alive",
+    "rE2_t1": "you tell them, the taster, the doctored cup, the {RED_TITLE} own hand in the feast-murder that started this war; the yard goes silent and then loud; some believe you and more do not, and {RED_LEADER} men have you by the arms before the echo dies",
+    "rE2_t2": "branded a liar for telling the truth, cast out of the {RED_COLOR} house you exposed; the garrison half-split behind you and no thanks from any banner; you learn that a secret spoken from inside is heard as treason no matter how true, and the truth-teller pays before the truth does",
+    "rE2": "the year you told the truth and it broke you first; the staged poisoning spoken aloud in the muster yard, the {RED_COLOR} house split, and you branded traitor for the one honest sentence of the year; you learn what only the {RED_COLOR} vantage could teach, that a true secret spoken from the inside is called betrayal by the very men it might have saved",
+    "r_c3": "the third turn; a rider could reach {GREEN_TITLE} {GREEN_LEADER} {GREEN_COLOR} chancery tonight with word of the sellsword letter you carried south, the proof that {RED_LEADER} bought an army under the truce; smuggle the word out to {GREEN_COLOR} and arm the one house that could prove it; or hold it, because a {RED_ROLE} who leaks his own master is a {RED_ROLE} no house will ever trust again",
+    "rE3_t1": "you get the word out, a whispered route to the {GREEN_COLOR} chancery, the sellsword companies named, the {RED_TITLE} under-the-table army exposed to the one house that keeps proof; you have handed {GREEN_COLOR} a weapon and handed yourself a truth you can never take back, that you are no longer only {RED_LEADER} man",
+    "rE3": "the year the {RED_COLOR} vantage armed the {GREEN_COLOR}; the sellsword secret carried out of {RED_FORTRESS} to the one house that could prove it, the {RED_TITLE} bought army dragged toward the light; you kept no banner trust and served a truth larger than any of them, and you learned that the only loyalty left to you was to the fact itself",
+    "r_c4": "the fourth turn; {GREY_LEADER} {RED_ROLE} comes under a white flag to parley, and {RED_LEADER} hands you his ultimatum to deliver, harsh enough to make the parley fail on purpose; carry the ultimatum exactly as the {RED_TITLE} wrote it and burn the truce, or soften it in the delivery and leave a door open, though a {RED_ROLE} who edits his master words has broken his office",
+    "rE4_t1": "you deliver it whole, every barbed clause, and watch the {GREY_COLOR} {RED_ROLE} face close and the white flag come down; the parley dies as it was built to die and the siege hardens to the death; you kept your office and carried your master true meaning, and the meaning was war",
+    "rE4": "the year you carried a war in your mouth; the ultimatum delivered whole, the truce burned to the ground exactly as intended, the siege set to grind to its worst; you kept the {RED_ROLE} rule to carry your master words unaltered and learned it can make you the faithful instrument of a thing you hate",
+    "r_c5": "the fifth turn, and the cruelest; {RED_LEADER} orders the boy-king shown on the wall in sight of {GREY_LEADER} host, a nine-year-old made a shield to freeze the {GREY_COLOR} advance; the rule beneath every rule, a shield of children is no shield at all; obey and set the child on the battlements, or refuse and hide the boy where no order can reach him",
+    "rE5_t1": "you do it, the small king on the cold battlement in his gold cloak, a target dressed as a threat, and the {GREY_COLOR} host below goes still with horror; the advance freezes and {RED_LEADER} smiles and you understand you have made yourself the jailer of a child",
+    "rE5_t2": "the boy holds your hand and does not know why; when the reckoning comes, {GREY_COLOR} and {GREEN_COLOR} alike name the {RED_ROLE} who set the child on the wall, and there is no honor rule left to hide behind; you obeyed, and obedience made you the thing the rule warned against",
+    "rE5": "the year you made a child a shield; the boy-king set on the battlements to freeze an army, the siege bought on a nine-year-old fear, and you the hand that walked him into the wind; the rule was plain, a shield of children is no shield at all, and you broke it to obey, and the breaking is yours to carry however the year ends",
+    "r_c6": "the sixth turn; a {GREY_COLOR} captain offers you gold to open a postern gate by night and let {GREY_LEADER} men into {RED_FORTRESS}, a betrayal of the betrayers that would end the siege in blood in the dark; open the postern and sell the fortress from within, or keep faith with the walls you stand on even now, when the men behind them deserve so little",
+    "rE6_t1": "you take the gold and turn the key; {GREY_COLOR} men pour through the postern in the black hour and the fortress falls from the inside in a confusion of blades; you have ended one betrayal with another and no house will call you anything but what you are now, a man who opens gates for coin, whichever side he wears",
+    "rE6": "the year you answered a betrayal with a betrayal; the postern sold, {RED_FORTRESS} taken from within in the dark, the siege ended in blood you let inside; you traded one broken faith for another and came out the year with gold and no name worth keeping, a gate that opens for whoever pays the most",
+    "r_c7": "the seventh turn; a chance opens to broker a private surrender of Prince {HEIR_NAME} into the keeping of a neutral Council, ending the siege without a storming and taking the boy out of every grasping hand; broker the quiet surrender and close the year with the child safe, or press on and keep the game running for a bigger prize",
+    "rE7_t1": "you spend three nights carrying terms between {RED_LEADER} and a neutral Council forming below, until the shape of it holds; the boy surrendered not to {GREY_COLOR} or {RED_COLOR} but to a shared keeping, the siege lifted, the fortress spared a storming",
+    "rE7_t2": "the terms signed, the {GREY_COLOR} host withdrawing, the {RED_COLOR} falcons lowered by agreement instead of defeat; {HEIR_NAME} taken from {RED_FORTRESS} to a Council care; the year ends not with a winner but with a boy alive and a war unfought",
+    "rE7": "the year the {RED_ROLE} ended a siege with words instead of a wall; Prince {HEIR_NAME} surrendered into a neutral Council keeping, the fortress spared, no banner crowned and none defeated; you used everything the {RED_COLOR} vantage taught you to broker a quiet close, and the child walked out of the game alive, which was the only prize worth taking",
+    "r_c8": "the eighth turn; you could confront {RED_LEADER} himself with what you alone know, the staged poisoning, the sellswords, the whole rotten frame of the year, and force the {RED_TITLE} to see his own reflection; confront him with the truth of his staging and see what a shamed man does, or swallow it one more time and keep your place",
+    "rE8_t1": "you say it all in the high room, the taster, the doctored cup, the letter to the {SELLSWORD_BASE}, the child on the wall, and for once {RED_LEADER} has no charm to answer with; the {RED_TITLE} sits a long time with his own reflection, and something in the year bends; he relents part way, pulls the boy off the wall, lets the parley live, not from mercy but because a man seen clearly cannot look away as easily",
+    "rE8": "the year the {RED_ROLE} held a mirror to a duke; every private crime of the {RED_COLOR} vantage named to {RED_LEADER} own face, the staging and the sellswords and the shield of children, and the {RED_TITLE} bent a little under being seen; you changed nothing you could prove and something you could not, and learned that a witness is its own kind of power",
+    "r_c9": "the ninth turn; {RED_LEADER} means to crown {HEIR_NAME} a puppet king under {RED_COLOR} protection, a small hollow crown with the {RED_TITLE} hand inside it, and asks you to stage the crowning; help crown the puppet and give the year a king who is a shadow, or move to stop the false crowning before it sets",
+    "rE9_t1": "you help stage it, the boy-king crowned in {RED_FORTRESS} with {RED_COLOR} falcons at every pillar, a real crown on a child who will rule nothing while {RED_LEADER} rules through him; the realm has its king again and he is a shadow of one, and you the {RED_ROLE} who called the ceremony true",
+    "rE9": "the year the realm got back a king who was a shadow; {HEIR_NAME} crowned in {RED_FORTRESS} under the {RED_COLOR} {RED_SIGIL}, the throne filled and empty at once, {RED_LEADER} hand inside the small gold crown; you closed the year with a coronation that settled everything and healed nothing, and you know exactly whose reign you helped begin",
+    "r_c10": "the tenth turn, deep in the year and the walls; a narrow window opens to spirit Prince {HEIR_NAME} out of {RED_FORTRESS} to true hiding, out of {RED_COLOR} hands and {GREY_COLOR} reach alike, a child hidden until he is old enough to be his own king; take the risk and steal the boy away to safety, or stay the course and keep him a piece on the board",
+    "rE10_t1": "you go in the small hours, the boy in a servant cloak, down the water-stair and out past the falcons who never guard the {RED_ROLE}; you carry {HEIR_NAME} into the marshes and the hidden keeps beyond every banner map, a child taken out of the game entirely to be kept until he is grown",
+    "rE10_t2": "the boy delivered to guardians who owe no house and want no throne; the war at {RED_FORTRESS} loses its prize and its point; the {RED_ROLE} who stole a king walks out of the story into a long quiet, his word spent to save a child and never for a lie",
+    "rE10": "the year the {RED_ROLE} stole a king to save him; {HEIR_NAME} carried out of {RED_FORTRESS} and hidden past every banner reach, the war robbed of its prize, the child kept safe to grow into his own crown; you spent everything the {RED_COLOR} vantage gave you on the one honest act it made possible, and your word came out of the year clean",
+    "r_c11": "the eleventh turn; you could turn the {RED_FORTRESS} garrison itself, the captains sick of the year, and force {RED_LEADER} at his own sword-point to accept a Council of Banners; turn the garrison and end the {RED_TITLE} grip from inside, or hold and let the siege decide it by blood outside the walls",
+    "rE11_t1": "you spend a week turning captains one by one, the man who lost a brother at the feast, the woman who will not guard a child on a wall, until the garrison stands with you; {RED_LEADER} wakes to his own house arrayed against him and no army left to give an order to; the {RED_TITLE} accepts a Council of Banners at the point of his own men swords",
+    "rE11": "the year the {RED_ROLE} turned a fortress against its own duke; the {RED_FORTRESS} garrison brought over one grief at a time until {RED_LEADER} had no one left to command, forced to a Council of Banners by his own men; you ended the {RED_TITLE} grip with conscience instead of blood, and the boy-king passed to safe and shared keeping",
+    "r_c12": "the last turn of the {RED_COLOR} year; the siege breaks one way or another and {RED_LEADER} asks which banner you raise over {RED_FORTRESS} when the smoke clears; raise the gold {ROYAL_SIGIL} for the child and set the crown back where it belongs, free; or raise the {RED_COLOR} {RED_SIGIL}, let the {RED_TITLE} keep what he took, and live the rest of your life inside that choice",
+    "rE12_t1": "when it ends you climb the highest tower and haul down the {RED_COLOR} {RED_SIGIL} and raise the small gold {ROYAL_SIGIL} over {RED_FORTRESS}, free and rightful; the realm sees whose banner won the year, not the strongest house but the true crown; {HEIR_NAME} passed at last into keeping that guards and does not grasp",
+    "rE12_t2": "the gold {ROYAL_SIGIL} over the marches at winter end, the boy-king safe and free, the {RED_COLOR} ambition folded, the honor rule kept whole; your word carried no lie out of the year and your hand raised the one banner worth raising",
+    "rE12": "the year the {RED_ROLE} raised the true banner; the gold {ROYAL_SIGIL} flown free over {RED_FORTRESS}, the boy-king restored and safe, {RED_LEADER} ambition undone from the inside by the one man who knew all of it; you carried every {RED_COLOR} secret through the year and spent it to set a right crown back where it belonged, your word clean and your banner true",
+    "rE13_t1": "you run the {RED_COLOR} {RED_SIGIL} up over {RED_FORTRESS} and let the {RED_TITLE} keep the boy and the year; {RED_LEADER} wins, the crown becomes his shadow to move, and you stand in the victory knowing exactly what it is built on, the taster, the letter, the child on the wall, all of it yours to carry",
+    "rE13": "the year the {RED_ROLE} raised the banner of the lie; the {RED_COLOR} {RED_SIGIL} flown over {RED_FORTRESS}, {RED_LEADER} master of a puppet crown, the whole rotten year made permanent by the one man who could have unmade it; you kept your place and your reward and lost your word, and you close the year won and hollow, carrying every secret you refused to spend",
+    "gr_r1": "{GREEN_TITLE} {GREEN_LEADER_GIVEN} {GREEN_LEADER} chancery in the river-city of {GREEN_CITY}, ink and river-light and the smell of wet rope; you are her youngest {GREEN_ROLE}, quick with a pen and quicker with a memory; the {GREEN_COLOR} {GREEN_SIGIL} banner over the guild-halls, the commons and the river folk who feed the whole realm and are counted last in every hall",
+    "gr_r2": "{GREEN_TITLE} {GREEN_LEADER} by lamplight, plain-spoken and patient, teaching you the cause; not a crown for any house but a Council where the river guilds sit with the great banners; the boy-king {HEIR_NAME} to be warded by all, owned by none; the honor rule of the chancery, that the {GREEN_COLOR} house wins with proof and not with the sword, because the commons cannot afford a war and will pay for it first",
+    "gr_r3": "your first weeks in {GREEN_COLOR} ink; petitions, grievances, the long ledger of promises the great houses made the commons and never kept; you learn the river country by its complaints and its patience, and you begin to understand why {GREEN_TITLE} {GREEN_LEADER} trusts proof more than any lord word",
+    "gr_r4": "{GREEN_TITLE} {GREEN_LEADER} takes you down to the wharves where the grain barges load, the guild masters and the ferry families who are the {GREEN_COLOR} cause made flesh; she names them for you one by one, and you understand the seat she wants at the Council is not for herself but for every hand on that quay; the succession year has not touched them yet, and it will",
+    "gr_petition": "the first draft of the year; {GREEN_TITLE} {GREEN_LEADER} means to petition the Council for a share of the regency, and how you help her word it sets the {GREEN_COLOR} tone; draft it moderate, a careful request the great houses can grant without losing face; or draft it bold, a demand that names the commons owed and dares the banners to refuse; the chancery rule stands, {GREEN_COLOR} wins with proof and patience, so weigh how loud the first word should be",
+    "gr_m1": "you draft it moderate, every clause a door left open, the demand dressed as a request; {GREEN_TITLE} {GREEN_LEADER} reads it and nods, this is how the weak speak to the strong and still keep their feet; the petition goes north to the Council and the river-city holds its breath",
+    "gr_m2": "the {KINGSBRIDGE}, the river-gate opened in the night, the lower fords drowned; a {GREEN_COLOR} grain convoy and forty river folk of your own guilds taken by the flood; the city reels; every banner blames another and the truth is somewhere in the current; the {GREEN_COLOR} vantage alone will be able to trace where the gate-order truly came from",
+    "gr_bridge": "the drowned fords and the {GREEN_COLOR} house in mourning; you can follow the flood back to its source, quiet inquiries among the lock-keepers and the surviving ferry folk who saw who worked the gate; or you can set inquiry aside and pour everything into holding the river-towns together through the grief and the hunger the flood has brought; the {GREEN_COLOR} vantage is the only one that can ever learn the truth of the bridge, so choose what the truth is worth right now",
+    "gr_p1": "you work it like a ledger, the lock-keepers, the timing of the gate, the survivors who saw {GREY_COLOR} uniforms on the sluice; the trail runs to Captain Roderic {GUARD_CAPTAIN} and past him toward the {GREY_COLOR} {GREY_TITLE} own order, the truth the {RED_COLOR} house will never see and the {GREY_COLOR} house will never admit, that {GREY_LEADER} spent the fords to deny {RED_LEADER} a crossing",
+    "gr_p2": "the proof assembles, thin but real, the {GREY_COLOR} house hand on the gate that drowned your own people; the {GREEN_COLOR} vantage alone holds it; what you do with it can start a war or force a peace, and {GREEN_TITLE} {GREEN_LEADER} will not decide it without you, because you gathered it and you know how far it truly reaches",
+    "gr_proof": "the proof of the bridge in {GREEN_COLOR} hands and the whole year hanging on how it is used; name {GUARD_CAPTAIN} and the {GREY_TITLE} openly and let the river-city cry murder to the sky; or carry the proof quietly to the Council table and use it to force a truce and a hearing for the commons; the rule warns you, proof shouted becomes a sword and the commons bleed first under it, so choose how the drowned are answered",
+    "gnE1_t1": "you name them from the steps, {GUARD_CAPTAIN} and {GREY_LEADER} and the drowning-order, and the river-city roars; the grief becomes a mob and the mob becomes a rising, and the {GREY_COLOR} house answers a shout with soldiers",
+    "gnE1_t2": "the proof shouted became a sword exactly as the rule warned, and it is the commons, unarmed and furious, who fall on it first; you meant to answer the drowned and instead you gave the {GREY_COLOR} house a reason to drown more",
+    "gnE1": "the year the truth became a riot; the bridge-order named from the guild-hall steps, the river-city risen in grief and cut down by {GREY_COLOR} soldiers, the commons bleeding first as the rule foretold; you answered the drowned with a shout and the shout became a sword, and {GREEN_COLOR} learned again that the weak pay first for the truths they cannot arm",
+    "gnE2_t1": "you carry it north quietly, not to the mob but to the banners, and set it before the Council closed-door; the {GREY_COLOR} house cannot deny its own hand and cannot afford it known; the room goes very still around a page of names",
+    "gnE2_t2": "the price of your silence is a truce and a hearing for the commons; the {GREY_COLOR} house pays it to keep the bridge secret buried, and {GREEN_COLOR} takes the coin it never had, a seat at the table bought with the grief of the fords",
+    "gnE2_t3": "you carry the truce back down the {RIVER_NAME}; the war that hung over the summer folded before it opened; the drowned answered not with more blood but with a foothold the commons never held before",
+    "gnE2_t4": "{GREEN_COLOR} keeps the bridge-proof locked and the {GREY_COLOR} house leashed by it all year; you learn the weight of a truth carried quietly, heavier than one shouted, and steadier",
+    "gnE2_t5": "the fords still a grave, the commons still poor, but seated now where they were never seated; the chancery rule kept, {GREEN_COLOR} wins with proof and patience, and you turned a drowning into a door",
+    "gnE2_t6": "harvest under a truce that holds; the boy-king protection reaffirmed, the commons in the room for the votes that decide their bread; you helped make grief into leverage without spilling a drop more of it",
+    "gnE2": "the year the drowned bought a seat at the table; the bridge-proof carried quietly to the Council instead of shouted to the mob, the {GREY_COLOR} house leashed by its own secret, a truce and a commons hearing traded for silence; you kept the chancery rule, {GREEN_COLOR} wins with proof and patience, and turned a grief into a foothold without spilling more blood",
+    "gr_h1": "you set the inquiry aside and give the {GREEN_COLOR} house to the living; the flooded towns, the lost granaries, the river folk with nowhere dry to sleep; {GREEN_TITLE} {GREEN_LEADER} works the guild-halls day and night and you work beside her, and the truth of the gate waits in a drawer while the year presses harder needs on you",
+    "gr_h2": "harvest thin, the fords still broken, the great houses drawing armies through the river country and eating it bare as they pass; the commons look to {GREEN_COLOR} to keep them alive through a year the banners are fighting over their heads; the choice narrows to how the river folk survive, not who is blamed for the water",
+    "gr_hold": "the hungry season and the {GREEN_COLOR} house its only shield; open the guild granaries and feed the river-towns first, even if it leaves nothing to bargain with; or ration hard and arm the river folk to hold their own country against the armies trampling it; feeding or arming, mercy or teeth, and the commons live or die by which you choose",
+    "gnE3_t1": "you open the guild stores wide and feed the river country through the worst of the year; nothing kept back for leverage, no grain to trade to any banner, only bread to people who would have starved for the great houses war",
+    "gnE3_t2": "you spend the autumn moving grain by barge and cart to the towns the flood ruined; the work thankless and endless and the only work that matters; the {GREEN_COLOR} stores empty as the winter deepens",
+    "gnE3_t3": "the river country thins but does not break; no town lost to hunger, though {GREEN_COLOR} ends the year with empty granaries and no coin of leverage left to spend on any lord",
+    "gnE3_t4": "spring, and the fords still broken but the people not; the {GREEN_COLOR} house poorer by every granary and richer by a whole country loyalty, chosen first for once and not forgetting it",
+    "gnE3_t5": "{GREEN_TITLE} {GREEN_LEADER} spent her bargaining bread to keep the commons breathing, and the commons will stand for {GREEN_COLOR} now in any hall; you learn the cause was never the seat at the table but the lives the seat was meant to feed",
+    "gnE3": "the year {GREEN_COLOR} fed the commons before it fed the cause; every guild granary thrown open, the river country carried alive through a war fought over its head, nothing kept for leverage and everything spent on bread; you chose the living over the advantage and won a country loyalty by counting it first for once, the chancery rule kept in mercy",
+    "gnE4_t1": "you ration the grain hard and arm the river folk to hold their own banks; the commons become a militia, the {GREEN_COLOR} {GREEN_SIGIL} grown teeth, the river country a place the armies no longer cross for free",
+    "gnE4_t2": "rationed towns go hungry to feed the pikes; the {GREEN_COLOR} house that meant to spare a war has raised a smaller one of its own along every bank; you kept the country from being trampled and turned it into a battlefield",
+    "gnE4": "the year the {GREEN_SIGIL} grew teeth and drew blood; the river folk armed and rationed, the banks held against the great armies but held hungry, the {GREEN_COLOR} house that swore off the sword raising one along every ford; you kept the country from being trampled and turned it into a battlefield of its own, mercy traded for teeth and the commons paying in bread",
+    "gr_b1": "you draft it bold, the commons named owed, the great houses dared to refuse; {GREEN_TITLE} {GREEN_LEADER} reads it twice and lets it stand, sometimes the weak must speak loudly to be counted at all; the petition goes north like a thrown stone, and the Council will not be able to pretend it did not hear",
+    "gr_b2": "you travel with {GREEN_TITLE} {GREEN_LEADER} to the Council of Banners, the {GREEN_COLOR} {GREEN_SIGIL} among the {GREY_COLOR} {GREY_SIGIL} and the {RED_COLOR} {RED_SIGIL}; the great houses circle the boy-king and the regency and would sooner not see {GREEN_COLOR} at all; the bold petition on the table between them like a challenge",
+    "gr_council": "the Council in session and the {GREEN_COLOR} house standing bold; confront the banners to their faces and demand the Council of Banners now, in the open, or walk out of the great-house game entirely and build a coalition of guilds and river-towns that answers to no crown; press the powerful or gather the many, and the year turns on which strength {GREEN_COLOR} trusts",
+    "gr_c1": "{GREEN_TITLE} {GREEN_LEADER} on her feet before the Council, demanding the boy-king warded by all houses and the commons seated among them; the {GREY_COLOR} {GREY_TITLE} wary, the {RED_COLOR} {RED_TITLE} amused, the room deciding whether to grant a {GREEN_SIGIL} a chair; you at her shoulder with the record, every broken promise ready to read aloud",
+    "gr_c2": "the Council will not say yes and cannot quite say no; some lords fear the guilds, some court them; the demand hangs unanswered and the {GREEN_COLOR} house must decide whether to force the vote or to press it harder still, knowing the boy-king fate is already sliding toward the strong houses while the weak ones talk",
+    "gr_confront": "the demand on the floor and the hall divided; call the vote now and force the banners to seat the commons or refuse them in the open where all can see; or lead a walkout of the guild delegates and rally the river-city behind {GREEN_COLOR} outside the Council doors; a vote in the hall or a rising in the streets, and each answers the year differently",
+    "gnE5_t1": "you force it to a vote; the great houses, caught in the open with the whole realm watching, cannot refuse the commons a chair without naming themselves tyrants; the hands go up slow and grudging and enough",
+    "gnE5_t2": "the Council of Banners granted, narrowly, grudgingly, real; the boy-king becomes its ward and {GREEN_COLOR} wins a chair that no later year can easily unmake, a foothold written into the realm own record",
+    "gnE5_t3": "you spend the season making the granted Council work, the guilds learning to sit where they never sat, the great houses learning to share a table they always owned; the boy safe at the center of it",
+    "gnE5_t4": "every clause witnessed, every seat named, the commons written into the protection of the crown; the chancery rule kept, {GREEN_COLOR} won with proof and patience and daylight and not one drawn sword",
+    "gnE5_t5": "winter over a realm that seated its poor; nothing perfect, the great houses still great, but the table wider than it began; you learn that a chair granted in the open is harder to take away than one seized in the dark",
+    "gnE5": "the year {GREEN_COLOR} forced the hall to choose in the open; the vote called with the realm watching, the great houses unable to refuse the commons a chair without wearing the tyrant name, a Council of Banners granted narrow and real; you won the commons a seat by proof and patience and daylight, the chancery rule kept, the boy-king warded by all",
+    "gnE6_t1": "you walk the guilds out of the Council and into the streets, and the river-city rises {GREEN_COLOR} behind you, not in a riot but in a wall of ordinary people the banners cannot ignore or afford to fight",
+    "gnE6_t2": "the great houses learn the commons can simply withdraw the country they all stand on; a lesson taught without a sword, and the year listens; {GREEN_COLOR} discovers a strength it always had and never counted",
+    "gnE6": "the year the commons discovered their own weight; the {GREEN_COLOR} delegates walked out and the river-city rose behind them, peaceful and immovable, the great houses learning the country they fought over could withdraw itself; you taught the banners a truth {GREEN_COLOR} always knew, that the many hold up the few, and the lesson landed without a single blade",
+    "gr_q1": "you leave the Council to its circling and build beneath it, guild by guild, river-town by river-town, a coalition that owes the great houses nothing; the work is slow ink and long roads, and it is where the {GREEN_COLOR} vantage comes into its own; and it is on these roads that the letter finds you",
+    "gr_q2": "a courier of the {SELLSWORD_BASE}, bought and frightened, brings you {RED_LEADER} own sealed letter to the sellsword companies, the {RED_TITLE} under-the-table army written in his own hand; the {RED_COLOR} vantage sent it and the {GREY_COLOR} house only suspects it, but {GREEN_COLOR} alone can prove it now; the whole year could turn on a single page in your keeping",
+    "gr_letter": "{RED_LEADER} sellsword letter in {GREEN_COLOR} hands, the one proof the {RED_COLOR} house cannot deny and the {GREY_COLOR} house cannot match; publish it to the whole realm and expose the {RED_TITLE} bought war, though a truth loosed cannot be recalled and the realm may burn for it; or hold it close and trade on it, brokering a Council of Banners with the leverage no one else has; a truth loosed or a truth spent, and the year answers to which",
+    "gr_pub1": "you copy it out, seal and clause and the {SELLSWORD_BASE} named, and {GREEN_TITLE} {GREEN_LEADER} weighs how widely to loose it; a truth this size cannot be half-told, and once told it belongs to everyone; the {RED_COLOR} house will call it forgery and the {GREY_COLOR} house will use it and the commons will pay for whichever war it starts",
+    "gr_publish": "the letter about to leave your hands for good; publish it to the whole realm, criers and copies in every town, and brace the river country for the war the truth will light; or publish it only to the houses, privately, a proof shown to the banners alone to shame {RED_LEADER} without setting the commons alight; loud or quiet, and the rule stands, a truth loosed cannot be recalled",
+    "gnE7_t1": "the letter goes everywhere at once, criers and copies in every market; the realm learns {RED_LEADER} bought a war under a truce and the realm catches fire; the {RED_COLOR} house cries forgery, the {GREY_COLOR} house marches, and the river country, ground between them, pays first and most",
+    "gnE7_t2": "the truth was real and the fire it lit does not ask whose fault the burning is; you loosed a thing that could not be recalled, exactly as the rule warned, and the commons paid the price of the daylight",
+    "gnE7": "the year the truth set the realm alight; {RED_LEADER} sellsword letter loosed to every street, the {RED_TITLE} exposed and the country at open war over it, the river folk ground first between {GREY_COLOR} and {RED_COLOR}; you loosed a real truth and it could not be recalled, exactly as the rule warned, and the commons paid the price of the daylight",
+    "gnE8_t1": "you loose it only to the houses, a proof laid before {GREY_COLOR} and {RED_COLOR} and the Council behind closed doors; {RED_LEADER} cannot deny his own seal and cannot afford it public, and the {GREY_COLOR} house holds the same knife; the {RED_TITLE} is shamed and leashed without a crier ever shouting",
+    "gnE8": "the year {GREEN_COLOR} shamed a duke in the dark; the sellsword letter shown only to the banners, {RED_LEADER} leashed by his own seal without a public fire, the war kept off the commons; you learned the difference between a truth thrown and a truth spent, and spent this one so the river country would not have to burn to be believed",
+    "gr_br1": "you hold the letter and let its weight do the work; {GREEN_TITLE} {GREEN_LEADER} carries the leverage no other house has to the Council table, the one proof that can bind {RED_LEADER}, and asks in return the thing {GREEN_COLOR} wanted all year; the boy-king warded by a Council, the commons seated, the war unfought; the last {GREEN_COLOR} choice is what to buy with the leverage",
+    "gr_broker": "the leverage of {RED_LEADER} letter in hand and a whole year to close; spend it to convene the Council of Banners at the fords, binding every house and seating the commons at last; or spend it narrower and surer, trading the letter directly for Prince {HEIR_NAME} safety into a shared keeping; the wide win or the sure one, the Council or the child, and {GREEN_COLOR} cannot buy both with one page",
+    "gnE9_t1": "you call the Council to the very fords that drowned in the spring, and the leverage of the letter holds every house to the table; {GREY_COLOR} bound by the bridge-proof, {RED_COLOR} bound by the sellsword letter, {GREEN_COLOR} holding both",
+    "gnE9_t2": "the Council of Banners made real at last, the commons seated, the boy-king its ward, the reforms of a whole year written into law on the bank of a grave; no single banner able to break what all of them signed",
+    "gnE9_t3": "the great houses leashed to one another and to the commons, the boy-king warded by all and grasped by none, the war folded before it opened; {GREEN_TITLE} {GREEN_LEADER} spent one page to buy the thing {GREEN_COLOR} never had",
+    "gnE9_t4": "a permanent seat and a Council no single banner can break; you kept the chancery rule to the end, proof and patience over the sword, and turned a single letter into the shape of the realm to come",
+    "gnE9_t5": "the crossing rebuilt where the flood took it, the Council meeting on the very ground that was a grave; you learn that the deepest wins are built on the deepest griefs, and you helped build this one honestly",
+    "gnE9": "the year {GREEN_COLOR} built the Council on a grave; {RED_LEADER} letter spent to bind every house to the table at the drowned fords, {GREY_COLOR} leashed by the bridge and {RED_COLOR} by the sellswords, the commons seated at last and the boy-king warded by all; you won the whole {GREEN_COLOR} cause with one page and no war, proof and patience over the sword, the year written into law",
+    "gnE10_t1": "you spend the letter not on the Council but on the boy; the leverage traded straight across for Prince {HEIR_NAME} passed out of every grasping hand into a shared, guarded keeping; {GREEN_COLOR} gives up the wider win and takes the surer one",
+    "gnE10_t2": "a child safe now rather than a cause won maybe; {GREEN_TITLE} {GREEN_LEADER} signs it without regret, because the commons taught her which lives count first, and a boy off the board is worth more than a clause on a page",
+    "gnE10_t3": "{HEIR_NAME} out of {RED_FORTRESS} and every trap, warded and breathing, the wider Council let go for another year; you learn that {GREEN_COLOR} highest law was never the seat but the life, and you kept it",
+    "gnE10": "the year {GREEN_COLOR} spent its one card on a child; {RED_LEADER} letter traded straight for Prince {HEIR_NAME} safety into shared keeping, the wider Council let go for the surer rescue, the boy out of every grasping hand at last; you chose the certain life over the possible cause and closed the year with a king safe, the chancery rule kept in mercy again"
+  },
+  "titles": {
+    "gE1": "The Gate That Held the City",
+    "gE2": "The Walls That Would Not Break",
+    "gE3": "The King Who Went Out by Water",
+    "gE4": "The Half of the Truth You Could Prove",
+    "gE5": "A Peace Kept by a Sealed Letter",
+    "gE6": "The Charge That Broke on the Law",
+    "gE7": "The Council of Banners",
+    "gE8": "The Surety of Good Faith",
+    "gE9": "The Hand That Opened in Time",
+    "gE10": "The Crown He Would Not Set Down",
+    "rE1": "The Lie in the Boy-King Hand",
+    "rE2": "The Truth They Called Treason",
+    "rE3": "The Secret Sent Over the Wall",
+    "rE4": "The Ultimatum Carried Whole",
+    "rE5": "The Child on the Battlements",
+    "rE6": "The Postern Sold in the Dark",
+    "rE7": "The Surrender Brokered in the Snow",
+    "rE8": "The Mirror Held to the {RED_TITLE}",
+    "rE9": "The Hollow Crown of {RED_FORTRESS}",
+    "rE10": "The King Hidden Until He Is Grown",
+    "rE11": "The Garrison That Turned",
+    "rE12": "The Gold {ROYAL_SIGIL} Over {RED_FORTRESS}",
+    "rE13": "The Falcon Raised, the Cost Uncounted",
+    "gnE1": "The Proof That Became a Riot",
+    "gnE2": "The Order Laid on the Table",
+    "gnE3": "The Granaries Thrown Open",
+    "gnE4": "The Thorn That Grew Teeth",
+    "gnE5": "The Vote Forced in the Open",
+    "gnE6": "The Country That Withdrew Itself",
+    "gnE7": "The Truth That Lit the War",
+    "gnE8": "The Letter Shown Behind Closed Doors",
+    "gnE9": "The Council Convened at the {KINGSBRIDGE}",
+    "gnE10": "The Page Traded for the Child"
+  },
+  "labels": {
+    "n_sort": {
+      "c_n_sort_1": "Serve {GREY_TITLE} {GREY_LEADER} under the {GREY_COLOR} Banner.",
+      "c_n_sort_2": "Serve {RED_TITLE} {RED_LEADER} under the {RED_COLOR} Banner.",
+      "c_n_sort_3": "Serve {GREEN_TITLE} {GREEN_LEADER} under the {GREEN_COLOR} Banner."
+    },
+    "g_a1": {
+      "c_g_a1_1": "Read on into the {GREY_COLOR} keep."
+    },
+    "g_a3": {
+      "c_g_a3_1": "Stand at the {GREY_TITLE} shoulder as the will is read."
+    },
+    "g_will": {
+      "c_g_will_3": "Counsel him to offer {RED_LEADER} a shared regency."
+    },
+    "g_xa1": {
+      "c_g_xa1_1": "Walk the closed walls with Captain {GUARD_CAPTAIN}."
+    },
+    "g_x_bridge": {
+      "c_g_x_bridge_1": "Carry {GUARD_CAPTAIN} order and open the river-gate.",
+      "c_g_x_bridge_2": "Refuse, and warn the {GREY_TITLE} what it will drown."
+    },
+    "g_xb1": {
+      "c_g_xb1_1": "Bring the true cost to the {GREY_TITLE}."
+    },
+    "gE2_t2": {
+      "c_gE2_t2_1": "Watch the {RED_COLOR} ring close around the walls."
+    },
+    "g_ya1": {
+      "c_g_ya1_1": "Keep the {GREY_COLOR} house to the law."
+    },
+    "g_y_feast": {
+      "c_g_y_feast_2": "Let the {GREY_TITLE} answer with cold restraint."
+    },
+    "gE4_t2": {
+      "c_gE4_t2_1": "Watch the {RED_TITLE} walk out uncondemned."
+    },
+    "gE5_t1": {
+      "c_gE5_t1_1": "Carry the sealed proof to the {RED_TITLE} tent."
+    },
+    "gE6_t1": {
+      "c_gE6_t1_1": "Watch the {GREY_TITLE} answer with the law."
+    },
+    "g_za1": {
+      "c_g_za1_1": "Carry the {GREY_TITLE} offer between the banners."
+    },
+    "g_za3": {
+      "c_g_za3_1": "Bring the three roads back to {GREY_LEADER}."
+    },
+    "g_z_offer": {
+      "c_g_z_offer_1": "Ally openly with {GREEN_TITLE} {GREEN_LEADER} for a Council of Banners.",
+      "c_g_z_offer_2": "Deal privately with {RED_TITLE} {RED_LEADER}, house to house.",
+      "c_g_z_offer_3": "Keep the {GREY_TITLE} above the factions."
+    },
+    "gE7_t1": {
+      "c_gE7_t1_1": "Bind the {GREY_COLOR} and {GREEN_COLOR} banners together."
+    },
+    "gE7_t2": {
+      "c_gE7_t2_1": "Watch {RED_LEADER} find a door he cannot widen."
+    },
+    "gE7_t4": {
+      "c_gE7_t4_1": "Bring the houses to the {ROYAL_SIGIL} hall."
+    },
+    "gE8_t1": {
+      "c_gE8_t1_1": "Shake hands with the {RED_TITLE} in his tent."
+    },
+    "gE8_t2": {
+      "c_gE8_t2_1": "Learn what a gift becomes in {RED_LEADER} hands."
+    },
+    "g_zb1": {
+      "c_g_zb1_1": "Hold the {GREY_TITLE} clear of every faction."
+    },
+    "gE9_t3": {
+      "c_gE9_t3_1": "Walk the {GREY_TITLE} out of the keep at dusk."
+    },
+    "gE10_t2": {
+      "c_gE10_t2_1": "Take up the seal from a fallen {GREY_TITLE}."
+    },
+    "r_s1": {
+      "c_r_s1_1": "Ride into the {RED_COLOR} war-camp."
+    },
+    "r_s2": {
+      "c_r_s2_1": "Take the {RED_TITLE} measure by firelight."
+    },
+    "r_s4": {
+      "c_r_s4_1": "Watch the {RED_TITLE} co-sign the will."
+    },
+    "r_s10": {
+      "c_r_s10_1": "Ride guard as the {RED_TITLE} takes the boy."
+    },
+    "r_s11": {
+      "c_r_s11_1": "Come to the {RED_COLOR} fortress by the water."
+    },
+    "r_s13": {
+      "c_r_s13_1": "Stand at the {RED_TITLE} side on the siege eve."
+    },
+    "r_c3": {
+      "c_r_c3_1": "Smuggle word of the sellsword letter to {GREEN_TITLE} {GREEN_LEADER}."
+    },
+    "r_c6": {
+      "c_r_c6_1": "Open the postern gate to {GREY_LEADER} men by night."
+    },
+    "r_c8": {
+      "c_r_c8_1": "Confront {RED_LEADER} with the truth of his staging."
+    },
+    "rE8_t1": {
+      "c_rE8_t1_1": "Name the {RED_TITLE} crimes to his own face."
+    },
+    "r_c9": {
+      "c_r_c9_1": "Help crown {HEIR_NAME} a puppet under {RED_COLOR} protection."
+    },
+    "r_c10": {
+      "c_r_c10_1": "Spirit {HEIR_NAME} out of {RED_FORTRESS} to true hiding."
+    },
+    "r_c11": {
+      "c_r_c11_1": "Turn the garrison to force {RED_LEADER} to a Council."
+    },
+    "r_c12": {
+      "c_r_c12_1": "Raise the gold {ROYAL_SIGIL} over {RED_FORTRESS}, for the child.",
+      "c_r_c12_2": "Raise the {RED_COLOR} {RED_SIGIL}, and live with it."
+    },
+    "rE13_t1": {
+      "c_rE13_t1_1": "Raise the {RED_SIGIL} and count the cost."
+    },
+    "gr_r1": {
+      "c_gr_r1_1": "Enter the {GREEN_COLOR} chancery."
+    },
+    "gr_r2": {
+      "c_gr_r2_1": "Learn the shape of the {GREEN_COLOR} cause."
+    },
+    "gr_r4": {
+      "c_gr_r4_1": "Walk the wharves of {GREEN_CITY} before the year turns."
+    },
+    "gr_proof": {
+      "c_gr_proof_1": "Name {GUARD_CAPTAIN} and the {GREY_TITLE} openly to the city."
+    },
+    "gnE3_t1": {
+      "c_gnE3_t1_1": "Throw open every {GREEN_COLOR} granary."
+    },
+    "gr_b2": {
+      "c_gr_b2_1": "Ride north to the Council in {GREEN_COLOR}."
+    },
+    "gr_c1": {
+      "c_gr_c1_1": "Stand {GREEN_COLOR} up before the great banners."
+    },
+    "gnE6_t1": {
+      "c_gnE6_t1_1": "Lead the {GREEN_COLOR} delegates out the great doors."
+    },
+    "gr_q1": {
+      "c_gr_q1_1": "Build {GREEN_COLOR} outside the great hall."
+    },
+    "gr_q2": {
+      "c_gr_q2_1": "Come into the proof only {GREEN_COLOR} can hold."
+    },
+    "gr_letter": {
+      "c_gr_letter_1": "Publish the letter and expose the {RED_TITLE}."
+    },
+    "gr_pub1": {
+      "c_gr_pub1_1": "Set the {RED_TITLE} letter before the realm."
+    }
+  }
+}

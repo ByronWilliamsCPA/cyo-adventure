@@ -1,0 +1,2753 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_year_of_four_banners",
+  "version": 1,
+  "title": "The Year of Four Banners",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "political intrigue",
+      "divided loyalties",
+      "moral cost",
+      "succession",
+      "loyalty and honor"
+    ],
+    "estimated_minutes": 26,
+    "ending_count": 33,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "sorting_hat",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "is_ending": false,
+      "body": "<<FILL role=setup words=168 beats='the river kingdom of the Tallow Combine on the Long Night of Midwinter, snow on the Slate walls of Port Amaranth; Magnate Rasten the Third is dead in the Comet Keep with no grown heir, only his grandson Prince Petra, nine years old, last of the House Ilio; the gold Comet banner lowered to half its staff over the keep while three bells toll across the frozen Solion; you are a youth in service in the capital, old enough this year to be trusted with letters and secrets and too young to be blamed for either; a whole succession year is turning on the death of one old king and the childhood of one small boy, and men are already counting banners in the dark'>>",
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Follow the tolling bells into the waking city.",
+          "target": "n_council"
+        }
+      ]
+    },
+    {
+      "id": "n_council",
+      "is_ending": false,
+      "body": "<<FILL role=rising words=172 beats='First Thaw; the great houses converge on Port Amaranth for the reading of the will and the naming of a regent; the Slate Banner of House Brasque, a Slate gull, borne by Lord Warden Odile Brasque who held the old king household and now holds the capital; the Copper Banner of House Vantrain, a Copper hawk, borne by Commodore Cassian Vantrain who rides in from the marches with a border army to honor a king he barely obeyed; the Verdant Banner of House Oyelaran, a Verdant eel, borne by Factor Nessa Oyelaran who speaks for the river guilds and the drowned poor of the fords; above them all the empty gold Comet of the boy who cannot yet rule; four banners for one throne, and the year has not even begun'>>",
+      "choices": [
+        {
+          "id": "c_n_council_1",
+          "label": "Take your place among the households as the houses gather.",
+          "target": "n_sort"
+        }
+      ]
+    },
+    {
+      "id": "n_sort",
+      "body": "<<FILL role=choice words=178 beats='the choosing that decides which betrayals you will witness and which you will never see; three households will take you in and each guards a different half of the year truth; serve under Warden Odile Brasque and hold the Slate capital, where the old order keeps its secrets and spends what it must to survive; serve under Commodore Cassian Vantrain in the Copper war-camp, where ambition wears the mask of protection and you alone will learn what it hides; serve under Factor Nessa Oyelaran in the Verdant chancery, where the river folk count their dead and the proof of everything passes through your ink; one banner, one vantage, one conscience, and whose do you carry into the year'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_sort_1",
+          "label": "Serve Warden Brasque under the Slate Banner.",
+          "target": "g_a1"
+        },
+        {
+          "id": "c_n_sort_2",
+          "label": "Serve Commodore Vantrain under the Copper Banner.",
+          "target": "r_s1"
+        },
+        {
+          "id": "c_n_sort_3",
+          "label": "Serve Factor Oyelaran under the Verdant Banner.",
+          "target": "gr_r1"
+        }
+      ]
+    },
+    {
+      "id": "g_a1",
+      "body": "<<FILL role=rising words=150 beats='the Warden household in the old wing of the Comet Keep; you are Odile Brasque clerk, trusted with the wax and the seal-ring; Captain Roderic Voss, grim and loyal, runs the gull-banner guard; Brasque is Slate-haired, exact, a man who has served the crown so long he cannot tell where the crown ends and he begins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_a1_1",
+          "label": "Read on into the Slate keep.",
+          "target": "g_a2"
+        }
+      ]
+    },
+    {
+      "id": "g_a2",
+      "body": "<<FILL role=rising words=148 beats='the great houses gathering in the Slate hall for the reading; the will sealed on the table under the founder portrait; Vantrain arriving with more guards than a mourner needs, Factor Oyelaran with a folder of river-town petitions; the whole capital waiting to learn who will hold the boy-king and the year'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_a2_1",
+          "label": "Cross the cold hall to the council table.",
+          "target": "g_a3"
+        }
+      ]
+    },
+    {
+      "id": "g_a3",
+      "body": "<<FILL role=rising words=150 beats='the will read aloud; it names Odile Brasque regent but binds the regency to a three-house co-signing of Petra protection, so no banner may hold the boy alone; Vantrain co-signs with a smile that does not reach his eyes; Factor Oyelaran asks for a Council of Banners and is refused; Brasque turns to you and asks, quietly, what posture the Slate house should strike in the days to come'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_a3_1",
+          "label": "Stand at the Warden shoulder as the will is read.",
+          "target": "g_will"
+        }
+      ]
+    },
+    {
+      "id": "g_will",
+      "body": "<<FILL role=choice words=170 beats='the first counsel you help the Warden choose, and it will shape the whole Slate year; hold the capital by strength and shut the gates against Vantrain border army before it can crowd the walls; keep strictly to the letter of the will and let law, not force, answer every challenge; or offer Vantrain a share of the regency now, buying peace with power before either turns to war; the honor rule of the Slate house, spoken by Brasque himself, is that a steward guards, he does not grasp, so remember it, because each road tests it differently'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_will_1",
+          "label": "Counsel him to hold the capital by force.",
+          "target": "g_xa1"
+        },
+        {
+          "id": "c_g_will_2",
+          "label": "Counsel him to keep to the letter of the will.",
+          "target": "g_ya1"
+        },
+        {
+          "id": "c_g_will_3",
+          "label": "Counsel him to offer Vantrain a shared regency.",
+          "target": "g_za1"
+        }
+      ]
+    },
+    {
+      "id": "g_xa1",
+      "body": "<<FILL role=rising words=148 beats='the gates of Port Amaranth barred; Vantrain Copper army camped in the water-meadows across the Solion, close enough to hear their horns at dawn; Voss speaks of the Fenwick Span, the one crossing that lets the border army reach the capital; the river runs high with the thaw and the old sluice-gate could be opened to flood the fords below the bridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_xa1_1",
+          "label": "Walk the closed walls with Captain Voss.",
+          "target": "g_xa2"
+        }
+      ]
+    },
+    {
+      "id": "g_xa2",
+      "body": "<<FILL role=rising words=146 beats='Voss lays it out flat; open the gate, drown the fords, and Vantrain cannot cross for a week; but the fords carry a Verdant grain convoy and the river folk who work it, crossing at dusk, and the flood will take them; the Warden order is already written and waits only for a hand to carry it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_xa2_1",
+          "label": "Weigh the cost of a drowned crossing.",
+          "target": "g_x_bridge"
+        }
+      ]
+    },
+    {
+      "id": "g_x_bridge",
+      "body": "<<FILL role=choice words=168 beats='the Fenwick Span crisis, and the Slate house darkest hour; carry the Warden order to open the river-gate and drown the lower fords so Vantrain cannot cross, though a Verdant convoy and forty river folk are on the water; the honor rule stands plainly before you, a steward man does not spend the innocent to win a crossing; carry the order as given, or refuse it and warn the Warden what it truly costs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_x_bridge_1",
+          "label": "Carry Voss order and open the river-gate.",
+          "target": "gE1_t1"
+        },
+        {
+          "id": "c_g_x_bridge_2",
+          "label": "Refuse, and warn the Warden what it will drown.",
+          "target": "g_xb1"
+        }
+      ],
+      "safety_scope": [
+        "peril",
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "gE1_t1",
+      "body": "<<FILL role=consequence words=150 beats='the sluice hauled up in the dark; the Solion pouring brown over the lower fords; the Verdant convoy lanterns going out one by one downriver as the water climbs the pilings and the shouting stops'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE1_t1_1",
+          "label": "See the water rise in the dark.",
+          "target": "gE1_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE1_t2",
+      "body": "<<FILL role=consequence words=146 beats='forty river folk taken by the flood that saved the capital a week of siege; Vantrain army turned back at the drowned crossing; the walls safe and the cost written on no ledger any lord will read aloud'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE1_t2_1",
+          "label": "Count what the flood took to save the walls.",
+          "target": "gE1_t3"
+        }
+      ]
+    },
+    {
+      "id": "gE1_t3",
+      "body": "<<FILL role=consequence words=140 beats='Voss will not meet your eyes on the wall the next morning; the Warden thanks you, and you learn thanks is the wage they pay for a thing that cannot be undone; you carry the wax back through a keep gone very quiet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE1_t3_1",
+          "label": "Carry the seal-ring back through a silent keep.",
+          "target": "gE1"
+        }
+      ]
+    },
+    {
+      "id": "gE1",
+      "body": "<<FILL role=ending words=132 beats='the year the Slate house won the bridge and lost its name; the capital safe, the fords a grave, and you the hand that turned the gate; no siege came, and no forgiveness either; you keep the Warden seal and the memory of lanterns going dark, and you know now what order costs when it is paid in other people lives'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Gate That Held the City"
+      },
+      "safety_scope": [
+        "sad_moment",
+        "peril"
+      ]
+    },
+    {
+      "id": "g_xb1",
+      "body": "<<FILL role=rising words=150 beats='you refuse Voss and go straight to Brasque with the whole of it, the convoy, the river folk, the forty who would drown for a week delay; the Warden hears you out in silence and for once looks his age; he lets the gate stay shut and the fords stay dry, and Vantrain army begins to cross the Fenwick Span unopposed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_xb1_1",
+          "label": "Bring the true cost to the Warden.",
+          "target": "g_xb2"
+        }
+      ]
+    },
+    {
+      "id": "g_xb2",
+      "body": "<<FILL role=rising words=146 beats='the Copper columns on the near bank now, the easy crossing lost by choice; the capital must be held another way, with less time and no clever cruelty to buy it; Brasque asks you to help him choose the last honest road, and there are only two of them left'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_xb2_1",
+          "label": "Face the capital with fewer choices left.",
+          "target": "g_x_council"
+        }
+      ]
+    },
+    {
+      "id": "g_x_council",
+      "body": "<<FILL role=choice words=160 beats='Vantrain Copper columns on the near bank and the capital decision forced; stand a siege behind Port Amaranth Slate walls and make the border army pay for every stone; or yield the capital without a battle and slip the boy-king Petra out through the water-gate to a safer keep before the trap closes; the Slate house will be remembered for one or the other, and there is no third road left now that the river runs free'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_x_council_1",
+          "label": "Hold the capital and stand the siege.",
+          "target": "gE2_t1"
+        },
+        {
+          "id": "c_g_x_council_2",
+          "label": "Yield the capital and escort the prince to safety.",
+          "target": "gE3_t1"
+        }
+      ]
+    },
+    {
+      "id": "gE2_t1",
+      "body": "<<FILL role=consequence words=150 beats='the gates shut and barred, the granaries counted grain by grain, the wells sounded, the Slate gull banner nailed to the highest tower where the whole meadow can see it stand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE2_t1_1",
+          "label": "Bar the gates for a long winter.",
+          "target": "gE2_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE2_t2",
+      "body": "<<FILL role=consequence words=146 beats='Vantrain army settles to a siege in the water-meadows; horns at dawn and dusk, a ring of Copper tents, no storm and no yielding, only the slow arithmetic of which house runs out of winter first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE2_t2_1",
+          "label": "Watch the Copper ring close around the walls.",
+          "target": "gE2_t3"
+        }
+      ]
+    },
+    {
+      "id": "gE2_t3",
+      "body": "<<FILL role=consequence words=144 beats='short rations and shorter tempers; the boy-king kept to the inner rooms and told it is a long winter game; you carry the Warden orders down cold stairs and learn the weight of simply not losing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE2_t3_1",
+          "label": "Carry orders down through the hard months.",
+          "target": "gE2_t4"
+        }
+      ]
+    },
+    {
+      "id": "gE2_t4",
+      "body": "<<FILL role=consequence words=140 beats='midwinter deep; a sally against the Copper lines that costs more than it wins; the walls hold; the household thins; the Slate house learns to measure victory in mornings survived and nothing more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE2_t4_1",
+          "label": "Hold the line through the worst of it.",
+          "target": "gE2_t5"
+        }
+      ]
+    },
+    {
+      "id": "gE2_t5",
+      "body": "<<FILL role=consequence words=142 beats='first thaw; Vantrain army worn and hungry too, drawn off at last toward troubles on the marches it left unguarded; the ring of tents empties; the siege loosens more abandoned than lifted'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE2_t5_1",
+          "label": "Feel the siege loosen with the thaw.",
+          "target": "gE2_t6"
+        }
+      ]
+    },
+    {
+      "id": "gE2_t6",
+      "body": "<<FILL role=consequence words=138 beats='spring over Port Amaranth, the meadows bare of Copper tents; the boy-king still in the keep, still breathing, still the realm rightful heir; nothing won but survival, and survival held with both cold hands until the light came back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE2_t6_1",
+          "label": "Walk the empty meadows at spring.",
+          "target": "gE2"
+        }
+      ]
+    },
+    {
+      "id": "gE2",
+      "body": "<<FILL role=ending words=134 beats='the year the Slate capital simply refused to fall; no triumph, no rout, only a long siege outlasted and a small king kept alive behind Slate stone; the war is not ended, the question of the throne not answered, but Port Amaranth stands and Petra breathes, and you learn that holding the line is its own quiet kind of victory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE2",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Walls That Would Not Break"
+      }
+    },
+    {
+      "id": "gE3_t1",
+      "body": "<<FILL role=consequence words=150 beats='the water-gate at the third bell of the night; Prince Petra woken and wrapped against the cold and told it is a game of quiet; the gull-guard picked and few and sworn to the barge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE3_t1_1",
+          "label": "Wake the prince in the last dark hour.",
+          "target": "gE3_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE3_t2",
+      "body": "<<FILL role=consequence words=146 beats='down the river stairs to a waiting barge; the capital left behind for Vantrain to hold empty; its true prize slipping onto the black Solion while the Copper horns sleep in the meadows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE3_t2_1",
+          "label": "Slip the true prize out of a closing trap.",
+          "target": "gE3_t3"
+        }
+      ]
+    },
+    {
+      "id": "gE3_t3",
+      "body": "<<FILL role=consequence words=144 beats='the barge running silent past the sleeping fords, oars muffled, no lantern lit; the boy asleep against your shoulder before the first Slate of dawn touches the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE3_t3_1",
+          "label": "Row upriver under a dark sky.",
+          "target": "gE3_t4"
+        }
+      ]
+    },
+    {
+      "id": "gE3_t4",
+      "body": "<<FILL role=consequence words=140 beats='a chain of small Slate keeps upriver, loyal to Brasque by old oath and older debt, none of which will sell a child; the barge passed hand to hand up the friendly current'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE3_t4_1",
+          "label": "Pass the heir up the loyal water.",
+          "target": "gE3_t5"
+        }
+      ]
+    },
+    {
+      "id": "gE3_t5",
+      "body": "<<FILL role=consequence words=142 beats='the upriver keep, gates open to the gull banner at first light; Petra handed to guardians who owe the Warden their lives; Vantrain left ruling walls with no king inside them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE3_t5_1",
+          "label": "Deliver the king into safe hands.",
+          "target": "gE3_t6"
+        }
+      ]
+    },
+    {
+      "id": "gE3_t6",
+      "body": "<<FILL role=consequence words=138 beats='the Slate house poorer by a city and richer by a crown it did not have to grasp to keep; you stand on the keep wall as the sun comes up and understand at last what a guardian is meant to guard'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE3_t6_1",
+          "label": "Understand what a steward is for.",
+          "target": "gE3"
+        }
+      ]
+    },
+    {
+      "id": "gE3",
+      "body": "<<FILL role=ending words=136 beats='the year the Warden gave away a capital to save a king; Port Amaranth lost, Petra safe and free among loyal keeps, the Slate house proven a guardian and not a jailer; you rowed the heir out of a closing trap and kept the honor rule whole, a steward guards and does not grasp, and the realm still has a rightful crown to grow into'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE3",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The King Who Went Out by Water"
+      }
+    },
+    {
+      "id": "g_ya1",
+      "body": "<<FILL role=rising words=148 beats='you help Brasque hold to the will to the letter; the three-house co-signing of Petra protection honored in full, every seal witnessed, every clause read aloud so no house can later claim it was tricked; it is slow and bloodless and it makes Vantrain grind his teeth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_ya1_1",
+          "label": "Keep the Slate house to the law.",
+          "target": "g_ya2"
+        }
+      ]
+    },
+    {
+      "id": "g_ya2",
+      "body": "<<FILL role=rising words=146 beats='you spend the spring carrying witnessed copies between the houses, binding each lord to the same written protection of the boy; the law becomes a slow net around the year; Vantrain signs everything and means none of it, and you learn to read a smile that agrees in order to betray later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_ya2_1",
+          "label": "Carry the law between the banners.",
+          "target": "g_ya3"
+        }
+      ]
+    },
+    {
+      "id": "g_ya3",
+      "body": "<<FILL role=rising words=148 beats='Midsummer brings the Comet Feast, a truce feast where all banners sit at one table and the boy-king is shown to the realm; the hall bright, the wine poured, every house watching every other over the rims of their cups; Vantrain keeps his own taster very close and you note it without knowing yet why'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_ya3_1",
+          "label": "Come to the truce feast at Midsummer.",
+          "target": "g_y_feast"
+        }
+      ]
+    },
+    {
+      "id": "g_y_feast",
+      "body": "<<FILL role=choice words=166 beats='the Comet Feast turned to poison; Vantrain food-taster collapses and dies over the boy-king cup, and Vantrain rises to accuse the Slate house of trying to poison the prince and pin it on the marches; you saw the cup was Vantrain own man, not Petra, but from the Slate vantage you cannot yet prove the Commodore staged it; the honor rule holds, the Slate house answers with truth, not with a louder lie; demand proof and try to expose the staging, or let the Warden answer the charge with cold restraint and let the lie starve'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_y_feast_1",
+          "label": "Demand proof and try to expose the staging.",
+          "target": "g_yb1"
+        },
+        {
+          "id": "c_g_y_feast_2",
+          "label": "Let the Warden answer with cold restraint.",
+          "target": "gE6_t1"
+        }
+      ]
+    },
+    {
+      "id": "g_yb1",
+      "body": "<<FILL role=rising words=150 beats='you work the feast-hall backward, the cup, the taster, the order of the pouring; every thread says the doctored cup was Vantrain own and never near the prince, but the proof stops at the edge of the Commodore tent where no Slate hand can reach; you have enough to clear the Warden and never enough to hang the Commodore'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_yb1_1",
+          "label": "Hunt the truth of the poisoned cup.",
+          "target": "g_yb2"
+        }
+      ]
+    },
+    {
+      "id": "g_yb2",
+      "body": "<<FILL role=rising words=146 beats='half a truth in your hand and the council waiting; enough to clear a name, never enough to name a guilty man; what you do with it will decide how the realm reads the whole year, and Brasque leaves the choosing to you because you are the one who gathered it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_yb2_1",
+          "label": "Weigh half a truth against a whole war.",
+          "target": "g_y_trial"
+        }
+      ]
+    },
+    {
+      "id": "g_y_trial",
+      "body": "<<FILL role=choice words=156 beats='half a truth in your hand and the council waiting; bring what you have before the full Council of Banners and clear Brasque name in the open, though you cannot name the Commodore; or hold the proof close and use the threat of it to force Vantrain to a truce that spares the realm a war; clearing a name or keeping a peace, and you cannot do both'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_y_trial_1",
+          "label": "Bring the proof before the Council openly.",
+          "target": "gE4_t1"
+        },
+        {
+          "id": "c_g_y_trial_2",
+          "label": "Hold the proof to force a truce.",
+          "target": "gE5_t1"
+        }
+      ]
+    },
+    {
+      "id": "gE4_t1",
+      "body": "<<FILL role=consequence words=148 beats='the Council of Banners in full session; you lay out the cup, the taster, the pouring, enough to clear the Warden of any hand in the death; Vantrain sits stone-faced as the charge against Slate collapses under the plain order of the evening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE4_t1_1",
+          "label": "Stand before the assembled banners.",
+          "target": "gE4_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE4_t2",
+      "body": "<<FILL role=consequence words=144 beats='Brasque cleared, the Slate house vindicated, the Commodore untouched; the proof will not reach far enough to name him, and every lord in the room knows it and says nothing; a half-justice that keeps one honest name and lets a guilty man keep his sword'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE4_t2_1",
+          "label": "Watch the Commodore walk out uncondemned.",
+          "target": "gE4_t3"
+        }
+      ]
+    },
+    {
+      "id": "gE4_t3",
+      "body": "<<FILL role=consequence words=138 beats='you carry the record home knowing the difference now between the truth you hold and the truth you can hang a man with; the Slate house honest and the Copper house free; the whole design locked in a vantage your ink could not reach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE4_t3_1",
+          "label": "Learn the shape of provable truth.",
+          "target": "gE4"
+        }
+      ]
+    },
+    {
+      "id": "gE4",
+      "body": "<<FILL role=ending words=132 beats='the year you cleared the Warden and could not touch the Commodore; the Slate house honest and the Copper house unpunished, the whole truth of the staged poisoning locked in a vantage you could not reach; you kept the honor rule and answered with proof, and you learned that a proven truth and a known truth are not the same weapon'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE4",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Half of the Truth You Could Prove"
+      }
+    },
+    {
+      "id": "gE5_t1",
+      "body": "<<FILL role=consequence words=148 beats='you take the half-proof to Vantrain privately, not to hang him but to bargain; enough that he knows the Slate house could make the feast-poison stink follow the Copper banner all year if it chose; the Commodore listens, and for once the smile is gone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE5_t1_1",
+          "label": "Carry the sealed proof to the Commodore tent.",
+          "target": "gE5_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE5_t2",
+      "body": "<<FILL role=consequence words=144 beats='a truce struck in the space between what you can prove and what he cannot deny; no war over the feast, no name cleared in the open either; the Warden keeps a peace and swallows a vindication in the same breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE5_t2_1",
+          "label": "Strike a truce in the space between.",
+          "target": "gE5_t3"
+        }
+      ]
+    },
+    {
+      "id": "gE5_t3",
+      "body": "<<FILL role=consequence words=142 beats='the truce holds through the harvest; the Copper banner careful, the Slate banner quiet, the realm buying a season of calm with a secret nobody outside the tent will ever read'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE5_t3_1",
+          "label": "Watch the leashed season hold.",
+          "target": "gE5_t4"
+        }
+      ]
+    },
+    {
+      "id": "gE5_t4",
+      "body": "<<FILL role=consequence words=140 beats='you brokered it with a threat you never had to carry out; the household praises a calm they do not understand and you let them; a peace kept by a letter that must never be opened, and you the only one who knows its weight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE5_t4_1",
+          "label": "Carry a peace you can never explain.",
+          "target": "gE5_t5"
+        }
+      ]
+    },
+    {
+      "id": "gE5_t5",
+      "body": "<<FILL role=consequence words=138 beats='the proof locked away, spent without being used, a coin held over the year like weather that never breaks; the honor rule kept whole, truth answered with truth and never with the sword, and the realm the safer for a thing it cannot see'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE5_t5_1",
+          "label": "Set the sealed proof away in the dark.",
+          "target": "gE5"
+        }
+      ]
+    },
+    {
+      "id": "gE5",
+      "body": "<<FILL role=ending words=130 beats='the year a secret bought a peace; the Slate house never cleared in the open and never at war either, the Commodore leashed by proof he could not let surface; you traded justice for calm and kept the honor rule whole by answering with truth instead of the sword, and the realm breathed easier for a season without ever knowing why'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE5",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "A Peace Kept by a Sealed Letter"
+      }
+    },
+    {
+      "id": "gE6_t1",
+      "body": "<<FILL role=consequence words=150 beats='Brasque rises before the feast and answers Vantrain not with denial but with the will itself, read again clause by clause, the co-signing, the shared protection, the law that binds every banner including Copper; he does not accuse, he only stands inside the law and lets the false charge break against it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE6_t1_1",
+          "label": "Watch the Warden answer with the law.",
+          "target": "gE6_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE6_t2",
+      "body": "<<FILL role=consequence words=146 beats='Vantrain has a dead taster and no cup that ever touched the prince; the accusation curdles as the Slate house simply refuses to shout back; the hall turns, slowly, from the accuser toward the accused'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE6_t2_1",
+          "label": "See the accusation lose its footing.",
+          "target": "gE6_t3"
+        }
+      ]
+    },
+    {
+      "id": "gE6_t3",
+      "body": "<<FILL role=consequence words=144 beats='by the feast turning it is the Commodore who looks the schemer and the Warden who looks the crown true servant; no blood spilled to prove it, only patience and the plain reading of a page every lord already signed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE6_t3_1",
+          "label": "Feel the hall change its mind.",
+          "target": "gE6_t4"
+        }
+      ]
+    },
+    {
+      "id": "gE6_t4",
+      "body": "<<FILL role=consequence words=142 beats='you keep near Petra through the rest of the feast, the small king pale and frightened by the shouting; the Slate house closes quietly around him, guardian and not jailer, and the realm sees the difference'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE6_t4_1",
+          "label": "Steady the boy-king through the long night.",
+          "target": "gE6_t5"
+        }
+      ]
+    },
+    {
+      "id": "gE6_t5",
+      "body": "<<FILL role=consequence words=140 beats='the feast ends with the three-house protection unbroken and the Slate house the stronger for having stayed quiet; Vantrain withdraws his charge in all but words, and words are all he has left'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE6_t5_1",
+          "label": "Hold the co-signing intact.",
+          "target": "gE6_t6"
+        }
+      ]
+    },
+    {
+      "id": "gE6_t6",
+      "body": "<<FILL role=consequence words=140 beats='the harvest comes in under a calmer sky; the law Brasque read aloud stands as the year spine, the boy safe, the houses bound; you learn that the hardest answer to a lie is often no answer at all but the truth left standing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE6_t6_1",
+          "label": "Read the harvest in a quieter realm.",
+          "target": "gE6_t7"
+        }
+      ]
+    },
+    {
+      "id": "gE6_t7",
+      "body": "<<FILL role=consequence words=138 beats='winter again, and the Slate gull banner flying over a realm that kept its head; the honor rule kept in the hardest place, where a lie begged to be answered with a lie and was answered only with the law'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE6_t7_1",
+          "label": "Walk the keep at the year turn.",
+          "target": "gE6_t8"
+        }
+      ]
+    },
+    {
+      "id": "gE6_t8",
+      "body": "<<FILL role=consequence words=138 beats='the realm remembers the feast as the night the Slate house would not stoop; you carry the Warden wax into another year knowing that a house can win by refusing the very weapon that was used against it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE6_t8_1",
+          "label": "Know which banner served the crown.",
+          "target": "gE6"
+        }
+      ]
+    },
+    {
+      "id": "gE6",
+      "body": "<<FILL role=ending words=138 beats='the year the Slate house won by refusing to lie; Vantrain staged poisoning turned back on him by nothing but the plain law read aloud and the Warden cold patience; you helped an honest man hold his name without a sword or a counter-lie, and the realm saw which banner served the crown and which served itself'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE6",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Charge That Broke on the Law"
+      }
+    },
+    {
+      "id": "g_za1",
+      "body": "<<FILL role=rising words=148 beats='you become the Slate house go-between, carrying Brasque offer of a shared regency to the other banners; to Factor Oyelaran it sounds like the Council she has begged for; to Commodore Vantrain it sounds like weakness he can widen; the honor rule whispers a warning you will need later, that Vantrain keeps whatever he is given and asks for more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_za1_1",
+          "label": "Carry the Warden offer between the banners.",
+          "target": "g_za2"
+        }
+      ]
+    },
+    {
+      "id": "g_za2",
+      "body": "<<FILL role=rising words=146 beats='you spend a fortnight reading rooms; the Verdant chancery hungry for any seat at the table, the Copper camp hungry for the whole table, the Slate household weary and wanting only to keep the boy safe and the year quiet; three roads open from one offer and each ends the Slate year in a different place'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_za2_1",
+          "label": "Sound the mood of each house.",
+          "target": "g_za3"
+        }
+      ]
+    },
+    {
+      "id": "g_za3",
+      "body": "<<FILL role=rising words=148 beats='you lay the choices before the Warden; ally openly with Verdant and build a Council that binds even Vantrain, deal privately with the Commodore house to house, or keep the Slate house above every faction and hold the balance alone; Brasque, tired, asks which road keeps the honor rule whole, and you are not certain any of them does'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_za3_1",
+          "label": "Bring the three roads back to Brasque.",
+          "target": "g_z_offer"
+        }
+      ]
+    },
+    {
+      "id": "g_z_offer",
+      "body": "<<FILL role=choice words=166 beats='the shared regency taking shape three ways; ally the Slate house openly with Factor Oyelaran Verdant banner and press for a true Council of Banners that binds even Vantrain; or deal privately with the Commodore, hand for hand, and settle the regency between the two strong houses over Oyelaran head; or keep the Warden above every faction and let him hold the balance alone; the warning stands, Vantrain keeps what he is given, so weigh what you would hand him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_z_offer_1",
+          "label": "Ally openly with Factor Oyelaran for a Council of Banners.",
+          "target": "gE7_t1"
+        },
+        {
+          "id": "c_g_z_offer_2",
+          "label": "Deal privately with Commodore Vantrain, house to house.",
+          "target": "gE8_t1"
+        },
+        {
+          "id": "c_g_z_offer_3",
+          "label": "Keep the Warden above the factions.",
+          "target": "g_zb1"
+        }
+      ]
+    },
+    {
+      "id": "gE7_t1",
+      "body": "<<FILL role=consequence words=150 beats='you carry the alliance back and forth until it holds; Slate order and Verdant legitimacy joined, the river guilds and the old household speaking with one voice; the two banners together outweigh the Copper at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE7_t1_1",
+          "label": "Bind the Slate and Verdant banners together.",
+          "target": "gE7_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE7_t2",
+      "body": "<<FILL role=consequence words=146 beats='for the first time the Commodore meets a thing he cannot simply lean his weight against; Slate and Verdant interlocked, each covering the other blind side; the Copper house held not by a sword but by a knot it cannot pick'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE7_t2_1",
+          "label": "Watch Vantrain find a door he cannot widen.",
+          "target": "gE7_t3"
+        }
+      ]
+    },
+    {
+      "id": "gE7_t3",
+      "body": "<<FILL role=consequence words=144 beats='you sit up nights with the Verdant scribes writing the shared regency, every power balanced against another, the boy-king made ward of all and prisoner of none; a document built to survive the men who signed it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE7_t3_1",
+          "label": "Draft the shared regency clause by clause.",
+          "target": "gE7_t4"
+        }
+      ]
+    },
+    {
+      "id": "gE7_t4",
+      "body": "<<FILL role=consequence words=142 beats='the Council of Banners convened in the Comet hall, every seat filled, the commons among the great for the first time in the realm memory; the war that hung over the fords all year folds up unfought before it starts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE7_t4_1",
+          "label": "Bring the houses to the Comet hall.",
+          "target": "gE7_t5"
+        }
+      ]
+    },
+    {
+      "id": "gE7_t5",
+      "body": "<<FILL role=consequence words=140 beats='Petra under the protection of a Council instead of a single grasping house; safe because no one banner can move him without the others; the honor rule kept and made into law, a steward guards and does not grasp'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE7_t5_1",
+          "label": "See the small king warded by many hands.",
+          "target": "gE7_t6"
+        }
+      ]
+    },
+    {
+      "id": "gE7_t6",
+      "body": "<<FILL role=consequence words=140 beats='the Warden private honor written now into the realm public rule, no house permitted to hold the boy alone; you helped turn one man restraint into a thing every banner must keep whether it wishes to or not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE7_t6_1",
+          "label": "Bind the rule onto every banner.",
+          "target": "gE7_t7"
+        }
+      ]
+    },
+    {
+      "id": "gE7_t7",
+      "body": "<<FILL role=consequence words=140 beats='Petra shown to the realm not as a prize between armies but as a ward of them all; the fear goes out of the small king shoulders by degrees through the autumn; you learn a crown guarded by many is a lighter thing to wear than one clutched by one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE7_t7_1",
+          "label": "Watch the boy-king breathe easier.",
+          "target": "gE7_t8"
+        }
+      ]
+    },
+    {
+      "id": "gE7_t8",
+      "body": "<<FILL role=consequence words=138 beats='winter again over a realm that chose a Council over a crown; the Slate gull and the Verdant eel flying together, the Copper hawk hemmed by both, the gold Comet safe above them all; you learn that the strongest guard is many hands, not one fist'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE7_t8_1",
+          "label": "Close the year under a shared banner.",
+          "target": "gE7"
+        }
+      ]
+    },
+    {
+      "id": "gE7",
+      "body": "<<FILL role=ending words=138 beats='the year Slate and Verdant built a Council no single banner could break; the boy-king warded by all houses and owned by none, Vantrain hemmed in by law instead of beaten by war; you carried the alliance that turned the Warden private honor into the realm public rule, and the crown is safer for it than a sword could make it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE7",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Council of Banners"
+      }
+    },
+    {
+      "id": "gE8_t1",
+      "body": "<<FILL role=consequence words=150 beats='you carry the private deal into Vantrain tent; the two strong houses to split the regency and leave Oyelaran outside the door; the Commodore agrees at once, too easily, and asks only that the Slate house send a surety of good faith into his keeping, a hostage by a politer name'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE8_t1_1",
+          "label": "Shake hands with the Commodore in his tent.",
+          "target": "gE8_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE8_t2",
+      "body": "<<FILL role=consequence words=146 beats='the ink is not dry before the Commodore widens every clause; the surety becomes leverage, the shared regency becomes his in all but the writing, and the Slate house finds itself the junior partner of a man who never keeps a bargain smaller than he can grow it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE8_t2_1",
+          "label": "Learn what a gift becomes in Vantrain hands.",
+          "target": "gE8_t3"
+        }
+      ]
+    },
+    {
+      "id": "gE8_t3",
+      "body": "<<FILL role=consequence words=140 beats='the warning was true and came too late; Vantrain keeps what he is given, and you gave him the Slate house piece by piece, thinking each piece the last; by winter the Warden is a guest in his own regency and you the messenger who carried him there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE8_t3_1",
+          "label": "Feel the cage close one clause at a time.",
+          "target": "gE8"
+        }
+      ]
+    },
+    {
+      "id": "gE8",
+      "body": "<<FILL role=ending words=132 beats='the year the Slate house bargained itself into a cage; the private deal made Vantrain master of the regency and made the Warden his hostage in fact, Oyelaran locked out and the boy-king a bargaining chip between two houses; the honor rule warned you plainly, Vantrain keeps what he is given, and you gave him the Slate house one clause at a time'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE8",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "The Surety of Good Faith"
+      }
+    },
+    {
+      "id": "g_zb1",
+      "body": "<<FILL role=rising words=150 beats='you help Brasque refuse both the Verdant alliance and the Copper deal, holding the Slate house above the fray as the one banner that grasps at nothing; it is a lonely place and a proud one, and by the year end it costs; a crown held too tight cuts the hand, the old man says, half to himself, and you are not sure he still hears his own rule'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_zb1_1",
+          "label": "Hold the Warden clear of every faction.",
+          "target": "g_zb2"
+        }
+      ]
+    },
+    {
+      "id": "g_zb2",
+      "body": "<<FILL role=rising words=146 beats='the year closes in around the Warden; the houses that were courted turn cold, the boy-king harder to protect alone, the Slate house proud and isolated on its high ground; it all narrows to a single last question about how Odile Brasque will let go of the regency, or whether he will let go at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_zb2_1",
+          "label": "Watch the balance narrow to one choice.",
+          "target": "g_z_end"
+        }
+      ]
+    },
+    {
+      "id": "g_z_end",
+      "body": "<<FILL role=choice words=158 beats='the last Slate choice of the year; counsel the Warden to resign the regency into a Council hands while he still can, stepping down with the honor whole; or back him in clinging to the regency to the last, holding the boy and the crown alone against every other banner; the rule he taught you cuts both ways now, a steward guards and does not grasp, and a crown held too tight cuts the hand that will not open'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_z_end_1",
+          "label": "Counsel him to resign the regency to a Council.",
+          "target": "gE9_t1"
+        },
+        {
+          "id": "c_g_z_end_2",
+          "label": "Back him in holding the regency to the last.",
+          "target": "gE10_t1"
+        }
+      ]
+    },
+    {
+      "id": "gE9_t1",
+      "body": "<<FILL role=consequence words=150 beats='you help the Warden write his own stepping-down; the regency surrendered to a Council of Banners before any house can wrench it from him; Brasque signs it steady-handed and looks, for the first time all year, unburdened'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE9_t1_1",
+          "label": "Help an old man lay down a heavy thing.",
+          "target": "gE9_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE9_t2",
+      "body": "<<FILL role=consequence words=146 beats='Petra handed to a Council instead of clutched by a fist; the Slate house keeps the one thing it came in with, its honor, and loses only power, which the old man says was never his to keep in the first place'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE9_t2_1",
+          "label": "Pass the boy-king into shared keeping.",
+          "target": "gE9_t3"
+        }
+      ]
+    },
+    {
+      "id": "gE9_t3",
+      "body": "<<FILL role=consequence words=142 beats='the gull banner lowered by choice, not by defeat; the old man walking out of the Comet Keep a private lord again, the crown left safer than he found it, the household quiet with a kind of relief'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE9_t3_1",
+          "label": "Walk the Warden out of the keep at dusk.",
+          "target": "gE9_t4"
+        }
+      ]
+    },
+    {
+      "id": "gE9_t4",
+      "body": "<<FILL role=consequence words=140 beats='you learn that the hardest guarding is knowing when to let the guarded thing go; the Warden taught you the rule with his life and kept it with his last act of office'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE9_t4_1",
+          "label": "Learn the hardest part of guarding.",
+          "target": "gE9_t5"
+        }
+      ]
+    },
+    {
+      "id": "gE9_t5",
+      "body": "<<FILL role=consequence words=138 beats='winter over a realm that got its Council without a war; the Slate house smaller and cleaner than it began; you carry the seal into next year knowing exactly what it is worth, and what it is not worth keeping at any cost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE9_t5_1",
+          "label": "Close the year with the honor whole.",
+          "target": "gE9"
+        }
+      ]
+    },
+    {
+      "id": "gE9",
+      "body": "<<FILL role=ending words=134 beats='the year the Warden proved his own rule by keeping it; the regency laid down into a Council before it could be seized, the boy-king safe in shared hands, the Slate house diminished in power and whole in honor; you helped an old man open his hand before the crown could cut it, and he walked out a guardian to the end'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE9",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Hand That Opened in Time"
+      }
+    },
+    {
+      "id": "gE10_t1",
+      "body": "<<FILL role=consequence words=150 beats='the Warden will not let go; he holds the regency and the boy alone against Slate counsel and every other banner, and the houses close on him like weather; you stand at his shoulder to the last as the Council votes him down and the Copper and Verdant banners take the keep between them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE10_t1_1",
+          "label": "Watch an old man close his fist on a crown.",
+          "target": "gE10_t2"
+        }
+      ]
+    },
+    {
+      "id": "gE10_t2",
+      "body": "<<FILL role=consequence words=146 beats='Odile Brasque broken by the year and the weight, dead of it before the spring, the household says of a stopped heart and the truer say of a hand that would not open; the regency lost, the boy passed to other keeping, the gull banner furled; the death is recounted quietly, with the gravity a long service is owed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gE10_t2_1",
+          "label": "Take up the seal from a fallen Warden.",
+          "target": "gE10"
+        }
+      ]
+    },
+    {
+      "id": "gE10",
+      "body": "<<FILL role=ending words=140 beats='the year the Warden could not let go and it killed him; the regency clutched to the last, the Council turned against him, the old man gone before spring with the crown still in his cold grip; you carry his seal and the lesson he taught and broke, a crown held too tight cuts the hand, and you bury a guardian who forgot to open his'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gE10",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Crown He Would Not Set Down"
+      },
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "r_s1",
+      "body": "<<FILL role=rising words=150 beats='the Commodore war-camp on the marches, Copper hawk banners snapping over a sea of tents; you are Cassian Vantrain young courier, the boy who carries his words where they must not be written; the camp is all iron and appetite, and the Commodore at its center is charming, generous, and never once idle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s1_1",
+          "label": "Ride into the Copper war-camp.",
+          "target": "r_s2"
+        }
+      ]
+    },
+    {
+      "id": "r_s2",
+      "body": "<<FILL role=rising words=148 beats='Vantrain by the fire, naming the great houses for you like a man laying out a board; Slate Brasque the tired old guardian, Verdant Oyelaran the dreamer with her guilds, the boy-king Petra a crown on legs too short to run; the Commodore says the realm needs a strong hand and lets you understand whose hand he means'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s2_1",
+          "label": "Take the Commodore measure by firelight.",
+          "target": "r_s3"
+        }
+      ]
+    },
+    {
+      "id": "r_s3",
+      "body": "<<FILL role=rising words=148 beats='First Thaw; Vantrain rides for Port Amaranth at the head of the marches, banners forward, to honor a king he fought half his life; the army is too large for a funeral and everyone knows it; you carry his letters ahead, warm and dutiful on the page, and see the distance between what your master writes and what he means'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s3_1",
+          "label": "Ride north with the border army.",
+          "target": "r_s4"
+        }
+      ]
+    },
+    {
+      "id": "r_s4",
+      "body": "<<FILL role=rising words=146 beats='the will read in the Slate hall; it names Brasque regent and binds the boy protection to all three houses; Vantrain signs it with a flourish and a smile, co-signing the very leash he means to slip; you watch him agree to everything he intends to break and file it with the other things you were not meant to see'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s4_1",
+          "label": "Watch the Commodore co-sign the will.",
+          "target": "r_s5"
+        }
+      ]
+    },
+    {
+      "id": "r_s5",
+      "body": "<<FILL role=spine words=150 beats='a sealed letter pressed into your hand for a hard ride south to the Cinder Docks, to the sellsword companies who fight for coin and no banner; you are told only to deliver it and forget it, but you saw the seal and you know the Cinder Docks, and you understand your master is buying an army under the table of a truce he just signed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s5_1",
+          "label": "Carry the letter you were never shown.",
+          "target": "r_s6"
+        }
+      ]
+    },
+    {
+      "id": "r_s6",
+      "body": "<<FILL role=spine words=150 beats='word comes of the Fenwick Span, the river-gate opened, the lower fords drowned, forty river folk and a grain convoy lost; the camp roars that Brasque did it, and Vantrain believes it, cursing the Slate house for butchers; the Copper vantage never learns the truth of the bridge, only the Slate house wears that crime in secret; you carry a rage built on a fact you cannot check'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s6_1",
+          "label": "Hear the camp blame the wrong house.",
+          "target": "r_s7"
+        }
+      ]
+    },
+    {
+      "id": "r_s7",
+      "body": "<<FILL role=spine words=146 beats='the border army halts within a day of the capital and the houses agree to a truce feast at Midsummer, the Comet Feast, where the boy-king will be shown and every banner will sit at one table and pretend; Vantrain grows quiet and busy in the days before, and the quiet is the kind you have learned to fear'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s7_1",
+          "label": "March on toward the truce feast.",
+          "target": "r_s8"
+        }
+      ]
+    },
+    {
+      "id": "r_s8",
+      "body": "<<FILL role=spine words=150 beats='the second secret only the Copper vantage holds; you overhear Vantrain arranging it, his own taster to drink a doctored cup at the feast and die of it, so the Commodore can cry that Brasque tried to poison the prince and seize the boy as his protector; a staged murder of his own man to buy a child; you carry it out of the tent like a coal in your fist'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s8_1",
+          "label": "Overhear what must never be spoken.",
+          "target": "r_s9"
+        }
+      ],
+      "safety_scope": [
+        "conflict",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "r_s9",
+      "body": "<<FILL role=spine words=150 beats='the Comet Feast; the taster drinks and dies, though the staging goes wrong and the man dies harder and truer than planned; Vantrain rises white-faced and accuses the Slate house of poisoning the prince; the hall erupts; you alone in all that room know the cup was the Commodore own design, and you hold your tongue because a courier who speaks now does not leave the hall alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s9_1",
+          "label": "Sit through the poisoned feast.",
+          "target": "r_s10"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery",
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "r_s10",
+      "body": "<<FILL role=spine words=148 beats='in the uproar Vantrain moves fast; he sweeps up Prince Petra under the banner of protection, claiming Brasque cannot keep the child safe, and rides for the border fortress of Ember Station with the boy and the gold Comet in Copper hands; you ride in the column that carries a king away from his keepers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s10_1",
+          "label": "Ride guard as the Commodore takes the boy.",
+          "target": "r_s11"
+        }
+      ]
+    },
+    {
+      "id": "r_s11",
+      "body": "<<FILL role=spine words=146 beats='Ember Station on its crag above the marches, Copper falcons on every tower and the small gold Comet flying below them now, a captured banner; Prince Petra lodged in the high rooms, guarded and gilded and alone; the realm splits clean, Slate holding the empty capital, Verdant holding the rivers, Copper holding the child'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s11_1",
+          "label": "Come to the Copper fortress by the water.",
+          "target": "r_s12"
+        }
+      ]
+    },
+    {
+      "id": "r_s12",
+      "body": "<<FILL role=spine words=148 beats='winter closes on Ember Station; Brasque marches to recover the prince and Vantrain digs in to keep him, the boy the pivot of both; the Commodore means to crown Petra under Copper protection or hold him as a shield, and you carry messages between men deciding a nine-year-old life like a move in a long game'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s12_1",
+          "label": "Watch the winter armies gather.",
+          "target": "r_s13"
+        }
+      ]
+    },
+    {
+      "id": "r_s13",
+      "body": "<<FILL role=spine words=150 beats='the eve of the siege; Brasque Slate host in the snow below and Ember Station sealed above; Vantrain turns to you at last and asks plainly where your loyalty lies, courier, with the hawk or with your own conscience; the honor rule of the courier, the one thing you brought into this camp, is that a courier word is his house honor and must never carry a lie; every choice from here tests it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_s13_1",
+          "label": "Stand at the Commodore side on the siege eve.",
+          "target": "r_c1"
+        }
+      ]
+    },
+    {
+      "id": "r_c1",
+      "body": "<<FILL role=choice words=160 beats='the first turn of the siege; Vantrain wants a forged proclamation that Prince Petra named him protector with the boy own seal, to make the capture look like the child wish; the honor rule is plain, a courier word is his house honor and must never carry a lie; forge the proclamation in the boy-king name, or refuse the lie and hold your word clean'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c1_1",
+          "label": "Forge the proclamation in the boy-king name.",
+          "target": "rE1_t1"
+        },
+        {
+          "id": "c_r_c1_2",
+          "label": "Refuse the lie and keep your word clean.",
+          "target": "r_c2"
+        }
+      ]
+    },
+    {
+      "id": "rE1_t1",
+      "body": "<<FILL role=consequence words=146 beats='you write it, the boy-king voice in your master design, the gold Comet seal pressed to a lie; the proclamation goes out and the realm reads it as Petra own choosing; the courier word is spent and cannot be bought back, and you feel the honor you came in with go out of you like heat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE1_t1_1",
+          "label": "Set your hand to a child forged wish.",
+          "target": "rE1"
+        }
+      ]
+    },
+    {
+      "id": "rE1",
+      "body": "<<FILL role=ending words=130 beats='the year you signed away your only honor; the forged proclamation made the capture look like the child wish and made you the liar who wrote it; the rule you brought into the Copper camp is broken, a courier word is his house honor, and you carry the hawk now with nothing of your own left underneath it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Lie in the Boy-King Hand"
+      }
+    },
+    {
+      "id": "r_c2",
+      "body": "<<FILL role=choice words=156 beats='the second turn; the garrison mutters and you could break the whole siege with one sentence, the truth that the feast-poisoning was Vantrain own staging, a secret only you hold; speak it to the garrison and watch the Copper house turn on itself, though you will be named traitor first and fast; or keep the coal in your fist and stay useful and alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c2_1",
+          "label": "Reveal to the garrison that the poisoning was staged.",
+          "target": "rE2_t1"
+        },
+        {
+          "id": "c_r_c2_2",
+          "label": "Keep the secret and stay silent.",
+          "target": "r_c3"
+        }
+      ]
+    },
+    {
+      "id": "rE2_t1",
+      "body": "<<FILL role=consequence words=148 beats='you tell them, the taster, the doctored cup, the Commodore own hand in the feast-murder that started this war; the yard goes silent and then loud; some believe you and more do not, and Vantrain men have you by the arms before the echo dies'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE2_t1_1",
+          "label": "Say the unsayable in the muster yard.",
+          "target": "rE2_t2"
+        }
+      ]
+    },
+    {
+      "id": "rE2_t2",
+      "body": "<<FILL role=consequence words=140 beats='branded a liar for telling the truth, cast out of the Copper house you exposed; the garrison half-split behind you and no thanks from any banner; you learn that a secret spoken from inside is heard as treason no matter how true, and the truth-teller pays before the truth does'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE2_t2_1",
+          "label": "Wear the traitor name for a true word.",
+          "target": "rE2"
+        }
+      ]
+    },
+    {
+      "id": "rE2",
+      "body": "<<FILL role=ending words=132 beats='the year you told the truth and it broke you first; the staged poisoning spoken aloud in the muster yard, the Copper house split, and you branded traitor for the one honest sentence of the year; you learn what only the Copper vantage could teach, that a true secret spoken from the inside is called betrayal by the very men it might have saved'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE2",
+        "valence": "negative",
+        "kind": "discovery",
+        "title": "The Truth They Called Treason"
+      }
+    },
+    {
+      "id": "r_c3",
+      "body": "<<FILL role=choice words=152 beats='the third turn; a rider could reach Factor Oyelaran Verdant chancery tonight with word of the sellsword letter you carried south, the proof that Vantrain bought an army under the truce; smuggle the word out to Verdant and arm the one house that could prove it; or hold it, because a courier who leaks his own master is a courier no house will ever trust again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c3_1",
+          "label": "Smuggle word of the sellsword letter to Factor Oyelaran.",
+          "target": "rE3_t1"
+        },
+        {
+          "id": "c_r_c3_2",
+          "label": "Hold it, and trust no other house.",
+          "target": "r_c4"
+        }
+      ]
+    },
+    {
+      "id": "rE3_t1",
+      "body": "<<FILL role=consequence words=146 beats='you get the word out, a whispered route to the Verdant chancery, the sellsword companies named, the Commodore under-the-table army exposed to the one house that keeps proof; you have handed Verdant a weapon and handed yourself a truth you can never take back, that you are no longer only Vantrain man'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE3_t1_1",
+          "label": "Send the secret over the wall by night.",
+          "target": "rE3"
+        }
+      ]
+    },
+    {
+      "id": "rE3",
+      "body": "<<FILL role=ending words=130 beats='the year the Copper vantage armed the Verdant; the sellsword secret carried out of Ember Station to the one house that could prove it, the Commodore bought army dragged toward the light; you kept no banner trust and served a truth larger than any of them, and you learned that the only loyalty left to you was to the fact itself'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE3",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Secret Sent Over the Wall"
+      }
+    },
+    {
+      "id": "r_c4",
+      "body": "<<FILL role=choice words=150 beats='the fourth turn; Brasque courier comes under a white flag to parley, and Vantrain hands you his ultimatum to deliver, harsh enough to make the parley fail on purpose; carry the ultimatum exactly as the Commodore wrote it and burn the truce, or soften it in the delivery and leave a door open, though a courier who edits his master words has broken his office'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c4_1",
+          "label": "Deliver the ultimatum exactly, and burn the truce.",
+          "target": "rE4_t1"
+        },
+        {
+          "id": "c_r_c4_2",
+          "label": "Soften it, and leave a door open.",
+          "target": "r_c5"
+        }
+      ]
+    },
+    {
+      "id": "rE4_t1",
+      "body": "<<FILL role=consequence words=146 beats='you deliver it whole, every barbed clause, and watch the Slate courier face close and the white flag come down; the parley dies as it was built to die and the siege hardens to the death; you kept your office and carried your master true meaning, and the meaning was war'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE4_t1_1",
+          "label": "Speak the words meant to end the talking.",
+          "target": "rE4"
+        }
+      ]
+    },
+    {
+      "id": "rE4",
+      "body": "<<FILL role=ending words=128 beats='the year you carried a war in your mouth; the ultimatum delivered whole, the truce burned to the ground exactly as intended, the siege set to grind to its worst; you kept the courier rule to carry your master words unaltered and learned it can make you the faithful instrument of a thing you hate'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE4",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Ultimatum Carried Whole"
+      }
+    },
+    {
+      "id": "r_c5",
+      "body": "<<FILL role=choice words=156 beats='the fifth turn, and the cruelest; Vantrain orders the boy-king shown on the wall in sight of Brasque host, a nine-year-old made a shield to freeze the Slate advance; the rule beneath every rule, a shield of children is no shield at all; obey and set the child on the battlements, or refuse and hide the boy where no order can reach him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c5_1",
+          "label": "Obey, and set the child on the battlements.",
+          "target": "rE5_t1"
+        },
+        {
+          "id": "c_r_c5_2",
+          "label": "Refuse, and hide the boy away.",
+          "target": "r_c6"
+        }
+      ],
+      "safety_scope": [
+        "peril",
+        "conflict"
+      ]
+    },
+    {
+      "id": "rE5_t1",
+      "body": "<<FILL role=consequence words=148 beats='you do it, the small king on the cold battlement in his gold cloak, a target dressed as a threat, and the Slate host below goes still with horror; the advance freezes and Vantrain smiles and you understand you have made yourself the jailer of a child'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE5_t1_1",
+          "label": "Walk a nine-year-old into the wind on the wall.",
+          "target": "rE5_t2"
+        }
+      ]
+    },
+    {
+      "id": "rE5_t2",
+      "body": "<<FILL role=consequence words=140 beats='the boy holds your hand and does not know why; when the reckoning comes, Slate and Verdant alike name the courier who set the child on the wall, and there is no honor rule left to hide behind; you obeyed, and obedience made you the thing the rule warned against'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE5_t2_1",
+          "label": "Answer for a shield of children.",
+          "target": "rE5"
+        }
+      ]
+    },
+    {
+      "id": "rE5",
+      "body": "<<FILL role=ending words=134 beats='the year you made a child a shield; the boy-king set on the battlements to freeze an army, the siege bought on a nine-year-old fear, and you the hand that walked him into the wind; the rule was plain, a shield of children is no shield at all, and you broke it to obey, and the breaking is yours to carry however the year ends'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE5",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "The Child on the Battlements"
+      },
+      "safety_scope": [
+        "peril",
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "r_c6",
+      "body": "<<FILL role=choice words=150 beats='the sixth turn; a Slate captain offers you gold to open a postern gate by night and let Brasque men into Ember Station, a betrayal of the betrayers that would end the siege in blood in the dark; open the postern and sell the fortress from within, or keep faith with the walls you stand on even now, when the men behind them deserve so little'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c6_1",
+          "label": "Open the postern gate to Brasque men by night.",
+          "target": "rE6_t1"
+        },
+        {
+          "id": "c_r_c6_2",
+          "label": "Keep faith with the walls.",
+          "target": "r_c7"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "rE6_t1",
+      "body": "<<FILL role=consequence words=148 beats='you take the gold and turn the key; Slate men pour through the postern in the black hour and the fortress falls from the inside in a confusion of blades; you have ended one betrayal with another and no house will call you anything but what you are now, a man who opens gates for coin, whichever side he wears'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE6_t1_1",
+          "label": "Turn a key you were never given.",
+          "target": "rE6"
+        }
+      ]
+    },
+    {
+      "id": "rE6",
+      "body": "<<FILL role=ending words=128 beats='the year you answered a betrayal with a betrayal; the postern sold, Ember Station taken from within in the dark, the siege ended in blood you let inside; you traded one broken faith for another and came out the year with gold and no name worth keeping, a gate that opens for whoever pays the most'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE6",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Postern Sold in the Dark"
+      }
+    },
+    {
+      "id": "r_c7",
+      "body": "<<FILL role=choice words=152 beats='the seventh turn; a chance opens to broker a private surrender of Prince Petra into the keeping of a neutral Council, ending the siege without a storming and taking the boy out of every grasping hand; broker the quiet surrender and close the year with the child safe, or press on and keep the game running for a bigger prize'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c7_1",
+          "label": "Broker a quiet surrender of the prince to a Council.",
+          "target": "rE7_t1"
+        },
+        {
+          "id": "c_r_c7_2",
+          "label": "Press on for a bigger prize.",
+          "target": "r_c8"
+        }
+      ]
+    },
+    {
+      "id": "rE7_t1",
+      "body": "<<FILL role=consequence words=148 beats='you spend three nights carrying terms between Vantrain and a neutral Council forming below, until the shape of it holds; the boy surrendered not to Slate or Copper but to a shared keeping, the siege lifted, the fortress spared a storming'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE7_t1_1",
+          "label": "Carry the terms between two stubborn armies.",
+          "target": "rE7_t2"
+        }
+      ]
+    },
+    {
+      "id": "rE7_t2",
+      "body": "<<FILL role=consequence words=140 beats='the terms signed, the Slate host withdrawing, the Copper falcons lowered by agreement instead of defeat; Petra taken from Ember Station to a Council care; the year ends not with a winner but with a boy alive and a war unfought'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE7_t2_1",
+          "label": "Watch the armies stand down in the thaw.",
+          "target": "rE7"
+        }
+      ]
+    },
+    {
+      "id": "rE7",
+      "body": "<<FILL role=ending words=132 beats='the year the courier ended a siege with words instead of a wall; Prince Petra surrendered into a neutral Council keeping, the fortress spared, no banner crowned and none defeated; you used everything the Copper vantage taught you to broker a quiet close, and the child walked out of the game alive, which was the only prize worth taking'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE7",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Surrender Brokered in the Snow"
+      }
+    },
+    {
+      "id": "r_c8",
+      "body": "<<FILL role=choice words=152 beats='the eighth turn; you could confront Vantrain himself with what you alone know, the staged poisoning, the sellswords, the whole rotten frame of the year, and force the Commodore to see his own reflection; confront him with the truth of his staging and see what a shamed man does, or swallow it one more time and keep your place'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c8_1",
+          "label": "Confront Vantrain with the truth of his staging.",
+          "target": "rE8_t1"
+        },
+        {
+          "id": "c_r_c8_2",
+          "label": "Swallow it, and keep your place.",
+          "target": "r_c9"
+        }
+      ]
+    },
+    {
+      "id": "rE8_t1",
+      "body": "<<FILL role=consequence words=150 beats='you say it all in the high room, the taster, the doctored cup, the letter to the Cinder Docks, the child on the wall, and for once Vantrain has no charm to answer with; the Commodore sits a long time with his own reflection, and something in the year bends; he relents part way, pulls the boy off the wall, lets the parley live, not from mercy but because a man seen clearly cannot look away as easily'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE8_t1_1",
+          "label": "Name the Commodore crimes to his own face.",
+          "target": "rE8"
+        }
+      ]
+    },
+    {
+      "id": "rE8",
+      "body": "<<FILL role=ending words=134 beats='the year the courier held a mirror to a duke; every private crime of the Copper vantage named to Vantrain own face, the staging and the sellswords and the shield of children, and the Commodore bent a little under being seen; you changed nothing you could prove and something you could not, and learned that a witness is its own kind of power'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE8",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Mirror Held to the Commodore"
+      }
+    },
+    {
+      "id": "r_c9",
+      "body": "<<FILL role=choice words=150 beats='the ninth turn; Vantrain means to crown Petra a puppet king under Copper protection, a small hollow crown with the Commodore hand inside it, and asks you to stage the crowning; help crown the puppet and give the year a king who is a shadow, or move to stop the false crowning before it sets'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c9_1",
+          "label": "Help crown Petra a puppet under Copper protection.",
+          "target": "rE9_t1"
+        },
+        {
+          "id": "c_r_c9_2",
+          "label": "Move to stop the false crowning.",
+          "target": "r_c10"
+        }
+      ]
+    },
+    {
+      "id": "rE9_t1",
+      "body": "<<FILL role=consequence words=148 beats='you help stage it, the boy-king crowned in Ember Station with Copper falcons at every pillar, a real crown on a child who will rule nothing while Vantrain rules through him; the realm has its king again and he is a shadow of one, and you the courier who called the ceremony true'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE9_t1_1",
+          "label": "Set a hollow crown on a small head.",
+          "target": "rE9"
+        }
+      ]
+    },
+    {
+      "id": "rE9",
+      "body": "<<FILL role=ending words=132 beats='the year the realm got back a king who was a shadow; Petra crowned in Ember Station under the Copper hawk, the throne filled and empty at once, Vantrain hand inside the small gold crown; you closed the year with a coronation that settled everything and healed nothing, and you know exactly whose reign you helped begin'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE9",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Hollow Crown of Ember Station"
+      }
+    },
+    {
+      "id": "r_c10",
+      "body": "<<FILL role=choice words=152 beats='the tenth turn, deep in the year and the walls; a narrow window opens to spirit Prince Petra out of Ember Station to true hiding, out of Copper hands and Slate reach alike, a child hidden until he is old enough to be his own king; take the risk and steal the boy away to safety, or stay the course and keep him a piece on the board'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c10_1",
+          "label": "Spirit Petra out of Ember Station to true hiding.",
+          "target": "rE10_t1"
+        },
+        {
+          "id": "c_r_c10_2",
+          "label": "Stay the course and keep him a piece.",
+          "target": "r_c11"
+        }
+      ]
+    },
+    {
+      "id": "rE10_t1",
+      "body": "<<FILL role=consequence words=150 beats='you go in the small hours, the boy in a servant cloak, down the water-stair and out past the falcons who never guard the courier; you carry Petra into the marshes and the hidden keeps beyond every banner map, a child taken out of the game entirely to be kept until he is grown'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE10_t1_1",
+          "label": "Steal a king out of his own captivity.",
+          "target": "rE10_t2"
+        }
+      ]
+    },
+    {
+      "id": "rE10_t2",
+      "body": "<<FILL role=consequence words=140 beats='the boy delivered to guardians who owe no house and want no throne; the war at Ember Station loses its prize and its point; the courier who stole a king walks out of the story into a long quiet, his word spent to save a child and never for a lie'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE10_t2_1",
+          "label": "Vanish from the year with your honor whole.",
+          "target": "rE10"
+        }
+      ]
+    },
+    {
+      "id": "rE10",
+      "body": "<<FILL role=ending words=138 beats='the year the courier stole a king to save him; Petra carried out of Ember Station and hidden past every banner reach, the war robbed of its prize, the child kept safe to grow into his own crown; you spent everything the Copper vantage gave you on the one honest act it made possible, and your word came out of the year clean'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE10",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The King Hidden Until He Is Grown"
+      }
+    },
+    {
+      "id": "r_c11",
+      "body": "<<FILL role=choice words=152 beats='the eleventh turn; you could turn the Ember Station garrison itself, the captains sick of the year, and force Vantrain at his own sword-point to accept a Council of Banners; turn the garrison and end the Commodore grip from inside, or hold and let the siege decide it by blood outside the walls'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c11_1",
+          "label": "Turn the garrison to force Vantrain to a Council.",
+          "target": "rE11_t1"
+        },
+        {
+          "id": "c_r_c11_2",
+          "label": "Hold, and let the siege decide.",
+          "target": "r_c12"
+        }
+      ]
+    },
+    {
+      "id": "rE11_t1",
+      "body": "<<FILL role=consequence words=150 beats='you spend a week turning captains one by one, the man who lost a brother at the feast, the woman who will not guard a child on a wall, until the garrison stands with you; Vantrain wakes to his own house arrayed against him and no army left to give an order to; the Commodore accepts a Council of Banners at the point of his own men swords'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE11_t1_1",
+          "label": "Whisper a fortress into changing its mind.",
+          "target": "rE11"
+        }
+      ]
+    },
+    {
+      "id": "rE11",
+      "body": "<<FILL role=ending words=136 beats='the year the courier turned a fortress against its own duke; the Ember Station garrison brought over one grief at a time until Vantrain had no one left to command, forced to a Council of Banners by his own men; you ended the Commodore grip with conscience instead of blood, and the boy-king passed to safe and shared keeping'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE11",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Garrison That Turned"
+      }
+    },
+    {
+      "id": "r_c12",
+      "body": "<<FILL role=choice words=156 beats='the last turn of the Copper year; the siege breaks one way or another and Vantrain asks which banner you raise over Ember Station when the smoke clears; raise the gold Comet for the child and set the crown back where it belongs, free; or raise the Copper hawk, let the Commodore keep what he took, and live the rest of your life inside that choice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_c12_1",
+          "label": "Raise the gold Comet over Ember Station, for the child.",
+          "target": "rE12_t1"
+        },
+        {
+          "id": "c_r_c12_2",
+          "label": "Raise the Copper hawk, and live with it.",
+          "target": "rE13_t1"
+        }
+      ]
+    },
+    {
+      "id": "rE12_t1",
+      "body": "<<FILL role=consequence words=150 beats='when it ends you climb the highest tower and haul down the Copper hawk and raise the small gold Comet over Ember Station, free and rightful; the realm sees whose banner won the year, not the strongest house but the true crown; Petra passed at last into keeping that guards and does not grasp'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE12_t1_1",
+          "label": "Run a boy-king banner up a captured tower.",
+          "target": "rE12_t2"
+        }
+      ]
+    },
+    {
+      "id": "rE12_t2",
+      "body": "<<FILL role=consequence words=140 beats='the gold Comet over the marches at winter end, the boy-king safe and free, the Copper ambition folded, the honor rule kept whole; your word carried no lie out of the year and your hand raised the one banner worth raising'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE12_t2_1",
+          "label": "Close the year under the right banner.",
+          "target": "rE12"
+        }
+      ]
+    },
+    {
+      "id": "rE12",
+      "body": "<<FILL role=ending words=138 beats='the year the courier raised the true banner; the gold Comet flown free over Ember Station, the boy-king restored and safe, Vantrain ambition undone from the inside by the one man who knew all of it; you carried every Copper secret through the year and spent it to set a right crown back where it belonged, your word clean and your banner true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE12",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Gold Comet Over Ember Station"
+      }
+    },
+    {
+      "id": "rE13_t1",
+      "body": "<<FILL role=consequence words=148 beats='you run the Copper hawk up over Ember Station and let the Commodore keep the boy and the year; Vantrain wins, the crown becomes his shadow to move, and you stand in the victory knowing exactly what it is built on, the taster, the letter, the child on the wall, all of it yours to carry'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rE13_t1_1",
+          "label": "Raise the hawk and count the cost.",
+          "target": "rE13"
+        }
+      ]
+    },
+    {
+      "id": "rE13",
+      "body": "<<FILL role=ending words=134 beats='the year the courier raised the banner of the lie; the Copper hawk flown over Ember Station, Vantrain master of a puppet crown, the whole rotten year made permanent by the one man who could have unmade it; you kept your place and your reward and lost your word, and you close the year won and hollow, carrying every secret you refused to spend'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "rE13",
+        "valence": "negative",
+        "kind": "completion",
+        "title": "The Falcon Raised, the Cost Uncounted"
+      }
+    },
+    {
+      "id": "gr_r1",
+      "body": "<<FILL role=rising words=148 beats='Factor Nessa Oyelaran chancery in the river-city of Driftmarket, ink and river-light and the smell of wet rope; you are her youngest archivist, quick with a pen and quicker with a memory; the Verdant eel banner over the guild-halls, the commons and the river folk who feed the whole realm and are counted last in every hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_r1_1",
+          "label": "Enter the Verdant chancery.",
+          "target": "gr_r2"
+        }
+      ]
+    },
+    {
+      "id": "gr_r2",
+      "body": "<<FILL role=rising words=148 beats='Factor Oyelaran by lamplight, plain-spoken and patient, teaching you the cause; not a crown for any house but a Council where the river guilds sit with the great banners; the boy-king Petra to be warded by all, owned by none; the honor rule of the chancery, that the Verdant house wins with proof and not with the sword, because the commons cannot afford a war and will pay for it first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_r2_1",
+          "label": "Learn the shape of the Verdant cause.",
+          "target": "gr_r3"
+        }
+      ]
+    },
+    {
+      "id": "gr_r3",
+      "body": "<<FILL role=rising words=146 beats='your first weeks in Verdant ink; petitions, grievances, the long ledger of promises the great houses made the commons and never kept; you learn the river country by its complaints and its patience, and you begin to understand why Factor Oyelaran trusts proof more than any lord word'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_r3_1",
+          "label": "Take up the pen for the river folk.",
+          "target": "gr_r4"
+        }
+      ]
+    },
+    {
+      "id": "gr_r4",
+      "body": "<<FILL role=rising words=144 beats='Factor Oyelaran takes you down to the wharves where the grain barges load, the guild masters and the ferry families who are the Verdant cause made flesh; she names them for you one by one, and you understand the seat she wants at the Council is not for herself but for every hand on that quay; the succession year has not touched them yet, and it will'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_r4_1",
+          "label": "Walk the wharves of Driftmarket before the year turns.",
+          "target": "gr_petition"
+        }
+      ]
+    },
+    {
+      "id": "gr_petition",
+      "body": "<<FILL role=choice words=158 beats='the first draft of the year; Factor Oyelaran means to petition the Council for a share of the regency, and how you help her word it sets the Verdant tone; draft it moderate, a careful request the great houses can grant without losing face; or draft it bold, a demand that names the commons owed and dares the banners to refuse; the chancery rule stands, Verdant wins with proof and patience, so weigh how loud the first word should be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_petition_1",
+          "label": "Draft the petition moderate and careful.",
+          "target": "gr_m1"
+        },
+        {
+          "id": "c_gr_petition_2",
+          "label": "Draft the petition bold and demanding.",
+          "target": "gr_b1"
+        }
+      ]
+    },
+    {
+      "id": "gr_m1",
+      "body": "<<FILL role=rising words=146 beats='you draft it moderate, every clause a door left open, the demand dressed as a request; Factor Oyelaran reads it and nods, this is how the weak speak to the strong and still keep their feet; the petition goes north to the Council and the river-city holds its breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_m1_1",
+          "label": "Set a careful petition on the page.",
+          "target": "gr_m2"
+        }
+      ]
+    },
+    {
+      "id": "gr_m2",
+      "body": "<<FILL role=rising words=146 beats='the Fenwick Span, the river-gate opened in the night, the lower fords drowned; a Verdant grain convoy and forty river folk of your own guilds taken by the flood; the city reels; every banner blames another and the truth is somewhere in the current; the Verdant vantage alone will be able to trace where the gate-order truly came from'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_m2_1",
+          "label": "Wake to the news from the fords.",
+          "target": "gr_bridge"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment",
+        "peril"
+      ]
+    },
+    {
+      "id": "gr_bridge",
+      "body": "<<FILL role=choice words=162 beats='the drowned fords and the Verdant house in mourning; you can follow the flood back to its source, quiet inquiries among the lock-keepers and the surviving ferry folk who saw who worked the gate; or you can set inquiry aside and pour everything into holding the river-towns together through the grief and the hunger the flood has brought; the Verdant vantage is the only one that can ever learn the truth of the bridge, so choose what the truth is worth right now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_bridge_1",
+          "label": "Pursue the proof of who opened the gate.",
+          "target": "gr_p1"
+        },
+        {
+          "id": "c_gr_bridge_2",
+          "label": "Set it aside and hold the river-towns together.",
+          "target": "gr_h1"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "gr_p1",
+      "body": "<<FILL role=rising words=148 beats='you work it like a ledger, the lock-keepers, the timing of the gate, the survivors who saw Slate uniforms on the sluice; the trail runs to Captain Roderic Voss and past him toward the Slate Warden own order, the truth the Copper house will never see and the Slate house will never admit, that Brasque spent the fords to deny Vantrain a crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_p1_1",
+          "label": "Follow the flood to its source.",
+          "target": "gr_p2"
+        }
+      ]
+    },
+    {
+      "id": "gr_p2",
+      "body": "<<FILL role=rising words=146 beats='the proof assembles, thin but real, the Slate house hand on the gate that drowned your own people; the Verdant vantage alone holds it; what you do with it can start a war or force a peace, and Factor Oyelaran will not decide it without you, because you gathered it and you know how far it truly reaches'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_p2_1",
+          "label": "Hold a drowning-order in your hand.",
+          "target": "gr_proof"
+        }
+      ]
+    },
+    {
+      "id": "gr_proof",
+      "body": "<<FILL role=choice words=156 beats='the proof of the bridge in Verdant hands and the whole year hanging on how it is used; name Voss and the Warden openly and let the river-city cry murder to the sky; or carry the proof quietly to the Council table and use it to force a truce and a hearing for the commons; the rule warns you, proof shouted becomes a sword and the commons bleed first under it, so choose how the drowned are answered'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_proof_1",
+          "label": "Name Voss and the Warden openly to the city.",
+          "target": "gnE1_t1"
+        },
+        {
+          "id": "c_gr_proof_2",
+          "label": "Carry the proof quietly to force a truce.",
+          "target": "gnE2_t1"
+        }
+      ]
+    },
+    {
+      "id": "gnE1_t1",
+      "body": "<<FILL role=consequence words=148 beats='you name them from the steps, Voss and Brasque and the drowning-order, and the river-city roars; the grief becomes a mob and the mob becomes a rising, and the Slate house answers a shout with soldiers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE1_t1_1",
+          "label": "Cry murder from the guild-hall steps.",
+          "target": "gnE1_t2"
+        }
+      ]
+    },
+    {
+      "id": "gnE1_t2",
+      "body": "<<FILL role=consequence words=140 beats='the proof shouted became a sword exactly as the rule warned, and it is the commons, unarmed and furious, who fall on it first; you meant to answer the drowned and instead you gave the Slate house a reason to drown more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE1_t2_1",
+          "label": "Watch the shout become a sword.",
+          "target": "gnE1"
+        }
+      ]
+    },
+    {
+      "id": "gnE1",
+      "body": "<<FILL role=ending words=130 beats='the year the truth became a riot; the bridge-order named from the guild-hall steps, the river-city risen in grief and cut down by Slate soldiers, the commons bleeding first as the rule foretold; you answered the drowned with a shout and the shout became a sword, and Verdant learned again that the weak pay first for the truths they cannot arm'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Proof That Became a Riot"
+      },
+      "safety_scope": [
+        "peril",
+        "conflict"
+      ]
+    },
+    {
+      "id": "gnE2_t1",
+      "body": "<<FILL role=consequence words=150 beats='you carry it north quietly, not to the mob but to the banners, and set it before the Council closed-door; the Slate house cannot deny its own hand and cannot afford it known; the room goes very still around a page of names'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE2_t1_1",
+          "label": "Lay the drowning-order on the Council table.",
+          "target": "gnE2_t2"
+        }
+      ]
+    },
+    {
+      "id": "gnE2_t2",
+      "body": "<<FILL role=consequence words=146 beats='the price of your silence is a truce and a hearing for the commons; the Slate house pays it to keep the bridge secret buried, and Verdant takes the coin it never had, a seat at the table bought with the grief of the fords'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE2_t2_1",
+          "label": "Name the price of your silence.",
+          "target": "gnE2_t3"
+        }
+      ]
+    },
+    {
+      "id": "gnE2_t3",
+      "body": "<<FILL role=consequence words=144 beats='you carry the truce back down the Solion; the war that hung over the summer folded before it opened; the drowned answered not with more blood but with a foothold the commons never held before'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE2_t3_1",
+          "label": "Bring the truce home to the river-city.",
+          "target": "gnE2_t4"
+        }
+      ]
+    },
+    {
+      "id": "gnE2_t4",
+      "body": "<<FILL role=consequence words=142 beats='Verdant keeps the bridge-proof locked and the Slate house leashed by it all year; you learn the weight of a truth carried quietly, heavier than one shouted, and steadier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE2_t4_1",
+          "label": "Hold the secret and the seat together.",
+          "target": "gnE2_t5"
+        }
+      ]
+    },
+    {
+      "id": "gnE2_t5",
+      "body": "<<FILL role=consequence words=140 beats='the fords still a grave, the commons still poor, but seated now where they were never seated; the chancery rule kept, Verdant wins with proof and patience, and you turned a drowning into a door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE2_t5_1",
+          "label": "Count the cost and the gain.",
+          "target": "gnE2_t6"
+        }
+      ]
+    },
+    {
+      "id": "gnE2_t6",
+      "body": "<<FILL role=consequence words=138 beats='harvest under a truce that holds; the boy-king protection reaffirmed, the commons in the room for the votes that decide their bread; you helped make grief into leverage without spilling a drop more of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE2_t6_1",
+          "label": "Close the season with the table changed.",
+          "target": "gnE2"
+        }
+      ]
+    },
+    {
+      "id": "gnE2",
+      "body": "<<FILL role=ending words=132 beats='the year the drowned bought a seat at the table; the bridge-proof carried quietly to the Council instead of shouted to the mob, the Slate house leashed by its own secret, a truce and a commons hearing traded for silence; you kept the chancery rule, Verdant wins with proof and patience, and turned a grief into a foothold without spilling more blood'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE2",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Order Laid on the Table"
+      }
+    },
+    {
+      "id": "gr_h1",
+      "body": "<<FILL role=rising words=146 beats='you set the inquiry aside and give the Verdant house to the living; the flooded towns, the lost granaries, the river folk with nowhere dry to sleep; Factor Oyelaran works the guild-halls day and night and you work beside her, and the truth of the gate waits in a drawer while the year presses harder needs on you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_h1_1",
+          "label": "Turn from proof to people.",
+          "target": "gr_h2"
+        }
+      ]
+    },
+    {
+      "id": "gr_h2",
+      "body": "<<FILL role=rising words=146 beats='harvest thin, the fords still broken, the great houses drawing armies through the river country and eating it bare as they pass; the commons look to Verdant to keep them alive through a year the banners are fighting over their heads; the choice narrows to how the river folk survive, not who is blamed for the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_h2_1",
+          "label": "Count the cost of the hungry season.",
+          "target": "gr_hold"
+        }
+      ]
+    },
+    {
+      "id": "gr_hold",
+      "body": "<<FILL role=choice words=154 beats='the hungry season and the Verdant house its only shield; open the guild granaries and feed the river-towns first, even if it leaves nothing to bargain with; or ration hard and arm the river folk to hold their own country against the armies trampling it; feeding or arming, mercy or teeth, and the commons live or die by which you choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_hold_1",
+          "label": "Feed the river-towns first, and keep nothing back.",
+          "target": "gnE3_t1"
+        },
+        {
+          "id": "c_gr_hold_2",
+          "label": "Ration hard and arm the river folk.",
+          "target": "gnE4_t1"
+        }
+      ]
+    },
+    {
+      "id": "gnE3_t1",
+      "body": "<<FILL role=consequence words=150 beats='you open the guild stores wide and feed the river country through the worst of the year; nothing kept back for leverage, no grain to trade to any banner, only bread to people who would have starved for the great houses war'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE3_t1_1",
+          "label": "Throw open every Verdant granary.",
+          "target": "gnE3_t2"
+        }
+      ]
+    },
+    {
+      "id": "gnE3_t2",
+      "body": "<<FILL role=consequence words=146 beats='you spend the autumn moving grain by barge and cart to the towns the flood ruined; the work thankless and endless and the only work that matters; the Verdant stores empty as the winter deepens'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE3_t2_1",
+          "label": "Carry bread down the broken fords.",
+          "target": "gnE3_t3"
+        }
+      ]
+    },
+    {
+      "id": "gnE3_t3",
+      "body": "<<FILL role=consequence words=144 beats='the river country thins but does not break; no town lost to hunger, though Verdant ends the year with empty granaries and no coin of leverage left to spend on any lord'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE3_t3_1",
+          "label": "Watch the towns hold through the dark.",
+          "target": "gnE3_t4"
+        }
+      ]
+    },
+    {
+      "id": "gnE3_t4",
+      "body": "<<FILL role=consequence words=142 beats='spring, and the fords still broken but the people not; the Verdant house poorer by every granary and richer by a whole country loyalty, chosen first for once and not forgetting it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE3_t4_1",
+          "label": "See the commons come through alive.",
+          "target": "gnE3_t5"
+        }
+      ]
+    },
+    {
+      "id": "gnE3_t5",
+      "body": "<<FILL role=consequence words=138 beats='Factor Oyelaran spent her bargaining bread to keep the commons breathing, and the commons will stand for Verdant now in any hall; you learn the cause was never the seat at the table but the lives the seat was meant to feed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE3_t5_1",
+          "label": "Learn what the cause was always for.",
+          "target": "gnE3"
+        }
+      ]
+    },
+    {
+      "id": "gnE3",
+      "body": "<<FILL role=ending words=136 beats='the year Verdant fed the commons before it fed the cause; every guild granary thrown open, the river country carried alive through a war fought over its head, nothing kept for leverage and everything spent on bread; you chose the living over the advantage and won a country loyalty by counting it first for once, the chancery rule kept in mercy'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE3",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Granaries Thrown Open"
+      }
+    },
+    {
+      "id": "gnE4_t1",
+      "body": "<<FILL role=consequence words=150 beats='you ration the grain hard and arm the river folk to hold their own banks; the commons become a militia, the Verdant eel grown teeth, the river country a place the armies no longer cross for free'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE4_t1_1",
+          "label": "Put pikes in the hands of ferrymen.",
+          "target": "gnE4_t2"
+        }
+      ]
+    },
+    {
+      "id": "gnE4_t2",
+      "body": "<<FILL role=consequence words=140 beats='rationed towns go hungry to feed the pikes; the Verdant house that meant to spare a war has raised a smaller one of its own along every bank; you kept the country from being trampled and turned it into a battlefield'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE4_t2_1",
+          "label": "Count the hunger the pikes cost.",
+          "target": "gnE4"
+        }
+      ]
+    },
+    {
+      "id": "gnE4",
+      "body": "<<FILL role=ending words=130 beats='the year the eel grew teeth and drew blood; the river folk armed and rationed, the banks held against the great armies but held hungry, the Verdant house that swore off the sword raising one along every ford; you kept the country from being trampled and turned it into a battlefield of its own, mercy traded for teeth and the commons paying in bread'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE4",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Thorn That Grew Teeth"
+      }
+    },
+    {
+      "id": "gr_b1",
+      "body": "<<FILL role=rising words=146 beats='you draft it bold, the commons named owed, the great houses dared to refuse; Factor Oyelaran reads it twice and lets it stand, sometimes the weak must speak loudly to be counted at all; the petition goes north like a thrown stone, and the Council will not be able to pretend it did not hear'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_b1_1",
+          "label": "Set a bold petition on the page.",
+          "target": "gr_b2"
+        }
+      ]
+    },
+    {
+      "id": "gr_b2",
+      "body": "<<FILL role=rising words=146 beats='you travel with Factor Oyelaran to the Council of Banners, the Verdant eel among the Slate gull and the Copper hawk; the great houses circle the boy-king and the regency and would sooner not see Verdant at all; the bold petition on the table between them like a challenge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_b2_1",
+          "label": "Ride north to the Council in Verdant.",
+          "target": "gr_council"
+        }
+      ]
+    },
+    {
+      "id": "gr_council",
+      "body": "<<FILL role=choice words=154 beats='the Council in session and the Verdant house standing bold; confront the banners to their faces and demand the Council of Banners now, in the open, or walk out of the great-house game entirely and build a coalition of guilds and river-towns that answers to no crown; press the powerful or gather the many, and the year turns on which strength Verdant trusts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_council_1",
+          "label": "Confront the banners and demand a Council now.",
+          "target": "gr_c1"
+        },
+        {
+          "id": "c_gr_council_2",
+          "label": "Walk out and build a coalition of guilds.",
+          "target": "gr_q1"
+        }
+      ]
+    },
+    {
+      "id": "gr_c1",
+      "body": "<<FILL role=rising words=146 beats='Factor Oyelaran on her feet before the Council, demanding the boy-king warded by all houses and the commons seated among them; the Slate Warden wary, the Copper Commodore amused, the room deciding whether to grant a eel a chair; you at her shoulder with the record, every broken promise ready to read aloud'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_c1_1",
+          "label": "Stand Verdant up before the great banners.",
+          "target": "gr_c2"
+        }
+      ]
+    },
+    {
+      "id": "gr_c2",
+      "body": "<<FILL role=rising words=146 beats='the Council will not say yes and cannot quite say no; some lords fear the guilds, some court them; the demand hangs unanswered and the Verdant house must decide whether to force the vote or to press it harder still, knowing the boy-king fate is already sliding toward the strong houses while the weak ones talk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_c2_1",
+          "label": "Weigh the mood of a hostile hall.",
+          "target": "gr_confront"
+        }
+      ]
+    },
+    {
+      "id": "gr_confront",
+      "body": "<<FILL role=choice words=152 beats='the demand on the floor and the hall divided; call the vote now and force the banners to seat the commons or refuse them in the open where all can see; or lead a walkout of the guild delegates and rally the river-city behind Verdant outside the Council doors; a vote in the hall or a rising in the streets, and each answers the year differently'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_confront_1",
+          "label": "Force the vote in the Council hall.",
+          "target": "gnE5_t1"
+        },
+        {
+          "id": "c_gr_confront_2",
+          "label": "Lead a walkout and rally the river-city.",
+          "target": "gnE6_t1"
+        }
+      ]
+    },
+    {
+      "id": "gnE5_t1",
+      "body": "<<FILL role=consequence words=150 beats='you force it to a vote; the great houses, caught in the open with the whole realm watching, cannot refuse the commons a chair without naming themselves tyrants; the hands go up slow and grudging and enough'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE5_t1_1",
+          "label": "Call the vote and count the raised hands.",
+          "target": "gnE5_t2"
+        }
+      ]
+    },
+    {
+      "id": "gnE5_t2",
+      "body": "<<FILL role=consequence words=146 beats='the Council of Banners granted, narrowly, grudgingly, real; the boy-king becomes its ward and Verdant wins a chair that no later year can easily unmake, a foothold written into the realm own record'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE5_t2_1",
+          "label": "Win a seat that cannot be taken back.",
+          "target": "gnE5_t3"
+        }
+      ]
+    },
+    {
+      "id": "gnE5_t3",
+      "body": "<<FILL role=consequence words=144 beats='you spend the season making the granted Council work, the guilds learning to sit where they never sat, the great houses learning to share a table they always owned; the boy safe at the center of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE5_t3_1",
+          "label": "Steady the new order through its first days.",
+          "target": "gnE5_t4"
+        }
+      ]
+    },
+    {
+      "id": "gnE5_t4",
+      "body": "<<FILL role=consequence words=142 beats='every clause witnessed, every seat named, the commons written into the protection of the crown; the chancery rule kept, Verdant won with proof and patience and daylight and not one drawn sword'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE5_t4_1",
+          "label": "Read the year into the record.",
+          "target": "gnE5_t5"
+        }
+      ]
+    },
+    {
+      "id": "gnE5_t5",
+      "body": "<<FILL role=consequence words=140 beats='winter over a realm that seated its poor; nothing perfect, the great houses still great, but the table wider than it began; you learn that a chair granted in the open is harder to take away than one seized in the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE5_t5_1",
+          "label": "Close the year at a fuller table.",
+          "target": "gnE5"
+        }
+      ]
+    },
+    {
+      "id": "gnE5",
+      "body": "<<FILL role=ending words=132 beats='the year Verdant forced the hall to choose in the open; the vote called with the realm watching, the great houses unable to refuse the commons a chair without wearing the tyrant name, a Council of Banners granted narrow and real; you won the commons a seat by proof and patience and daylight, the chancery rule kept, the boy-king warded by all'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE5",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Vote Forced in the Open"
+      }
+    },
+    {
+      "id": "gnE6_t1",
+      "body": "<<FILL role=consequence words=148 beats='you walk the guilds out of the Council and into the streets, and the river-city rises Verdant behind you, not in a riot but in a wall of ordinary people the banners cannot ignore or afford to fight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE6_t1_1",
+          "label": "Lead the Verdant delegates out the great doors.",
+          "target": "gnE6_t2"
+        }
+      ]
+    },
+    {
+      "id": "gnE6_t2",
+      "body": "<<FILL role=consequence words=140 beats='the great houses learn the commons can simply withdraw the country they all stand on; a lesson taught without a sword, and the year listens; Verdant discovers a strength it always had and never counted'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE6_t2_1",
+          "label": "Teach the banners a quiet lesson.",
+          "target": "gnE6"
+        }
+      ]
+    },
+    {
+      "id": "gnE6",
+      "body": "<<FILL role=ending words=130 beats='the year the commons discovered their own weight; the Verdant delegates walked out and the river-city rose behind them, peaceful and immovable, the great houses learning the country they fought over could withdraw itself; you taught the banners a truth Verdant always knew, that the many hold up the few, and the lesson landed without a single blade'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE6",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Country That Withdrew Itself"
+      }
+    },
+    {
+      "id": "gr_q1",
+      "body": "<<FILL role=rising words=146 beats='you leave the Council to its circling and build beneath it, guild by guild, river-town by river-town, a coalition that owes the great houses nothing; the work is slow ink and long roads, and it is where the Verdant vantage comes into its own; and it is on these roads that the letter finds you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_q1_1",
+          "label": "Build Verdant outside the great hall.",
+          "target": "gr_q2"
+        }
+      ]
+    },
+    {
+      "id": "gr_q2",
+      "body": "<<FILL role=rising words=148 beats='a courier of the Cinder Docks, bought and frightened, brings you Vantrain own sealed letter to the sellsword companies, the Commodore under-the-table army written in his own hand; the Copper vantage sent it and the Slate house only suspects it, but Verdant alone can prove it now; the whole year could turn on a single page in your keeping'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_q2_1",
+          "label": "Come into the proof only Verdant can hold.",
+          "target": "gr_letter"
+        }
+      ]
+    },
+    {
+      "id": "gr_letter",
+      "body": "<<FILL role=choice words=158 beats='Vantrain sellsword letter in Verdant hands, the one proof the Copper house cannot deny and the Slate house cannot match; publish it to the whole realm and expose the Commodore bought war, though a truth loosed cannot be recalled and the realm may burn for it; or hold it close and trade on it, brokering a Council of Banners with the leverage no one else has; a truth loosed or a truth spent, and the year answers to which'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_letter_1",
+          "label": "Publish the letter and expose the Commodore.",
+          "target": "gr_pub1"
+        },
+        {
+          "id": "c_gr_letter_2",
+          "label": "Hold it, and broker a Council with the leverage.",
+          "target": "gr_br1"
+        }
+      ]
+    },
+    {
+      "id": "gr_pub1",
+      "body": "<<FILL role=rising words=148 beats='you copy it out, seal and clause and the Cinder Docks named, and Factor Oyelaran weighs how widely to loose it; a truth this size cannot be half-told, and once told it belongs to everyone; the Copper house will call it forgery and the Slate house will use it and the commons will pay for whichever war it starts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_pub1_1",
+          "label": "Set the Commodore letter before the realm.",
+          "target": "gr_publish"
+        }
+      ]
+    },
+    {
+      "id": "gr_publish",
+      "body": "<<FILL role=choice words=152 beats='the letter about to leave your hands for good; publish it to the whole realm, criers and copies in every town, and brace the river country for the war the truth will light; or publish it only to the houses, privately, a proof shown to the banners alone to shame Vantrain without setting the commons alight; loud or quiet, and the rule stands, a truth loosed cannot be recalled'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_publish_1",
+          "label": "Publish to the whole realm and brace for war.",
+          "target": "gnE7_t1"
+        },
+        {
+          "id": "c_gr_publish_2",
+          "label": "Publish only to the houses, privately.",
+          "target": "gnE8_t1"
+        }
+      ]
+    },
+    {
+      "id": "gnE7_t1",
+      "body": "<<FILL role=consequence words=150 beats='the letter goes everywhere at once, criers and copies in every market; the realm learns Vantrain bought a war under a truce and the realm catches fire; the Copper house cries forgery, the Slate house marches, and the river country, ground between them, pays first and most'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE7_t1_1",
+          "label": "Loose the truth on every street.",
+          "target": "gnE7_t2"
+        }
+      ]
+    },
+    {
+      "id": "gnE7_t2",
+      "body": "<<FILL role=consequence words=140 beats='the truth was real and the fire it lit does not ask whose fault the burning is; you loosed a thing that could not be recalled, exactly as the rule warned, and the commons paid the price of the daylight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE7_t2_1",
+          "label": "Watch a real truth light a real war.",
+          "target": "gnE7"
+        }
+      ]
+    },
+    {
+      "id": "gnE7",
+      "body": "<<FILL role=ending words=132 beats='the year the truth set the realm alight; Vantrain sellsword letter loosed to every street, the Commodore exposed and the country at open war over it, the river folk ground first between Slate and Copper; you loosed a real truth and it could not be recalled, exactly as the rule warned, and the commons paid the price of the daylight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE7",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Truth That Lit the War"
+      },
+      "safety_scope": [
+        "conflict",
+        "peril"
+      ]
+    },
+    {
+      "id": "gnE8_t1",
+      "body": "<<FILL role=consequence words=148 beats='you loose it only to the houses, a proof laid before Slate and Copper and the Council behind closed doors; Vantrain cannot deny his own seal and cannot afford it public, and the Slate house holds the same knife; the Commodore is shamed and leashed without a crier ever shouting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE8_t1_1",
+          "label": "Show the letter to the banners alone.",
+          "target": "gnE8"
+        }
+      ]
+    },
+    {
+      "id": "gnE8",
+      "body": "<<FILL role=ending words=130 beats='the year Verdant shamed a duke in the dark; the sellsword letter shown only to the banners, Vantrain leashed by his own seal without a public fire, the war kept off the commons; you learned the difference between a truth thrown and a truth spent, and spent this one so the river country would not have to burn to be believed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE8",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Letter Shown Behind Closed Doors"
+      }
+    },
+    {
+      "id": "gr_br1",
+      "body": "<<FILL role=rising words=148 beats='you hold the letter and let its weight do the work; Factor Oyelaran carries the leverage no other house has to the Council table, the one proof that can bind Vantrain, and asks in return the thing Verdant wanted all year; the boy-king warded by a Council, the commons seated, the war unfought; the last Verdant choice is what to buy with the leverage'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_br1_1",
+          "label": "Trade on the truth instead of loosing it.",
+          "target": "gr_broker"
+        }
+      ]
+    },
+    {
+      "id": "gr_broker",
+      "body": "<<FILL role=choice words=154 beats='the leverage of Vantrain letter in hand and a whole year to close; spend it to convene the Council of Banners at the fords, binding every house and seating the commons at last; or spend it narrower and surer, trading the letter directly for Prince Petra safety into a shared keeping; the wide win or the sure one, the Council or the child, and Verdant cannot buy both with one page'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gr_broker_1",
+          "label": "Convene the Council of Banners at the fords.",
+          "target": "gnE9_t1"
+        },
+        {
+          "id": "c_gr_broker_2",
+          "label": "Trade the letter for the prince safety.",
+          "target": "gnE10_t1"
+        }
+      ]
+    },
+    {
+      "id": "gnE9_t1",
+      "body": "<<FILL role=consequence words=150 beats='you call the Council to the very fords that drowned in the spring, and the leverage of the letter holds every house to the table; Slate bound by the bridge-proof, Copper bound by the sellsword letter, Verdant holding both'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE9_t1_1",
+          "label": "Convene the banners where the fords drowned.",
+          "target": "gnE9_t2"
+        }
+      ]
+    },
+    {
+      "id": "gnE9_t2",
+      "body": "<<FILL role=consequence words=146 beats='the Council of Banners made real at last, the commons seated, the boy-king its ward, the reforms of a whole year written into law on the bank of a grave; no single banner able to break what all of them signed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE9_t2_1",
+          "label": "Bind every banner to one table.",
+          "target": "gnE9_t3"
+        }
+      ]
+    },
+    {
+      "id": "gnE9_t3",
+      "body": "<<FILL role=consequence words=142 beats='the great houses leashed to one another and to the commons, the boy-king warded by all and grasped by none, the war folded before it opened; Factor Oyelaran spent one page to buy the thing Verdant never had'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE9_t3_1",
+          "label": "Write the year into a new shape.",
+          "target": "gnE9_t4"
+        }
+      ]
+    },
+    {
+      "id": "gnE9_t4",
+      "body": "<<FILL role=consequence words=140 beats='a permanent seat and a Council no single banner can break; you kept the chancery rule to the end, proof and patience over the sword, and turned a single letter into the shape of the realm to come'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE9_t4_1",
+          "label": "Read the whole cause into the record.",
+          "target": "gnE9_t5"
+        }
+      ]
+    },
+    {
+      "id": "gnE9_t5",
+      "body": "<<FILL role=consequence words=138 beats='the crossing rebuilt where the flood took it, the Council meeting on the very ground that was a grave; you learn that the deepest wins are built on the deepest griefs, and you helped build this one honestly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE9_t5_1",
+          "label": "Stand on the mended fords at winter.",
+          "target": "gnE9"
+        }
+      ]
+    },
+    {
+      "id": "gnE9",
+      "body": "<<FILL role=ending words=138 beats='the year Verdant built the Council on a grave; Vantrain letter spent to bind every house to the table at the drowned fords, Slate leashed by the bridge and Copper by the sellswords, the commons seated at last and the boy-king warded by all; you won the whole Verdant cause with one page and no war, proof and patience over the sword, the year written into law'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE9",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Council Convened at the Fenwick Span"
+      }
+    },
+    {
+      "id": "gnE10_t1",
+      "body": "<<FILL role=consequence words=150 beats='you spend the letter not on the Council but on the boy; the leverage traded straight across for Prince Petra passed out of every grasping hand into a shared, guarded keeping; Verdant gives up the wider win and takes the surer one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE10_t1_1",
+          "label": "Trade a page for a child safety.",
+          "target": "gnE10_t2"
+        }
+      ]
+    },
+    {
+      "id": "gnE10_t2",
+      "body": "<<FILL role=consequence words=144 beats='a child safe now rather than a cause won maybe; Factor Oyelaran signs it without regret, because the commons taught her which lives count first, and a boy off the board is worth more than a clause on a page'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE10_t2_1",
+          "label": "Choose the certain life over the maybe.",
+          "target": "gnE10_t3"
+        }
+      ]
+    },
+    {
+      "id": "gnE10_t3",
+      "body": "<<FILL role=consequence words=140 beats='Petra out of Ember Station and every trap, warded and breathing, the wider Council let go for another year; you learn that Verdant highest law was never the seat but the life, and you kept it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gnE10_t3_1",
+          "label": "Close the year with a king kept safe.",
+          "target": "gnE10"
+        }
+      ]
+    },
+    {
+      "id": "gnE10",
+      "body": "<<FILL role=ending words=132 beats='the year Verdant spent its one card on a child; Vantrain letter traded straight for Prince Petra safety into shared keeping, the wider Council let go for the surer rescue, the boy out of every grasping hand at last; you chose the certain life over the possible cause and closed the year with a king safe, the chancery rule kept in mercy again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "gnE10",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Page Traded for the Child"
+      }
+    }
+  ]
+}

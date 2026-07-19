@@ -35,19 +35,19 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=150 beats='Noor Haddad, fifteen, climbs from the river ferry to the Aldermont Conservatory on its hill above Brede; the scholarship letter folded soft from rereading; her grandmother's viola in a secondhand case and a notebook of margin tunes in her coat; head custodian Mr. Brant hauls her trunk and points out Whitmore Hall with its famous windows and infamous wiring; the terms of the scholarship plain on the page, end the term in good standing with a studio; downriver the mill towns she comes from, where everyone knows the Weir Song; three studios, one choice coming, a whole term balanced on it'>>",
+      "body": "<<FILL role=setup words=150 beats='{HERO}, fifteen, climbs from the river ferry to {SCHOOL} on its hill above {SCHOOL_TOWN}; the scholarship letter folded soft from rereading; {HERO_KEEPSAKE} in a secondhand case and a notebook of margin tunes in her coat; head custodian {CUSTODIAN} hauls her trunk and points out {HALL} with its famous windows and infamous wiring; the terms of the scholarship plain on the page, end the term in good standing with a studio; downriver {HERO_HOMETOWN}, where everyone knows the {SIGNATURE_TUNE}; three studios, one choice coming, a whole term balanced on it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_start_1",
-          "label": "Follow Brant up to the welcome recital.",
+          "label": "Follow {CUSTODIAN} up to the {OPENING_EVENT}.",
           "target": "n_recital"
         }
       ]
     },
     {
       "id": "n_recital",
-      "body": "<<FILL role=rising words=168 beats='the Welcome Recital, first Friday of term, Whitmore Hall packed; Maestra Varga's strings play the Corvin Caprice with senior soloist Petra Lindqvist, exact as clockwork and twice as alive; the composition studio presents Rain Study by third-year Felix Marsh, who bows in a green wool scarf with ink on his fingers; Director Osei's choir sings the Aldermont Evensong, and in the last verse the hall lights flicker, and Osei jokes about the wiring while Dean Farrow, clipboard on his knee, does not laugh; then the announcement that changes the term, this year the Winter Concert will for the first time combine all three studios in one piece; new students choose their studio tonight'>>",
+      "body": "<<FILL role=rising words=168 beats='the {OPENING_EVENT}, first Friday of term, {HALL} packed; {TEACHER_A}'s strings play the {SHOWCASE_PIECE} with senior soloist {SENIOR_PEER}, exact as clockwork and twice as alive; the composition studio presents {CULPRIT_EARLY_PIECE} by third-year {CULPRIT}, who bows in a {CULPRIT_SIGN} with ink on his fingers; {TEACHER_C}'s choir sings the {CHORAL_PIECE}, and in the last verse the hall lights flicker, and {TEACHER_C} jokes about the wiring while {ADMIN}, clipboard on his knee, does not laugh; then the announcement that changes the term, this year the {CONCERT_EVENT} will for the first time combine all three studios in one piece; new students choose their studio tonight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -59,46 +59,46 @@
     },
     {
       "id": "n_sort",
-      "body": "<<FILL role=choice words=178 beats='the registrar's table under the founder's portrait, three lines on one form; strings under Maestra Ilsa Varga, who reworks one bar until it is true and whose section leader is Petra Lindqvist herself; composition under Professor Elias Thorn, whose studio is full of disagreeing clocks and who teaches by riddles, with Felix Marsh as studio aide; voice under Director Amara Osei, who learned Noor's name before Noor gave it and who is fighting the board for the choral program's evening hours in the hall, with head chorister Danil Reyes at her elbow; Varga demands, Thorn puzzles, Osei welcomes, and none of the three doors is the easy one; Noor's pen hangs over the form; the choosing is hers'>>",
+      "body": "<<FILL role=choice words=178 beats='the registrar's table under the founder's portrait, three lines on one form; {ROUTE_A_STUDIO} under {TEACHER_A}, who reworks one bar until it is true and whose section leader is {SENIOR_PEER} herself; {ROUTE_B_STUDIO} under {TEACHER_B}, whose studio is full of disagreeing clocks and who teaches by riddles, with {CULPRIT} as studio aide; {ROUTE_C_STUDIO} under {TEACHER_C}, who learned {HERO}'s name before {HERO} gave it and who is fighting the board for the choral program's evening hours in the hall, with head chorister {HEAD_CHORISTER} at her elbow; {TEACHER_A} demands, {TEACHER_B} puzzles, {TEACHER_C} welcomes, and none of the three doors is the easy one; {HERO}'s pen hangs over the form; the choosing is hers'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_sort_1",
-          "label": "Sign for strings under Maestra Varga.",
+          "label": "Sign for {ROUTE_A_STUDIO} under {TEACHER_A}.",
           "target": "st01"
         },
         {
           "id": "c_n_sort_2",
-          "label": "Sign for composition under Professor Thorn.",
+          "label": "Sign for {ROUTE_B_STUDIO} under {TEACHER_B}.",
           "target": "cm01"
         },
         {
           "id": "c_n_sort_3",
-          "label": "Sign for voice under Director Osei.",
+          "label": "Sign for {ROUTE_C_STUDIO} under {TEACHER_C}.",
           "target": "vo01"
         }
       ]
     },
     {
       "id": "st01",
-      "body": "<<FILL role=choice words=158 beats='first strings class in the long room, chairs ranked by desk, Noor at the last desk of the second violas; Varga assigns the term's first discipline, the Varga bar, one bar of the Corvin Caprice played until it is true and no second bar before that; the metronome ticking like weather; Petra at the first desk making it look like breathing; the notebook of margin tunes heavy in Noor's bag; two ways to survive a term like this and only one of her'>>",
+      "body": "<<FILL role=choice words=158 beats='first {ROUTE_A_STUDIO} class in the long room, chairs ranked by desk, {HERO} at the last desk of the second violas; {TEACHER_A} assigns the term's first discipline, {ROUTE_A_DISCIPLINE}, one bar of the {SHOWCASE_PIECE} played until it is true and no second bar before that; the metronome ticking like weather; {SENIOR_PEER} at the first desk making it look like breathing; the notebook of margin tunes heavy in {HERO}'s bag; two ways to survive a term like this and only one of her'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st01_1",
-          "label": "Give the bar everything and shelve all else.",
+          "label": "Give {ROUTE_A_DISCIPLINE} everything and shelve all else.",
           "target": "st02"
         },
         {
           "id": "c_st01_2",
-          "label": "Work the bar but keep the margin tunes alive.",
+          "label": "Work {ROUTE_A_DISCIPLINE} but keep the margin tunes alive.",
           "target": "st38"
         }
       ]
     },
     {
       "id": "st02",
-      "body": "<<FILL role=rising words=136 beats='the week of the bar; blisters ripening on her left hand; the bar true at slow tempo and false at speed; the last desk feeling like a verdict on gray mornings; Petra pausing behind her on Wednesday to watch her wrist without a word; Varga's only comment all week, again'>>",
+      "body": "<<FILL role=rising words=136 beats='the week of the bar; blisters ripening on her left hand; the bar true at slow tempo and false at speed; the last desk feeling like a verdict on gray mornings; {SENIOR_PEER} pausing behind her on Wednesday to watch her wrist without a word; {TEACHER_A}'s only comment all week, again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -110,12 +110,12 @@
     },
     {
       "id": "st03",
-      "body": "<<FILL role=choice words=152 beats='Thursday, Petra offers the loose-wrist trick her own first teacher gave her, knuckles soft, weight from the arm not the fingers; help passed from the first desk to the last is currency at Aldermont and every chair in the room knows it; Varga, passing with the metronome, says pain is information, not tuition, and moves on; pride and sense pulling opposite directions in Noor's chest'>>",
+      "body": "<<FILL role=choice words=152 beats='Thursday, {SENIOR_PEER} offers the loose-wrist trick her own first teacher gave her, knuckles soft, weight from the arm not the fingers; help passed from the first desk to the last is currency at {SCHOOL} and every chair in the room knows it; {TEACHER_A}, passing with the metronome, says pain is information, not tuition, and moves on; pride and sense pulling opposite directions in {HERO}'s chest'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st03_1",
-          "label": "Take Petra's help and learn the trick.",
+          "label": "Take {SENIOR_PEER}'s help and learn the trick.",
           "target": "st04"
         },
         {
@@ -127,19 +127,19 @@
     },
     {
       "id": "st04",
-      "body": "<<FILL role=rising words=138 beats='the trick lands; by Friday the bar rings true at tempo and Varga gives one short nod, which the second violas swear is a parade; the seat challenge posted on the board, any player may challenge for a higher desk before the Winter Concert, chairs re-ranked by a blind hearing; Petra signs Noor's name up herself before Noor can argue'>>",
+      "body": "<<FILL role=rising words=138 beats='the trick lands; by Friday the bar rings true at tempo and {TEACHER_A} gives one short nod, which the second violas swear is a parade; {ROUTE_A_CHALLENGE} posted on the board, any player may challenge for a higher desk before the {CONCERT_EVENT}, chairs re-ranked by a blind hearing; {SENIOR_PEER} signs {HERO}'s name up herself before {HERO} can argue'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st04_1",
-          "label": "Prepare for the seat challenge.",
+          "label": "Prepare for {ROUTE_A_CHALLENGE}.",
           "target": "st05"
         }
       ]
     },
     {
       "id": "st05",
-      "body": "<<FILL role=rising words=140 beats='challenge preparation; second-year Odile Maren wants the same desk and stops saying good morning; the practice rooms at seven, at lunch, at dusk; Varga assigns them the same excerpt on purpose, because a rival is just a colleague you have not needed yet; the edge between the two girls sharpening all week'>>",
+      "body": "<<FILL role=rising words=140 beats='challenge preparation; second-year {ROUTE_A_RIVAL} wants the same desk and stops saying good morning; the practice rooms at seven, at lunch, at dusk; {TEACHER_A} assigns them the same excerpt on purpose, because a rival is just a colleague you have not needed yet; the edge between the two girls sharpening all week'>>",
       "is_ending": false,
       "choices": [
         {
@@ -151,7 +151,7 @@
     },
     {
       "id": "st06",
-      "body": "<<FILL role=rising words=134 beats='challenge day behind the screen; Noor plays the excerpt true and a hair braver than safe; the ranking posts at supper, Noor up two desks, Odile's congratulations cold enough to skate on; that night the first frost silvers the practice-wing windows, and the term tips toward winter'>>",
+      "body": "<<FILL role=rising words=134 beats='challenge day behind the screen; {HERO} plays the excerpt true and a hair braver than safe; the ranking posts at supper, {HERO} up two desks, {ROUTE_A_RIVAL}'s congratulations cold enough to skate on; that night {FROST_MARKER} silvers the practice-wing windows, and the term tips toward winter'>>",
       "is_ending": false,
       "choices": [
         {
@@ -163,7 +163,7 @@
     },
     {
       "id": "st07",
-      "body": "<<FILL role=rising words=156 beats='the Monday after first frost, Mr. Brant unlocking at six and the morning going wrong; in the strings store the loaner bows hang wiped with soap, unplayable until rehaired though nothing is broken; next door the concert grand has three keys wedged silent with clean-cut felt shims, and the choir's marked folios are gone from their locked cabinet, a fine green wool thread caught on the hinge; no forced entry anywhere, and the sign-out log shows the practice-wing key last signed to Petra Lindqvist and never signed back'>>",
+      "body": "<<FILL role=rising words=156 beats='the Monday after {FROST_MARKER}, {CUSTODIAN} unlocking at six and the morning going wrong; in {ROOM_STRINGS} the {CLUE_BOWS}, unplayable until rehaired though nothing is broken; next door the concert grand has {CLUE_PIANO}, and {CLUE_FOLIOS}, {CLUE_THREAD}; no forced entry anywhere, and the sign-out log shows the practice-wing key last signed to {SENIOR_PEER} and never signed back'>>",
       "is_ending": false,
       "choices": [
         {
@@ -175,12 +175,12 @@
     },
     {
       "id": "st08",
-      "body": "<<FILL role=choice words=150 beats='Tuesday, Petra accused; the key log, plus a week of her grumbling that combined rehearsals were eating the hall, is enough for the rumor mill; Odile repeats it flat, some people hate sharing; the section leader's chair sits empty at rehearsal and Varga conducts around it like a missing tooth; Noor holding what she knows of Petra against what the log says'>>",
+      "body": "<<FILL role=choice words=150 beats='Tuesday, {SENIOR_PEER} accused; the key log, plus a week of her grumbling that combined rehearsals were eating the hall, is enough for the rumor mill; {ROUTE_A_RIVAL} repeats it flat, some people hate sharing; the section leader's chair sits empty at rehearsal and {TEACHER_A} conducts around it like a missing tooth; {HERO} holding what she knows of {SENIOR_PEER} against what the log says'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st08_1",
-          "label": "Speak for Petra, straight to Varga.",
+          "label": "Speak for {SENIOR_PEER}, straight to {TEACHER_A}.",
           "target": "st09"
         },
         {
@@ -192,7 +192,7 @@
     },
     {
       "id": "st09",
-      "body": "<<FILL role=rising words=138 beats='Noor speaks for Petra to Varga, the trick, the lent kindness, the sense it does not make; Varga listens without expression and says facts will serve her better than feeling, but carries both to the Provost anyway; Wednesday evening Director Osei crosses the quad with the infirmary log under her arm'>>",
+      "body": "<<FILL role=rising words=138 beats='{HERO} speaks for {SENIOR_PEER} to {TEACHER_A}, the trick, the lent kindness, the sense it does not make; {TEACHER_A} listens without expression and says facts will serve her better than feeling, but carries both to {PROVOST} anyway; Wednesday evening {TEACHER_C} crosses the quad with the infirmary log under her arm'>>",
       "is_ending": false,
       "choices": [
         {
@@ -204,31 +204,31 @@
     },
     {
       "id": "st10",
-      "body": "<<FILL role=rising words=140 beats='Thursday assembly; Nurse Imrie's infirmary log read aloud, Petra there all Monday night with a migraine, signed in and never out; the key ring lent days earlier to her accompanist and never returned; Provost Hale clears her name in front of everyone, and the applause from the strings section starts at the last desks'>>",
+      "body": "<<FILL role=rising words=140 beats='Thursday assembly; {NURSE}'s infirmary log read aloud, {SENIOR_PEER} there all Monday night with {CLEARING_DETAIL}; the key ring lent days earlier to her accompanist and never returned; {PROVOST} clears her name in front of everyone, and the applause from the section starts at the last desks'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st10_1",
-          "label": "Welcome Petra back.",
+          "label": "Welcome {SENIOR_PEER} back.",
           "target": "st11"
         }
       ]
     },
     {
       "id": "st11",
-      "body": "<<FILL role=rising words=144 beats='Petra back at the first desk; Friday, at the first combined rehearsal for the Winter Cantata, Felix Marsh stands up beside the repaired grand and says it all plainly, the soaped hair, the felt shims, the folios safe in the organ loft, and why; the studios speak for him and expulsion becomes probation and long hours in Okafor's repair shop; Odile, of all people, starts the section's applause when Petra shakes his hand'>>",
+      "body": "<<FILL role=rising words=144 beats='{SENIOR_PEER} back at the first desk; Friday, at the first combined rehearsal for the {COMBINED_PIECE}, {CULPRIT} stands up beside the repaired grand and says it all plainly, the soaped hair, the felt shims, the folios safe in the {HIDING_PLACE}, and why; the studios speak for him and expulsion becomes probation and long hours at {REPAIR_SHOP}; {ROUTE_A_RIVAL}, of all people, starts the section's applause when {SENIOR_PEER} shakes his hand'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st11_1",
-          "label": "Give December to the Cantata.",
+          "label": "Give December to the {COMBINED_PIECE}.",
           "target": "st12"
         }
       ]
     },
     {
       "id": "st12",
-      "body": "<<FILL role=success words=132 beats='the Winter Concert, snow falling past the famous windows; the Weir Song rising through strings and voices; in the last verse the old wiring flickers and lanterns come up along the stage lip like a second orchestra; Noor and Odile sharing one desk and one stand light, two names penciled on the same part; Dean Farrow pledging the wiring fund before the hall empties'>>",
+      "body": "<<FILL role=success words=132 beats='the {CONCERT_EVENT}, snow falling past the famous windows; the {SIGNATURE_TUNE} rising through strings and voices; in the last verse the old wiring flickers and lanterns come up along the stage lip like a second orchestra; {HERO} and {ROUTE_A_RIVAL} sharing one desk and one stand light, two names penciled on the same part; {ADMIN} pledging the {WIRING_FUND} before the hall empties'>>",
       "is_ending": true,
       "ending": {
         "id": "st12",
@@ -239,7 +239,7 @@
     },
     {
       "id": "st13",
-      "body": "<<FILL role=rising words=142 beats='the facts, checked in the librarian's ledger light; the key signed out but the ring lent onward days before the frost, a detail the rumor skipped; the thread on the folio cabinet fine green wool, not Petra's gray; Brant mentions damp footprints that morning going toward the organ loft stairs, and mentions twice that those stairs are unlit and treacherous after dark'>>",
+      "body": "<<FILL role=rising words=142 beats='the facts, checked in the librarian's ledger light; the key signed out but the ring lent onward days before the frost, a detail the rumor skipped; the thread on the folio cabinet fine green wool, not {SENIOR_PEER}'s gray; {CUSTODIAN} mentions damp footprints that morning going toward the {HIDING_PLACE} stairs, and mentions twice that those stairs are unlit and treacherous after dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -251,24 +251,24 @@
     },
     {
       "id": "st14",
-      "body": "<<FILL role=choice words=150 beats='everything Noor has found laid out on her music stand like a score; Maestra Varga is one flight up marking bowings, exact and fair and terrifying; the organ loft is across the dark quad, where the footprints pointed, stairs unlit, Brant's warning still in her ears; the truth is close enough to touch and there are two ways to reach for it'>>",
+      "body": "<<FILL role=choice words=150 beats='everything {HERO} has found laid out on her music stand like a score; {TEACHER_A} is one flight up marking bowings, exact and fair and terrifying; the {HIDING_PLACE} is across the dark quad, where the footprints pointed, stairs unlit, {CUSTODIAN}'s warning still in her ears; the truth is close enough to touch and there are two ways to reach for it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st14_1",
-          "label": "Bring it all to Maestra Varga.",
+          "label": "Bring it all to {TEACHER_A}.",
           "target": "st15"
         },
         {
           "id": "c_st14_2",
-          "label": "Climb to the organ loft tonight.",
+          "label": "Climb to the {HIDING_PLACE} tonight.",
           "target": "st18"
         }
       ]
     },
     {
       "id": "st15",
-      "body": "<<FILL role=rising words=140 beats='Varga hears the whole account without interrupting, then acts the way she rehearses, in order and at once; the lent ring to the Provost, the wool thread to Osei, Wednesday the infirmary log, Thursday assembly and Petra cleared before the whole school; afterward Varga tells Noor she practiced the truth like a bar, and from Varga that is a decoration'>>",
+      "body": "<<FILL role=rising words=140 beats='{TEACHER_A} hears the whole account without interrupting, then acts the way she rehearses, in order and at once; the lent ring to {PROVOST}, the wool thread to {TEACHER_C}, Wednesday the infirmary log, Thursday assembly and {SENIOR_PEER} cleared before the whole school; afterward {TEACHER_A} tells {HERO} she practiced the truth like a bar, and from {TEACHER_A} that is a decoration'>>",
       "is_ending": false,
       "choices": [
         {
@@ -280,7 +280,7 @@
     },
     {
       "id": "st16",
-      "body": "<<FILL role=rising words=144 beats='the search turns kind, because every harm was reversible, soap that washes out, felt that lifts away, folios missing but somewhere dry; whoever did it loved the instruments too much to break them, Varga says, and the school starts asking who instead of hunting what; Friday morning Felix Marsh walks into the Provost's office before anyone names him, and says everything; probation, the shop bench, the folios home by supper'>>",
+      "body": "<<FILL role=rising words=144 beats='the search turns kind, because every harm was reversible, soap that washes out, felt that lifts away, folios missing but somewhere dry; whoever did it loved the instruments too much to break them, {TEACHER_A} says, and the school starts asking who instead of hunting what; Friday morning {CULPRIT} walks into {PROVOST}'s office before anyone names him, and says everything; probation, the shop bench, the folios home by supper'>>",
       "is_ending": false,
       "choices": [
         {
@@ -292,7 +292,7 @@
     },
     {
       "id": "st17",
-      "body": "<<FILL role=success words=130 beats='the Winter Concert, snow thick by curtain; the Corvin Caprice opening the night and the Weir Song closing it; the flicker in the last verse, the lanterns, Farrow's pledge; Petra playing the solo she nearly lost, and finding Noor at the last desk afterward to say, in front of Varga, that the truth had good hands this term'>>",
+      "body": "<<FILL role=success words=130 beats='the {CONCERT_EVENT}, snow thick by curtain; the {SHOWCASE_PIECE} opening the night and the {SIGNATURE_TUNE} closing it; the flicker in the last verse, the lanterns, {ADMIN}'s pledge; {SENIOR_PEER} playing the solo she nearly lost, and finding {HERO} at the last desk afterward to say, in front of {TEACHER_A}, that the truth had good hands this term'>>",
       "is_ending": true,
       "ending": {
         "id": "st17",
@@ -303,7 +303,7 @@
     },
     {
       "id": "st18",
-      "body": "<<FILL role=rising words=146 beats='the organ loft at night, breath silver, stairs counted by hand; the choir folios stacked under a dust sheet, dry and safe and weighted square; and Felix Marsh sitting beside them in his green scarf, not dangerous, just wrecked; the story spilling out of him, his father's job gone at the Corvin works, the scholarship renewal, audition week for the commission cut to two days by the new schedule; he came back Tuesday night to undo all of it and Brant had already changed the lock'>>",
+      "body": "<<FILL role=rising words=146 beats='the {HIDING_PLACE} at night, breath silver, stairs counted by hand; the choir folios stacked under a dust sheet, dry and safe and weighted square; and {CULPRIT} sitting beside them in his {CULPRIT_SIGN}, not dangerous, just wrecked; the story spilling out of him, {MOTIVE_DETAIL} by the new schedule; he came back Tuesday night to undo all of it and {CUSTODIAN} had already changed the lock'>>",
       "is_ending": false,
       "choices": [
         {
@@ -318,7 +318,7 @@
     },
     {
       "id": "st19",
-      "body": "<<FILL role=choice words=148 beats='cold loft, two scholarship kids and a stack of stolen music between them; Petra wears the blame until the truth moves, and every hour matters; Felix is asking nothing, which is somehow worse; Noor can sit down in the dust and walk him toward the truth by his own feet, or leave now and put it before Provost Hale tonight, official and fast'>>",
+      "body": "<<FILL role=choice words=148 beats='cold loft, two scholarship kids and a stack of stolen music between them; {SENIOR_PEER} wears the blame until the truth moves, and every hour matters; {CULPRIT} is asking nothing, which is somehow worse; {HERO} can sit down in the dust and walk him toward the truth by his own feet, or leave now and put it before {PROVOST} tonight, official and fast'>>",
       "is_ending": false,
       "choices": [
         {
@@ -328,14 +328,14 @@
         },
         {
           "id": "c_st19_2",
-          "label": "Go to the Provost tonight.",
+          "label": "Go to {PROVOST} tonight.",
           "target": "st23"
         }
       ]
     },
     {
       "id": "st20",
-      "body": "<<FILL role=rising words=142 beats='they sit until the frost window pales, talking scholarships and fathers and the arithmetic of desperation; he agrees to carry it himself; Thursday the infirmary log clears Petra at assembly, and Friday, at the first combined rehearsal, Felix stands and says everything with Noor standing at his shoulder; the studios speak, expulsion becomes probation and the shop bench, the folios come down the loft stairs in his own arms'>>",
+      "body": "<<FILL role=rising words=142 beats='they sit until the frost window pales, talking scholarships and fathers and the arithmetic of desperation; he agrees to carry it himself; Thursday the infirmary log clears {SENIOR_PEER} at assembly, and Friday, at the first combined rehearsal, {CULPRIT} stands and says everything with {HERO} standing at his shoulder; the studios speak, expulsion becomes probation and the shop bench, the folios come down the loft stairs in his own arms'>>",
       "is_ending": false,
       "choices": [
         {
@@ -347,19 +347,19 @@
     },
     {
       "id": "st21",
-      "body": "<<FILL role=climax words=136 beats='December; Okafor's shop smelling of rosin and glue while Felix rehairs the bows he soaped, one by one; the Cantata knitting three studios into one animal; Petra bringing her own bow to his bench first, which says more than the assembly did; snow beginning the afternoon of the concert; lanterns set out along the stage lip'>>",
+      "body": "<<FILL role=climax words=136 beats='December; {REPAIR_SHOP} shop smelling of rosin and glue while {CULPRIT} rehairs the bows he soaped, one by one; the {COMBINED_PIECE} knitting three studios into one animal; {SENIOR_PEER} bringing her own bow to his bench first, which says more than the assembly did; snow beginning the afternoon of the concert; lanterns set out along the stage lip'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st21_1",
-          "label": "Take your desk for the Winter Concert.",
+          "label": "Take your desk for the {CONCERT_EVENT}.",
           "target": "st22"
         }
       ]
     },
     {
       "id": "st22",
-      "body": "<<FILL role=completion words=128 beats='the Winter Concert; the Weir Song in the middle movement, the flicker, the lanterns, the hall gone golden at its darkest moment; from her desk Noor watches Felix in the back row of the violins, playing repaired music on repaired instruments; some weights are not lifted, only shared, and the term ends with hers set down'>>",
+      "body": "<<FILL role=completion words=128 beats='the {CONCERT_EVENT}; the {SIGNATURE_TUNE} in the middle movement, the flicker, the lanterns, the hall gone golden at its darkest moment; from her desk {HERO} watches {CULPRIT} in the back row of the violins, playing repaired music on repaired instruments; some weights are not lifted, only shared, and the term ends with hers set down'>>",
       "is_ending": true,
       "ending": {
         "id": "st22",
@@ -370,7 +370,7 @@
     },
     {
       "id": "st23",
-      "body": "<<FILL role=rising words=144 beats='Provost Hale's office that same night; fair, thorough, and cold as the quad; Felix hears the knock the next morning and does not run; suspension pending a hearing, the workshop hollow for two weeks; at the hearing Noor testifies to the kind details, soap that washes out, felt that lifts away, and Petra, cleared, speaks too; probation, not expulsion, and it is right, and something in Noor keeps asking whether there had been a kinder door first'>>",
+      "body": "<<FILL role=rising words=144 beats='{PROVOST}'s office that same night; fair, thorough, and cold as the quad; {CULPRIT} hears the knock the next morning and does not run; suspension pending a hearing, the workshop hollow for two weeks; at the hearing {HERO} testifies to the kind details, soap that washes out, felt that lifts away, and {SENIOR_PEER}, cleared, speaks too; probation, not expulsion, and it is right, and something in {HERO} keeps asking whether there had been a kinder door first'>>",
       "is_ending": false,
       "choices": [
         {
@@ -385,7 +385,7 @@
     },
     {
       "id": "st24",
-      "body": "<<FILL role=discovery words=126 beats='the Winter Concert, snow and lanterns; Felix in the back row, mending slowly, the section closing around him like water over a stone; the truth got where it was going, and Noor learns the thing the term wanted her to learn, that right and kind are two instruments, and the music is better when both play'>>",
+      "body": "<<FILL role=discovery words=126 beats='the {CONCERT_EVENT}, snow and lanterns; {CULPRIT} in the back row, mending slowly, the section closing around him like water over a stone; the truth got where it was going, and {HERO} learns the thing the term wanted her to learn, that right and kind are two instruments, and the music is better when both play'>>",
       "is_ending": true,
       "ending": {
         "id": "st24",
@@ -396,7 +396,7 @@
     },
     {
       "id": "st25",
-      "body": "<<FILL role=rising words=138 beats='alone with the bar on principle; the trick refused politely, the metronome merciless; by the second Thursday her wrist aches from the second knuckle to the elbow; Varga stops beside her desk and says it again, slower, pain is information, not tuition, and waits one extra beat before walking on'>>",
+      "body": "<<FILL role=rising words=138 beats='alone with the bar on principle; the trick refused politely, the metronome merciless; by the second Thursday her wrist aches from the second knuckle to the elbow; {TEACHER_A} stops beside her desk and says it again, slower, pain is information, not tuition, and waits one extra beat before walking on'>>",
       "is_ending": false,
       "choices": [
         {
@@ -408,7 +408,7 @@
     },
     {
       "id": "st26",
-      "body": "<<FILL role=choice words=148 beats='the ache and the calendar, side by side; the seat challenge is coming, the bar is nearly true, and the wrist is asking for rest in a language Noor has been refusing to hear; Varga has now said it twice, plainly, which by studio arithmetic means it matters; rest is a week lost, pushing is the bar on schedule, and only one of those can be taken back'>>",
+      "body": "<<FILL role=choice words=148 beats='the ache and the calendar, side by side; {ROUTE_A_CHALLENGE} is coming, the bar is nearly true, and the wrist is asking for rest in a language {HERO} has been refusing to hear; {TEACHER_A} has now said it twice, plainly, which by studio arithmetic means it matters; rest is a week lost, pushing is the bar on schedule, and only one of those can be taken back'>>",
       "is_ending": false,
       "choices": [
         {
@@ -425,19 +425,19 @@
     },
     {
       "id": "st27",
-      "body": "<<FILL role=rising words=136 beats='rest, resentfully, then honestly; slow practice, the bar at half tempo until the motion is clean; the wrist unclenches by degrees; the bar comes true a week late and rings; late and true beats soon and almost, Varga says, and moves her up one desk without a challenge'>>",
+      "body": "<<FILL role=rising words=136 beats='rest, resentfully, then honestly; slow practice, the bar at half tempo until the motion is clean; the wrist unclenches by degrees; the bar comes true a week late and rings; late and true beats soon and almost, {TEACHER_A} says, and moves her up one desk without a challenge'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st27_1",
-          "label": "Meet the Monday after first frost.",
+          "label": "Meet the Monday after {FROST_MARKER}.",
           "target": "st28"
         }
       ]
     },
     {
       "id": "st28",
-      "body": "<<FILL role=rising words=152 beats='the Monday after first frost; Brant at six, the strings store wrong; loaner bows wiped with soap, Noor's own among them, unplayable and unbroken; next door three keys of the concert grand wedged silent with felt shims and the choir folios gone from the locked cabinet, green thread on the hinge; no forced entry, the key log naming Petra; the section grieving the bows like family'>>",
+      "body": "<<FILL role=rising words=152 beats='the Monday after {FROST_MARKER}; {CUSTODIAN} at six, {ROOM_STRINGS} wrong; {CLUE_BOWS}, {HERO}'s own among them, unplayable and unbroken; next door {CLUE_PIANO} and {CLUE_FOLIOS}, {CLUE_THREAD}; no forced entry, the key log naming {SENIOR_PEER}; the section grieving the bows like family'>>",
       "is_ending": false,
       "choices": [
         {
@@ -449,7 +449,7 @@
     },
     {
       "id": "st29",
-      "body": "<<FILL role=rising words=146 beats='Tuesday, Petra accused on the strength of the log; Noor keeps her head down and her hands busy, learning bow rehairing at Okafor's bench so her own loaner sings again; Wednesday Osei crosses the quad with the infirmary log, Thursday assembly clears Petra, the lent key ring surfacing, and the shop smells like the only honest room in the school'>>",
+      "body": "<<FILL role=rising words=146 beats='Tuesday, {SENIOR_PEER} accused on the strength of the log; {HERO} keeps her head down and her hands busy, learning bow rehairing at {REPAIR_SHOP} bench so her own loaner sings again; Wednesday {TEACHER_C} crosses the quad with the infirmary log, Thursday assembly clears {SENIOR_PEER}, the lent key ring surfacing, and the shop smells like the only honest room in the school'>>",
       "is_ending": false,
       "choices": [
         {
@@ -461,7 +461,7 @@
     },
     {
       "id": "st30",
-      "body": "<<FILL role=rising words=140 beats='Friday, first combined rehearsal, Felix Marsh stands by the repaired grand and confesses everything, the desperation named out loud, his father's job, the commission, the shrunken audition week; probation and the shop bench where Noor already works; afterward Varga offers Noor the inner-voice chair in the Cantata's quartet passage, earned, she says, by a wrist that learned to listen'>>",
+      "body": "<<FILL role=rising words=140 beats='Friday, first combined rehearsal, {CULPRIT} stands by the repaired grand and confesses everything, the desperation named out loud, {MOTIVE_DETAIL}; probation and the shop bench where {HERO} already works; afterward {TEACHER_A} offers {HERO} the inner-voice chair in the {COMBINED_PIECE}'s quartet passage, earned, she says, by a wrist that learned to listen'>>",
       "is_ending": false,
       "choices": [
         {
@@ -473,7 +473,7 @@
     },
     {
       "id": "st31",
-      "body": "<<FILL role=rising words=134 beats='quartet rehearsals inside the middle movement, the Weir Song setting; Noor has known the tune since her grandmother's kitchen and now it wears counterpoint like Sunday clothes; Felix orchestrating the seam from the shop bench on probation; the four inner voices learning to breathe together'>>",
+      "body": "<<FILL role=rising words=134 beats='quartet rehearsals inside the middle movement, the {SIGNATURE_TUNE} setting; {HERO} has known the tune since {HERO_TUNE_ORIGIN} and now it wears counterpoint like Sunday clothes; {CULPRIT} orchestrating the seam from the shop bench on probation; the four inner voices learning to breathe together'>>",
       "is_ending": false,
       "choices": [
         {
@@ -485,19 +485,19 @@
     },
     {
       "id": "st32",
-      "body": "<<FILL role=climax words=132 beats='the final rehearsal, snow starting at noon and not stopping; lanterns set along the stage lip against the wiring; Varga rehearses the last verse twice, once for the notes and once, she says, for the dark; the hall breathing like a living thing'>>",
+      "body": "<<FILL role=climax words=132 beats='the final rehearsal, snow starting at noon and not stopping; lanterns set along the stage lip against the wiring; {TEACHER_A} rehearses the last verse twice, once for the notes and once, she says, for the dark; the hall breathing like a living thing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st32_1",
-          "label": "Walk out for the Winter Concert.",
+          "label": "Walk out for the {CONCERT_EVENT}.",
           "target": "st33"
         }
       ]
     },
     {
       "id": "st33",
-      "body": "<<FILL role=success words=130 beats='the Winter Concert; the quartet passage rising clean out of the middle movement, her inner voice holding the chord's warm center; the flicker, the lanterns, Farrow's pledge; Varga's nod from the podium, longer this time; a term that began at the last desk ending inside the music's own weather, late and true'>>",
+      "body": "<<FILL role=success words=130 beats='the {CONCERT_EVENT}; the quartet passage rising clean out of the middle movement, her inner voice holding the chord's warm center; the flicker, the lanterns, {ADMIN}'s pledge; {TEACHER_A}'s nod from the podium, longer this time; a term that began at the last desk ending inside the music's own weather, late and true'>>",
       "is_ending": true,
       "ending": {
         "id": "st33",
@@ -508,7 +508,7 @@
     },
     {
       "id": "st34",
-      "body": "<<FILL role=rising words=142 beats='she practices through the ache and the ache stops being information and becomes fact; Friday, mid-bar, a tremor runs her bow arm and the tone shears; Varga stops the room, not unkindly, and walks her to Nurse Imrie herself; a strained tendon, weeks of true rest, the seat challenge and the concert chair gone in one sentence'>>",
+      "body": "<<FILL role=rising words=142 beats='she practices through the ache and the ache stops being information and becomes fact; Friday, mid-bar, a tremor runs her bow arm and the tone shears; {TEACHER_A} stops the room, not unkindly, and walks her to {NURSE} herself; a strained tendon, weeks of true rest, {ROUTE_A_CHALLENGE} and the concert chair gone in one sentence'>>",
       "is_ending": false,
       "choices": [
         {
@@ -523,7 +523,7 @@
     },
     {
       "id": "st35",
-      "body": "<<FILL role=rising words=140 beats='the term reshaped; Noor becomes the section's librarian, hands resting, ears growing; she watches the frost Monday and the soaped bows from the margins, watches Petra accused and cleared by the infirmary log, watches Felix confess at the Friday rehearsal and begin his long repair in Okafor's shop; the score opens to her like a building with the roof off'>>",
+      "body": "<<FILL role=rising words=140 beats='the term reshaped; {HERO} becomes the section's librarian, hands resting, ears growing; she watches the frost Monday and the soaped bows from the margins, watches {SENIOR_PEER} accused and cleared by the infirmary log, watches {CULPRIT} confess at the Friday rehearsal and begin his long repair at {REPAIR_SHOP}; the score opens to her like a building with the roof off'>>",
       "is_ending": false,
       "choices": [
         {
@@ -535,7 +535,7 @@
     },
     {
       "id": "st36",
-      "body": "<<FILL role=rising words=130 beats='December; the section plays her bowing marks now, small decisions of hers alive in other hands; Varga leaves a concert ticket at her door with one line on the envelope, sections heal, so do wrists, spring auditions in March; the snow starts the afternoon of the concert'>>",
+      "body": "<<FILL role=rising words=130 beats='December; the section plays her bowing marks now, small decisions of hers alive in other hands; {TEACHER_A} leaves a concert ticket at her door with one line on the envelope, sections heal, so do wrists, spring auditions in March; the snow starts the afternoon of the concert'>>",
       "is_ending": false,
       "choices": [
         {
@@ -547,7 +547,7 @@
     },
     {
       "id": "st37",
-      "body": "<<FILL role=failure words=134 beats='the Winter Concert from row twelve, her arm in its brace, the Weir Song swelling without her and because of her, every bowing hers; the flicker, the lanterns, the hall gone golden; it aches worse than the tendon ever did and it teaches better; pain is information, and this year she finally wrote it down; March is four pages away'>>",
+      "body": "<<FILL role=failure words=134 beats='the {CONCERT_EVENT} from row twelve, her arm in its brace, the {SIGNATURE_TUNE} swelling without her and because of her, every bowing hers; the flicker, the lanterns, the hall gone golden; it aches worse than the tendon ever did and it teaches better; pain is information, and this year she finally wrote it down; March is four pages away'>>",
       "is_ending": true,
       "ending": {
         "id": "st37",
@@ -558,19 +558,19 @@
     },
     {
       "id": "st38",
-      "body": "<<FILL role=rising words=138 beats='the double life; the Varga bar by daylight, margin tunes by lamplight, and both growing; mid-week the notebook slips from her stand at the end of rehearsal and lands open at Varga's feet, a term's worth of small tunes looking up at the most exacting woman in the school'>>",
+      "body": "<<FILL role=rising words=138 beats='the double life; {ROUTE_A_DISCIPLINE} by daylight, margin tunes by lamplight, and both growing; mid-week the notebook slips from her stand at the end of rehearsal and lands open at {TEACHER_A}'s feet, a term's worth of small tunes looking up at the most exacting woman in the school'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st38_1",
-          "label": "Stand there while Varga reads.",
+          "label": "Stand there while {TEACHER_A} reads.",
           "target": "st39"
         }
       ]
     },
     {
       "id": "st39",
-      "body": "<<FILL role=rising words=140 beats='Varga reads three pages in silence and hands the notebook back; her sentence, bring me the margin tune played truly, or shelve it until spring, both are honorable; the Varga bar still due Friday; two disciplines now instead of one, and the weeks turn hard and bright'>>",
+      "body": "<<FILL role=rising words=140 beats='{TEACHER_A} reads three pages in silence and hands the notebook back; her sentence, bring me the margin tune played truly, or shelve it until spring, both are honorable; {ROUTE_A_DISCIPLINE} still due Friday; two disciplines now instead of one, and the weeks turn hard and bright'>>",
       "is_ending": false,
       "choices": [
         {
@@ -582,24 +582,24 @@
     },
     {
       "id": "st40",
-      "body": "<<FILL role=rising words=144 beats='the margin tune played truly in the long room, Varga listening with closed eyes; then the summons across the quad, because Professor Thorn is gathering settings of the Weir Song for the Winter Cantata's middle movement and Varga has told him about a second viola with tunes in her margins; Thorn's studio full of disagreeing clocks, and at the piano, arranging, Felix Marsh in his green scarf'>>",
+      "body": "<<FILL role=rising words=144 beats='the margin tune played truly in the long room, {TEACHER_A} listening with closed eyes; then the summons across the quad, because {TEACHER_B} is gathering settings of the {SIGNATURE_TUNE} for the {COMBINED_PIECE}'s middle movement and {TEACHER_A} has told him about a second viola with tunes in her margins; {TEACHER_B}'s studio full of disagreeing clocks, and at the piano, arranging, {CULPRIT} in his {CULPRIT_SIGN}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st40_1",
-          "label": "Hear what Thorn is asking.",
+          "label": "Hear what {TEACHER_B} is asking.",
           "target": "st41"
         }
       ]
     },
     {
       "id": "st41",
-      "body": "<<FILL role=choice words=154 beats='Thorn's offer, spoken like a riddle but plain enough, fold her margin tune into the Cantata's middle movement as a countermelody to the Weir Song, one voice among many with the credit shared, or keep it whole and hers for the spring recital; a tune knows its hour, Thorn says, but he will not say which hour this is; Felix waits at the piano with kind, tired eyes'>>",
+      "body": "<<FILL role=choice words=154 beats='{TEACHER_B}'s offer, spoken like a riddle but plain enough, fold her margin tune into the {COMBINED_PIECE}'s middle movement as a countermelody to the {SIGNATURE_TUNE}, one voice among many with the credit shared, or keep it whole and hers for the spring recital; a tune knows its hour, {TEACHER_B} says, but he will not say which hour this is; {CULPRIT} waits at the piano with kind, tired eyes'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st41_1",
-          "label": "Give the tune to the Cantata.",
+          "label": "Give the tune to the {COMBINED_PIECE}.",
           "target": "st42"
         },
         {
@@ -611,7 +611,7 @@
     },
     {
       "id": "st42",
-      "body": "<<FILL role=rising words=142 beats='the workshop; her countermelody threading under the Weir Song, Felix setting her line with a care that borders on tenderness; also the fray she cannot unsee, unanswered letters from home under a paperweight, the solo commission list on the wall, his name and the audition dates; talent up close looks a lot like worry wearing good clothes'>>",
+      "body": "<<FILL role=rising words=142 beats='the workshop; her countermelody threading under the {SIGNATURE_TUNE}, {CULPRIT} setting her line with a care that borders on tenderness; also the fray she cannot unsee, unanswered letters from home under a paperweight, the solo commission list on the wall, his name and the audition dates; talent up close looks a lot like worry wearing good clothes'>>",
       "is_ending": false,
       "choices": [
         {
@@ -623,7 +623,7 @@
     },
     {
       "id": "st43",
-      "body": "<<FILL role=rising words=148 beats='the Monday after first frost; the workshop grand silenced, three keys wedged with clean-cut felt shims, the strings store's loaner bows soaped, the choir folios gone from the locked cabinet with a green wool thread on the hinge; the key log naming Petra Lindqvist; no forced entry, nothing broken, everything reversible, which is somehow the strangest fact in the building'>>",
+      "body": "<<FILL role=rising words=148 beats='the Monday after {FROST_MARKER}; the workshop grand silenced, {CLUE_PIANO}, {ROOM_STRINGS}'s {CLUE_BOWS}, {CLUE_FOLIOS} with a green wool thread on the hinge; the key log naming {SENIOR_PEER}; no forced entry, nothing broken, everything reversible, which is somehow the strangest fact in the building'>>",
       "is_ending": false,
       "choices": [
         {
@@ -635,7 +635,7 @@
     },
     {
       "id": "st44",
-      "body": "<<FILL role=rising words=138 beats='Tuesday, Petra accused; Wednesday, Osei and the infirmary log; Thursday, assembly, Nurse Imrie's ledger, the lent key ring, Petra cleared before the school; the workshop limping forward on the repaired grand, her countermelody rehearsed around the mended keys; the green thread staying in Noor's mind like a held note'>>",
+      "body": "<<FILL role=rising words=138 beats='Tuesday, {SENIOR_PEER} accused; Wednesday, {TEACHER_C} and the infirmary log; Thursday, assembly, {NURSE}'s ledger, the lent key ring, {SENIOR_PEER} cleared before the school; the workshop limping forward on the repaired grand, her countermelody rehearsed around the mended keys; the green thread staying in {HERO}'s mind like a held note'>>",
       "is_ending": false,
       "choices": [
         {
@@ -647,7 +647,7 @@
     },
     {
       "id": "st45",
-      "body": "<<FILL role=rising words=146 beats='Friday, first combined rehearsal; Felix stands and says everything, and it lands hardest here, in the studio where he set her tune with such care; the desperation named, the father, the renewal, the two-day audition week; the studios speak for him, probation and Okafor's bench; Noor holding her line's manuscript, ink in his handwriting, not knowing where to put what she feels'>>",
+      "body": "<<FILL role=rising words=146 beats='Friday, first combined rehearsal; {CULPRIT} stands and says everything, and it lands hardest here, in the studio where he set her tune with such care; the desperation named, {MOTIVE_DETAIL}; the studios speak for him, probation and {REPAIR_SHOP} bench; {HERO} holding her line's manuscript, ink in his handwriting, not knowing where to put what she feels'>>",
       "is_ending": false,
       "choices": [
         {
@@ -662,7 +662,7 @@
     },
     {
       "id": "st46",
-      "body": "<<FILL role=rising words=136 beats='Okafor's shop; rehaired bows hanging in ranks like a choir; Felix at the bench with soap-ruined hair in one hand and a hook in the other; Noor says the forgiveness out loud instead of carrying it, and he sands the same spot for a long minute before he can answer; the countermelody stays in the movement, both their names on the manuscript'>>",
+      "body": "<<FILL role=rising words=136 beats='{REPAIR_SHOP} shop; rehaired bows hanging in ranks like a choir; {CULPRIT} at the bench with soap-ruined hair in one hand and a hook in the other; {HERO} says the forgiveness out loud instead of carrying it, and he sands the same spot for a long minute before he can answer; the countermelody stays in the movement, both their names on the manuscript'>>",
       "is_ending": false,
       "choices": [
         {
@@ -674,7 +674,7 @@
     },
     {
       "id": "st47",
-      "body": "<<FILL role=climax words=132 beats='final rehearsal, snow at the windows; the middle movement whole now, the Weir Song with her countermelody breathing under it; lanterns along the stage lip; Varga rehearsing the last verse once for the notes and once for the dark'>>",
+      "body": "<<FILL role=climax words=132 beats='final rehearsal, snow at the windows; the middle movement whole now, the {SIGNATURE_TUNE} with her countermelody breathing under it; lanterns along the stage lip; {TEACHER_A} rehearsing the last verse once for the notes and once for the dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -686,7 +686,7 @@
     },
     {
       "id": "st48",
-      "body": "<<FILL role=completion words=130 beats='the Winter Concert; her margin tune inside the ensemble's weather, one voice among many and stronger for it; the flicker, the lanterns, Farrow's pledge to fix the wiring; in the program, under the middle movement, two names in small print that took the whole term to earn; the tune found its hour'>>",
+      "body": "<<FILL role=completion words=130 beats='the {CONCERT_EVENT}; her margin tune inside the ensemble's weather, one voice among many and stronger for it; the flicker, the lanterns, {ADMIN}'s pledge to fix the wiring; in the program, under the middle movement, two names in small print that took the whole term to earn; the tune found its hour'>>",
       "is_ending": true,
       "ending": {
         "id": "st48",
@@ -697,7 +697,7 @@
     },
     {
       "id": "st49",
-      "body": "<<FILL role=rising words=134 beats='the refusal, respected; a tune knows its hour, Thorn says again, apparently satisfied, and winds a clock; back to the Caprice with a lighter bag; the margin tune goes into the drawer whole, promised to spring, and the Varga bar finally rings true the same week'>>",
+      "body": "<<FILL role=rising words=134 beats='the refusal, respected; a tune knows its hour, {TEACHER_B} says again, apparently satisfied, and winds a clock; back to the {SHOWCASE_PIECE} with a lighter bag; the margin tune goes into the drawer whole, promised to spring, and {ROUTE_A_DISCIPLINE} finally rings true the same week'>>",
       "is_ending": false,
       "choices": [
         {
@@ -709,7 +709,7 @@
     },
     {
       "id": "st49b",
-      "body": "<<FILL role=rising words=140 beats='the week the bar rings true pays out; a better desk at the Caprice read-through, the ensemble knitting around her; an errand takes her to Thorn's studio, where the aide in the green scarf is kind about her margins again, genuinely kind, though something behind his eyes looks worn thin, like a man counting a private clock; late autumn tightening toward frost'>>",
+      "body": "<<FILL role=rising words=140 beats='the week the bar rings true pays out; a better desk at the {SHOWCASE_PIECE} read-through, the ensemble knitting around her; an errand takes her to {TEACHER_B}'s studio, where the aide in the {CULPRIT_SIGN} is kind about her margins again, genuinely kind, though something behind his eyes looks worn thin, like a man counting a private clock; late autumn tightening toward frost'>>",
       "is_ending": false,
       "choices": [
         {
@@ -721,7 +721,7 @@
     },
     {
       "id": "st50",
-      "body": "<<FILL role=rising words=150 beats='the Monday after first frost; soaped bows, the wedged grand, the folios gone; and on the folio cabinet's hinge a fine green wool thread that stops Noor cold, because she has seen that scarf, draped over the piano bench in Thorn's studio, on the shoulders of the aide who was kind about her margins; the key log names Petra, and the thread says otherwise, quietly, to the one person who noticed'>>",
+      "body": "<<FILL role=rising words=150 beats='the Monday after {FROST_MARKER}; soaped bows, the wedged grand, the folios gone; and on the folio cabinet's hinge {CLUE_THREAD} that stops {HERO} cold, because she has seen that scarf, draped over the piano bench in {TEACHER_B}'s studio, on the shoulders of the aide who was kind about her margins; the key log names {SENIOR_PEER}, and the thread says otherwise, quietly, to the one person who noticed'>>",
       "is_ending": false,
       "choices": [
         {
@@ -733,7 +733,7 @@
     },
     {
       "id": "st51",
-      "body": "<<FILL role=rising words=148 beats='she carries the thread to Director Osei, who receives it the way she receives everything, seriously and kindly; Wednesday the infirmary log, Thursday assembly and Petra cleared; and the search changes key, because every harm was reversible, soap that washes out, felt that lifts away, whoever did it loved the instruments too much to break them, and at the assembly the key log itself is answered, Petra's ring had been lent out that week and never signed back, so the name on the page was never the hand on the door; and now the school is asking who wears green'>>",
+      "body": "<<FILL role=rising words=148 beats='she carries the thread to {TEACHER_C}, who receives it the way she receives everything, seriously and kindly; Wednesday the infirmary log, Thursday assembly and {SENIOR_PEER} cleared; and the search changes key, because every harm was reversible, soap that washes out, felt that lifts away, whoever did it loved the instruments too much to break them, and at the assembly the key log itself is answered, {SENIOR_PEER}'s ring had been lent out that week and never signed back, so the name on the page was never the hand on the door; and now the school is asking who wears green'>>",
       "is_ending": false,
       "choices": [
         {
@@ -745,31 +745,31 @@
     },
     {
       "id": "st52",
-      "body": "<<FILL role=rising words=140 beats='Friday morning, before anyone names him, Felix Marsh walks into the Provost's office and says everything; the desperation, the father, the commission, the audition week; probation instead of expulsion when the studios speak, the folios down from the loft in his own arms, the long repair begun at Okafor's bench; the kindest form the truth could have taken, and the thread helped it arrive'>>",
+      "body": "<<FILL role=rising words=140 beats='Friday morning, before anyone names him, {CULPRIT} walks into {PROVOST}'s office and says everything; the desperation, {MOTIVE_DETAIL}; probation instead of expulsion when the studios speak, the folios down from the loft in his own arms, the long repair begun at {REPAIR_SHOP} bench; the kindest form the truth could have taken, and the thread helped it arrive'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st52_1",
-          "label": "Give December to the Caprice.",
+          "label": "Give December to the {SHOWCASE_PIECE}.",
           "target": "st53"
         }
       ]
     },
     {
       "id": "st53",
-      "body": "<<FILL role=climax words=136 beats='December; the Caprice polished until it rings, the margin tune safe in its drawer like a saved seed; the Cantata rehearsals knitting the studios together; snow beginning the afternoon of the concert, lanterns set out against the wiring, the hall filling with coats and breath'>>",
+      "body": "<<FILL role=climax words=136 beats='December; the {SHOWCASE_PIECE} polished until it rings, the margin tune safe in its drawer like a saved seed; the {COMBINED_PIECE} rehearsals knitting the studios together; snow beginning the afternoon of the concert, lanterns set out against the wiring, the hall filling with coats and breath'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st53_1",
-          "label": "Play the Winter Concert.",
+          "label": "Play the {CONCERT_EVENT}.",
           "target": "st54"
         }
       ]
     },
     {
       "id": "st54",
-      "body": "<<FILL role=discovery words=132 beats='the Winter Concert; the Caprice played truly from a better desk than September's; the Weir Song, the flicker, the lanterns; her tune still hers, whole, waiting for spring, and the waiting feels like strength now instead of hiding; some music you give the ensemble, and some you grow in the dark until its hour strikes'>>",
+      "body": "<<FILL role=discovery words=132 beats='the {CONCERT_EVENT}; the {SHOWCASE_PIECE} played truly from a better desk than September's; the {SIGNATURE_TUNE}, the flicker, the lanterns; her tune still hers, whole, waiting for spring, and the waiting feels like strength now instead of hiding; some music you give the ensemble, and some you grow in the dark until its hour strikes'>>",
       "is_ending": true,
       "ending": {
         "id": "st54",
@@ -780,7 +780,7 @@
     },
     {
       "id": "cm01",
-      "body": "<<FILL role=rising words=144 beats='Professor Thorn's studio, forty clocks and none of them agreeing; the first assignment delivered like a riddle and left there, bring me four bars of weather; Felix Marsh, the studio aide, hands out manuscript paper in his green scarf, ink to the second knuckle, and warns her with a tired smile that Thorn never explains anything twice, or once'>>",
+      "body": "<<FILL role=rising words=144 beats='{TEACHER_B}'s studio, forty clocks and none of them agreeing; the first assignment delivered like a riddle and left there, bring me {ROUTE_B_TASK}; {CULPRIT}, the studio aide, hands out manuscript paper in his {CULPRIT_SIGN}, ink to the second knuckle, and warns her with a tired smile that {TEACHER_B} never explains anything twice, or once'>>",
       "is_ending": false,
       "choices": [
         {
@@ -792,24 +792,24 @@
     },
     {
       "id": "cm02",
-      "body": "<<FILL role=rising words=138 beats='the studio writes storms all week, thunder in the left hand, lightning in the right; Noor writes the drizzle over the mill roofs at home, small and gray and patient; doubt like a low ceiling; then Felix's pencil note in her margin, this one is weather, the rest are scenery, and the ceiling lifts an inch'>>",
+      "body": "<<FILL role=rising words=138 beats='the studio writes storms all week, thunder in the left hand, lightning in the right; {HERO} writes the drizzle over the mill roofs at home, small and gray and patient; doubt like a low ceiling; then {CULPRIT}'s pencil note in her margin, this one is weather, the rest are scenery, and the ceiling lifts an inch'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm02_1",
-          "label": "Bring the drizzle to Thorn.",
+          "label": "Bring the drizzle to {TEACHER_B}.",
           "target": "cm03"
         }
       ]
     },
     {
       "id": "cm03",
-      "body": "<<FILL role=choice words=150 beats='Thorn hears every setting and says nothing about any of them, only winds his clocks; a silent teacher is its own riddle; some students corner him with questions, others wait him out like weather; Noor has one Friday and one nerve left, and two ways to spend them'>>",
+      "body": "<<FILL role=choice words=150 beats='{TEACHER_B} hears every setting and says nothing about any of them, only winds his clocks; a silent teacher is its own riddle; some students corner him with questions, others wait him out like weather; {HERO} has one Friday and one nerve left, and two ways to spend them'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm03_1",
-          "label": "Ask Thorn straight out what the riddle means.",
+          "label": "Ask {TEACHER_B} straight out what the riddle means.",
           "target": "cm04"
         },
         {
@@ -821,7 +821,7 @@
     },
     {
       "id": "cm04",
-      "body": "<<FILL role=rising words=142 beats='the asking; Thorn answers her riddle with a riddle, then, quietly, one real thing, weather is what a place does when nobody is watching, and so is a student; then the assignment underneath the assignment, she will copy parts for the Winter Cantata workshop, the middle movement, a setting of the Weir Song; the tune from her grandmother's kitchen, here, wearing manuscript ink'>>",
+      "body": "<<FILL role=rising words=142 beats='the asking; {TEACHER_B} answers her riddle with a riddle, then, quietly, one real thing, weather is what a place does when nobody is watching, and so is a student; then the assignment underneath the assignment, she will copy parts for the {COMBINED_PIECE} workshop, the middle movement, a setting of the {SIGNATURE_TUNE}; the tune from {HERO_TUNE_ORIGIN}, here, wearing manuscript ink'>>",
       "is_ending": false,
       "choices": [
         {
@@ -833,7 +833,7 @@
     },
     {
       "id": "cm05",
-      "body": "<<FILL role=rising words=140 beats='copy nights beside Felix; his gift up close, voice leading like water finding a channel, and his fray up close too, unanswered letters from home held under a paperweight, the solo commission list pinned to the wall with the audition dates circled; the scarf on the bench, the smile getting thinner as November comes on'>>",
+      "body": "<<FILL role=rising words=140 beats='copy nights beside {CULPRIT}; his gift up close, voice leading like water finding a channel, and his fray up close too, unanswered letters from home held under a paperweight, the solo commission list pinned to the wall with the audition dates circled; the scarf on the bench, the smile getting thinner as November comes on'>>",
       "is_ending": false,
       "choices": [
         {
@@ -845,7 +845,7 @@
     },
     {
       "id": "cm06",
-      "body": "<<FILL role=rising words=136 beats='the schedule posts on a gray Thursday, combined rehearsals to take Whitmore Hall and the shared instruments from mid-November, audition week for the commission cut to two days; Felix reads the notice twice, says nothing the rest of the night, and copies eleven pages without one wrong stem, which is somehow worse than shouting'>>",
+      "body": "<<FILL role=rising words=136 beats='the schedule posts on a gray Thursday, combined rehearsals to take {HALL} and the shared instruments from mid-November, audition week for the commission cut to two days; {CULPRIT} reads the notice twice, says nothing the rest of the night, and copies eleven pages without one wrong stem, which is somehow worse than shouting'>>",
       "is_ending": false,
       "choices": [
         {
@@ -857,7 +857,7 @@
     },
     {
       "id": "cm07",
-      "body": "<<FILL role=rising words=154 beats='the Monday after first frost; Brant unlocking at six and finding the morning wrong; three keys of the concert grand wedged silent with clean-cut felt shims, the strings store's loaner bows wiped with soap, the choir folios gone from their locked cabinet with a fine green wool thread on the hinge; no forced entry, damp footprints toward the organ loft stairs; Felix reports the piano first, pale as manuscript paper; nothing anywhere is actually broken, which nobody notices yet but Noor'>>",
+      "body": "<<FILL role=rising words=154 beats='the Monday after {FROST_MARKER}; {CUSTODIAN} unlocking at six and finding the morning wrong; {CLUE_PIANO}, {ROOM_STRINGS}'s {CLUE_BOWS}, {CLUE_FOLIOS} with a fine green wool thread on the hinge; no forced entry, damp footprints toward the {HIDING_PLACE} stairs; {CULPRIT} reports the piano first, pale as manuscript paper; nothing anywhere is actually broken, which nobody notices yet but {HERO}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -869,7 +869,7 @@
     },
     {
       "id": "cm08",
-      "body": "<<FILL role=choice words=150 beats='Tuesday, Petra Lindqvist accused, her key on the log and her grumbling about ceded hall time repeated in every corridor; the studio waits for Thorn's opinion and gets a riddle instead, who mends a thing they broke; the clocks disagree about the hour and everyone else disagrees about Petra; two honest ways into the riddle'>>",
+      "body": "<<FILL role=choice words=150 beats='Tuesday, {SENIOR_PEER} accused, her key on the log and her grumbling about ceded hall time repeated in every corridor; the studio waits for {TEACHER_B}'s opinion and gets a riddle instead, who mends a thing they broke; the clocks disagree about the hour and everyone else disagrees about {SENIOR_PEER}; two honest ways into the riddle'>>",
       "is_ending": false,
       "choices": [
         {
@@ -886,7 +886,7 @@
     },
     {
       "id": "cm09",
-      "body": "<<FILL role=rising words=146 beats='the facts, gathered honestly; no forced entry, so a key; the shims cut clean from the piano shop's felt stock with something like a copyist's knife; the three silenced keys spell the opening notes of the Aldermont Evensong; soap on the bow hair because soap washes out; nothing permanent anywhere; whoever did it loved the instruments too much to break them, and knew exactly how much harm would heal'>>",
+      "body": "<<FILL role=rising words=146 beats='the facts, gathered honestly; no forced entry, so a key; the shims cut clean from the piano shop's felt stock with something like a copyist's knife; the three silenced keys spell the opening notes of the {CHORAL_PIECE}; soap on the bow hair because soap washes out; nothing permanent anywhere; whoever did it loved the instruments too much to break them, and knew exactly how much harm would heal'>>",
       "is_ending": false,
       "choices": [
         {
@@ -898,41 +898,41 @@
     },
     {
       "id": "cm10",
-      "body": "<<FILL role=rising words=138 beats='the key; Petra signed it out, yes, and lent her whole ring days before the frost, to her accompanist, the way she has every term for three years; and her accompanist is the studio aide with ink on his fingers and a green scarf by the door; the floor tilts; the scarf hangs there like a held breath'>>",
+      "body": "<<FILL role=rising words=138 beats='the key; {SENIOR_PEER} signed it out, yes, and lent her whole ring days before the frost, to her accompanist, the way she has every term for three years; and her accompanist is the studio aide with ink on his fingers and a green scarf by the door; the floor tilts; the scarf hangs there like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm10_1",
-          "label": "Stand at Thorn's three doors.",
+          "label": "Stand at {TEACHER_B}'s three doors.",
           "target": "cm11"
         }
       ]
     },
     {
       "id": "cm11",
-      "body": "<<FILL role=choice words=162 beats='Thorn, when she comes to him with her face full of it, does not ask what she knows; he sets three doors in a row, spoken like a riddle and meant like a map, a truth can be carried alone to the one it belongs to, or carried with a witness who loves him, or handed whole to the law of the school; the clocks tick at odds; Petra wears the blame another hour for every hour Noor stands still'>>",
+      "body": "<<FILL role=choice words=162 beats='{TEACHER_B}, when she comes to him with her face full of it, does not ask what she knows; he sets three doors in a row, spoken like a riddle and meant like a map, a truth can be carried alone to the one it belongs to, or carried with a witness who loves him, or handed whole to the law of the school; the clocks tick at odds; {SENIOR_PEER} wears the blame another hour for every hour {HERO} stands still'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm11_1",
-          "label": "Go to Felix alone.",
+          "label": "Go to {CULPRIT} alone.",
           "target": "cm12"
         },
         {
           "id": "c_cm11_2",
-          "label": "Bring Thorn with you.",
+          "label": "Bring {TEACHER_B} with you.",
           "target": "cm15"
         },
         {
           "id": "c_cm11_3",
-          "label": "Put it before Provost Hale.",
+          "label": "Put it before {PROVOST}.",
           "target": "cm19"
         }
       ]
     },
     {
       "id": "cm12",
-      "body": "<<FILL role=rising words=150 beats='the organ loft, dust sheets and cold; the folios stacked dry and safe and weighted square; Felix beside them, undone at the sight of her; the whole of it spilling out, his father's job gone at the Corvin works, the renewal letter that reads like a countdown, the audition week cut to two days, the night he chose harms that would all wash out; he went back Tuesday night to undo everything and Brant had changed the lock'>>",
+      "body": "<<FILL role=rising words=150 beats='the {HIDING_PLACE}, dust sheets and cold; the folios stacked dry and safe and weighted square; {CULPRIT} beside them, undone at the sight of her; the whole of it spilling out, {MOTIVE_DETAIL}, the renewal letter that reads like a countdown, the night he chose harms that would all wash out; he went back Tuesday night to undo everything and {CUSTODIAN} had changed the lock'>>",
       "is_ending": false,
       "choices": [
         {
@@ -947,7 +947,7 @@
     },
     {
       "id": "cm13",
-      "body": "<<FILL role=rising words=142 beats='Thursday the infirmary log clears Petra at assembly, migraine, signed in all night, the lent ring named; Friday, before the first combined rehearsal, Felix stands beside the repaired grand and says everything plainly with Noor at his shoulder; the studios speak for him, Provost Hale converts expulsion to probation, repairs assigned to Okafor's shop, the folios home by supper'>>",
+      "body": "<<FILL role=rising words=142 beats='Thursday the infirmary log clears {SENIOR_PEER} at assembly, {CLEARING_DETAIL}, the lent ring named; Friday, before the first combined rehearsal, {CULPRIT} stands beside the repaired grand and says everything plainly with {HERO} at his shoulder; the studios speak for him, {PROVOST} converts expulsion to probation, repairs assigned to {REPAIR_SHOP}, the folios home by supper'>>",
       "is_ending": false,
       "choices": [
         {
@@ -959,7 +959,7 @@
     },
     {
       "id": "cm14",
-      "body": "<<FILL role=completion words=134 beats='the Winter Concert, snow past the windows; the Weir Song's middle movement on the mended grand and the rehaired bows, her four bars of drizzle braided into it; the flicker in the last verse, the lanterns, Farrow's pledge; Thorn winding nothing that night, only listening; four bars of weather, and a term that learned what a place does when nobody is watching'>>",
+      "body": "<<FILL role=completion words=134 beats='the {CONCERT_EVENT}, snow past the windows; the {SIGNATURE_TUNE}'s middle movement on the mended grand and the rehaired bows, her {ROUTE_B_TASK} braided into it; the flicker in the last verse, the lanterns, {ADMIN}'s pledge; {TEACHER_B} winding nothing that night, only listening; {ROUTE_B_TASK}, and a term that learned what a place does when nobody is watching'>>",
       "is_ending": true,
       "ending": {
         "id": "cm14",
@@ -970,7 +970,7 @@
     },
     {
       "id": "cm15",
-      "body": "<<FILL role=rising words=146 beats='with Thorn; the clocks tick through her whole account and he never once looks surprised; a riddle is a door you let a man open himself, he says; he invites Felix to tea, asks nothing, tells one story about his own worst term and the stupid, reversible thing he did in it, and waits; the confession comes like ice going off the river, all at once and long overdue'>>",
+      "body": "<<FILL role=rising words=146 beats='with {TEACHER_B}; the clocks tick through her whole account and he never once looks surprised; a riddle is a door you let a man open himself, he says; he invites {CULPRIT} to tea, asks nothing, tells one story about his own worst term and the stupid, reversible thing he did in it, and waits; the confession comes like ice going off the river, all at once and long overdue'>>",
       "is_ending": false,
       "choices": [
         {
@@ -982,7 +982,7 @@
     },
     {
       "id": "cm16",
-      "body": "<<FILL role=rising words=142 beats='Thorn walks Felix to the Provost and owns his own share out loud, the fray he watched all November and answered with riddles instead of questions; adults flawed and decent in the same breath; probation, the shop bench, the folios home by supper, Petra already cleared by Thursday's assembly; the studio spends the weekend copying parts together, nobody assigned, everybody there'>>",
+      "body": "<<FILL role=rising words=142 beats='{TEACHER_B} walks {CULPRIT} to {PROVOST} and owns his own share out loud, the fray he watched all November and answered with riddles instead of questions; adults flawed and decent in the same breath; probation, the shop bench, the folios home by supper, {SENIOR_PEER} already cleared by Thursday's assembly; the studio spends the weekend copying parts together, nobody assigned, everybody there'>>",
       "is_ending": false,
       "choices": [
         {
@@ -994,7 +994,7 @@
     },
     {
       "id": "cm17",
-      "body": "<<FILL role=climax words=132 beats='concert eve; snow starting at dusk; the middle movement finished by many hands, his themes, her drizzle figure, the weir under everything; lanterns set along the stage lip against the wiring; Thorn stops every clock in the studio at seven, for luck, the only explanation anyone gets'>>",
+      "body": "<<FILL role=climax words=132 beats='concert eve; snow starting at dusk; the middle movement finished by many hands, his themes, her drizzle figure, the {SIGNATURE_TUNE} under everything; lanterns set along the stage lip against the wiring; {TEACHER_B} stops every clock in the studio at seven, for luck, the only explanation anyone gets'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1006,7 +1006,7 @@
     },
     {
       "id": "cm18",
-      "body": "<<FILL role=success words=130 beats='the Winter Concert; the Weir Song rising through three studios like one instrument; the flicker, the lanterns, the pledge; Felix playing in the back row of the violins on a bow he rehaired himself; afterward Thorn tells Noor the term's real riddle was never the weather, it was the door, and she opened it the slow, right way'>>",
+      "body": "<<FILL role=success words=130 beats='the {CONCERT_EVENT}; the {SIGNATURE_TUNE} rising through three studios like one instrument; the flicker, the lanterns, the pledge; {CULPRIT} playing in the back row of the violins on a bow he rehaired himself; afterward {TEACHER_B} tells {HERO} the term's real riddle was never the weather, it was the door, and she opened it the slow, right way'>>",
       "is_ending": true,
       "ending": {
         "id": "cm18",
@@ -1017,7 +1017,7 @@
     },
     {
       "id": "cm19",
-      "body": "<<FILL role=rising words=148 beats='Provost Hale's office that evening, the key ring, the thread, the felt, the motive laid out in order; Hale is fair and thorough and the room is cold; Felix suspended the next morning pending a hearing; the workshop goes quiet for two weeks, his desk like a pulled tooth; at the hearing Noor testifies to the kind details, soap that washes out, felt that lifts away, harms chosen to heal'>>",
+      "body": "<<FILL role=rising words=148 beats='{PROVOST}'s office that evening, the key ring, the thread, the felt, the motive laid out in order; {PROVOST} is fair and thorough and the room is cold; {CULPRIT} suspended the next morning pending a hearing; the workshop goes quiet for two weeks, his desk like a pulled tooth; at the hearing {HERO} testifies to the kind details, soap that washes out, felt that lifts away, harms chosen to heal'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1032,7 +1032,7 @@
     },
     {
       "id": "cm20",
-      "body": "<<FILL role=rising words=140 beats='the hearing; Petra, cleared since Thursday and generous past all expectation, speaks for him; Osei, Varga, and Thorn speak; probation, not expulsion, the shop bench, the fund for the repairs; right, all of it, and slow; the two silent weeks sit in the middle of the term like rests nobody wrote'>>",
+      "body": "<<FILL role=rising words=140 beats='the hearing; {SENIOR_PEER}, cleared since Thursday and generous past all expectation, speaks for him; {TEACHER_C}, {TEACHER_A}, and {TEACHER_B} speak; probation, not expulsion, the shop bench, the fund for the repairs; right, all of it, and slow; the two silent weeks sit in the middle of the term like rests nobody wrote'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1044,7 +1044,7 @@
     },
     {
       "id": "cm21",
-      "body": "<<FILL role=discovery words=134 beats='the Winter Concert, snow and lanterns and the movement played whole, Felix back at the rank desk working his way inward; the official door was real and it was the slowest one in the building; Noor carries that out into the snow, filed beside the facts, that procedure found the truth and mercy had to jog to catch up, and next time she will knock on the kinder door first'>>",
+      "body": "<<FILL role=discovery words=134 beats='the {CONCERT_EVENT}, snow and lanterns and the movement played whole, {CULPRIT} back at the rank desk working his way inward; the official door was real and it was the slowest one in the building; {HERO} carries that out into the snow, filed beside the facts, that procedure found the truth and mercy had to jog to catch up, and next time she will knock on the kinder door first'>>",
       "is_ending": true,
       "ending": {
         "id": "cm21",
@@ -1055,7 +1055,7 @@
     },
     {
       "id": "cm22",
-      "body": "<<FILL role=rising words=140 beats='charity first; Noor says out loud, in the studio, that Petra is innocent until the facts say otherwise, and then builds the answer that helps either way; the missing choir folios can be re-copied from the library masters, and the composition studio owns more pens than anyone; an overnight copy party, cocoa urn and all, so the choir can rehearse by Wednesday'>>",
+      "body": "<<FILL role=rising words=140 beats='charity first; {HERO} says out loud, in the studio, that {SENIOR_PEER} is innocent until the facts say otherwise, and then builds the answer that helps either way; the missing choir folios can be re-copied from the library masters, and the composition studio owns more pens than anyone; an overnight copy party, cocoa urn and all, so the choir can rehearse by Wednesday'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1067,7 +1067,7 @@
     },
     {
       "id": "cm23",
-      "body": "<<FILL role=rising words=144 beats='the copy night; twelve pens scratching; Felix copies fastest of all, and writes in dynamics and breath marks the library masters never held, pencil ghosts that lived only in the missing folios; Noor watches his pen know things it should not know, and does not yet understand what she is seeing, only that she is seeing it'>>",
+      "body": "<<FILL role=rising words=144 beats='the copy night; twelve pens scratching; {CULPRIT} copies fastest of all, and writes in dynamics and breath marks the library masters never held, pencil ghosts that lived only in the missing folios; {HERO} watches his pen know things it should not know, and does not yet understand what she is seeing, only that she is seeing it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1079,7 +1079,7 @@
     },
     {
       "id": "cm24",
-      "body": "<<FILL role=rising words=146 beats='Thursday assembly clears Petra, infirmary log and lent ring, the school exhaling; Friday the choir is handed the studio's copies and thanks Felix by name for the markings, and he stands there while the gratitude lands like weight on a cracked beam, and then at rehearsal he stands again and cannot carry it, and says everything, unprompted, the whole desperate arithmetic of it'>>",
+      "body": "<<FILL role=rising words=146 beats='Thursday assembly clears {SENIOR_PEER}, infirmary log and lent ring, the school exhaling; Friday the choir is handed the studio's copies and thanks {CULPRIT} by name for the markings, and he stands there while the gratitude lands like weight on a cracked beam, and then at rehearsal he stands again and cannot carry it, and says everything, unprompted, the whole desperate arithmetic of it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1094,7 +1094,7 @@
     },
     {
       "id": "cm25",
-      "body": "<<FILL role=choice words=152 beats='the studio circle, raw; probation already likely, the shop bench already offered; Thorn, who never assigns feelings, asks the newest member to speak first, because the newest member built the copy night that broke the truth loose; the room waits; there is the harm and there is the why, and the order Noor says them in will teach the studio which matters more'>>",
+      "body": "<<FILL role=choice words=152 beats='the studio circle, raw; probation already likely, the shop bench already offered; {TEACHER_B}, who never assigns feelings, asks the newest member to speak first, because the newest member built the copy night that broke the truth loose; the room waits; there is the harm and there is the why, and the order {HERO} says them in will teach the studio which matters more'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1111,7 +1111,7 @@
     },
     {
       "id": "cm26",
-      "body": "<<FILL role=rising words=142 beats='she names the harm plainly first, Petra's two days under the blame, the choir's grief for their pencil ghosts, the shop's long nights to come; and then, having said the true thing first, she asks that the repair be his to lead, folios, felts, hair, all of it; the circle holds; afterward Felix thanks her, specifically, for not softening it'>>",
+      "body": "<<FILL role=rising words=142 beats='she names the harm plainly first, {SENIOR_PEER}'s two days under the blame, the choir's grief for their pencil ghosts, the shop's long nights to come; and then, having said the true thing first, she asks that the repair be his to lead, folios, felts, hair, all of it; the circle holds; afterward {CULPRIT} thanks her, specifically, for not softening it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1123,7 +1123,7 @@
     },
     {
       "id": "cm27",
-      "body": "<<FILL role=success words=132 beats='the Winter Concert; snow, the flicker, the lanterns; the middle movement with his themes and her drizzle bars, played on instruments he repaired with his own hands; the studio's clocks all wrong and the music exactly on time; say the true thing first, and kindness has somewhere solid to stand'>>",
+      "body": "<<FILL role=success words=132 beats='the {CONCERT_EVENT}; snow, the flicker, the lanterns; the middle movement with his themes and her drizzle bars, played on instruments he repaired with his own hands; the studio's clocks all wrong and the music exactly on time; say the true thing first, and kindness has somewhere solid to stand'>>",
       "is_ending": true,
       "ending": {
         "id": "cm27",
@@ -1134,7 +1134,7 @@
     },
     {
       "id": "cm28",
-      "body": "<<FILL role=rising words=144 beats='she speaks the why, the letters under the paperweight, the commission list, the audition week cut to two days, a scholarship kid doing desperate arithmetic; the room softens toward him, which he needs; then Petra, visiting from the strings hall, says quietly that someone also needed to say what it cost her; Noor stands a second time and says the other half, late but said, and the circle holds both'>>",
+      "body": "<<FILL role=rising words=144 beats='she speaks the why, the letters under the paperweight, the commission list, the audition week cut to two days, a scholarship kid doing desperate arithmetic; the room softens toward him, which he needs; then {SENIOR_PEER}, visiting from the strings hall, says quietly that someone also needed to say what it cost her; {HERO} stands a second time and says the other half, late but said, and the circle holds both'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1146,7 +1146,7 @@
     },
     {
       "id": "cm29",
-      "body": "<<FILL role=discovery words=130 beats='the Winter Concert, snow and lanterns, the movement whole; what Noor carries out is the shape of complete kindness, the why in one hand and the ledger in the other, neither pretending the other away; mercy without the accounting is only weather, and she came here to learn what weather really is'>>",
+      "body": "<<FILL role=discovery words=130 beats='the {CONCERT_EVENT}, snow and lanterns, the movement whole; what {HERO} carries out is the shape of complete kindness, the why in one hand and the ledger in the other, neither pretending the other away; mercy without the accounting is only weather, and she came here to learn what weather really is'>>",
       "is_ending": true,
       "ending": {
         "id": "cm29",
@@ -1157,19 +1157,19 @@
     },
     {
       "id": "cm30",
-      "body": "<<FILL role=rising words=136 beats='the week of sitting; river walks, the drizzle piece growing a second voice on its own; Thorn says nothing, winds one more clock, and Noor decides to take the winding as weather; patience as a discipline, which nobody warned her composition would be'>>",
+      "body": "<<FILL role=rising words=136 beats='the week of sitting; river walks, the drizzle piece growing a second voice on its own; {TEACHER_B} says nothing, winds one more clock, and {HERO} decides to take the winding as weather; patience as a discipline, which nobody warned her composition would be'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm30_1",
-          "label": "Bring the four bars back grown.",
+          "label": "Bring {ROUTE_B_TASK} back grown.",
           "target": "cm31"
         }
       ]
     },
     {
       "id": "cm31",
-      "body": "<<FILL role=rising words=142 beats='her four bars land; Thorn plays them twice at the studio piano and says, again, slower, which by studio arithmetic is a parade; she is named junior copyist to the Winter Cantata workshop, the middle movement, a setting of the Weir Song; her grandmother's kitchen tune wearing manuscript ink, the weir audible under it if you know to listen, and she knows'>>",
+      "body": "<<FILL role=rising words=142 beats='her {ROUTE_B_TASK} land; {TEACHER_B} plays them twice at the studio piano and says, again, slower, which by studio arithmetic is a parade; she is named junior copyist to the {COMBINED_PIECE} workshop, the middle movement, a setting of the {SIGNATURE_TUNE}; {HERO_TUNE_ORIGIN} tune wearing manuscript ink, the {SIGNATURE_TUNE}'s pulse audible under it if you know to listen, and she knows'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1181,7 +1181,7 @@
     },
     {
       "id": "cm32",
-      "body": "<<FILL role=rising words=140 beats='the workshop; the middle movement lacks a bridge and no draft survives Thursday; Felix's versions brilliant and frantic, each one trying harder than the last, which is the problem; then the schedule posts, combined rehearsals to take the hall from mid-November, audition week for the commission cut to two days, and Felix stops humming that week entirely'>>",
+      "body": "<<FILL role=rising words=140 beats='the workshop; the middle movement lacks a bridge and no draft survives Thursday; {CULPRIT}'s versions brilliant and frantic, each one trying harder than the last, which is the problem; then the schedule posts, combined rehearsals to take the hall from mid-November, audition week for the commission cut to two days, and {CULPRIT} stops humming that week entirely'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1193,7 +1193,7 @@
     },
     {
       "id": "cm33",
-      "body": "<<FILL role=rising words=150 beats='the Monday after first frost; she and Felix reach the hall first, just behind Brant; three keys of the grand wedged silent with clean-cut felt shims, and the silenced notes spell the Evensong's opening; soaped bows in the strings store, the choir folios gone from the locked cabinet, green wool thread on the hinge, damp footprints toward the loft stairs; nothing broken anywhere; Felix's face the color of the manuscript paper he is holding'>>",
+      "body": "<<FILL role=rising words=150 beats='the Monday after {FROST_MARKER}; she and {CULPRIT} reach the hall first, just behind {CUSTODIAN}; {CLUE_PIANO}, and the silenced notes spell the {CHORAL_PIECE}'s opening; {ROOM_STRINGS}'s {CLUE_BOWS}, {CLUE_FOLIOS}, green wool thread on the hinge, damp footprints toward the loft stairs; nothing broken anywhere; {CULPRIT}'s face the color of the manuscript paper he is holding'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1205,7 +1205,7 @@
     },
     {
       "id": "cm34",
-      "body": "<<FILL role=rising words=146 beats='Tuesday, Petra accused on the key log; Thursday, the infirmary log read at assembly and Petra cleared, the lent ring named; but the folios are still missing and the workshop stalls on the mended grand; Thorn sets the week's riddle to the whole studio, what does a locked room want, and winds his clocks while everyone groans'>>",
+      "body": "<<FILL role=rising words=146 beats='Tuesday, {SENIOR_PEER} accused on the key log; Thursday, the infirmary log read at assembly and {SENIOR_PEER} cleared, the lent ring named; but the folios are still missing and the workshop stalls on the mended grand; {TEACHER_B} sets the week's riddle to the whole studio, what does a locked room want, and winds his clocks while everyone groans'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1217,7 +1217,7 @@
     },
     {
       "id": "cm35",
-      "body": "<<FILL role=choice words=148 beats='the riddle sits on her desk like a bird that will not fly off; what does a locked room want; half the studio treats it as Thorn being Thorn; the bridge still is not written and the concert will not move; Noor can spend her one free evening chasing the riddle to wherever music sleeps in this school, or let the adults carry the mystery and write'>>",
+      "body": "<<FILL role=choice words=148 beats='the riddle sits on her desk like a bird that will not fly off; what does a locked room want; half the studio treats it as {TEACHER_B} being {TEACHER_B}; the bridge still is not written and the concert will not move; {HERO} can spend her one free evening chasing the riddle to wherever music sleeps in this school, or let the adults carry the mystery and write'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1234,19 +1234,19 @@
     },
     {
       "id": "cm36",
-      "body": "<<FILL role=rising words=144 beats='a locked room wants to be opened from the inside; she thinks about where music sleeps at Aldermont and climbs to the organ loft with a lamp; the folios stacked under dust sheets, dry and weighted square, every pencil ghost safe; and folded on top, deliberate as a signature, a green wool scarf, left like an apology waiting for whoever cared enough to look'>>",
+      "body": "<<FILL role=rising words=144 beats='a locked room wants to be opened from the inside; she thinks about where music sleeps at {SCHOOL} and climbs to the {HIDING_PLACE} with a lamp; the folios stacked under dust sheets, dry and weighted square, every pencil ghost safe; and folded on top, deliberate as a signature, a {CULPRIT_SIGN}, left like an apology waiting for whoever cared enough to look'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm36_1",
-          "label": "Carry it all to Thorn.",
+          "label": "Carry it all to {TEACHER_B}.",
           "target": "cm37"
         }
       ]
     },
     {
       "id": "cm37",
-      "body": "<<FILL role=rising words=142 beats='scarf and folios to Thorn, who looks at both a long moment and says, a door you let a man open himself; Friday, at the first combined rehearsal, Felix stands beside the grand he silenced and opens it, all of it, father, renewal, audition week, the reversible harms, the changed lock; the studios speak, probation over expulsion, Okafor's bench, the folios home in his own arms'>>",
+      "body": "<<FILL role=rising words=142 beats='scarf and folios to {TEACHER_B}, who looks at both a long moment and says, a door you let a man open himself; Friday, at the first combined rehearsal, {CULPRIT} stands beside the grand he silenced and opens it, all of it, father, renewal, audition week, the reversible harms, the changed lock; the studios speak, probation over expulsion, {REPAIR_SHOP} bench, the folios home in his own arms'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1258,7 +1258,7 @@
     },
     {
       "id": "cm38",
-      "body": "<<FILL role=rising words=138 beats='the bridge nobody could write gets written in one long night by the whole studio, his theme and her drizzle figure braided, the weir under everything; Felix orchestrates from the shop bench between rehairing jobs; the last bow comes back to the strings store at midnight with the shop's chalk mark on the frog'>>",
+      "body": "<<FILL role=rising words=138 beats='the bridge nobody could write gets written in one long night by the whole studio, his theme and her drizzle figure braided, the {SIGNATURE_TUNE} under everything; {CULPRIT} orchestrates from the shop bench between rehairing jobs; the last bow comes back to {ROOM_STRINGS} at midnight with the shop's chalk mark on the frog'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1270,19 +1270,19 @@
     },
     {
       "id": "cm39",
-      "body": "<<FILL role=climax words=134 beats='concert day, snow from noon on; lanterns along the stage lip against the wiring; Dean Farrow in the second row with his clipboard shut; Thorn stops every clock in the studio at seven, and when someone finally asks why, he says the music will keep the time tonight'>>",
+      "body": "<<FILL role=climax words=134 beats='concert day, snow from noon on; lanterns along the stage lip against the wiring; {ADMIN} in the second row with his clipboard shut; {TEACHER_B} stops every clock in the studio at seven, and when someone finally asks why, he says the music will keep the time tonight'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm39_1",
-          "label": "Hear the Cantata whole.",
+          "label": "Hear the {COMBINED_PIECE} whole.",
           "target": "cm40"
         }
       ]
     },
     {
       "id": "cm40",
-      "body": "<<FILL role=success words=130 beats='the Winter Concert; the bridge holds, the Weir Song rises, the flicker comes in the last verse and the lanterns answer it; Farrow pledges the wiring fund before the applause dies; where music sleeps, someone finally looked, and the looking was the kindness; the riddle answered in the only language Thorn accepts, out loud, in the hall'>>",
+      "body": "<<FILL role=success words=130 beats='the {CONCERT_EVENT}; the bridge holds, the {SIGNATURE_TUNE} rises, the flicker comes in the last verse and the lanterns answer it; {ADMIN} pledges the {WIRING_FUND} before the applause dies; where music sleeps, someone finally looked, and the looking was the kindness; the riddle answered in the only language {TEACHER_B} accepts, out loud, in the hall'>>",
       "is_ending": true,
       "ending": {
         "id": "cm40",
@@ -1293,7 +1293,7 @@
     },
     {
       "id": "cm41",
-      "body": "<<FILL role=rising words=146 beats='she lets the adults carry the mystery and writes; the bridge comes out of the drizzle figure, eight bars that make the weir audible, and survives Thursday, the first draft all term to do it; the workshop limps forward on the mended grand; Friday, at the first combined rehearsal, Felix stands and says everything himself, unprompted, time and conscience having done the work no detective was doing'>>",
+      "body": "<<FILL role=rising words=146 beats='she lets the adults carry the mystery and writes; the bridge comes out of the drizzle figure, eight bars that make {SIGNATURE_TUNE}'s pulse audible, and survives Thursday, the first draft all term to do it; the workshop limps forward on the mended grand; Friday, at the first combined rehearsal, {CULPRIT} stands and says everything himself, unprompted, time and conscience having done the work no detective was doing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1305,7 +1305,7 @@
     },
     {
       "id": "cm42",
-      "body": "<<FILL role=rising words=144 beats='aftermath; her bridge is chosen for the movement the same week his probation begins; she wrestles with having looked away from the riddle while it mattered, and Thorn, winding the one clock that keeps real time, says, you answered a different riddle, both were real; Petra, cleared and unsentimental, brings her own bow to Felix's bench first, which says more than the assembly did'>>",
+      "body": "<<FILL role=rising words=144 beats='aftermath; her bridge is chosen for the movement the same week his probation begins; she wrestles with having looked away from the riddle while it mattered, and {TEACHER_B}, winding the one clock that keeps real time, says, you answered a different riddle, both were real; {SENIOR_PEER}, cleared and unsentimental, brings her own bow to {CULPRIT}'s bench first, which says more than the assembly did'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1317,7 +1317,7 @@
     },
     {
       "id": "cm43",
-      "body": "<<FILL role=choice words=150 beats='the solo commission Felix chased reopens, and Thorn nominates her bridge for it; the prize that bent a good student until he broke, now offered to the newest member of his studio; the audition week that caused everything restored to a full week, too late; Noor holds the nomination letter and the term's whole weather at once'>>",
+      "body": "<<FILL role=choice words=150 beats='the solo commission {CULPRIT} chased reopens, and {TEACHER_B} nominates her bridge for it; the prize that bent a good student until he broke, now offered to the newest member of his studio; the audition week that caused everything restored to a full week, too late; {HERO} holds the nomination letter and the term's whole weather at once'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1334,7 +1334,7 @@
     },
     {
       "id": "cm44",
-      "body": "<<FILL role=rising words=140 beats='she accepts, and attaches one condition, that Felix orchestrate the bridge with her, from the shop bench, work as repair; two names on the commission line or none; the committee blinks and agrees; he argues for the violas in bar six and she lets him win where he is right, which is most places'>>",
+      "body": "<<FILL role=rising words=140 beats='she accepts, and attaches one condition, that {CULPRIT} orchestrate the bridge with her, from the shop bench, work as repair; two names on the commission line or none; the committee blinks and agrees; he argues for the violas in bar six and she lets him win where he is right, which is most places'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1346,7 +1346,7 @@
     },
     {
       "id": "cm45",
-      "body": "<<FILL role=climax words=132 beats='the last week; the bridge with both names rehearsed into the middle movement; snow starting the afternoon of the concert; lanterns along the stage lip; Felix's father's letter finally answered with a program in the envelope'>>",
+      "body": "<<FILL role=climax words=132 beats='the last week; the bridge with both names rehearsed into the middle movement; snow starting the afternoon of the concert; lanterns along the stage lip; {CULPRIT}'s father's letter finally answered with a program in the envelope'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1358,7 +1358,7 @@
     },
     {
       "id": "cm46",
-      "body": "<<FILL role=success words=130 beats='the Winter Concert; the bridge with two names in the program in small print; the flicker, the lanterns, the pledge; the commission money split toward his family's winter and her spring strings; a prize that broke someone taught to carry double, and the movement is better for every scar in it'>>",
+      "body": "<<FILL role=success words=130 beats='the {CONCERT_EVENT}; the bridge with two names in the program in small print; the flicker, the lanterns, the pledge; the commission money split toward his family's winter and her spring strings; a prize that broke someone taught to carry double, and the movement is better for every scar in it'>>",
       "is_ending": true,
       "ending": {
         "id": "cm46",
@@ -1369,7 +1369,7 @@
     },
     {
       "id": "cm47",
-      "body": "<<FILL role=rising words=142 beats='she asks, in writing, that the commission go unawarded this term, because the term's wound should not wear a prize; Provost Hale reads the letter twice, fair as always, and agrees; the prize money seeds a quiet hardship fund with a deliberately boring name, for students whose letters from home read like countdowns; adults being decent on purpose, which turns out to be a thing you can ask for'>>",
+      "body": "<<FILL role=rising words=142 beats='she asks, in writing, that the commission go unawarded this term, because the term's wound should not wear a prize; {PROVOST} reads the letter twice, fair as always, and agrees; the prize money seeds a quiet hardship fund with a deliberately boring name, for students whose letters from home read like countdowns; adults being decent on purpose, which turns out to be a thing you can ask for'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1393,7 +1393,7 @@
     },
     {
       "id": "cm49",
-      "body": "<<FILL role=completion words=130 beats='the Winter Concert; the movement rises with no name on it and everyone's hands in it; the flicker, the lanterns, Farrow's pledge; Felix beside her in the standing row, on probation and present, the fund with the boring name already holding its first quiet grant; some credits are truest when they are shared all the way out'>>",
+      "body": "<<FILL role=completion words=130 beats='the {CONCERT_EVENT}; the movement rises with no name on it and everyone's hands in it; the flicker, the lanterns, {ADMIN}'s pledge; {CULPRIT} beside her in the standing row, on probation and present, the fund with the boring name already holding its first quiet grant; some credits are truest when they are shared all the way out'>>",
       "is_ending": true,
       "ending": {
         "id": "cm49",
@@ -1404,19 +1404,19 @@
     },
     {
       "id": "vo01",
-      "body": "<<FILL role=rising words=140 beats='first choir rehearsal; Osei greets Noor by name and river town before Noor has given either; alto seconds, third row; Danil Reyes, head chorister, hands her the Evensong folio, its margins full of pencil ghosts from forty years of singers; the folio cabinet by the stage locks with a small brass key that Danil treats like a relic'>>",
+      "body": "<<FILL role=rising words=140 beats='first choir rehearsal; {TEACHER_C} greets {HERO} by name and river town before {HERO} has given either; alto seconds, third row; {HEAD_CHORISTER}, head chorister, hands her the {CHORAL_PIECE} folio, its margins full of pencil ghosts from forty years of singers; the folio cabinet by the stage locks with a small brass key that {HEAD_CHORISTER} treats like a relic'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo01_1",
-          "label": "Learn the Evensong from the inside.",
+          "label": "Learn the {CHORAL_PIECE} from the inside.",
           "target": "vo02"
         }
       ]
     },
     {
       "id": "vo02",
-      "body": "<<FILL role=rising words=144 beats='warmth with weather coming; Dean Farrow walks Whitmore Hall with a clipboard, measuring evening hours in money, because the wiring bill is real and the board votes on the hall's evening schedule in January; the Winter Concert is the argument, everyone knows it; Osei jokes about singing by candlelight and only half of it is a joke'>>",
+      "body": "<<FILL role=rising words=144 beats='warmth with weather coming; {ADMIN} walks {HALL} with a clipboard, measuring evening hours in money, because the wiring bill is real and the board votes on the hall's evening schedule in January; the {CONCERT_EVENT} is the argument, everyone knows it; {TEACHER_C} jokes about singing by candlelight and only half of it is a joke'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1428,24 +1428,24 @@
     },
     {
       "id": "vo03",
-      "body": "<<FILL role=choice words=148 beats='sectionals; a descant line opens above the Evensong's last verse, silver and exposed, auditions Friday; the alto seconds also need an anchor, the note nobody claps for that every chord leans on; Danil says the choir is a body and every part of it thinks it is the spine; two honest ways to spend a first term's voice'>>",
+      "body": "<<FILL role=choice words=148 beats='sectionals; {ROUTE_C_TASK} opens above the {CHORAL_PIECE}'s last verse, silver and exposed, auditions Friday; {ROUTE_C_ANCHOR} also need an anchor, the note nobody claps for that every chord leans on; {HEAD_CHORISTER} says the choir is a body and every part of it thinks it is the spine; two honest ways to spend a first term's voice'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo03_1",
-          "label": "Audition for the descant line.",
+          "label": "Audition for {ROUTE_C_TASK}.",
           "target": "vo04"
         },
         {
           "id": "c_vo03_2",
-          "label": "Anchor the alto seconds.",
+          "label": "Anchor {ROUTE_C_ANCHOR}.",
           "target": "vo34"
         }
       ]
     },
     {
       "id": "vo04",
-      "body": "<<FILL role=rising words=136 beats='the audition; her alto stretched to the line's silver top and holding; she wins it, and the winning is lonely for exactly one day, until Danil starts calling her the weathervane, the voice you steer by, and the name sticks the way kind names do'>>",
+      "body": "<<FILL role=rising words=136 beats='the audition; her alto stretched to the line's silver top and holding; she wins it, and the winning is lonely for exactly one day, until {HEAD_CHORISTER} starts calling her the weathervane, the voice you steer by, and the name sticks the way kind names do'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1457,7 +1457,7 @@
     },
     {
       "id": "vo05",
-      "body": "<<FILL role=rising words=138 beats='first frost silvering the quad; petitions on the notice boards to keep the choir's evening hours; the choir sings the harvest service at the river chapel and the town packs the pews to the doors, which is the whole argument for the program, made audible for anyone listening; Farrow was not there, Danil notes, and Osei says he will be, in December'>>",
+      "body": "<<FILL role=rising words=138 beats='{FROST_MARKER} silvering the quad; petitions on the notice boards to keep the choir's evening hours; the choir sings the harvest service at the river chapel and the town packs the pews to the doors, which is the whole argument for the program, made audible for anyone listening; {ADMIN} was not there, {HEAD_CHORISTER} notes, and {TEACHER_C} says he will be, in December'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1469,7 +1469,7 @@
     },
     {
       "id": "vo06",
-      "body": "<<FILL role=rising words=152 beats='the Monday after first frost; Brant at six and the folio cabinet open with no forced lock, the folios gone, pencil ghosts and all, a fine green wool thread caught on the hinge; next door the loaner bows wiped with soap and three keys of the concert grand wedged silent with felt shims; the sign-out log says Petra Lindqvist and the key was never signed back; the older singers grieve the folios like letters from the dead'>>",
+      "body": "<<FILL role=rising words=152 beats='the Monday after {FROST_MARKER}; {CUSTODIAN} at six and the folio cabinet open with no forced lock, the folios gone, pencil ghosts and all, {CLUE_THREAD}; next door {CLUE_BOWS} and {CLUE_PIANO}; the sign-out log says {SENIOR_PEER} and the key was never signed back; the older singers grieve the folios like letters from the dead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1481,12 +1481,12 @@
     },
     {
       "id": "vo07",
-      "body": "<<FILL role=choice words=150 beats='Farrow's memo lands by noon, a program that cannot secure its own scores invites questions about its stewardship of shared spaces; the choir reads it in silence; Osei folds it once and asks for ideas, not outrage; the answer can be made of facts on paper or of music remembered, and there is only so much choir to spend'>>",
+      "body": "<<FILL role=choice words=150 beats='{ADMIN}'s memo lands by noon, a program that cannot secure its own scores invites questions about its stewardship of shared spaces; the choir reads it in silence; {TEACHER_C} folds it once and asks for ideas, not outrage; the answer can be made of facts on paper or of music remembered, and there is only so much choir to spend'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo07_1",
-          "label": "Help Osei answer the memo with facts.",
+          "label": "Help {TEACHER_C} answer the memo with facts.",
           "target": "vo08"
         },
         {
@@ -1498,7 +1498,7 @@
     },
     {
       "id": "vo08",
-      "body": "<<FILL role=rising words=142 beats='the inventory drafted at Osei's desk, honest to a fault, the music replaceable, the forty years of markings not, negligence nowhere in the building; Osei declines to speculate about any student before facts, and says so in writing; Tuesday the rumor mill names Petra anyway, key log and her grumbling about ceded hall time, and the corridor goes cold between choir and strings'>>",
+      "body": "<<FILL role=rising words=142 beats='the inventory drafted at {TEACHER_C}'s desk, honest to a fault, the music replaceable, the forty years of markings not, negligence nowhere in the building; {TEACHER_C} declines to speculate about any student before facts, and says so in writing; Tuesday the rumor mill names {SENIOR_PEER} anyway, key log and her grumbling about ceded hall time, and the corridor goes cold between choir and strings'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1510,12 +1510,12 @@
     },
     {
       "id": "vo09",
-      "body": "<<FILL role=choice words=152 beats='the board wants a culprit faster than the truth is moving; a complaint naming Petra Lindqvist arrives for Osei's co-signature, protect the program, settle the matter; Noor is in the office when it lands; she has heard an aide from the infirmary mention a migraine log, secondhand and unverified; the pen and the rumor sit on the same desk'>>",
+      "body": "<<FILL role=choice words=152 beats='the board wants a culprit faster than the truth is moving; a complaint naming {SENIOR_PEER} arrives for {TEACHER_C}'s co-signature, protect the program, settle the matter; {HERO} is in the office when it lands; she has heard an aide from the infirmary mention a migraine log, secondhand and unverified; the pen and the rumor sit on the same desk'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo09_1",
-          "label": "Urge Osei to sign and protect the program.",
+          "label": "Urge {TEACHER_C} to sign and protect the program.",
           "target": "vo10"
         },
         {
@@ -1527,7 +1527,7 @@
     },
     {
       "id": "vo10",
-      "body": "<<FILL role=rising words=148 beats='Osei does not sign; blame is a loan at interest, she says, gently, and Noor hears the lesson land on herself; but the urging travels anyway, corridors being corridors, and Petra hears that the choir's new girl pushed for the complaint; Thursday the infirmary log clears Petra at assembly, migraine, signed in all night, the ring lent days before; the chill between the sections now has Noor's name on it'>>",
+      "body": "<<FILL role=rising words=148 beats='{TEACHER_C} does not sign; blame is a loan at interest, she says, gently, and {HERO} hears the lesson land on herself; but the urging travels anyway, corridors being corridors, and {SENIOR_PEER} hears that the choir's new girl pushed for the complaint; Thursday the infirmary log clears {SENIOR_PEER} at assembly, {CLEARING_DETAIL}, the ring lent days before; the chill between the sections now has {HERO}'s name on it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1539,12 +1539,12 @@
     },
     {
       "id": "vo11",
-      "body": "<<FILL role=choice words=146 beats='the accusation died at assembly but the chill outlived it; combined rehearsals start Friday and the alto seconds stand shoulder to shoulder with Petra's section; an apology is a small door that gets heavier every day it stays shut; the term is loud and it would be easy to let the noise carry this away'>>",
+      "body": "<<FILL role=choice words=146 beats='the accusation died at assembly but the chill outlived it; combined rehearsals start Friday and {ROUTE_C_ANCHOR} stand shoulder to shoulder with {SENIOR_PEER}'s section; an apology is a small door that gets heavier every day it stays shut; the term is loud and it would be easy to let the noise carry this away'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo11_1",
-          "label": "Apologize to Petra, face to face.",
+          "label": "Apologize to {SENIOR_PEER}, face to face.",
           "target": "vo12"
         },
         {
@@ -1556,7 +1556,7 @@
     },
     {
       "id": "vo12",
-      "body": "<<FILL role=rising words=144 beats='the apology, face to face outside the strings hall, no cushions on it; Petra's grace arrives sideways, I lent my keys, you lent your fear, we both got them back; something unclenches; Friday at the first combined rehearsal Felix Marsh stands and confesses everything, the desperation, the reversible harms, and Noor, already humbled once this week, is kind early instead of clever late'>>",
+      "body": "<<FILL role=rising words=144 beats='the apology, face to face outside the strings hall, no cushions on it; {SENIOR_PEER}'s grace arrives sideways, I lent my keys, you lent your fear, we both got them back; something unclenches; Friday at the first combined rehearsal {CULPRIT} stands and confesses everything, the desperation, the reversible harms, and {HERO}, already humbled once this week, is kind early instead of clever late'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1568,19 +1568,19 @@
     },
     {
       "id": "vo13",
-      "body": "<<FILL role=climax words=134 beats='December; the descant rehearsed over the Weir Song's last verse; the board confirmed for the second row; lantern drill after the flicker joke stops being a joke; snow forecast for concert night; Osei, counting breaths with the sopranos, in for four, out for the whole hall'>>",
+      "body": "<<FILL role=climax words=134 beats='December; {ROUTE_C_TASK} rehearsed over the {SIGNATURE_TUNE}'s last verse; the board confirmed for the second row; lantern drill after the flicker joke stops being a joke; snow forecast for concert night; {TEACHER_C}, counting breaths with the sopranos, in for four, out for the whole hall'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo13_1",
-          "label": "Sing the Winter Concert.",
+          "label": "Sing the {CONCERT_EVENT}.",
           "target": "vo14"
         }
       ]
     },
     {
       "id": "vo14",
-      "body": "<<FILL role=success words=130 beats='the Winter Concert; her descant riding the last verse when the wiring flickers on schedule with no schedule, and the lanterns come up like a second choir; Farrow stands and pledges the wiring fund; Petra finds the weathervane afterward to say the descant steered true; a term that started with a wrong push ends pointed exactly right'>>",
+      "body": "<<FILL role=success words=130 beats='the {CONCERT_EVENT}; her {ROUTE_C_TASK} riding the last verse when the wiring flickers on schedule with no schedule, and the lanterns come up like a second choir; {ADMIN} stands and pledges the {WIRING_FUND}; {SENIOR_PEER} finds the weathervane afterward to say the descant steered true; a term that started with a wrong push ends pointed exactly right'>>",
       "is_ending": true,
       "ending": {
         "id": "vo14",
@@ -1591,7 +1591,7 @@
     },
     {
       "id": "vo15",
-      "body": "<<FILL role=rising words=146 beats='it does not fade; the chill sits between the sections at every combined rehearsal like a draft nobody will name; Friday Felix stands and owns his whole mess in front of everyone, and Noor watches what owning looks like from the outside, which is a mirror if you let it be; the last night of term she writes the letter she should have spoken and slides it under Petra's door'>>",
+      "body": "<<FILL role=rising words=146 beats='it does not fade; the chill sits between the sections at every combined rehearsal like a draft nobody will name; Friday {CULPRIT} stands and owns his whole mess in front of everyone, and {HERO} watches what owning looks like from the outside, which is a mirror if you let it be; the last night of term she writes the letter she should have spoken and slides it under {SENIOR_PEER}'s door'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1606,7 +1606,7 @@
     },
     {
       "id": "vo16",
-      "body": "<<FILL role=discovery words=132 beats='the Winter Concert is beautiful anyway, snow and lanterns and the pledge; the descant flies; the letter is answered in January with two words and a rehearsal invitation, which is how string players forgive; some repairs run past the last page of a term, and the discovery is that they still count'>>",
+      "body": "<<FILL role=discovery words=132 beats='the {CONCERT_EVENT} is beautiful anyway, snow and lanterns and the pledge; the descant flies; the letter is answered in January with two words and a rehearsal invitation, which is how string players forgive; some repairs run past the last page of a term, and the discovery is that they still count'>>",
       "is_ending": true,
       "ending": {
         "id": "vo16",
@@ -1617,7 +1617,7 @@
     },
     {
       "id": "vo17",
-      "body": "<<FILL role=rising words=148 beats='the wait, vindicated; Wednesday evening Osei crosses the quad to the infirmary herself and comes back with Nurse Imrie's log under her arm, then walks Petra to Provost Hale's door; Thursday assembly, the log read aloud, the whole night accounted for, the key ring lent days earlier to her accompanist; Petra cleared in front of everyone, Osei's hand on her shoulder, and the choir's memo suddenly answering itself'>>",
+      "body": "<<FILL role=rising words=148 beats='the wait, vindicated; Wednesday evening {TEACHER_C} crosses the quad to the infirmary herself and comes back with {NURSE}'s log under her arm, then walks {SENIOR_PEER} to {PROVOST}'s door; Thursday assembly, the log read aloud, the whole night accounted for, the key ring lent days earlier to her accompanist; {SENIOR_PEER} cleared in front of everyone, {TEACHER_C}'s hand on her shoulder, and the choir's memo suddenly answering itself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1629,19 +1629,19 @@
     },
     {
       "id": "vo18",
-      "body": "<<FILL role=rising words=144 beats='the memo answered with the inventory and the clearing stapled together; Farrow withdraws the insinuation in writing, which costs him something and he pays it, a flawed man being decent where it counts; Friday Felix confesses at the first combined rehearsal, the folios come home with every pencil ghost intact, probation and the shop bench and a quiet fund; the January vote still looms, and the concert is the argument'>>",
+      "body": "<<FILL role=rising words=144 beats='the memo answered with the inventory and the clearing stapled together; {ADMIN} withdraws the insinuation in writing, which costs him something and he pays it, a flawed man being decent where it counts; Friday {CULPRIT} confesses at the first combined rehearsal, the folios come home with every pencil ghost intact, probation and the shop bench and a quiet fund; the January vote still looms, and the concert is the argument'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo18_1",
-          "label": "Plan the argument with Osei.",
+          "label": "Plan the argument with {TEACHER_C}.",
           "target": "vo19"
         }
       ]
     },
     {
       "id": "vo19",
-      "body": "<<FILL role=choice words=152 beats='Osei spreads the concert order across the piano lid; the board will be in the second row and the hall will make its own case if the choir lets it; two plans, embrace the failing lights, rehearse the last verse in lantern light and make the board feel what this hall is, or sing the safest, cleanest Evensong in forty years and let flawless be the argument; risk against rigor, and she asks the room'>>",
+      "body": "<<FILL role=choice words=152 beats='{TEACHER_C} spreads the concert order across the piano lid; the board will be in the second row and the hall will make its own case if the choir lets it; two plans, embrace the failing lights, rehearse the last verse in lantern light and make the board feel what this hall is, or sing the safest, cleanest {CHORAL_PIECE} in forty years and let flawless be the argument; risk against rigor, and she asks the room'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1658,7 +1658,7 @@
     },
     {
       "id": "vo20",
-      "body": "<<FILL role=rising words=140 beats='rehearsing darkness on purpose; lights off, lanterns up, the choir learning the last verse by ear and trust; Danil's counter-melody threading the dark like a handrail; the sopranos giggle the first night and by the third night nobody does, because it sounds like the hall is singing back; snow forecast holds'>>",
+      "body": "<<FILL role=rising words=140 beats='rehearsing darkness on purpose; lights off, lanterns up, the choir learning the last verse by ear and trust; {HEAD_CHORISTER}'s counter-melody threading the dark like a handrail; the sopranos giggle the first night and by the third night nobody does, because it sounds like the hall is singing back; snow forecast holds'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1670,7 +1670,7 @@
     },
     {
       "id": "vo21",
-      "body": "<<FILL role=climax words=138 beats='concert night, snow thick on the sills; the Weir Song, the combined studios, the hall packed to the doors; in the last verse the old wiring flickers all on its own, right on cue, and the lanterns come up steady in a hundred hands because the choir rehearsed for exactly this dark'>>",
+      "body": "<<FILL role=climax words=138 beats='concert night, snow thick on the sills; the {SIGNATURE_TUNE}, the combined studios, the hall packed to the doors; in the last verse the old wiring flickers all on its own, right on cue, and the lanterns come up steady in a hundred hands because the choir rehearsed for exactly this dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1682,7 +1682,7 @@
     },
     {
       "id": "vo22",
-      "body": "<<FILL role=success words=132 beats='the lantern verse; the board watching a hall full of light that the budget line calls a liability; Farrow stands before the applause ends and pledges the wiring fund, and the January vote becomes a formality everyone can feel; Osei finds Noor after and says the program was saved by people who rehearsed the dark instead of fearing it'>>",
+      "body": "<<FILL role=success words=132 beats='the lantern verse; the board watching a hall full of light that the budget line calls a liability; {ADMIN} stands before the applause ends and pledges the {WIRING_FUND}, and the January vote becomes a formality everyone can feel; {TEACHER_C} finds {HERO} after and says the program was saved by people who rehearsed the dark instead of fearing it'>>",
       "is_ending": true,
       "ending": {
         "id": "vo22",
@@ -1693,7 +1693,7 @@
     },
     {
       "id": "vo23",
-      "body": "<<FILL role=rising words=140 beats='the flawless program; note-perfect Evensong, nothing staged, rigor as the whole argument; and when the flicker comes anyway in the last verse, unplanned and inevitable, the choir holds through the dark without one wobble, because held is what Osei trains; the board sees steadiness that no lighting rig can fake; snow on the windows like applause'>>",
+      "body": "<<FILL role=rising words=140 beats='the flawless program; note-perfect {CHORAL_PIECE}, nothing staged, rigor as the whole argument; and when the flicker comes anyway in the last verse, unplanned and inevitable, the choir holds through the dark without one wobble, because held is what {TEACHER_C} trains; the board sees steadiness that no lighting rig can fake; snow on the windows like applause'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1705,7 +1705,7 @@
     },
     {
       "id": "vo24",
-      "body": "<<FILL role=completion words=130 beats='the last chord lands in half-dark and total silence, then the house lights stutter back to a hall on its feet; Farrow pledges the wiring fund with his clipboard finally shut; the choir proved the hall's case by being unshakable inside it; steadiness, it turns out, is also a kind of light'>>",
+      "body": "<<FILL role=completion words=130 beats='the last chord lands in half-dark and total silence, then the house lights stutter back to a hall on its feet; {ADMIN} pledges the {WIRING_FUND} with his clipboard finally shut; the choir proved the hall's case by being unshakable inside it; steadiness, it turns out, is also a kind of light'>>",
       "is_ending": true,
       "ending": {
         "id": "vo24",
@@ -1716,7 +1716,7 @@
     },
     {
       "id": "vo25",
-      "body": "<<FILL role=rising words=146 beats='the rally; every section pooling its memory of the pencil ghosts, an overnight re-marking with the cocoa urn going and Osei pretending not to know how late it runs; at midnight Felix Marsh appears to help, copying dynamics and breath marks nobody's memory holds, markings only the missing folios knew; Noor watches his pen know too much and files the chill away without a name'>>",
+      "body": "<<FILL role=rising words=146 beats='the rally; every section pooling its memory of the pencil ghosts, an overnight re-marking with the cocoa urn going and {TEACHER_C} pretending not to know how late it runs; at midnight {CULPRIT} appears to help, copying dynamics and breath marks nobody's memory holds, markings only the missing folios knew; {HERO} watches his pen know too much and files the chill away without a name'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1728,7 +1728,7 @@
     },
     {
       "id": "vo26",
-      "body": "<<FILL role=choice words=148 beats='the question sits with Noor by the cocoa urn; how does a composition aide know the alto section's private breath marks; asking could be an accusation or a kindness depending entirely on how it is held; the scores are nearly done, the night nearly over, and Tuesday the school will start looking for someone to blame'>>",
+      "body": "<<FILL role=choice words=148 beats='the question sits with {HERO} by the cocoa urn; how does a composition aide know the alto section's private breath marks; asking could be an accusation or a kindness depending entirely on how it is held; the scores are nearly done, the night nearly over, and Tuesday the school will start looking for someone to blame'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1745,7 +1745,7 @@
     },
     {
       "id": "vo27",
-      "body": "<<FILL role=rising words=146 beats='the kind question, just the two of them and the dregs of the cocoa; Felix does not answer, and stops pretending, which is an answer; Tuesday Petra is accused on the key log and he goes gray as newsprint; Noor tells him, quiet and level, that the truth has a Thursday deadline if decency means anything, and then leaves the door open instead of pushing him through it'>>",
+      "body": "<<FILL role=rising words=146 beats='the kind question, just the two of them and the dregs of the cocoa; {CULPRIT} does not answer, and stops pretending, which is an answer; Tuesday {SENIOR_PEER} is accused on the key log and he goes gray as newsprint; {HERO} tells him, quiet and level, that the truth has a Thursday deadline if decency means anything, and then leaves the door open instead of pushing him through it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1760,7 +1760,7 @@
     },
     {
       "id": "vo28",
-      "body": "<<FILL role=rising words=144 beats='Thursday the infirmary log clears Petra at assembly, the lent ring named at last; Friday morning Felix goes to Osei first, then stands at the combined rehearsal with Noor's steadying nod from the third row and says all of it, father, renewal, the two-day audition week, the harms chosen to wash out; probation, the shop bench, the fund; the folios come down from the organ loft intact'>>",
+      "body": "<<FILL role=rising words=144 beats='Thursday the infirmary log clears {SENIOR_PEER} at assembly, the lent ring named at last; Friday morning {CULPRIT} goes to {TEACHER_C} first, then stands at the combined rehearsal with {HERO}'s steadying nod from the third row and says all of it, {MOTIVE_DETAIL}, the harms chosen to wash out; probation, the shop bench, the fund; the folios come down from the {HIDING_PLACE} intact'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1772,19 +1772,19 @@
     },
     {
       "id": "vo29",
-      "body": "<<FILL role=climax words=136 beats='December; the choir keeps the hand-copied set shelved beside the returned originals, the night the choir re-membered itself, Danil calls it, and the pun survives on merit; lantern drill, snow forecast, the board confirmed for the second row; the term closing like a chord resolving'>>",
+      "body": "<<FILL role=climax words=136 beats='December; the choir keeps the hand-copied set shelved beside the returned originals, the night the choir re-membered itself, {HEAD_CHORISTER} calls it, and the pun survives on merit; lantern drill, snow forecast, the board confirmed for the second row; the term closing like a chord resolving'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo29_1",
-          "label": "Sing the Winter Concert.",
+          "label": "Sing the {CONCERT_EVENT}.",
           "target": "vo30"
         }
       ]
     },
     {
       "id": "vo30",
-      "body": "<<FILL role=success words=130 beats='the Winter Concert; the Weir Song, the flicker, the lanterns, the pledge; two sets of scores in the cabinet with one brass key, the originals and the night the choir wrote itself down from memory; a program the board came to price and left having heard; some things, re-marked by hand, hold better than before'>>",
+      "body": "<<FILL role=success words=130 beats='the {CONCERT_EVENT}; the {SIGNATURE_TUNE}, the flicker, the lanterns, the pledge; two sets of scores in the cabinet with one brass key, the originals and the night the choir wrote itself down from memory; a program the board came to price and left having heard; some things, re-marked by hand, hold better than before'>>",
       "is_ending": true,
       "ending": {
         "id": "vo30",
@@ -1795,12 +1795,12 @@
     },
     {
       "id": "vo31",
-      "body": "<<FILL role=rising words=146 beats='she says nothing and the scores get finished, which is real and mattered; Tuesday Petra is accused, Wednesday the school aches, Thursday the log clears her at assembly; Friday Felix confesses at rehearsal unprompted, and Noor does the quiet arithmetic, her unasked question might have spared Petra two days under the blame; nobody scolds her, which is worse and better at once'>>",
+      "body": "<<FILL role=rising words=146 beats='she says nothing and the scores get finished, which is real and mattered; Tuesday {SENIOR_PEER} is accused, Wednesday the school aches, Thursday the log clears her at assembly; Friday {CULPRIT} confesses at rehearsal unprompted, and {HERO} does the quiet arithmetic, her unasked question might have spared {SENIOR_PEER} two days under the blame; nobody scolds her, which is worse and better at once'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo31_1",
-          "label": "Carry the arithmetic to Osei.",
+          "label": "Carry the arithmetic to {TEACHER_C}.",
           "target": "vo32"
         }
       ],
@@ -1810,7 +1810,7 @@
     },
     {
       "id": "vo32",
-      "body": "<<FILL role=rising words=138 beats='she tells Osei about the midnight markings after the fact, expecting weather and getting climate; noticing is a gift, Osei says, level and kind, hand it to someone sooner next time; the term folds toward the concert, lantern drill and snow forecast, and the lesson rides along without rancor'>>",
+      "body": "<<FILL role=rising words=138 beats='she tells {TEACHER_C} about the midnight markings after the fact, expecting weather and getting climate; noticing is a gift, {TEACHER_C} says, level and kind, hand it to someone sooner next time; the term folds toward the concert, lantern drill and snow forecast, and the lesson rides along without rancor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1822,7 +1822,7 @@
     },
     {
       "id": "vo33",
-      "body": "<<FILL role=discovery words=130 beats='the Winter Concert, snow and lanterns and the hall gone golden; the choir sings from the re-marked scores and the returned originals both; what Noor carries out into the snow is small and permanent, that a noticed thing is a held note, and holding it silent helps no one; next time, she hands it on sooner'>>",
+      "body": "<<FILL role=discovery words=130 beats='the {CONCERT_EVENT}, snow and lanterns and the hall gone golden; the choir sings from the re-marked scores and the returned originals both; what {HERO} carries out into the snow is small and permanent, that a noticed thing is a held note, and holding it silent helps no one; next time, she hands it on sooner'>>",
       "is_ending": true,
       "ending": {
         "id": "vo33",
@@ -1833,7 +1833,7 @@
     },
     {
       "id": "vo34",
-      "body": "<<FILL role=rising words=136 beats='the anchor work; tuning the chord from the inside, the note nobody claps for; Osei stops the room mid-verse to make the sopranos listen down, the audience hears the descant, the choir hears the altos; Noor learns to love the unclapped note the way you love a load-bearing wall'>>",
+      "body": "<<FILL role=rising words=136 beats='the anchor work; tuning the chord from the inside, the note nobody claps for; {TEACHER_C} stops the room mid-verse to make the sopranos listen down, the audience hears the descant, the choir hears the altos; {HERO} learns to love the unclapped note the way you love a load-bearing wall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1845,7 +1845,7 @@
     },
     {
       "id": "vo35",
-      "body": "<<FILL role=rising words=142 beats='the schedule bites; the choir bumped from Whitmore Hall twice in one week for paying events, sectionals held in the refectory among stacked chairs that ring like bad bells; first frost on the quad, petitions on the boards, Danil's jaw set; Osei keeps rehearsing as if the room does not matter, which is itself an argument, though not the whole of one; and once, quietly, to the section: a term has only so many evenings, spend each one where the music is'>>",
+      "body": "<<FILL role=rising words=142 beats='the schedule bites; the choir bumped from {HALL} twice in one week for paying events, sectionals held in the refectory among stacked chairs that ring like bad bells; {FROST_MARKER} on the quad, petitions on the boards, {HEAD_CHORISTER}'s jaw set; {TEACHER_C} keeps rehearsing as if the room does not matter, which is itself an argument, though not the whole of one; and once, quietly, to the section: a term has only so many evenings, spend each one where the music is'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1857,7 +1857,7 @@
     },
     {
       "id": "vo36",
-      "body": "<<FILL role=rising words=150 beats='the Monday after first frost; the folio cabinet open with no forced lock, folios gone, green wool thread on the hinge; the loaner bows soaped and three keys of the grand wedged silent next door; the key log naming Petra Lindqvist, never signed back; the older singers grieving forty years of pencil ghosts, and Farrow's clipboard already crossing the quad by nine'>>",
+      "body": "<<FILL role=rising words=150 beats='the Monday after {FROST_MARKER}; the folio cabinet open with no forced lock, folios gone, {CLUE_THREAD}; {CLUE_BOWS} and {CLUE_PIANO} next door; the key log naming {SENIOR_PEER}, never signed back; the older singers grieving forty years of pencil ghosts, and {ADMIN}'s clipboard already crossing the quad by nine'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1869,24 +1869,24 @@
     },
     {
       "id": "vo37",
-      "body": "<<FILL role=choice words=152 beats='Danil wants the choir to sing, uninvited, at the board's open meeting Thursday week, two minutes of Evensong in front of the people pricing the hall, a plea in the only language the choir speaks fluently; Osei will neither bless it nor forbid it, students may attend open meetings, she says, and looks out the window; risk to the program either way, and Danil is asking Noor to stand with him'>>",
+      "body": "<<FILL role=choice words=152 beats='{HEAD_CHORISTER} wants the choir to sing, uninvited, at the board's open meeting Thursday week, two minutes of {CHORAL_PIECE} in front of the people pricing the hall, a plea in the only language the choir speaks fluently; {TEACHER_C} will neither bless it nor forbid it, students may attend open meetings, she says, and looks out the window; risk to the program either way, and {HEAD_CHORISTER} is asking {HERO} to stand with him'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo37_1",
-          "label": "Back Danil's plan.",
+          "label": "Back {HEAD_CHORISTER}'s plan.",
           "target": "vo38"
         },
         {
           "id": "c_vo37_2",
-          "label": "Back Osei's patience.",
+          "label": "Back {TEACHER_C}'s patience.",
           "target": "vo46"
         }
       ]
     },
     {
       "id": "vo38",
-      "body": "<<FILL role=rising words=142 beats='the open meeting; the students rise from the public seats and sing two minutes of Evensong, respectful and short and devastatingly good; Farrow listens with his pen down the whole time; the Provost chides the method and praises the music in one sentence, adults being complicated in public; the recording someone made is around the school by supper'>>",
+      "body": "<<FILL role=rising words=142 beats='the open meeting; the students rise from the public seats and sing two minutes of {CHORAL_PIECE}, respectful and short and devastatingly good; {ADMIN} listens with his pen down the whole time; {PROVOST} chides the method and praises the music in one sentence, adults being complicated in public; the recording someone made is around the school by supper'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1898,7 +1898,7 @@
     },
     {
       "id": "vo39",
-      "body": "<<FILL role=rising words=148 beats='fallout mild, ripples long; Tuesday Petra accused on the key log, Thursday assembly and the infirmary log clearing her while the whole school watches, Osei's hand on her shoulder; Friday Felix Marsh confesses at the first combined rehearsal, probation and the shop bench; and the board floats a compromise, shared evening hours with paying events if the Winter Concert makes the hall's case; the singing at the meeting bought that much'>>",
+      "body": "<<FILL role=rising words=148 beats='fallout mild, ripples long; Tuesday {SENIOR_PEER} accused on the key log, Thursday assembly and the infirmary log clearing her while the whole school watches, {TEACHER_C}'s hand on her shoulder; Friday {CULPRIT} confesses at the first combined rehearsal, probation and the shop bench; and the board floats a compromise, shared evening hours with paying events if the {CONCERT_EVENT} makes the hall's case; the singing at the meeting bought that much'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1910,12 +1910,12 @@
     },
     {
       "id": "vo40",
-      "body": "<<FILL role=choice words=150 beats='Osei, plainly, to the choir, we asked to be heard and we were, now sing; Danil wants one more petition round anyway, pressure until the vote is signed; the compromise is real but unsigned, the concert is five weeks out, and a choir only has so many evenings; Osei has said her piece once, which by her arithmetic means it matters'>>",
+      "body": "<<FILL role=choice words=150 beats='{TEACHER_C}, plainly, to the choir, we asked to be heard and we were, now sing; {HEAD_CHORISTER} wants one more petition round anyway, pressure until the vote is signed; the compromise is real but unsigned, the concert is five weeks out, and a choir only has so many evenings; {TEACHER_C} has said her piece once, which by her arithmetic means it matters'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo40_1",
-          "label": "Pour everything into the Cantata.",
+          "label": "Pour everything into the {COMBINED_PIECE}.",
           "target": "vo41"
         },
         {
@@ -1927,7 +1927,7 @@
     },
     {
       "id": "vo41",
-      "body": "<<FILL role=rising words=140 beats='everything into the Cantata; the altos carry the join where strings hand the Weir Song to the voices, the seam that makes three studios sound like one; Felix, on probation, orchestrates the seam from the shop bench and gets it right the third time; combined rehearsals knit the term's wounds into something load-bearing; snow in the forecast'>>",
+      "body": "<<FILL role=rising words=140 beats='everything into the {COMBINED_PIECE}; the altos carry the join where strings hand the {SIGNATURE_TUNE} to the voices, the seam that makes three studios sound like one; {CULPRIT}, on probation, orchestrates the seam from the shop bench and gets it right the third time; combined rehearsals knit the term's wounds into something load-bearing; snow in the forecast'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1939,19 +1939,19 @@
     },
     {
       "id": "vo42",
-      "body": "<<FILL role=climax words=134 beats='final rehearsal; lantern drill for the last verse, the flicker joke long since a plan; the board confirmed for the second row; Osei counts the choir's breath, in for four, out for the whole hall; the join rehearsed until the seam disappears'>>",
+      "body": "<<FILL role=climax words=134 beats='final rehearsal; lantern drill for the last verse, the flicker joke long since a plan; the board confirmed for the second row; {TEACHER_C} counts the choir's breath, in for four, out for the whole hall; the join rehearsed until the seam disappears'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo42_1",
-          "label": "Sing the Winter Concert.",
+          "label": "Sing the {CONCERT_EVENT}.",
           "target": "vo43"
         }
       ]
     },
     {
       "id": "vo43",
-      "body": "<<FILL role=success words=130 beats='the Winter Concert; the join lands and nobody in the hall can hear where strings end and voices begin; the flicker, the lanterns, Farrow's pledge before the applause dies; the compromise signs itself in January, everyone can feel it; the altos still get no applause of their own, and Noor finally hears why that is the compliment'>>",
+      "body": "<<FILL role=success words=130 beats='the {CONCERT_EVENT}; the join lands and nobody in the hall can hear where strings end and voices begin; the flicker, the lanterns, {ADMIN}'s pledge before the applause dies; the compromise signs itself in January, everyone can feel it; the altos still get no applause of their own, and {HERO} finally hears why that is the compliment'>>",
       "is_ending": true,
       "ending": {
         "id": "vo43",
@@ -1962,7 +1962,7 @@
     },
     {
       "id": "vo44",
-      "body": "<<FILL role=rising words=144 beats='the extra petition round; evenings that belonged to sectionals go to signatures, and the alto seconds sing Thursday's join ragged; Osei never scolds; she moves the alto lead to Noor for the last week to keep the section warm, and says only, a term has one December, spend it where you mean it; the kindness of the correction is the sting of it'>>",
+      "body": "<<FILL role=rising words=144 beats='the extra petition round; evenings that belonged to sectionals go to signatures, and {ROUTE_C_ANCHOR} sing Thursday's join ragged; {TEACHER_C} never scolds; she moves the alto lead to {HERO} for the last week to keep the section warm, and says only, a term has one December, spend it where you mean it; the kindness of the correction is the sting of it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1974,7 +1974,7 @@
     },
     {
       "id": "vo45",
-      "body": "<<FILL role=failure words=136 beats='the Winter Concert lands anyway, carried by the whole term's case, the lanterns, the pledge, the vote all but won; Noor sings from the middle of a section she barely rehearsed with in the final weeks, and hears the difference between a fight and a term's work from the inside; nothing broke, and something thinned; the door to spring stands open, and she knows exactly which evenings she wants back'>>",
+      "body": "<<FILL role=failure words=136 beats='the {CONCERT_EVENT} lands anyway, carried by the whole term's case, the lanterns, the pledge, the vote all but won; {HERO} sings from the middle of a section she barely rehearsed with in the final weeks, and hears the difference between a fight and a term's work from the inside; nothing broke, and something thinned; the door to spring stands open, and she knows exactly which evenings she wants back'>>",
       "is_ending": true,
       "ending": {
         "id": "vo45",
@@ -1985,7 +1985,7 @@
     },
     {
       "id": "vo46",
-      "body": "<<FILL role=rising words=142 beats='Osei's patience; instead of a protest she invites Farrow to an ordinary Tuesday rehearsal, no program, no polish; he comes with the clipboard and forgets to write anything for forty minutes; on his way out he fixes the door hinge himself with a pocket screwdriver, a man who loves the building being half the problem and half the solution in one coat'>>",
+      "body": "<<FILL role=rising words=142 beats='{TEACHER_C}'s patience; instead of a protest she invites {ADMIN} to an ordinary Tuesday rehearsal, no program, no polish; he comes with the clipboard and forgets to write anything for forty minutes; on his way out he fixes the door hinge himself with a pocket screwdriver, a man who loves the building being half the problem and half the solution in one coat'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1997,19 +1997,19 @@
     },
     {
       "id": "vo47",
-      "body": "<<FILL role=rising words=152 beats='the accusation week up close; Tuesday, Petra named on the key log; Wednesday evening Osei crosses to the infirmary and walks Petra to the Provost with Nurse Imrie's log; Thursday assembly clears her, the lent ring surfacing at last; Friday Felix confesses at the first combined rehearsal, folios home intact, probation and the shop bench; Farrow's second memo dies unsent, and the board's compromise takes shape around the concert instead'>>",
+      "body": "<<FILL role=rising words=152 beats='the accusation week up close; Tuesday, {SENIOR_PEER} named on the key log; Wednesday evening {TEACHER_C} crosses to the infirmary and walks {SENIOR_PEER} to {PROVOST} with {NURSE}'s log; Thursday assembly clears her, the lent ring surfacing at last; Friday {CULPRIT} confesses at the first combined rehearsal, folios home intact, probation and the shop bench; {ADMIN}'s second memo dies unsent, and the board's compromise takes shape around the concert instead'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_vo47_1",
-          "label": "Hear Osei's offer.",
+          "label": "Hear {TEACHER_C}'s offer.",
           "target": "vo48"
         }
       ]
     },
     {
       "id": "vo48",
-      "body": "<<FILL role=choice words=150 beats='Osei's offer, made across the piano lid; the Cantata's middle movement carries the Weir Song, and its small solo verse wants a voice that grew up inside the tune; Noor has known it since her grandmother's kitchen; take the solo and carry home into that paneled hall alone, or ask to share it, because Danil's counter-voice has been threading hers all term and some tunes want two'>>",
+      "body": "<<FILL role=choice words=150 beats='{TEACHER_C}'s offer, made across the piano lid; the {COMBINED_PIECE}'s middle movement carries the {SIGNATURE_TUNE}, and its small solo verse wants a voice that grew up inside the tune; {HERO} has known it since {HERO_TUNE_ORIGIN}; take the solo and carry home into that paneled hall alone, or ask to share it, because {HEAD_CHORISTER}'s counter-voice has been threading hers all term and some tunes want two'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2019,14 +2019,14 @@
         },
         {
           "id": "c_vo48_2",
-          "label": "Ask to sing it as a duet with Danil.",
+          "label": "Ask to sing it as a duet with {HEAD_CHORISTER}.",
           "target": "vo52"
         }
       ]
     },
     {
       "id": "vo49",
-      "body": "<<FILL role=rising words=138 beats='carrying the Weir Song alone; nerves like a held fermata; Osei's breath work, in for four, through the fear and out the other side; singing home in front of strangers, which is either betrayal or gift depending on the singing; the mill towns downriver in every vowel; snow forecast for concert night'>>",
+      "body": "<<FILL role=rising words=138 beats='carrying the {SIGNATURE_TUNE} alone; nerves like a held fermata; {TEACHER_C}'s breath work, in for four, through the fear and out the other side; singing home in front of strangers, which is either betrayal or gift depending on the singing; {HERO_HOMETOWN} in every vowel; snow forecast for concert night'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2050,18 +2050,18 @@
     },
     {
       "id": "vo51",
-      "body": "<<FILL role=success words=130 beats='a mill-town tune holding a paneled hall dead quiet, then the roar; Farrow pledges the wiring fund before he sits down; Osei, in the wings, taps her own sternum twice, which is choir for that was yours; the Weir Song went out from a scholarship kid's kitchen and came home with a concert hall around it'>>",
+      "body": "<<FILL role=success words=130 beats='a mill-town tune holding a paneled hall dead quiet, then the roar; {ADMIN} pledges the {WIRING_FUND} before he sits down; {TEACHER_C}, in the wings, taps her own sternum twice, which is choir for that was yours; the {SIGNATURE_TUNE} went out from a scholarship kid's kitchen and came home with a concert hall around it'>>",
       "is_ending": true,
       "ending": {
         "id": "vo51",
         "valence": "positive",
         "kind": "success",
-        "title": "The Weir Song, Carried"
+        "title": "The {SIGNATURE_TUNE}, Carried"
       }
     },
     {
       "id": "vo52",
-      "body": "<<FILL role=rising words=138 beats='she asks to split the verse, and the asking surprises everyone but Osei; two voices braiding the Weir Song, mill town and river school; rehearsals turn into a friendship with its own private jokes about fermatas and Farrow's clipboard; Danil teaches her to shape the verse's turn, she teaches him how the weir actually sounds; snow forecast holds'>>",
+      "body": "<<FILL role=rising words=138 beats='she asks to split the verse, and the asking surprises everyone but {TEACHER_C}; two voices braiding the {SIGNATURE_TUNE}, mill town and river school; rehearsals turn into a friendship with its own private jokes about fermatas and {ADMIN}'s clipboard; {HEAD_CHORISTER} teaches her to shape the verse's turn, she teaches him how {SIGNATURE_TUNE}'s pulse actually sounds; snow forecast holds'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2073,13 +2073,13 @@
     },
     {
       "id": "vo53",
-      "body": "<<FILL role=completion words=132 beats='the Winter Concert; the duet verse rises, two voices carrying one tune from two directions, and the join is invisible; the flicker, the lanterns, the pledge; afterward Danil says the tune was better with the weir in it, and Noor says it was better with the handrail; a term that began alone in a new school ends in two-part harmony, which is the whole argument for the program in one bar'>>",
+      "body": "<<FILL role=completion words=132 beats='the {CONCERT_EVENT}; the duet verse rises, two voices carrying one tune from two directions, and the join is invisible; the flicker, the lanterns, the pledge; afterward {HEAD_CHORISTER} says the tune was better with its pulse in it, and {HERO} says it was better with the handrail; a term that began alone in a new school ends in two-part harmony, which is the whole argument for the program in one bar'>>",
       "is_ending": true,
       "ending": {
         "id": "vo53",
         "valence": "positive",
         "kind": "completion",
-        "title": "Two Voices, One Weir"
+        "title": "Two Voices, One {SIGNATURE_TUNE}"
       }
     }
   ]

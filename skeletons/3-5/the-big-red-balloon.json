@@ -35,7 +35,7 @@
   "nodes": [
     {
       "id": "n_park",
-      "body": "<<FILL role=setup words=44 beats='Lila and Grandpa are at the sunny park; her big red balloon is tied to her wrist with a floppy bow; it bobs and tugs in the breeze like it wants to play; Lila skips down the path to show the ducks'>>",
+      "body": "<<FILL role=setup words=44 beats='{HERO} and {COMPANION} are at {THRESHOLD}; {GOAL} is tied to her wrist with a floppy bow; it bobs and tugs in the {TONE_MOTIF} like it wants to play; {HERO} skips down the path to show the {ROUTE_A_CREATURE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -47,19 +47,19 @@
     },
     {
       "id": "n_slip",
-      "body": "<<FILL role=setup words=42 beats='a big breeze whooshes by and the floppy bow wiggles loose; the red balloon slips off Lila’s wrist and floats up, up, just past her fingertips; Grandpa takes her hand and says quick, let’s follow it'>>",
+      "body": "<<FILL role=setup words=42 beats='a big {TONE_MOTIF} whooshes by and the floppy bow wiggles loose; {GOAL} slips off {HERO}'s wrist and floats up, up, just past her fingertips; {COMPANION} takes her hand and says quick, let's follow it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_chase_balloon",
-          "label": "Chase the big red balloon!",
+          "label": "Chase {GOAL}!",
           "target": "n_run"
         }
       ]
     },
     {
       "id": "n_run",
-      "body": "<<FILL role=setup words=38 beats='they trot after the balloon as it bounces along on the breeze, red and round against the blue sky; it drifts ahead of them toward the spot where the park path splits in two'>>",
+      "body": "<<FILL role=setup words=38 beats='they trot after {GOAL} as it bounces along on the {TONE_MOTIF}, red and round against the blue sky; it drifts ahead of them toward the spot where the park path splits in two'>>",
       "is_ending": false,
       "choices": [
         {
@@ -71,94 +71,94 @@
     },
     {
       "id": "n_fork",
-      "body": "<<FILL role=choice words=44 beats='at the fork the balloon hangs in the air as if it is choosing too; the left path slopes down to the shiny duck pond and the balloon dips low that way; the right path climbs grassy kite hill and the wind tugs it high that way'>>",
+      "body": "<<FILL role=choice words=44 beats='at the fork {GOAL} hangs in the air as if it is choosing too; the left path is {ROUTE_A_PATH} to {ROUTE_A_LURE} and it dips low that way; the right path is {ROUTE_B_PATH} to {ROUTE_B_LURE} and the {TONE_MOTIF} tugs it high that way'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_down_pond",
-          "label": "Follow it down to the duck pond.",
+          "label": "Follow it down to {ROUTE_A_LURE}.",
           "target": "n_pond"
         },
         {
           "id": "c_up_hill",
-          "label": "Follow it up kite hill.",
+          "label": "Follow it up {ROUTE_B_LURE}.",
           "target": "n_hill"
         }
       ]
     },
     {
       "id": "n_pond",
-      "body": "<<FILL role=rising words=40 beats='down by the pond the balloon skims low over the water, its string trailing like a little tail; ducks quack and paddle after it in a bumpy line; the balloon drifts toward the tall reeds on the far bank'>>",
+      "body": "<<FILL role=rising words=40 beats='down by {ROUTE_A_LURE} {GOAL} skims low over the water, its string trailing like a little tail; {ROUTE_A_CREATURE} quack and paddle after it in a bumpy line; it drifts toward {ROUTE_A_LANDMARK}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_round_pond",
-          "label": "Hurry around the pond.",
+          "label": "Hurry around {ROUTE_A_LURE}.",
           "target": "n_ducks"
         }
       ]
     },
     {
       "id": "n_ducks",
-      "body": "<<FILL role=rising words=36 beats='Lila and Grandpa hurry along the bank while the duck line paddles beside them, quacking a cheer; up ahead, the balloon’s string catches in the tall reeds under the old willow tree'>>",
+      "body": "<<FILL role=rising words=36 beats='{HERO} and {COMPANION} hurry along the bank while a line of {ROUTE_A_CREATURE} paddles beside them, quacking a cheer; up ahead, the string catches in {ROUTE_A_LANDMARK}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_to_reeds",
-          "label": "Go to the reeds by the willow.",
+          "label": "Go to {ROUTE_A_LANDMARK}.",
           "target": "n_reeds"
         }
       ]
     },
     {
       "id": "n_reeds",
-      "body": "<<FILL role=choice words=44 beats='the balloon bobs above the reeds, its string tangled just out of reach over the water; flat stepping stones lead out toward the willow, and a friendly paddle-boat lady in a sun hat waves from her little boat; Lila gets to pick how to get close'>>",
+      "body": "<<FILL role=choice words=44 beats='{GOAL} bobs above the reeds, its string tangled just out of reach over the water; {A1_APPROACH} lead out toward {A1_ZONE}, and {A2_GUIDE} waves from her little boat; {HERO} gets to pick how to get close'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_stones",
-          "label": "Tiptoe across the stepping stones.",
+          "label": "Tiptoe across {A1_APPROACH}.",
           "target": "n_stones"
         },
         {
           "id": "c_boat",
-          "label": "Wave to the paddle-boat lady.",
+          "label": "Wave to {A2_GUIDE}.",
           "target": "n_boat"
         }
       ]
     },
     {
       "id": "n_stones",
-      "body": "<<FILL role=rising words=38 beats='holding Grandpa’s hand, Lila tiptoes from stone to stone, splish, steady, splish; the ducks watch like an audience; at the last stone the red balloon bobs in the willow twigs right above her head'>>",
+      "body": "<<FILL role=rising words=38 beats='holding {COMPANION}'s hand, {HERO} tiptoes from stone to stone, splish, steady, splish; the {ROUTE_A_CREATURE} watch like an audience; at the last stone {GOAL} bobs in the twigs of {A1_ZONE} right above her head'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_under_willow",
-          "label": "Stop under the willow.",
+          "label": "Stop under {A1_ZONE}.",
           "target": "n_willow"
         }
       ]
     },
     {
       "id": "n_willow",
-      "body": "<<FILL role=choice words=42 beats='the balloon’s string is looped loosely on a bendy willow twig, just a little too high; Grandpa spots a long smooth stick by the bank, and the breeze keeps puffing at the leaves; Lila can reach up with the stick or wait for the breeze to lift the string free'>>",
+      "body": "<<FILL role=choice words=42 beats='the string of {GOAL} is looped loosely on a bendy twig of {A1_ZONE}, just a little too high; {COMPANION} spots {A1_OFFER1} by the bank, and {A1_OFFER2} keeps puffing at the leaves; {HERO} can reach up with {A1_OFFER1} or wait for {A1_OFFER2} to lift the string free'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_stick",
-          "label": "Reach up with the long stick.",
+          "label": "Reach up with {A1_OFFER1}.",
           "target": "n_stick"
         },
         {
           "id": "c_breeze",
-          "label": "Wait for the breeze to help.",
+          "label": "Wait for {A1_OFFER2} to help.",
           "target": "n_breeze"
         }
       ]
     },
     {
       "id": "n_stick",
-      "body": "<<FILL role=rising words=36 beats='Grandpa holds Lila steady while she stretches the long stick way, way up; the tip nudges the loop of string and it slides down the twig, closer and closer to her open hand'>>",
+      "body": "<<FILL role=rising words=36 beats='{COMPANION} holds {HERO} steady while she stretches {A1_OFFER1} way, way up; the tip nudges the loop of string and it slides down the twig, closer and closer to her open hand'>>",
       "is_ending": false,
       "choices": [
         {
@@ -170,18 +170,18 @@
     },
     {
       "id": "n_catch_end",
-      "body": "<<FILL role=completion words=46 beats='the string drops right into Lila’s hand; got it; she winds it twice around her wrist and Grandpa ties the bow extra tight; the ducks quack a hooray and the willow waves; Lila and Grandpa walk home with the big red balloon bouncing proudly'>>",
+      "body": "<<FILL role=completion words=46 beats='the string drops right into {HERO}'s hand; got it; she winds it twice around her wrist and {COMPANION} ties the bow extra tight; the {ROUTE_A_CREATURE} quack a hooray and {A1_ZONE} waves; {HERO} and {COMPANION} walk home with {GOAL} bouncing proudly'>>",
       "is_ending": true,
       "ending": {
         "id": "e_willow_catch",
         "valence": "positive",
         "kind": "success",
-        "title": "Caught Under the Willow"
+        "title": "{A1_PRIZE1}"
       }
     },
     {
       "id": "n_breeze",
-      "body": "<<FILL role=rising words=38 beats='Lila and Grandpa sit still on the last stone and watch; the breeze puffs once, twice, and the string slips free of the twig; but instead of coming down, the balloon floats gently out over the middle of the pond'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} and {COMPANION} sit still on the last stone and watch; {A1_OFFER2} puffs once, twice, and the string slips free of the twig; but instead of coming down, {GOAL} floats gently out over {A1_PRIZE2_ZONE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -193,7 +193,7 @@
     },
     {
       "id": "n_drift",
-      "body": "<<FILL role=rising words=36 beats='the balloon drifts down and lands softly on the water, round and red like a little boat; one by one the ducks paddle over to it, circling it slowly, as if it is a brand new friend'>>",
+      "body": "<<FILL role=rising words=36 beats='{GOAL} drifts down and lands softly on {A1_PRIZE2_ZONE}, round and red like a little boat; one by one the {ROUTE_A_CREATURE} paddle over to it, circling it slowly, as if it is a brand new friend'>>",
       "is_ending": false,
       "choices": [
         {
@@ -205,42 +205,42 @@
     },
     {
       "id": "n_parade_end",
-      "body": "<<FILL role=completion words=48 beats='the ducks paddle in a proud circle around the red balloon boat, quacking a happy song, and the littlest duckling bobs beside it like a tiny guard; Lila giggles and waves from the stones; her balloon has become the leader of the duck parade, and that feels like a happy trade'>>",
+      "body": "<<FILL role=completion words=48 beats='the {ROUTE_A_CREATURE} paddle in a proud circle around {GOAL}, quacking a happy song, and the littlest one bobs beside it like a tiny guard; {HERO} giggles and waves from the stones; her balloon has become the leader of the parade, and that feels like a happy trade'>>",
       "is_ending": true,
       "ending": {
         "id": "e_duck_parade",
         "valence": "positive",
         "kind": "discovery",
-        "title": "Leader of the Duck Parade"
+        "title": "{A1_PRIZE2}"
       }
     },
     {
       "id": "n_boat",
-      "body": "<<FILL role=rising words=40 beats='the paddle-boat lady glides her little boat to the bank and helps Lila and Grandpa aboard; everyone holds on snug; out on the pond the red balloon bobs low over the water, its string dancing on the ripples'>>",
+      "body": "<<FILL role=rising words=40 beats='{A2_GUIDE} glides her little boat to the bank and helps {HERO} and {COMPANION} aboard; everyone holds on snug; out on {ROUTE_A_LURE} {GOAL} bobs low over the water, its string dancing on the ripples'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pedal",
-          "label": "Pedal after the balloon.",
+          "label": "Pedal after {GOAL}.",
           "target": "n_pedal"
         }
       ]
     },
     {
       "id": "n_pedal",
-      "body": "<<FILL role=rising words=36 beats='they pedal and pedal, splish splash splish; the ducks race alongside like an escort; the balloon skips ahead on the breeze, straight toward the big whooshing fountain in the middle of the pond'>>",
+      "body": "<<FILL role=rising words=36 beats='they pedal and pedal, splish splash splish; the {ROUTE_A_CREATURE} race alongside like an escort; {GOAL} skips ahead on the {TONE_MOTIF}, straight toward {A2_ZONE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_to_fountain",
-          "label": "Follow it to the fountain.",
+          "label": "Follow it to {A2_ZONE}.",
           "target": "n_fountain"
         }
       ]
     },
     {
       "id": "n_fountain",
-      "body": "<<FILL role=rising words=38 beats='the fountain sprays a cool silver mist and the balloon bounces softly on top of it, boing, boing, like the fountain is juggling it; then it rolls down the spray, sliding closer and closer to the boat'>>",
+      "body": "<<FILL role=rising words=38 beats='{A2_ZONE} sprays a cool silver mist and {GOAL} bounces softly on top of it, boing, boing, like the fountain is juggling it; then it rolls down the spray, sliding closer and closer to the boat'>>",
       "is_ending": false,
       "choices": [
         {
@@ -252,18 +252,18 @@
     },
     {
       "id": "n_boat_end",
-      "body": "<<FILL role=completion words=46 beats='plop; the big red balloon rolls right off the spray and lands in Lila’s open arms, cool and misty; the paddle-boat lady cheers and the ducks quack hooray; they pedal back to shore with the balloon riding in Lila’s lap like a round red captain'>>",
+      "body": "<<FILL role=completion words=46 beats='plop; {GOAL} rolls right off the spray and lands in {HERO}'s open arms, cool and misty; {A2_GUIDE} cheers and the {ROUTE_A_CREATURE} quack hooray; they pedal back to shore with the balloon riding in {HERO}'s lap like a round red captain'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fountain_catch",
         "valence": "positive",
         "kind": "success",
-        "title": "The Fountain Catch"
+        "title": "{A2_PRIZE}"
       }
     },
     {
       "id": "n_hill",
-      "body": "<<FILL role=rising words=40 beats='up the grassy hill they go, puff puff; the balloon climbs higher too, a round red dot against the white clouds; from partway up, Lila hears a jingly bell on the hillside and sees kites swooping at the top'>>",
+      "body": "<<FILL role=rising words=40 beats='up {ROUTE_B_LURE} they go, puff puff; {GOAL} climbs higher too, a round red dot against the white clouds; from partway up, {HERO} hears {ROUTE_B_SIGN} on the hillside and sees {ROUTE_B_CREATURE} swooping at the top'>>",
       "is_ending": false,
       "choices": [
         {
@@ -275,36 +275,36 @@
     },
     {
       "id": "n_bell",
-      "body": "<<FILL role=rising words=36 beats='the jingle comes from the ice-cream cart with its tall striped umbrella, parked on the hillside; above it, the kite kids fly swooping kites at the very top; the balloon wobbles in between them'>>",
+      "body": "<<FILL role=rising words=36 beats='{ROUTE_B_SIGN} comes from {B1_ZONE} with {B1_LANDMARK}, parked on the hillside; above it, the {ROUTE_B_CREATURE} fly swooping kites at the very top; {GOAL} wobbles in between them'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_see_where",
-          "label": "See where the balloon goes.",
+          "label": "See where {GOAL} goes.",
           "target": "n_hillside"
         }
       ]
     },
     {
       "id": "n_hillside",
-      "body": "<<FILL role=choice words=44 beats='the balloon dips low toward the ice-cream cart’s tall striped umbrella, then bobs up toward the swooping kites at the top of the hill; it cannot make up its mind; Grandpa squeezes Lila’s hand and says she gets to pick where they try to catch it'>>",
+      "body": "<<FILL role=choice words=44 beats='{GOAL} dips low toward {B1_ZONE}'s {B1_LANDMARK}, then bobs up toward the {ROUTE_B_CREATURE} at {B2_ZONE}; it cannot make up its mind; {COMPANION} squeezes {HERO}'s hand and says she gets to pick where they try to catch it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_to_cart",
-          "label": "Run to the ice-cream cart.",
+          "label": "Run to {B1_ZONE}.",
           "target": "n_cart"
         },
         {
           "id": "c_to_top",
-          "label": "Climb up to the kite kids.",
+          "label": "Climb up to the {ROUTE_B_CREATURE}.",
           "target": "n_top"
         }
       ]
     },
     {
       "id": "n_cart",
-      "body": "<<FILL role=rising words=40 beats='just as they reach the jingling cart, the balloon bumps softly against the tall striped umbrella and its string wraps once around the umbrella pole; the ice-cream man looks up from his scoops and smiles at his new balloon customer'>>",
+      "body": "<<FILL role=rising words=40 beats='just as they reach {B1_ZONE}, {GOAL} bumps softly against {B1_LANDMARK} and its string wraps once around the pole; {B1_GUIDE} looks up from his scoops and smiles at his new balloon customer'>>",
       "is_ending": false,
       "choices": [
         {
@@ -316,47 +316,47 @@
     },
     {
       "id": "n_umbrella",
-      "body": "<<FILL role=choice words=42 beats='the string is wound around the pole up where the umbrella spreads, too high for Lila; the ice-cream man is very tall, and he keeps a little step stool behind the cart; Lila can ask him to reach it down or climb the stool and try herself'>>",
+      "body": "<<FILL role=choice words=42 beats='the string is wound around the pole up where {B1_LANDMARK} spreads, too high for {HERO}; {B1_GUIDE} is very tall, and he keeps {B1_TOOL} behind the cart; {HERO} can ask him to reach it down or climb the stool and try herself'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ask_man",
-          "label": "Ask the ice-cream man to reach it.",
+          "label": "Ask {B1_GUIDE} to reach it.",
           "target": "n_reachup"
         },
         {
           "id": "c_try_stool",
-          "label": "Climb the step stool and try.",
+          "label": "Climb {B1_TOOL} and try.",
           "target": "n_stool"
         }
       ]
     },
     {
       "id": "n_reachup",
-      "body": "<<FILL role=rising words=36 beats='the ice-cream man wipes his hands, stands on his tiptoes, and unwinds the string, one loop, two loops; he catches the balloon before it can wiggle away and bows like a fancy waiter'>>",
+      "body": "<<FILL role=rising words=36 beats='{B1_GUIDE} wipes his hands, stands on his tiptoes, and unwinds the string, one loop, two loops; he catches {GOAL} before it can wiggle away and bows like a fancy waiter'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_take_back",
-          "label": "Take the balloon back.",
+          "label": "Take {GOAL} back.",
           "target": "n_sundae_end"
         }
       ]
     },
     {
       "id": "n_sundae_end",
-      "body": "<<FILL role=completion words=46 beats='he hands Lila the big red balloon like it is the fanciest sundae on the menu, and adds one small strawberry scoop for the brave balloon chaser; Lila ties the string tight, licks her ice cream, and grins at Grandpa; what a delicious rescue'>>",
+      "body": "<<FILL role=completion words=46 beats='{B1_GUIDE} hands {HERO} {GOAL} like it is the fanciest sundae on the menu, and adds one small strawberry scoop for the brave balloon chaser; {HERO} ties the string tight, licks her ice cream, and grins at {COMPANION}; what a delicious rescue'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fanciest_rescue",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Fanciest Rescue"
+        "title": "{B1_PRIZE1}"
       }
     },
     {
       "id": "n_stool",
-      "body": "<<FILL role=rising words=38 beats='Lila climbs the little step stool while Grandpa holds her steady; she stretches way up on her tiptoes and her fingertips just brush the very end of the dangling string; almost, almost'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} climbs {B1_TOOL} while {COMPANION} holds her steady; she stretches way up on her tiptoes and her fingertips just brush the very end of the dangling string; almost, almost'>>",
       "is_ending": false,
       "choices": [
         {
@@ -368,7 +368,7 @@
     },
     {
       "id": "n_gust",
-      "body": "<<FILL role=rising words=38 beats='right then a big gust swoops over the hill; the string spins loose off the pole, hops past Lila’s fingers, and the red balloon sails up and away over the treetops, smaller and smaller'>>",
+      "body": "<<FILL role=rising words=38 beats='right then a big {TONE_MOTIF} swoops over the hill; the string spins loose off the pole, hops past {HERO}'s fingers, and {GOAL} sails up and away over the treetops, smaller and smaller'>>",
       "is_ending": false,
       "choices": [
         {
@@ -380,30 +380,30 @@
     },
     {
       "id": "n_goodbye_end",
-      "body": "<<FILL role=ending words=48 beats='Lila’s chin wobbles as the red dot winks away behind the trees; the ice-cream man says a red balloon chaser deserves a red treat and hands her a strawberry cone; Grandpa hugs her close; the ice cream is sweet and cold, and next park day they will pick a new balloon together'>>",
+      "body": "<<FILL role=ending words=48 beats='{HERO}'s chin wobbles as the red dot winks away behind the trees; {B1_GUIDE} says a balloon chaser deserves a red treat and hands her a strawberry cone; {COMPANION} hugs her close; the ice cream is sweet and cold, and next park day they will pick a new balloon together'>>",
       "is_ending": true,
       "ending": {
         "id": "e_strawberry_goodbye",
         "valence": "neutral",
         "kind": "setback",
-        "title": "The Strawberry Goodbye"
+        "title": "{B1_PRIZE2}"
       }
     },
     {
       "id": "n_top",
-      "body": "<<FILL role=rising words=40 beats='at the windy top of the hill the balloon rises in among the kites, bobbing like a round red kite that lost its tail; a kite kid named Jo grins and says her yellow kite can help'>>",
+      "body": "<<FILL role=rising words=40 beats='at {B2_ZONE} {GOAL} rises in among the kites, bobbing like a round red kite that lost its tail; a kite kid named {B2_FRIEND} grins and says her {B2_TOOL} can help'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ask_jo",
-          "label": "Ask Jo to try.",
+          "label": "Ask {B2_FRIEND} to try.",
           "target": "n_kites"
         }
       ]
     },
     {
       "id": "n_kites",
-      "body": "<<FILL role=rising words=38 beats='Jo lets out string and her yellow kite swoops up beside the balloon; the kite’s long ribbon tail twirls gently around the balloon’s string, soft as a hug, and holds on tight'>>",
+      "body": "<<FILL role=rising words=38 beats='{B2_FRIEND} lets out string and her {B2_TOOL} swoops up beside {GOAL}; its long ribbon tail twirls gently around the string, soft as a hug, and holds on tight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -415,7 +415,7 @@
     },
     {
       "id": "n_reel",
-      "body": "<<FILL role=rising words=36 beats='hand over hand, Lila and Jo wind the reel together; down come the yellow kite and the red balloon, spinning slowly like leaves, lower and lower, until the string brushes Lila’s hands'>>",
+      "body": "<<FILL role=rising words=36 beats='hand over hand, {HERO} and {B2_FRIEND} wind the reel together; down come the {B2_TOOL} and {GOAL}, spinning slowly like leaves, lower and lower, until the string brushes {HERO}'s hands'>>",
       "is_ending": false,
       "choices": [
         {
@@ -427,13 +427,13 @@
     },
     {
       "id": "n_kite_end",
-      "body": "<<FILL role=completion words=46 beats='Lila holds her big red balloon at last and Jo takes back her clever yellow kite; all the kite kids cheer from the hilltop; Grandpa ties the string with a double bow, and Lila and her brand new friend fly one more kite before home'>>",
+      "body": "<<FILL role=completion words=46 beats='{HERO} holds {GOAL} at last and {B2_FRIEND} takes back her clever {B2_TOOL}; all the {ROUTE_B_CREATURE} cheer from the hilltop; {COMPANION} ties the string with a double bow, and {HERO} and her brand new friend fly one more kite before home'>>",
       "is_ending": true,
       "ending": {
         "id": "e_kindest_kite",
         "valence": "positive",
         "kind": "success",
-        "title": "The Kindest Kite"
+        "title": "{B2_PRIZE}"
       }
     }
   ]

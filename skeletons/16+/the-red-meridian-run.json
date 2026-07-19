@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "sup0",
-      "body": "<<FILL role=setup words=92 beats='second person; you are the pilot of a small blockaded-side runner easing out of the last dark slip on the near shore of the Meridian Strait; the crossing is one hard route through a line of checkpoints the far side keeps lit and listening; grave stakes, stated plainly: many have gone and few have returned'>>",
+      "body": "<<FILL role=setup words=92 beats='second person; you are {HERO} of {VESSEL} easing out of the last dark slip on the near shore of {STRAIT}; the crossing is one hard route through a line of checkpoints the far side keeps lit and listening; grave stakes, stated plainly: many have gone and few have returned'>>",
       "is_ending": false,
       "choices": [
         {
@@ -58,7 +58,7 @@
     },
     {
       "id": "st01_ap0",
-      "body": "<<FILL role=rising words=76 beats='the first mark is the harbor boom: a chain-and-net barrier across the mouth, its floats riding low, an ebb gap worked into the seaward corner by the tide'>>",
+      "body": "<<FILL role=rising words=76 beats='the first mark is {ST01_OBSTACLE}: a chain-and-net barrier across the mouth, its floats riding low, an ebb gap worked into the seaward corner by the tide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -70,7 +70,7 @@
     },
     {
       "id": "st01_pass",
-      "body": "<<FILL role=rising words=60 beats='past the harbor boom the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST01_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -322,7 +322,7 @@
     },
     {
       "id": "st01_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the harbor boom; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST01_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -344,7 +344,7 @@
     },
     {
       "id": "st01_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the harbor boom; the boom is slipped only through the ebb gap on the seaward corner; the chain fouls a screw and the net holds a bow, and either one pins you under the shore guns; ride the gap, never the barrier; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST01_OBSTACLE}; it is slipped only through the ebb gap on the seaward corner; the chain fouls a screw and the net holds a bow, and either one pins you under the shore guns; ride the gap, never the barrier; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -386,7 +386,7 @@
     },
     {
       "id": "st02_ap0",
-      "body": "<<FILL role=rising words=74 beats='a line of channel buoys marks the swept water; some ride true and some are false, wired to the mines below and set to look exactly like the rest'>>",
+      "body": "<<FILL role=rising words=74 beats='{ST02_OBSTACLE} mark the swept water; some ride true and some are false, wired to the mines below and set to look exactly like the rest'>>",
       "is_ending": false,
       "choices": [
         {
@@ -398,7 +398,7 @@
     },
     {
       "id": "st02_pass",
-      "body": "<<FILL role=rising words=60 beats='past the inner buoys the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST02_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -650,7 +650,7 @@
     },
     {
       "id": "st02_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the inner buoys; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST02_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -672,7 +672,7 @@
     },
     {
       "id": "st02_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the inner buoys; the true buoys carry a single steady topmark and the false ones a doubled mark; steer buoy to buoy on the single mark and the mined water on either side will not touch you; read every mark before you turn; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST02_OBSTACLE}; the true buoys carry a single steady topmark and the false ones a doubled mark; steer buoy to buoy on the single mark and the mined water on either side will not touch you; read every mark before you turn; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -714,7 +714,7 @@
     },
     {
       "id": "st03_ap0",
-      "body": "<<FILL role=rising words=74 beats='the guard cutter works a fixed patrol lane across the middle water, up the line and back, turning at each end with her stern to the strait'>>",
+      "body": "<<FILL role=rising words=74 beats='the guard cutter works {ST03_OBSTACLE} across the middle water, up the line and back, turning at each end with her stern to the strait'>>",
       "is_ending": false,
       "choices": [
         {
@@ -726,7 +726,7 @@
     },
     {
       "id": "st03_pass",
-      "body": "<<FILL role=rising words=60 beats='past the patrol lane the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST03_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -978,7 +978,7 @@
     },
     {
       "id": "st03_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the patrol lane; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST03_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1000,7 +1000,7 @@
     },
     {
       "id": "st03_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the patrol lane; cross astern of her on the turn, in the blind quarter of her stern wake; cross ahead of her bow and her lookouts have the whole open strait to see you against; time the turn and take the blind water; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST03_OBSTACLE}; cross astern of her on the turn, in the blind quarter of her stern wake; cross ahead of her bow and her lookouts have the whole open strait to see you against; time the turn and take the blind water; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1042,7 +1042,7 @@
     },
     {
       "id": "st04_ap0",
-      "body": "<<FILL role=rising words=76 beats='a shore searchlight sweeps the reach: a hard white bar going over the water and back, holding the far side, swinging across on a slow ten-count, holding, swinging back'>>",
+      "body": "<<FILL role=rising words=76 beats='you come under {ST04_OBSTACLE}: a shore searchlight beam going over the water and back, holding the far side, swinging across on a slow ten-count, holding, swinging back'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1054,7 +1054,7 @@
     },
     {
       "id": "st04_pass",
-      "body": "<<FILL role=rising words=60 beats='past the searchlight reach the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST04_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1306,7 +1306,7 @@
     },
     {
       "id": "st04_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the searchlight reach; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST04_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1328,7 +1328,7 @@
     },
     {
       "id": "st04_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the searchlight reach; move only while the beam is away and the water is dark; when the bar comes over, freeze and be a still shape among still shapes; motion under the light is what the gunners fire on; run the dark, hold the light; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST04_OBSTACLE}; move only while the beam is away and the water is dark; when the bar comes over, freeze and be a still shape among still shapes; motion under the light is what the gunners fire on; run the dark, hold the light; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1370,7 +1370,7 @@
     },
     {
       "id": "st05_ap0",
-      "body": "<<FILL role=rising words=70 beats='the water goes quiet in a way that listens; a hydrophone post on the point hears engines across the whole narrows'>>",
+      "body": "<<FILL role=rising words=70 beats='the water goes quiet in a way that listens; {ST05_OBSTACLE} on the point hears engines across the whole narrows'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1382,7 +1382,7 @@
     },
     {
       "id": "st05_pass",
-      "body": "<<FILL role=rising words=60 beats='past the listening post the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST05_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1598,7 +1598,7 @@
     },
     {
       "id": "st05_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the listening post; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST05_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1620,7 +1620,7 @@
     },
     {
       "id": "st05_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the listening post; drop to a crawl and let the tide do the work; a hard engine note carries straight to the post and lays the picket on your bearing; run silent or run seen; keep the note low; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST05_OBSTACLE}; drop to a crawl and let the tide do the work; a hard engine note carries straight to the post and lays the picket on your bearing; run silent or run seen; keep the note low; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1657,7 +1657,7 @@
     },
     {
       "id": "st06_ap0",
-      "body": "<<FILL role=rising words=78 beats='the narrows are mined: moored charges just under the surface, their float wires catching starlight in thin lines, a single swept drift of clear water down the middle'>>",
+      "body": "<<FILL role=rising words=78 beats='{ST06_OBSTACLE} lie ahead: moored charges just under the surface, their float wires catching starlight in thin lines, a single swept drift of clear water down the middle'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1669,7 +1669,7 @@
     },
     {
       "id": "st06_pass",
-      "body": "<<FILL role=rising words=60 beats='past the minefield narrows the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST06_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1921,7 +1921,7 @@
     },
     {
       "id": "st06_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the minefield narrows; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST06_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1943,7 +1943,7 @@
     },
     {
       "id": "st06_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the minefield narrows; hold the clear drift dead center where no wires show; a wire touched at speed pulls the charge to the hull; stay off the wires and off the throttle; center and slow is the only water that forgives; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST06_OBSTACLE}; hold the clear drift dead center where no wires show; a wire touched at speed pulls the charge to the hull; stay off the wires and off the throttle; center and slow is the only water that forgives; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1985,7 +1985,7 @@
     },
     {
       "id": "st07_ap0",
-      "body": "<<FILL role=rising words=72 beats='a black bar lies across the strait: a drowned hull grounded years back, its plating just below the surface at this state of tide'>>",
+      "body": "<<FILL role=rising words=72 beats='{ST07_OBSTACLE} lies across the strait: a drowned hull grounded years back, its plating just below the surface at this state of tide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1997,7 +1997,7 @@
     },
     {
       "id": "st07_pass",
-      "body": "<<FILL role=rising words=60 beats='past the wreck bar the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST07_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2213,7 +2213,7 @@
     },
     {
       "id": "st07_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the wreck bar; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST07_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2235,7 +2235,7 @@
     },
     {
       "id": "st07_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the wreck bar; the only water over the wreck is the scour channel off its stern where the tide has dug deep; everywhere else the plating waits a foot down to open your hull; take the stern scour or nothing; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST07_OBSTACLE}; the only water over the wreck is the scour channel off its stern where the tide has dug deep; everywhere else the plating waits a foot down to open your hull; take the stern scour or nothing; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2272,7 +2272,7 @@
     },
     {
       "id": "st08_ap0",
-      "body": "<<FILL role=rising words=78 beats='the far battery ranges the outer water; its shots walk in slow rows across the swell, each row a little nearer the last, with a fired-over lull between'>>",
+      "body": "<<FILL role=rising words=78 beats='{ST08_OBSTACLE} ranges the outer water; the far battery's shots walk in slow rows across the swell, each row a little nearer the last, with a fired-over lull between'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2284,7 +2284,7 @@
     },
     {
       "id": "st08_pass",
-      "body": "<<FILL role=rising words=60 beats='past the gun line the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST08_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2536,7 +2536,7 @@
     },
     {
       "id": "st08_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the gun line; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST08_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2558,7 +2558,7 @@
     },
     {
       "id": "st08_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the gun line; run in the lull just behind the last row, on water already fired over and not yet fired on again; get ahead of the rows and you put yourself where the next salvo is already aimed; stay behind the fall; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST08_OBSTACLE}; run in the lull just behind the last row, on water already fired over and not yet fired on again; get ahead of the rows and you put yourself where the next salvo is already aimed; stay behind the fall; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2600,7 +2600,7 @@
     },
     {
       "id": "st09_ap0",
-      "body": "<<FILL role=rising words=70 beats='a fog bank lies across the far half of the strait, thick enough to blind the shore and thick enough to blind you'>>",
+      "body": "<<FILL role=rising words=70 beats='{ST09_OBSTACLE} lies across the far half of the strait, thick enough to blind the shore and thick enough to blind you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2612,7 +2612,7 @@
     },
     {
       "id": "st09_pass",
-      "body": "<<FILL role=rising words=60 beats='past the fog bank the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST09_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2828,7 +2828,7 @@
     },
     {
       "id": "st09_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the fog bank; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST09_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2850,7 +2850,7 @@
     },
     {
       "id": "st09_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the fog bank; the fog hides you only on a held compass course and a slow steady note; chase your own sense of direction inside it and you circle back onto the guns you just passed; trust the needle, not the feeling; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST09_OBSTACLE}; the fog hides you only on a held compass course and a slow steady note; chase your own sense of direction inside it and you circle back onto the guns you just passed; trust the needle, not the feeling; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2887,7 +2887,7 @@
     },
     {
       "id": "st10_ap0",
-      "body": "<<FILL role=rising words=78 beats='a picket line of small guard boats rides the inshore swell, spaced wide, each showing a shaded lamp to hold station on the next, a dark gap of unwatched water between them'>>",
+      "body": "<<FILL role=rising words=78 beats='{ST10_OBSTACLE} of small guard boats rides the inshore swell, spaced wide, each showing a shaded lamp to hold station on the next, a dark gap of unwatched water between them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2899,7 +2899,7 @@
     },
     {
       "id": "st10_pass",
-      "body": "<<FILL role=rising words=60 beats='past the picket line the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST10_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3151,7 +3151,7 @@
     },
     {
       "id": "st10_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the picket line; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST10_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3173,7 +3173,7 @@
     },
     {
       "id": "st10_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the picket line; thread the dark gap between two shaded lamps where each picket is night-blind toward the other; pass close under one lamp and its own crew has you in the light; take the gap, not the boat; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST10_OBSTACLE}; thread the dark gap between two shaded lamps where each picket is night-blind toward the other; pass close under one lamp and its own crew has you in the light; take the gap, not the boat; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3215,7 +3215,7 @@
     },
     {
       "id": "st11_ap0",
-      "body": "<<FILL role=rising words=72 beats='a second, lighter boom guards the inner water: a log-and-net line with a warden's skiff patrolling its length on a lantern'>>",
+      "body": "<<FILL role=rising words=72 beats='{ST11_OBSTACLE} guards the inner water: a log-and-net line with a warden's skiff patrolling its length on a lantern'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3227,7 +3227,7 @@
     },
     {
       "id": "st11_pass",
-      "body": "<<FILL role=rising words=60 beats='past the inshore boom the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST11_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3443,7 +3443,7 @@
     },
     {
       "id": "st11_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the inshore boom; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST11_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3465,7 +3465,7 @@
     },
     {
       "id": "st11_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the inshore boom; the warden's skiff works the boom end to end on a fixed lantern-lit round; slip the boom at the far end just after the skiff turns away, in the dark it leaves behind; meet the lantern and the whole inner shore wakes; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST11_OBSTACLE}; the warden's skiff works it end to end on a fixed lantern-lit round; slip the boom at the far end just after the skiff turns away, in the dark it leaves behind; meet the lantern and the whole inner shore wakes; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3502,7 +3502,7 @@
     },
     {
       "id": "st12_ap0",
-      "body": "<<FILL role=rising words=74 beats='a tidal bar lies across the last mile: the swell rearing and breaking over it in the dark, a line of pale collapsing water'>>",
+      "body": "<<FILL role=rising words=74 beats='{ST12_OBSTACLE} lies across the last mile: the swell rearing and breaking over it in the dark, a line of pale collapsing water'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3514,7 +3514,7 @@
     },
     {
       "id": "st12_pass",
-      "body": "<<FILL role=rising words=60 beats='past the bar the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST12_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3730,7 +3730,7 @@
     },
     {
       "id": "st12_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the bar; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST12_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3752,7 +3752,7 @@
     },
     {
       "id": "st12_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the bar; cross on the back of a swell through the deep slot where the break is lowest, timed to the sets; take it on the face of a breaking sea and it stands the boat on end and rolls her; read the sets, take the slot; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST12_OBSTACLE}; cross on the back of a swell through the deep slot where the break is lowest, timed to the sets; take it on the face of a breaking sea and it stands the boat on end and rolls her; read the sets, take the slot; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3789,7 +3789,7 @@
     },
     {
       "id": "st13_ap0",
-      "body": "<<FILL role=rising words=80 beats='the landing beach is wired: a low belt of staked wire and obstacles the length of it, with one cleared lane the far side keeps for its own boats, held on a leading mark against the dunes'>>",
+      "body": "<<FILL role=rising words=80 beats='{ST13_OBSTACLE} waits: a low belt of staked wire and obstacles the length of it, with one cleared lane the far side keeps for its own boats, held on a leading mark against the dunes'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3801,7 +3801,7 @@
     },
     {
       "id": "st13_pass",
-      "body": "<<FILL role=rising words=60 beats='past the wire the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
+      "body": "<<FILL role=rising words=60 beats='past {ST13_OBSTACLE} the strait lets you on; the far shore is a little nearer and the run a little longer survived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4017,7 +4017,7 @@
     },
     {
       "id": "st13_seen",
-      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off the wire; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
+      "body": "<<FILL role=choice words=74 beats='you are spotted but still moving off {ST13_OBSTACLE}; one breath to choose; state the three ways this goes and that only the hard quiet one keeps the run alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4039,7 +4039,7 @@
     },
     {
       "id": "st13_gate",
-      "body": "<<FILL role=rising words=88 beats='you are on the wire; come in on the leading mark down the cleared lane where the wire is cut; run the beach anywhere else and the obstacles hold the boat fast in the surf under the sentries' guns; find the mark, keep the lane; state the rule plainly before the choice so the reader can see which way is death'>>",
+      "body": "<<FILL role=rising words=88 beats='you are on {ST13_OBSTACLE}; come in on the leading mark down the cleared lane where the wire is cut; run the beach anywhere else and the obstacles hold the boat fast in the surf under the sentries' guns; find the mark, keep the lane; state the rule plainly before the choice so the reader can see which way is death'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4180,13 +4180,13 @@
     },
     {
       "id": "win_clean",
-      "body": "<<FILL role=resolution words=86 beats='the handoff is clean and silent; the cargo goes inland into safe hands and you with it, the whole lethal strait behind you and every mark of it survived; a clean run, the rarest kind, told plainly and without triumph'>>",
+      "body": "<<FILL role=resolution words=86 beats='the handoff is clean and silent; {CARGO} goes inland into safe hands and you with it, the whole lethal strait behind you and every mark of it survived; a clean run, the rarest kind, told plainly and without triumph'>>",
       "is_ending": true,
       "ending": {
         "id": "win_clean",
         "valence": "positive",
         "kind": "success",
-        "title": "The Clean Run"
+        "title": "{WIN_CLEAN_TITLE}"
       },
       "choices": []
     },
@@ -4198,19 +4198,19 @@
         "id": "win_costly",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Costly Run"
+        "title": "{WIN_COSTLY_TITLE}"
       },
       "choices": []
     },
     {
       "id": "win_quiet",
-      "body": "<<FILL role=resolution words=82 beats='you give up the cargo and sit on the cold shingle with nothing left; the run is done and so are you, and both of those are enough; a quiet arrival, no triumph in it, only the strait crossed and the work delivered'>>",
+      "body": "<<FILL role=resolution words=82 beats='you give up {CARGO} and sit on the cold shingle with nothing left; the run is done and so are you, and both of those are enough; a quiet arrival, no triumph in it, only the strait crossed and the work delivered'>>",
       "is_ending": true,
       "ending": {
         "id": "win_quiet",
         "valence": "neutral",
         "kind": "completion",
-        "title": "The Quiet Arrival"
+        "title": "{WIN_QUIET_TITLE}"
       },
       "choices": []
     }

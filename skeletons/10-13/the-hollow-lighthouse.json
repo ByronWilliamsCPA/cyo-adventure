@@ -34,85 +34,85 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=130 beats='Mira misses the last bus home and the fog swallows the headland where the Hollow Lighthouse has stood dark since old keeper Ferris vanished a year ago; tonight a pale light flickers in its lamp room though no one lives there; four ways lead in from the mist, the keeper's cottage, the tower stair to the lamp, the sea caves under the rock, and the leaning old boathouse'>>",
+      "body": "<<FILL role=setup words=130 beats='{HERO} misses the last bus home at {OPENING_MOMENT}; {THRESHOLD} has stood dark since {KEEPER} vanished a year ago; tonight {LIGHT_MOTIF} flickers though no one lives there; four ways lead in from the mist, {ROUTE_A_PLACE}, {ROUTE_B_PLACE}, {ROUTE_C_PLACE}, and {ROUTE_D_PLACE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_start_1",
-          "label": "Try the keeper's cottage.",
+          "label": "Try {ROUTE_A_PLACE}.",
           "target": "a_office1"
         },
         {
           "id": "c_n_start_2",
-          "label": "Climb the tower stair to the lamp room.",
+          "label": "Head for {ROUTE_B_PLACE}.",
           "target": "b_lamp1"
         },
         {
           "id": "c_n_start_3",
-          "label": "Slip into the sea caves under the rock.",
+          "label": "Slip into {ROUTE_C_PLACE}.",
           "target": "c_cave1"
         },
         {
           "id": "c_n_start_4",
-          "label": "Cross to the old boathouse.",
+          "label": "Cross to {ROUTE_D_PLACE}.",
           "target": "d_boat1"
         }
       ]
     },
     {
       "id": "a_office1",
-      "body": "<<FILL role=rising words=105 beats='the keeper's cottage is cold and still, a mug of tea long gone to dust on the table; three places look worth a search, the roll-top desk under the window, the wall of crowded shelves, and the dead ash of the hearth'>>",
+      "body": "<<FILL role=rising words=105 beats='{ROUTE_A_PLACE} is cold and still, a mug of tea long gone to dust on the table; three places look worth a search, {A_DESK}, {A_SHELF}, and {A_HEARTH}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_office1_1",
-          "label": "Search the roll-top desk.",
+          "label": "Search {A_DESK}.",
           "target": "a_desk"
         },
         {
           "id": "c_a_office1_2",
-          "label": "Read along the crowded shelves.",
+          "label": "Read along {A_SHELF}.",
           "target": "a_shelf"
         },
         {
           "id": "c_a_office1_3",
-          "label": "Rake through the cold hearth.",
+          "label": "Rake through {A_HEARTH}.",
           "target": "a_hearth"
         }
       ]
     },
     {
       "id": "a_desk",
-      "body": "<<FILL role=choice words=100 beats='the roll-top desk rolls back with a groan; the last log page lies open mid-sentence, and a small drawer beneath is locked fast'>>",
+      "body": "<<FILL role=choice words=100 beats='{A_DESK} rolls back with a groan; {A_LOG_PAGE} lies open mid-sentence, and {A_DESK_DRAWER} beneath is locked fast'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_desk_1",
-          "label": "Read the last log page.",
+          "label": "Read {A_LOG_PAGE}.",
           "target": "a_desk_log"
         },
         {
           "id": "c_a_desk_2",
-          "label": "Work at the locked drawer.",
+          "label": "Work at {A_DESK_DRAWER}.",
           "target": "a_desk_drawer"
         }
       ]
     },
     {
       "id": "a_desk_log",
-      "body": "<<FILL role=rising words=95 beats='the final entry stops halfway, the keeper writing of a light he never lit and footsteps on the shore; the words trail toward the tower door at the end of the hall'>>",
+      "body": "<<FILL role=rising words=95 beats='the final entry stops halfway, {KEEPER} writing of {LIGHT_MOTIF} he never lit and footsteps on the shore; the words trail toward {A_CORRIDOR}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_desk_log_1",
-          "label": "Follow the hall toward the tower.",
+          "label": "Follow {A_CORRIDOR}.",
           "target": "a_corridor"
         }
       ]
     },
     {
       "id": "a_desk_drawer",
-      "body": "<<FILL role=choice words=95 beats='the drawer will not give; a bent letter-opener could pick it, or Mira could simply wrench it open and risk splitting the old wood'>>",
+      "body": "<<FILL role=choice words=95 beats='{A_DESK_DRAWER} will not give; a bent letter-opener could pick it, or {HERO} could simply wrench it open and risk splitting the old wood'>>",
       "is_ending": false,
       "choices": [
         {
@@ -122,67 +122,67 @@
         },
         {
           "id": "c_a_desk_drawer_2",
-          "label": "Wrench the drawer open.",
+          "label": "Wrench {A_DESK_DRAWER} open.",
           "target": "e_set_a_drawer"
         }
       ]
     },
     {
       "id": "a_desk_pick",
-      "body": "<<FILL role=rising words=90 beats='the lock clicks and the drawer slides free, holding a brass key wrapped in oilcloth and a folded hall plan marked toward the tower'>>",
+      "body": "<<FILL role=rising words=90 beats='the lock clicks and {A_DESK_DRAWER} slides free, holding {A_DESK_KEY} and a folded hall plan marked toward the tower'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_desk_pick_1",
-          "label": "Take the key and follow the plan.",
+          "label": "Take {A_DESK_KEY} and follow the plan.",
           "target": "a_corridor"
         }
       ]
     },
     {
       "id": "a_shelf",
-      "body": "<<FILL role=choice words=100 beats='the shelves are heavy with ships in bottles and a long row of leather logbooks; one bottle hides a rolled note, and one logbook spine is worn from handling'>>",
+      "body": "<<FILL role=choice words=100 beats='{A_SHELF} is heavy with ships in bottles and a long row of leather logbooks; one bottle hides a rolled note, and {A_LOGBOOK} spine is worn from handling'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_shelf_1",
-          "label": "Uncork the ship in the bottle.",
+          "label": "Uncork {A_BOTTLE}.",
           "target": "a_shelf_bottle"
         },
         {
           "id": "c_a_shelf_2",
-          "label": "Pull the worn logbook.",
+          "label": "Pull {A_LOGBOOK}.",
           "target": "a_shelf_books"
         }
       ]
     },
     {
       "id": "a_shelf_bottle",
-      "body": "<<FILL role=rising words=90 beats='the little ship pops loose and a curl of paper falls out, a sketch of the tower with a hidden door inked at its foot; the hall runs that way'>>",
+      "body": "<<FILL role=rising words=90 beats='{A_BOTTLE} pops loose and a curl of paper falls out, a sketch of the tower with a hidden door inked at its foot; {A_CORRIDOR} runs that way'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_shelf_bottle_1",
-          "label": "Head down the hall.",
+          "label": "Head down {A_CORRIDOR}.",
           "target": "a_corridor"
         }
       ]
     },
     {
       "id": "a_shelf_books",
-      "body": "<<FILL role=rising words=92 beats='the worn logbook falls open to a pressed sprig of sea-holly and a margin note in the keeper's hand, follow the hall when the light burns wrong'>>",
+      "body": "<<FILL role=rising words=92 beats='{A_LOGBOOK} falls open to a pressed sprig of sea-holly and a margin note in {KEEPER}'s hand, follow {A_CORRIDOR} when the light burns wrong'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_shelf_books_1",
-          "label": "Take the note down the hall.",
+          "label": "Take the note down {A_CORRIDOR}.",
           "target": "a_corridor"
         }
       ]
     },
     {
       "id": "a_hearth",
-      "body": "<<FILL role=choice words=98 beats='the cold hearth is full of pale ash; something square did not burn, and one firebrick sits loose and off its line'>>",
+      "body": "<<FILL role=choice words=98 beats='{A_HEARTH} is full of pale ash; something square did not burn, and one firebrick sits loose and off its line'>>",
       "is_ending": false,
       "choices": [
         {
@@ -192,26 +192,26 @@
         },
         {
           "id": "c_a_hearth_2",
-          "label": "Work the loose firebrick free.",
+          "label": "Work {A_BRICK_GATE} free.",
           "target": "a_hearth_brick"
         }
       ]
     },
     {
       "id": "a_hearth_ash",
-      "body": "<<FILL role=rising words=90 beats='half a scorched photograph survives the ash, the keeper on the gallery beside a stranger who should not be there; the print points her toward the tower'>>",
+      "body": "<<FILL role=rising words=90 beats='half {A_ASH_PHOTO} survives the ash, {KEEPER} on the gallery beside a stranger who should not be there; the print points her toward {A_CORRIDOR}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_hearth_ash_1",
-          "label": "Carry the photo to the hall.",
+          "label": "Carry the photo to {A_CORRIDOR}.",
           "target": "a_corridor"
         }
       ]
     },
     {
       "id": "a_hearth_brick",
-      "body": "<<FILL role=choice words=92 beats='behind the loose brick is a shallow cavity with a cloth bundle just in reach, but the brick jams half-out and pinches her fingers'>>",
+      "body": "<<FILL role=choice words=92 beats='behind {A_BRICK_GATE} is a shallow cavity with a cloth bundle just in reach, but the brick jams half-out and pinches her fingers'>>",
       "is_ending": false,
       "choices": [
         {
@@ -221,26 +221,26 @@
         },
         {
           "id": "c_a_hearth_brick_2",
-          "label": "Yank the jammed brick.",
+          "label": "Yank {A_BRICK_GATE}.",
           "target": "e_set_a_brick"
         }
       ]
     },
     {
       "id": "a_hearth_key",
-      "body": "<<FILL role=rising words=90 beats='the bundle holds an oilcloth-wrapped brass key stamped with the tower's mark; the hall to the tower door beckons'>>",
+      "body": "<<FILL role=rising words=90 beats='the bundle holds {A_HEARTH_KEY} stamped with the tower's mark; {A_CORRIDOR} to the tower door beckons'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_hearth_key_1",
-          "label": "Follow the hall with the key.",
+          "label": "Follow {A_CORRIDOR} with the key.",
           "target": "a_corridor"
         }
       ]
     },
     {
       "id": "a_corridor",
-      "body": "<<FILL role=choice words=100 beats='the hall runs toward the tower's inner door, but a side passage leads to the dark kitchen where a draught stirs; either way ends at the same locked door'>>",
+      "body": "<<FILL role=choice words=100 beats='{A_CORRIDOR} runs toward the tower's inner door, but a side passage leads to {A_KITCHEN} where a draught stirs; either way ends at the same locked door'>>",
       "is_ending": false,
       "choices": [
         {
@@ -250,14 +250,14 @@
         },
         {
           "id": "c_a_corridor_2",
-          "label": "Cut through the dark kitchen.",
+          "label": "Cut through {A_KITCHEN}.",
           "target": "a_kitchen"
         }
       ]
     },
     {
       "id": "a_kitchen",
-      "body": "<<FILL role=rising words=90 beats='the kitchen draught comes from a gap behind the pantry; following it brings Mira right back to the tower's inner door from the other side'>>",
+      "body": "<<FILL role=rising words=90 beats='the draught in {A_KITCHEN} comes from a gap behind the pantry; following it brings {HERO} right back to the tower's inner door from the other side'>>",
       "is_ending": false,
       "choices": [
         {
@@ -269,70 +269,70 @@
     },
     {
       "id": "a_toward",
-      "body": "<<FILL role=rising words=95 beats='the tower's inner door stands ajar on darkness; on a hook beside it hangs a battered journal she almost misses, the keeper's own'>>",
+      "body": "<<FILL role=rising words=95 beats='the tower's inner door stands ajar on darkness; on a hook beside it hangs {JOURNAL} she almost misses'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_a_toward_1",
-          "label": "Take the journal down.",
+          "label": "Take {JOURNAL} down.",
           "target": "n_journal"
         }
       ]
     },
     {
       "id": "b_lamp1",
-      "body": "<<FILL role=rising words=108 beats='the tower stair spirals up to the lamp room where the pale light pulses without heat or flame; three things pull at Mira, the great glass lens, the narrow gallery walk outside, and the clockwork weight that once turned the lamp'>>",
+      "body": "<<FILL role=rising words=108 beats='{ROUTE_B_PLACE} spirals up to the lamp room where {LIGHT_MOTIF} pulses without heat or flame; three things pull at {HERO}, {B_LENS}, {B_GALLERY}, and {B_CLOCK}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_lamp1_1",
-          "label": "Examine the great glass lens.",
+          "label": "Examine {B_LENS}.",
           "target": "b_lens"
         },
         {
           "id": "c_b_lamp1_2",
-          "label": "Step toward the gallery walk.",
+          "label": "Step toward {B_GALLERY}.",
           "target": "b_gallery"
         },
         {
           "id": "c_b_lamp1_3",
-          "label": "Study the clockwork weight.",
+          "label": "Study {B_CLOCK}.",
           "target": "b_clock"
         }
       ]
     },
     {
       "id": "b_lens",
-      "body": "<<FILL role=choice words=100 beats='up close the lens is not lit at all; a cracked panel throws the glow, and behind it a second reflector has been fitted where none should be'>>",
+      "body": "<<FILL role=choice words=100 beats='up close {B_LENS} is not lit at all; {B_LENS_CRACK} throws the glow, and behind it {B_LENS_REFLECT} has been fitted where none should be'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_lens_1",
-          "label": "Look through the cracked panel.",
+          "label": "Look through {B_LENS_CRACK}.",
           "target": "b_lens_crack"
         },
         {
           "id": "c_b_lens_2",
-          "label": "Reach behind to the hidden reflector.",
+          "label": "Reach behind to {B_LENS_REFLECT}.",
           "target": "b_lens_reflect"
         }
       ]
     },
     {
       "id": "b_lens_crack",
-      "body": "<<FILL role=rising words=92 beats='through the crack she sees the glow comes from below, not the lamp, a light climbing the shaft in the tower's heart; the stair leads down to it'>>",
+      "body": "<<FILL role=rising words=92 beats='through {B_LENS_CRACK} she sees the glow comes from below, not the lamp, a light climbing the shaft in the tower's heart; {B_DOWNSTAIR} leads to it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_lens_crack_1",
-          "label": "Take the stair down.",
+          "label": "Take {B_DOWNSTAIR}.",
           "target": "b_down"
         }
       ]
     },
     {
       "id": "b_lens_reflect",
-      "body": "<<FILL role=rising words=92 beats='the hidden reflector is angled to bounce a light up from deep in the tower, a trick, not a ghost; the down stair is where the trick begins'>>",
+      "body": "<<FILL role=rising words=92 beats='{B_LENS_REFLECT} is angled to bounce a light up from deep in the tower, a trick, not a ghost; {B_DOWNSTAIR} is where the trick begins'>>",
       "is_ending": false,
       "choices": [
         {
@@ -344,7 +344,7 @@
     },
     {
       "id": "b_gallery",
-      "body": "<<FILL role=choice words=98 beats='the gallery walk rings the lamp room in the open fog; the iron rail is furred with rust, and the mist below hides the drop to the rocks'>>",
+      "body": "<<FILL role=choice words=98 beats='{B_GALLERY} rings the lamp room in the open fog; the iron rail is furred with rust, and the mist below hides the drop to the rocks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -361,36 +361,36 @@
     },
     {
       "id": "b_gallery_out",
-      "body": "<<FILL role=choice words=95 beats='one foot on the walk and the rail shivers under her hand; it might hold for a careful circuit, or it might not'>>",
+      "body": "<<FILL role=choice words=95 beats='one foot on {B_GALLERY} and {B_RAIL_GATE} shivers under her hand; it might hold for a careful circuit, or it might not'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_gallery_out_1",
-          "label": "Trust the rail and edge along.",
+          "label": "Trust {B_RAIL_GATE} and edge along.",
           "target": "b_down"
         },
         {
           "id": "c_b_gallery_out_2",
-          "label": "Feel the rail groan and shrink back.",
+          "label": "Feel {B_RAIL_GATE} groan and shrink back.",
           "target": "e_set_b_rail"
         }
       ]
     },
     {
       "id": "b_gallery_fog",
-      "body": "<<FILL role=rising words=90 beats='through the streaked window Mira spots a glow leaking from a grille at the tower's base; whatever makes the light is far below the lamp'>>",
+      "body": "<<FILL role=rising words=90 beats='through the streaked window {HERO} spots a glow leaking from a grille at the tower's base; whatever makes the light is far below the lamp'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_gallery_fog_1",
-          "label": "Head for the down stair.",
+          "label": "Head for {B_DOWNSTAIR}.",
           "target": "b_down"
         }
       ]
     },
     {
       "id": "b_clock",
-      "body": "<<FILL role=choice words=98 beats='the clockwork weight hangs on a rust-stiff chain that once drove the turning lamp; winding it might wake the mechanism, or she could follow the chain down its shaft'>>",
+      "body": "<<FILL role=choice words=98 beats='{B_CLOCK} hangs on a rust-stiff chain that once drove the turning lamp; winding it might wake the mechanism, or she could follow the chain down its shaft'>>",
       "is_ending": false,
       "choices": [
         {
@@ -407,7 +407,7 @@
     },
     {
       "id": "b_clock_wind",
-      "body": "<<FILL role=rising words=92 beats='the mechanism grinds a quarter-turn and a hatch drops open in the floor, showing the stair that winds down into the tower's core'>>",
+      "body": "<<FILL role=rising words=92 beats='the mechanism grinds a quarter-turn and a hatch drops open in the floor, showing {B_DOWNSTAIR} that winds into the tower's core'>>",
       "is_ending": false,
       "choices": [
         {
@@ -431,70 +431,70 @@
     },
     {
       "id": "b_down",
-      "body": "<<FILL role=choice words=98 beats='the way down splits, the main spiral stair curling into the dark, or a cramped service hatch that drops more directly toward the base'>>",
+      "body": "<<FILL role=choice words=98 beats='{B_DOWNSTAIR} splits, {B_SPIRAL} curling into the dark, or {B_HATCH} that drops more directly toward the base'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_down_1",
-          "label": "Wind down the spiral stair.",
+          "label": "Wind down {B_SPIRAL}.",
           "target": "b_down_spiral"
         },
         {
           "id": "c_b_down_2",
-          "label": "Drop through the service hatch.",
+          "label": "Drop through {B_HATCH}.",
           "target": "b_down_hatch"
         }
       ]
     },
     {
       "id": "b_down_spiral",
-      "body": "<<FILL role=rising words=92 beats='the spiral stair delivers Mira to a low landing at the tower's foot, where a battered journal lies open on a stool, the keeper's own'>>",
+      "body": "<<FILL role=rising words=92 beats='{B_SPIRAL} delivers {HERO} to a low landing at the tower's foot, where {JOURNAL} lies open on a stool'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_down_spiral_1",
-          "label": "Pick up the journal.",
+          "label": "Pick up {JOURNAL}.",
           "target": "n_journal"
         }
       ]
     },
     {
       "id": "b_down_hatch",
-      "body": "<<FILL role=rising words=90 beats='the service hatch drops her onto the same low landing, and there on a stool sits the keeper's battered journal, left open'>>",
+      "body": "<<FILL role=rising words=90 beats='{B_HATCH} drops her onto the same low landing, and there on a stool sits {JOURNAL}, left open'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_down_hatch_1",
-          "label": "Take up the journal.",
+          "label": "Take up {JOURNAL}.",
           "target": "n_journal"
         }
       ]
     },
     {
       "id": "c_cave1",
-      "body": "<<FILL role=rising words=108 beats='below the rock the sea caves breathe with the tide, cold and echoing; three ways open off the entrance pool, a wet passage running inland, a shelf of glimmering tide pools, and a low arch carved with old marks'>>",
+      "body": "<<FILL role=rising words=108 beats='below the rock {ROUTE_C_PLACE} breathe with the tide, cold and echoing; three ways open off the entrance pool, {C_PASSAGE}, {C_POOLS}, and {C_ARCH}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c_cave1_1",
-          "label": "Follow the wet passage inland.",
+          "label": "Follow {C_PASSAGE}.",
           "target": "c_pass"
         },
         {
           "id": "c_c_cave1_2",
-          "label": "Search the glimmering tide pools.",
+          "label": "Search {C_POOLS}.",
           "target": "c_pool"
         },
         {
           "id": "c_c_cave1_3",
-          "label": "Read the carved arch.",
+          "label": "Read {C_ARCH}.",
           "target": "c_arch"
         }
       ]
     },
     {
       "id": "c_pass",
-      "body": "<<FILL role=choice words=98 beats='the passage narrows and the water at her boots is climbing; she can push deeper while the way is clear, or the rising tide may cut her off'>>",
+      "body": "<<FILL role=choice words=98 beats='{C_PASSAGE} narrows and {C_TIDE_GATE} at her boots is climbing; she can push deeper while the way is clear, or the tide may cut her off'>>",
       "is_ending": false,
       "choices": [
         {
@@ -504,43 +504,43 @@
         },
         {
           "id": "c_c_pass_2",
-          "label": "Feel the water rise and hesitate.",
+          "label": "Feel {C_TIDE_GATE} rise and hesitate.",
           "target": "e_set_c_tide"
         }
       ]
     },
     {
       "id": "c_pass_deep",
-      "body": "<<FILL role=rising words=92 beats='the passage opens above the tideline onto a dry ledge and a flight of slick steps cut into the rock, climbing toward the tower's base'>>",
+      "body": "<<FILL role=rising words=92 beats='{C_PASSAGE} opens above the tideline onto a dry ledge and {C_ROCKSTEPS}, climbing toward the tower's base'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c_pass_deep_1",
-          "label": "Take the slick steps up.",
+          "label": "Take {C_ROCKSTEPS} up.",
           "target": "c_gather"
         }
       ]
     },
     {
       "id": "c_pool",
-      "body": "<<FILL role=choice words=96 beats='the tide pools glow faintly with clinging weed, the same pale colour as the tower's light; one pool holds a dull gleam of metal under the water'>>",
+      "body": "<<FILL role=choice words=96 beats='{C_POOLS} glow faintly with clinging weed, the same pale colour as the tower's light; one pool holds a dull gleam of metal under the water'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c_pool_1",
-          "label": "Cup the glowing weed.",
+          "label": "Cup {C_WEED}.",
           "target": "c_pool_glow"
         },
         {
           "id": "c_c_pool_2",
-          "label": "Fish out the gleam of metal.",
+          "label": "Fish out {C_BADGE}.",
           "target": "c_pool_metal"
         }
       ]
     },
     {
       "id": "c_pool_glow",
-      "body": "<<FILL role=rising words=92 beats='the weed glows cold in her palm, harmless, the very thing that paints the ghostly light; a rope handrail leads up from the pools toward the rock stair'>>",
+      "body": "<<FILL role=rising words=92 beats='{C_WEED} glows cold in her palm, harmless, the very thing that paints the ghostly light; a rope handrail leads up from {C_POOLS} toward the rock stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -552,7 +552,7 @@
     },
     {
       "id": "c_pool_metal",
-      "body": "<<FILL role=rising words=90 beats='the metal is a keeper's brass tide-badge on a chain, dropped and lost; beyond the pool a rock stair climbs out of the cave'>>",
+      "body": "<<FILL role=rising words=90 beats='{C_BADGE} is a keeper's tide-badge on a chain, dropped and lost; beyond the pool a rock stair climbs out of the cave'>>",
       "is_ending": false,
       "choices": [
         {
@@ -564,24 +564,24 @@
     },
     {
       "id": "c_arch",
-      "body": "<<FILL role=choice words=96 beats='the arch is scratched with tally marks and a warning in the keeper's shorthand; a narrow gap beyond it might be squeezed through'>>",
+      "body": "<<FILL role=choice words=96 beats='{C_ARCH} is scratched with tally marks and a warning in {KEEPER}'s shorthand; {C_GAP_GATE} beyond it might be squeezed through'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c_arch_1",
-          "label": "Study the carved marks.",
+          "label": "Study {C_MARKS}.",
           "target": "c_arch_marks"
         },
         {
           "id": "c_c_arch_2",
-          "label": "Squeeze through the narrow gap.",
+          "label": "Squeeze through {C_GAP_GATE}.",
           "target": "c_arch_gap"
         }
       ]
     },
     {
       "id": "c_arch_marks",
-      "body": "<<FILL role=rising words=92 beats='the marks count nights of a light that was never logged; the shorthand points to a stair up and out, away from the rising sea'>>",
+      "body": "<<FILL role=rising words=92 beats='{C_MARKS} count nights of a light that was never logged; the shorthand points to a stair up and out, away from the rising sea'>>",
       "is_ending": false,
       "choices": [
         {
@@ -593,7 +593,7 @@
     },
     {
       "id": "c_arch_gap",
-      "body": "<<FILL role=choice words=92 beats='the gap is tight and cold; she can wriggle through to the far chamber, or feel her shoulders wedge and think better of it'>>",
+      "body": "<<FILL role=choice words=92 beats='{C_GAP_GATE} is tight and cold; she can wriggle through to the far chamber, or feel her shoulders wedge and think better of it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -610,70 +610,70 @@
     },
     {
       "id": "c_gather",
-      "body": "<<FILL role=choice words=96 beats='the cave stair brings her under the tower at last; two ways up remain, the slick worn steps or an old iron ladder bolted to the wall'>>",
+      "body": "<<FILL role=choice words=96 beats='the cave stair brings her under the tower at last; two ways up remain, {C_WORNSTEPS} or {C_LADDER}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c_gather_1",
-          "label": "Take the slick worn steps.",
+          "label": "Take {C_WORNSTEPS}.",
           "target": "c_steps"
         },
         {
           "id": "c_c_gather_2",
-          "label": "Climb the old iron ladder.",
+          "label": "Climb {C_LADDER}.",
           "target": "c_ladder"
         }
       ]
     },
     {
       "id": "c_steps",
-      "body": "<<FILL role=rising words=90 beats='the worn steps end at a low landing inside the tower's base, where a battered journal rests on a stool, the keeper's own, left open'>>",
+      "body": "<<FILL role=rising words=90 beats='{C_WORNSTEPS} end at a low landing inside the tower's base, where {JOURNAL} rests on a stool, left open'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c_steps_1",
-          "label": "Pick up the journal.",
+          "label": "Pick up {JOURNAL}.",
           "target": "n_journal"
         }
       ]
     },
     {
       "id": "c_ladder",
-      "body": "<<FILL role=rising words=90 beats='the iron ladder lets her up into the same low landing, and there is the keeper's battered journal on its stool, open to the last page'>>",
+      "body": "<<FILL role=rising words=90 beats='{C_LADDER} lets her up into the same low landing, and there is {JOURNAL} on its stool, open to the last page'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_c_ladder_1",
-          "label": "Take up the journal.",
+          "label": "Take up {JOURNAL}.",
           "target": "n_journal"
         }
       ]
     },
     {
       "id": "d_boat1",
-      "body": "<<FILL role=rising words=106 beats='the leaning boathouse smells of tar and old rope; three things catch her eye, a beached dinghy under a tarp, a battered tool locker, and a loft up a rickety ladder'>>",
+      "body": "<<FILL role=rising words=106 beats='{ROUTE_D_PLACE} smells of tar and old rope; three things catch her eye, {D_DINGHY}, {D_LOCKER}, and {D_LOFT}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_d_boat1_1",
-          "label": "Search the beached dinghy.",
+          "label": "Search {D_DINGHY}.",
           "target": "d_dinghy"
         },
         {
           "id": "c_d_boat1_2",
-          "label": "Open the tool locker.",
+          "label": "Open {D_LOCKER}.",
           "target": "d_locker"
         },
         {
           "id": "c_d_boat1_3",
-          "label": "Climb to the loft.",
+          "label": "Climb to {D_LOFT}.",
           "target": "d_loft"
         }
       ]
     },
     {
       "id": "d_dinghy",
-      "body": "<<FILL role=choice words=96 beats='under the dinghy's tarp are bundled oilskins and, tucked in the bow, a bailing tin that rattles with something that is not water'>>",
+      "body": "<<FILL role=choice words=96 beats='under {D_DINGHY}'s tarp are bundled oilskins and, tucked in the bow, {D_TIN} that rattles with something that is not water'>>",
       "is_ending": false,
       "choices": [
         {
@@ -683,79 +683,79 @@
         },
         {
           "id": "c_d_dinghy_2",
-          "label": "Shake out the bailing tin.",
+          "label": "Shake out {D_TIN}.",
           "target": "d_dinghy_tin"
         }
       ]
     },
     {
       "id": "d_dinghy_tarp",
-      "body": "<<FILL role=rising words=90 beats='beneath the oilskins is a chart of the coast with a passage inked under the lighthouse; a floor hatch in the corner leads that way'>>",
+      "body": "<<FILL role=rising words=90 beats='beneath the oilskins is {D_CHART} with a passage inked under the lighthouse; {D_HATCH} in the corner leads that way'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_d_dinghy_tarp_1",
-          "label": "Cross to the floor hatch.",
+          "label": "Cross to {D_HATCH}.",
           "target": "d_hatch"
         }
       ]
     },
     {
       "id": "d_dinghy_tin",
-      "body": "<<FILL role=rising words=90 beats='the tin holds a brass key and a scrap reading, the light is not a ghost, it is a signal; the corner hatch drops toward the tower'>>",
+      "body": "<<FILL role=rising words=90 beats='{D_TIN} holds a brass key and a scrap reading, the light is not a ghost, it is a signal; {D_HATCH} drops toward the tower'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_d_dinghy_tin_1",
-          "label": "Go to the floor hatch.",
+          "label": "Go to {D_HATCH}.",
           "target": "d_hatch"
         }
       ]
     },
     {
       "id": "d_locker",
-      "body": "<<FILL role=choice words=96 beats='the tool locker holds a neat coil of rope and a rusted storm lantern still half full of oil, either handy for the dark below'>>",
+      "body": "<<FILL role=choice words=96 beats='{D_LOCKER} holds {D_ROPE} and {D_LANTERN} still half full of oil, either handy for the dark below'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_d_locker_1",
-          "label": "Take the coil of rope.",
+          "label": "Take {D_ROPE}.",
           "target": "d_locker_rope"
         },
         {
           "id": "c_d_locker_2",
-          "label": "Take the rusted lantern.",
+          "label": "Take {D_LANTERN}.",
           "target": "d_locker_lantern"
         }
       ]
     },
     {
       "id": "d_locker_rope",
-      "body": "<<FILL role=rising words=88 beats='with the rope looped over her shoulder Mira spots a floor hatch worn smooth by boots, the way down toward the tower'>>",
+      "body": "<<FILL role=rising words=88 beats='with {D_ROPE} looped over her shoulder {HERO} spots {D_HATCH} worn smooth by boots, the way down toward the tower'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_d_locker_rope_1",
-          "label": "Open the floor hatch.",
+          "label": "Open {D_HATCH}.",
           "target": "d_hatch"
         }
       ]
     },
     {
       "id": "d_locker_lantern",
-      "body": "<<FILL role=rising words=88 beats='the lantern catches on the third strike, throwing a warm ring of light; its glow finds a boot-worn floor hatch in the corner'>>",
+      "body": "<<FILL role=rising words=88 beats='{D_LANTERN} catches on the third strike, throwing a warm ring of light; its glow finds {D_HATCH} in the corner'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_d_locker_lantern_1",
-          "label": "Lift the floor hatch.",
+          "label": "Lift {D_HATCH}.",
           "target": "d_hatch"
         }
       ]
     },
     {
       "id": "d_loft",
-      "body": "<<FILL role=choice words=94 beats='the loft ladder is missing rungs; she can pick her way up carefully, or trust a cracked rung that looks ready to give'>>",
+      "body": "<<FILL role=choice words=94 beats='the ladder to {D_LOFT} is missing rungs; she can pick her way up carefully, or trust {D_RUNG_GATE} that looks ready to give'>>",
       "is_ending": false,
       "choices": [
         {
@@ -765,26 +765,26 @@
         },
         {
           "id": "c_d_loft_2",
-          "label": "Trust the cracked rung.",
+          "label": "Trust {D_RUNG_GATE}.",
           "target": "e_set_d_loft"
         }
       ]
     },
     {
       "id": "d_loft_up",
-      "body": "<<FILL role=rising words=90 beats='the loft holds coils of signal flags and a diagram of lamp flashes; a trapdoor at the back drops back down beside the floor hatch'>>",
+      "body": "<<FILL role=rising words=90 beats='{D_LOFT} holds coils of signal flags and a diagram of lamp flashes; a trapdoor at the back drops back down beside {D_HATCH}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_d_loft_up_1",
-          "label": "Drop down to the floor hatch.",
+          "label": "Drop down to {D_HATCH}.",
           "target": "d_hatch"
         }
       ]
     },
     {
       "id": "d_hatch",
-      "body": "<<FILL role=choice words=96 beats='the floor hatch is stiff; she can pry it up and follow the passage under the boathouse toward the tower, but the wind is worrying the loose door behind her'>>",
+      "body": "<<FILL role=choice words=96 beats='{D_HATCH} is stiff; she can pry it up and follow the passage under the boathouse toward the tower, but {D_DOOR_GATE} is worrying loose in the wind behind her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -794,118 +794,118 @@
         },
         {
           "id": "c_d_hatch_2",
-          "label": "Turn as the door slams in the wind.",
+          "label": "Turn as {D_DOOR_GATE} slams in the wind.",
           "target": "e_set_d_storm"
         }
       ]
     },
     {
       "id": "d_hatch_down",
-      "body": "<<FILL role=rising words=92 beats='the passage runs under the rock to a low landing at the tower's base, where the keeper's battered journal waits open on a stool'>>",
+      "body": "<<FILL role=rising words=92 beats='the passage runs under the rock to a low landing at the tower's base, where {JOURNAL} waits open on a stool'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_d_hatch_down_1",
-          "label": "Take up the journal.",
+          "label": "Take up {JOURNAL}.",
           "target": "n_journal"
         }
       ]
     },
     {
       "id": "n_journal",
-      "body": "<<FILL role=choice words=118 beats='BOTTLENECK: whichever way Mira came, every path meets here at the keeper's hidden journal; its pages hold three tangled threads, entries about the wrong-burning light, a ledger of night cargoes that were never declared, and a rough sketch of a tunnel beneath the tower'>>",
+      "body": "<<FILL role=choice words=118 beats='BOTTLENECK: whichever way {HERO} came, every path meets here at {JOURNAL}; its pages hold three tangled threads, {JR_LIGHT_ENTRIES}, {JR_CARGO_LEDGER}, and {JR_TUNNEL_SKETCH}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_journal_1",
-          "label": "Read the entries about the light.",
+          "label": "Read {JR_LIGHT_ENTRIES}.",
           "target": "jr_light"
         },
         {
           "id": "c_n_journal_2",
-          "label": "Study the ledger of night cargoes.",
+          "label": "Study {JR_CARGO_LEDGER}.",
           "target": "jr_smug"
         },
         {
           "id": "c_n_journal_3",
-          "label": "Trace the sketch of the tunnel.",
+          "label": "Trace {JR_TUNNEL_SKETCH}.",
           "target": "jr_tunnel"
         }
       ]
     },
     {
       "id": "jr_light",
-      "body": "<<FILL role=choice words=98 beats='the light entries grow uneasy, a glow that climbs the tower when no lamp is lit; two pages stand out, a careful description and a column of odd dates'>>",
+      "body": "<<FILL role=choice words=98 beats='{JR_LIGHT_ENTRIES} grow uneasy, {LIGHT_MOTIF} climbing the tower when no lamp is lit; two pages stand out, {JR_LIGHT_DESC} and {JR_LIGHT_DATES}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_light_1",
-          "label": "Read the careful description.",
+          "label": "Read {JR_LIGHT_DESC}.",
           "target": "jr_light_read"
         },
         {
           "id": "c_jr_light_2",
-          "label": "Check the column of dates.",
+          "label": "Check {JR_LIGHT_DATES}.",
           "target": "jr_light_date"
         }
       ]
     },
     {
       "id": "jr_light_read",
-      "body": "<<FILL role=rising words=92 beats='the keeper writes that the light is real but made, not haunted, and that its source lies below; the note ends, take the hidden stair'>>",
+      "body": "<<FILL role=rising words=92 beats='{KEEPER} writes that the light is real but made, not haunted, and that its source lies below; the note ends, take {JR_HIDDEN_STAIR}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_light_read_1",
-          "label": "Look for the hidden stair.",
+          "label": "Look for {JR_HIDDEN_STAIR}.",
           "target": "jr_light_join"
         }
       ]
     },
     {
       "id": "jr_light_date",
-      "body": "<<FILL role=rising words=92 beats='the odd dates all fall on foggy nights, the very nights the ledger lists cargoes; the pattern points down the hidden stair'>>",
+      "body": "<<FILL role=rising words=92 beats='{JR_LIGHT_DATES} all fall on foggy nights, the very nights {JR_CARGO_LEDGER} lists cargoes; the pattern points down {JR_HIDDEN_STAIR}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_light_date_1",
-          "label": "Find the hidden stair.",
+          "label": "Find {JR_HIDDEN_STAIR}.",
           "target": "jr_light_join"
         }
       ]
     },
     {
       "id": "jr_light_join",
-      "body": "<<FILL role=rising words=90 beats='both threads agree, the answer is below; a panel in the landing wall swings back on a cramped stair leading up into the tower's core'>>",
+      "body": "<<FILL role=rising words=90 beats='both threads agree, the answer is below; a panel in the landing wall swings back on {JR_HIDDEN_STAIR} leading up into the tower's core'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_light_join_1",
-          "label": "Approach the hidden stair.",
+          "label": "Approach {JR_HIDDEN_STAIR}.",
           "target": "n_stairs"
         }
       ]
     },
     {
       "id": "jr_smug",
-      "body": "<<FILL role=choice words=98 beats='the ledger lists barrels and crates landed on dark nights and signed with a single initial that is not the keeper's; the figures and the names both invite a closer look'>>",
+      "body": "<<FILL role=choice words=98 beats='{JR_CARGO_LEDGER} lists barrels and crates landed on dark nights and signed with a single initial that is not {KEEPER}'s; {JR_CARGO_FIGURES} and {JR_CODED_NAMES} both invite a closer look'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_smug_1",
-          "label": "Copy the cargo figures.",
+          "label": "Copy {JR_CARGO_FIGURES}.",
           "target": "jr_smug_ledger"
         },
         {
           "id": "c_jr_smug_2",
-          "label": "Puzzle out the coded names.",
+          "label": "Puzzle out {JR_CODED_NAMES}.",
           "target": "jr_smug_names"
         }
       ]
     },
     {
       "id": "jr_smug_ledger",
-      "body": "<<FILL role=choice words=94 beats='the figures do not balance, goods that came in and never left; but one whole page has been torn out at the root'>>",
+      "body": "<<FILL role=choice words=94 beats='{JR_CARGO_FIGURES} do not balance, goods that came in and never left; but {JR_TORN_PAGE} has been torn out at the root'>>",
       "is_ending": false,
       "choices": [
         {
@@ -915,96 +915,96 @@
         },
         {
           "id": "c_jr_smug_ledger_2",
-          "label": "Search for the torn-out page.",
+          "label": "Search for {JR_TORN_PAGE}.",
           "target": "jr_smug_torn"
         }
       ]
     },
     {
       "id": "jr_smug_copy",
-      "body": "<<FILL role=rising words=90 beats='Mira copies the crooked totals into her own notebook, proof that someone used the dark tower as a store; the trail leads to the hidden stair'>>",
+      "body": "<<FILL role=rising words=90 beats='{HERO} copies the crooked totals into her own notebook, proof that someone used the dark tower as a store; the trail leads to {JR_HIDDEN_STAIR}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_smug_copy_1",
-          "label": "Head for the hidden stair.",
+          "label": "Head for {JR_HIDDEN_STAIR}.",
           "target": "jr_smug_join"
         }
       ]
     },
     {
       "id": "jr_smug_torn",
-      "body": "<<FILL role=rising words=90 beats='the torn page is folded inside the back cover, naming a hidden store reached from the stair in the tower's core'>>",
+      "body": "<<FILL role=rising words=90 beats='{JR_TORN_PAGE} is folded inside the back cover, naming a hidden store reached from the stair in the tower's core'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_smug_torn_1",
-          "label": "Make for the hidden stair.",
+          "label": "Make for {JR_HIDDEN_STAIR}.",
           "target": "jr_smug_join"
         }
       ]
     },
     {
       "id": "jr_smug_names",
-      "body": "<<FILL role=rising words=92 beats='the coded names unpick into a single smuggler who paid the keeper to look away, then wanted the tower for himself; the stair is the way to the truth'>>",
+      "body": "<<FILL role=rising words=92 beats='{JR_CODED_NAMES} unpick into a single smuggler who paid {KEEPER} to look away, then wanted the tower for himself; {JR_HIDDEN_STAIR} is the way to the truth'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_smug_names_1",
-          "label": "Find the hidden stair.",
+          "label": "Find {JR_HIDDEN_STAIR}.",
           "target": "jr_smug_join"
         }
       ]
     },
     {
       "id": "jr_smug_join",
-      "body": "<<FILL role=choice words=94 beats='the ledger points up the hidden stair in the core; a low cellar door tempts her too, though its lock looks meant to stay shut'>>",
+      "body": "<<FILL role=choice words=94 beats='{JR_CARGO_LEDGER} points up {JR_HIDDEN_STAIR} in the core; {JR_CELLAR_GATE} tempts her too, though its lock looks meant to stay shut'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_smug_join_1",
-          "label": "Take the hidden stair.",
+          "label": "Take {JR_HIDDEN_STAIR}.",
           "target": "n_stairs"
         },
         {
           "id": "c_jr_smug_join_2",
-          "label": "Try the low cellar door.",
+          "label": "Try {JR_CELLAR_GATE}.",
           "target": "e_set_cellar"
         }
       ]
     },
     {
       "id": "jr_tunnel",
-      "body": "<<FILL role=choice words=98 beats='the sketch shows a tunnel running from beneath the tower out under the sea gate; a loose flagstone in this very landing is marked with the same cross'>>",
+      "body": "<<FILL role=choice words=98 beats='{JR_TUNNEL_SKETCH} shows a tunnel running from beneath the tower out under the sea gate; {JR_FLAGSTONE} in this very landing is marked with the same cross'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_tunnel_1",
-          "label": "Study the tunnel sketch.",
+          "label": "Study {JR_TUNNEL_SKETCH}.",
           "target": "jr_tun_sketch"
         },
         {
           "id": "c_jr_tunnel_2",
-          "label": "Test the marked flagstone.",
+          "label": "Test {JR_FLAGSTONE}.",
           "target": "jr_tun_stone"
         }
       ]
     },
     {
       "id": "jr_tun_sketch",
-      "body": "<<FILL role=rising words=92 beats='the sketch labels a hidden stair as the only dry way to the tunnel; the panel in the landing wall matches the drawing exactly'>>",
+      "body": "<<FILL role=rising words=92 beats='{JR_TUNNEL_SKETCH} labels {JR_HIDDEN_STAIR} as the only dry way to the tunnel; the panel in the landing wall matches the drawing exactly'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_tun_sketch_1",
-          "label": "Go to the hidden stair.",
+          "label": "Go to {JR_HIDDEN_STAIR}.",
           "target": "jr_tun_join"
         }
       ]
     },
     {
       "id": "jr_tun_stone",
-      "body": "<<FILL role=choice words=90 beats='the flagstone rocks but is set fast with rust and age; she can heave at it, or give up and take the drier route the sketch marks'>>",
+      "body": "<<FILL role=choice words=90 beats='{JR_FLAGSTONE} rocks but is set fast with rust and age; she can heave at it, or give up and take the drier route {JR_TUNNEL_SKETCH} marks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1014,43 +1014,43 @@
         },
         {
           "id": "c_jr_tun_stone_2",
-          "label": "Heave the flagstone aside.",
+          "label": "Heave {JR_FLAGSTONE} aside.",
           "target": "jr_tun_join"
         }
       ]
     },
     {
       "id": "jr_tun_join",
-      "body": "<<FILL role=rising words=90 beats='either way the sketch wins, the dry route is the hidden stair; the wall panel stands open on a cramped climb into the core'>>",
+      "body": "<<FILL role=rising words=90 beats='either way {JR_TUNNEL_SKETCH} wins, the dry route is {JR_HIDDEN_STAIR}; the wall panel stands open on a cramped climb into the core'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_jr_tun_join_1",
-          "label": "Approach the hidden stair.",
+          "label": "Approach {JR_HIDDEN_STAIR}.",
           "target": "n_stairs"
         }
       ]
     },
     {
       "id": "n_stairs",
-      "body": "<<FILL role=choice words=108 beats='BOTTLENECK: all three threads bring Mira to the hidden stair in the tower's core, the keeper's secret climb toward the light; it forks into a tight winding stair and a set of outer steps open to the fog'>>",
+      "body": "<<FILL role=choice words=108 beats='BOTTLENECK: all three threads bring {HERO} to {JR_HIDDEN_STAIR} in the tower's core, {KEEPER}'s secret climb toward the light; it forks into {ST_WIND} and {ST_OUTER}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_stairs_1",
-          "label": "Take the tight winding stair.",
+          "label": "Take {ST_WIND}.",
           "target": "st_wind"
         },
         {
           "id": "c_n_stairs_2",
-          "label": "Climb the outer steps in the fog.",
+          "label": "Climb {ST_OUTER}.",
           "target": "st_outer"
         }
       ]
     },
     {
       "id": "st_wind",
-      "body": "<<FILL role=choice words=94 beats='the winding stair is dark and close, each step worn to a dish; most are firm, but one near the top sounds hollow underfoot'>>",
+      "body": "<<FILL role=choice words=94 beats='{ST_WIND} is dark and close, each step worn to a dish; most are firm, but {ST_STEP_GATE} near the top sounds hollow underfoot'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1060,26 +1060,26 @@
         },
         {
           "id": "c_st_wind_2",
-          "label": "Trust the hollow-sounding step.",
+          "label": "Trust {ST_STEP_GATE}.",
           "target": "e_set_stair"
         }
       ]
     },
     {
       "id": "st_wind_up",
-      "body": "<<FILL role=rising words=90 beats='keeping to the wall side of each step, Mira climbs clear to a small door of frosted glass, warm with the pale light beyond'>>",
+      "body": "<<FILL role=rising words=90 beats='keeping to the wall side of each step, {HERO} climbs clear to {ST_DOOR}, warm with the pale light beyond'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st_wind_up_1",
-          "label": "Open the frosted door.",
+          "label": "Open {ST_DOOR}.",
           "target": "n_light"
         }
       ]
     },
     {
       "id": "st_outer",
-      "body": "<<FILL role=choice words=94 beats='the outer steps hug the tower in the open fog, cold and slick; the wind gusts hard enough to make her wait for a lull'>>",
+      "body": "<<FILL role=choice words=94 beats='{ST_OUTER} hug the tower in the open fog, cold and slick; the wind gusts hard enough to make her wait for a lull'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1096,53 +1096,53 @@
     },
     {
       "id": "st_outer_wait",
-      "body": "<<FILL role=rising words=88 beats='she presses to the stone until the gust dies, then climbs on; the steps end at a frosted glass door glowing softly'>>",
+      "body": "<<FILL role=rising words=88 beats='she presses to the stone until the gust dies, then climbs on; {ST_OUTER} end at {ST_DOOR} glowing softly'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st_outer_wait_1",
-          "label": "Reach the frosted door.",
+          "label": "Reach {ST_DOOR}.",
           "target": "st_outer_up"
         }
       ]
     },
     {
       "id": "st_outer_up",
-      "body": "<<FILL role=rising words=90 beats='the outer steps deliver her, breathless, to the frosted glass door where the pale light waits just behind'>>",
+      "body": "<<FILL role=rising words=90 beats='{ST_OUTER} deliver her, breathless, to {ST_DOOR} where the pale light waits just behind'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_st_outer_up_1",
-          "label": "Open the frosted door.",
+          "label": "Open {ST_DOOR}.",
           "target": "n_light"
         }
       ]
     },
     {
       "id": "n_light",
-      "body": "<<FILL role=choice words=118 beats='BOTTLENECK: behind the frosted door lies the source of the ghostly light, a small chamber where a shuttered lantern and a rig of angled mirrors throw a pale glow up the tower, dressed with the glowing cave-weed; it is a made light, a signal, not a haunting; three ways lead down toward the tunnel, a stone stair, a service shaft, and an outer ladder'>>",
+      "body": "<<FILL role=choice words=118 beats='BOTTLENECK: behind {ST_DOOR} lies the source of {LIGHT_MOTIF}, a small chamber where {LAMP_RIG} throws a pale glow up the tower, dressed with {C_WEED}; it is a made light, a signal, not a haunting; three ways lead down toward the tunnel, {LI_STAIR}, {LI_SHAFT}, and {LI_LADDER}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_light_1",
-          "label": "Descend the stone stair.",
+          "label": "Descend {LI_STAIR}.",
           "target": "li_stair"
         },
         {
           "id": "c_n_light_2",
-          "label": "Climb down the service shaft.",
+          "label": "Climb down {LI_SHAFT}.",
           "target": "li_shaft"
         },
         {
           "id": "c_n_light_3",
-          "label": "Take the outer ladder down.",
+          "label": "Take {LI_LADDER} down.",
           "target": "li_ladder"
         }
       ]
     },
     {
       "id": "li_stair",
-      "body": "<<FILL role=choice words=96 beats='the stone stair is broad and safe; a cupboard on the landing is stuffed with the keeper's things, spare parts and a folded coat'>>",
+      "body": "<<FILL role=choice words=96 beats='{LI_STAIR} is broad and safe; {LI_CUPBOARD} is stuffed with {KEEPER}'s things, spare parts and a folded coat'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1152,101 +1152,101 @@
         },
         {
           "id": "c_li_stair_2",
-          "label": "Open the landing cupboard.",
+          "label": "Open {LI_CUPBOARD}.",
           "target": "li_stair_cup"
         }
       ]
     },
     {
       "id": "li_stair_down",
-      "body": "<<FILL role=rising words=90 beats='the stone stair winds down past the lamp-rig to a damp undercroft where the tunnel mouth yawns dark and cool'>>",
+      "body": "<<FILL role=rising words=90 beats='{LI_STAIR} winds down past the lamp-rig to a damp undercroft where {LI_TUNNEL_MOUTH} yawns dark and cool'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_li_stair_down_1",
-          "label": "Enter the tunnel mouth.",
+          "label": "Enter {LI_TUNNEL_MOUTH}.",
           "target": "n_tunnel"
         }
       ]
     },
     {
       "id": "li_stair_cup",
-      "body": "<<FILL role=choice words=92 beats='the cupboard holds a spare lens and the keeper's own storm coat, still smelling of pipe smoke; both feel like clues left behind'>>",
+      "body": "<<FILL role=choice words=92 beats='{LI_CUPBOARD} holds {LI_LENS} and {KEEPER}'s own {LI_COAT}, still smelling of pipe smoke; both feel like clues left behind'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_li_stair_cup_1",
-          "label": "Take the spare lens.",
+          "label": "Take {LI_LENS}.",
           "target": "li_cup_lens"
         },
         {
           "id": "c_li_stair_cup_2",
-          "label": "Search the keeper's coat.",
+          "label": "Search {LI_COAT}.",
           "target": "li_cup_coat"
         }
       ]
     },
     {
       "id": "li_cup_lens",
-      "body": "<<FILL role=rising words=88 beats='the spare lens is scored with the same rig-marks as the mirrors, proof the light was built by hand; the stair drops on to the tunnel'>>",
+      "body": "<<FILL role=rising words=88 beats='{LI_LENS} is scored with the same rig-marks as the mirrors, proof the light was built by hand; {LI_STAIR} drops on to the tunnel'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_li_cup_lens_1",
-          "label": "Go down to the tunnel.",
+          "label": "Go down to {LI_TUNNEL_MOUTH}.",
           "target": "n_tunnel"
         }
       ]
     },
     {
       "id": "li_cup_coat",
-      "body": "<<FILL role=rising words=88 beats='the coat pocket gives up a folded note in the keeper's hand, gone but not lost; the stair carries her down to the tunnel mouth'>>",
+      "body": "<<FILL role=rising words=88 beats='{LI_COAT}'s pocket gives up a folded note in {KEEPER}'s hand, gone but not lost; {LI_STAIR} carries her down to {LI_TUNNEL_MOUTH}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_li_cup_coat_1",
-          "label": "Descend to the tunnel.",
+          "label": "Descend to {LI_TUNNEL_MOUTH}.",
           "target": "n_tunnel"
         }
       ]
     },
     {
       "id": "li_shaft",
-      "body": "<<FILL role=choice words=94 beats='the service shaft drops straight down on iron staples; a knotted rope hangs beside it, and she cannot be sure which will bear her'>>",
+      "body": "<<FILL role=choice words=94 beats='{LI_SHAFT} drops straight down on {LI_STAPLES}; {LI_ROPE_GATE} hangs beside it, and she cannot be sure which will bear her'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_li_shaft_1",
-          "label": "Climb straight down the staples.",
+          "label": "Climb straight down {LI_STAPLES}.",
           "target": "li_shaft_down"
         },
         {
           "id": "c_li_shaft_2",
-          "label": "Test the knotted rope first.",
+          "label": "Test {LI_ROPE_GATE} first.",
           "target": "li_shaft_rope"
         }
       ]
     },
     {
       "id": "li_shaft_down",
-      "body": "<<FILL role=rising words=90 beats='the iron staples hold and Mira climbs down into the undercroft, where the tunnel opens off into the dark'>>",
+      "body": "<<FILL role=rising words=90 beats='{LI_STAPLES} hold and {HERO} climbs down into the undercroft, where {LI_TUNNEL_MOUTH} opens off into the dark'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_li_shaft_down_1",
-          "label": "Step into the tunnel.",
+          "label": "Step into {LI_TUNNEL_MOUTH}.",
           "target": "n_tunnel"
         }
       ]
     },
     {
       "id": "li_shaft_rope",
-      "body": "<<FILL role=choice words=90 beats='she leans her weight on the rope; the first fibres creak, and she must judge whether to trust it or the staples'>>",
+      "body": "<<FILL role=choice words=90 beats='she leans her weight on {LI_ROPE_GATE}; the first fibres creak, and she must judge whether to trust it or {LI_STAPLES}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_li_shaft_rope_1",
-          "label": "Trust the rope down.",
+          "label": "Trust {LI_ROPE_GATE} down.",
           "target": "n_tunnel"
         },
         {
@@ -1258,7 +1258,7 @@
     },
     {
       "id": "li_ladder",
-      "body": "<<FILL role=choice words=92 beats='the outer ladder runs down the tower's flank in thick fog; the rungs are wet and the mist is closing until she can barely see her hands'>>",
+      "body": "<<FILL role=choice words=92 beats='{LI_LADDER} runs down the tower's flank in thick fog; the rungs are wet and {LI_FOG_GATE} is closing until she can barely see her hands'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1268,14 +1268,14 @@
         },
         {
           "id": "c_li_ladder_2",
-          "label": "Judge the fog too thick.",
+          "label": "Judge {LI_FOG_GATE} too thick.",
           "target": "e_set_fog"
         }
       ]
     },
     {
       "id": "li_ladder_down",
-      "body": "<<FILL role=rising words=90 beats='hand under hand through the murk, Mira reaches the foot of the tower and ducks into the cool mouth of the tunnel'>>",
+      "body": "<<FILL role=rising words=90 beats='hand under hand through the murk, {HERO} reaches the foot of the tower and ducks into {LI_TUNNEL_MOUTH}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1287,75 +1287,75 @@
     },
     {
       "id": "n_tunnel",
-      "body": "<<FILL role=choice words=118 beats='BOTTLENECK: every descent meets at the tunnel beneath the lighthouse, a low brick passage running out under the rock toward the sea; it branches three ways, toward a sealed door the keeper's sketch calls his own room, toward a store stacked with unmarked crates, and toward a barred sea gate where the tide sighs in'>>",
+      "body": "<<FILL role=choice words=118 beats='BOTTLENECK: every descent meets at {LI_TUNNEL_MOUTH} beneath the lighthouse, a low brick passage running out under the rock toward the sea; it branches three ways, toward {TN_KEEPER_DOOR}, toward {TN_STORE}, and toward {TN_SEAGATE_GATE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_tunnel_1",
-          "label": "Go toward the sealed keeper's door.",
+          "label": "Go toward {TN_KEEPER_DOOR}.",
           "target": "tn_keeper"
         },
         {
           "id": "c_n_tunnel_2",
-          "label": "Go toward the crate store.",
+          "label": "Go toward {TN_STORE}.",
           "target": "tn_store"
         },
         {
           "id": "c_n_tunnel_3",
-          "label": "Go toward the barred sea gate.",
+          "label": "Go toward {TN_SEAGATE_GATE}.",
           "target": "tn_gate"
         }
       ]
     },
     {
       "id": "tn_keeper",
-      "body": "<<FILL role=choice words=96 beats='the sealed door is oak bound in brass, the keeper's mark burned into it; a heavy beam has fallen across the passage just before it'>>",
+      "body": "<<FILL role=choice words=96 beats='{TN_KEEPER_DOOR} is oak bound in brass, {KEEPER}'s mark burned into it; a heavy beam has fallen across the passage just before it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_keeper_1",
-          "label": "Try the brass key on the door.",
+          "label": "Try {TN_KEY} on the door.",
           "target": "tn_keep_door"
         },
         {
           "id": "c_tn_keeper_2",
-          "label": "Deal with the fallen beam.",
+          "label": "Deal with {TN_BEAM_GATE}.",
           "target": "tn_keep_beam"
         }
       ]
     },
     {
       "id": "tn_keep_door",
-      "body": "<<FILL role=choice words=92 beats='the brass key slides into the lock and turns halfway, then jams on rust; it will need coaxing, or a harder shove'>>",
+      "body": "<<FILL role=choice words=92 beats='{TN_KEY} slides into the lock and turns halfway, then jams on rust; it will need coaxing, or a harder shove'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_keep_door_1",
-          "label": "Coax the key gently.",
+          "label": "Coax {TN_KEY} gently.",
           "target": "tn_keep_open"
         },
         {
           "id": "c_tn_keep_door_2",
-          "label": "Shove the key hard.",
+          "label": "Shove {TN_KEY} hard.",
           "target": "tn_keep_stuck"
         }
       ]
     },
     {
       "id": "tn_keep_open",
-      "body": "<<FILL role=rising words=90 beats='the lock gives with a soft clunk and the keeper's door swings inward on the small sealed room beyond'>>",
+      "body": "<<FILL role=rising words=90 beats='the lock gives with a soft clunk and {TN_KEEPER_DOOR} swings inward on {CM_ROOM} beyond'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_keep_open_1",
-          "label": "Step into the keeper's room.",
+          "label": "Step into {CM_ROOM}.",
           "target": "n_chamber"
         }
       ]
     },
     {
       "id": "tn_keep_stuck",
-      "body": "<<FILL role=choice words=90 beats='the key sticks fast; forcing it might snap the old wards, or she can breathe, ease it back, and try again'>>",
+      "body": "<<FILL role=choice words=90 beats='{TN_WARD_GATE} sticks fast; forcing it might snap the old wards, or she can breathe, ease it back, and try again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1365,60 +1365,60 @@
         },
         {
           "id": "c_tn_keep_stuck_2",
-          "label": "Force it and risk the wards.",
+          "label": "Force it and risk {TN_WARD_GATE}.",
           "target": "e_set_door"
         }
       ]
     },
     {
       "id": "tn_keep_beam",
-      "body": "<<FILL role=choice words=92 beats='the fallen beam blocks the way; she can lever it clear with care, or drop and squeeze through the narrow gap beneath it'>>",
+      "body": "<<FILL role=choice words=92 beats='{TN_BEAM_GATE} blocks the way; she can lever it clear with care, or drop and squeeze through the narrow gap beneath it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_keep_beam_1",
-          "label": "Lever the beam clear carefully.",
+          "label": "Lever {TN_BEAM_GATE} clear carefully.",
           "target": "tn_keep_open"
         },
         {
           "id": "c_tn_keep_beam_2",
-          "label": "Squeeze under the beam.",
+          "label": "Squeeze under {TN_BEAM_GATE}.",
           "target": "e_set_beam"
         }
       ]
     },
     {
       "id": "tn_store",
-      "body": "<<FILL role=choice words=96 beats='the store is stacked to the brick roof with crates and barrels, none of them stamped; a locked ledger box sits on the topmost crate'>>",
+      "body": "<<FILL role=choice words=96 beats='{TN_STORE} is stacked to the brick roof with crates and barrels, none of them stamped; {TN_LEDGERBOX} sits on the topmost crate'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_store_1",
-          "label": "Prise open a crate.",
+          "label": "Prise open {TN_CRATE}.",
           "target": "tn_store_crate"
         },
         {
           "id": "c_tn_store_2",
-          "label": "Take down the ledger box.",
+          "label": "Take down {TN_LEDGERBOX}.",
           "target": "tn_store_box"
         }
       ]
     },
     {
       "id": "tn_store_crate",
-      "body": "<<FILL role=rising words=90 beats='the crate is full of untaxed lamp oil and fine cloth, a smuggler's haul hidden in a dead man's tower; a low door leads on to the keeper's room'>>",
+      "body": "<<FILL role=rising words=90 beats='{TN_CRATE} is full of untaxed lamp oil and fine cloth, a smuggler's haul hidden in a dead man's tower; a low door leads on to {CM_ROOM}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_store_crate_1",
-          "label": "Go on to the keeper's room.",
+          "label": "Go on to {CM_ROOM}.",
           "target": "tn_store_join"
         }
       ]
     },
     {
       "id": "tn_store_box",
-      "body": "<<FILL role=rising words=90 beats='the ledger box confirms what she has already pieced together, sealing the case; a low door leads deeper toward the keeper's room'>>",
+      "body": "<<FILL role=rising words=90 beats='{TN_LEDGERBOX} confirms what she has already pieced together, sealing the case; a low door leads deeper toward {CM_ROOM}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1430,12 +1430,12 @@
     },
     {
       "id": "tn_store_join",
-      "body": "<<FILL role=choice words=92 beats='the low door opens on the passage to the keeper's sealed room, but the light she carries gutters low and threatens to leave her dark'>>",
+      "body": "<<FILL role=choice words=92 beats='the low door opens on the passage to {CM_ROOM}, but {TN_LANTERN} gutters low and threatens to leave her dark'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_store_join_1",
-          "label": "Press on before the lantern dies.",
+          "label": "Press on before {TN_LANTERN} dies.",
           "target": "n_chamber"
         },
         {
@@ -1447,7 +1447,7 @@
     },
     {
       "id": "tn_store_relight",
-      "body": "<<FILL role=rising words=88 beats='she trims the wick and the flame steadies; by its light the passage runs straight to the keeper's door'>>",
+      "body": "<<FILL role=rising words=88 beats='she trims the wick and the flame steadies; by its light the passage runs straight to {TN_KEEPER_DOOR}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1459,12 +1459,12 @@
     },
     {
       "id": "tn_gate",
-      "body": "<<FILL role=choice words=94 beats='the barred sea gate lets the tide breathe in and out; beyond it the open water heaves, and the lower bars are slick and rising with the sea'>>",
+      "body": "<<FILL role=choice words=94 beats='{TN_SEAGATE_GATE} lets the tide breathe in and out; beyond it the open water heaves, and the lower bars are slick and rising with the sea'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_gate_1",
-          "label": "Work the sea gate open.",
+          "label": "Work {TN_SEAGATE_GATE} open.",
           "target": "tn_gate_open"
         },
         {
@@ -1476,7 +1476,7 @@
     },
     {
       "id": "tn_gate_open",
-      "body": "<<FILL role=choice words=92 beats='the gate grinds open a hand's width, enough to slip through onto a inner ledge; the current tugs, strong and cold'>>",
+      "body": "<<FILL role=choice words=92 beats='{TN_SEAGATE_GATE} grinds open a hand's width, enough to slip through onto an inner ledge; {TN_CURRENT} tugs, strong and cold'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1486,41 +1486,41 @@
         },
         {
           "id": "c_tn_gate_open_2",
-          "label": "Wait for the current to ease.",
+          "label": "Wait for {TN_CURRENT} to ease.",
           "target": "tn_gate_wait"
         }
       ]
     },
     {
       "id": "tn_gate_wait",
-      "body": "<<FILL role=rising words=88 beats='she waits out the surge on the ledge, then steps inside where a dry passage climbs to the keeper's sealed room'>>",
+      "body": "<<FILL role=rising words=88 beats='she waits out the surge on the ledge, then steps inside where a dry passage climbs to {CM_ROOM}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_gate_wait_1",
-          "label": "Climb to the keeper's room.",
+          "label": "Climb to {CM_ROOM}.",
           "target": "n_chamber"
         }
       ]
     },
     {
       "id": "n_chamber",
-      "body": "<<FILL role=choice words=120 beats='BOTTLENECK: all routes end in the keeper's sealed room, snug and dry under the sea; a lamp, a bunk, a desk, and on it a sealed letter that answers everything, the truth of where old Ferris went, the smuggler who drove him out, and the false light he left burning as a warning; now Mira must decide what to do with it all'>>",
+      "body": "<<FILL role=choice words=120 beats='BOTTLENECK: all routes end in {CM_ROOM}, snug and dry under the sea; a lamp, a bunk, a desk, and on it {CM_LETTER} that answers everything, the truth of where {KEEPER} went, the smuggler who drove him out, and {LAMP_RIG} he left burning as a warning; now {HERO} must decide what to do with it all'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_chamber_1",
-          "label": "Read the keeper's sealed letter.",
+          "label": "Read {CM_LETTER}.",
           "target": "cm_letter"
         },
         {
           "id": "c_n_chamber_2",
-          "label": "Deal with the smugglers' store.",
+          "label": "Deal with {CM_STORE}.",
           "target": "cm_smug"
         },
         {
           "id": "c_n_chamber_3",
-          "label": "Turn to the false-light rig.",
+          "label": "Turn to {LAMP_RIG}.",
           "target": "cm_light"
         },
         {
@@ -1532,12 +1532,12 @@
     },
     {
       "id": "cm_letter",
-      "body": "<<FILL role=choice words=98 beats='the sealed letter is addressed, to whoever is brave enough to climb; she can read it to the very end, or keep it safe and carry it out unread'>>",
+      "body": "<<FILL role=choice words=98 beats='{CM_LETTER} is addressed, to whoever is brave enough to climb; she can read it to the very end, or keep it safe and carry it out unread'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_letter_1",
-          "label": "Read the letter to the end.",
+          "label": "Read {CM_LETTER} to the end.",
           "target": "cm_letter_read"
         },
         {
@@ -1549,82 +1549,82 @@
     },
     {
       "id": "cm_letter_read",
-      "body": "<<FILL role=choice words=105 beats='the letter tells it plain, Ferris did not vanish, he fled the smuggler's threats and hid inland, leaving the false light so the town would come looking; three things end the page, a map to his cottage, a signed confession of the years he looked away, and a plea to make it right'>>",
+      "body": "<<FILL role=choice words=105 beats='{CM_LETTER} tells it plain, {KEEPER} did not vanish, he fled the smuggler's threats and hid inland, leaving {LAMP_RIG} so the town would come looking; three things end the page, {CM_MAP}, {CM_CONFESSION}, and {CM_PLEA}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_letter_read_1",
-          "label": "Follow the map to the keeper.",
+          "label": "Follow {CM_MAP} to the keeper.",
           "target": "cm_letter_map"
         },
         {
           "id": "c_cm_letter_read_2",
-          "label": "Read the signed confession.",
+          "label": "Read {CM_CONFESSION}.",
           "target": "cm_letter_conf"
         },
         {
           "id": "c_cm_letter_read_3",
-          "label": "Answer the keeper's plea.",
+          "label": "Answer {CM_PLEA}.",
           "target": "cm_letter_plea"
         }
       ]
     },
     {
       "id": "cm_letter_map",
-      "body": "<<FILL role=choice words=96 beats='the map inks a path to a shepherd's cottage on the inland moor; she can go straight to it and find the old keeper, or take word first to the harbour office'>>",
+      "body": "<<FILL role=choice words=96 beats='{CM_MAP} inks a path to {CM_COTTAGE}; she can go straight to it and find the old keeper, or take word first to {CM_HARBOUR_OFFICE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_letter_map_1",
-          "label": "Go to the inland cottage.",
+          "label": "Go to {CM_COTTAGE}.",
           "target": "e_win_keeper_found"
         },
         {
           "id": "c_cm_letter_map_2",
-          "label": "Take word to the harbour office.",
+          "label": "Take word to {CM_HARBOUR_OFFICE}.",
           "target": "e_win_keeper_word"
         }
       ]
     },
     {
       "id": "cm_letter_conf",
-      "body": "<<FILL role=rising words=92 beats='the confession is unflinching, years of small blind eyes turned for a little money, then the night the smuggler wanted everything; reading it, Mira sees exactly who did what, and how to set the record straight'>>",
+      "body": "<<FILL role=rising words=92 beats='{CM_CONFESSION} is unflinching, years of small blind eyes turned for a little money, then the night the smuggler wanted everything; reading it, {HERO} sees exactly who did what, and how to set the record straight'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_letter_conf_1",
-          "label": "Take the confession to the town.",
+          "label": "Take {CM_CONFESSION} to the town.",
           "target": "e_win_name_cleared"
         }
       ]
     },
     {
       "id": "cm_letter_plea",
-      "body": "<<FILL role=rising words=90 beats='the plea is simple and human, please tell them I am sorry and please light the tower true; the words settle on Mira like a task handed down, and she knows she will not put it down'>>",
+      "body": "<<FILL role=rising words=90 beats='{CM_PLEA} is simple and human, please tell them I am sorry and please light the tower true; the words settle on {HERO} like a task handed down, and she knows she will not put it down'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_letter_plea_1",
-          "label": "Take up the keeper's task.",
+          "label": "Take up {KEEPER}'s task.",
           "target": "e_win_promise"
         }
       ]
     },
     {
       "id": "cm_letter_keep",
-      "body": "<<FILL role=rising words=90 beats='Mira decides the letter is not hers to open all the way; she folds it carefully into her coat, its seal unbroken, to place in the right hands when the sun is up'>>",
+      "body": "<<FILL role=rising words=90 beats='{HERO} decides {CM_LETTER} is not hers to open all the way; she folds it carefully into her coat, its seal unbroken, to place in the right hands when the sun is up'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_letter_keep_1",
-          "label": "Carry the sealed letter out.",
+          "label": "Carry {CM_LETTER} out.",
           "target": "e_neutral_letter"
         }
       ]
     },
     {
       "id": "cm_smug",
-      "body": "<<FILL role=choice words=98 beats='the store is the whole case laid bare; she can photograph the crates and ledger as evidence, or follow the passage deeper to where the goods truly end up'>>",
+      "body": "<<FILL role=choice words=98 beats='{CM_STORE} is the whole case laid bare; she can photograph the crates and ledger as evidence, or follow the passage deeper to where the goods truly end up'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1634,31 +1634,31 @@
         },
         {
           "id": "c_cm_smug_2",
-          "label": "Follow the store deeper.",
+          "label": "Follow {CM_STORE} deeper.",
           "target": "cm_smug_follow"
         }
       ]
     },
     {
       "id": "cm_smug_photo",
-      "body": "<<FILL role=choice words=94 beats='with the crates and ledger box framed on her phone, Mira has proof no one can wave away; she can signal the coastguard now or carry it straight to the harbour master'>>",
+      "body": "<<FILL role=choice words=94 beats='with the crates and ledger box framed on her phone, {HERO} has proof no one can wave away; she can signal {CM_COASTGUARD} now or carry it straight to {CM_HARBOURMASTER}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_smug_photo_1",
-          "label": "Signal the coastguard.",
+          "label": "Signal {CM_COASTGUARD}.",
           "target": "e_win_smugglers"
         },
         {
           "id": "c_cm_smug_photo_2",
-          "label": "Take it to the harbour master.",
+          "label": "Take it to {CM_HARBOURMASTER}.",
           "target": "e_win_harbor"
         }
       ]
     },
     {
       "id": "cm_smug_follow",
-      "body": "<<FILL role=choice words=96 beats='deeper in, the passage opens on a hidden hoard the smuggler stashed for himself; a single jewelled compass sits on top, easy to pocket'>>",
+      "body": "<<FILL role=choice words=96 beats='deeper in, the passage opens on a hidden hoard the smuggler stashed for himself; {CM_COMPASS} sits on top, easy to pocket'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1668,14 +1668,14 @@
         },
         {
           "id": "c_cm_smug_follow_2",
-          "label": "Reach for the jewelled compass.",
+          "label": "Reach for {CM_COMPASS}.",
           "target": "cm_smug_token"
         }
       ]
     },
     {
       "id": "cm_smug_hoard",
-      "body": "<<FILL role=rising words=90 beats='Mira maps the whole hidden hoard with her phone, crate by crate, so nothing can be denied or lost; it is more than enough to bring the law down on the tower's secret keeper for good'>>",
+      "body": "<<FILL role=rising words=90 beats='{HERO} maps the whole hidden hoard with her phone, crate by crate, so nothing can be denied or lost; it is more than enough to bring the law down on the tower's secret keeper for good'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1687,12 +1687,12 @@
     },
     {
       "id": "cm_smug_token",
-      "body": "<<FILL role=choice words=92 beats='the compass is beautiful and would prove everything in an instant; her hand hovers, and she weighs taking it against leaving it be'>>",
+      "body": "<<FILL role=choice words=92 beats='{CM_COMPASS} is beautiful and would prove everything in an instant; her hand hovers, and she weighs taking it against leaving it be'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_smug_token_1",
-          "label": "Pocket the compass and go.",
+          "label": "Pocket {CM_COMPASS} and go.",
           "target": "e_set_token"
         },
         {
@@ -1704,7 +1704,7 @@
     },
     {
       "id": "cm_light",
-      "body": "<<FILL role=choice words=98 beats='the false-light rig can still be saved for good use; she can relight the tower as a true lamp again, or study the signal the keeper built to warn passing ships'>>",
+      "body": "<<FILL role=choice words=98 beats='{LAMP_RIG} can still be saved for good use; she can relight the tower as a true lamp again, or study {CM_SIGNAL_RIG} built to warn passing ships'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1714,31 +1714,31 @@
         },
         {
           "id": "c_cm_light_2",
-          "label": "Study the warning signal.",
+          "label": "Study {CM_SIGNAL_RIG}.",
           "target": "cm_light_study"
         }
       ]
     },
     {
       "id": "cm_light_relight",
-      "body": "<<FILL role=choice words=94 beats='the old lamp will burn if the mirror is set true and the gears turn clean; she can align the mirror by the keeper's marks, or force the stiff gears to move'>>",
+      "body": "<<FILL role=choice words=94 beats='the old lamp will burn if {CM_MIRROR} is set true and {CM_GEARS_GATE} turn clean; she can align {CM_MIRROR} by {KEEPER}'s marks, or force {CM_GEARS_GATE} to move'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_light_relight_1",
-          "label": "Set the mirror true by the marks.",
+          "label": "Set {CM_MIRROR} true by the marks.",
           "target": "cm_light_true"
         },
         {
           "id": "c_cm_light_relight_2",
-          "label": "Force the stiff gears.",
+          "label": "Force {CM_GEARS_GATE}.",
           "target": "e_set_gears"
         }
       ]
     },
     {
       "id": "cm_light_true",
-      "body": "<<FILL role=rising words=90 beats='mirror aligned and wick trimmed, the lamp catches and a strong clean beam swings out over the water for the first time in a year'>>",
+      "body": "<<FILL role=rising words=90 beats='{CM_MIRROR} aligned and wick trimmed, the lamp catches and a strong clean beam swings out over the water for the first time in a year'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1750,7 +1750,7 @@
     },
     {
       "id": "cm_light_study",
-      "body": "<<FILL role=choice words=92 beats='the signal rig can flash a coded call; she can rig it now to call the coastguard for help, or simply log how the whole clever thing was made'>>",
+      "body": "<<FILL role=choice words=92 beats='{CM_SIGNAL_RIG} can flash a coded call; she can rig it now to call {CM_COASTGUARD} for help, or simply log how the whole clever thing was made'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1767,7 +1767,7 @@
     },
     {
       "id": "cm_leave",
-      "body": "<<FILL role=choice words=96 beats='the fog is thick and Mira is tired; she can head straight back to town with what she knows, or take a moment to mark the way so others can follow'>>",
+      "body": "<<FILL role=choice words=96 beats='the fog is thick and {HERO} is tired; she can head straight back to town with what she knows, or take a moment to mark the way so others can follow'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1784,7 +1784,7 @@
     },
     {
       "id": "cm_leave_town",
-      "body": "<<FILL role=rising words=88 beats='Mira takes one last look at the keeper's snug room, then turns for the long foggy walk back to town with the whole strange night stored up in her head, ready to tell in the morning'>>",
+      "body": "<<FILL role=rising words=88 beats='{HERO} takes one last look at {CM_ROOM}, then turns for the long foggy walk back to town with the whole strange night stored up in her head, ready to tell in the morning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1796,360 +1796,360 @@
     },
     {
       "id": "cm_leave_mark",
-      "body": "<<FILL role=choice words=92 beats='she can leave the keeper's journal open on the desk as a signpost, or carry it out and hand it to the town in the morning'>>",
+      "body": "<<FILL role=choice words=92 beats='she can leave {JOURNAL} open on the desk as a signpost, or carry it out and hand it to the town in the morning'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cm_leave_mark_1",
-          "label": "Leave the journal as a signpost.",
+          "label": "Leave {JOURNAL} as a signpost.",
           "target": "e_neutral_evidence"
         },
         {
           "id": "c_cm_leave_mark_2",
-          "label": "Carry the journal into town.",
+          "label": "Carry {JOURNAL} into town.",
           "target": "e_neutral_museum"
         }
       ]
     },
     {
       "id": "e_set_a_drawer",
-      "body": "<<FILL role=failure words=85 beats='the wrenched drawer splits and jams the desk shut on her sleeve; by the time Mira works free the fog has thickened and she decides the cottage has kept its secrets for tonight, safe but no wiser, and heads out to wait for morning'>>",
+      "body": "<<FILL role=failure words=85 beats='{A_DESK_DRAWER} splits and jams the desk shut on her sleeve; by the time {HERO} works free the fog has thickened and she decides {ROUTE_A_PLACE} has kept its secrets for tonight, safe but no wiser, and heads out to wait for morning'>>",
       "is_ending": true,
       "ending": {
         "id": "e_a_drawer",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Split Drawer"
+        "title": "{A_DRAWER_END}"
       }
     },
     {
       "id": "e_set_a_brick",
-      "body": "<<FILL role=failure words=85 beats='the yanked brick brings a small slide of rubble that seals the cavity and fills the room with dust; coughing, Mira gives up the hearth and settles by the door to wait out the night, unharmed and unsolved'>>",
+      "body": "<<FILL role=failure words=85 beats='{A_BRICK_GATE} brings a small slide of rubble that seals the cavity and fills the room with dust; coughing, {HERO} gives up {A_HEARTH} and settles by the door to wait out the night, unharmed and unsolved'>>",
       "is_ending": true,
       "ending": {
         "id": "e_a_brick",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Fallen Brick"
+        "title": "{A_BRICK_END}"
       }
     },
     {
       "id": "e_set_b_rail",
-      "body": "<<FILL role=failure words=85 beats='the gallery rail groans and sags under her hand and she snatches herself back to safety; the walk is too rotten to trust, so Mira retreats into the lamp room to wait for dawn, shaken but sound'>>",
+      "body": "<<FILL role=failure words=85 beats='{B_RAIL_GATE} groans and sags under her hand and she snatches herself back to safety; {B_GALLERY} is too rotten to trust, so {HERO} retreats into the lamp room to wait for dawn, shaken but sound'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b_rail",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Rotten Rail"
+        "title": "{B_RAIL_END}"
       }
     },
     {
       "id": "e_set_c_tide",
-      "body": "<<FILL role=failure words=88 beats='the tide slides in faster than she guessed and the passage floods to her knees; Mira wades back to a high dry ledge and settles to wait for the water to fall, cold and unsolved but perfectly safe'>>",
+      "body": "<<FILL role=failure words=88 beats='{C_TIDE_GATE} slides in faster than she guessed and {C_PASSAGE} floods to her knees; {HERO} wades back to a high dry ledge and settles to wait for the water to fall, cold and unsolved but perfectly safe'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_tide",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Rising Tide"
+        "title": "{C_TIDE_END}"
       }
     },
     {
       "id": "e_set_c_stuck",
-      "body": "<<FILL role=failure words=85 beats='wedged in the narrow gap, Mira breathes out and wriggles carefully back the way she came; the far chamber will keep its secret tonight, and she picks a route out to firmer ground'>>",
+      "body": "<<FILL role=failure words=85 beats='wedged in {C_GAP_GATE}, {HERO} breathes out and wriggles carefully back the way she came; the far chamber will keep its secret tonight, and she picks a route out to firmer ground'>>",
       "is_ending": true,
       "ending": {
         "id": "e_c_stuck",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Narrow Gap"
+        "title": "{C_GAP_END}"
       }
     },
     {
       "id": "e_set_d_loft",
-      "body": "<<FILL role=failure words=85 beats='the cracked rung snaps and drops her a short jarring way to the boathouse floor; nothing broken but her pride, Mira decides the loft can wait and limps out to the shore to wait for light'>>",
+      "body": "<<FILL role=failure words=85 beats='{D_RUNG_GATE} snaps and drops her a short jarring way to the boathouse floor; nothing broken but her pride, {HERO} decides {D_LOFT} can wait and limps out to the shore to wait for light'>>",
       "is_ending": true,
       "ending": {
         "id": "e_d_loft",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Broken Rung"
+        "title": "{D_RUNG_END}"
       }
     },
     {
       "id": "e_set_d_storm",
-      "body": "<<FILL role=failure words=88 beats='the wind slams the boathouse door and rattles the whole leaning shed until a shelf of gear comes down across the hatch; Mira judges it too risky tonight and steps out into the fog to head back for town'>>",
+      "body": "<<FILL role=failure words=88 beats='the wind slams {D_DOOR_GATE} and rattles the whole leaning shed until a shelf of gear comes down across the hatch; {HERO} judges it too risky tonight and steps out into the fog to head back for town'>>",
       "is_ending": true,
       "ending": {
         "id": "e_d_storm",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Slamming Door"
+        "title": "{D_DOOR_END}"
       }
     },
     {
       "id": "e_set_cellar",
-      "body": "<<FILL role=failure words=86 beats='the low cellar door gives all at once onto cold blackness and the lantern flame gutters out; rather than grope on blind, Mira eases the door shut and climbs back to the landing to wait for a safer hour'>>",
+      "body": "<<FILL role=failure words=86 beats='{JR_CELLAR_GATE} gives all at once onto cold blackness and the lantern flame gutters out; rather than grope on blind, {HERO} eases the door shut and climbs back to the landing to wait for a safer hour'>>",
       "is_ending": true,
       "ending": {
         "id": "e_cellar",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Cellar Door"
+        "title": "{JR_CELLAR_END}"
       }
     },
     {
       "id": "e_set_stair",
-      "body": "<<FILL role=failure words=85 beats='the hollow step crumbles under her boot and drops her shin-deep into the stair; Mira hauls herself out, heart pounding, and decides the hidden climb is too far gone to trust tonight'>>",
+      "body": "<<FILL role=failure words=85 beats='{ST_STEP_GATE} crumbles under her boot and drops her shin-deep into the stair; {HERO} hauls herself out, heart pounding, and decides {JR_HIDDEN_STAIR} is too far gone to trust tonight'>>",
       "is_ending": true,
       "ending": {
         "id": "e_stair",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Hollow Step"
+        "title": "{ST_STEP_END}"
       }
     },
     {
       "id": "e_set_shaft",
-      "body": "<<FILL role=failure words=85 beats='the knotted rope frays through in her grip and she catches herself hard against the staples; badly rattled, Mira climbs back up and gives up the shaft, the tunnel unreached this night'>>",
+      "body": "<<FILL role=failure words=85 beats='{LI_ROPE_GATE} frays through in her grip and she catches herself hard against {LI_STAPLES}; badly rattled, {HERO} climbs back up and gives up {LI_SHAFT}, the tunnel unreached this night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_shaft",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Frayed Rope"
+        "title": "{LI_ROPE_END}"
       }
     },
     {
       "id": "e_set_fog",
-      "body": "<<FILL role=failure words=85 beats='the fog thickens on the outer ladder until she cannot see the next rung or the ground below; Mira will not climb blind over rocks, so she edges back up and waits for the mist to lift'>>",
+      "body": "<<FILL role=failure words=85 beats='{LI_FOG_GATE} thickens on {LI_LADDER} until she cannot see the next rung or the ground below; {HERO} will not climb blind over rocks, so she edges back up and waits for the mist to lift'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fog",
         "valence": "negative",
         "kind": "setback",
-        "title": "Too Thick a Fog"
+        "title": "{LI_FOG_END}"
       }
     },
     {
       "id": "e_set_door",
-      "body": "<<FILL role=failure words=85 beats='she forces the key and the old wards shear with a snap, jamming the keeper's door for good; the sealed room stays sealed, and Mira turns back with the mystery half-told'>>",
+      "body": "<<FILL role=failure words=85 beats='she forces {TN_KEY} and {TN_WARD_GATE} shear with a snap, jamming {TN_KEEPER_DOOR} for good; the sealed room stays sealed, and {HERO} turns back with the mystery half-told'>>",
       "is_ending": true,
       "ending": {
         "id": "e_door",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Broken Ward"
+        "title": "{TN_WARD_END}"
       }
     },
     {
       "id": "e_set_beam",
-      "body": "<<FILL role=failure words=86 beats='halfway under the beam it shifts and settles heavier, pinning her coat until she twists free of it; the near miss is enough, and Mira backs out of the passage to find a safer way another day'>>",
+      "body": "<<FILL role=failure words=86 beats='halfway under {TN_BEAM_GATE} it shifts and settles heavier, pinning her coat until she twists free of it; the near miss is enough, and {HERO} backs out of the passage to find a safer way another day'>>",
       "is_ending": true,
       "ending": {
         "id": "e_beam",
         "valence": "negative",
         "kind": "setback",
-        "title": "Under the Beam"
+        "title": "{TN_BEAM_END}"
       }
     },
     {
       "id": "e_set_gate",
-      "body": "<<FILL role=failure words=87 beats='the sea gate's lower bars are already awash and the cold water surges to her waist; Mira wades back to the dry passage and decides the tide has won this round, safe but stopped short'>>",
+      "body": "<<FILL role=failure words=87 beats='{TN_SEAGATE_GATE}'s lower bars are already awash and the cold water surges to her waist; {HERO} wades back to the dry passage and decides the tide has won this round, safe but stopped short'>>",
       "is_ending": true,
       "ending": {
         "id": "e_gate",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Flooded Gate"
+        "title": "{TN_SEAGATE_END}"
       }
     },
     {
       "id": "e_set_token",
-      "body": "<<FILL role=failure words=88 beats='the compass in her pocket, Mira turns to go and a hidden bell-wire chimes through the tunnel; guilty and flustered, she puts it straight back, and by the time she climbs out the dawn patrol is waiting to ask hard questions, the evidence spoiled by her own hand'>>",
+      "body": "<<FILL role=failure words=88 beats='{CM_COMPASS} in her pocket, {HERO} turns to go and a hidden bell-wire chimes through the tunnel; guilty and flustered, she puts it straight back, and by the time she climbs out the dawn patrol is waiting to ask hard questions, the evidence spoiled by her own hand'>>",
       "is_ending": true,
       "ending": {
         "id": "e_token",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Chiming Wire"
+        "title": "{CM_TOKEN_END}"
       }
     },
     {
       "id": "e_set_gears",
-      "body": "<<FILL role=failure words=86 beats='she forces the stiff gears and they lock solid with a crack, jamming the whole lamp mechanism for good; the tower will not light tonight, and Mira climbs down disappointed, the beam still dark over the water'>>",
+      "body": "<<FILL role=failure words=86 beats='she forces {CM_GEARS_GATE} and they lock solid with a crack, jamming the whole lamp mechanism for good; the tower will not light tonight, and {HERO} climbs down disappointed, the beam still dark over the water'>>",
       "is_ending": true,
       "ending": {
         "id": "e_gears",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Jammed Gears"
+        "title": "{CM_GEARS_END}"
       }
     },
     {
       "id": "e_win_keeper_found",
-      "body": "<<FILL role=completion words=100 beats='the moor path leads Mira to a low shepherd's cottage where old Ferris himself opens the door, grey and blinking but alive and well; the vanished keeper is found, the year-long mystery solved from end to end, and together they plan how to set the whole story right; the fullest, brightest ending'>>",
+      "body": "<<FILL role=completion words=100 beats='{CM_COTTAGE} leads {HERO} to a low shepherd's cottage where {KEEPER} himself opens the door, grey and blinking but alive and well; the vanished keeper is found, the year-long mystery solved from end to end, and together they plan how to set the whole story right; the fullest, brightest ending'>>",
       "is_ending": true,
       "ending": {
         "id": "e_keeper_found",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Keeper Found"
+        "title": "{KEEPER_FOUND_PRIZE}"
       }
     },
     {
       "id": "e_win_keeper_word",
-      "body": "<<FILL role=completion words=96 beats='Mira carries the letter and map to the harbour office at first light; within the hour a search party sets out for the moor, and by noon old Ferris is home again, cleared and welcomed, the mystery closed by her word'>>",
+      "body": "<<FILL role=completion words=96 beats='{HERO} carries {CM_LETTER} and {CM_MAP} to {CM_HARBOUR_OFFICE} at first light; within the hour a search party sets out for the moor, and by noon {KEEPER} is home again, cleared and welcomed, the mystery closed by her word'>>",
       "is_ending": true,
       "ending": {
         "id": "e_keeper_word",
         "valence": "positive",
         "kind": "completion",
-        "title": "Word to the Harbour"
+        "title": "{KEEPER_WORD_PRIZE}"
       }
     },
     {
       "id": "e_win_name_cleared",
-      "body": "<<FILL role=success words=95 beats='with the signed confession in hand, Mira makes sure the town learns the truth, that Ferris was threatened, not guilty, and that he left the false light to bring help; his good name is restored and the real culprit named'>>",
+      "body": "<<FILL role=success words=95 beats='with {CM_CONFESSION} in hand, {HERO} makes sure the town learns the truth, that {KEEPER} was threatened, not guilty, and that he left {LAMP_RIG} to bring help; his good name is restored and the real culprit named'>>",
       "is_ending": true,
       "ending": {
         "id": "e_name_cleared",
         "valence": "positive",
         "kind": "success",
-        "title": "The Keeper's Name"
+        "title": "{NAME_CLEARED_PRIZE}"
       }
     },
     {
       "id": "e_win_promise",
-      "body": "<<FILL role=success words=92 beats='answering the keeper's plea, Mira vows to see the tower mended and the truth told; she leaves the room a keeper of his trust, and in the weeks that follow she quietly makes every word of it come good'>>",
+      "body": "<<FILL role=success words=92 beats='answering {CM_PLEA}, {HERO} vows to see the tower mended and the truth told; she leaves the room a keeper of his trust, and in the weeks that follow she quietly makes every word of it come good'>>",
       "is_ending": true,
       "ending": {
         "id": "e_promise",
         "valence": "positive",
         "kind": "success",
-        "title": "A Keeper's Promise"
+        "title": "{PROMISE_PRIZE}"
       }
     },
     {
       "id": "e_win_smugglers",
-      "body": "<<FILL role=success words=95 beats='Mira flashes the coded lamp until a coastguard cutter answers out of the fog; by dawn the store is opened, the crates seized, and the smuggler who haunted the tower is caught red-handed, the whole scheme undone'>>",
+      "body": "<<FILL role=success words=95 beats='{HERO} flashes the coded lamp until {CM_COASTGUARD} answers out of the fog; by dawn {CM_STORE} is opened, the crates seized, and the smuggler who haunted the tower is caught red-handed, the whole scheme undone'>>",
       "is_ending": true,
       "ending": {
         "id": "e_smugglers",
         "valence": "positive",
         "kind": "success",
-        "title": "The Smugglers Caught"
+        "title": "{SMUGGLERS_PRIZE}"
       }
     },
     {
       "id": "e_win_harbor",
-      "body": "<<FILL role=success words=92 beats='the harbour master listens open-mouthed to Mira's proof, then rouses the constable and the revenue men; the tower's secret store is emptied into the light of day, and the town owes the truth to a girl who missed her bus'>>",
+      "body": "<<FILL role=success words=92 beats='{CM_HARBOURMASTER} listens open-mouthed to {HERO}'s proof, then rouses the constable and the revenue men; {CM_STORE} is emptied into the light of day, and the town owes the truth to a girl who missed her bus'>>",
       "is_ending": true,
       "ending": {
         "id": "e_harbor",
         "valence": "positive",
         "kind": "success",
-        "title": "The Harbour Master"
+        "title": "{HARBOR_PRIZE}"
       }
     },
     {
       "id": "e_win_hoard",
-      "body": "<<FILL role=success words=92 beats='Mira records every corner of the hidden hoard without touching a thing, so the evidence stands untouched for the law; when the coastguard comes, her careful photographs seal the case beyond any doubt'>>",
+      "body": "<<FILL role=success words=92 beats='{HERO} records every corner of the hidden hoard without touching a thing, so the evidence stands untouched for the law; when {CM_COASTGUARD} comes, her careful photographs seal the case beyond any doubt'>>",
       "is_ending": true,
       "ending": {
         "id": "e_hoard",
         "valence": "positive",
         "kind": "success",
-        "title": "The Hidden Hoard"
+        "title": "{HOARD_PRIZE}"
       }
     },
     {
       "id": "e_win_light_restored",
-      "body": "<<FILL role=completion words=98 beats='the true lamp swings its clean beam out across the water and, far off, a fishing boat lost in the fog answers with a grateful horn; Mira has given the coast back its light, and the hollow tower is hollow no more'>>",
+      "body": "<<FILL role=completion words=98 beats='the true lamp swings its clean beam out across the water and, far off, a fishing boat lost in the fog answers with a grateful horn; {HERO} has given the coast back its light, and {ROUTE_B_PLACE} is hollow no more'>>",
       "is_ending": true,
       "ending": {
         "id": "e_light_restored",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Light Restored"
+        "title": "{LIGHT_RESTORED_PRIZE}"
       }
     },
     {
       "id": "e_win_rescue",
-      "body": "<<FILL role=success words=94 beats='Mira sets the signal flashing its coded call for help, and before long lights answer from the harbour and the sea; the keeper's clever rig, meant as a warning, becomes the thing that finally brings everyone home'>>",
+      "body": "<<FILL role=success words=94 beats='{HERO} sets {CM_SIGNAL_RIG} flashing its coded call for help, and before long lights answer from the harbour and the sea; {KEEPER}'s clever rig, meant as a warning, becomes the thing that finally brings everyone home'>>",
       "is_ending": true,
       "ending": {
         "id": "e_rescue",
         "valence": "positive",
         "kind": "success",
-        "title": "The Call for Help"
+        "title": "{RESCUE_PRIZE}"
       }
     },
     {
       "id": "e_win_signal",
-      "body": "<<FILL role=success words=92 beats='Mira logs every mirror and shutter of the keeper's signal until she understands it whole; the ghost light was never a ghost, and her careful record turns a year of fear into a solved and ordinary wonder'>>",
+      "body": "<<FILL role=success words=92 beats='{HERO} logs every mirror and shutter of {CM_SIGNAL_RIG} until she understands it whole; the ghost light was never a ghost, and her careful record turns a year of fear into a solved and ordinary wonder'>>",
       "is_ending": true,
       "ending": {
         "id": "e_signal",
         "valence": "positive",
         "kind": "success",
-        "title": "The Signal Solved"
+        "title": "{SIGNAL_PRIZE}"
       }
     },
     {
       "id": "e_neutral_letter",
-      "body": "<<FILL role=ending words=86 beats='Mira slips the sealed letter into her coat and climbs out into the greying fog, the truth carried safe but unread; she will hand it to the right people in daylight and let them open it, content to have found it at all'>>",
+      "body": "<<FILL role=ending words=86 beats='{HERO} slips {CM_LETTER} into her coat and climbs out into the greying fog, the truth carried safe but unread; she will hand it to the right people in daylight and let them open it, content to have found it at all'>>",
       "is_ending": true,
       "ending": {
         "id": "e_letter",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Sealed Letter"
+        "title": "{LETTER_PRIZE}"
       }
     },
     {
       "id": "e_neutral_honest",
-      "body": "<<FILL role=ending words=86 beats='leaving the jewelled compass exactly where it lay, Mira photographs the hoard and climbs out with clean hands; she has not caught anyone tonight, but she has learned what she will and will not do, and walks home wiser'>>",
+      "body": "<<FILL role=ending words=86 beats='leaving {CM_COMPASS} exactly where it lay, {HERO} photographs the hoard and climbs out with clean hands; she has not caught anyone tonight, but she has learned what she will and will not do, and walks home wiser'>>",
       "is_ending": true,
       "ending": {
         "id": "e_honest",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Clean Hands"
+        "title": "{HONEST_PRIZE}"
       }
     },
     {
       "id": "e_neutral_town",
-      "body": "<<FILL role=ending words=86 beats='the fog is too thick and the hour too late; Mira heads back to town with a head full of what she has seen, the mystery not yet solved but no longer hers to fear, and a story she cannot wait to tell by daylight'>>",
+      "body": "<<FILL role=ending words=86 beats='the fog is too thick and the hour too late; {HERO} heads back to town with a head full of what she has seen, the mystery not yet solved but no longer hers to fear, and a story she cannot wait to tell by daylight'>>",
       "is_ending": true,
       "ending": {
         "id": "e_town",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Back to Town"
+        "title": "{TOWN_PRIZE}"
       }
     },
     {
       "id": "e_neutral_evidence",
-      "body": "<<FILL role=ending words=86 beats='Mira leaves the keeper's journal open on the desk like a signpost and marks the tunnel with chalk arrows for whoever comes next; she carries out only what she saw, trusting the grown-ups to follow the trail she has laid'>>",
+      "body": "<<FILL role=ending words=86 beats='{HERO} leaves {JOURNAL} open on the desk like a signpost and marks the tunnel with chalk arrows for whoever comes next; she carries out only what she saw, trusting the grown-ups to follow the trail she has laid'>>",
       "is_ending": true,
       "ending": {
         "id": "e_evidence",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Signpost"
+        "title": "{EVIDENCE_PRIZE}"
       }
     },
     {
       "id": "e_neutral_museum",
-      "body": "<<FILL role=ending words=86 beats='the keeper's journal goes home under Mira's arm to be handed to the town in the morning; it is proof enough to bring the right people back, and she leaves the deciding of what happens next to older and wiser heads'>>",
+      "body": "<<FILL role=ending words=86 beats='{JOURNAL} goes home under {HERO}'s arm to be handed to the town in the morning; it is proof enough to bring the right people back, and she leaves the deciding of what happens next to older and wiser heads'>>",
       "is_ending": true,
       "ending": {
         "id": "e_museum",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Journal Home"
+        "title": "{MUSEUM_PRIZE}"
       }
     }
   ]

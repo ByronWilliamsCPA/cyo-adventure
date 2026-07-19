@@ -702,13 +702,13 @@ state win_gate #FFE0B2
 win_gate : climax · 88w
 state win_clean #C8E6C9
 win_clean : success (positive)
-win_clean : "The Clean Run"
+win_clean : "{WIN_CLEAN_TITLE}"
 state win_costly #C8E6C9
 win_costly : completion (positive)
-win_costly : "The Costly Run"
+win_costly : "{WIN_COSTLY_TITLE}"
 state win_quiet #E0E0E0
 win_quiet : completion (neutral)
-win_quiet : "The Quiet Arrival"
+win_quiet : "{WIN_QUIET_TITLE}"
 sup0 --> sup1 : Take her out.
 sup1 --> st01_ap0 : Line up on the first mark.
 st01_ap0 --> st01_gate : Go on.

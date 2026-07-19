@@ -1,0 +1,7 @@
+PASS 1. run_gate(skeleton) not blocked
+PASS opt. structure_fingerprint matches the pre-migration manifest
+PASS 2. contract loads and schema-validates
+PASS 3. declared forbid bundle ids are known
+PASS 4. default_binding passes validate_slot_bindings
+PASS 5. a synthesized graphic binding on 'ALL_GRANDMOTHER_PRIZE' is rejected
+PASS 6. render_bound_skeleton(default_binding) succeeds, no residual tokens

@@ -1,0 +1,93 @@
+{
+  "beats": {
+    "n_park": "{HERO} and {COMPANION} are at {THRESHOLD}; {GOAL} is tied to her wrist with a floppy bow; it bobs and tugs in the {TONE_MOTIF} like it wants to play; {HERO} skips down the path to show the {ROUTE_A_CREATURE}",
+    "n_slip": "a big {TONE_MOTIF} whooshes by and the floppy bow wiggles loose; {GOAL} slips off {HERO}'s wrist and floats up, up, just past her fingertips; {COMPANION} takes her hand and says quick, let's follow it",
+    "n_run": "they trot after {GOAL} as it bounces along on the {TONE_MOTIF}, red and round against the blue sky; it drifts ahead of them toward the spot where the park path splits in two",
+    "n_fork": "at the fork {GOAL} hangs in the air as if it is choosing too; the left path is {ROUTE_A_PATH} to {ROUTE_A_LURE} and it dips low that way; the right path is {ROUTE_B_PATH} to {ROUTE_B_LURE} and the {TONE_MOTIF} tugs it high that way",
+    "n_pond": "down by {ROUTE_A_LURE} {GOAL} skims low over the water, its string trailing like a little tail; {ROUTE_A_CREATURE} quack and paddle after it in a bumpy line; it drifts toward {ROUTE_A_LANDMARK}",
+    "n_ducks": "{HERO} and {COMPANION} hurry along the bank while a line of {ROUTE_A_CREATURE} paddles beside them, quacking a cheer; up ahead, the string catches in {ROUTE_A_LANDMARK}",
+    "n_reeds": "{GOAL} bobs above the reeds, its string tangled just out of reach over the water; {A1_APPROACH} lead out toward {A1_ZONE}, and {A2_GUIDE} waves from her little boat; {HERO} gets to pick how to get close",
+    "n_stones": "holding {COMPANION}'s hand, {HERO} tiptoes from stone to stone, splish, steady, splish; the {ROUTE_A_CREATURE} watch like an audience; at the last stone {GOAL} bobs in the twigs of {A1_ZONE} right above her head",
+    "n_willow": "the string of {GOAL} is looped loosely on a bendy twig of {A1_ZONE}, just a little too high; {COMPANION} spots {A1_OFFER1} by the bank, and {A1_OFFER2} keeps puffing at the leaves; {HERO} can reach up with {A1_OFFER1} or wait for {A1_OFFER2} to lift the string free",
+    "n_stick": "{COMPANION} holds {HERO} steady while she stretches {A1_OFFER1} way, way up; the tip nudges the loop of string and it slides down the twig, closer and closer to her open hand",
+    "n_catch_end": "the string drops right into {HERO}'s hand; got it; she winds it twice around her wrist and {COMPANION} ties the bow extra tight; the {ROUTE_A_CREATURE} quack a hooray and {A1_ZONE} waves; {HERO} and {COMPANION} walk home with {GOAL} bouncing proudly",
+    "n_breeze": "{HERO} and {COMPANION} sit still on the last stone and watch; {A1_OFFER2} puffs once, twice, and the string slips free of the twig; but instead of coming down, {GOAL} floats gently out over {A1_PRIZE2_ZONE}",
+    "n_drift": "{GOAL} drifts down and lands softly on {A1_PRIZE2_ZONE}, round and red like a little boat; one by one the {ROUTE_A_CREATURE} paddle over to it, circling it slowly, as if it is a brand new friend",
+    "n_parade_end": "the {ROUTE_A_CREATURE} paddle in a proud circle around {GOAL}, quacking a happy song, and the littlest one bobs beside it like a tiny guard; {HERO} giggles and waves from the stones; her balloon has become the leader of the parade, and that feels like a happy trade",
+    "n_boat": "{A2_GUIDE} glides her little boat to the bank and helps {HERO} and {COMPANION} aboard; everyone holds on snug; out on {ROUTE_A_LURE} {GOAL} bobs low over the water, its string dancing on the ripples",
+    "n_pedal": "they pedal and pedal, splish splash splish; the {ROUTE_A_CREATURE} race alongside like an escort; {GOAL} skips ahead on the {TONE_MOTIF}, straight toward {A2_ZONE}",
+    "n_fountain": "{A2_ZONE} sprays a cool silver mist and {GOAL} bounces softly on top of it, boing, boing, like the fountain is juggling it; then it rolls down the spray, sliding closer and closer to the boat",
+    "n_boat_end": "plop; {GOAL} rolls right off the spray and lands in {HERO}'s open arms, cool and misty; {A2_GUIDE} cheers and the {ROUTE_A_CREATURE} quack hooray; they pedal back to shore with the balloon riding in {HERO}'s lap like a round red captain",
+    "n_hill": "up {ROUTE_B_LURE} they go, puff puff; {GOAL} climbs higher too, a round red dot against the white clouds; from partway up, {HERO} hears {ROUTE_B_SIGN} on the hillside and sees {ROUTE_B_CREATURE} swooping at the top",
+    "n_bell": "{ROUTE_B_SIGN} comes from {B1_ZONE} with {B1_LANDMARK}, parked on the hillside; above it, the {ROUTE_B_CREATURE} fly swooping kites at the very top; {GOAL} wobbles in between them",
+    "n_hillside": "{GOAL} dips low toward {B1_ZONE}'s {B1_LANDMARK}, then bobs up toward the {ROUTE_B_CREATURE} at {B2_ZONE}; it cannot make up its mind; {COMPANION} squeezes {HERO}'s hand and says she gets to pick where they try to catch it",
+    "n_cart": "just as they reach {B1_ZONE}, {GOAL} bumps softly against {B1_LANDMARK} and its string wraps once around the pole; {B1_GUIDE} looks up from his scoops and smiles at his new balloon customer",
+    "n_umbrella": "the string is wound around the pole up where {B1_LANDMARK} spreads, too high for {HERO}; {B1_GUIDE} is very tall, and he keeps {B1_TOOL} behind the cart; {HERO} can ask him to reach it down or climb the stool and try herself",
+    "n_reachup": "{B1_GUIDE} wipes his hands, stands on his tiptoes, and unwinds the string, one loop, two loops; he catches {GOAL} before it can wiggle away and bows like a fancy waiter",
+    "n_sundae_end": "{B1_GUIDE} hands {HERO} {GOAL} like it is the fanciest sundae on the menu, and adds one small strawberry scoop for the brave balloon chaser; {HERO} ties the string tight, licks her ice cream, and grins at {COMPANION}; what a delicious rescue",
+    "n_stool": "{HERO} climbs {B1_TOOL} while {COMPANION} holds her steady; she stretches way up on her tiptoes and her fingertips just brush the very end of the dangling string; almost, almost",
+    "n_gust": "right then a big {TONE_MOTIF} swoops over the hill; the string spins loose off the pole, hops past {HERO}'s fingers, and {GOAL} sails up and away over the treetops, smaller and smaller",
+    "n_goodbye_end": "{HERO}'s chin wobbles as the red dot winks away behind the trees; {B1_GUIDE} says a balloon chaser deserves a red treat and hands her a strawberry cone; {COMPANION} hugs her close; the ice cream is sweet and cold, and next park day they will pick a new balloon together",
+    "n_top": "at {B2_ZONE} {GOAL} rises in among the kites, bobbing like a round red kite that lost its tail; a kite kid named {B2_FRIEND} grins and says her {B2_TOOL} can help",
+    "n_kites": "{B2_FRIEND} lets out string and her {B2_TOOL} swoops up beside {GOAL}; its long ribbon tail twirls gently around the string, soft as a hug, and holds on tight",
+    "n_reel": "hand over hand, {HERO} and {B2_FRIEND} wind the reel together; down come the {B2_TOOL} and {GOAL}, spinning slowly like leaves, lower and lower, until the string brushes {HERO}'s hands",
+    "n_kite_end": "{HERO} holds {GOAL} at last and {B2_FRIEND} takes back her clever {B2_TOOL}; all the {ROUTE_B_CREATURE} cheer from the hilltop; {COMPANION} ties the string with a double bow, and {HERO} and her brand new friend fly one more kite before home"
+  },
+  "titles": {
+    "n_catch_end": "{A1_PRIZE1}",
+    "n_parade_end": "{A1_PRIZE2}",
+    "n_boat_end": "{A2_PRIZE}",
+    "n_sundae_end": "{B1_PRIZE1}",
+    "n_goodbye_end": "{B1_PRIZE2}",
+    "n_kite_end": "{B2_PRIZE}"
+  },
+  "labels": {
+    "n_slip": {
+      "c_chase_balloon": "Chase {GOAL}!"
+    },
+    "n_fork": {
+      "c_down_pond": "Follow it down to {ROUTE_A_LURE}.",
+      "c_up_hill": "Follow it up {ROUTE_B_LURE}."
+    },
+    "n_pond": {
+      "c_round_pond": "Hurry around {ROUTE_A_LURE}."
+    },
+    "n_ducks": {
+      "c_to_reeds": "Go to {ROUTE_A_LANDMARK}."
+    },
+    "n_reeds": {
+      "c_stones": "Tiptoe across {A1_APPROACH}.",
+      "c_boat": "Wave to {A2_GUIDE}."
+    },
+    "n_stones": {
+      "c_under_willow": "Stop under {A1_ZONE}."
+    },
+    "n_willow": {
+      "c_stick": "Reach up with {A1_OFFER1}.",
+      "c_breeze": "Wait for {A1_OFFER2} to help."
+    },
+    "n_boat": {
+      "c_pedal": "Pedal after {GOAL}."
+    },
+    "n_pedal": {
+      "c_to_fountain": "Follow it to {A2_ZONE}."
+    },
+    "n_bell": {
+      "c_see_where": "See where {GOAL} goes."
+    },
+    "n_hillside": {
+      "c_to_cart": "Run to {B1_ZONE}.",
+      "c_to_top": "Climb up to the {ROUTE_B_CREATURE}."
+    },
+    "n_umbrella": {
+      "c_ask_man": "Ask {B1_GUIDE} to reach it.",
+      "c_try_stool": "Climb {B1_TOOL} and try."
+    },
+    "n_reachup": {
+      "c_take_back": "Take {GOAL} back."
+    },
+    "n_top": {
+      "c_ask_jo": "Ask {B2_FRIEND} to try."
+    }
+  }
+}

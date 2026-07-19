@@ -65,81 +65,81 @@ state r_show #FFF9C4
 r_show : choice · 75w
 state e_set_compost #FFCDD2
 e_set_compost : setback (negative)
-e_set_compost : "The Wiggly Worm Detour"
+e_set_compost : "{B3_SETBACK}"
 state e_set_splash #FFCDD2
 e_set_splash : setback (negative)
-e_set_splash : "One Squishy Boot"
+e_set_splash : "{E3_SETBACK}"
 state e_set_dash #FFCDD2
 e_set_dash : setback (negative)
-e_set_dash : "A Flash of White Tail"
+e_set_dash : "{F3_SETBACK}"
 state e_patch #C8E6C9
 e_patch : completion (positive)
-e_patch : "The Bunny Buffet"
+e_patch : "{G_PRIZE}"
 state e_fence #C8E6C9
 e_fence : success (positive)
-e_fence : "A Fence with a Gate"
+e_fence : "{H_PRIZE}"
 state e_share #C8E6C9
 e_share : completion (positive)
-e_share : "The Shared Garden"
+e_share : "{I1_PRIZE}"
 state e_watch #C8E6C9
 e_watch : success (positive)
-e_watch : "Rabbit Watchers on Duty"
-n_start --> n_clue : Take a closer look at the nibbled lettuc...
-n_clue --> n_hub : Start at the path circle where all the p...
-n_hub --> lb_prints : Search the lettuce beds for footprints.
-n_hub --> cc_tunnel : Poke around the compost corner.
-n_hub --> ts_shed : Check inside the tool shed.
-n_hub --> sf_row : Walk down the sunflower row.
-n_hub --> pe_pond : Look for clues along the pond edge.
-n_hub --> wc_approach : Head for the quiet willow at the back.
-lb_prints --> lb_sketch : Sketch the footprints in your notebook.
+e_watch : "{I2_PRIZE}"
+n_start --> n_clue : Take a closer look at the nibbled {CROP}...
+n_clue --> n_hub : Start at {HUB} where all the paths meet.
+n_hub --> lb_prints : Search {ROUTE_A_ZONE} for footprints.
+n_hub --> cc_tunnel : Poke around {ROUTE_B_ZONE}.
+n_hub --> ts_shed : Check inside {ROUTE_C_ZONE}.
+n_hub --> sf_row : Walk down {ROUTE_D_ZONE}.
+n_hub --> pe_pond : Look for clues along {ROUTE_E_ZONE}.
+n_hub --> wc_approach : Head for {DESTINATION} at the back.
+lb_prints --> lb_sketch : Sketch the footprints in {NOTEBOOK}.
 lb_prints --> lb_follow : Follow the footprints right away.
-lb_sketch --> n_hub : Go back to the path circle.
-lb_sketch --> wc_approach : Follow the prints toward the willow corn...
-lb_follow --> n_hub : Head back to the path circle.
-lb_follow --> wc_approach : Trail the prints toward the willow corne...
-cc_tunnel --> cc_peek : Lie down and peek into the tunnel.
-cc_tunnel --> cc_fence : Check where the tunnel comes out past th...
-cc_tunnel --> e_set_compost : Dig through the compost heap for buried ...
-cc_peek --> n_hub : Return to the path circle.
-cc_peek --> wc_approach : Head toward the willow corner.
-cc_fence --> n_hub : Go back to the path circle.
-cc_fence --> wc_approach : Follow the nibbled trail to the willow c...
-ts_shed --> ts_open : Open the lunchbox carefully.
-ts_shed --> ts_look : Look around the shed for more signs.
-ts_open --> ts_marco : Go ask Marco about the lunchbox.
-ts_open --> n_hub : Take the clue back to the path circle.
-ts_look --> n_hub : Head back to the path circle.
-ts_look --> wc_approach : Follow the crumb trail toward the willow...
-ts_marco --> n_hub : Go back to the path circle.
-ts_marco --> wc_approach : Head for the willow corner.
-sf_row --> sf_crawl : Crawl along the tiny path under the stem...
-sf_row --> sf_bench : Climb the bench to look over the whole r...
-sf_crawl --> n_hub : Back out to the path circle.
-sf_crawl --> wc_approach : Keep following the tiny path to the will...
-sf_bench --> n_hub : Hop down and go to the path circle.
-sf_bench --> wc_approach : Head straight for the willow corner.
+lb_sketch --> n_hub : Go back to {HUB}.
+lb_sketch --> wc_approach : Follow the prints toward {DESTINATION}.
+lb_follow --> n_hub : Head back to {HUB}.
+lb_follow --> wc_approach : Trail the prints toward {DESTINATION}.
+cc_tunnel --> cc_peek : Lie down and peek into {B_LANDMARK}.
+cc_tunnel --> cc_fence : Check where {B_LANDMARK} comes out past ...
+cc_tunnel --> e_set_compost : Dig through {ROUTE_B_ZONE} for buried cl...
+cc_peek --> n_hub : Return to {HUB}.
+cc_peek --> wc_approach : Head toward {DESTINATION}.
+cc_fence --> n_hub : Go back to {HUB}.
+cc_fence --> wc_approach : Follow the nibbled trail to {DESTINATION...
+ts_shed --> ts_open : Open {C_FIND} carefully.
+ts_shed --> ts_look : Look around {ROUTE_C_ZONE} for more sign...
+ts_open --> ts_marco : Go ask {FRIEND} about {C_FIND}.
+ts_open --> n_hub : Take the clue back to {HUB}.
+ts_look --> n_hub : Head back to {HUB}.
+ts_look --> wc_approach : Follow the crumb trail toward {DESTINATI...
+ts_marco --> n_hub : Go back to {HUB}.
+ts_marco --> wc_approach : Head for {DESTINATION}.
+sf_row --> sf_crawl : Crawl along {D_LANDMARK}.
+sf_row --> sf_bench : Climb the bench to look over {ROUTE_D_ZO...
+sf_crawl --> n_hub : Back out to {HUB}.
+sf_crawl --> wc_approach : Keep following the path to {DESTINATION}...
+sf_bench --> n_hub : Hop down and go to {HUB}.
+sf_bench --> wc_approach : Head straight for {DESTINATION}.
 pe_pond --> pe_mud : Follow the little prints along the mud.
 pe_pond --> pe_reeds : Check the rustling reeds.
 pe_pond --> e_set_splash : Lean way out over the water for a closer...
-pe_mud --> n_hub : Return to the path circle.
-pe_mud --> wc_approach : Follow the hops toward the willow corner...
-pe_reeds --> n_hub : Go back to the path circle.
-pe_reeds --> wc_approach : Follow the prints to the willow corner.
+pe_mud --> n_hub : Return to {HUB}.
+pe_mud --> wc_approach : Follow the hops toward {DESTINATION}.
+pe_reeds --> n_hub : Go back to {HUB}.
+pe_reeds --> wc_approach : Follow the prints to {DESTINATION}.
 wc_approach --> wc_wait : Tiptoe close and wait as still as a stat...
-wc_approach --> wc_offer : Sit in the clover and hold out a lettuce...
+wc_approach --> wc_offer : Sit in the clover and hold out a {CROP} ...
 wc_approach --> e_set_dash : Dash over for a quick peek.
 wc_wait --> wc_watch : Keep watching quietly.
 wc_offer --> wc_watch : Stay very still and watch.
 wc_watch --> wc_reveal : Put all the clues together.
-wc_reveal --> r_patch : Plant a bunny patch just for the rabbits...
+wc_reveal --> r_patch : Plant a patch just for the {CREATURE}s.
 wc_reveal --> r_fence : Plan a low fence with a gate around the ...
-wc_reveal --> r_tell : Go tell Ms. Flores and the class.
-r_patch --> e_patch : Open the bunny buffet.
+wc_reveal --> r_tell : Go tell {MENTOR} and the class.
+r_patch --> e_patch : Open the {CREATURE} buffet.
 r_fence --> e_fence : Finish the little fence together.
-r_tell --> r_show : Lead everyone to the willow corner on ti...
-r_show --> e_share : Hang a friendly Rabbit Crossing sign.
-r_show --> e_watch : Make rabbit watching a class job.
+r_tell --> r_show : Lead everyone to {DESTINATION} on tiptoe...
+r_show --> e_share : Hang a friendly {CREATURE} crossing sign...
+r_show --> e_watch : Make {CREATURE} watching a class job.
 e_set_compost --> [*]
 e_set_splash --> [*]
 e_set_dash --> [*]

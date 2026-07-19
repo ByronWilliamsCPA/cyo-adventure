@@ -1,0 +1,440 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_baking_day_grandma_vole",
+  "version": 1,
+  "title": "Baking Day with Grandma Vole",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "family",
+      "patience",
+      "perseverance",
+      "baking"
+    ],
+    "estimated_minutes": 4,
+    "ending_count": 6,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=42 beats='morning light peeks into the willow hollow and Nell wakes to a warm toasty smell drifting from the potting shed; today is the best baking day of all with Uncle Otter; Nell hops out of bed and scampers down the mossy path'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_kitchen",
+          "label": "Scamper to the burrow kitchen.",
+          "target": "n_kitchen"
+        }
+      ]
+    },
+    {
+      "id": "n_kitchen",
+      "body": "<<FILL role=setup words=40 beats='Uncle Otter ties Nell's little apron in a bow and props up the old garden journal for sunflower seedlings; first the recipe needs the big clay pot from the shelf; Nell rolls up his sleeves, ready to help'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kitchen_bowl",
+          "label": "Go get the big brown bowl.",
+          "target": "n_bowls"
+        }
+      ]
+    },
+    {
+      "id": "n_bowls",
+      "body": "<<FILL role=choice words=42 beats='the kitchen bowls stand in a wobbly stack of pots on the low shelf, and the big clay pot sits at the very bottom of the stack; Nell reaches out his paws; he can lift the top bowls off one at a time or slide the bottom bowl out fast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bowls_lift",
+          "label": "Lift the top bowls off one at a time.",
+          "target": "n_bowl_ok"
+        },
+        {
+          "id": "c_bowls_slide",
+          "label": "Slide the big clay pot out from the bottom.",
+          "target": "n_bowl_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_bowl_oops",
+      "body": "<<FILL role=rising words=40 beats='a wobbly stack of pots teeters and totters and the bowls clatter down all around Nell, tumbling onto his tail with a thud; nothing breaks and nobody is hurt; Uncle Otter chuckles, says one at a time, little paws, and helps him stack the tower back up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bowloops_again",
+          "label": "Try the bowl shelf again.",
+          "target": "n_bowls"
+        }
+      ]
+    },
+    {
+      "id": "n_bowl_ok",
+      "body": "<<FILL role=rising words=36 beats='Nell lifts the bowls off one by one, steady and slow, until the big clay pot is free; he carries it to the table like a treasure; Uncle Otter gives his ears a proud pat; next the old garden journal says dark crumbly soil'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bowlok_flour",
+          "label": "Fetch the flour crock.",
+          "target": "n_flour"
+        }
+      ]
+    },
+    {
+      "id": "n_flour",
+      "body": "<<FILL role=choice words=42 beats='the potting soil bag sits open on the table, full to the brim with dark crumbly soil; Uncle Otter holds the big clay pot steady while Nell picks up the small tin scoop; he can scoop small scoops nice and slow or tip the whole crock over the bowl at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flour_scoop",
+          "label": "Scoop small scoops, nice and slow.",
+          "target": "n_flour_ok"
+        },
+        {
+          "id": "c_flour_tip",
+          "label": "Tip the potting soil bag over all at once.",
+          "target": "n_flour_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_flour_oops",
+      "body": "<<FILL role=rising words=40 beats='a big white cloud of dark crumbly soil poofs up and Nell sneezes the squeakiest sneeze, achoo, and now he has a smudge of soil on his nose; Uncle Otter giggles and wipes his nose with her apron, saying little scoops, slow paws; Nell dusts himself off, ready to try again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flouroops_again",
+          "label": "Dust off and scoop again.",
+          "target": "n_flour"
+        }
+      ]
+    },
+    {
+      "id": "n_flour_ok",
+      "body": "<<FILL role=rising words=36 beats='three soft scoops of dark crumbly soil whisper into the big clay pot, one, two, three; Uncle Otter peeks in and says just right, little baker; Nell beams proudly; now the old garden journal says tiny sunflower seeds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flourok_seeds",
+          "label": "Open the seed jar.",
+          "target": "n_seeds"
+        }
+      ]
+    },
+    {
+      "id": "n_seeds",
+      "body": "<<FILL role=choice words=44 beats='the seed packet glitters with tiny sunflower seeds, and the smooth grey pebble sits on top, saved to crown the biggest bun; Nell hugs the jar close; he can pour the seeds into the bowl in a slow gentle stream or shake the jar hard upside down to hurry'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_seeds_pour",
+          "label": "Pour the seeds in a gentle stream.",
+          "target": "n_seeds_ok"
+        },
+        {
+          "id": "c_seeds_shake",
+          "label": "Shake the jar hard upside down.",
+          "target": "n_acorn_chase"
+        }
+      ]
+    },
+    {
+      "id": "n_acorn_chase",
+      "body": "<<FILL role=rising words=40 beats='tiny sunflower seeds sprinkle every which way and the smooth grey pebble plops out, bounces off the table, and rolls away down the garden lane; Nell scampers after it past the toolshed and around the rain barrel, paws pattering, while Uncle Otter sweeps up the spill and laughs her warm laugh'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chase_catch",
+          "label": "Catch the smooth grey pebble!",
+          "target": "n_acorn_back"
+        }
+      ]
+    },
+    {
+      "id": "n_acorn_back",
+      "body": "<<FILL role=rising words=38 beats='the smooth grey pebble spins to a stop against Uncle Otter's slipper and Nell pounces on it with both paws, got it; he trots back to the table holding it high like a prize; Uncle Otter says gentle pours, no shakes, and hands him the seed packet again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_back_again",
+          "label": "Pour the seeds again, gently.",
+          "target": "n_seeds"
+        }
+      ]
+    },
+    {
+      "id": "n_seeds_ok",
+      "body": "<<FILL role=rising words=36 beats='tiny sunflower seeds patter into dark crumbly soil in a slow gentle stream and speckle it like freckles; the smooth grey pebble waits safely in Uncle Otter's pocket for the biggest bun; the old garden journal says the plant food bottle comes next, and it is Nell's favorite part'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_seedsok_honey",
+          "label": "Bring the plant food bottle.",
+          "target": "n_honey"
+        }
+      ]
+    },
+    {
+      "id": "n_honey",
+      "body": "<<FILL role=rising words=38 beats='Uncle Otter opens the plant food bottle and cups her warm paws over Nell's paws on the little trowel; together they drizzle a slow shiny spiral over the mixture, round and round; Nell licks one sweet drip off his thumb and grins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_stir",
+          "label": "Stir it all together.",
+          "target": "n_mix"
+        }
+      ]
+    },
+    {
+      "id": "n_mix",
+      "body": "<<FILL role=rising words=38 beats='Nell stirs the little trowel in slow round circles, like stirring soup, while Uncle Otter turns the big clay pot; the mixture hugs together into a soft speckled dough; Nell pokes it and it springs right back; Uncle Otter says now the dough needs a little nap to grow puffy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mix_rest",
+          "label": "Let the dough have a little nap.",
+          "target": "n_rest"
+        }
+      ]
+    },
+    {
+      "id": "n_rest",
+      "body": "<<FILL role=rising words=40 beats='the dough naps under a checked cloth by the warm stove while Nell and Uncle Otter sip cool lemonade in the big chair; Uncle Otter tells how she baked sunflower seedlings with her own grandma long ago in the potting shed; then she peeks under the cloth and the dough is puffy and ready'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rest_shape",
+          "label": "Shape the sunflower seedlings with Uncle Otter.",
+          "target": "n_shape"
+        }
+      ]
+    },
+    {
+      "id": "n_shape",
+      "body": "<<FILL role=choice words=42 beats='Uncle Otter dusts the table with dark crumbly soil and rolls one perfect round bun to show Nell how, smooth as a river pebble; the smooth grey pebble is ready to crown the biggest one; Nell pats his own lump of dough; he can roll neat round buns just like Uncle Otter's or squish fun shapes, swirly spirals and tiny hearts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shape_neat",
+          "label": "Roll neat round buns like Uncle Otter's.",
+          "target": "n_tray_neat"
+        },
+        {
+          "id": "c_shape_funny",
+          "label": "Squish fun shapes, swirly spirals and tiny hearts.",
+          "target": "n_tray_funny"
+        }
+      ]
+    },
+    {
+      "id": "n_tray_neat",
+      "body": "<<FILL role=rising words=38 beats='Nell rolls bun after bun, round and smooth, and lines them up on the tray in tidy rows; Uncle Otter presses the smooth grey pebble on top of the biggest one; the tray slides into the warm greenhouse and the willow hollow starts to smell wonderful'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_neat_oven",
+          "label": "Watch and wait by the warm greenhouse.",
+          "target": "n_oven"
+        }
+      ]
+    },
+    {
+      "id": "n_tray_funny",
+      "body": "<<FILL role=rising words=38 beats='Nell squishes swirly spirals and tiny hearts, and a bun shaped just like his straw sun hat; Uncle Otter laughs her happy laugh and presses the smooth grey pebble onto the snail; the tray slides into the warm greenhouse and the willow hollow starts to smell wonderful'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_funny_oven",
+          "label": "Watch and wait by the warm greenhouse.",
+          "target": "n_oven_funny"
+        }
+      ]
+    },
+    {
+      "id": "n_oven",
+      "body": "<<FILL role=choice words=40 beats='through the warm greenhouse's little window Nell watches his round buns puff up fatter and fatter; the willow hollow smells of the plant food bottle and toasty seeds; Uncle Otter says the wind chime will ting when they are done; Nell can wait for the wind chime or open the door for a tiny peek'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oven_wait",
+          "label": "Wait for the wind chime.",
+          "target": "n_golden"
+        },
+        {
+          "id": "c_oven_peek",
+          "label": "Open the door for a tiny peek.",
+          "target": "n_peek_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_peek_oops",
+      "body": "<<FILL role=rising words=38 beats='Nell opens the warm greenhouse's door a crack and warm air whooshes out, whoosh, and the buns sigh and slump a little; Uncle Otter closes the door gently and whispers that buns need their beauty sleep; sure enough the buns begin to puff right back up while Nell hums a waiting song'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_peek_again",
+          "label": "Wait by the warm greenhouse again.",
+          "target": "n_oven"
+        }
+      ]
+    },
+    {
+      "id": "n_golden",
+      "body": "<<FILL role=choice words=42 beats='ting goes the wind chime and Uncle Otter slides out a tray of golden sunflower seedlings, round and perfect, steam curling off their tops and the smooth grey pebble shining on the biggest one; Nell claps his floury paws; now comes the very best part of baking day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_golden_teatime",
+          "label": "Have a cool lemonade picnic with Uncle Otter.",
+          "target": "e_teatime"
+        },
+        {
+          "id": "c_golden_neighbors",
+          "label": "Take warm sunflower seedlings to the neighbors.",
+          "target": "e_neighbors"
+        },
+        {
+          "id": "c_golden_admire",
+          "label": "Line up the batch on the windowsill.",
+          "target": "e_perfect"
+        }
+      ]
+    },
+    {
+      "id": "n_oven_funny",
+      "body": "<<FILL role=choice words=40 beats='through the warm greenhouse's little window the star points turn golden and the snail bun puffs up round; the willow hollow smells of the plant food bottle and toasty seeds; Uncle Otter says the wind chime will ting when they are done; Nell can wait for the wind chime or open the door for a tiny peek'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ofunny_wait",
+          "label": "Wait for the wind chime.",
+          "target": "n_funny_out"
+        },
+        {
+          "id": "c_ofunny_peek",
+          "label": "Open the door for a tiny peek.",
+          "target": "n_funny_peek"
+        }
+      ]
+    },
+    {
+      "id": "n_funny_peek",
+      "body": "<<FILL role=rising words=38 beats='Nell cracks the door open and a puff of warm steam curls his whiskers into silly squiggles; Uncle Otter laughs softly and shuts the door, saying the steam likes to stay in with the buns; Nell pats his whiskers flat and watches the wiggly shapes keep puffing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fpeek_again",
+          "label": "Wait by the warm greenhouse again.",
+          "target": "n_oven_funny"
+        }
+      ]
+    },
+    {
+      "id": "n_funny_out",
+      "body": "<<FILL role=choice words=42 beats='ting goes the wind chime and out comes the funniest tray in the willow hollow, a golden star, a curly snail with the smooth grey pebble on top, and a bun just like his straw sun hat; Nell and Uncle Otter giggle together; now comes the very best part of baking day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fout_taste",
+          "label": "Taste the wiggly star bun first.",
+          "target": "e_funny"
+        },
+        {
+          "id": "c_fout_recipe",
+          "label": "Draw the new sunflower seedlings on the old garden journal.",
+          "target": "e_recipe"
+        },
+        {
+          "id": "c_fout_neighbors",
+          "label": "Show the silly sunflower seedlings to the neighbors.",
+          "target": "e_silly"
+        }
+      ]
+    },
+    {
+      "id": "e_teatime",
+      "body": "<<FILL role=completion words=44 beats='Nell and Uncle Otter spread the checked cloth under the round window and share warm sunflower seedlings with cool lemonade, just the two of them; the plant food bottle is sweet and the seeds go crunch; Nell snuggles under Uncle Otter's arm, already dreaming of the next baking day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_teatime",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Garden Afternoon for Two"
+      }
+    },
+    {
+      "id": "e_neighbors",
+      "body": "<<FILL role=completion words=44 beats='Nell carries the basket of warm sunflower seedlings down the garden lane and knocks on every round door; the rabbit sisters and old Mister Heron sniff the sweet smell and cheer; soon the willow hollow is munching happily, and everyone says Nell is a proper little baker now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_neighbors",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Fresh Blooms for the Whole Hollow"
+      }
+    },
+    {
+      "id": "e_perfect",
+      "body": "<<FILL role=completion words=44 beats='Nell lines the golden sunflower seedlings along the windowsill in a proud tidy row, with the bun crowned by the smooth grey pebble in the middle like a little king; Uncle Otter counts them and every single one is just right; she tells Nell he tried and tried until he got it, and that is what makes a perfect batch'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_perfect",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Perfect Tidy Row"
+      }
+    },
+    {
+      "id": "e_funny",
+      "body": "<<FILL role=completion words=44 beats='Nell bites the wiggly star bun while it is still warm and sweet, and it is the most delicious bun he has ever tasted; Uncle Otter tries the hat-shaped bun and declares it scrumptious; the sunflower seedlings look funny and taste wonderful, and that is the very best kind of bun'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_funny",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Silly Shapes, Happy Blooms"
+      }
+    },
+    {
+      "id": "e_recipe",
+      "body": "<<FILL role=completion words=44 beats='Uncle Otter fetches her pen and Nell draws a star bun, a snail bun, and a hat bun right on the old garden journal, next to the writing from long ago; Uncle Otter writes Nell's Wiggly Buns underneath; together they have discovered a brand-new family recipe to bake forever'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_recipe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "A Brand-New Garden Tradition"
+      }
+    },
+    {
+      "id": "e_silly",
+      "body": "<<FILL role=completion words=44 beats='Nell parades the funny tray down the garden lane and the neighbors come peeking out of every round door; the rabbit sisters pick the star, old Mister Heron picks the hat, and everyone giggles and munches; silly sunflower seedlings, it turns out, make the willow hollow smile'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_silly",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Playful Blooms Delight the Hollow"
+      }
+    }
+  ]
+}

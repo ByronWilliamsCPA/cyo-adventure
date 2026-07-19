@@ -1,0 +1,2086 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_conservatory_wars",
+  "version": 1,
+  "title": "The Conservatory Wars",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "talent and work",
+      "pressure from home",
+      "rivalry into friendship",
+      "integrity",
+      "music"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 26,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "sorting_hat",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=150 beats='Kavi Oduya, fifteen, climbs from the river ferry to Thornfield Maritime Academy on its hill above Gravesend Point; the scholarship letter folded soft from rereading; her grandfather's sextant in a secondhand case and a notebook of margin tunes in her coat; head custodian Mr. Delgado hauls her trunk and points out Ironwood Hall with its famous windows and infamous wiring; the terms of the scholarship plain on the page, end the term in good standing with a studio; downriver the delta fishing towns, where everyone knows the Harbor Shanty; three studios, one choice coming, a whole term balanced on it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Follow Mr. Delgado up to the Launch Day Trials.",
+          "target": "n_recital"
+        }
+      ]
+    },
+    {
+      "id": "n_recital",
+      "body": "<<FILL role=rising words=168 beats='the Launch Day Trials, first Friday of term, Ironwood Hall packed; Coach Ines Solberg's strings play the Windward Reckoning with senior soloist Talia Bregman, exact as clockwork and twice as alive; the composition studio presents Squall Sketch by third-year Emory Voss, who bows in a a tarred canvas cap with ink on his fingers; Captain Mireille Anouk's choir sings the Deep-Water Anthem, and in the last verse the hall lights flicker, and Captain Mireille Anouk jokes about the wiring while Warden Colette Fen, clipboard on his knee, does not laugh; then the announcement that changes the term, this year the Regatta Day will for the first time combine all three studios in one piece; new students choose their studio tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_recital_1",
+          "label": "Join the line at the registrar's table.",
+          "target": "n_sort"
+        }
+      ]
+    },
+    {
+      "id": "n_sort",
+      "body": "<<FILL role=choice words=178 beats='the registrar's table under the founder's portrait, three lines on one form; navigation under Coach Ines Solberg, who reworks one bar until it is true and whose section leader is Talia Bregman herself; shipwrighting under Instructor Rafael Duarte, whose studio is full of disagreeing clocks and who teaches by riddles, with Emory Voss as studio aide; crew under Captain Mireille Anouk, who learned Kavi Oduya's name before Kavi Oduya gave it and who is fighting the board for the choral program's evening hours in the hall, with head chorister Basile Okonkwo at her elbow; Coach Ines Solberg demands, Instructor Rafael Duarte puzzles, Captain Mireille Anouk welcomes, and none of the three doors is the easy one; Kavi Oduya's pen hangs over the form; the choosing is hers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_sort_1",
+          "label": "Sign for navigation under Coach Ines Solberg.",
+          "target": "st01"
+        },
+        {
+          "id": "c_n_sort_2",
+          "label": "Sign for shipwrighting under Instructor Rafael Duarte.",
+          "target": "cm01"
+        },
+        {
+          "id": "c_n_sort_3",
+          "label": "Sign for crew under Captain Mireille Anouk.",
+          "target": "vo01"
+        }
+      ]
+    },
+    {
+      "id": "st01",
+      "body": "<<FILL role=choice words=158 beats='first navigation class in the long room, chairs ranked by desk, Kavi Oduya at the last desk of the second violas; Coach Ines Solberg assigns the term's first discipline, Solberg's drill, one bar of the Windward Reckoning played until it is true and no second bar before that; the metronome ticking like weather; Talia Bregman at the first desk making it look like breathing; the notebook of margin tunes heavy in Kavi Oduya's bag; two ways to survive a term like this and only one of her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_1",
+          "label": "Give Solberg's drill everything and shelve all else.",
+          "target": "st02"
+        },
+        {
+          "id": "c_st01_2",
+          "label": "Work Solberg's drill but keep the margin tunes alive.",
+          "target": "st38"
+        }
+      ]
+    },
+    {
+      "id": "st02",
+      "body": "<<FILL role=rising words=136 beats='the week of the bar; blisters ripening on her left hand; the bar true at slow tempo and false at speed; the last desk feeling like a verdict on gray mornings; Talia Bregman pausing behind her on Wednesday to watch her wrist without a word; Coach Ines Solberg's only comment all week, again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_1",
+          "label": "Keep at it until Thursday.",
+          "target": "st03"
+        }
+      ]
+    },
+    {
+      "id": "st03",
+      "body": "<<FILL role=choice words=152 beats='Thursday, Talia Bregman offers the loose-wrist trick her own first teacher gave her, knuckles soft, weight from the arm not the fingers; help passed from the first desk to the last is currency at Thornfield Maritime Academy and every chair in the room knows it; Coach Ines Solberg, passing with the metronome, says pain is information, not tuition, and moves on; pride and sense pulling opposite directions in Kavi Oduya's chest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_1",
+          "label": "Take Talia Bregman's help and learn the trick.",
+          "target": "st04"
+        },
+        {
+          "id": "c_st03_2",
+          "label": "Thank her, and prove the bar alone.",
+          "target": "st25"
+        }
+      ]
+    },
+    {
+      "id": "st04",
+      "body": "<<FILL role=rising words=138 beats='the trick lands; by Friday the bar rings true at tempo and Coach Ines Solberg gives one short nod, which the second violas swear is a parade; helm challenge posted on the board, any player may challenge for a higher desk before the Regatta Day, chairs re-ranked by a blind hearing; Talia Bregman signs Kavi Oduya's name up herself before Kavi Oduya can argue'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_1",
+          "label": "Prepare for helm challenge.",
+          "target": "st05"
+        }
+      ]
+    },
+    {
+      "id": "st05",
+      "body": "<<FILL role=rising words=140 beats='challenge preparation; second-year Junia Roth wants the same desk and stops saying good morning; the practice rooms at seven, at lunch, at dusk; Coach Ines Solberg assigns them the same excerpt on purpose, because a rival is just a colleague you have not needed yet; the edge between the two girls sharpening all week'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_1",
+          "label": "Play the blind hearing.",
+          "target": "st06"
+        }
+      ]
+    },
+    {
+      "id": "st06",
+      "body": "<<FILL role=rising words=134 beats='challenge day behind the screen; Kavi Oduya plays the excerpt true and a hair braver than safe; the ranking posts at supper, Kavi Oduya up two desks, Junia Roth's congratulations cold enough to skate on; that night the spring tide silvers the practice-wing windows, and the term tips toward winter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_1",
+          "label": "Walk into Monday.",
+          "target": "st07"
+        }
+      ]
+    },
+    {
+      "id": "st07",
+      "body": "<<FILL role=rising words=156 beats='the Monday after the spring tide, Mr. Delgado unlocking at six and the morning going wrong; in rigging locker the practice oars slicked with tallow, unplayable until rehaired though nothing is broken; next door the concert grand has the capstan jammed with wedges, and the signal flags missing from their locker, a scrap of tarred canvas on the latch; no forced entry anywhere, and the sign-out log shows the practice-wing key last signed to Talia Bregman and never signed back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_1",
+          "label": "Face the section on its worst day.",
+          "target": "st08"
+        }
+      ]
+    },
+    {
+      "id": "st08",
+      "body": "<<FILL role=choice words=150 beats='Tuesday, Talia Bregman accused; the key log, plus a week of her grumbling that combined rehearsals were eating the hall, is enough for the rumor mill; Junia Roth repeats it flat, some people hate sharing; the section leader's chair sits empty at rehearsal and Coach Ines Solberg conducts around it like a missing tooth; Kavi Oduya holding what she knows of Talia Bregman against what the log says'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_1",
+          "label": "Speak for Talia Bregman, straight to Coach Ines Solberg.",
+          "target": "st09"
+        },
+        {
+          "id": "c_st08_2",
+          "label": "Say less, and re-check the facts yourself.",
+          "target": "st13"
+        }
+      ]
+    },
+    {
+      "id": "st09",
+      "body": "<<FILL role=rising words=138 beats='Kavi Oduya speaks for Talia Bregman to Coach Ines Solberg, the trick, the lent kindness, the sense it does not make; Coach Ines Solberg listens without expression and says facts will serve her better than feeling, but carries both to Commodore Ashworth anyway; Wednesday evening Captain Mireille Anouk crosses the quad with the infirmary log under her arm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_1",
+          "label": "Stand with the section at assembly.",
+          "target": "st10"
+        }
+      ]
+    },
+    {
+      "id": "st10",
+      "body": "<<FILL role=rising words=140 beats='Thursday assembly; Nurse Petrakis's infirmary log read aloud, Talia Bregman there all Monday night with a fever, logged in and never out; the key ring lent days earlier to her accompanist and never returned; Commodore Ashworth clears her name in front of everyone, and the applause from the section starts at the last desks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_1",
+          "label": "Welcome Talia Bregman back.",
+          "target": "st11"
+        }
+      ]
+    },
+    {
+      "id": "st11",
+      "body": "<<FILL role=rising words=144 beats='Talia Bregman back at the first desk; Friday, at the first combined rehearsal for the Fleet Passage, Emory Voss stands up beside the repaired grand and says it all plainly, the soaped hair, the felt shims, the folios safe in the sail loft, and why; the studios speak for him and expulsion becomes probation and long hours at Bell's boatyard; Junia Roth, of all people, starts the section's applause when Talia Bregman shakes his hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_1",
+          "label": "Give December to the Fleet Passage.",
+          "target": "st12"
+        }
+      ]
+    },
+    {
+      "id": "st12",
+      "body": "<<FILL role=success words=132 beats='the Regatta Day, snow falling past the famous windows; the Harbor Shanty rising through strings and voices; in the last verse the old wiring flickers and lanterns come up along the stage lip like a second orchestra; Kavi Oduya and Junia Roth sharing one desk and one stand light, two names penciled on the same part; Warden Colette Fen pledging the the dock repair fund before the hall empties'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st12",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Two Names on One Desk"
+      }
+    },
+    {
+      "id": "st13",
+      "body": "<<FILL role=rising words=142 beats='the facts, checked in the librarian's ledger light; the key signed out but the ring lent onward days before the frost, a detail the rumor skipped; the thread on the folio cabinet fine green wool, not Talia Bregman's gray; Mr. Delgado mentions damp footprints that morning going toward the sail loft stairs, and mentions twice that those stairs are unlit and treacherous after dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_1",
+          "label": "Decide what to do with what you found.",
+          "target": "st14"
+        }
+      ]
+    },
+    {
+      "id": "st14",
+      "body": "<<FILL role=choice words=150 beats='everything Kavi Oduya has found laid out on her music stand like a score; Coach Ines Solberg is one flight up marking bowings, exact and fair and terrifying; the sail loft is across the dark quad, where the footprints pointed, stairs unlit, Mr. Delgado's warning still in her ears; the truth is close enough to touch and there are two ways to reach for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_1",
+          "label": "Bring it all to Coach Ines Solberg.",
+          "target": "st15"
+        },
+        {
+          "id": "c_st14_2",
+          "label": "Climb to the sail loft tonight.",
+          "target": "st18"
+        }
+      ]
+    },
+    {
+      "id": "st15",
+      "body": "<<FILL role=rising words=140 beats='Coach Ines Solberg hears the whole account without interrupting, then acts the way she rehearses, in order and at once; the lent ring to Commodore Ashworth, the wool thread to Captain Mireille Anouk, Wednesday the infirmary log, Thursday assembly and Talia Bregman cleared before the whole school; afterward Coach Ines Solberg tells Kavi Oduya she practiced the truth like a bar, and from Coach Ines Solberg that is a decoration'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_1",
+          "label": "Watch the search turn kind.",
+          "target": "st16"
+        }
+      ]
+    },
+    {
+      "id": "st16",
+      "body": "<<FILL role=rising words=144 beats='the search turns kind, because every harm was reversible, soap that washes out, felt that lifts away, folios missing but somewhere dry; whoever did it loved the instruments too much to break them, Coach Ines Solberg says, and the school starts asking who instead of hunting what; Friday morning Emory Voss walks into Commodore Ashworth's office before anyone names him, and says everything; probation, the shop bench, the folios home by supper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_1",
+          "label": "Carry the term to its last Friday.",
+          "target": "st17"
+        }
+      ]
+    },
+    {
+      "id": "st17",
+      "body": "<<FILL role=success words=130 beats='the Regatta Day, snow thick by curtain; the Windward Reckoning opening the night and the Harbor Shanty closing it; the flicker in the last verse, the lanterns, Warden Colette Fen's pledge; Talia Bregman playing the solo she nearly lost, and finding Kavi Oduya at the last desk afterward to say, in front of Coach Ines Solberg, that the truth had good hands this term'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st17",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The True Bar"
+      }
+    },
+    {
+      "id": "st18",
+      "body": "<<FILL role=rising words=146 beats='the sail loft at night, breath silver, stairs counted by hand; the choir folios stacked under a dust sheet, dry and safe and weighted square; and Emory Voss sitting beside them in his a tarred canvas cap, not dangerous, just wrecked; the story spilling out of him, her uncle's lost boat and a shortened trial week by the new schedule; he came back Tuesday night to undo all of it and Mr. Delgado had already changed the lock'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_1",
+          "label": "Choose what happens next.",
+          "target": "st19"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "st19",
+      "body": "<<FILL role=choice words=148 beats='cold loft, two scholarship kids and a stack of stolen music between them; Talia Bregman wears the blame until the truth moves, and every hour matters; Emory Voss is asking nothing, which is somehow worse; Kavi Oduya can sit down in the dust and walk him toward the truth by his own feet, or leave now and put it before Commodore Ashworth tonight, official and fast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st19_1",
+          "label": "Stay, and walk him to the truth.",
+          "target": "st20"
+        },
+        {
+          "id": "c_st19_2",
+          "label": "Go to Commodore Ashworth tonight.",
+          "target": "st23"
+        }
+      ]
+    },
+    {
+      "id": "st20",
+      "body": "<<FILL role=rising words=142 beats='they sit until the frost window pales, talking scholarships and fathers and the arithmetic of desperation; he agrees to carry it himself; Thursday the infirmary log clears Talia Bregman at assembly, and Friday, at the first combined rehearsal, Emory Voss stands and says everything with Kavi Oduya standing at his shoulder; the studios speak, expulsion becomes probation and the shop bench, the folios come down the loft stairs in his own arms'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st20_1",
+          "label": "Let December do its work.",
+          "target": "st21"
+        }
+      ]
+    },
+    {
+      "id": "st21",
+      "body": "<<FILL role=climax words=136 beats='December; Bell's boatyard shop smelling of rosin and glue while Emory Voss rehairs the bows he soaped, one by one; the Fleet Passage knitting three studios into one animal; Talia Bregman bringing her own bow to his bench first, which says more than the assembly did; snow beginning the afternoon of the concert; lanterns set out along the stage lip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st21_1",
+          "label": "Take your desk for the Regatta Day.",
+          "target": "st22"
+        }
+      ]
+    },
+    {
+      "id": "st22",
+      "body": "<<FILL role=completion words=128 beats='the Regatta Day; the Harbor Shanty in the middle movement, the flicker, the lanterns, the hall gone golden at its darkest moment; from her desk Kavi Oduya watches Emory Voss in the back row of the violins, playing repaired music on repaired instruments; some weights are not lifted, only shared, and the term ends with hers set down'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st22",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Weight He Carried"
+      }
+    },
+    {
+      "id": "st23",
+      "body": "<<FILL role=rising words=144 beats='Commodore Ashworth's office that same night; fair, thorough, and cold as the quad; Emory Voss hears the knock the next morning and does not run; suspension pending a hearing, the workshop hollow for two weeks; at the hearing Kavi Oduya testifies to the kind details, soap that washes out, felt that lifts away, and Talia Bregman, cleared, speaks too; probation, not expulsion, and it is right, and something in Kavi Oduya keeps asking whether there had been a kinder door first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st23_1",
+          "label": "Finish the term honestly.",
+          "target": "st24"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "st24",
+      "body": "<<FILL role=discovery words=126 beats='the Regatta Day, snow and lanterns; Emory Voss in the back row, mending slowly, the section closing around him like water over a stone; the truth got where it was going, and Kavi Oduya learns the thing the term wanted her to learn, that right and kind are two instruments, and the music is better when both play'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st24",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Colder Door"
+      }
+    },
+    {
+      "id": "st25",
+      "body": "<<FILL role=rising words=138 beats='alone with the bar on principle; the trick refused politely, the metronome merciless; by the second Thursday her wrist aches from the second knuckle to the elbow; Coach Ines Solberg stops beside her desk and says it again, slower, pain is information, not tuition, and waits one extra beat before walking on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st25_1",
+          "label": "Decide what the ache is telling you.",
+          "target": "st26"
+        }
+      ]
+    },
+    {
+      "id": "st26",
+      "body": "<<FILL role=choice words=148 beats='the ache and the calendar, side by side; helm challenge is coming, the bar is nearly true, and the wrist is asking for rest in a language Kavi Oduya has been refusing to hear; Coach Ines Solberg has now said it twice, plainly, which by studio arithmetic means it matters; rest is a week lost, pushing is the bar on schedule, and only one of those can be taken back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st26_1",
+          "label": "Rest the wrist as told.",
+          "target": "st27"
+        },
+        {
+          "id": "c_st26_2",
+          "label": "Practice through the ache.",
+          "target": "st34"
+        }
+      ]
+    },
+    {
+      "id": "st27",
+      "body": "<<FILL role=rising words=136 beats='rest, resentfully, then honestly; slow practice, the bar at half tempo until the motion is clean; the wrist unclenches by degrees; the bar comes true a week late and rings; late and true beats soon and almost, Coach Ines Solberg says, and moves her up one desk without a challenge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st27_1",
+          "label": "Meet the Monday after the spring tide.",
+          "target": "st28"
+        }
+      ]
+    },
+    {
+      "id": "st28",
+      "body": "<<FILL role=rising words=152 beats='the Monday after the spring tide; Mr. Delgado at six, rigging locker wrong; practice oars slicked with tallow, Kavi Oduya's own among them, unplayable and unbroken; next door the capstan jammed with wedges and the signal flags missing from their locker, a scrap of tarred canvas on the latch; no forced entry, the key log naming Talia Bregman; the section grieving the bows like family'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st28_1",
+          "label": "Hold steady through the accusation week.",
+          "target": "st29"
+        }
+      ]
+    },
+    {
+      "id": "st29",
+      "body": "<<FILL role=rising words=146 beats='Tuesday, Talia Bregman accused on the strength of the log; Kavi Oduya keeps her head down and her hands busy, learning bow rehairing at Bell's boatyard bench so her own loaner sings again; Wednesday Captain Mireille Anouk crosses the quad with the infirmary log, Thursday assembly clears Talia Bregman, the lent key ring surfacing, and the shop smells like the only honest room in the school'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st29_1",
+          "label": "Hear the truth on Friday.",
+          "target": "st30"
+        }
+      ]
+    },
+    {
+      "id": "st30",
+      "body": "<<FILL role=rising words=140 beats='Friday, first combined rehearsal, Emory Voss stands by the repaired grand and confesses everything, the desperation named out loud, her uncle's lost boat and a shortened trial week; probation and the shop bench where Kavi Oduya already works; afterward Coach Ines Solberg offers Kavi Oduya the inner-voice chair in the Fleet Passage's quartet passage, earned, she says, by a wrist that learned to listen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st30_1",
+          "label": "Take the quartet chair.",
+          "target": "st31"
+        }
+      ]
+    },
+    {
+      "id": "st31",
+      "body": "<<FILL role=rising words=134 beats='quartet rehearsals inside the middle movement, the Harbor Shanty setting; Kavi Oduya has known the tune since aboard her uncle's trawler and now it wears counterpoint like Sunday clothes; Emory Voss orchestrating the seam from the shop bench on probation; the four inner voices learning to breathe together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st31_1",
+          "label": "Play the final rehearsal.",
+          "target": "st32"
+        }
+      ]
+    },
+    {
+      "id": "st32",
+      "body": "<<FILL role=climax words=132 beats='the final rehearsal, snow starting at noon and not stopping; lanterns set along the stage lip against the wiring; Coach Ines Solberg rehearses the last verse twice, once for the notes and once, she says, for the dark; the hall breathing like a living thing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st32_1",
+          "label": "Walk out for the Regatta Day.",
+          "target": "st33"
+        }
+      ]
+    },
+    {
+      "id": "st33",
+      "body": "<<FILL role=success words=130 beats='the Regatta Day; the quartet passage rising clean out of the middle movement, her inner voice holding the chord's warm center; the flicker, the lanterns, Warden Colette Fen's pledge; Coach Ines Solberg's nod from the podium, longer this time; a term that began at the last desk ending inside the music's own weather, late and true'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st33",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Late and True"
+      }
+    },
+    {
+      "id": "st34",
+      "body": "<<FILL role=rising words=142 beats='she practices through the ache and the ache stops being information and becomes fact; Friday, mid-bar, a tremor runs her bow arm and the tone shears; Coach Ines Solberg stops the room, not unkindly, and walks her to Nurse Petrakis herself; a strained tendon, weeks of true rest, helm challenge and the concert chair gone in one sentence'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st34_1",
+          "label": "Let the term reshape itself.",
+          "target": "st35"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "st35",
+      "body": "<<FILL role=rising words=140 beats='the term reshaped; Kavi Oduya becomes the section's librarian, hands resting, ears growing; she watches the frost Monday and the soaped bows from the margins, watches Talia Bregman accused and cleared by the infirmary log, watches Emory Voss confess at the Friday rehearsal and begin his long repair at Bell's boatyard; the score opens to her like a building with the roof off'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st35_1",
+          "label": "Mark the parts for December.",
+          "target": "st36"
+        }
+      ]
+    },
+    {
+      "id": "st36",
+      "body": "<<FILL role=rising words=130 beats='December; the section plays her bowing marks now, small decisions of hers alive in other hands; Coach Ines Solberg leaves a concert ticket at her door with one line on the envelope, sections heal, so do wrists, spring auditions in March; the snow starts the afternoon of the concert'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st36_1",
+          "label": "Take your seat in the audience.",
+          "target": "st37"
+        }
+      ]
+    },
+    {
+      "id": "st37",
+      "body": "<<FILL role=failure words=134 beats='the Regatta Day from row twelve, her arm in its brace, the Harbor Shanty swelling without her and because of her, every bowing hers; the flicker, the lanterns, the hall gone golden; it aches worse than the tendon ever did and it teaches better; pain is information, and this year she finally wrote it down; March is four pages away'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st37",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pain Is Information"
+      }
+    },
+    {
+      "id": "st38",
+      "body": "<<FILL role=rising words=138 beats='the double life; Solberg's drill by daylight, margin tunes by lamplight, and both growing; mid-week the notebook slips from her stand at the end of rehearsal and lands open at Coach Ines Solberg's feet, a term's worth of small tunes looking up at the most exacting woman in the school'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st38_1",
+          "label": "Stand there while Coach Ines Solberg reads.",
+          "target": "st39"
+        }
+      ]
+    },
+    {
+      "id": "st39",
+      "body": "<<FILL role=rising words=140 beats='Coach Ines Solberg reads three pages in silence and hands the notebook back; her sentence, bring me the margin tune played truly, or shelve it until spring, both are honorable; Solberg's drill still due Friday; two disciplines now instead of one, and the weeks turn hard and bright'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st39_1",
+          "label": "Play the tune truly.",
+          "target": "st40"
+        }
+      ]
+    },
+    {
+      "id": "st40",
+      "body": "<<FILL role=rising words=144 beats='the margin tune played truly in the long room, Coach Ines Solberg listening with closed eyes; then the summons across the quad, because Instructor Rafael Duarte is gathering settings of the Harbor Shanty for the Fleet Passage's middle movement and Coach Ines Solberg has told him about a second viola with tunes in her margins; Instructor Rafael Duarte's studio full of disagreeing clocks, and at the piano, arranging, Emory Voss in his a tarred canvas cap'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st40_1",
+          "label": "Hear what Instructor Rafael Duarte is asking.",
+          "target": "st41"
+        }
+      ]
+    },
+    {
+      "id": "st41",
+      "body": "<<FILL role=choice words=154 beats='Instructor Rafael Duarte's offer, spoken like a riddle but plain enough, fold her margin tune into the Fleet Passage's middle movement as a countermelody to the Harbor Shanty, one voice among many with the credit shared, or keep it whole and hers for the spring recital; a tune knows its hour, Instructor Rafael Duarte says, but he will not say which hour this is; Emory Voss waits at the piano with kind, tired eyes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st41_1",
+          "label": "Give the tune to the Fleet Passage.",
+          "target": "st42"
+        },
+        {
+          "id": "c_st41_2",
+          "label": "Keep it for the spring recital.",
+          "target": "st49"
+        }
+      ]
+    },
+    {
+      "id": "st42",
+      "body": "<<FILL role=rising words=142 beats='the workshop; her countermelody threading under the Harbor Shanty, Emory Voss setting her line with a care that borders on tenderness; also the fray she cannot unsee, unanswered letters from home under a paperweight, the solo commission list on the wall, his name and the audition dates; talent up close looks a lot like worry wearing good clothes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st42_1",
+          "label": "Keep working toward mid-term.",
+          "target": "st43"
+        }
+      ]
+    },
+    {
+      "id": "st43",
+      "body": "<<FILL role=rising words=148 beats='the Monday after the spring tide; the workshop grand silenced, the capstan jammed with wedges, rigging locker's practice oars slicked with tallow, the signal flags missing from their locker with a green wool thread on the hinge; the key log naming Talia Bregman; no forced entry, nothing broken, everything reversible, which is somehow the strangest fact in the building'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st43_1",
+          "label": "Watch the accusation week unfold.",
+          "target": "st44"
+        }
+      ]
+    },
+    {
+      "id": "st44",
+      "body": "<<FILL role=rising words=138 beats='Tuesday, Talia Bregman accused; Wednesday, Captain Mireille Anouk and the infirmary log; Thursday, assembly, Nurse Petrakis's ledger, the lent key ring, Talia Bregman cleared before the school; the workshop limping forward on the repaired grand, her countermelody rehearsed around the mended keys; the green thread staying in Kavi Oduya's mind like a held note'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st44_1",
+          "label": "Be there on Friday.",
+          "target": "st45"
+        }
+      ]
+    },
+    {
+      "id": "st45",
+      "body": "<<FILL role=rising words=146 beats='Friday, first combined rehearsal; Emory Voss stands and says everything, and it lands hardest here, in the studio where he set her tune with such care; the desperation named, her uncle's lost boat and a shortened trial week; the studios speak for him, probation and Bell's boatyard bench; Kavi Oduya holding her line's manuscript, ink in his handwriting, not knowing where to put what she feels'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st45_1",
+          "label": "Go where the repair is happening.",
+          "target": "st46"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "st46",
+      "body": "<<FILL role=rising words=136 beats='Bell's boatyard shop; rehaired bows hanging in ranks like a choir; Emory Voss at the bench with soap-ruined hair in one hand and a hook in the other; Kavi Oduya says the forgiveness out loud instead of carrying it, and he sands the same spot for a long minute before he can answer; the countermelody stays in the movement, both their names on the manuscript'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st46_1",
+          "label": "Play the last rehearsal.",
+          "target": "st47"
+        }
+      ]
+    },
+    {
+      "id": "st47",
+      "body": "<<FILL role=climax words=132 beats='final rehearsal, snow at the windows; the middle movement whole now, the Harbor Shanty with her countermelody breathing under it; lanterns along the stage lip; Coach Ines Solberg rehearsing the last verse once for the notes and once for the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st47_1",
+          "label": "Take your desk for the concert.",
+          "target": "st48"
+        }
+      ]
+    },
+    {
+      "id": "st48",
+      "body": "<<FILL role=completion words=130 beats='the Regatta Day; her margin tune inside the ensemble's weather, one voice among many and stronger for it; the flicker, the lanterns, Warden Colette Fen's pledge to fix the wiring; in the program, under the middle movement, two names in small print that took the whole term to earn; the tune found its hour'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st48",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Margin Tune, Voiced"
+      }
+    },
+    {
+      "id": "st49",
+      "body": "<<FILL role=rising words=134 beats='the refusal, respected; a tune knows its hour, Instructor Rafael Duarte says again, apparently satisfied, and winds a clock; back to the Windward Reckoning with a lighter bag; the margin tune goes into the drawer whole, promised to spring, and Solberg's drill finally rings true the same week'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st49_1",
+          "label": "Carry the true bar into ensemble week.",
+          "target": "st49b"
+        }
+      ]
+    },
+    {
+      "id": "st49b",
+      "body": "<<FILL role=rising words=140 beats='the week the bar rings true pays out; a better desk at the Windward Reckoning read-through, the ensemble knitting around her; an errand takes her to Instructor Rafael Duarte's studio, where the aide in the a tarred canvas cap is kind about her margins again, genuinely kind, though something behind his eyes looks worn thin, like a man counting a private clock; late autumn tightening toward frost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st49b_1",
+          "label": "Meet the frost Monday.",
+          "target": "st50"
+        }
+      ]
+    },
+    {
+      "id": "st50",
+      "body": "<<FILL role=rising words=150 beats='the Monday after the spring tide; soaped bows, the wedged grand, the folios gone; and on the folio cabinet's hinge a scrap of tarred canvas on the latch that stops Kavi Oduya cold, because she has seen that scarf, draped over the piano bench in Instructor Rafael Duarte's studio, on the shoulders of the aide who was kind about her margins; the key log names Talia Bregman, and the thread says otherwise, quietly, to the one person who noticed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st50_1",
+          "label": "Decide what the thread is worth.",
+          "target": "st51"
+        }
+      ]
+    },
+    {
+      "id": "st51",
+      "body": "<<FILL role=rising words=148 beats='she carries the thread to Captain Mireille Anouk, who receives it the way she receives everything, seriously and kindly; Wednesday the infirmary log, Thursday assembly and Talia Bregman cleared; and the search changes key, because every harm was reversible, soap that washes out, felt that lifts away, whoever did it loved the instruments too much to break them, and at the assembly the key log itself is answered, Talia Bregman's ring had been lent out that week and never signed back, so the name on the page was never the hand on the door; and now the school is asking who wears green'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st51_1",
+          "label": "Let the kind search work.",
+          "target": "st52"
+        }
+      ]
+    },
+    {
+      "id": "st52",
+      "body": "<<FILL role=rising words=140 beats='Friday morning, before anyone names him, Emory Voss walks into Commodore Ashworth's office and says everything; the desperation, her uncle's lost boat and a shortened trial week; probation instead of expulsion when the studios speak, the folios down from the loft in his own arms, the long repair begun at Bell's boatyard bench; the kindest form the truth could have taken, and the thread helped it arrive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st52_1",
+          "label": "Give December to the Windward Reckoning.",
+          "target": "st53"
+        }
+      ]
+    },
+    {
+      "id": "st53",
+      "body": "<<FILL role=climax words=136 beats='December; the Windward Reckoning polished until it rings, the margin tune safe in its drawer like a saved seed; the Fleet Passage rehearsals knitting the studios together; snow beginning the afternoon of the concert, lanterns set out against the wiring, the hall filling with coats and breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st53_1",
+          "label": "Play the Regatta Day.",
+          "target": "st54"
+        }
+      ]
+    },
+    {
+      "id": "st54",
+      "body": "<<FILL role=discovery words=132 beats='the Regatta Day; the Windward Reckoning played truly from a better desk than September's; the Harbor Shanty, the flicker, the lanterns; her tune still hers, whole, waiting for spring, and the waiting feels like strength now instead of hiding; some music you give the ensemble, and some you grow in the dark until its hour strikes'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st54",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Hour of the Tune"
+      }
+    },
+    {
+      "id": "cm01",
+      "body": "<<FILL role=rising words=144 beats='Instructor Rafael Duarte's studio, forty clocks and none of them agreeing; the first assignment delivered like a riddle and left there, bring me four planks of weather; Emory Voss, the studio aide, hands out manuscript paper in his a tarred canvas cap, ink to the second knuckle, and warns her with a tired smile that Instructor Rafael Duarte never explains anything twice, or once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm01_1",
+          "label": "Take the riddle back to your room.",
+          "target": "cm02"
+        }
+      ]
+    },
+    {
+      "id": "cm02",
+      "body": "<<FILL role=rising words=138 beats='the studio writes storms all week, thunder in the left hand, lightning in the right; Kavi Oduya writes the drizzle over the mill roofs at home, small and gray and patient; doubt like a low ceiling; then Emory Voss's pencil note in her margin, this one is weather, the rest are scenery, and the ceiling lifts an inch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm02_1",
+          "label": "Bring the drizzle to Instructor Rafael Duarte.",
+          "target": "cm03"
+        }
+      ]
+    },
+    {
+      "id": "cm03",
+      "body": "<<FILL role=choice words=150 beats='Instructor Rafael Duarte hears every setting and says nothing about any of them, only winds his clocks; a silent teacher is its own riddle; some students corner him with questions, others wait him out like weather; Kavi Oduya has one Friday and one nerve left, and two ways to spend them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm03_1",
+          "label": "Ask Instructor Rafael Duarte straight out what the riddle means.",
+          "target": "cm04"
+        },
+        {
+          "id": "c_cm03_2",
+          "label": "Sit with the riddle another week.",
+          "target": "cm30"
+        }
+      ]
+    },
+    {
+      "id": "cm04",
+      "body": "<<FILL role=rising words=142 beats='the asking; Instructor Rafael Duarte answers her riddle with a riddle, then, quietly, one real thing, weather is what a place does when nobody is watching, and so is a student; then the assignment underneath the assignment, she will copy parts for the Fleet Passage workshop, the middle movement, a setting of the Harbor Shanty; the tune from aboard her uncle's trawler, here, wearing manuscript ink'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm04_1",
+          "label": "Report to the workshop as copyist.",
+          "target": "cm05"
+        }
+      ]
+    },
+    {
+      "id": "cm05",
+      "body": "<<FILL role=rising words=140 beats='copy nights beside Emory Voss; his gift up close, voice leading like water finding a channel, and his fray up close too, unanswered letters from home held under a paperweight, the solo commission list pinned to the wall with the audition dates circled; the scarf on the bench, the smile getting thinner as November comes on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm05_1",
+          "label": "Keep copying toward mid-term.",
+          "target": "cm06"
+        }
+      ]
+    },
+    {
+      "id": "cm06",
+      "body": "<<FILL role=rising words=136 beats='the schedule posts on a gray Thursday, combined rehearsals to take Ironwood Hall and the shared instruments from mid-November, audition week for the commission cut to two days; Emory Voss reads the notice twice, says nothing the rest of the night, and copies eleven pages without one wrong stem, which is somehow worse than shouting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm06_1",
+          "label": "Come in on the frost Monday.",
+          "target": "cm07"
+        }
+      ]
+    },
+    {
+      "id": "cm07",
+      "body": "<<FILL role=rising words=154 beats='the Monday after the spring tide; Mr. Delgado unlocking at six and finding the morning wrong; the capstan jammed with wedges, rigging locker's practice oars slicked with tallow, the signal flags missing from their locker with a fine green wool thread on the hinge; no forced entry, damp footprints toward the sail loft stairs; Emory Voss reports the piano first, pale as manuscript paper; nothing anywhere is actually broken, which nobody notices yet but Kavi Oduya'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm07_1",
+          "label": "Sit with the studio in the wreckage.",
+          "target": "cm08"
+        }
+      ]
+    },
+    {
+      "id": "cm08",
+      "body": "<<FILL role=choice words=150 beats='Tuesday, Talia Bregman accused, her key on the log and her grumbling about ceded hall time repeated in every corridor; the studio waits for Instructor Rafael Duarte's opinion and gets a riddle instead, who mends a thing they broke; the clocks disagree about the hour and everyone else disagrees about Talia Bregman; two honest ways into the riddle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm08_1",
+          "label": "Answer the riddle with facts.",
+          "target": "cm09"
+        },
+        {
+          "id": "c_cm08_2",
+          "label": "Answer it with charity first.",
+          "target": "cm22"
+        }
+      ]
+    },
+    {
+      "id": "cm09",
+      "body": "<<FILL role=rising words=146 beats='the facts, gathered honestly; no forced entry, so a key; the shims cut clean from the piano shop's felt stock with something like a copyist's knife; the three silenced keys spell the opening notes of the Deep-Water Anthem; soap on the bow hair because soap washes out; nothing permanent anywhere; whoever did it loved the instruments too much to break them, and knew exactly how much harm would heal'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm09_1",
+          "label": "Follow the key.",
+          "target": "cm10"
+        }
+      ]
+    },
+    {
+      "id": "cm10",
+      "body": "<<FILL role=rising words=138 beats='the key; Talia Bregman signed it out, yes, and lent her whole ring days before the frost, to her accompanist, the way she has every term for three years; and her accompanist is the studio aide with ink on his fingers and a green scarf by the door; the floor tilts; the scarf hangs there like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm10_1",
+          "label": "Stand at Instructor Rafael Duarte's three doors.",
+          "target": "cm11"
+        }
+      ]
+    },
+    {
+      "id": "cm11",
+      "body": "<<FILL role=choice words=162 beats='Instructor Rafael Duarte, when she comes to him with her face full of it, does not ask what she knows; he sets three doors in a row, spoken like a riddle and meant like a map, a truth can be carried alone to the one it belongs to, or carried with a witness who loves him, or handed whole to the law of the school; the clocks tick at odds; Talia Bregman wears the blame another hour for every hour Kavi Oduya stands still'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm11_1",
+          "label": "Go to Emory Voss alone.",
+          "target": "cm12"
+        },
+        {
+          "id": "c_cm11_2",
+          "label": "Bring Instructor Rafael Duarte with you.",
+          "target": "cm15"
+        },
+        {
+          "id": "c_cm11_3",
+          "label": "Put it before Commodore Ashworth.",
+          "target": "cm19"
+        }
+      ]
+    },
+    {
+      "id": "cm12",
+      "body": "<<FILL role=rising words=150 beats='the sail loft, dust sheets and cold; the folios stacked dry and safe and weighted square; Emory Voss beside them, undone at the sight of her; the whole of it spilling out, her uncle's lost boat and a shortened trial week, the renewal letter that reads like a countdown, the night he chose harms that would all wash out; he went back Tuesday night to undo everything and Mr. Delgado had changed the lock'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm12_1",
+          "label": "Hear him to the end.",
+          "target": "cm13"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "cm13",
+      "body": "<<FILL role=rising words=142 beats='Thursday the infirmary log clears Talia Bregman at assembly, a fever, logged in and never out, the lent ring named; Friday, before the first combined rehearsal, Emory Voss stands beside the repaired grand and says everything plainly with Kavi Oduya at his shoulder; the studios speak for him, Commodore Ashworth converts expulsion to probation, repairs assigned to Bell's boatyard, the folios home by supper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm13_1",
+          "label": "Give December to the middle movement.",
+          "target": "cm14"
+        }
+      ]
+    },
+    {
+      "id": "cm14",
+      "body": "<<FILL role=completion words=134 beats='the Regatta Day, snow past the windows; the Harbor Shanty's middle movement on the mended grand and the rehaired bows, her four planks of weather braided into it; the flicker in the last verse, the lanterns, Warden Colette Fen's pledge; Instructor Rafael Duarte winding nothing that night, only listening; four planks of weather, and a term that learned what a place does when nobody is watching'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm14",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Four Bars of Weather"
+      }
+    },
+    {
+      "id": "cm15",
+      "body": "<<FILL role=rising words=146 beats='with Instructor Rafael Duarte; the clocks tick through her whole account and he never once looks surprised; a riddle is a door you let a man open himself, he says; he invites Emory Voss to tea, asks nothing, tells one story about his own worst term and the stupid, reversible thing he did in it, and waits; the confession comes like ice going off the river, all at once and long overdue'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm15_1",
+          "label": "Stand by while the truth walks.",
+          "target": "cm16"
+        }
+      ]
+    },
+    {
+      "id": "cm16",
+      "body": "<<FILL role=rising words=142 beats='Instructor Rafael Duarte walks Emory Voss to Commodore Ashworth and owns his own share out loud, the fray he watched all November and answered with riddles instead of questions; adults flawed and decent in the same breath; probation, the shop bench, the folios home by supper, Talia Bregman already cleared by Thursday's assembly; the studio spends the weekend copying parts together, nobody assigned, everybody there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm16_1",
+          "label": "Come to the last week of term.",
+          "target": "cm17"
+        }
+      ]
+    },
+    {
+      "id": "cm17",
+      "body": "<<FILL role=climax words=132 beats='concert eve; snow starting at dusk; the middle movement finished by many hands, his themes, her drizzle figure, the Harbor Shanty under everything; lanterns set along the stage lip against the wiring; Instructor Rafael Duarte stops every clock in the studio at seven, for luck, the only explanation anyone gets'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm17_1",
+          "label": "Take your seat for the concert.",
+          "target": "cm18"
+        }
+      ]
+    },
+    {
+      "id": "cm18",
+      "body": "<<FILL role=success words=130 beats='the Regatta Day; the Harbor Shanty rising through three studios like one instrument; the flicker, the lanterns, the pledge; Emory Voss playing in the back row of the violins on a bow he rehaired himself; afterward Instructor Rafael Duarte tells Kavi Oduya the term's real riddle was never the weather, it was the door, and she opened it the slow, right way'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm18",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Door He Opened"
+      }
+    },
+    {
+      "id": "cm19",
+      "body": "<<FILL role=rising words=148 beats='Commodore Ashworth's office that evening, the key ring, the thread, the felt, the motive laid out in order; Commodore Ashworth is fair and thorough and the room is cold; Emory Voss suspended the next morning pending a hearing; the workshop goes quiet for two weeks, his desk like a pulled tooth; at the hearing Kavi Oduya testifies to the kind details, soap that washes out, felt that lifts away, harms chosen to heal'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm19_1",
+          "label": "See the hearing through.",
+          "target": "cm20"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "cm20",
+      "body": "<<FILL role=rising words=140 beats='the hearing; Talia Bregman, cleared since Thursday and generous past all expectation, speaks for him; Captain Mireille Anouk, Coach Ines Solberg, and Instructor Rafael Duarte speak; probation, not expulsion, the shop bench, the fund for the repairs; right, all of it, and slow; the two silent weeks sit in the middle of the term like rests nobody wrote'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm20_1",
+          "label": "Finish the term with open eyes.",
+          "target": "cm21"
+        }
+      ]
+    },
+    {
+      "id": "cm21",
+      "body": "<<FILL role=discovery words=134 beats='the Regatta Day, snow and lanterns and the movement played whole, Emory Voss back at the rank desk working his way inward; the official door was real and it was the slowest one in the building; Kavi Oduya carries that out into the snow, filed beside the facts, that procedure found the truth and mercy had to jog to catch up, and next time she will knock on the kinder door first'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm21",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Procedure Before Mercy"
+      }
+    },
+    {
+      "id": "cm22",
+      "body": "<<FILL role=rising words=140 beats='charity first; Kavi Oduya says out loud, in the studio, that Talia Bregman is innocent until the facts say otherwise, and then builds the answer that helps either way; the missing choir folios can be re-copied from the library masters, and the composition studio owns more pens than anyone; an overnight copy party, cocoa urn and all, so the choir can rehearse by Wednesday'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm22_1",
+          "label": "Run the copy night.",
+          "target": "cm23"
+        }
+      ]
+    },
+    {
+      "id": "cm23",
+      "body": "<<FILL role=rising words=144 beats='the copy night; twelve pens scratching; Emory Voss copies fastest of all, and writes in dynamics and breath marks the library masters never held, pencil ghosts that lived only in the missing folios; Kavi Oduya watches his pen know things it should not know, and does not yet understand what she is seeing, only that she is seeing it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm23_1",
+          "label": "Deliver the scores and wait.",
+          "target": "cm24"
+        }
+      ]
+    },
+    {
+      "id": "cm24",
+      "body": "<<FILL role=rising words=146 beats='Thursday assembly clears Talia Bregman, infirmary log and lent ring, the school exhaling; Friday the choir is handed the studio's copies and thanks Emory Voss by name for the markings, and he stands there while the gratitude lands like weight on a cracked beam, and then at rehearsal he stands again and cannot carry it, and says everything, unprompted, the whole desperate arithmetic of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm24_1",
+          "label": "Sit in the studio circle after.",
+          "target": "cm25"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "cm25",
+      "body": "<<FILL role=choice words=152 beats='the studio circle, raw; probation already likely, the shop bench already offered; Instructor Rafael Duarte, who never assigns feelings, asks the newest member to speak first, because the newest member built the copy night that broke the truth loose; the room waits; there is the harm and there is the why, and the order Kavi Oduya says them in will teach the studio which matters more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm25_1",
+          "label": "Speak to what he did.",
+          "target": "cm26"
+        },
+        {
+          "id": "c_cm25_2",
+          "label": "Speak to why he did it.",
+          "target": "cm28"
+        }
+      ]
+    },
+    {
+      "id": "cm26",
+      "body": "<<FILL role=rising words=142 beats='she names the harm plainly first, Talia Bregman's two days under the blame, the choir's grief for their pencil ghosts, the shop's long nights to come; and then, having said the true thing first, she asks that the repair be his to lead, folios, felts, hair, all of it; the circle holds; afterward Emory Voss thanks her, specifically, for not softening it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm26_1",
+          "label": "Let the term mend toward December.",
+          "target": "cm27"
+        }
+      ]
+    },
+    {
+      "id": "cm27",
+      "body": "<<FILL role=success words=132 beats='the Regatta Day; snow, the flicker, the lanterns; the middle movement with his themes and her drizzle bars, played on instruments he repaired with his own hands; the studio's clocks all wrong and the music exactly on time; say the true thing first, and kindness has somewhere solid to stand'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm27",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Say the True Thing First"
+      }
+    },
+    {
+      "id": "cm28",
+      "body": "<<FILL role=rising words=144 beats='she speaks the why, the letters under the paperweight, the commission list, the audition week cut to two days, a scholarship kid doing desperate arithmetic; the room softens toward him, which he needs; then Talia Bregman, visiting from the strings hall, says quietly that someone also needed to say what it cost her; Kavi Oduya stands a second time and says the other half, late but said, and the circle holds both'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm28_1",
+          "label": "Carry both halves to December.",
+          "target": "cm29"
+        }
+      ]
+    },
+    {
+      "id": "cm29",
+      "body": "<<FILL role=discovery words=130 beats='the Regatta Day, snow and lanterns, the movement whole; what Kavi Oduya carries out is the shape of complete kindness, the why in one hand and the ledger in the other, neither pretending the other away; mercy without the accounting is only weather, and she came here to learn what weather really is'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm29",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Both Halves of Kindness"
+      }
+    },
+    {
+      "id": "cm30",
+      "body": "<<FILL role=rising words=136 beats='the week of sitting; river walks, the drizzle piece growing a second voice on its own; Instructor Rafael Duarte says nothing, winds one more clock, and Kavi Oduya decides to take the winding as weather; patience as a discipline, which nobody warned her composition would be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm30_1",
+          "label": "Bring four planks of weather back grown.",
+          "target": "cm31"
+        }
+      ]
+    },
+    {
+      "id": "cm31",
+      "body": "<<FILL role=rising words=142 beats='her four planks of weather land; Instructor Rafael Duarte plays them twice at the studio piano and says, again, slower, which by studio arithmetic is a parade; she is named junior copyist to the Fleet Passage workshop, the middle movement, a setting of the Harbor Shanty; aboard her uncle's trawler tune wearing manuscript ink, the Harbor Shanty's pulse audible under it if you know to listen, and she knows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm31_1",
+          "label": "Join the workshop.",
+          "target": "cm32"
+        }
+      ]
+    },
+    {
+      "id": "cm32",
+      "body": "<<FILL role=rising words=140 beats='the workshop; the middle movement lacks a bridge and no draft survives Thursday; Emory Voss's versions brilliant and frantic, each one trying harder than the last, which is the problem; then the schedule posts, combined rehearsals to take the hall from mid-November, audition week for the commission cut to two days, and Emory Voss stops humming that week entirely'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm32_1",
+          "label": "Come in on the frost Monday.",
+          "target": "cm33"
+        }
+      ]
+    },
+    {
+      "id": "cm33",
+      "body": "<<FILL role=rising words=150 beats='the Monday after the spring tide; she and Emory Voss reach the hall first, just behind Mr. Delgado; the capstan jammed with wedges, and the silenced notes spell the Deep-Water Anthem's opening; rigging locker's practice oars slicked with tallow, the signal flags missing from their locker, green wool thread on the hinge, damp footprints toward the loft stairs; nothing broken anywhere; Emory Voss's face the color of the manuscript paper he is holding'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm33_1",
+          "label": "Hold the studio together that week.",
+          "target": "cm34"
+        }
+      ]
+    },
+    {
+      "id": "cm34",
+      "body": "<<FILL role=rising words=146 beats='Tuesday, Talia Bregman accused on the key log; Thursday, the infirmary log read at assembly and Talia Bregman cleared, the lent ring named; but the folios are still missing and the workshop stalls on the mended grand; Instructor Rafael Duarte sets the week's riddle to the whole studio, what does a locked room want, and winds his clocks while everyone groans'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm34_1",
+          "label": "Take the riddle seriously.",
+          "target": "cm35"
+        }
+      ]
+    },
+    {
+      "id": "cm35",
+      "body": "<<FILL role=choice words=148 beats='the riddle sits on her desk like a bird that will not fly off; what does a locked room want; half the studio treats it as Instructor Rafael Duarte being Instructor Rafael Duarte; the bridge still is not written and the concert will not move; Kavi Oduya can spend her one free evening chasing the riddle to wherever music sleeps in this school, or let the adults carry the mystery and write'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm35_1",
+          "label": "Search where music sleeps.",
+          "target": "cm36"
+        },
+        {
+          "id": "c_cm35_2",
+          "label": "Let the adults carry it, and write.",
+          "target": "cm41"
+        }
+      ]
+    },
+    {
+      "id": "cm36",
+      "body": "<<FILL role=rising words=144 beats='a locked room wants to be opened from the inside; she thinks about where music sleeps at Thornfield Maritime Academy and climbs to the sail loft with a lamp; the folios stacked under dust sheets, dry and weighted square, every pencil ghost safe; and folded on top, deliberate as a signature, a a tarred canvas cap, left like an apology waiting for whoever cared enough to look'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm36_1",
+          "label": "Carry it all to Instructor Rafael Duarte.",
+          "target": "cm37"
+        }
+      ]
+    },
+    {
+      "id": "cm37",
+      "body": "<<FILL role=rising words=142 beats='scarf and folios to Instructor Rafael Duarte, who looks at both a long moment and says, a door you let a man open himself; Friday, at the first combined rehearsal, Emory Voss stands beside the grand he silenced and opens it, all of it, father, renewal, audition week, the reversible harms, the changed lock; the studios speak, probation over expulsion, Bell's boatyard bench, the folios home in his own arms'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm37_1",
+          "label": "Watch the bridge get written.",
+          "target": "cm38"
+        }
+      ]
+    },
+    {
+      "id": "cm38",
+      "body": "<<FILL role=rising words=138 beats='the bridge nobody could write gets written in one long night by the whole studio, his theme and her drizzle figure braided, the Harbor Shanty under everything; Emory Voss orchestrates from the shop bench between rehairing jobs; the last bow comes back to rigging locker at midnight with the shop's chalk mark on the frog'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm38_1",
+          "label": "Come to concert day.",
+          "target": "cm39"
+        }
+      ]
+    },
+    {
+      "id": "cm39",
+      "body": "<<FILL role=climax words=134 beats='concert day, snow from noon on; lanterns along the stage lip against the wiring; Warden Colette Fen in the second row with his clipboard shut; Instructor Rafael Duarte stops every clock in the studio at seven, and when someone finally asks why, he says the music will keep the time tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm39_1",
+          "label": "Hear the Fleet Passage whole.",
+          "target": "cm40"
+        }
+      ]
+    },
+    {
+      "id": "cm40",
+      "body": "<<FILL role=success words=130 beats='the Regatta Day; the bridge holds, the Harbor Shanty rises, the flicker comes in the last verse and the lanterns answer it; Warden Colette Fen pledges the the dock repair fund before the applause dies; where music sleeps, someone finally looked, and the looking was the kindness; the riddle answered in the only language Instructor Rafael Duarte accepts, out loud, in the hall'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm40",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Where Music Sleeps"
+      }
+    },
+    {
+      "id": "cm41",
+      "body": "<<FILL role=rising words=146 beats='she lets the adults carry the mystery and writes; the bridge comes out of the drizzle figure, eight bars that make Harbor Shanty's pulse audible, and survives Thursday, the first draft all term to do it; the workshop limps forward on the mended grand; Friday, at the first combined rehearsal, Emory Voss stands and says everything himself, unprompted, time and conscience having done the work no detective was doing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm41_1",
+          "label": "Meet the aftermath.",
+          "target": "cm42"
+        }
+      ]
+    },
+    {
+      "id": "cm42",
+      "body": "<<FILL role=rising words=144 beats='aftermath; her bridge is chosen for the movement the same week his probation begins; she wrestles with having looked away from the riddle while it mattered, and Instructor Rafael Duarte, winding the one clock that keeps real time, says, you answered a different riddle, both were real; Talia Bregman, cleared and unsentimental, brings her own bow to Emory Voss's bench first, which says more than the assembly did'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm42_1",
+          "label": "Face the commission question.",
+          "target": "cm43"
+        }
+      ]
+    },
+    {
+      "id": "cm43",
+      "body": "<<FILL role=choice words=150 beats='the solo commission Emory Voss chased reopens, and Instructor Rafael Duarte nominates her bridge for it; the prize that bent a good student until he broke, now offered to the newest member of his studio; the audition week that caused everything restored to a full week, too late; Kavi Oduya holds the nomination letter and the term's whole weather at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm43_1",
+          "label": "Accept the nomination.",
+          "target": "cm44"
+        },
+        {
+          "id": "c_cm43_2",
+          "label": "Ask that it go unawarded this term.",
+          "target": "cm47"
+        }
+      ]
+    },
+    {
+      "id": "cm44",
+      "body": "<<FILL role=rising words=140 beats='she accepts, and attaches one condition, that Emory Voss orchestrate the bridge with her, from the shop bench, work as repair; two names on the commission line or none; the committee blinks and agrees; he argues for the violas in bar six and she lets him win where he is right, which is most places'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm44_1",
+          "label": "Rehearse it into the movement.",
+          "target": "cm45"
+        }
+      ]
+    },
+    {
+      "id": "cm45",
+      "body": "<<FILL role=climax words=132 beats='the last week; the bridge with both names rehearsed into the middle movement; snow starting the afternoon of the concert; lanterns along the stage lip; Emory Voss's father's letter finally answered with a program in the envelope'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm45_1",
+          "label": "Take your seat for the concert.",
+          "target": "cm46"
+        }
+      ]
+    },
+    {
+      "id": "cm46",
+      "body": "<<FILL role=success words=130 beats='the Regatta Day; the bridge with two names in the program in small print; the flicker, the lanterns, the pledge; the commission money split toward his family's winter and her spring strings; a prize that broke someone taught to carry double, and the movement is better for every scar in it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm46",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Shared Credit"
+      }
+    },
+    {
+      "id": "cm47",
+      "body": "<<FILL role=rising words=142 beats='she asks, in writing, that the commission go unawarded this term, because the term's wound should not wear a prize; Commodore Ashworth reads the letter twice, fair as always, and agrees; the prize money seeds a quiet hardship fund with a deliberately boring name, for students whose letters from home read like countdowns; adults being decent on purpose, which turns out to be a thing you can ask for'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm47_1",
+          "label": "Finish the movement with the studio.",
+          "target": "cm48"
+        }
+      ]
+    },
+    {
+      "id": "cm48",
+      "body": "<<FILL role=climax words=134 beats='the last week; the middle movement finished by the whole studio, no solo line, the drizzle figure and his themes and three other students' bars braided; snow from noon; lanterns out; the program proof arrives and the credit line reads, middle movement, the composition studio, every name and none'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm48_1",
+          "label": "Hear it played that way.",
+          "target": "cm49"
+        }
+      ]
+    },
+    {
+      "id": "cm49",
+      "body": "<<FILL role=completion words=130 beats='the Regatta Day; the movement rises with no name on it and everyone's hands in it; the flicker, the lanterns, Warden Colette Fen's pledge; Emory Voss beside her in the standing row, on probation and present, the fund with the boring name already holding its first quiet grant; some credits are truest when they are shared all the way out'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm49",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Studio's Name"
+      }
+    },
+    {
+      "id": "vo01",
+      "body": "<<FILL role=rising words=140 beats='first choir rehearsal; Captain Mireille Anouk greets Kavi Oduya by name and river town before Kavi Oduya has given either; alto seconds, third row; Basile Okonkwo, head chorister, hands her the Deep-Water Anthem folio, its margins full of pencil ghosts from forty years of singers; the folio cabinet by the stage locks with a small brass key that Basile Okonkwo treats like a relic'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo01_1",
+          "label": "Learn the Deep-Water Anthem from the inside.",
+          "target": "vo02"
+        }
+      ]
+    },
+    {
+      "id": "vo02",
+      "body": "<<FILL role=rising words=144 beats='warmth with weather coming; Warden Colette Fen walks Ironwood Hall with a clipboard, measuring evening hours in money, because the wiring bill is real and the board votes on the hall's evening schedule in January; the Regatta Day is the argument, everyone knows it; Captain Mireille Anouk jokes about singing by candlelight and only half of it is a joke'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo02_1",
+          "label": "Settle into sectionals.",
+          "target": "vo03"
+        }
+      ]
+    },
+    {
+      "id": "vo03",
+      "body": "<<FILL role=choice words=148 beats='sectionals; the lookout call opens above the Deep-Water Anthem's last verse, silver and exposed, auditions Friday; the deck hands also need an anchor, the note nobody claps for that every chord leans on; Basile Okonkwo says the choir is a body and every part of it thinks it is the spine; two honest ways to spend a first term's voice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo03_1",
+          "label": "Audition for the lookout call.",
+          "target": "vo04"
+        },
+        {
+          "id": "c_vo03_2",
+          "label": "Anchor the deck hands.",
+          "target": "vo34"
+        }
+      ]
+    },
+    {
+      "id": "vo04",
+      "body": "<<FILL role=rising words=136 beats='the audition; her alto stretched to the line's silver top and holding; she wins it, and the winning is lonely for exactly one day, until Basile Okonkwo starts calling her the weathervane, the voice you steer by, and the name sticks the way kind names do'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo04_1",
+          "label": "Sing into the cold weeks.",
+          "target": "vo05"
+        }
+      ]
+    },
+    {
+      "id": "vo05",
+      "body": "<<FILL role=rising words=138 beats='the spring tide silvering the quad; petitions on the notice boards to keep the choir's evening hours; the choir sings the harvest service at the river chapel and the town packs the pews to the doors, which is the whole argument for the program, made audible for anyone listening; Warden Colette Fen was not there, Basile Okonkwo notes, and Captain Mireille Anouk says he will be, in December'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo05_1",
+          "label": "Come in on Monday.",
+          "target": "vo06"
+        }
+      ]
+    },
+    {
+      "id": "vo06",
+      "body": "<<FILL role=rising words=152 beats='the Monday after the spring tide; Mr. Delgado at six and the folio cabinet open with no forced lock, the folios gone, pencil ghosts and all, a scrap of tarred canvas on the latch; next door practice oars slicked with tallow and the capstan jammed with wedges; the sign-out log says Talia Bregman and the key was never signed back; the older singers grieve the folios like letters from the dead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo06_1",
+          "label": "Gather with the choir at noon.",
+          "target": "vo07"
+        }
+      ]
+    },
+    {
+      "id": "vo07",
+      "body": "<<FILL role=choice words=150 beats='Warden Colette Fen's memo lands by noon, a program that cannot secure its own scores invites questions about its stewardship of shared spaces; the choir reads it in silence; Captain Mireille Anouk folds it once and asks for ideas, not outrage; the answer can be made of facts on paper or of music remembered, and there is only so much choir to spend'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo07_1",
+          "label": "Help Captain Mireille Anouk answer the memo with facts.",
+          "target": "vo08"
+        },
+        {
+          "id": "c_vo07_2",
+          "label": "Rally the choir to re-mark scores overnight.",
+          "target": "vo25"
+        }
+      ]
+    },
+    {
+      "id": "vo08",
+      "body": "<<FILL role=rising words=142 beats='the inventory drafted at Captain Mireille Anouk's desk, honest to a fault, the music replaceable, the forty years of markings not, negligence nowhere in the building; Captain Mireille Anouk declines to speculate about any student before facts, and says so in writing; Tuesday the rumor mill names Talia Bregman anyway, key log and her grumbling about ceded hall time, and the corridor goes cold between choir and strings'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo08_1",
+          "label": "Be in the office when the board writes back.",
+          "target": "vo09"
+        }
+      ]
+    },
+    {
+      "id": "vo09",
+      "body": "<<FILL role=choice words=152 beats='the board wants a culprit faster than the truth is moving; a complaint naming Talia Bregman arrives for Captain Mireille Anouk's co-signature, protect the program, settle the matter; Kavi Oduya is in the office when it lands; she has heard an aide from the infirmary mention a migraine log, secondhand and unverified; the pen and the rumor sit on the same desk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo09_1",
+          "label": "Urge Captain Mireille Anouk to sign and protect the program.",
+          "target": "vo10"
+        },
+        {
+          "id": "c_vo09_2",
+          "label": "Urge her to wait for the infirmary log.",
+          "target": "vo17"
+        }
+      ]
+    },
+    {
+      "id": "vo10",
+      "body": "<<FILL role=rising words=148 beats='Captain Mireille Anouk does not sign; blame is a loan at interest, she says, gently, and Kavi Oduya hears the lesson land on herself; but the urging travels anyway, corridors being corridors, and Talia Bregman hears that the choir's new girl pushed for the complaint; Thursday the infirmary log clears Talia Bregman at assembly, a fever, logged in and never out, the ring lent days before; the chill between the sections now has Kavi Oduya's name on it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo10_1",
+          "label": "Own what traveled.",
+          "target": "vo11"
+        }
+      ]
+    },
+    {
+      "id": "vo11",
+      "body": "<<FILL role=choice words=146 beats='the accusation died at assembly but the chill outlived it; combined rehearsals start Friday and the deck hands stand shoulder to shoulder with Talia Bregman's section; an apology is a small door that gets heavier every day it stays shut; the term is loud and it would be easy to let the noise carry this away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo11_1",
+          "label": "Apologize to Talia Bregman, face to face.",
+          "target": "vo12"
+        },
+        {
+          "id": "c_vo11_2",
+          "label": "Let it fade into the term's noise.",
+          "target": "vo15"
+        }
+      ]
+    },
+    {
+      "id": "vo12",
+      "body": "<<FILL role=rising words=144 beats='the apology, face to face outside the strings hall, no cushions on it; Talia Bregman's grace arrives sideways, I lent my keys, you lent your fear, we both got them back; something unclenches; Friday at the first combined rehearsal Emory Voss stands and confesses everything, the desperation, the reversible harms, and Kavi Oduya, already humbled once this week, is kind early instead of clever late'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo12_1",
+          "label": "Sing toward December.",
+          "target": "vo13"
+        }
+      ]
+    },
+    {
+      "id": "vo13",
+      "body": "<<FILL role=climax words=134 beats='December; the lookout call rehearsed over the Harbor Shanty's last verse; the board confirmed for the second row; lantern drill after the flicker joke stops being a joke; snow forecast for concert night; Captain Mireille Anouk, counting breaths with the sopranos, in for four, out for the whole hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo13_1",
+          "label": "Sing the Regatta Day.",
+          "target": "vo14"
+        }
+      ]
+    },
+    {
+      "id": "vo14",
+      "body": "<<FILL role=success words=130 beats='the Regatta Day; her the lookout call riding the last verse when the wiring flickers on schedule with no schedule, and the lanterns come up like a second choir; Warden Colette Fen stands and pledges the the dock repair fund; Talia Bregman finds the weathervane afterward to say the descant steered true; a term that started with a wrong push ends pointed exactly right'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo14",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Weathervane"
+      }
+    },
+    {
+      "id": "vo15",
+      "body": "<<FILL role=rising words=146 beats='it does not fade; the chill sits between the sections at every combined rehearsal like a draft nobody will name; Friday Emory Voss stands and owns his whole mess in front of everyone, and Kavi Oduya watches what owning looks like from the outside, which is a mirror if you let it be; the last night of term she writes the letter she should have spoken and slides it under Talia Bregman's door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo15_1",
+          "label": "Sing the concert with the letter sent.",
+          "target": "vo16"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "vo16",
+      "body": "<<FILL role=discovery words=132 beats='the Regatta Day is beautiful anyway, snow and lanterns and the pledge; the descant flies; the letter is answered in January with two words and a rehearsal invitation, which is how string players forgive; some repairs run past the last page of a term, and the discovery is that they still count'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo16",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Letters Sent Late"
+      }
+    },
+    {
+      "id": "vo17",
+      "body": "<<FILL role=rising words=148 beats='the wait, vindicated; Wednesday evening Captain Mireille Anouk crosses the quad to the infirmary herself and comes back with Nurse Petrakis's log under her arm, then walks Talia Bregman to Commodore Ashworth's door; Thursday assembly, the log read aloud, the whole night accounted for, the key ring lent days earlier to her accompanist; Talia Bregman cleared in front of everyone, Captain Mireille Anouk's hand on her shoulder, and the choir's memo suddenly answering itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo17_1",
+          "label": "Watch the politics turn.",
+          "target": "vo18"
+        }
+      ]
+    },
+    {
+      "id": "vo18",
+      "body": "<<FILL role=rising words=144 beats='the memo answered with the inventory and the clearing stapled together; Warden Colette Fen withdraws the insinuation in writing, which costs him something and he pays it, a flawed man being decent where it counts; Friday Emory Voss confesses at the first combined rehearsal, the folios come home with every pencil ghost intact, probation and the shop bench and a quiet fund; the January vote still looms, and the concert is the argument'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo18_1",
+          "label": "Plan the argument with Captain Mireille Anouk.",
+          "target": "vo19"
+        }
+      ]
+    },
+    {
+      "id": "vo19",
+      "body": "<<FILL role=choice words=152 beats='Captain Mireille Anouk spreads the concert order across the piano lid; the board will be in the second row and the hall will make its own case if the choir lets it; two plans, embrace the failing lights, rehearse the last verse in lantern light and make the board feel what this hall is, or sing the safest, cleanest Deep-Water Anthem in forty years and let flawless be the argument; risk against rigor, and she asks the room'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo19_1",
+          "label": "Back the lantern verse.",
+          "target": "vo20"
+        },
+        {
+          "id": "c_vo19_2",
+          "label": "Back the flawless program.",
+          "target": "vo23"
+        }
+      ]
+    },
+    {
+      "id": "vo20",
+      "body": "<<FILL role=rising words=140 beats='rehearsing darkness on purpose; lights off, lanterns up, the choir learning the last verse by ear and trust; Basile Okonkwo's counter-melody threading the dark like a handrail; the sopranos giggle the first night and by the third night nobody does, because it sounds like the hall is singing back; snow forecast holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo20_1",
+          "label": "Come to concert night.",
+          "target": "vo21"
+        }
+      ]
+    },
+    {
+      "id": "vo21",
+      "body": "<<FILL role=climax words=138 beats='concert night, snow thick on the sills; the Harbor Shanty, the combined studios, the hall packed to the doors; in the last verse the old wiring flickers all on its own, right on cue, and the lanterns come up steady in a hundred hands because the choir rehearsed for exactly this dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo21_1",
+          "label": "Hold the verse to the end.",
+          "target": "vo22"
+        }
+      ]
+    },
+    {
+      "id": "vo22",
+      "body": "<<FILL role=success words=132 beats='the lantern verse; the board watching a hall full of light that the budget line calls a liability; Warden Colette Fen stands before the applause ends and pledges the the dock repair fund, and the January vote becomes a formality everyone can feel; Captain Mireille Anouk finds Kavi Oduya after and says the program was saved by people who rehearsed the dark instead of fearing it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo22",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Lantern Verse"
+      }
+    },
+    {
+      "id": "vo23",
+      "body": "<<FILL role=rising words=140 beats='the flawless program; note-perfect Deep-Water Anthem, nothing staged, rigor as the whole argument; and when the flicker comes anyway in the last verse, unplanned and inevitable, the choir holds through the dark without one wobble, because held is what Captain Mireille Anouk trains; the board sees steadiness that no lighting rig can fake; snow on the windows like applause'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo23_1",
+          "label": "Finish in the dark, steady.",
+          "target": "vo24"
+        }
+      ]
+    },
+    {
+      "id": "vo24",
+      "body": "<<FILL role=completion words=130 beats='the last chord lands in half-dark and total silence, then the house lights stutter back to a hall on its feet; Warden Colette Fen pledges the the dock repair fund with his clipboard finally shut; the choir proved the hall's case by being unshakable inside it; steadiness, it turns out, is also a kind of light'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo24",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Steady in the Dark"
+      }
+    },
+    {
+      "id": "vo25",
+      "body": "<<FILL role=rising words=146 beats='the rally; every section pooling its memory of the pencil ghosts, an overnight re-marking with the cocoa urn going and Captain Mireille Anouk pretending not to know how late it runs; at midnight Emory Voss appears to help, copying dynamics and breath marks nobody's memory holds, markings only the missing folios knew; Kavi Oduya watches his pen know too much and files the chill away without a name'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo25_1",
+          "label": "Work beside him till the urn runs dry.",
+          "target": "vo26"
+        }
+      ]
+    },
+    {
+      "id": "vo26",
+      "body": "<<FILL role=choice words=148 beats='the question sits with Kavi Oduya by the cocoa urn; how does a composition aide know the alto section's private breath marks; asking could be an accusation or a kindness depending entirely on how it is held; the scores are nearly done, the night nearly over, and Tuesday the school will start looking for someone to blame'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo26_1",
+          "label": "Ask him, kindly, how he knows the markings.",
+          "target": "vo27"
+        },
+        {
+          "id": "c_vo26_2",
+          "label": "Say nothing and finish the scores.",
+          "target": "vo31"
+        }
+      ]
+    },
+    {
+      "id": "vo27",
+      "body": "<<FILL role=rising words=146 beats='the kind question, just the two of them and the dregs of the cocoa; Emory Voss does not answer, and stops pretending, which is an answer; Tuesday Talia Bregman is accused on the key log and he goes gray as newsprint; Kavi Oduya tells him, quiet and level, that the truth has a Thursday deadline if decency means anything, and then leaves the door open instead of pushing him through it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo27_1",
+          "label": "Hold the door open through the week.",
+          "target": "vo28"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "vo28",
+      "body": "<<FILL role=rising words=144 beats='Thursday the infirmary log clears Talia Bregman at assembly, the lent ring named at last; Friday morning Emory Voss goes to Captain Mireille Anouk first, then stands at the combined rehearsal with Kavi Oduya's steadying nod from the third row and says all of it, her uncle's lost boat and a shortened trial week, the harms chosen to wash out; probation, the shop bench, the fund; the folios come down from the sail loft intact'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo28_1",
+          "label": "Bring the scores home to December.",
+          "target": "vo29"
+        }
+      ]
+    },
+    {
+      "id": "vo29",
+      "body": "<<FILL role=climax words=136 beats='December; the choir keeps the hand-copied set shelved beside the returned originals, the night the choir re-membered itself, Basile Okonkwo calls it, and the pun survives on merit; lantern drill, snow forecast, the board confirmed for the second row; the term closing like a chord resolving'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo29_1",
+          "label": "Sing the Regatta Day.",
+          "target": "vo30"
+        }
+      ]
+    },
+    {
+      "id": "vo30",
+      "body": "<<FILL role=success words=130 beats='the Regatta Day; the Harbor Shanty, the flicker, the lanterns, the pledge; two sets of scores in the cabinet with one brass key, the originals and the night the choir wrote itself down from memory; a program the board came to price and left having heard; some things, re-marked by hand, hold better than before'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo30",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Second Set of Scores"
+      }
+    },
+    {
+      "id": "vo31",
+      "body": "<<FILL role=rising words=146 beats='she says nothing and the scores get finished, which is real and mattered; Tuesday Talia Bregman is accused, Wednesday the school aches, Thursday the log clears her at assembly; Friday Emory Voss confesses at rehearsal unprompted, and Kavi Oduya does the quiet arithmetic, her unasked question might have spared Talia Bregman two days under the blame; nobody scolds her, which is worse and better at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo31_1",
+          "label": "Carry the arithmetic to Captain Mireille Anouk.",
+          "target": "vo32"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "vo32",
+      "body": "<<FILL role=rising words=138 beats='she tells Captain Mireille Anouk about the midnight markings after the fact, expecting weather and getting climate; noticing is a gift, Captain Mireille Anouk says, level and kind, hand it to someone sooner next time; the term folds toward the concert, lantern drill and snow forecast, and the lesson rides along without rancor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo32_1",
+          "label": "Sing the concert with clear eyes.",
+          "target": "vo33"
+        }
+      ]
+    },
+    {
+      "id": "vo33",
+      "body": "<<FILL role=discovery words=130 beats='the Regatta Day, snow and lanterns and the hall gone golden; the choir sings from the re-marked scores and the returned originals both; what Kavi Oduya carries out into the snow is small and permanent, that a noticed thing is a held note, and holding it silent helps no one; next time, she hands it on sooner'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo33",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Unasked Question"
+      }
+    },
+    {
+      "id": "vo34",
+      "body": "<<FILL role=rising words=136 beats='the anchor work; tuning the chord from the inside, the note nobody claps for; Captain Mireille Anouk stops the room mid-verse to make the sopranos listen down, the audience hears the descant, the choir hears the altos; Kavi Oduya learns to love the unclapped note the way you love a load-bearing wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo34_1",
+          "label": "Sing into the schedule fight.",
+          "target": "vo35"
+        }
+      ]
+    },
+    {
+      "id": "vo35",
+      "body": "<<FILL role=rising words=142 beats='the schedule bites; the choir bumped from Ironwood Hall twice in one week for paying events, sectionals held in the refectory among stacked chairs that ring like bad bells; the spring tide on the quad, petitions on the boards, Basile Okonkwo's jaw set; Captain Mireille Anouk keeps rehearsing as if the room does not matter, which is itself an argument, though not the whole of one; and once, quietly, to the section: a term has only so many evenings, spend each one where the music is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo35_1",
+          "label": "Come in on Monday.",
+          "target": "vo36"
+        }
+      ]
+    },
+    {
+      "id": "vo36",
+      "body": "<<FILL role=rising words=150 beats='the Monday after the spring tide; the folio cabinet open with no forced lock, folios gone, a scrap of tarred canvas on the latch; practice oars slicked with tallow and the capstan jammed with wedges next door; the key log naming Talia Bregman, never signed back; the older singers grieving forty years of pencil ghosts, and Warden Colette Fen's clipboard already crossing the quad by nine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo36_1",
+          "label": "Meet with the choir that evening.",
+          "target": "vo37"
+        }
+      ]
+    },
+    {
+      "id": "vo37",
+      "body": "<<FILL role=choice words=152 beats='Basile Okonkwo wants the choir to sing, uninvited, at the board's open meeting Thursday week, two minutes of Deep-Water Anthem in front of the people pricing the hall, a plea in the only language the choir speaks fluently; Captain Mireille Anouk will neither bless it nor forbid it, students may attend open meetings, she says, and looks out the window; risk to the program either way, and Basile Okonkwo is asking Kavi Oduya to stand with him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo37_1",
+          "label": "Back Basile Okonkwo's plan.",
+          "target": "vo38"
+        },
+        {
+          "id": "c_vo37_2",
+          "label": "Back Captain Mireille Anouk's patience.",
+          "target": "vo46"
+        }
+      ]
+    },
+    {
+      "id": "vo38",
+      "body": "<<FILL role=rising words=142 beats='the open meeting; the students rise from the public seats and sing two minutes of Deep-Water Anthem, respectful and short and devastatingly good; Warden Colette Fen listens with his pen down the whole time; Commodore Ashworth chides the method and praises the music in one sentence, adults being complicated in public; the recording someone made is around the school by supper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo38_1",
+          "label": "Ride the ripples.",
+          "target": "vo39"
+        }
+      ]
+    },
+    {
+      "id": "vo39",
+      "body": "<<FILL role=rising words=148 beats='fallout mild, ripples long; Tuesday Talia Bregman accused on the key log, Thursday assembly and the infirmary log clearing her while the whole school watches, Captain Mireille Anouk's hand on her shoulder; Friday Emory Voss confesses at the first combined rehearsal, probation and the shop bench; and the board floats a compromise, shared evening hours with paying events if the Regatta Day makes the hall's case; the singing at the meeting bought that much'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo39_1",
+          "label": "Weigh the compromise with the choir.",
+          "target": "vo40"
+        }
+      ]
+    },
+    {
+      "id": "vo40",
+      "body": "<<FILL role=choice words=150 beats='Captain Mireille Anouk, plainly, to the choir, we asked to be heard and we were, now sing; Basile Okonkwo wants one more petition round anyway, pressure until the vote is signed; the compromise is real but unsigned, the concert is five weeks out, and a choir only has so many evenings; Captain Mireille Anouk has said her piece once, which by her arithmetic means it matters'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo40_1",
+          "label": "Pour everything into the Fleet Passage.",
+          "target": "vo41"
+        },
+        {
+          "id": "c_vo40_2",
+          "label": "Keep fighting the schedule fight.",
+          "target": "vo44"
+        }
+      ]
+    },
+    {
+      "id": "vo41",
+      "body": "<<FILL role=rising words=140 beats='everything into the Fleet Passage; the altos carry the join where strings hand the Harbor Shanty to the voices, the seam that makes three studios sound like one; Emory Voss, on probation, orchestrates the seam from the shop bench and gets it right the third time; combined rehearsals knit the term's wounds into something load-bearing; snow in the forecast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo41_1",
+          "label": "Sing the final rehearsal.",
+          "target": "vo42"
+        }
+      ]
+    },
+    {
+      "id": "vo42",
+      "body": "<<FILL role=climax words=134 beats='final rehearsal; lantern drill for the last verse, the flicker joke long since a plan; the board confirmed for the second row; Captain Mireille Anouk counts the choir's breath, in for four, out for the whole hall; the join rehearsed until the seam disappears'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo42_1",
+          "label": "Sing the Regatta Day.",
+          "target": "vo43"
+        }
+      ]
+    },
+    {
+      "id": "vo43",
+      "body": "<<FILL role=success words=130 beats='the Regatta Day; the join lands and nobody in the hall can hear where strings end and voices begin; the flicker, the lanterns, Warden Colette Fen's pledge before the applause dies; the compromise signs itself in January, everyone can feel it; the altos still get no applause of their own, and Kavi Oduya finally hears why that is the compliment'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo43",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Join"
+      }
+    },
+    {
+      "id": "vo44",
+      "body": "<<FILL role=rising words=144 beats='the extra petition round; evenings that belonged to sectionals go to signatures, and the deck hands sing Thursday's join ragged; Captain Mireille Anouk never scolds; she moves the alto lead to Kavi Oduya for the last week to keep the section warm, and says only, a term has one December, spend it where you mean it; the kindness of the correction is the sting of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo44_1",
+          "label": "Sing the concert you rehearsed.",
+          "target": "vo45"
+        }
+      ]
+    },
+    {
+      "id": "vo45",
+      "body": "<<FILL role=failure words=136 beats='the Regatta Day lands anyway, carried by the whole term's case, the lanterns, the pledge, the vote all but won; Kavi Oduya sings from the middle of a section she barely rehearsed with in the final weeks, and hears the difference between a fight and a term's work from the inside; nothing broke, and something thinned; the door to spring stands open, and she knows exactly which evenings she wants back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo45",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wrong War"
+      }
+    },
+    {
+      "id": "vo46",
+      "body": "<<FILL role=rising words=142 beats='Captain Mireille Anouk's patience; instead of a protest she invites Warden Colette Fen to an ordinary Tuesday rehearsal, no program, no polish; he comes with the clipboard and forgets to write anything for forty minutes; on his way out he fixes the door hinge himself with a pocket screwdriver, a man who loves the building being half the problem and half the solution in one coat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo46_1",
+          "label": "Let the term turn under you.",
+          "target": "vo47"
+        }
+      ]
+    },
+    {
+      "id": "vo47",
+      "body": "<<FILL role=rising words=152 beats='the accusation week up close; Tuesday, Talia Bregman named on the key log; Wednesday evening Captain Mireille Anouk crosses to the infirmary and walks Talia Bregman to Commodore Ashworth with Nurse Petrakis's log; Thursday assembly clears her, the lent ring surfacing at last; Friday Emory Voss confesses at the first combined rehearsal, folios home intact, probation and the shop bench; Warden Colette Fen's second memo dies unsent, and the board's compromise takes shape around the concert instead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo47_1",
+          "label": "Hear Captain Mireille Anouk's offer.",
+          "target": "vo48"
+        }
+      ]
+    },
+    {
+      "id": "vo48",
+      "body": "<<FILL role=choice words=150 beats='Captain Mireille Anouk's offer, made across the piano lid; the Fleet Passage's middle movement carries the Harbor Shanty, and its small solo verse wants a voice that grew up inside the tune; Kavi Oduya has known it since aboard her uncle's trawler; take the solo and carry home into that paneled hall alone, or ask to share it, because Basile Okonkwo's counter-voice has been threading hers all term and some tunes want two'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo48_1",
+          "label": "Take the solo verse.",
+          "target": "vo49"
+        },
+        {
+          "id": "c_vo48_2",
+          "label": "Ask to sing it as a duet with Basile Okonkwo.",
+          "target": "vo52"
+        }
+      ]
+    },
+    {
+      "id": "vo49",
+      "body": "<<FILL role=rising words=138 beats='carrying the Harbor Shanty alone; nerves like a held fermata; Captain Mireille Anouk's breath work, in for four, through the fear and out the other side; singing home in front of strangers, which is either betrayal or gift depending on the singing; the delta fishing towns in every vowel; snow forecast for concert night'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo49_1",
+          "label": "Walk out under the lanterns.",
+          "target": "vo50"
+        }
+      ]
+    },
+    {
+      "id": "vo50",
+      "body": "<<FILL role=climax words=134 beats='concert night, snow thick past the famous windows; the hall packed, the board in the second row; the middle movement turns and the room goes quiet for one voice; in the last verse the wiring flickers and a hundred lanterns rise while she holds the tune steady over the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo50_1",
+          "label": "Finish the verse.",
+          "target": "vo51"
+        }
+      ]
+    },
+    {
+      "id": "vo51",
+      "body": "<<FILL role=success words=130 beats='a mill-town tune holding a paneled hall dead quiet, then the roar; Warden Colette Fen pledges the the dock repair fund before he sits down; Captain Mireille Anouk, in the wings, taps her own sternum twice, which is choir for that was yours; the Harbor Shanty went out from a scholarship kid's kitchen and came home with a concert hall around it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo51",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Harbor Shanty, Carried"
+      }
+    },
+    {
+      "id": "vo52",
+      "body": "<<FILL role=rising words=138 beats='she asks to split the verse, and the asking surprises everyone but Captain Mireille Anouk; two voices braiding the Harbor Shanty, mill town and river school; rehearsals turn into a friendship with its own private jokes about fermatas and Warden Colette Fen's clipboard; Basile Okonkwo teaches her to shape the verse's turn, she teaches him how Harbor Shanty's pulse actually sounds; snow forecast holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo52_1",
+          "label": "Sing it together.",
+          "target": "vo53"
+        }
+      ]
+    },
+    {
+      "id": "vo53",
+      "body": "<<FILL role=completion words=132 beats='the Regatta Day; the duet verse rises, two voices carrying one tune from two directions, and the join is invisible; the flicker, the lanterns, the pledge; afterward Basile Okonkwo says the tune was better with its pulse in it, and Kavi Oduya says it was better with the handrail; a term that began alone in a new school ends in two-part harmony, which is the whole argument for the program in one bar'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo53",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Two Voices, One Harbor Shanty"
+      }
+    }
+  ]
+}

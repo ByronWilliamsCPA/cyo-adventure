@@ -1,0 +1,1660 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_river_of_small_boats",
+  "version": 1,
+  "title": "The River of Small Boats",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "racing",
+      "friendship",
+      "sportsmanship",
+      "community",
+      "nature"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 26,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "s_morning",
+  "nodes": [
+    {
+      "id": "s_morning",
+      "body": "<<FILL role=setup words=115 beats='race morning in Cedar Hollow: bunting on every bridge and the mill river full of glitter; ten-year-old Nora carries her go-kart Pepper, a small pine boat with the leaf-shaped sail her friend Milo painted last summer, before the quarrel neither of them will mention; every racer carries a long-handled bank net, and the rules are painted on the boathouse door: nets only to free a stuck boat, carrying only at the white portage posts, every boat home by the the closing horn, and racers stay on the bank paths, always'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_s_morning_1",
+          "label": "Carry her go-kart Pepper to the the starting ramp.",
+          "target": "s_launch"
+        }
+      ]
+    },
+    {
+      "id": "s_launch",
+      "body": "<<FILL role=setup words=110 beats='at the the starting ramp the race marshal drops the checkered flag and a hundred small boats tumble into the current while the bank path fills with running kids; Sasha falls in step beside Nora, her sleek red Blaze already nosing ahead of her go-kart Pepper; somewhere back in the crowd Milo runs alone behind the patched boat Rustbucket; ahead the river bends toward the Old Oak Split, where the water divides'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_s_launch_1",
+          "label": "Run with the fleet toward the Old Oak Split.",
+          "target": "s_split"
+        }
+      ]
+    },
+    {
+      "id": "s_split",
+      "body": "<<FILL role=choice words=115 beats='at the Old Oak Split the river splits three ways and her go-kart Pepper spins in the choosing eddy; to the left the the steep run runs fast and loud toward the windmill; ahead the the meadow loop loops slow and golden through the duck pond shallows; to the right the the old canal path slides straight and shadowed toward the clanking rails; the current is about to take her, and Nora must pick one bank path and commit to wherever it leads'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_s_split_1",
+          "label": "Sprint down the the steep run path.",
+          "target": "a_dash"
+        },
+        {
+          "id": "ch_s_split_2",
+          "label": "Follow the the meadow loop.",
+          "target": "b_bend"
+        },
+        {
+          "id": "ch_s_split_3",
+          "label": "Take the the old canal path.",
+          "target": "c_cut"
+        }
+      ]
+    },
+    {
+      "id": "a_dash",
+      "body": "<<FILL role=rising words=100 beats='the the steep run path: a paved lane, wheels humming and swift; her go-kart Pepper shoots ahead like she was built for this channel, and Sasha pounds along at Nora's shoulder, Blaze and her go-kart Pepper trading the lead stroke for stroke; then, ahead, hedge lies right across the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_dash_1",
+          "label": "Race toward hedge.",
+          "target": "a_snag"
+        }
+      ]
+    },
+    {
+      "id": "a_snag",
+      "body": "<<FILL role=choice words=115 beats='the fallen hedge: last winter's storm dropped a whole tree into the race, and its trailing branches have combed up half the fleet, boats pinned like beads on a string; Milo is there hauling at a branch, Rustbucket stuck deep in the tangle; her go-kart Pepper is sliding fast toward the one open gap under the trunk, and Sasha is already running on past the snag'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_snag_1",
+          "label": "Race on through the hedge gap.",
+          "target": "a_gap"
+        },
+        {
+          "id": "ch_a_snag_2",
+          "label": "Stop at the snag to help.",
+          "target": "a_stop"
+        }
+      ]
+    },
+    {
+      "id": "a_gap",
+      "body": "<<FILL role=rising words=95 beats='her go-kart Pepper threads the hedge gap with a scrape of twigs and pops out clean; now it is just Nora and Sasha at the front of the race, two boats and two runners with the towpath drumming underfoot, and the thunder of the millwheel growing ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_gap_1",
+          "label": "Chase the leaders along the race wall.",
+          "target": "a_neck"
+        }
+      ]
+    },
+    {
+      "id": "a_neck",
+      "body": "<<FILL role=rising words=95 beats='neck and neck along the old race wall, Blaze leading by a bowsprit, then her go-kart Pepper, then Blaze again; spray hangs in the air like glitter; ahead the channel forks around the traffic island, and there is no seeing both sides of the island at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_neck_1",
+          "label": "Run to the fork at the traffic island.",
+          "target": "a_wheel"
+        }
+      ]
+    },
+    {
+      "id": "a_wheel",
+      "body": "<<FILL role=choice words=110 beats='the channel splits around the traffic island: on the wheel side it dives under the dripping spray tunnel beside the great turning wheel, wild water and rainbow spray; on the wall side it runs smooth and glassy past the miller's window toward the finish chicane; whichever bank path Nora takes, she loses sight of the other, and both boats are drifting toward the split'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_wheel_1",
+          "label": "Take the wheel side, under the spray tunnel.",
+          "target": "a_arch"
+        },
+        {
+          "id": "ch_a_wheel_2",
+          "label": "Take the wall side, past the miller's window.",
+          "target": "a_wall"
+        }
+      ]
+    },
+    {
+      "id": "a_arch",
+      "body": "<<FILL role=rising words=95 beats='under the spray tunnel the world is roar and rainbow; Nora runs the railed parapet walk high above the channel, spray rattling on her hood, while below her her go-kart Pepper and Blaze buck through the standing waves side by side and shoot toward the roundabout beneath the great turning wheel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_arch_1",
+          "label": "Follow the boats to the roundabout.",
+          "target": "a_swirl"
+        }
+      ]
+    },
+    {
+      "id": "a_swirl",
+      "body": "<<FILL role=choice words=115 beats='the roundabout catches both boats in its slow merry-go-round: Blaze circles the wide outer ring, her go-kart Pepper the tight inner one, and neither can break loose; from the stone parapet a racer may reach down with a net to free a stuck boat, but there is time for only one good reach before the rings carry them past; Sasha arrives gasping, her own net left far back at the hedge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_swirl_1",
+          "label": "Reach down and set Blaze free.",
+          "target": "a_free_rocket"
+        },
+        {
+          "id": "ch_a_swirl_2",
+          "label": "Wait, poised, for her go-kart Pepper's ring to come round.",
+          "target": "a_wait_ring"
+        }
+      ]
+    },
+    {
+      "id": "a_free_rocket",
+      "body": "<<FILL role=rising words=100 beats='Nora kneels at the parapet rail and tips Blaze loose with one clean lift of the net; Sasha whoops and sprints for the finish path; a heartbeat later the roundabout, as if it approved of the trade, spits her go-kart Pepper out of the inner ring all on its own, one boat-length behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_free_rocket_1",
+          "label": "Sprint after both boats to the line.",
+          "target": "a_grace_end"
+        }
+      ]
+    },
+    {
+      "id": "a_grace_end",
+      "body": "<<FILL role=completion words=90 beats='Blaze takes the ribbon and her go-kart Pepper crosses second, and somehow second feels enormous; Sasha splits the winner's lemon bars straight down the middle on the judges' table and tells everyone the parapet reach saved her race; a rival at the start line, a friend at the finish'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_grace_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Second Place, New Friend"
+      }
+    },
+    {
+      "id": "a_wait_ring",
+      "body": "<<FILL role=rising words=95 beats='Nora waits, net low, counting the inner ring like a skipping rope; on the third pass her go-kart Pepper's bow swings under the parapet, and one gentle lift breaks her free of the merry-go-round while Blaze is still circling the outer rim'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_wait_ring_1",
+          "label": "Race the freed her go-kart Pepper down the outflow.",
+          "target": "a_outflow"
+        }
+      ]
+    },
+    {
+      "id": "a_outflow",
+      "body": "<<FILL role=rising words=95 beats='her go-kart Pepper shoots the outflow first and takes the last straight with the current behind her; a moment later the pool lets Blaze go too, one boat-length back, and both runners fly along the bank toward the finish chicane, shouting themselves hoarse'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_outflow_1",
+          "label": "Run flat out for the finish.",
+          "target": "a_ribbon_end"
+        }
+      ]
+    },
+    {
+      "id": "a_ribbon_end",
+      "body": "<<FILL role=completion words=95 beats='her go-kart Pepper noses over the line a hand's width ahead of Blaze and the bank explodes; the river ribbon is blue with a little tin boat sewn to it, and when the race marshal pins it on, Sasha shakes Nora's hand hard and promises that next year she is watching that inner ring; the leaf sail flutters like it knows'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_ribbon_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Hill Trophy"
+      }
+    },
+    {
+      "id": "a_wall",
+      "body": "<<FILL role=rising words=95 beats='the wall side runs smooth as poured glass; through the mill's open window flour-dusty Pip waves a white hand, and Sasha's shout fades beyond the island, committed to the wheel side; then, just before the finish chicane, trouble: two lead boats locked mast to mast, spinning slow circles in the chicane mouth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_wall_1",
+          "label": "Run up to the blocked chicane mouth.",
+          "target": "a_tangle"
+        }
+      ]
+    },
+    {
+      "id": "a_tangle",
+      "body": "<<FILL role=choice words=110 beats='the tangled pair belongs to two big kids already at the the finish flags, yelling useless advice from the rope line; the spinning boats block the middle of the chicane and her go-kart Pepper is closing fast; from the plank bridge over the chicane mouth a net could tease the crossed masts apart, or Nora could trust her go-kart Pepper's luck through the thin gap along the chicane wall and save her sprint for the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_tangle_1",
+          "label": "Untangle the spinning pair from the plank bridge.",
+          "target": "a_untangle_pair"
+        },
+        {
+          "id": "ch_a_tangle_2",
+          "label": "Trust her go-kart Pepper through the thin gap.",
+          "target": "a_luck_gap"
+        }
+      ]
+    },
+    {
+      "id": "a_untangle_pair",
+      "body": "<<FILL role=rising words=95 beats='kneeling on the plank bridge, Nora works the net head between the crossed masts, one twist, two, and the boats spring apart like startled ducks and wobble off down the chicane; the big kids' cheer from the rope line rattles the handrail'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_untangle_pair_1",
+          "label": "Watch the chicane run clear.",
+          "target": "a_chute_clear"
+        }
+      ]
+    },
+    {
+      "id": "a_chute_clear",
+      "body": "<<FILL role=rising words=95 beats='the chicane runs clear; the freed pair ride through first and second, and her go-kart Pepper sweeps in behind them, third and closing, the the finish flags opening ahead full of flags and noise and the judge's raft gleaming at the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_chute_clear_1",
+          "label": "Meet the big kids pounding back along the rope line.",
+          "target": "a_shoulder_offer"
+        }
+      ]
+    },
+    {
+      "id": "a_shoulder_offer",
+      "body": "<<FILL role=choice words=105 beats='the big kids come pounding back along the rope line, patting their shoulders: hop up, best view of the finish in Cedar Hollow, we owe you a ride; it is a glorious offer, but behind Nora the chicane mouth has no keeper now, and more tired boats are wobbling toward it in twos and threes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_shoulder_offer_1",
+          "label": "Stay and keep the chicane mouth clear.",
+          "target": "a_chute_guard"
+        },
+        {
+          "id": "ch_a_shoulder_offer_2",
+          "label": "Ride high on their shoulders to the line.",
+          "target": "a_shoulder_ride"
+        }
+      ]
+    },
+    {
+      "id": "a_chute_guard",
+      "body": "<<FILL role=rising words=95 beats='Nora plants herself on the plank bridge like a elevator keeper; twice more the net flicks and twice more a tangle becomes a finish; below her, her go-kart Pepper holds third across the line while her skipper is busy holding the door open for everyone else'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_chute_guard_1",
+          "label": "Let the last boats through, then look up.",
+          "target": "a_clean_chute_end"
+        }
+      ]
+    },
+    {
+      "id": "a_clean_chute_end",
+      "body": "<<FILL role=completion words=95 beats='third place is a yellow ribbon, but what the the finish flags chants is the word keeper; every boat that crossed clean came through Nora's chicane mouth, and the big kids hoist her up anyway, ribbon and net and all, for a shoulder ride she did not have to trade the race for'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_clean_chute_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Keeper of the Chicane"
+      }
+    },
+    {
+      "id": "a_shoulder_ride",
+      "body": "<<FILL role=rising words=90 beats='up on the big kids' shoulders the whole finish spreads out like a painted map: flags, the judge's raft, the last bend gleaming; it is the best view in Cedar Hollow, which is exactly how Nora sees the new tangle forming in the chicane mouth below, with a small familiar leaf sail drifting straight for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_shoulder_ride_1",
+          "label": "Scramble down and run for the chicane.",
+          "target": "a_shoulders_end"
+        }
+      ]
+    },
+    {
+      "id": "a_shoulders_end",
+      "body": "<<FILL role=ending words=90 beats='by the time Nora reaches the plank bridge, her go-kart Pepper is wedged nose-first in the new tangle, and a marshal frees the knot only after the leaders are home; ninth place, and a lesson with a view: a keeper who leaves the gate learns the gate was hers; the big kids, mortified, promise shoulder rides all summer'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_shoulders_end",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The View From the Fence"
+      }
+    },
+    {
+      "id": "a_luck_gap",
+      "body": "<<FILL role=rising words=95 beats='her go-kart Pepper feints at the thin gap along the chicane wall, kisses one spinning hull with a tap like a knuckle on wood, tips until her leaf sail brushes the water, and somehow rolls back up; the gap opens, closes, opens, and she is through the spinners with the line in sight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_luck_gap_1",
+          "label": "Sprint beside her for the line.",
+          "target": "a_spinout_end"
+        }
+      ]
+    },
+    {
+      "id": "a_spinout_end",
+      "body": "<<FILL role=ending words=90 beats='luck carries her go-kart Pepper past the spinners and then spends itself: she skates wide off the last eddy and noses soft into the reed fringe a boat-length short of the line; by the time the net frees her the ribbons are pinned; twelfth, upright and unscratched, while the tangled pair never finished at all; next year, Nora thinks, she will stop and untangle'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_spinout_end",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Spun Out"
+      }
+    },
+    {
+      "id": "a_stop",
+      "body": "<<FILL role=rising words=100 beats='Nora skids to a stop under the hedge, and behind her the choosing eddy folds her go-kart Pepper gently back into the hedge's keep with the rest of the caught fleet; up close the snag is a curtain of trailing branches with six small boats pinned behind it, Rustbucket deepest of all; Milo hauls one-handed at a limb, not looking up, and the silence between them is as tangled as the boats'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_stop_1",
+          "label": "Size up the hedge curtain.",
+          "target": "a_helpers"
+        }
+      ]
+    },
+    {
+      "id": "a_helpers",
+      "body": "<<FILL role=choice words=110 beats='there are two ways to open the hedge: the big limb pinning Rustbucket would lift if two people heaved together, which means standing next to Milo and finding something to say; or the whole trailing curtain could be levered up at once from the footbridge with a long net pole, freeing every boat at a stroke, if one runner is strong and quick enough alone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_helpers_1",
+          "label": "Heave the big limb with Milo.",
+          "target": "a_big_branch"
+        },
+        {
+          "id": "ch_a_helpers_2",
+          "label": "Lever the curtain from the footbridge.",
+          "target": "a_bridge"
+        }
+      ]
+    },
+    {
+      "id": "a_big_branch",
+      "body": "<<FILL role=rising words=100 beats='Nora sets her hands beside Milo's on the wet bark, and the old count from last summer comes out of her mouth on its own, one two HUP; Milo's grin arrives before the memory of the quarrel can stop it; the limb lifts, the curtain sways, and six boats slide free in a squadron, Rustbucket and her go-kart Pepper side by side'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_big_branch_1",
+          "label": "Catch your breath beside Milo.",
+          "target": "a_crew_ask"
+        }
+      ]
+    },
+    {
+      "id": "a_crew_ask",
+      "body": "<<FILL role=choice words=110 beats='the race is far downstream now, its noise a rumor; Milo wrings out a sleeve and nods at the two boats below the bank: crew up, my legs and your net, we could still catch the tail of the fleet; but Rustbucket is riding low, a thin crack weeping river into her hull, and Milo is pretending very hard not to see it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_crew_ask_1",
+          "label": "Crew up and chase the fleet.",
+          "target": "a_chase"
+        },
+        {
+          "id": "ch_a_crew_ask_2",
+          "label": "Point at the seam and fix Rustbucket first.",
+          "target": "a_caulk"
+        }
+      ]
+    },
+    {
+      "id": "a_chase",
+      "body": "<<FILL role=rising words=95 beats='a crew of two works like one racer: Milo reads the current lines and calls them, Nora runs the net, and the towpath flies; boat by boat the tail of the fleet comes back to them, Rustbucket gamely thumping along in her go-kart Pepper's wake'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_chase_1",
+          "label": "Push hard for the meadow merge.",
+          "target": "a_merge_pass"
+        }
+      ]
+    },
+    {
+      "id": "a_merge_pass",
+      "body": "<<FILL role=rising words=95 beats='at the meadow merge, where all three channels braid back into one river, the two boats slip past a knot of tired stragglers in a single clean move, Milo calling the seam of fast water, Nora lifting one grounded boat clear of their lane; the finish flags show over the hedge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_merge_pass_1",
+          "label": "Run the last field together.",
+          "target": "a_crew_end"
+        }
+      ]
+    },
+    {
+      "id": "a_crew_end",
+      "body": "<<FILL role=completion words=95 beats='Rustbucket and her go-kart Pepper cross the line mid-fleet and exactly together, too far back for ribbons and too pleased to care; somewhere along the last field the quarrel simply is not there anymore, worked loose like the hedge limb; crew of two, says Milo, spitting on a palm and holding it out, same time next year'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_crew_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Crew of Two"
+      }
+    },
+    {
+      "id": "a_caulk",
+      "body": "<<FILL role=rising words=100 beats='Nora points at the weeping crack and says it out loud, and it is easier than it looked; they beach Rustbucket on the grass, bail her dry with cupped hands, and pack the seam with moss the way Milo's grandpa taught them both in the good summer, working like one pair of hands with four thumbs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_caulk_1",
+          "label": "Relaunch Rustbucket tight and dry.",
+          "target": "a_second_launch"
+        }
+      ]
+    },
+    {
+      "id": "a_second_launch",
+      "body": "<<FILL role=rising words=95 beats='Rustbucket relaunches tight and dry as a drum; the river is empty now, the race long gone, and the two of them run the whole mill reach anyway with both boats abreast, laughing at nothing, calling turns nobody is racing them for'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_second_launch_1",
+          "label": "Follow the empty river home.",
+          "target": "a_after_bell_end"
+        }
+      ]
+    },
+    {
+      "id": "a_after_bell_end",
+      "body": "<<FILL role=ending words=95 beats='the the trophy table is being folded up when two boats and two racers come up the last field together; logged home safe, listed with no place; and still it is somehow the best run either of them has ever had on this river, which is the sort of prize the the trophy table has no drawer for; same time next year, both of them, first ones at the flag'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_after_bell_end",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "After the Closing Horn"
+      }
+    },
+    {
+      "id": "a_bridge",
+      "body": "<<FILL role=rising words=100 beats='Nora takes the footbridge steps two at a time, hooks her net pole under the hedge's trailing curtain, and heaves; the whole green mass rises like a stage curtain going up, water streaming off it in silver strings, and the pinned fleet stares up at daylight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_bridge_1",
+          "label": "Hold the curtain high.",
+          "target": "a_curtain_lift"
+        }
+      ]
+    },
+    {
+      "id": "a_curtain_lift",
+      "body": "<<FILL role=rising words=95 beats='a roar from the bank as six boats pour through the opened gap in a body, Rustbucket among them and her go-kart Pepper swept along in the crowd; Milo waves both arms from the path; then the hedge takes its revenge: the curtain sags, and the net pole is swallowed to the handle, stuck fast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_curtain_lift_1",
+          "label": "Haul at the stuck pole.",
+          "target": "a_pole_stuck"
+        }
+      ]
+    },
+    {
+      "id": "a_pole_stuck",
+      "body": "<<FILL role=choice words=110 beats='the pole will not come, the fleet is away downstream with nobody watching her go-kart Pepper, and on the far rail of the footbridge stands Pip from the mill with a spare wheel, holding it out: trade you, mine for the story of how you lifted the whole hedge, told to my mum at the mill door; the big pole might still be wrestled free, but wrestling takes time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_pole_stuck_1",
+          "label": "Wrestle your own pole free first.",
+          "target": "a_wrestle"
+        },
+        {
+          "id": "ch_a_pole_stuck_2",
+          "label": "Take Pip's stubby spare and run.",
+          "target": "a_spare_net"
+        }
+      ]
+    },
+    {
+      "id": "a_wrestle",
+      "body": "<<FILL role=rising words=95 beats='Nora braces both boots against the bridge rail post and hauls until the hedge gives up the pole with a sound like a cork; it costs a hundred heartbeats and both shoulders, but the long net is hers again as she pelts down the towpath after the vanished fleet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_wrestle_1",
+          "label": "Chase the race with the long net.",
+          "target": "a_pole_free"
+        }
+      ]
+    },
+    {
+      "id": "a_pole_free",
+      "body": "<<FILL role=rising words=95 beats='she catches the race at the traffic island, passing knots of parents who turn and point, that is the one who lifted the hedge; the whole snagged half of the fleet is back in the running because of one heave, and her go-kart Pepper, unwatched all this while, has kept herself honest in mid-pack'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_pole_free_1",
+          "label": "Run her home with the fleet.",
+          "target": "a_fleet_hero_end"
+        }
+      ]
+    },
+    {
+      "id": "a_fleet_hero_end",
+      "body": "<<FILL role=completion words=95 beats='ninth over the line, nowhere near the ribbons, and the the finish flags does not seem to have noticed: six families whose boats came home owe the hedge curtain to Nora, and the miller pins the green River Friend badge on her collar with flour still on his thumbs; Pip gets his story at the mill door, told twice'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_fleet_hero_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Hedge Hero"
+      }
+    },
+    {
+      "id": "a_spare_net",
+      "body": "<<FILL role=rising words=95 beats='Pip's spare wheel is half the length and light as a spoon; Nora takes it and flies, and the trade feels fair right up until the roundabout, where her go-kart Pepper has wandered into the churning inner ring and is going around like a leaf on a clock'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_spare_net_1",
+          "label": "Kneel at the parapet with the short net.",
+          "target": "a_parapet_lunge"
+        }
+      ]
+    },
+    {
+      "id": "a_parapet_lunge",
+      "body": "<<FILL role=rising words=95 beats='kneeling at the parapet rail, Nora reaches the stubby net down toward the ring; the rim is a hand too far; three passes, three misses, each one closer than the last, the little net trembling at full stretch above the turning water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_a_parapet_lunge_1",
+          "label": "Try one more pass.",
+          "target": "a_short_net_end"
+        }
+      ]
+    },
+    {
+      "id": "a_short_net_end",
+      "body": "<<FILL role=failure words=90 beats='an inch short is an inch short all afternoon; a marshal's long hook finally lifts her go-kart Pepper out, dizzy but dry, after the leaders are home; tenth place, one borrowed net, and a plan already growing on the walk home: next year, a pole with an extra arm's reach, and maybe the hedge story will be worth two nets'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_short_net_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "An Inch Short"
+      }
+    },
+    {
+      "id": "b_bend",
+      "body": "<<FILL role=rising words=95 beats='the the meadow loop is another world: wide grassy track the color of straw, dragonflies stitching the air, cows watching over the fence like judges; only a handful of racers turned this way, and an old-timer on a stump winks as Nora passes: the bend rewards the patient, always has'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_bend_1",
+          "label": "Follow the slow parade of boats.",
+          "target": "b_heron"
+        }
+      ]
+    },
+    {
+      "id": "b_heron",
+      "body": "<<FILL role=choice words=110 beats='at the duck pond shallows a grey heron stands statue-still exactly where the little fleet must drift past, and the bank path forks: the low cattle track hugs the water, close to her go-kart Pepper but right past the heron's yellow eye; the flowered top path climbs the rise, loses the boats from sight, and comes down ahead at Puddle Field before the fleet can arrive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_heron_1",
+          "label": "Creep the low track, staying with your boat.",
+          "target": "b_creep"
+        },
+        {
+          "id": "ch_b_heron_2",
+          "label": "Climb the top path to get ahead at the pool.",
+          "target": "b_top_path"
+        }
+      ]
+    },
+    {
+      "id": "b_creep",
+      "body": "<<FILL role=rising words=95 beats='heel and toe past the heron, so close its eye turns like a slow clock; the boats drift by in a hushed parade and the heron, deciding they are neither fish nor frog, lets them; then from the sandy bank downstream comes a sound that is all wrong: a kingfisher, piping alarm over and over'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_creep_1",
+          "label": "Hurry toward the piping alarm.",
+          "target": "b_alarm"
+        }
+      ]
+    },
+    {
+      "id": "b_alarm",
+      "body": "<<FILL role=choice words=115 beats='last night's rain has slumped the sandy bank, and the slump is slowly burying a duck nest while two kingfishers whir in frantic circles; every boat wake slaps another handful of sand loose; her go-kart Pepper drifts on with the parade, needing nothing, and the nest needs everything; Park Ranger Moss checks racers at the plank bridge, minutes ahead for a fast sprinter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_alarm_1",
+          "label": "Stay and shore up the bank yourself.",
+          "target": "b_stones"
+        },
+        {
+          "id": "ch_b_alarm_2",
+          "label": "Sprint and fetch Park Ranger Moss.",
+          "target": "b_sprint_ivy"
+        }
+      ]
+    },
+    {
+      "id": "b_stones",
+      "body": "<<FILL role=rising words=100 beats='flat stones from the cattle track laid like a tiny sea wall, handfuls of packed sand, a driftwood plank angled to soften the wakes; it is slow, kneeling, careful work, and the race gurgles away downstream without her while the kingfishers watch from a bare branch, still as two blue thoughts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_stones_1",
+          "label": "Sit back and watch the tunnel mouth.",
+          "target": "b_blue_flash"
+        }
+      ]
+    },
+    {
+      "id": "b_blue_flash",
+      "body": "<<FILL role=rising words=95 beats='sand cakes Nora's knees from hem to boot; far downstream a cheer says the race is still happening to other people, and here the piping has stopped: one kingfisher tilts, drops, and slips into the duck nest mouth above the little stone sea wall, a blue spark going home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_blue_flash_1",
+          "label": "Turn at the sound of running boots.",
+          "target": "b_ivy"
+        }
+      ]
+    },
+    {
+      "id": "b_ivy",
+      "body": "<<FILL role=choice words=105 beats='Park Ranger Moss arrives at a run with a spade over her shoulder, sent by somebody's shout; she reads the stones, the plank, the sandy knees, and whistles: nest saved, she says, and I have exactly one junior warden armband in this bag; or, and she points her spade at the field path, sprint that way and you will still see your boat finish'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_ivy_1",
+          "label": "Stay and rope off the nest bank with Park Ranger Moss.",
+          "target": "b_rope"
+        },
+        {
+          "id": "ch_b_ivy_2",
+          "label": "Sprint the field path to the finish.",
+          "target": "b_field"
+        }
+      ]
+    },
+    {
+      "id": "b_rope",
+      "body": "<<FILL role=rising words=95 beats='they work the nesting bank together, stakes and soft rope and a hand-lettered sign, quiet please, kingfishers at home; Park Ranger Moss talks about bank swallows and last year's flood like the river is a neighbor she has known forever, and hands Nora the armband to knot on herself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_rope_1",
+          "label": "Knot on the armband.",
+          "target": "b_warden_end"
+        }
+      ]
+    },
+    {
+      "id": "b_warden_end",
+      "body": "<<FILL role=completion words=95 beats='at dusk Milo appears on the towpath carrying her go-kart Pepper, netted home safe at the finish by half a dozen borrowed hands; she came in somewhere in the middle, nobody quite counted; on Nora's sleeve is Cedar Hollow's first junior river warden armband, and in the sandy bank behind her, safe under stone and driftwood, a blue flash settles for the night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_warden_end",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Duckling Rescue"
+      }
+    },
+    {
+      "id": "b_field",
+      "body": "<<FILL role=rising words=95 beats='over the stile and flat out across the buttercups, the race noise rising ahead like a kettle coming to the boil; Nora arrives at the rope line with burrs on both socks just as the meadow fleet comes wobbling up the last straight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_field_1",
+          "label": "Cheer her go-kart Pepper up the straight.",
+          "target": "b_see_finish_end"
+        }
+      ]
+    },
+    {
+      "id": "b_see_finish_end",
+      "body": "<<FILL role=ending words=90 beats='her go-kart Pepper bobs over the line eleventh, unhelped and unbothered, and Nora cheers her home so loudly that strangers laugh; no ribbon, no armband, and nobody at the finish knows about the little stone sea wall upstream; the kingfishers know; some scores only the river keeps'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_see_finish_end",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Eleventh Place, First Rescue"
+      }
+    },
+    {
+      "id": "b_sprint_ivy",
+      "body": "<<FILL role=rising words=95 beats='Nora pelts back along the drifting parade to the plank bridge, where Park Ranger Moss leans over the rail freeing a snagged boat; the words tumble out in one breath, slumped bank, buried duck nest, kingfishers circling; Park Ranger Moss is moving before the sentence ends, spade kit swinging on her shoulder'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_sprint_ivy_1",
+          "label": "Run after Park Ranger Moss.",
+          "target": "b_ivy_runs"
+        }
+      ]
+    },
+    {
+      "id": "b_ivy_runs",
+      "body": "<<FILL role=rising words=95 beats='Park Ranger Moss runs like a warden, straight and fast, and pulls ahead and away; Nora follows with burning lungs, and at the shallows fork the day splits in two: upstream, the nest bank where Park Ranger Moss's spade is already flashing; downstream, the gravel crossing, where the unwatched fleet has begun to ground on the shelf, boat after boat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_ivy_runs_1",
+          "label": "Stop at the fork and choose.",
+          "target": "b_back_track"
+        }
+      ]
+    },
+    {
+      "id": "b_back_track",
+      "body": "<<FILL role=choice words=110 beats='two jobs, one runner: Park Ranger Moss could use a second pair of hands passing stones at the nest bank, and nobody at all is minding the gravel crossing, where grounded boats are stacking up on the gravel crossing like plates at a sink; her go-kart Pepper herself is three boats from grounding'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_back_track_1",
+          "label": "Help Park Ranger Moss shore up the nest.",
+          "target": "b_nest_help"
+        },
+        {
+          "id": "ch_b_back_track_2",
+          "label": "Guard the narrows with your net.",
+          "target": "b_narrows"
+        }
+      ]
+    },
+    {
+      "id": "b_nest_help",
+      "body": "<<FILL role=rising words=95 beats='stone, sand, plank, pass; with four hands the little sea wall grows twice as fast, and Park Ranger Moss talks the whole time, this stone here, that angle there, in the voice people use when they are quietly deciding something about you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_nest_help_1",
+          "label": "Keep passing stones till the bank holds.",
+          "target": "b_brace"
+        }
+      ]
+    },
+    {
+      "id": "b_brace",
+      "body": "<<FILL role=rising words=90 beats='the bank holds, the piping stops, and a blue spark slips home into the tunnel; Park Ranger Moss sits back on her heels, looks at Nora properly for the first time, and writes something in the green warden book with a stub of pencil, saying it out loud as she writes: assisted, capably'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_brace_1",
+          "label": "Walk the bank back with Park Ranger Moss.",
+          "target": "b_two_hands_end"
+        }
+      ]
+    },
+    {
+      "id": "b_two_hands_end",
+      "body": "<<FILL role=completion words=95 beats='the warden book closes on Nora's name; down at the merge, Theo nets her go-kart Pepper off the gravel crossing in passing, and she finishes mid-fleet without her skipper; no ribbon travels upstream, but Park Ranger Moss says the river remembers a wall longer than a race remembers a ribbon, and Park Ranger Moss would know'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_two_hands_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Four Hands and a Rake"
+      }
+    },
+    {
+      "id": "b_narrows",
+      "body": "<<FILL role=rising words=100 beats='Nora plants herself at the gravel crossing like a gatekeeper; the first grounded boat lifts free with one practiced flick of the net, then a second, then a fifth, each one waddling off down the deep channel; the parade funnels past her in a wobbling, grateful line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_narrows_1",
+          "label": "Watch the next boats come down.",
+          "target": "b_shelf_watch"
+        }
+      ]
+    },
+    {
+      "id": "b_shelf_watch",
+      "body": "<<FILL role=choice words=110 beats='then two at once: her go-kart Pepper grounds gently an arm's reach away at the near end of the gravel crossing, while at the far end the the Ferris twins' shared boat swings broadside to the current and starts to tip its cargo of lucky pebbles; a runner can free one first, not both, and the gravel crossing is longer than it looks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_shelf_watch_1",
+          "label": "Free the the Ferris twins' tipping boat first.",
+          "target": "b_twins_first"
+        },
+        {
+          "id": "ch_b_shelf_watch_2",
+          "label": "Free your her go-kart Pepper first, she is nearest.",
+          "target": "b_acorn_first"
+        }
+      ]
+    },
+    {
+      "id": "b_twins_first",
+      "body": "<<FILL role=rising words=95 beats='the long way down the shelf at a dead run; the the Ferris twins' boat rights itself at the first touch of the net, pebbles and all, and waddles free; back up the shelf, and her go-kart Pepper has waited exactly where the sand held her, patient as the bend itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_twins_first_1",
+          "label": "Set her go-kart Pepper loose.",
+          "target": "b_all_free"
+        }
+      ]
+    },
+    {
+      "id": "b_all_free",
+      "body": "<<FILL role=rising words=90 beats='one flick and her go-kart Pepper is away, last through the narrows and losing nothing by it; the meadow fleet sails on to the merge strangely whole, not one boat left behind on the shelf, and word of the net at the narrows travels up the line faster than the boats do'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_all_free_1",
+          "label": "Jog the bank to the finish.",
+          "target": "b_ferry_end"
+        }
+      ]
+    },
+    {
+      "id": "b_ferry_end",
+      "body": "<<FILL role=completion words=95 beats='her go-kart Pepper finishes fifth, best of the bend fleet, and the old-timer from the stump is at the rope line to see it: told you the bend rewards the patient; the the Ferris twins present Nora with one lucky pebble each, warm from their pockets, which is two more prizes than the the trophy table gave anyone else'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_ferry_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Ranger of the Crossing"
+      }
+    },
+    {
+      "id": "b_acorn_first",
+      "body": "<<FILL role=rising words=95 beats='nearest first: her go-kart Pepper lifts free in a blink and rides away down the channel; but the gravel crossing is longer than it looks, and by the time Nora reaches the far end the the Ferris twins' boat has rolled, spilled its lucky pebbles, and wedged hard under the gravel crossing lip, needing both hands and long, careful minutes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_acorn_first_1",
+          "label": "Work the wedged boat loose.",
+          "target": "b_two_at_once_end"
+        }
+      ]
+    },
+    {
+      "id": "b_two_at_once_end",
+      "body": "<<FILL role=ending words=90 beats='everything comes home safe and nothing comes home the way it should: the the Ferris twins' boat freed at last but out of the race, her go-kart Pepper unwatched at the merge, nosed into the reeds and netted free by Theo, finishing tenth; on the walk home Nora works the problem like a knot: nearest is not always first; some boats need you sooner than yours does'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_two_at_once_end",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Two at Once"
+      }
+    },
+    {
+      "id": "b_top_path",
+      "body": "<<FILL role=rising words=95 beats='the top path climbs through flowering grass until the whole bend lies below like a painted map: the drifting parade, the statue heron, and ahead, round and green as a coin, Puddle Field, where every boat in the bend must pass and every boat slows to a crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_top_path_1",
+          "label": "Come down the rise to the pool.",
+          "target": "b_pool_view"
+        }
+      ]
+    },
+    {
+      "id": "b_pool_view",
+      "body": "<<FILL role=rising words=90 beats='Nora comes down the rise well ahead of the fleet; the pool wears its duckweed like a bowling green, unbroken edge to edge; on the near bank Theo is already pacing and groaning about his own boat Buzzbox, still upstream: her gear chain will clog solid in a boat-length of this stuff'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_pool_view_1",
+          "label": "Hear Theo out.",
+          "target": "b_pool"
+        }
+      ]
+    },
+    {
+      "id": "b_pool",
+      "body": "<<FILL role=choice words=115 beats='Theo lays out the problem like a general: the old gravel track along the near edge runs straight through, but it is choked, and clearing it before the fleet arrives would take two net poles raking together; or, across the railed plank walk, the wardens' gate arm hangs on its hinge at the far lip, and swung open it would widen the one thread of clear current; one runner cannot do both in time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_pool_1",
+          "label": "Team up and rake the gravel track clear.",
+          "target": "b_clear"
+        },
+        {
+          "id": "ch_b_pool_2",
+          "label": "Cross the plank walk and swing the boom.",
+          "target": "b_plank_walk"
+        }
+      ]
+    },
+    {
+      "id": "b_clear",
+      "body": "<<FILL role=rising words=100 beats='two poles raking in rhythm like haymakers, green windrows piling on the bank; a channel opens one boat wide, dark and clean, and Theo presses a knob of beeswax into Nora's hand, wax the hull and weed will not grip, family secret; then the first bows of the fleet come nosing into the pool'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_clear_1",
+          "label": "Wave the fleet into the lane.",
+          "target": "b_lane_open"
+        }
+      ]
+    },
+    {
+      "id": "b_lane_open",
+      "body": "<<FILL role=rising words=90 beats='the parade funnels into the cleared lane nose to tail, a convoy in single file; from the bank it looks like a green zipper closing behind each hull; then Theo goes quiet: at the back, Buzzbox has arrived, gear chain churning, gaining on the slow line with nowhere to pass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_lane_open_1",
+          "label": "Look from the convoy to the lane and back.",
+          "target": "b_convoy"
+        }
+      ]
+    },
+    {
+      "id": "b_convoy",
+      "body": "<<FILL role=choice words=110 beats='Buzzbox will catch the convoy mid-pool, and a boat that big shoving down a one-boat lane means little boats squeezed out into the weed; there is time to rake a passing loop, a bulge in the middle of the lane where a big hull could swing out and by, but it is more haymaking on arms already tired; or the convoy can take its chances with a bump and a shove'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_convoy_1",
+          "label": "Rake a passing loop, quick.",
+          "target": "b_passing_loop"
+        },
+        {
+          "id": "ch_b_convoy_2",
+          "label": "Let the convoy run and cheer them through.",
+          "target": "b_jog_cheer"
+        }
+      ]
+    },
+    {
+      "id": "b_passing_loop",
+      "body": "<<FILL role=rising words=95 beats='sore arms, second wind; the bulge opens in the lane like a wide place in a country road just as Buzzbox arrives; she swings out, thunders past the little ones with a hand's width to spare, and swings back in, and the convoy never even wobbles'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_passing_loop_1",
+          "label": "Follow the convoy to the pool's lip.",
+          "target": "b_pour_out"
+        }
+      ]
+    },
+    {
+      "id": "b_pour_out",
+      "body": "<<FILL role=rising words=90 beats='the pool empties in perfect order, big boat first, little boats after, every hull striped with weed and none the worse; her go-kart Pepper rides out mid-pack onto the merge current, and Theo is shouting about passing loops like he has just invented roads'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_pour_out_1",
+          "label": "Chase the fleet down the merge.",
+          "target": "b_lane_end"
+        }
+      ]
+    },
+    {
+      "id": "b_lane_end",
+      "body": "<<FILL role=completion words=95 beats='her go-kart Pepper catches the merge current and finishes sixth; Theo finds Nora at the the trophy table and splits his lemon bars into two exact halves, engineer fashion; the green lane will be gone by morning, raked weed and all, but every boat in the bend came through it, and both of them know whose arms did that'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_lane_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Clear Lane"
+      }
+    },
+    {
+      "id": "b_jog_cheer",
+      "body": "<<FILL role=rising words=90 beats='the bump comes mid-pool: Buzzbox noses the last boat in line, the shove travels up the convoy like a rumor, and two little boats squeeze out of the lane into the weed field, stuck fast beyond any net's reach; the rest jostle through; Theo cannot watch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_jog_cheer_1",
+          "label": "Cheer the survivors through the jam.",
+          "target": "b_jam_end"
+        }
+      ]
+    },
+    {
+      "id": "b_jam_end",
+      "body": "<<FILL role=ending words=90 beats='the lane jams, unjams, crawls; her go-kart Pepper wallows out of the pool long after the leaders and finishes out of the ribbons, while the two weed-bound boats wait, safe and cross, for the marshals' punt to gather them at race end; passing loop next year, says Theo, and they shake on it like engineers who have just watched a bridge wobble'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_jam_end",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Traffic in the Mud"
+      }
+    },
+    {
+      "id": "b_plank_walk",
+      "body": "<<FILL role=rising words=95 beats='the plank walk drums underfoot, pool sliding green below the handrails; at the far lip the gate arm hangs on its crusted hinge, a floating log gate the wardens swing to corral the weed, its keeper chain held fast by one rusted latch pin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_plank_walk_1",
+          "label": "Get both hands on the gate arm.",
+          "target": "b_boom"
+        }
+      ]
+    },
+    {
+      "id": "b_boom",
+      "body": "<<FILL role=choice words=110 beats='one good heave will swing the gate arm partway on its crusted hinge, widening the thread of current to a ribbon before the fleet arrives; or the rusted latch pin could be worked loose first for the full wide swing, minutes of knuckle work while the first bows are already nosing into the weed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_boom_1",
+          "label": "Heave it partway, right now.",
+          "target": "b_partway"
+        },
+        {
+          "id": "ch_b_boom_2",
+          "label": "Work the rusted latch pin loose for the full swing.",
+          "target": "b_pin"
+        }
+      ]
+    },
+    {
+      "id": "b_partway",
+      "body": "<<FILL role=rising words=90 beats='the hinge shrieks and gives half its arc; the thread of current widens to a bright ribbon down the middle of the green, and the first boats find it like ducks finding a slipway, stringing through the pool in a neat silver line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_partway_1",
+          "label": "Watch the fleet take the thread.",
+          "target": "b_half_gate"
+        }
+      ]
+    },
+    {
+      "id": "b_half_gate",
+      "body": "<<FILL role=rising words=90 beats='half a gate turns out to be most of a race: the ribbon of current carries boat after boat across with barely a wallow, and her go-kart Pepper takes it neatly, second of the bend fleet, leaf sail drawing; a few heavy boats still shoulder into the weed at the edges and grumble their way across'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_half_gate_1",
+          "label": "Run the bank beside her.",
+          "target": "b_thread_end"
+        }
+      ]
+    },
+    {
+      "id": "b_thread_end",
+      "body": "<<FILL role=completion words=95 beats='her go-kart Pepper rides the silver thread out of the pool, holds her place down the merge, and finishes seventh; Park Ranger Moss, passing the boom on her rounds, eyes the half-swung gate, taps her nose, and leaves it exactly where Nora heaved it: race day rules, she says, the river likes a thread it can find'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_thread_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Open Lane"
+      }
+    },
+    {
+      "id": "b_pin",
+      "body": "<<FILL role=rising words=95 beats='rust fights back; knuckles sting, the rusted latch pin turns a quarter, sticks, turns again, while behind her the first boats nose into the green and slow like toys winding down; then the rusted latch pin drops into Nora's palm and the keeper chain runs free through its eye'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_pin_1",
+          "label": "Swing the boom wide.",
+          "target": "b_full_gate"
+        }
+      ]
+    },
+    {
+      "id": "b_full_gate",
+      "body": "<<FILL role=rising words=90 beats='the gate arm swings wide like a farm gate at milking time, and the pool changes its mind all at once: the thread fattens to a proper current, the green field folds back on both sides, and every boat in the pool, even the early ones stuck fast, pulls free and gathers way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_b_full_gate_1",
+          "label": "Follow the armada out of the pool.",
+          "target": "b_floodgate_end"
+        }
+      ]
+    },
+    {
+      "id": "b_floodgate_end",
+      "body": "<<FILL role=completion words=95 beats='the bend fleet crosses the pool together and arrives at the merge as a surprise armada, seventeen boats where the the steep run crowd expected three; her go-kart Pepper finishes eighth in the middle of the parade, and the the Ferris twins' boat is home because of the rusted latch pin in Nora's pocket, which she keeps, rust and all, on the windowsill all winter'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_floodgate_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "When the Gate Swung Wide"
+      }
+    },
+    {
+      "id": "c_cut",
+      "body": "<<FILL role=rising words=95 beats='the the old canal path is the quiet way: a narrow paved path in cool tunnel shade where footsteps echo and the race noise falls away behind; hardly anyone chose it; ahead, unhurried and enormous, comes the clank, clank of the great rails, and a brass bell rings twice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_cut_1",
+          "label": "Walk up to the great rails.",
+          "target": "c_gates"
+        }
+      ]
+    },
+    {
+      "id": "c_gates",
+      "body": "<<FILL role=rising words=95 beats='the elevator itself: two black rails tall as barn doors, a waiting pool above them collecting the little fleet like ducklings in a basin, and up on the beam, winding a crank with both hands, the elevator keeper: grey plait, patched blue coat, eyes bright as bell brass; she marks Nora's arrival with one nod'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_gates_1",
+          "label": "Answer the elevator keeper's nod.",
+          "target": "c_maren"
+        }
+      ]
+    },
+    {
+      "id": "c_maren",
+      "body": "<<FILL role=choice words=110 beats='boats for the flight, says Old Desmond the elevator keeper, then choose, racer: my elevators, down through both chambers the slow and proper way, and I will tell you how a elevator talks while the water works; or the bypass ramp yonder, the sluice that spills around the elevator, quick and rowdy and no promises; the little fleet noses at the rails, waiting on the choice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_maren_1",
+          "label": "Ride the flight with Old Desmond.",
+          "target": "c_pen"
+        },
+        {
+          "id": "ch_c_maren_2",
+          "label": "Follow the bypass ramp sluice.",
+          "target": "c_bywash"
+        }
+      ]
+    },
+    {
+      "id": "c_pen",
+      "body": "<<FILL role=rising words=100 beats='the rails swing, the fleet pens into the upper platform, and the rails boom shut behind them like a held breath; hold the bell rope, says Old Desmond, and ring when I say; paddles lift somewhere under the water and the whole platform begins, gently, to sink, boats riding down as if the river were a lift'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_pen_1",
+          "label": "Hold the rope and listen.",
+          "target": "c_story"
+        }
+      ]
+    },
+    {
+      "id": "c_story",
+      "body": "<<FILL role=rising words=105 beats='between clanks, Old Desmond talks: fifty years ago she was a racer with a boat called Comet, and on race day the the closing horn rang while she stood at these rails waiting for a keeper who never came; she stayed, learned the locks, and keeps them still; Comet sits in the elevator house window to this day, varnish dusty, race number seven still painted on her bow, a boat that never finished'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_story_1",
+          "label": "Look where Old Desmond is not looking.",
+          "target": "c_firefly"
+        }
+      ]
+    },
+    {
+      "id": "c_firefly",
+      "body": "<<FILL role=choice words=115 beats='the lower rails open on the last stretch of river, and through the elevator house window little Comet looks out at the water like a dog at a gate; Old Desmond follows Nora's eyes and says nothing at all, which is a kind of question; the second platform still needs working, and the crank handles are worn to the shape of fifty years of one pair of hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_firefly_1",
+          "label": "Ask Old Desmond to launch Comet beside her go-kart Pepper.",
+          "target": "c_dust"
+        },
+        {
+          "id": "ch_c_firefly_2",
+          "label": "Ask her to teach you the crank.",
+          "target": "c_windlass"
+        }
+      ]
+    },
+    {
+      "id": "c_dust",
+      "body": "<<FILL role=rising words=100 beats='Old Desmond goes very still, then laughs at the ceiling, fetches Comet from the window, and wipes fifty years off the varnish with one sleeve; race number seven, she says, never scratched off; the two boats slide out of the platform together, the old one and the young one, and the current takes them side by side'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_dust_1",
+          "label": "Run the lower cut beside the two boats.",
+          "target": "c_hats"
+        }
+      ]
+    },
+    {
+      "id": "c_hats",
+      "body": "<<FILL role=choice words=110 beats='down the lower cut, old racers on the bank recognize Comet one at a time, and one at a time their hats come off; word runs ahead of the boats; then at the last footbridge a marshal leans over: entered boats only past this point, and number seven is fifty years off the list; the crowd goes quiet; her go-kart Pepper carries the only race number between them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_hats_1",
+          "label": "Swap her go-kart Pepper's number onto Comet.",
+          "target": "c_number_swap"
+        },
+        {
+          "id": "ch_c_hats_2",
+          "label": "Sail them on together and let the line decide.",
+          "target": "c_escort"
+        }
+      ]
+    },
+    {
+      "id": "c_number_swap",
+      "body": "<<FILL role=rising words=95 beats='Nora unpins her race number from her go-kart Pepper's mast and hands it up to the marshal, who reads her face, then ties it to Comet's bow just below the painted seven; her go-kart Pepper sails on unnumbered, flying escort, and the bank noise starts low and builds like weather coming'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_number_swap_1",
+          "label": "Run the last stretch with them.",
+          "target": "c_firefly_end"
+        }
+      ]
+    },
+    {
+      "id": "c_firefly_end",
+      "body": "<<FILL role=completion words=100 beats='Comet crosses the line official at last, fifty years late and not one second early, to the biggest cheer of the day; from the gate beam far upstream, Old Desmond hears it and knows; her go-kart Pepper slips over after, unofficial and gloriously unbothered, and at the elevator house that evening there is lemon bars, the whole story told properly, and a promise: next year, racer, we launch her again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_firefly_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Comet, Kart No. 7"
+      }
+    },
+    {
+      "id": "c_escort",
+      "body": "<<FILL role=rising words=95 beats='sail on, then, both of them: Comet with her painted seven, her go-kart Pepper flying escort a half-length behind like she was trained to it; the marshal jogs alongside arguing with his own rulebook, and the hats keep coming off all the way down the cut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_escort_1",
+          "label": "Stay with them to the line.",
+          "target": "c_escort_end"
+        }
+      ]
+    },
+    {
+      "id": "c_escort_end",
+      "body": "<<FILL role=completion words=95 beats='at the line the judges rule it Solomon-fashion: her go-kart Pepper places sixth, and Comet enters the record book in fresh ink as escort, with honors, the first boat in Cedar Hollow history to finish without entering; the book is carried up to the elevator for Old Desmond to see, and she taps the entry twice, which from Old Desmond is a parade'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_escort_end",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Escort"
+      }
+    },
+    {
+      "id": "c_windlass",
+      "body": "<<FILL role=rising words=100 beats='Old Desmond sets Nora's hands on the worn handles and stands behind her like a spar: a elevator talks in clanks and hushes, listen for the hush; the paddles answer, the platform drains, and the great rails swing at the push of one girl leaning her whole weight, which is exactly how it should feel, says Old Desmond, like the river agreeing with you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_windlass_1",
+          "label": "Look up from your first worked gate.",
+          "target": "c_stragglers"
+        }
+      ]
+    },
+    {
+      "id": "c_stragglers",
+      "body": "<<FILL role=choice words=110 beats='from the gate top Nora spots three straggler boats arriving in the upper pound, little kids' boats, late and slow, and the the closing horn not far off; Old Desmond is oiling the far gate; a flight takes minutes to work, and there are only so many minutes left: a first solo lockage would send the stragglers down in time, and cost her go-kart Pepper her own run; Old Desmond catches the look and shrugs: your rails, keeper'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_stragglers_1",
+          "label": "Lock the stragglers down yourself.",
+          "target": "c_solo_flight"
+        },
+        {
+          "id": "ch_c_stragglers_2",
+          "label": "Hand back the crank and run for the bell.",
+          "target": "c_bell_run"
+        }
+      ]
+    },
+    {
+      "id": "c_solo_flight",
+      "body": "<<FILL role=rising words=100 beats='clank, hush, fall: three little boats ride Nora's first solo lockage down the flight, their owners watching through the gate rails like it is magic done slowly; she works the second platform alone, the rails boom at her word, hers, and the stragglers sail out onto the last stretch with the bell still unrung'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_solo_flight_1",
+          "label": "Close the last gate and turn around.",
+          "target": "c_brass_key"
+        }
+      ]
+    },
+    {
+      "id": "c_brass_key",
+      "body": "<<FILL role=rising words=95 beats='Old Desmond watches the last gate settle, then unhooks something from her belt that has hung there so long it has worn a pale stripe in the leather: a brass gate key on a red cord; she does not make a speech about it; she just holds it out on one weathered palm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_brass_key_1",
+          "label": "Take the key.",
+          "target": "c_keeper_end"
+        }
+      ]
+    },
+    {
+      "id": "c_keeper_end",
+      "body": "<<FILL role=completion words=100 beats='her go-kart Pepper misses the bell by minutes and nobody in the elevator house minds; junior keeper of the flight, says Old Desmond, first one in fifty years, and the key sits warm on its red cord while three little kids' boats dry on the sill beside Comet; some races, Nora understands now, are won by staying, and the elevator will talk to her all summer'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_keeper_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Crank Talks Back"
+      }
+    },
+    {
+      "id": "c_bell_run",
+      "body": "<<FILL role=rising words=95 beats='Old Desmond takes back the crank with a nod, go on then, I will lock the little ones down myself; Nora takes the towpath at a dead sprint, and behind her the flight begins to clank through its work in old, quick, certain hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_bell_run_1",
+          "label": "Race the elevator water down the last stretch.",
+          "target": "c_surge"
+        }
+      ]
+    },
+    {
+      "id": "c_surge",
+      "body": "<<FILL role=rising words=90 beats='the worked flight sends its long smooth push of water down the last stretch, and her go-kart Pepper rides the elevator surge past one tired boat after another; ahead the bell tower flag is still flying, and the noise of the merge crowd rises to meet them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_surge_1",
+          "label": "Sprint the final bend.",
+          "target": "c_bell_end"
+        }
+      ]
+    },
+    {
+      "id": "c_bell_end",
+      "body": "<<FILL role=completion words=95 beats='her go-kart Pepper slides over the line as the the closing horn begins to swing: sixth place, and the only elevator route boat home inside the count; under the bell's ringing, if you know what to listen for, come two far-off clanks from the flight, which is elevator for well run, racer; the little kids' boats come down safe after, exactly as promised'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_bell_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "On the Closing Horn"
+      }
+    },
+    {
+      "id": "c_bywash",
+      "body": "<<FILL role=rising words=95 beats='the bypass ramp then, quick and rowdy: a mossy stone sluice that spills around the elevator in a long white chicane; the little fleet tips in like minnows down a drainpipe, and Nora runs the mown path along the top of the sluice wall, hedge on one side, flying spray rattling off the stones below on the other'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_bywash_1",
+          "label": "Keep pace along the sluice wall.",
+          "target": "c_wall_path"
+        }
+      ]
+    },
+    {
+      "id": "c_wall_path",
+      "body": "<<FILL role=rising words=90 beats='the sluice braids and pleats below the wall, and her go-kart Pepper bucks through it upright, mostly; ahead, halfway down, a carry post stands at the path fork where racers may lift their own boats out and carry across the elevator island; beyond it, faint, comes the roar of the gravel spill where the bypass ramp spends itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_wall_path_1",
+          "label": "Run down to the white post.",
+          "target": "c_white_post"
+        }
+      ]
+    },
+    {
+      "id": "c_white_post",
+      "body": "<<FILL role=choice words=110 beats='the carry post, rule two made of wood: Nora may scoop her go-kart Pepper out here, her own boat and no other, and portage the mown path over the elevator island to relaunch in calm water below; or leave her running the whole rowdy bypass ramp and sprint the wall path to meet the fleet at the gravel spill, where the standing waves flip somebody every single year'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_white_post_1",
+          "label": "Let her run the bypass ramp to the fan.",
+          "target": "c_rapids"
+        },
+        {
+          "id": "ch_c_white_post_2",
+          "label": "Scoop her out and portage the island.",
+          "target": "c_island"
+        }
+      ]
+    },
+    {
+      "id": "c_rapids",
+      "body": "<<FILL role=rising words=95 beats='the last pitch of the sluice is all white: her go-kart Pepper vanishes in spray, pops up, vanishes, pops up like a cork with opinions; behind her two smaller boats take the big wave wrong and flip, washing hull-up onto the drain grate at the gravel spill's edge, and up the path come the the Ferris twins, running and crying at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_rapids_1",
+          "label": "Meet the the Ferris twins at the gravel fan.",
+          "target": "c_grating"
+        }
+      ]
+    },
+    {
+      "id": "c_grating",
+      "body": "<<FILL role=choice words=115 beats='the the Ferris twins' boats sit hull-up on the drain grate, a stride past any net's reach from the path, but the release pin that swings the drain grate is up on the plank bridge, an easy pull for someone tall enough who knows it is there; her go-kart Pepper meanwhile is through and away, riding the gravel spill's main tongue toward the merge with nobody watching; the the Ferris twins hiccup and point and pull at Nora's sleeve'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_grating_1",
+          "label": "Take the bridge and pull the release pin.",
+          "target": "c_pin_pull"
+        },
+        {
+          "id": "ch_c_grating_2",
+          "label": "Shout the the Ferris twins the pin trick and run on.",
+          "target": "c_shout"
+        }
+      ]
+    },
+    {
+      "id": "c_pin_pull",
+      "body": "<<FILL role=rising words=95 beats='up the plank bridge, find the release pin, pull: the drain grate tips with a rusty sigh and both little hulls roll right side up and slide free into the calm below, where two lifts of the net set them on the bank, dripping and whole; the the Ferris twins hug an elbow each like limpets'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_pin_pull_1",
+          "label": "Relaunch the the Ferris twins' boats in the calm.",
+          "target": "c_twin_parade"
+        }
+      ]
+    },
+    {
+      "id": "c_twin_parade",
+      "body": "<<FILL role=rising words=90 beats='relaunched in the flat water below the fan, the the Ferris twins' boats waddle off toward the merge; Nora jogs the last field with a twin holding each hand, their boats paddling ahead, while her go-kart Pepper is long out of sight, sailing her own race somewhere past the merge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_twin_parade_1",
+          "label": "Bring the small fleet home.",
+          "target": "c_twins_end"
+        }
+      ]
+    },
+    {
+      "id": "c_twins_end",
+      "body": "<<FILL role=completion words=95 beats='word comes back up the path that her go-kart Pepper crossed the line ninth all by herself and was lifted out safe by the finish marshal; the the Ferris twins tell the pin story at the the trophy table twice each, with actions; and for the rest of the summer two small crews follow Nora up and down the towpath calling her captain'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_twins_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Captain of the Ferris Fleet"
+      }
+    },
+    {
+      "id": "c_shout",
+      "body": "<<FILL role=rising words=90 beats='the gravel spill's roar eats half the words, but the older twin catches the ones that matter, release pin, BRIDGE, TIP, and the two of them scramble for the plank bridge together; Nora pelts on down the wall path after her own vanishing sail, guilt and hurry taking one leg each'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_shout_1",
+          "label": "Catch the fleet at the merge.",
+          "target": "c_merge_race"
+        }
+      ]
+    },
+    {
+      "id": "c_merge_race",
+      "body": "<<FILL role=rising words=90 beats='her go-kart Pepper rejoins the main river in a knot of the steep run boats and holds her own down the merge, leaf sail pulling hard; behind and far away comes a double splash and then a high double cheer, twin-sized, which loosens something in Nora's chest just in time for the last bend'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_merge_race_1",
+          "label": "Run the last bend with her.",
+          "target": "c_fifth_end"
+        }
+      ]
+    },
+    {
+      "id": "c_fifth_end",
+      "body": "<<FILL role=ending words=95 beats='fifth over the line, best of the bypass ramp boats, and a fine loud finish; at the the trophy table the the Ferris twins arrive towing both rescued boats and tell the pin story with Nora in it anyway, more heroic than she remembers being; she is glad, and a little sorry she only heard the splash, and both of those feelings keep'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_fifth_end",
+        "valence": "neutral",
+        "kind": "success",
+        "title": "Fifth, With an Echo"
+      }
+    },
+    {
+      "id": "c_island",
+      "body": "<<FILL role=rising words=100 beats='her go-kart Pepper comes out at the white post dripping under Nora's arm, and the island path is another country: bee-loud plum shade, and in the middle of it a picnic blanket of long-way-rounders, three racers trading gear like market day, wax, spare sail cloth, lucky pebbles; Old Greta looks up from her needle and thread and points it at her go-kart Pepper's fraying leaf sail: wind is rising on the last reach, trade you a stitch-up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_island_1",
+          "label": "Stop at the trading blanket.",
+          "target": "c_blanket"
+        }
+      ]
+    },
+    {
+      "id": "c_blanket",
+      "body": "<<FILL role=choice words=110 beats='Old Greta's price is the lemon bars in Nora's pocket: cake for a quick sail surgery and a strip of her sunflower-yellow tape to stiffen the leaf's spine; a fair trade, but the stone step relaunch is just down the path, and every breath spent trading is a boat-length given away to the bypass ramp fleet roaring past beyond the trees'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_blanket_1",
+          "label": "Trade the lemon bars for the stitch-up.",
+          "target": "c_stitch"
+        },
+        {
+          "id": "ch_c_blanket_2",
+          "label": "Skip the trade and relaunch at the stone step.",
+          "target": "c_stone_step"
+        }
+      ]
+    },
+    {
+      "id": "c_stitch",
+      "body": "<<FILL role=rising words=95 beats='the needle flashes, the frayed leaf gets a dragonfly-blue spine, and the sail comes back stiff and bright; Nora breaks the lemon bars and shares it around the blanket anyway, which makes Old Greta look at her the way Park Ranger Moss looks at rivers; overhead, the plum leaves have started to stir'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_stitch_1",
+          "label": "Carry her down to the stone step.",
+          "target": "c_wind"
+        }
+      ]
+    },
+    {
+      "id": "c_wind",
+      "body": "<<FILL role=rising words=90 beats='relaunched off the stone step at the island's foot, her go-kart Pepper meets the promised wind broadside on the last reach; the mended sail fills without a wrinkle and she skips across the water like a flat stone thrown well, past one wallowing bypass ramp boat after another'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_wind_1",
+          "label": "Chase her down the last reach.",
+          "target": "c_sail_end"
+        }
+      ]
+    },
+    {
+      "id": "c_sail_end",
+      "body": "<<FILL role=completion words=95 beats='her go-kart Pepper carves through the merge crowd and takes second place on the last reach, the dragonfly stitch pulling the whole way; Old Greta arrives whooping with the blanket still around her shoulders like a cape: some wins are stitched, not sailed, she says, and refuses her half of the ribbon but accepts her half of the glory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_sail_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Sunflower Patch"
+      }
+    },
+    {
+      "id": "c_stone_step",
+      "body": "<<FILL role=rising words=95 beats='no trade: down to the stone step and back in the water before any other portager, old frayed sail and all; for three glorious bends her go-kart Pepper leads the portage pack, while the wind Old Greta promised begins to comb the water dark from the far bank'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_stone_step_1",
+          "label": "Watch the wind come across the reach.",
+          "target": "c_lead_bends"
+        }
+      ]
+    },
+    {
+      "id": "c_lead_bends",
+      "body": "<<FILL role=rising words=90 beats='the wind arrives in earnest on the last reach and every sail on the river fills at once; her go-kart Pepper heels, surges, and for one breathless moment gains on the leaders; then the frayed leaf gives at the seam with a sound like paper tearing, small but final'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "ch_c_lead_bends_1",
+          "label": "Stay with her to the end.",
+          "target": "c_torn_end"
+        }
+      ]
+    },
+    {
+      "id": "c_torn_end",
+      "body": "<<FILL role=failure words=90 beats='her go-kart Pepper wallows home under half a sail, just past the bell, logged home safe with no place; at the the trophy table Old Greta finds Nora and presses the strip of sunflower-yellow tape into her hand, no trade, keep it for next year; the torn leaf comes down off the mast that night, folded like a letter Nora means to answer'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_torn_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Torn Flag"
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "HERO": "Petra Voss",
+  "KIN": "Dorin",
+  "THRESHOLD": "Kestrel Hollow Silo",
+  "ENTRANCE": "the maintenance hatch",
+  "WATCHER": "site guard",
+  "DEADLINE": "sunrise",
+  "DEADLINE_SIGN": "survey team",
+  "GOAL": "the classified logs that could clear his name",
+  "HUB_NAME": "atrium",
+  "STAIR_NAME": "the flooded silo shaft",
+  "HYDRO_NAME": "the coolant plant",
+  "MORGUE_NAME": "the cold war archive vault",
+  "CHAPEL_NAME": "the memorial yard",
+  "BOILER_NAME": "the generator hall",
+  "OFFICE_NAME": "the commandant's suite",
+  "WARD_NAME": "the barracks block",
+  "DISPENSARY_NAME": "the medical stores",
+  "ATTIC_NAME": "the antenna loft"
+}

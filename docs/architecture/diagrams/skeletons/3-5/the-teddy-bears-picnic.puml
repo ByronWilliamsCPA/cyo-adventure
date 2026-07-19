@@ -15,42 +15,42 @@ state n_honey2 #D1C4E9
 n_honey2 : rising · 40w
 state e_honey_oops #FFCDD2
 e_honey_oops : setback (negative)
-e_honey_oops : "Oops, Buzzy Bees"
+e_honey_oops : "Oops, {ROUTE_A_MISHAP}"
 state n_berry1 #FFF9C4
 n_berry1 : choice · 42w
 state n_berry2 #D1C4E9
 n_berry2 : rising · 40w
 state e_berry_oops #FFCDD2
 e_berry_oops : setback (negative)
-e_berry_oops : "Oops, Tumbling Berries"
+e_berry_oops : "Oops, {ROUTE_B_MISHAP}"
 state n_ball1 #FFF9C4
 n_ball1 : choice · 40w
 state n_ball2 #D1C4E9
 n_ball2 : rising · 38w
 state e_ball_oops #FFCDD2
 e_ball_oops : setback (negative)
-e_ball_oops : "Oops, a Ticklish Hopper"
+e_ball_oops : "Oops, {ROUTE_C_MISHAP}"
 state n_kite1 #FFF9C4
 n_kite1 : choice · 42w
 state n_kite2 #D1C4E9
 n_kite2 : rising · 38w
 state e_kite_oops #FFCDD2
 e_kite_oops : setback (negative)
-e_kite_oops : "Oops, a Windy Muddle"
+e_kite_oops : "Oops, {ROUTE_D_MISHAP}"
 state n_owl1 #FFF9C4
 n_owl1 : choice · 44w
 state n_owl2 #D1C4E9
 n_owl2 : rising · 40w
 state e_owl_oops #FFCDD2
 e_owl_oops : setback (negative)
-e_owl_oops : "Oops, a Pile of Leaves"
+e_owl_oops : "Oops, {ROUTE_E_MISHAP}"
 state n_music1 #FFF9C4
 n_music1 : choice · 42w
 state n_music2 #D1C4E9
 n_music2 : rising · 38w
 state e_music_oops #FFCDD2
 e_music_oops : setback (negative)
-e_music_oops : "Oops, a Jumbled Tune"
+e_music_oops : "Oops, {ROUTE_F_MISHAP}"
 state n_gather #D1C4E9
 n_gather : rising · 40w
 state n_welcome #D1C4E9
@@ -63,58 +63,58 @@ state n_game #FFF9C4
 n_game : choice · 36w
 state e_song #C8E6C9
 e_song : completion (positive)
-e_song : "The Picnic Song"
+e_song : "{SONG_PRIZE}"
 state e_music_finale #C8E6C9
 e_music_finale : success (positive)
-e_music_finale : "A Sweet Little Tune"
+e_music_finale : "{ROUTE_F_PRIZE}"
 state e_nap #C8E6C9
 e_nap : completion (positive)
-e_nap : "A Cozy Sunny Nap"
+e_nap : "{NAP_PRIZE}"
 state e_ball_game #C8E6C9
 e_ball_game : success (positive)
-e_ball_game : "The Rolling Red Ball"
+e_ball_game : "{ROUTE_C_PRIZE}"
 state e_kite_game #C8E6C9
 e_kite_game : success (positive)
-e_kite_game : "The High Bright Kite"
-n_start --> n_honey1 : Go ask the bees for honey.
-n_start --> n_berry1 : Go pick red berries at the bramble.
-n_start --> n_ball1 : Go find the big red ball.
-n_start --> n_kite1 : Go fetch the bright paper kite.
-n_start --> n_owl1 : Go wake sleepy Owl in the oak.
-n_start --> n_music1 : Go find the little music box.
-n_honey1 --> n_honey2 : Ask the bees nicely and wait.
-n_honey1 --> e_honey_oops : Poke the hive to hurry.
-n_honey2 --> n_start : Carry the honey back to the blanket.
-n_honey2 --> n_gather : Ring the bell and start the picnic.
-n_berry1 --> n_berry2 : Pick the easy low berries.
+e_kite_game : "{ROUTE_D_PRIZE}"
+n_start --> n_honey1 : Go ask {ROUTE_A_LURE} for {ROUTE_A_OFFER...
+n_start --> n_berry1 : Go pick {ROUTE_B_LURE} at {ROUTE_B_CHAR}...
+n_start --> n_ball1 : Go find {ROUTE_C_LURE}.
+n_start --> n_kite1 : Go fetch {ROUTE_D_LURE}.
+n_start --> n_owl1 : Go wake {ROUTE_E_LURE} in {ROUTE_E_CHAR}...
+n_start --> n_music1 : Go find {ROUTE_F_LURE}.
+n_honey1 --> n_honey2 : Ask {ROUTE_A_LURE} nicely and wait.
+n_honey1 --> e_honey_oops : Poke {ROUTE_A_CHAR} to hurry.
+n_honey2 --> n_start : Carry {ROUTE_A_OFFER} back to {ENTRANCE}...
+n_honey2 --> n_gather : Ring {SIGNAL} and start the {GOAL}.
+n_berry1 --> n_berry2 : Pick the easy low {ROUTE_B_LURE}.
 n_berry1 --> e_berry_oops : Stretch for the wobbly high ones.
-n_berry2 --> n_start : Carry the berries back to the blanket.
-n_berry2 --> n_gather : Ring the bell and start the picnic.
+n_berry2 --> n_start : Carry {ROUTE_B_OFFER} back to {ENTRANCE}...
+n_berry2 --> n_gather : Ring {SIGNAL} and start the {GOAL}.
 n_ball1 --> n_ball2 : Follow the little bounce marks.
-n_ball1 --> e_ball_oops : Dive into the tall grass.
-n_ball2 --> n_start : Roll the ball back to the blanket.
-n_ball2 --> n_gather : Ring the bell and start the picnic.
-n_kite1 --> n_kite2 : Carry the kite gently under her arm.
-n_kite1 --> e_kite_oops : Let the kite flap open in the wind.
-n_kite2 --> n_start : Bring the kite back to the blanket.
-n_kite2 --> n_gather : Ring the bell and start the picnic.
-n_owl1 --> n_owl2 : Hoot softly to wake Owl gently.
+n_ball1 --> e_ball_oops : Dive into {ROUTE_C_CHAR}.
+n_ball2 --> n_start : Roll {ROUTE_C_LURE} back to {ENTRANCE}.
+n_ball2 --> n_gather : Ring {SIGNAL} and start the {GOAL}.
+n_kite1 --> n_kite2 : Carry {ROUTE_D_LURE} gently under her ar...
+n_kite1 --> e_kite_oops : Let {ROUTE_D_LURE} flap open in the wind...
+n_kite2 --> n_start : Bring {ROUTE_D_LURE} back to {ENTRANCE}.
+n_kite2 --> n_gather : Ring {SIGNAL} and start the {GOAL}.
+n_owl1 --> n_owl2 : Hoot softly to wake {ROUTE_E_LURE} gentl...
 n_owl1 --> e_owl_oops : Shake the whole branch.
-n_owl2 --> n_start : Walk Owl back to the blanket.
-n_owl2 --> n_gather : Ring the bell and start the picnic.
+n_owl2 --> n_start : Walk {ROUTE_E_LURE} back to {ENTRANCE}.
+n_owl2 --> n_gather : Ring {SIGNAL} and start the {GOAL}.
 n_music1 --> n_music2 : Lift the lid carefully.
 n_music1 --> e_music_oops : Give the handle a big fast wind.
-n_music2 --> n_start : Carry the music box back to the blanket.
-n_music2 --> n_gather : Ring the bell and start the picnic.
-n_gather --> n_welcome : Welcome the teddy bears in.
-n_welcome --> n_arrange : Lay out all the picnic treats.
-n_arrange --> n_share : Share the honey and berries.
-n_arrange --> n_game : Start a picnic game.
-n_share --> e_song : Sing the teddy bears' picnic song.
-n_share --> e_music_finale : Wind up the music box and sway.
+n_music2 --> n_start : Carry {ROUTE_F_LURE} back to {ENTRANCE}.
+n_music2 --> n_gather : Ring {SIGNAL} and start the {GOAL}.
+n_gather --> n_welcome : Welcome {GUESTS} in.
+n_welcome --> n_arrange : Lay out all the {GOAL} treats.
+n_arrange --> n_share : Share {ROUTE_A_OFFER} and {ROUTE_B_OFFER...
+n_arrange --> n_game : Start a {GOAL} game.
+n_share --> e_song : Sing {SONG_PRIZE}.
+n_share --> e_music_finale : Wind up {ROUTE_F_LURE} and sway.
 n_share --> e_nap : Curl up for a cozy nap in the sun.
-n_game --> e_ball_game : Roll the big red ball around the ring.
-n_game --> e_kite_game : Fly the bright kite in the breeze.
+n_game --> e_ball_game : Roll {ROUTE_C_LURE} around the ring.
+n_game --> e_kite_game : Fly {ROUTE_D_LURE} in the breeze.
 e_honey_oops --> [*]
 e_berry_oops --> [*]
 e_ball_oops --> [*]

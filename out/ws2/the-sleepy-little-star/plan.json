@@ -1,0 +1,56 @@
+{
+  "beats": {
+    "n_start": "{OPENING_MOMENT} over {THRESHOLD}; high above, {HERO}, {HERO_ROLE}, wakes up in {HOME} and rubs her eyes; tonight is her very first night to shine all by herself",
+    "n_moon": "{COMPANION} rises slowly and smiles at {HERO}; {COMPANION} whispers that {THRESHOLD} is waiting for her little light; {HERO} feels fluttery and shy in her tummy, so she squeezes her {HERO_FEATURE} tight and gets ready to be brave",
+    "n_ready": "{HERO} floats to {ENTRANCE} and wonders how to start shining; she could hide behind {ROUTE_A_CHAR} first, or do {ROUTE_B_CHAR} to wake up her sparkle, or scoot down to peek at {ROUTE_C_CHAR}",
+    "n_cloud": "{HERO} tucks herself behind {ROUTE_A_CHAR} so only the very tip of her glow peeks out; {ROUTE_A_CHAR} is soft and cozy, but {ENTRANCE} stays dark and empty; she can snuggle deeper into {ROUTE_A_CHAR} or peek out one tiny sparkle",
+    "n_cozy_retry": "deep in {ROUTE_A_CHAR} {HERO} rests a little while and {COMPANION} hums one soft low note; {ROUTE_A_CHAR} tickles her nose and she giggles a tiny giggle; the rest makes her feel a little braver, so she floats back toward {ENTRANCE} to try again",
+    "n_peek": "one tiny sparkle slips out and drifts all the way down to {THRESHOLD}, where {A2_FIND} blinks hello back up at her; {HERO} gasps with joy, her little light reached somebody; her glow steadies and grows a bit warmer and bolder",
+    "n_wiggle": "{HERO} wiggles and jiggles to wake up her sparkle, and {WIGGLE_GLITTER} shakes off her {HERO_FEATURE} in every direction; it is very fun but very wobbly, and her light flickers like a hiccup; she can wiggle even faster or slow down and sway like a lullaby",
+    "n_giggle_retry": "{HERO} wiggles so fast she spins in a dizzy circle and plops onto {B1_LANDING}, giggling; her sparkle goes all fizzy like tiny bubbles; {COMPANION} chuckles kindly and says gently does it, little one, so she dusts off her {HERO_FEATURE} and floats back to try again",
+    "n_sway": "{HERO} sways slowly, side to side, like {B2_SCENE}; her sparkle settles into one warm, steady glow; the swaying feels just like a lullaby and she hums along softly, calm and ready at last",
+    "n_slide": "{HERO} scoots down {THRESHOLD} to peek at {ROUTE_C_CHAR}, but whoops, {THRESHOLD} is slippery tonight and she slides down, down, down to just above {SLIDE_LOW}; she can grab a {CLIMB_AID} and climb right back up, or take a little peek around from down low",
+    "n_low": "from down low {HERO} sees {LOW_HOUSES}, and {CHILDREN} peeking up, waiting for {HERO_ROLE}; her heart glows warm as toast; {CHILDREN} need her light tonight, so she floats up and up toward {ENTRANCE}",
+    "n_almost": "back at {ENTRANCE}, {THRESHOLD} finally feels just right, soft and dark and quiet as a blanket; {COMPANION} nods proudly and the whole night seems to wait; {HERO} can try one tiny practice sparkle first, or hold onto a {CLIMB_AID} and shine all at once",
+    "n_first_sparkle": "{HERO} lets out one small practice sparkle and it glows steady and bright, not wobbly at all; she laughs out loud with happy surprise; her shyness floats away like a little cloud, and now she is truly ready to shine her whole light",
+    "n_shine": "{HERO} takes the biggest breath of all and shines, and her silver light spills soft and bright across {THRESHOLD}; {COMPANION} beams with pride; now {HERO} can wink goodnight to {CHILDREN} below, or sing {LULLABY_SONG} with {COMPANION}, or invite {OTHER_STARS} to shine along",
+    "e_goodnight": "{HERO} twinkles a slow, gentle goodnight wink, and far below {CHILDREN} wave from their windows and snuggle into their beds; {THRESHOLD} grows quiet and dreamy under her soft silver light; {HERO} shines calm and proud, {HERO_ROLE}, right where she belongs",
+    "e_lullaby": "{HERO} and {COMPANION} hum {LULLABY_SONG} together while {THRESHOLD} rocks slow and gentle like a cradle; her light glows in time with the tune; down below, sleepy eyes close one by one; {HERO} sings the whole world to sleep and is not one bit shy anymore",
+    "e_friends": "{HERO} calls out softly and one by one {OTHER_STARS} pop out beside her, blinking hello until {THRESHOLD} is full of friendly lights; shining is easy with friends all around; {HERO} glows happiest of all, {HERO_ROLE} who lit up the whole night"
+  },
+  "titles": {
+    "e_goodnight": "Goodnight, {GOODNIGHT_PRIZE}",
+    "e_lullaby": "The {HERO} {LULLABY_PRIZE}",
+    "e_friends": "{FRIENDS_PRIZE}"
+  },
+  "labels": {
+    "n_start": {
+      "c_start_peek": "Peek out at {THRESHOLD}."
+    },
+    "n_ready": {
+      "c_ready_cloud": "Hide behind {ROUTE_A_CHAR}.",
+      "c_ready_wiggle": "Do {ROUTE_B_CHAR}.",
+      "c_ready_low": "Scoot down to peek at {ROUTE_C_CHAR}."
+    },
+    "n_cloud": {
+      "c_cloud_snuggle": "Snuggle deeper into {ROUTE_A_CHAR}."
+    },
+    "n_sway": {
+      "c_sway_spot": "Glide to {ENTRANCE}."
+    },
+    "n_slide": {
+      "c_slide_climb": "Climb the {CLIMB_AID} back up."
+    },
+    "n_low": {
+      "c_low_up": "Float up to {ENTRANCE}."
+    },
+    "n_almost": {
+      "c_almost_all": "Hold a {CLIMB_AID} and shine all at once."
+    },
+    "n_shine": {
+      "c_shine_wink": "Wink goodnight to {CHILDREN}.",
+      "c_shine_song": "Sing {LULLABY_SONG} with {COMPANION}.",
+      "c_shine_stars": "Invite {OTHER_STARS}."
+    }
+  }
+}

@@ -1,0 +1,459 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-big-red-balloon",
+  "age_band": "3-5",
+  "legacy_lexicon": [
+    "Lila",
+    "Grandpa",
+    "Jo",
+    "duck pond",
+    "kite hill",
+    "willow tree",
+    "willow",
+    "paddle-boat lady",
+    "paddle-boat",
+    "ice-cream cart",
+    "ice-cream man",
+    "step stool",
+    "yellow kite",
+    "stepping stones",
+    "kite kids",
+    "fountain"
+  ],
+  "default_binding": {
+    "HERO": "Lila",
+    "COMPANION": "Grandpa",
+    "THRESHOLD": "the sunny park",
+    "GOAL": "the big red balloon",
+    "TONE_MOTIF": "breeze",
+    "ROUTE_A_LURE": "the shiny duck pond",
+    "ROUTE_A_PATH": "sloping down toward the water",
+    "ROUTE_A_CREATURE": "ducks",
+    "ROUTE_A_LANDMARK": "the reeds by the old willow tree",
+    "ROUTE_B_LURE": "grassy kite hill",
+    "ROUTE_B_PATH": "climbing toward the open sky",
+    "ROUTE_B_SIGN": "a jingly bell",
+    "ROUTE_B_CREATURE": "kite kids",
+    "A1_APPROACH": "flat stepping stones",
+    "A1_ZONE": "the old willow tree",
+    "A1_OFFER1": "a long smooth stick",
+    "A1_OFFER2": "a puffing breeze",
+    "A1_PRIZE2_ZONE": "the calm middle of the pond",
+    "A1_PRIZE1": "Caught Under the Willow",
+    "A1_PRIZE2": "Leader of the Duck Parade",
+    "A2_GUIDE": "the paddle-boat lady",
+    "A2_ZONE": "the big whooshing fountain",
+    "A2_PRIZE": "The Fountain Catch",
+    "B1_ZONE": "the ice-cream cart",
+    "B1_LANDMARK": "the tall striped umbrella",
+    "B1_GUIDE": "the ice-cream man",
+    "B1_TOOL": "a little step stool",
+    "B1_PRIZE1": "The Fanciest Rescue",
+    "B1_PRIZE2": "The Strawberry Goodbye",
+    "B2_ZONE": "the windy top of the hill",
+    "B2_FRIEND": "Jo",
+    "B2_TOOL": "yellow kite",
+    "B2_PRIZE": "The Kindest Kite"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist chasing the balloon.",
+      "guidance": "A single kid-relatable child (name or role); capable, curious, not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["COMPANION"]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The adult who accompanies the hero throughout the chase.",
+      "guidance": "A trusted, steady adult (grandparent/guardian); helps but never takes over; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, sunny outdoor place the story happens inside.",
+      "guidance": "One open, cheerful outdoor place with room to roam; wonder over dread; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The lost, chased object the whole story is about recovering.",
+      "guidance": "A single cherished, harmless plaything; recognizable at a glance across every scene; never itself a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TONE_MOTIF",
+      "scope": "global",
+      "meaning": "The recurring playful force (wind/current/etc.) that carries the goal around and drives the chase.",
+      "guidance": "A gentle, whimsical natural force; never violent or destructive, even at its strongest moment.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LURE",
+      "scope": "route",
+      "meaning": "The named destination the goal pulls toward down the left-hand path.",
+      "guidance": "A bright, inviting place; distinguishable at a glance from route B's destination.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["ROUTE_B_LURE"]
+      }
+    },
+    {
+      "id": "ROUTE_A_PATH",
+      "scope": "route",
+      "meaning": "The physical character of the left-hand path.",
+      "guidance": "An easy, passable slope or trail; no hazards underfoot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CREATURE",
+      "scope": "route",
+      "meaning": "The friendly animal companions encountered throughout route A.",
+      "guidance": "Harmless, cheerful creatures that react to the chase like an audience or escort.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LANDMARK",
+      "scope": "route",
+      "meaning": "The landmark at the far side of route A where it forks into two tracks.",
+      "guidance": "A distinctive, safe natural feature; a fair, visible fork point.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_LURE",
+      "scope": "route",
+      "meaning": "The named destination the goal pulls toward up the right-hand path.",
+      "guidance": "A bright, inviting place; distinguishable at a glance from route A's destination.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["ROUTE_A_LURE"]
+      }
+    },
+    {
+      "id": "ROUTE_B_PATH",
+      "scope": "route",
+      "meaning": "The physical character of the right-hand path.",
+      "guidance": "An easy, passable climb; effort but no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_SIGN",
+      "scope": "route",
+      "meaning": "The sensory cue drawing the hero up route B before the destination is in view.",
+      "guidance": "A cheerful, distinctive sound or sight; benign.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_CREATURE",
+      "scope": "route",
+      "meaning": "The group of children or friendly figures encountered throughout route B.",
+      "guidance": "Welcoming peers or helpers, never a source of conflict.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_APPROACH",
+      "scope": "track",
+      "meaning": "The physical means of crossing to track A1's zone (the stones option at the route-A fork).",
+      "guidance": "A steady, walkable crossing; no risk of a real fall.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_ZONE",
+      "scope": "track",
+      "meaning": "The landmark where the goal's string gets caught on track A1.",
+      "guidance": "A safe, climbable or reachable natural feature; wonder, not hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_OFFER1",
+      "scope": "track",
+      "meaning": "The tool the companion offers for the quick, direct way to retrieve the goal.",
+      "guidance": "A simple, safe household or found object a child could use with help.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["A1_OFFER2"]
+      }
+    },
+    {
+      "id": "A1_OFFER2",
+      "scope": "track",
+      "meaning": "The patient, wait-and-see alternative to the tool at track A1's sub-choice.",
+      "guidance": "A gentle natural force distinct from the tool option; rewards patience, not urgency.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["A1_OFFER1"]
+      }
+    },
+    {
+      "id": "A1_PRIZE2_ZONE",
+      "scope": "track",
+      "meaning": "Where the goal drifts to when the hero waits instead of reaching for it.",
+      "guidance": "A calm, safe open spot; a pleasant surprise destination, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: the direct recovery of the goal at track A1's quick sub-path.",
+      "guidance": "A short, warm success title; the goal is back in hand.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "A1_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: the goal becomes a happy surprise for the route-A creatures.",
+      "guidance": "A short, delighted completion title; a joyful trade, not a loss.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "A2_GUIDE",
+      "scope": "track",
+      "meaning": "The friendly adult helper on track A2 who offers a boat ride.",
+      "guidance": "A cheerful, capable helper figure; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_ZONE",
+      "scope": "track",
+      "meaning": "The landmark in the middle of route A's water where the goal ends up on track A2.",
+      "guidance": "A splashy, delightful safe landmark; nothing hazardous about approaching it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the goal is recovered at track A2's landmark.",
+      "guidance": "A short, splashy success title.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "B1_ZONE",
+      "scope": "track",
+      "meaning": "The vendor/attraction on track B1 where the goal's string gets caught.",
+      "guidance": "A cheerful, kid-friendly stall or stand; safe to approach.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_LANDMARK",
+      "scope": "track",
+      "meaning": "The specific feature of B1_ZONE the goal's string catches on.",
+      "guidance": "A tall, reachable-with-help fixture; nothing sharp or unstable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_GUIDE",
+      "scope": "track",
+      "meaning": "The adult who runs B1_ZONE and helps free the goal.",
+      "guidance": "A warm, obliging adult figure; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_TOOL",
+      "scope": "track",
+      "meaning": "The object the hero can climb on to try reaching the goal herself at B1's sub-choice.",
+      "guidance": "A small, stable, kid-safe object; sturdy enough to stand on briefly.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: the goal is recovered when the hero asks the B1_GUIDE for help.",
+      "guidance": "A short, delighted success title with a treat-based flourish.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE2",
+          "B2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "B1_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: a bittersweet setback where the goal escapes for good, softened by a consolation treat.",
+      "guidance": "A gentle, comforting title; a wistful goodbye, never despairing or frightening.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["lethal", "weapon", "graphic", "despair"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "B2_ZONE",
+      "scope": "track",
+      "meaning": "The high, windy landmark at the top of route B where track B2 plays out.",
+      "guidance": "An open, breezy vantage point; safe underfoot, no edge or drop.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_FRIEND",
+      "scope": "track",
+      "meaning": "The child the hero meets at B2_ZONE who offers to help.",
+      "guidance": "A friendly peer, kind and helpful; a new friend, not a rival.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_TOOL",
+      "scope": "track",
+      "meaning": "The object B2_FRIEND uses to help snag the goal out of the air.",
+      "guidance": "A simple, safe plaything a child would plausibly bring outdoors.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the goal is recovered with B2_FRIEND's help, celebrated by the route-B creatures.",
+      "guidance": "A short, warm title naming the new friendship as much as the recovery.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE",
+          "B1_PRIZE1",
+          "B1_PRIZE2"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,5302 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_labyrinth_of_glass",
+  "version": 1,
+  "title": "The Labyrinth of Glass",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "the mirror labyrinth",
+      "lethal checkpoints",
+      "nerve over haste",
+      "the long climb up"
+    ],
+    "estimated_minutes": 35,
+    "ending_count": 116,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "gauntlet",
+    "length": "long",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "sup0",
+  "nodes": [
+    {
+      "id": "sup0",
+      "body": "<<FILL role=setup words=78 beats='second person; you are a carnival worker's kid who has slipped below the stage into the flooded funhouse maze to reach the the deed that saves the pier; the way out is one long spine of mirror rooms, each a killing test; state the grave stakes plainly, many go down and few come up, and a wrong step ends here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sup0",
+          "label": "Go down into the glass.",
+          "target": "sup1"
+        }
+      ]
+    },
+    {
+      "id": "sup1",
+      "body": "<<FILL role=setup words=66 beats='second person; the hatch beneath the boardwalk seals cold behind you and the way is one long spine of mirror rooms falling deeper under the stage; there is no going back and no second try inside, only forward from room to room, and each room is a test that has kept better climbers than you; keep your nerve and your eyes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sup1",
+          "label": "Take the first room.",
+          "target": "st01_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st01_ap0",
+      "body": "<<FILL role=rising words=55 beats='second person; you come to the Hall of Painted Doors; you enter a round hall of a hundred bright doorways, all of them mirrors; the cold air smells of dust and old velvet from the theatre above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_ap0",
+          "label": "Read the room.",
+          "target": "st01_gate"
+        }
+      ]
+    },
+    {
+      "id": "st01_gate",
+      "body": "<<FILL role=rising words=70 beats='second person; every doorway throws your reflection back at you except one; the true door is the black gap that holds no reflection; the rule is plain, walk into any mirror and the glass takes your face; choose the door that does not answer you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_gate_ok",
+          "label": "Step through the doorway that shows no reflection.",
+          "target": "st01_pass"
+        },
+        {
+          "id": "c_st01_gate_f0",
+          "label": "Shoulder through the nearest bright door.",
+          "target": "st01_f0_c0"
+        },
+        {
+          "id": "c_st01_gate_f1",
+          "label": "Wait for the true door to reveal itself.",
+          "target": "st01_f1_c0"
+        },
+        {
+          "id": "c_st01_gate_f2",
+          "label": "Feel along the frames for a hidden latch.",
+          "target": "st01_f2_c0"
+        },
+        {
+          "id": "c_st01_gate_f3",
+          "label": "Follow your own reflection deeper in.",
+          "target": "st01_f3_c0"
+        },
+        {
+          "id": "c_st01_gate_gm",
+          "label": "Gamble on the door you first came in by.",
+          "target": "st01_seen"
+        }
+      ]
+    },
+    {
+      "id": "st01_pass",
+      "body": "<<FILL role=rising words=50 beats='second person; the false doors fall dark behind you and a narrow passage of cold glass opens; you are past the first hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_pass",
+          "label": "Go on, deeper.",
+          "target": "st02_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st01_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you strike the lit glass at a run and it does not give'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_f0_c0",
+          "label": "And then.",
+          "target": "st01_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st01_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the mirror splits along your reflection and the shards come inward before you can turn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_f0_c1",
+          "label": "No time left.",
+          "target": "st01_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st01_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the mirror splits along your reflection and the shards come inward before you can turn'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st01_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Bright Door"
+      },
+      "choices": []
+    },
+    {
+      "id": "st01_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you stand still and watch the hundred reflections instead of moving'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_f1_c0",
+          "label": "And then.",
+          "target": "st01_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st01_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the delay is the death here; the ushers who keep this hall close on your held silhouette in the glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_f1_c1",
+          "label": "No time left.",
+          "target": "st01_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st01_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the delay is the death here; the ushers who keep this hall close on your held silhouette in the glass'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st01_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Too Long in the Hall"
+      },
+      "choices": []
+    },
+    {
+      "id": "st01_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you run your palm across the silvered seams looking for iron'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_f2_c0",
+          "label": "And then.",
+          "target": "st01_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st01_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; a frame swings and the edge opens your hand to the wrist, and the cold does the rest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_f2_c1",
+          "label": "No time left.",
+          "target": "st01_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st01_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; a frame swings and the edge opens your hand to the wrist, and the cold does the rest'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st01_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Latch of Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st01_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you trust the figure that walks where you walk and go after it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_f3_c0",
+          "label": "And then.",
+          "target": "st01_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st01_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; it leads you between two mirrors that were never a door and the hall folds shut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_f3_c1",
+          "label": "No time left.",
+          "target": "st01_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st01_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; it leads you between two mirrors that were never a door and the hall folds shut'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st01_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Lost Behind the Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st01_seen",
+      "body": "<<FILL role=choice words=62 beats='second person; you turn back toward the doorway you entered by; it may still be open, or the hall may have sealed it in silvered glass behind you; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st02_ap0"
+        },
+        {
+          "id": "c_st01_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st01_fd_c0"
+        },
+        {
+          "id": "c_st01_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st01_cap"
+        }
+      ]
+    },
+    {
+      "id": "st01_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; you press into where you came from and meet cold glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_fd_c0",
+          "label": "And then.",
+          "target": "st01_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st01_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; your own eyes stare back an instant before the hall keeps you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_fd_c1",
+          "label": "No time left.",
+          "target": "st01_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st01_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; your own eyes stare back an instant before the hall keeps you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st01_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Sealed In by Silver"
+      },
+      "choices": []
+    },
+    {
+      "id": "st01_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; hands in a ticket clerk's gloves take your arms from the dark and walk you up into a locked box above; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st01_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Handed to the Ushers"
+      },
+      "choices": []
+    },
+    {
+      "id": "st02_ap0",
+      "body": "<<FILL role=rising words=58 beats='second person; you come to the Rusted Stair; a staircase drops away, reflected on both walls into a falling infinity of steps; a single candle burns at the bottom'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_ap0",
+          "label": "Read the room.",
+          "target": "st02_gate"
+        }
+      ]
+    },
+    {
+      "id": "st02_gate",
+      "body": "<<FILL role=rising words=74 beats='second person; the candlelight catches every solid step and slides off the false ones; a step that shines back at you is glass and will drop you the whole depth of the stair; tread only the steps the candle does not light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_gate_ok",
+          "label": "Tread the dull steps the candle does not catch.",
+          "target": "st02_pass"
+        },
+        {
+          "id": "c_st02_gate_f0",
+          "label": "Take the bright steps, they look nearest.",
+          "target": "st02_f0_c0"
+        },
+        {
+          "id": "c_st02_gate_f1",
+          "label": "Slide down the banister to save time.",
+          "target": "st02_f1_c0"
+        },
+        {
+          "id": "c_st02_gate_f2",
+          "label": "Hold at the top until your eyes adjust.",
+          "target": "st02_f2_c0"
+        },
+        {
+          "id": "c_st02_gate_f3",
+          "label": "Jump the flight to the lit candle below.",
+          "target": "st02_f3_c0"
+        },
+        {
+          "id": "c_st02_gate_gm",
+          "label": "Gamble and pinch the candle out to read the dark.",
+          "target": "st02_seen"
+        }
+      ]
+    },
+    {
+      "id": "st02_pass",
+      "body": "<<FILL role=rising words=54 beats='second person; you go down step by dull step and reach the burning candle at the foot; the stair is behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_pass",
+          "label": "Go on, deeper.",
+          "target": "st03_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st02_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you set your weight on a step that shines back at you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_f0_c0",
+          "label": "And then.",
+          "target": "st02_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st02_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the glass gives like water and the reflected stair swallows you down its false depth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_f0_c1",
+          "label": "No time left.",
+          "target": "st02_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st02_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the glass gives like water and the reflected stair swallows you down its false depth'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st02_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Silvered Fall"
+      },
+      "choices": []
+    },
+    {
+      "id": "st02_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you throw a leg over the rail and let the smooth glass carry you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_f1_c0",
+          "label": "And then.",
+          "target": "st02_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st02_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the banister ends in mirror halfway down and there is nothing under your hands but the drop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_f1_c1",
+          "label": "No time left.",
+          "target": "st02_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st02_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the banister ends in mirror halfway down and there is nothing under your hands but the drop'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st02_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Banister Ends"
+      },
+      "choices": []
+    },
+    {
+      "id": "st02_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you freeze on the landing and wait for the false steps to sort themselves out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_f2_c0",
+          "label": "And then.",
+          "target": "st02_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st02_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; waiting is the killing here; the candle gutters, the solid steps go dark with the false, and the stair takes the guess you finally make'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_f2_c1",
+          "label": "No time left.",
+          "target": "st02_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st02_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; waiting is the killing here; the candle gutters, the solid steps go dark with the false, and the stair takes the guess you finally make'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st02_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Candle Gutters"
+      },
+      "choices": []
+    },
+    {
+      "id": "st02_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you leap for the light at the bottom in one drop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_f3_c0",
+          "label": "And then.",
+          "target": "st02_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st02_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the candle stood on glass; you and the flame go through it together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_f3_c1",
+          "label": "No time left.",
+          "target": "st02_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st02_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the candle stood on glass; you and the flame go through it together'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st02_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Leap onto Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st02_seen",
+      "body": "<<FILL role=choice words=66 beats='second person; you crush the flame; in the sudden black the solid steps might glow faintly of themselves, or the whole stair might vanish under you; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st03_ap0"
+        },
+        {
+          "id": "c_st02_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st02_fd_c0"
+        },
+        {
+          "id": "c_st02_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st02_cap"
+        }
+      ]
+    },
+    {
+      "id": "st02_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; you take a step you cannot see'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_fd_c0",
+          "label": "And then.",
+          "target": "st02_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st02_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the reflected stair opens and there is no landing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_fd_c1",
+          "label": "No time left.",
+          "target": "st02_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st02_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the reflected stair opens and there is no landing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st02_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Blind on the Stair"
+      },
+      "choices": []
+    },
+    {
+      "id": "st02_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a night guide's lantern finds you frozen on the last true step and its owner does not mean to let you leave; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st02_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Caught in the Lantern"
+      },
+      "choices": []
+    },
+    {
+      "id": "st03_ap0",
+      "body": "<<FILL role=rising words=61 beats='second person; you come to the Echoing Corridor; a long mirrored gallery curves away; far above, an orchestra tunes for the evening and the sound leaks down through the stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_ap0",
+          "label": "Read the room.",
+          "target": "st03_gate"
+        }
+      ]
+    },
+    {
+      "id": "st03_gate",
+      "body": "<<FILL role=rising words=78 beats='second person; the glass here is strung so tight that any near sound cracks it; you may only move under the loud swells of the orchestra above, never in the quiet between them; step in a silence and the walls shatter on you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_gate_ok",
+          "label": "Move only under the orchestra's loud swells.",
+          "target": "st03_pass"
+        },
+        {
+          "id": "c_st03_gate_f0",
+          "label": "Cross in the quiet to hear yourself think.",
+          "target": "st03_f0_c0"
+        },
+        {
+          "id": "c_st03_gate_f1",
+          "label": "Call out to test for an echo.",
+          "target": "st03_f1_c0"
+        },
+        {
+          "id": "c_st03_gate_f2",
+          "label": "Wait for the music to stop, then run.",
+          "target": "st03_f2_c0"
+        },
+        {
+          "id": "c_st03_gate_f3",
+          "label": "Drag your hand along the wall to steady yourself.",
+          "target": "st03_f3_c0"
+        },
+        {
+          "id": "c_st03_gate_f4",
+          "label": "Hum along to match the swell.",
+          "target": "st03_f4_c0"
+        },
+        {
+          "id": "c_st03_gate_gm",
+          "label": "Gamble and sprint the whole gallery at once.",
+          "target": "st03_seen"
+        }
+      ]
+    },
+    {
+      "id": "st03_pass",
+      "body": "<<FILL role=rising words=46 beats='second person; you time your steps to the music and cross under cover of a long chord; the gallery holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_pass",
+          "label": "Go on, deeper.",
+          "target": "st04_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st03_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you choose a still moment and walk it in silence'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f0_c0",
+          "label": "And then.",
+          "target": "st03_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st03_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; your own footfall is the loudest thing in the hush and the strung glass answers it all at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f0_c1",
+          "label": "No time left.",
+          "target": "st03_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st03_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your own footfall is the loudest thing in the hush and the strung glass answers it all at once'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st03_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Loud in the Quiet"
+      },
+      "choices": []
+    },
+    {
+      "id": "st03_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you raise your voice to map the gallery ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f1_c0",
+          "label": "And then.",
+          "target": "st03_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st03_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the word returns as a hundred cracks and the ceiling of mirror lets go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f1_c1",
+          "label": "No time left.",
+          "target": "st03_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st03_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the word returns as a hundred cracks and the ceiling of mirror lets go'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st03_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Answered Call"
+      },
+      "choices": []
+    },
+    {
+      "id": "st03_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you crouch and hold until the players rest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f2_c0",
+          "label": "And then.",
+          "target": "st03_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st03_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the wait is the trap; in the rest between pieces there is no cover left, and the first step you take rings the whole gallery down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f2_c1",
+          "label": "No time left.",
+          "target": "st03_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st03_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the wait is the trap; in the rest between pieces there is no cover left, and the first step you take rings the whole gallery down'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st03_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Between the Pieces"
+      },
+      "choices": []
+    },
+    {
+      "id": "st03_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you keep a palm on the cold glass as you go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f3_c0",
+          "label": "And then.",
+          "target": "st03_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st03_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the friction sings up the pane and the note it finds is the one that breaks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f3_c1",
+          "label": "No time left.",
+          "target": "st03_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st03_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the friction sings up the pane and the note it finds is the one that breaks'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st03_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Note in the Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st03_f4_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you pitch your own voice into the music to stay hidden'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f4_c0",
+          "label": "And then.",
+          "target": "st03_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "st03_f4_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; you land a half-tone off and the discord splits the gallery from end to end'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_f4_c1",
+          "label": "No time left.",
+          "target": "st03_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "st03_f4_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; you land a half-tone off and the discord splits the gallery from end to end'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st03_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Half a Tone Off"
+      },
+      "choices": []
+    },
+    {
+      "id": "st03_seen",
+      "body": "<<FILL role=choice words=58 beats='second person; you break into a dead run for the far arch; you may cross before the glass can gather the sound, or you may not; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st04_ap0"
+        },
+        {
+          "id": "c_st03_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st03_fd_c0"
+        },
+        {
+          "id": "c_st03_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st03_cap"
+        }
+      ]
+    },
+    {
+      "id": "st03_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; the glass gathers the sound of them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_fd_c0",
+          "label": "And then.",
+          "target": "st03_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st03_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the gallery comes down a stride from the arch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_fd_c1",
+          "label": "No time left.",
+          "target": "st03_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st03_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the gallery comes down a stride from the arch'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st03_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Stride Short"
+      },
+      "choices": []
+    },
+    {
+      "id": "st03_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a ride mechanic hauls you through a side door as the glass falls, and the door locks from his side; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st03_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Through the Side Door"
+      },
+      "choices": []
+    },
+    {
+      "id": "st04_ap0",
+      "body": "<<FILL role=rising words=64 beats='second person; you come to the Lantern Vault; the passage opens under a vast chandelier of glass drops, hung on one frayed chain over a floor of mirror'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_ap0",
+          "label": "Read the room.",
+          "target": "st04_gate"
+        }
+      ]
+    },
+    {
+      "id": "st04_gate",
+      "body": "<<FILL role=rising words=66 beats='second person; the chandelier swings a slow arc; cross only when it hangs dead still at the top of its swing, never while it moves; step under it swinging and it comes down through you and the floor both'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_gate_ok",
+          "label": "Cross while the chandelier hangs dead still.",
+          "target": "st04_pass"
+        },
+        {
+          "id": "c_st04_gate_f0",
+          "label": "Dash under it while it's still climbing.",
+          "target": "st04_f0_c0"
+        },
+        {
+          "id": "c_st04_gate_f1",
+          "label": "Cut the chain to drop it out of the way.",
+          "target": "st04_f1_c0"
+        },
+        {
+          "id": "c_st04_gate_f2",
+          "label": "Hold at the edge until it stops on its own.",
+          "target": "st04_f2_c0"
+        },
+        {
+          "id": "c_st04_gate_f3",
+          "label": "Climb the chain above the swing.",
+          "target": "st04_f3_c0"
+        },
+        {
+          "id": "c_st04_gate_gm",
+          "label": "Gamble on the mirror floor holding your run.",
+          "target": "st04_seen"
+        }
+      ]
+    },
+    {
+      "id": "st04_pass",
+      "body": "<<FILL role=rising words=50 beats='second person; you wait out the swing, then walk the floor beneath the stopped weight and reach the far door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_pass",
+          "label": "Go on, deeper.",
+          "target": "st05_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st04_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you break for the far side as the great weight rises'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_f0_c0",
+          "label": "And then.",
+          "target": "st04_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st04_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the arc reverses at the top and the chandelier finds the floor, and you, on the way down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_f0_c1",
+          "label": "No time left.",
+          "target": "st04_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st04_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the arc reverses at the top and the chandelier finds the floor, and you, on the way down'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st04_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Falling Weight"
+      },
+      "choices": []
+    },
+    {
+      "id": "st04_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you swing at the frayed chain to be rid of the thing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_f1_c0",
+          "label": "And then.",
+          "target": "st04_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st04_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; it drops early and wide and the glass storm of it fills the vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_f1_c1",
+          "label": "No time left.",
+          "target": "st04_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st04_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; it drops early and wide and the glass storm of it fills the vault'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st04_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Chain Cut Early"
+      },
+      "choices": []
+    },
+    {
+      "id": "st04_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you wait for the swing to die of itself before moving'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_f2_c0",
+          "label": "And then.",
+          "target": "st04_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st04_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; waiting kills you here; the draft from the passage keeps it swinging, and the longer you crouch the more the guards behind you gain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_f2_c1",
+          "label": "No time left.",
+          "target": "st04_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st04_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; waiting kills you here; the draft from the passage keeps it swinging, and the longer you crouch the more the guards behind you gain'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st04_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "It Never Stops"
+      },
+      "choices": []
+    },
+    {
+      "id": "st04_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you take to the chain to pass over the top'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_f3_c0",
+          "label": "And then.",
+          "target": "st04_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st04_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the frayed link parts under your weight and takes you into the drops below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_f3_c1",
+          "label": "No time left.",
+          "target": "st04_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st04_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the frayed link parts under your weight and takes you into the drops below'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st04_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Frayed Link"
+      },
+      "choices": []
+    },
+    {
+      "id": "st04_seen",
+      "body": "<<FILL role=choice words=62 beats='second person; you decide the floor is solid enough and start across without minding the swing; the mirror underfoot may be stone-backed, or only glass over the drop; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st05_ap0"
+        },
+        {
+          "id": "c_st04_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st04_fd_c0"
+        },
+        {
+          "id": "c_st04_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st04_cap"
+        }
+      ]
+    },
+    {
+      "id": "st04_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; it stars white under your second step'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_fd_c0",
+          "label": "And then.",
+          "target": "st04_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st04_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; you go through it under the swinging weight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_fd_c1",
+          "label": "No time left.",
+          "target": "st04_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st04_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; you go through it under the swinging weight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st04_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Floor of Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st04_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a rope drops from the dark above and a rope handler's hands haul you up out of the vault and do not set you free; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st04_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Hauled to the Rigging"
+      },
+      "choices": []
+    },
+    {
+      "id": "st05_ap0",
+      "body": "<<FILL role=rising words=52 beats='second person; you come to the Frosted Window; a single tall mirror blocks the passage, rimed white with frost, the only way a door somewhere in its face'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_ap0",
+          "label": "Read the room.",
+          "target": "st05_gate"
+        }
+      ]
+    },
+    {
+      "id": "st05_gate",
+      "body": "<<FILL role=rising words=70 beats='second person; breathe on the frost and your breath clears the true seam of the door; but the cold of this glass is deep, and every breath you spend leaning close leaks the warmth out of you; find the seam in one breath and go, linger and the cold stops your heart'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_gate_ok",
+          "label": "Fog it once, read the seam, and step through fast.",
+          "target": "st05_pass"
+        },
+        {
+          "id": "c_st05_gate_f0",
+          "label": "Warm the whole glass with both hands.",
+          "target": "st05_f0_c0"
+        },
+        {
+          "id": "c_st05_gate_f1",
+          "label": "Breathe on it slow to be sure of the seam.",
+          "target": "st05_f1_c0"
+        },
+        {
+          "id": "c_st05_gate_f2",
+          "label": "Strike the frozen glass to break through.",
+          "target": "st05_f2_c0"
+        },
+        {
+          "id": "c_st05_gate_f3",
+          "label": "Wipe the frost clear with your sleeve.",
+          "target": "st05_f3_c0"
+        },
+        {
+          "id": "c_st05_gate_gm",
+          "label": "Gamble and step through where you guess the seam is.",
+          "target": "st05_seen"
+        }
+      ]
+    },
+    {
+      "id": "st05_pass",
+      "body": "<<FILL role=rising words=54 beats='second person; your breath clears the door's outline; you find the seam and push through before the cold can hold you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_pass",
+          "label": "Go on, deeper.",
+          "target": "st06_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st05_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you press your palms flat to melt a wider view'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_f0_c0",
+          "label": "And then.",
+          "target": "st05_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st05_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the cold climbs your arms faster than the frost clears and it does not let go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_f0_c1",
+          "label": "No time left.",
+          "target": "st05_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st05_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the cold climbs your arms faster than the frost clears and it does not let go'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st05_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Cold in the Hands"
+      },
+      "choices": []
+    },
+    {
+      "id": "st05_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you lean close and fog it again and again to read it perfectly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_f1_c0",
+          "label": "And then.",
+          "target": "st05_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st05_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the waiting is the wound; each careful breath spends more of your warmth than the last, and the cold takes you leaning on the glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_f1_c1",
+          "label": "No time left.",
+          "target": "st05_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st05_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the waiting is the wound; each careful breath spends more of your warmth than the last, and the cold takes you leaning on the glass'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st05_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "One Breath Too Many"
+      },
+      "choices": []
+    },
+    {
+      "id": "st05_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you drive your elbow into the rimed pane'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_f2_c0",
+          "label": "And then.",
+          "target": "st05_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st05_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the frost-brittle mirror bursts and the cold rushes the whole gap into you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_f2_c1",
+          "label": "No time left.",
+          "target": "st05_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st05_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the frost-brittle mirror bursts and the cold rushes the whole gap into you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st05_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Brittle Pane"
+      },
+      "choices": []
+    },
+    {
+      "id": "st05_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you scrub at the ice to see the door plain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_f3_c0",
+          "label": "And then.",
+          "target": "st05_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st05_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the frost peels and the bare cold glass drinks the heat straight out of your hand and up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_f3_c1",
+          "label": "No time left.",
+          "target": "st05_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st05_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the frost peels and the bare cold glass drinks the heat straight out of your hand and up'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st05_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Bare Cold Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st05_seen",
+      "body": "<<FILL role=choice words=66 beats='second person; you do not fog it at all; you press where you think the door must be and trust the guess; the frost hides a seam or a solid pane; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st06_ap0"
+        },
+        {
+          "id": "c_st05_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st05_fd_c0"
+        },
+        {
+          "id": "c_st05_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st05_cap"
+        }
+      ]
+    },
+    {
+      "id": "st05_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; the solid glass holds and the cold holds you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_fd_c0",
+          "label": "And then.",
+          "target": "st05_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st05_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; you freeze against the mirror with your hand still raised'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_fd_c1",
+          "label": "No time left.",
+          "target": "st05_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st05_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; you freeze against the mirror with your hand still raised'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st05_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Frozen at the Guess"
+      },
+      "choices": []
+    },
+    {
+      "id": "st05_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a torch-bearer wrapped against the cold lifts you off the frost half-frozen and carries you somewhere with a lock; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st05_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Carried from the Cold"
+      },
+      "choices": []
+    },
+    {
+      "id": "st06_ap0",
+      "body": "<<FILL role=rising words=55 beats='second person; you come to the Gallery of Twin Statues; two figures stand in the passage ahead, identical, one of glass and one of flesh, and only one will let you pass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_ap0",
+          "label": "Read the room.",
+          "target": "st06_gate"
+        }
+      ]
+    },
+    {
+      "id": "st06_gate",
+      "body": "<<FILL role=rising words=74 beats='second person; a real body casts a shadow on the floor and a reflection does not; the twin barker guards the false path and the glass one stands before the true door; pass the figure that throws no shadow, and never the one that does'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_gate_ok",
+          "label": "Pass the warden that casts no shadow.",
+          "target": "st06_pass"
+        },
+        {
+          "id": "c_st06_gate_f0",
+          "label": "Pass the one with a shadow at its feet.",
+          "target": "st06_f0_c0"
+        },
+        {
+          "id": "c_st06_gate_f1",
+          "label": "Strike the glass one to be certain.",
+          "target": "st06_f1_c0"
+        },
+        {
+          "id": "c_st06_gate_f2",
+          "label": "Wait to see which of them breathes.",
+          "target": "st06_f2_c0"
+        },
+        {
+          "id": "c_st06_gate_f3",
+          "label": "Walk the line straight between them.",
+          "target": "st06_f3_c0"
+        },
+        {
+          "id": "c_st06_gate_gm",
+          "label": "Gamble and offer your hand to the nearer figure.",
+          "target": "st06_seen"
+        }
+      ]
+    },
+    {
+      "id": "st06_pass",
+      "body": "<<FILL role=rising words=46 beats='second person; you walk past the shadowless figure and it does not move; the true door stands open behind it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_pass",
+          "label": "Go on, deeper.",
+          "target": "st07_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st06_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you step by the figure the light lies across'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_f0_c0",
+          "label": "And then.",
+          "target": "st06_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st06_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the flesh warden closes a hand on you and the glass door was never his to open'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_f0_c1",
+          "label": "No time left.",
+          "target": "st06_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st06_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the flesh warden closes a hand on you and the glass door was never his to open'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st06_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Warden's Hand"
+      },
+      "choices": []
+    },
+    {
+      "id": "st06_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you swing to shatter the figure you take for a mirror'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_f1_c0",
+          "label": "And then.",
+          "target": "st06_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st06_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; your fist meets flesh, not glass, and he was faster than you guessed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_f1_c1",
+          "label": "No time left.",
+          "target": "st06_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st06_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your fist meets flesh, not glass, and he was faster than you guessed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st06_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Wrong Blow"
+      },
+      "choices": []
+    },
+    {
+      "id": "st06_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you hold and watch the two figures for the rise of a chest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_f2_c0",
+          "label": "And then.",
+          "target": "st06_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st06_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the delay is fatal; neither breathes for you, and the flesh one tires of the game and takes you where you stand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_f2_c1",
+          "label": "No time left.",
+          "target": "st06_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st06_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the delay is fatal; neither breathes for you, and the flesh one tires of the game and takes you where you stand'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st06_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Neither of Them Breathes"
+      },
+      "choices": []
+    },
+    {
+      "id": "st06_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you try to thread the gap without choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_f3_c0",
+          "label": "And then.",
+          "target": "st06_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st06_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; both close on you at once, glass on one side and hands on the other, and the gap was never a path'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_f3_c1",
+          "label": "No time left.",
+          "target": "st06_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st06_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; both close on you at once, glass on one side and hands on the other, and the gap was never a path'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st06_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Between the Wardens"
+      },
+      "choices": []
+    },
+    {
+      "id": "st06_seen",
+      "body": "<<FILL role=choice words=58 beats='second person; you reach out to the figure on your right; a cold palm is glass and safe, a warm one is the twin barker and is not; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st07_ap0"
+        },
+        {
+          "id": "c_st06_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st06_fd_c0"
+        },
+        {
+          "id": "c_st06_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st06_cap"
+        }
+      ]
+    },
+    {
+      "id": "st06_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; the warden has you before you can pull back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_fd_c0",
+          "label": "And then.",
+          "target": "st06_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st06_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; he does not let a caught hand go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_fd_c1",
+          "label": "No time left.",
+          "target": "st06_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st06_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; he does not let a caught hand go'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st06_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Warm Hand"
+      },
+      "choices": []
+    },
+    {
+      "id": "st06_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; the twin barker marches you off down a corridor of mirrors to a door that only opens the one way; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st06_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Marched Off"
+      },
+      "choices": []
+    },
+    {
+      "id": "st07_ap0",
+      "body": "<<FILL role=rising words=58 beats='second person; you come to the Flooded Engine Pit; the floor falls into a flooded pit, black water doubling the mirrored walls so pit and reflection meet at a seam'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_ap0",
+          "label": "Read the room.",
+          "target": "st07_gate"
+        }
+      ]
+    },
+    {
+      "id": "st07_gate",
+      "body": "<<FILL role=rising words=78 beats='second person; the water is deep and the reflected floor beneath it is a lie; only the narrow stone rim around the edge bears weight; walk the rim, never the bright false floor on the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_gate_ok",
+          "label": "Edge along the narrow stone rim.",
+          "target": "st07_pass"
+        },
+        {
+          "id": "c_st07_gate_f0",
+          "label": "Cross the bright floor in the middle.",
+          "target": "st07_f0_c0"
+        },
+        {
+          "id": "c_st07_gate_f1",
+          "label": "Swim straight across, it's only water.",
+          "target": "st07_f1_c0"
+        },
+        {
+          "id": "c_st07_gate_f2",
+          "label": "Wait on the rim for the water to still.",
+          "target": "st07_f2_c0"
+        },
+        {
+          "id": "c_st07_gate_f3",
+          "label": "Reach for the reflected rail to steady yourself.",
+          "target": "st07_f3_c0"
+        },
+        {
+          "id": "c_st07_gate_gm",
+          "label": "Gamble and leap the pit at its narrow throat.",
+          "target": "st07_seen"
+        }
+      ]
+    },
+    {
+      "id": "st07_pass",
+      "body": "<<FILL role=rising words=50 beats='second person; you press your back to the glass and side-step the rim all the way around; the pit is behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_pass",
+          "label": "Go on, deeper.",
+          "target": "st08_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st07_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you step out onto the shining floor the water shows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_f0_c0",
+          "label": "And then.",
+          "target": "st07_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st07_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; there is no floor, only the double of one, and the black water closes over your head'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_f0_c1",
+          "label": "No time left.",
+          "target": "st07_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st07_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; there is no floor, only the double of one, and the black water closes over your head'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st07_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Pit"
+      },
+      "choices": []
+    },
+    {
+      "id": "st07_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you lower yourself in to swim the shorter line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_f1_c0",
+          "label": "And then.",
+          "target": "st07_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st07_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the cold pit has no far wall you can climb, only sheer glass, and it keeps what falls in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_f1_c1",
+          "label": "No time left.",
+          "target": "st07_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st07_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the cold pit has no far wall you can climb, only sheer glass, and it keeps what falls in'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st07_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "No Wall to Climb"
+      },
+      "choices": []
+    },
+    {
+      "id": "st07_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you crouch on the stone and wait for the surface to settle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_f2_c0",
+          "label": "And then.",
+          "target": "st07_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st07_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the wait drowns you slow; the water is rising from somewhere, and it takes the rim out from under you inch by inch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_f2_c1",
+          "label": "No time left.",
+          "target": "st07_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st07_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the wait drowns you slow; the water is rising from somewhere, and it takes the rim out from under you inch by inch'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st07_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Water Rising"
+      },
+      "choices": []
+    },
+    {
+      "id": "st07_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you grab the handrail the mirror shows over the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_f3_c0",
+          "label": "And then.",
+          "target": "st07_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st07_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; your hand closes on nothing and the reach pitches you off the true rim'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_f3_c1",
+          "label": "No time left.",
+          "target": "st07_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st07_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your hand closes on nothing and the reach pitches you off the true rim'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st07_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Rail That Wasn't"
+      },
+      "choices": []
+    },
+    {
+      "id": "st07_seen",
+      "body": "<<FILL role=choice words=62 beats='second person; you back up and run for the narrowest span of black water; you may clear it, or you may come down short in the dark; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st08_ap0"
+        },
+        {
+          "id": "c_st07_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st07_fd_c0"
+        },
+        {
+          "id": "c_st07_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st07_cap"
+        }
+      ]
+    },
+    {
+      "id": "st07_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; the water takes your legs and then the rest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_fd_c0",
+          "label": "And then.",
+          "target": "st07_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st07_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the pit does not give back what it catches'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_fd_c1",
+          "label": "No time left.",
+          "target": "st07_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st07_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the pit does not give back what it catches'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st07_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Short over the Water"
+      },
+      "choices": []
+    },
+    {
+      "id": "st07_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a ferry pilot poles out of the dark, hauls you dripping from the pit, and rows you to a cell above the waterline; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st07_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Poled to the Cell"
+      },
+      "choices": []
+    },
+    {
+      "id": "st08_ap0",
+      "body": "<<FILL role=rising words=61 beats='second person; you come to the Lantern Maze; a low maze of glass walls runs ahead, some turns lit by candles set in the mirrors, some dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_ap0",
+          "label": "Read the room.",
+          "target": "st08_gate"
+        }
+      ]
+    },
+    {
+      "id": "st08_gate",
+      "body": "<<FILL role=rising words=66 beats='second person; the candles here mark the mirror dead-ends, set to draw you into the glass; the true way is always the unlit turn; follow the dark corridors, never the lit ones'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_gate_ok",
+          "label": "Take the unlit turns through the maze.",
+          "target": "st08_pass"
+        },
+        {
+          "id": "c_st08_gate_f0",
+          "label": "Follow the lighted turns, they seem the way.",
+          "target": "st08_f0_c0"
+        },
+        {
+          "id": "c_st08_gate_f1",
+          "label": "Pinch out a candle to darken a false turn.",
+          "target": "st08_f1_c0"
+        },
+        {
+          "id": "c_st08_gate_f2",
+          "label": "Stop and wait for a candle to burn out.",
+          "target": "st08_f2_c0"
+        },
+        {
+          "id": "c_st08_gate_f3",
+          "label": "Knock a wall to hear which are hollow.",
+          "target": "st08_f3_c0"
+        },
+        {
+          "id": "c_st08_gate_gm",
+          "label": "Gamble and follow the draft instead of the light.",
+          "target": "st08_seen"
+        }
+      ]
+    },
+    {
+      "id": "st08_pass",
+      "body": "<<FILL role=rising words=54 beats='second person; you keep to the dark corners against every pull of the candlelight and come out the far side of the maze'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_pass",
+          "label": "Go on, deeper.",
+          "target": "st09_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st08_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you go toward the warm candlelight at the next corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_f0_c0",
+          "label": "And then.",
+          "target": "st08_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st08_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the lit turn ends in a mirror and you are already at a run when you meet it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_f0_c1",
+          "label": "No time left.",
+          "target": "st08_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st08_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the lit turn ends in a mirror and you are already at a run when you meet it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st08_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Lighted Turn"
+      },
+      "choices": []
+    },
+    {
+      "id": "st08_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you snuff a flame to make a dead-end look like a way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_f1_c0",
+          "label": "And then.",
+          "target": "st08_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st08_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the melted wax scalds your hand and you reel into the very glass you meant to hide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_f1_c1",
+          "label": "No time left.",
+          "target": "st08_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st08_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the melted wax scalds your hand and you reel into the very glass you meant to hide'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st08_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Snuffed Candle"
+      },
+      "choices": []
+    },
+    {
+      "id": "st08_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you sit at a junction and wait for the lights to die on their own'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_f2_c0",
+          "label": "And then.",
+          "target": "st08_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st08_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; waiting is the killing; the candles are trimmed by unseen hands and never burn down, and the ones that keep the maze find you sitting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_f2_c1",
+          "label": "No time left.",
+          "target": "st08_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st08_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; waiting is the killing; the candles are trimmed by unseen hands and never burn down, and the ones that keep the maze find you sitting'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st08_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Candles Never Die"
+      },
+      "choices": []
+    },
+    {
+      "id": "st08_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you rap the panes for the ring of an open way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_f3_c0",
+          "label": "And then.",
+          "target": "st08_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st08_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; one pane you strike is under tension and it bursts across you at the sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_f3_c1",
+          "label": "No time left.",
+          "target": "st08_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st08_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; one pane you strike is under tension and it bursts across you at the sound'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st08_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Pane Under Tension"
+      },
+      "choices": []
+    },
+    {
+      "id": "st08_seen",
+      "body": "<<FILL role=choice words=66 beats='second person; you wet a finger and follow the faint cold draft, hoping the true way breathes air; the moving air may lead out or into a vent of glass; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st09_ap0"
+        },
+        {
+          "id": "c_st08_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st08_fd_c0"
+        },
+        {
+          "id": "c_st08_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st08_cap"
+        }
+      ]
+    },
+    {
+      "id": "st08_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; you are boxed in mirror with the air whistling past'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_fd_c0",
+          "label": "And then.",
+          "target": "st08_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st08_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the maze closes the way you came'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_fd_c1",
+          "label": "No time left.",
+          "target": "st08_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st08_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the maze closes the way you came'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st08_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Boxed by the Draft"
+      },
+      "choices": []
+    },
+    {
+      "id": "st08_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a lamp boy with a shielded lamp finds you in the dark and leads you not out but up, to a barred room; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st08_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Led by the Linkboy"
+      },
+      "choices": []
+    },
+    {
+      "id": "st09_ap0",
+      "body": "<<FILL role=rising words=64 beats='second person; you come to the Barker's Booth; a trapdoor sits in the floor beneath the stage, a prompter's box half sunk in mirror, its lid keyed to the music above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_ap0",
+          "label": "Read the room.",
+          "target": "st09_gate"
+        }
+      ]
+    },
+    {
+      "id": "st09_gate",
+      "body": "<<FILL role=rising words=70 beats='second person; the trap opens clean only on the downbeat of the music overhead; force it on a rest and the mechanism scissors shut; drop through on the beat, never in the silence between'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_gate_ok",
+          "label": "Drop through on the downbeat of the music.",
+          "target": "st09_pass"
+        },
+        {
+          "id": "c_st09_gate_f0",
+          "label": "Pry the lid up during a quiet rest.",
+          "target": "st09_f0_c0"
+        },
+        {
+          "id": "c_st09_gate_f1",
+          "label": "Wait for a longer, safer gap in the music.",
+          "target": "st09_f1_c0"
+        },
+        {
+          "id": "c_st09_gate_f2",
+          "label": "Wedge the lid so it can't close on you.",
+          "target": "st09_f2_c0"
+        },
+        {
+          "id": "c_st09_gate_f3",
+          "label": "Drop through on the last note, not the first.",
+          "target": "st09_f3_c0"
+        },
+        {
+          "id": "c_st09_gate_gm",
+          "label": "Gamble and roll through without counting at all.",
+          "target": "st09_seen"
+        }
+      ]
+    },
+    {
+      "id": "st09_pass",
+      "body": "<<FILL role=rising words=46 beats='second person; you count the bars, take the beat, and drop clean into the passage below the box'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_pass",
+          "label": "Go on, deeper.",
+          "target": "st10_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st09_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you lever the trap in the hush between phrases'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_f0_c0",
+          "label": "And then.",
+          "target": "st09_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st09_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the box takes the silence as its cue to close and the lid comes down like shears'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_f0_c1",
+          "label": "No time left.",
+          "target": "st09_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st09_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the box takes the silence as its cue to close and the lid comes down like shears'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st09_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Caught on the Rest"
+      },
+      "choices": []
+    },
+    {
+      "id": "st09_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you hold for a pause wide enough to be sure of'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_f1_c0",
+          "label": "And then.",
+          "target": "st09_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st09_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the delay is the death; the piece ends and the players go still, and with no beat left the trap seals for the night with you on the wrong side'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_f1_c1",
+          "label": "No time left.",
+          "target": "st09_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st09_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the delay is the death; the piece ends and the players go still, and with no beat left the trap seals for the night with you on the wrong side'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st09_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Music Ends"
+      },
+      "choices": []
+    },
+    {
+      "id": "st09_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you jam a splinter of mirror into the hinge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_f2_c0",
+          "label": "And then.",
+          "target": "st09_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st09_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the glass wedge snaps and the freed lid falls twice as fast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_f2_c1",
+          "label": "No time left.",
+          "target": "st09_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st09_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the glass wedge snaps and the freed lid falls twice as fast'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st09_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Wedge Snaps"
+      },
+      "choices": []
+    },
+    {
+      "id": "st09_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you take the end of the phrase instead of its downbeat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_f3_c0",
+          "label": "And then.",
+          "target": "st09_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st09_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; you misjudge the count and the box closes as you are still half through it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_f3_c1",
+          "label": "No time left.",
+          "target": "st09_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st09_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; you misjudge the count and the box closes as you are still half through it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st09_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Half Through the Box"
+      },
+      "choices": []
+    },
+    {
+      "id": "st09_seen",
+      "body": "<<FILL role=choice words=58 beats='second person; you throw yourself at the trap and roll for the gap on instinct, no count kept; instinct lands you clear or lands you under the lid; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st10_ap0"
+        },
+        {
+          "id": "c_st09_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st09_fd_c0"
+        },
+        {
+          "id": "c_st09_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st09_cap"
+        }
+      ]
+    },
+    {
+      "id": "st09_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; the lid finds your shoulder as you fall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_fd_c0",
+          "label": "And then.",
+          "target": "st09_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st09_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the box does not open twice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_fd_c1",
+          "label": "No time left.",
+          "target": "st09_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st09_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the box does not open twice'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st09_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Beat Late"
+      },
+      "choices": []
+    },
+    {
+      "id": "st09_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; the barker himself is below, and he closes cold hands on your collar the moment you land in his box; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st09_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Into the Prompter's Hands"
+      },
+      "choices": []
+    },
+    {
+      "id": "st10_ap0",
+      "body": "<<FILL role=rising words=52 beats='second person; you come to the Gallery of Painted Faces; a wall of mirrored theatre masks hangs down the passage, each a doubled face, one of them an opening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_ap0",
+          "label": "Read the room.",
+          "target": "st10_gate"
+        }
+      ]
+    },
+    {
+      "id": "st10_gate",
+      "body": "<<FILL role=rising words=74 beats='second person; the masks blink in their reflections, all but one; the mask that never blinks is a hole cut to look like the rest, and it is the way through; go to the still, unblinking mask, never a blinking one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_gate_ok",
+          "label": "Go to the mask that never blinks.",
+          "target": "st10_pass"
+        },
+        {
+          "id": "c_st10_gate_f0",
+          "label": "Push into a mask that blinks back at you.",
+          "target": "st10_f0_c0"
+        },
+        {
+          "id": "c_st10_gate_f1",
+          "label": "Lift a mask off the wall to check behind it.",
+          "target": "st10_f1_c0"
+        },
+        {
+          "id": "c_st10_gate_f2",
+          "label": "Wait for the masks to stop blinking.",
+          "target": "st10_f2_c0"
+        },
+        {
+          "id": "c_st10_gate_f3",
+          "label": "Cover your eyes and feel for the gap.",
+          "target": "st10_f3_c0"
+        },
+        {
+          "id": "c_st10_gate_f4",
+          "label": "Break the stillest mask to open it wider.",
+          "target": "st10_f4_c0"
+        },
+        {
+          "id": "c_st10_gate_gm",
+          "label": "Gamble and count the blinks for the odd one out.",
+          "target": "st10_seen"
+        }
+      ]
+    },
+    {
+      "id": "st10_pass",
+      "body": "<<FILL role=rising words=50 beats='second person; you fix on the one dead face among the blinking masks and step into the dark hole behind it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_pass",
+          "label": "Go on, deeper.",
+          "target": "st11_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st10_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you choose a living, blinking face and press it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f0_c0",
+          "label": "And then.",
+          "target": "st10_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st10_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the mask is solid mirror and it splits into your own reflected eyes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f0_c1",
+          "label": "No time left.",
+          "target": "st10_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st10_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the mask is solid mirror and it splits into your own reflected eyes'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st10_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Blinking Mask"
+      },
+      "choices": []
+    },
+    {
+      "id": "st10_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you take a mask down to find the opening by hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f1_c0",
+          "label": "And then.",
+          "target": "st10_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st10_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the wall behind is unbroken glass and the mask's edge lays your palm open'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f1_c1",
+          "label": "No time left.",
+          "target": "st10_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st10_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the wall behind is unbroken glass and the mask's edge lays your palm open'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st10_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Behind the Mask"
+      },
+      "choices": []
+    },
+    {
+      "id": "st10_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you stand and wait for the faces to go still'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f2_c0",
+          "label": "And then.",
+          "target": "st10_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st10_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the waiting kills; the masks blink on and on and the one you needed is lost among them while the gallery's keeper closes in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f2_c1",
+          "label": "No time left.",
+          "target": "st10_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st10_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the waiting kills; the masks blink on and on and the one you needed is lost among them while the gallery's keeper closes in'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st10_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "They Never Stop Blinking"
+      },
+      "choices": []
+    },
+    {
+      "id": "st10_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you shut your eyes and grope the wall of faces'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f3_c0",
+          "label": "And then.",
+          "target": "st10_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st10_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; blind, you press a blinking mask for the still one and the glass takes the guess'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f3_c1",
+          "label": "No time left.",
+          "target": "st10_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st10_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; blind, you press a blinking mask for the still one and the glass takes the guess'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st10_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Blind Among the Masks"
+      },
+      "choices": []
+    },
+    {
+      "id": "st10_f4_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you strike the unblinking face to be sure of the way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f4_c0",
+          "label": "And then.",
+          "target": "st10_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "st10_f4_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; it was already an opening; the blow drives your arm through into edges you could not see'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_f4_c1",
+          "label": "No time left.",
+          "target": "st10_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "st10_f4_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; it was already an opening; the blow drives your arm through into edges you could not see'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st10_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Opening Struck"
+      },
+      "choices": []
+    },
+    {
+      "id": "st10_seen",
+      "body": "<<FILL role=choice words=62 beats='second person; you try to hold every mask at once and catch which never blinks; your eye may find the still face, or lose it in the flutter; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st11_ap0"
+        },
+        {
+          "id": "c_st10_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st10_fd_c0"
+        },
+        {
+          "id": "c_st10_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st10_cap"
+        }
+      ]
+    },
+    {
+      "id": "st10_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; you reach for a face that blinked a beat ago'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_fd_c0",
+          "label": "And then.",
+          "target": "st10_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st10_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the mirror mask closes on your reaching hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_fd_c1",
+          "label": "No time left.",
+          "target": "st10_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st10_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the mirror mask closes on your reaching hand'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st10_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Lost in the Flutter"
+      },
+      "choices": []
+    },
+    {
+      "id": "st10_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a costume tender steps from the wall, takes your arm, and fits you a room with no door of your own; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st10_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Taken by the Dresser"
+      },
+      "choices": []
+    },
+    {
+      "id": "st11_ap0",
+      "body": "<<FILL role=rising words=55 beats='second person; you come to the Sandglass Chamber; a square room of mirror floors down which fine sand pours from the seams, the tiles going under grain by grain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_ap0",
+          "label": "Read the room.",
+          "target": "st11_gate"
+        }
+      ]
+    },
+    {
+      "id": "st11_gate",
+      "body": "<<FILL role=rising words=78 beats='second person; the floor drains into itself and the tiles vanish under the rising sand as you watch; cross before the sand hides the true tiles, and never trust a tile the sand has already buried, for you cannot see the drop beneath it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_gate_ok",
+          "label": "Cross fast on the tiles the sand hasn't buried.",
+          "target": "st11_pass"
+        },
+        {
+          "id": "c_st11_gate_f0",
+          "label": "Wade across the buried tiles anyway.",
+          "target": "st11_f0_c0"
+        },
+        {
+          "id": "c_st11_gate_f1",
+          "label": "Wait for the sand to finish draining.",
+          "target": "st11_f1_c0"
+        },
+        {
+          "id": "c_st11_gate_f2",
+          "label": "Sweep the sand aside to read the tiles.",
+          "target": "st11_f2_c0"
+        },
+        {
+          "id": "c_st11_gate_f3",
+          "label": "Leap tile to tile down the middle.",
+          "target": "st11_f3_c0"
+        },
+        {
+          "id": "c_st11_gate_gm",
+          "label": "Gamble and run the buried floor flat out.",
+          "target": "st11_seen"
+        }
+      ]
+    },
+    {
+      "id": "st11_pass",
+      "body": "<<FILL role=rising words=54 beats='second person; you go quick over the bare tiles while you can still read them and reach the door before the sand wins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_pass",
+          "label": "Go on, deeper.",
+          "target": "st12_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st11_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you push into the drifted sand where the floor is hidden'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_f0_c0",
+          "label": "And then.",
+          "target": "st11_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st11_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; under the sand a tile is gone and you find the drop with your whole weight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_f0_c1",
+          "label": "No time left.",
+          "target": "st11_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st11_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; under the sand a tile is gone and you find the drop with your whole weight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st11_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Sand"
+      },
+      "choices": []
+    },
+    {
+      "id": "st11_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you hold at the door for the room to empty and clear'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_f1_c0",
+          "label": "And then.",
+          "target": "st11_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st11_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the wait is the killing; the sand never stops pouring, it only rises, and it closes over the last true tile with you still deciding'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_f1_c1",
+          "label": "No time left.",
+          "target": "st11_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st11_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the wait is the killing; the sand never stops pouring, it only rises, and it closes over the last true tile with you still deciding'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st11_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Sand Never Stops"
+      },
+      "choices": []
+    },
+    {
+      "id": "st11_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you crouch to brush a path clear with your hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_f2_c0",
+          "label": "And then.",
+          "target": "st11_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st11_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the sand pours faster than you can sweep and it buries your knees, then the rest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_f2_c1",
+          "label": "No time left.",
+          "target": "st11_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st11_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the sand pours faster than you can sweep and it buries your knees, then the rest'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st11_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Buried Sweeping"
+      },
+      "choices": []
+    },
+    {
+      "id": "st11_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you jump the shortest line straight across'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_f3_c0",
+          "label": "And then.",
+          "target": "st11_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st11_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; a tile you land on was already hollow under its dusting of sand and it drops out from you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_f3_c1",
+          "label": "No time left.",
+          "target": "st11_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st11_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; a tile you land on was already hollow under its dusting of sand and it drops out from you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st11_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Hollow Tile"
+      },
+      "choices": []
+    },
+    {
+      "id": "st11_seen",
+      "body": "<<FILL role=choice words=66 beats='second person; you commit and sprint the sanded floor without reading it, betting most tiles still hold; speed may carry you over the gaps or into one; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st12_ap0"
+        },
+        {
+          "id": "c_st11_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st11_fd_c0"
+        },
+        {
+          "id": "c_st11_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st11_cap"
+        }
+      ]
+    },
+    {
+      "id": "st11_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; the sand pours in after you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_fd_c0",
+          "label": "And then.",
+          "target": "st11_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st11_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the chamber fills above where you fell'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_fd_c1",
+          "label": "No time left.",
+          "target": "st11_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st11_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the chamber fills above where you fell'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st11_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Gap Mid-Run"
+      },
+      "choices": []
+    },
+    {
+      "id": "st11_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a shovel hand digs you out of the sand at the low end and the digging ends at a barred door; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st11_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Dug Out and Barred"
+      },
+      "choices": []
+    },
+    {
+      "id": "st12_ap0",
+      "body": "<<FILL role=rising words=58 beats='second person; you come to the Rope Bridge; a bridge of clear glass arches over a black drop, its span so clean it seems there is nothing there at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_ap0",
+          "label": "Read the room.",
+          "target": "st12_gate"
+        }
+      ]
+    },
+    {
+      "id": "st12_gate",
+      "body": "<<FILL role=rising words=66 beats='second person; only the welded seam down the centre of the bridge bears weight; the clear span to either side of the seam is a single pane that will not hold you; walk the seam, never the span'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_gate_ok",
+          "label": "Walk the welded seam down the centre.",
+          "target": "st12_pass"
+        },
+        {
+          "id": "c_st12_gate_f0",
+          "label": "Walk the open span, it looks solid enough.",
+          "target": "st12_f0_c0"
+        },
+        {
+          "id": "c_st12_gate_f1",
+          "label": "Crawl across to spread your weight.",
+          "target": "st12_f1_c0"
+        },
+        {
+          "id": "c_st12_gate_f2",
+          "label": "Wait for the glass to frost over for grip.",
+          "target": "st12_f2_c0"
+        },
+        {
+          "id": "c_st12_gate_f3",
+          "label": "Slide across on your back, faster.",
+          "target": "st12_f3_c0"
+        },
+        {
+          "id": "c_st12_gate_gm",
+          "label": "Gamble and walk it upright without minding the seam.",
+          "target": "st12_seen"
+        }
+      ]
+    },
+    {
+      "id": "st12_pass",
+      "body": "<<FILL role=rising words=46 beats='second person; you set each foot on the frosted seam and cross the drop with the black air clear beneath you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_pass",
+          "label": "Go on, deeper.",
+          "target": "st13_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st12_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you step off the seam onto the clear pane to widen your footing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_f0_c0",
+          "label": "And then.",
+          "target": "st12_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st12_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the single sheet of glass gives all at once and the drop takes you without a sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_f0_c1",
+          "label": "No time left.",
+          "target": "st12_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st12_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the single sheet of glass gives all at once and the drop takes you without a sound'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st12_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Seam"
+      },
+      "choices": []
+    },
+    {
+      "id": "st12_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you go down on hands and knees over the whole width'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_f1_c0",
+          "label": "And then.",
+          "target": "st12_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st12_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; your knee comes down on the thin span beside the seam and it is gone before you feel it break'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_f1_c1",
+          "label": "No time left.",
+          "target": "st12_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st12_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your knee comes down on the thin span beside the seam and it is gone before you feel it break'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st12_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Knee on the Span"
+      },
+      "choices": []
+    },
+    {
+      "id": "st12_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you hold at the edge for the cold to roughen the surface'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_f2_c0",
+          "label": "And then.",
+          "target": "st12_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st12_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the delay is the fall; the span is warming, not frosting, from the lamps below, and the seam you need is fogging out of sight while you wait'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_f2_c1",
+          "label": "No time left.",
+          "target": "st12_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st12_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the delay is the fall; the span is warming, not frosting, from the lamps below, and the seam you need is fogging out of sight while you wait'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st12_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Seam Fogs Out"
+      },
+      "choices": []
+    },
+    {
+      "id": "st12_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you lie flat and push off to skate the bridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_f3_c0",
+          "label": "And then.",
+          "target": "st12_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st12_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; your shoulders spread over both spans at once and the panes let go together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_f3_c1",
+          "label": "No time left.",
+          "target": "st12_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st12_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your shoulders spread over both spans at once and the panes let go together'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st12_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Spread on the Span"
+      },
+      "choices": []
+    },
+    {
+      "id": "st12_seen",
+      "body": "<<FILL role=choice words=58 beats='second person; you decide the whole bridge must be sound and stride it plainly, trusting the glass; the span may be tempered to hold or not; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st13_ap0"
+        },
+        {
+          "id": "c_st12_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st12_fd_c0"
+        },
+        {
+          "id": "c_st12_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st12_cap"
+        }
+      ]
+    },
+    {
+      "id": "st12_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; it stars under your second stride and drops'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_fd_c0",
+          "label": "And then.",
+          "target": "st12_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st12_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the black takes you between the arch's ends'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st12_fd_c1",
+          "label": "No time left.",
+          "target": "st12_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st12_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the black takes you between the arch's ends'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st12_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Span Lets Go"
+      },
+      "choices": []
+    },
+    {
+      "id": "st12_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a bridge attendant waits at the far abutment, and he lets you finish the bridge only to take you in hand at the end of it; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st12_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Met at the Abutment"
+      },
+      "choices": []
+    },
+    {
+      "id": "st13_ap0",
+      "body": "<<FILL role=rising words=61 beats='second person; you come to the Hall of Whispered Names; the mirrors down this hall murmur, and among the murmur you hear your own name spoken in your own voice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_ap0",
+          "label": "Read the room.",
+          "target": "st13_gate"
+        }
+      ]
+    },
+    {
+      "id": "st13_gate",
+      "body": "<<FILL role=rising words=70 beats='second person; the glass calls you to make you answer and turn, for the face that turns to the mirror is the face the glass keeps; hold your name unanswered and walk straight, never turn to a voice that says it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_gate_ok",
+          "label": "Keep straight and answer none of the voices.",
+          "target": "st13_pass"
+        },
+        {
+          "id": "c_st13_gate_f0",
+          "label": "Turn to the voice that has your name.",
+          "target": "st13_f0_c0"
+        },
+        {
+          "id": "c_st13_gate_f1",
+          "label": "Answer, to prove it isn't you.",
+          "target": "st13_f1_c0"
+        },
+        {
+          "id": "c_st13_gate_f2",
+          "label": "Stop and wait for the voices to tire.",
+          "target": "st13_f2_c0"
+        },
+        {
+          "id": "c_st13_gate_f3",
+          "label": "Follow the one voice that sounds kind.",
+          "target": "st13_f3_c0"
+        },
+        {
+          "id": "c_st13_gate_gm",
+          "label": "Gamble and follow the one voice that does not echo.",
+          "target": "st13_seen"
+        }
+      ]
+    },
+    {
+      "id": "st13_pass",
+      "body": "<<FILL role=rising words=50 beats='second person; you fix your eyes on the far arch and let your name fall unanswered behind you; the hall lets you by'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_pass",
+          "label": "Go on, deeper.",
+          "target": "st14_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st13_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you hear yourself called too clearly and you turn to it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_f0_c0",
+          "label": "And then.",
+          "target": "st13_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st13_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; your reflection meets your eyes and the glass keeps the face that looked, and you fall still against the pane'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_f0_c1",
+          "label": "No time left.",
+          "target": "st13_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st13_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your reflection meets your eyes and the glass keeps the face that looked, and you fall still against the pane'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st13_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Face That Turned"
+      },
+      "choices": []
+    },
+    {
+      "id": "st13_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you call back at the mirror to break its hold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_f1_c0",
+          "label": "And then.",
+          "target": "st13_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st13_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; your voice joins the murmur and becomes another name the hall will use on the next to come; the glass takes you mid-word'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_f1_c1",
+          "label": "No time left.",
+          "target": "st13_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st13_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your voice joins the murmur and becomes another name the hall will use on the next to come; the glass takes you mid-word'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st13_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Another Voice in the Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st13_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you halt and wait out the calling, hands over your ears'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_f2_c0",
+          "label": "And then.",
+          "target": "st13_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st13_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the waiting is the death; the voices do not tire, they gather, and standing still is the same as turning, so the glass takes you where you stopped'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_f2_c1",
+          "label": "No time left.",
+          "target": "st13_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st13_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the waiting is the death; the voices do not tire, they gather, and standing still is the same as turning, so the glass takes you where you stopped'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st13_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Voices Gather"
+      },
+      "choices": []
+    },
+    {
+      "id": "st13_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you go toward the gentlest of the voices calling you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_f3_c0",
+          "label": "And then.",
+          "target": "st13_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st13_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the kind voice leads you face-first to a waiting mirror and it was the kindest lie in the hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_f3_c1",
+          "label": "No time left.",
+          "target": "st13_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st13_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the kind voice leads you face-first to a waiting mirror and it was the kindest lie in the hall'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st13_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Kindest Voice"
+      },
+      "choices": []
+    },
+    {
+      "id": "st13_seen",
+      "body": "<<FILL role=choice words=62 beats='second person; you listen for the single voice that comes without an echo, betting a true sound has no double here; the flat voice may be a door or a deeper trap; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st14_ap0"
+        },
+        {
+          "id": "c_st13_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st13_fd_c0"
+        },
+        {
+          "id": "c_st13_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st13_cap"
+        }
+      ]
+    },
+    {
+      "id": "st13_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; you turn to it and meet the glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_fd_c0",
+          "label": "And then.",
+          "target": "st13_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st13_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the hall keeps the face that trusted it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_fd_c1",
+          "label": "No time left.",
+          "target": "st13_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st13_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the hall keeps the face that trusted it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st13_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Doubled Voice"
+      },
+      "choices": []
+    },
+    {
+      "id": "st13_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; the voice was an announcer's, and an announcer steps out to take the arm of the one who answered and lead you away; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st13_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Answered by the Caller"
+      },
+      "choices": []
+    },
+    {
+      "id": "st14_ap0",
+      "body": "<<FILL role=rising words=64 beats='second person; you come to the Broken Proscenium; a broken arch of mirror frames the way, half its panes already smashed to a floor of shards, half still whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_ap0",
+          "label": "Read the room.",
+          "target": "st14_gate"
+        }
+      ]
+    },
+    {
+      "id": "st14_gate",
+      "body": "<<FILL role=rising words=74 beats='second person; here the safe ground is where the glass is already broken, for the shards cannot fall on you twice; the whole panes overhead are hung and waiting; cross under the broken frame, never under a pane still whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_gate_ok",
+          "label": "Cross under the already-shattered panes.",
+          "target": "st14_pass"
+        },
+        {
+          "id": "c_st14_gate_f0",
+          "label": "Cross under the whole panes, the floor's clear there.",
+          "target": "st14_f0_c0"
+        },
+        {
+          "id": "c_st14_gate_f1",
+          "label": "Sweep a path clear through the shards.",
+          "target": "st14_f1_c0"
+        },
+        {
+          "id": "c_st14_gate_f2",
+          "label": "Wait for the loose panes to fall first.",
+          "target": "st14_f2_c0"
+        },
+        {
+          "id": "c_st14_gate_f3",
+          "label": "Run through fast before anything can fall.",
+          "target": "st14_f3_c0"
+        },
+        {
+          "id": "c_st14_gate_gm",
+          "label": "Gamble and go barefoot over the shards for quiet.",
+          "target": "st14_seen"
+        }
+      ]
+    },
+    {
+      "id": "st14_pass",
+      "body": "<<FILL role=rising words=54 beats='second person; you pick over the fallen shards, keeping under the empty frames, and reach the far side of the arch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_pass",
+          "label": "Go on, deeper.",
+          "target": "st15_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st14_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you take the clean footing beneath the unbroken mirrors'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_f0_c0",
+          "label": "And then.",
+          "target": "st14_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st14_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; a whole pane lets go from the arch above and comes down on the clean floor, and you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_f0_c1",
+          "label": "No time left.",
+          "target": "st14_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st14_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; a whole pane lets go from the arch above and comes down on the clean floor, and you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st14_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Whole Pane"
+      },
+      "choices": []
+    },
+    {
+      "id": "st14_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you kick and sweep the broken glass aside for smoother ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_f1_c0",
+          "label": "And then.",
+          "target": "st14_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st14_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the noise of it shakes a hung pane loose overhead and it falls before you can look up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_f1_c1",
+          "label": "No time left.",
+          "target": "st14_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st14_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the noise of it shakes a hung pane loose overhead and it falls before you can look up'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st14_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Shaken Loose"
+      },
+      "choices": []
+    },
+    {
+      "id": "st14_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you hold back for the arch to finish shedding its glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_f2_c0",
+          "label": "And then.",
+          "target": "st14_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st14_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the delay is the death; the panes are pinned, not loose, and they fall only when a warden pulls the pin, timed for whoever waits beneath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_f2_c1",
+          "label": "No time left.",
+          "target": "st14_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st14_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the delay is the death; the panes are pinned, not loose, and they fall only when a warden pulls the pin, timed for whoever waits beneath'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st14_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Pinned Panes"
+      },
+      "choices": []
+    },
+    {
+      "id": "st14_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you sprint the arch to beat the drop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_f3_c0",
+          "label": "And then.",
+          "target": "st14_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st14_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; your speed carries you under a whole pane at the worst instant and it meets you there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_f3_c1",
+          "label": "No time left.",
+          "target": "st14_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st14_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your speed carries you under a whole pane at the worst instant and it meets you there'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st14_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under at the Worst Instant"
+      },
+      "choices": []
+    },
+    {
+      "id": "st14_seen",
+      "body": "<<FILL role=choice words=66 beats='second person; you strip your shoes to cross the shards in silence, betting quiet keeps the panes hung; the silence may hold them or your cut feet may fail you; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st15_ap0"
+        },
+        {
+          "id": "c_st14_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st14_fd_c0"
+        },
+        {
+          "id": "c_st14_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st14_cap"
+        }
+      ]
+    },
+    {
+      "id": "st14_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; you cannot keep your feet under you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_fd_c0",
+          "label": "And then.",
+          "target": "st14_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st14_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; you go down under the whole panes still hanging'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_fd_c1",
+          "label": "No time left.",
+          "target": "st14_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st14_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; you go down under the whole panes still hanging'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st14_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down on the Shards"
+      },
+      "choices": []
+    },
+    {
+      "id": "st14_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a props handler picks his way to you across the glass, wraps your bleeding feet, and locks you somewhere to heal for his own reasons; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st14_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Bound by the Property-Master"
+      },
+      "choices": []
+    },
+    {
+      "id": "st15_ap0",
+      "body": "<<FILL role=rising words=52 beats='second person; you come to the Weeping Pipe Wall; a wall of mirror sweats a sheet of water down the whole passage, the way a single dry channel through the wet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_ap0",
+          "label": "Read the room.",
+          "target": "st15_gate"
+        }
+      ]
+    },
+    {
+      "id": "st15_gate",
+      "body": "<<FILL role=rising words=78 beats='second person; where the glass runs wet it is charged and the water carries the shock straight to the bone; only the one dry vein down the wall is safe to touch and follow; keep to the dry channel, never lay a hand on the wet glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_gate_ok",
+          "label": "Follow the one dry vein down the wall.",
+          "target": "st15_pass"
+        },
+        {
+          "id": "c_st15_gate_f0",
+          "label": "Push through the wet glass, it's only water.",
+          "target": "st15_f0_c0"
+        },
+        {
+          "id": "c_st15_gate_f1",
+          "label": "Wipe the wall dry ahead of you.",
+          "target": "st15_f1_c0"
+        },
+        {
+          "id": "c_st15_gate_f2",
+          "label": "Wait for the wall to stop weeping.",
+          "target": "st15_f2_c0"
+        },
+        {
+          "id": "c_st15_gate_f3",
+          "label": "Cross to a dry patch on the far side.",
+          "target": "st15_f3_c0"
+        },
+        {
+          "id": "c_st15_gate_gm",
+          "label": "Gamble and go through the thinnest run of water.",
+          "target": "st15_seen"
+        }
+      ]
+    },
+    {
+      "id": "st15_pass",
+      "body": "<<FILL role=rising words=46 beats='second person; you trace the dry channel with a careful hand and follow it the length of the weeping wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_pass",
+          "label": "Go on, deeper.",
+          "target": "st16_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st15_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you set your palm flat against the running sheet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_f0_c0",
+          "label": "And then.",
+          "target": "st15_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st15_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the charge in the water takes your arm and does not let the muscle open your hand again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_f0_c1",
+          "label": "No time left.",
+          "target": "st15_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st15_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the charge in the water takes your arm and does not let the muscle open your hand again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st15_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Held to the Wet Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st15_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you drag your sleeve down the wet to make more dry path'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_f1_c0",
+          "label": "And then.",
+          "target": "st15_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st15_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the soaked cloth carries the shock up your arm the instant it touches the sheet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_f1_c1",
+          "label": "No time left.",
+          "target": "st15_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st15_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the soaked cloth carries the shock up your arm the instant it touches the sheet'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st15_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Soaked Sleeve"
+      },
+      "choices": []
+    },
+    {
+      "id": "st15_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you hold at the dry vein for the water to run itself out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_f2_c0",
+          "label": "And then.",
+          "target": "st15_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st15_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the waiting kills; the wall weeps from a cistern that never empties, and the dry vein you trust is narrowing to nothing as you wait'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_f2_c1",
+          "label": "No time left.",
+          "target": "st15_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st15_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the waiting kills; the wall weeps from a cistern that never empties, and the dry vein you trust is narrowing to nothing as you wait'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st15_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Vein Narrows"
+      },
+      "choices": []
+    },
+    {
+      "id": "st15_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you reach across the wet sheet for drier glass beyond'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_f3_c0",
+          "label": "And then.",
+          "target": "st15_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st15_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; your reaching arm bridges the charged water and it closes the circuit through you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_f3_c1",
+          "label": "No time left.",
+          "target": "st15_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st15_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your reaching arm bridges the charged water and it closes the circuit through you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st15_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Across the Wet"
+      },
+      "choices": []
+    },
+    {
+      "id": "st15_seen",
+      "body": "<<FILL role=choice words=58 beats='second person; you pick the place the sheet runs thinnest and push through it fast, betting a thin film cannot hold enough charge; thin may be safe or only less slow; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st16_ap0"
+        },
+        {
+          "id": "c_st15_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st15_fd_c0"
+        },
+        {
+          "id": "c_st15_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st15_cap"
+        }
+      ]
+    },
+    {
+      "id": "st15_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; it locks your legs mid-stride against the glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_fd_c0",
+          "label": "And then.",
+          "target": "st15_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st15_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; you go down against the weeping wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_fd_c1",
+          "label": "No time left.",
+          "target": "st15_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st15_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; you go down against the weeping wall'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st15_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down at the Wall"
+      },
+      "choices": []
+    },
+    {
+      "id": "st15_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a torch runner throws a dry hooked pole and drags you off the charged wall, then keeps the hook on you all the way to a cell; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st15_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Hooked from the Wall"
+      },
+      "choices": []
+    },
+    {
+      "id": "st16_ap0",
+      "body": "<<FILL role=rising words=55 beats='second person; you come to the Spinning Room; a drum of mirror turns slowly across the passage, its one doorway swinging past the opening once each revolution'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_ap0",
+          "label": "Read the room.",
+          "target": "st16_gate"
+        }
+      ]
+    },
+    {
+      "id": "st16_gate",
+      "body": "<<FILL role=rising words=66 beats='second person; the drum's door lines up with the way out only for a breath on each turn; step through on the half-turn when the openings meet, and never against the closed wall of the drum, which will grind you into the frame'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_gate_ok",
+          "label": "Step through when the doorway lines up.",
+          "target": "st16_pass"
+        },
+        {
+          "id": "c_st16_gate_f0",
+          "label": "Step in against the closed wall to wait inside.",
+          "target": "st16_f0_c0"
+        },
+        {
+          "id": "c_st16_gate_f1",
+          "label": "Force the drum to stop turning.",
+          "target": "st16_f1_c0"
+        },
+        {
+          "id": "c_st16_gate_f2",
+          "label": "Wait for the drum to slow down.",
+          "target": "st16_f2_c0"
+        },
+        {
+          "id": "c_st16_gate_f3",
+          "label": "Dive through as the door is already leaving.",
+          "target": "st16_f3_c0"
+        },
+        {
+          "id": "c_st16_gate_gm",
+          "label": "Gamble and match the drum's spin from inside its rim.",
+          "target": "st16_seen"
+        }
+      ]
+    },
+    {
+      "id": "st16_pass",
+      "body": "<<FILL role=rising words=50 beats='second person; you watch the drum come round, take the door as it meets the frame, and ride the half-turn out the other side'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_pass",
+          "label": "Go on, deeper.",
+          "target": "st17_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st16_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you push into the drum before its door has come round'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_f0_c0",
+          "label": "And then.",
+          "target": "st16_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st16_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the turning wall carries you into the frame and there is no give in either'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_f0_c1",
+          "label": "No time left.",
+          "target": "st16_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st16_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the turning wall carries you into the frame and there is no give in either'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st16_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Against the Turning Wall"
+      },
+      "choices": []
+    },
+    {
+      "id": "st16_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you jam your shoulder to hold the drum still for a clean step'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_f1_c0",
+          "label": "And then.",
+          "target": "st16_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st16_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the weight of it does not stop; it pins your arm to the frame and keeps turning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_f1_c1",
+          "label": "No time left.",
+          "target": "st16_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st16_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the weight of it does not stop; it pins your arm to the frame and keeps turning'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st16_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Drum Won't Stop"
+      },
+      "choices": []
+    },
+    {
+      "id": "st16_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you hold outside for the turning to ease before you try it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_f2_c0",
+          "label": "And then.",
+          "target": "st16_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st16_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the delay is the death; the drum does not slow, it quickens, and the window of the door shrinks each turn until there is none'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_f2_c1",
+          "label": "No time left.",
+          "target": "st16_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st16_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the delay is the death; the drum does not slow, it quickens, and the window of the door shrinks each turn until there is none'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st16_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Window Shrinks"
+      },
+      "choices": []
+    },
+    {
+      "id": "st16_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you throw yourself at the opening a beat after it lines up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_f3_c0",
+          "label": "And then.",
+          "target": "st16_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st16_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the door swings past and the closing wall catches your trailing leg against the frame'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_f3_c1",
+          "label": "No time left.",
+          "target": "st16_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st16_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the door swings past and the closing wall catches your trailing leg against the frame'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st16_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Caught by the Trailing Leg"
+      },
+      "choices": []
+    },
+    {
+      "id": "st16_seen",
+      "body": "<<FILL role=choice words=62 beats='second person; you slip onto the turning rim and try to walk with the spin to the door, betting you can match its pace; matching carries you round to the gap or slings you off; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st17_ap0"
+        },
+        {
+          "id": "c_st16_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st16_fd_c0"
+        },
+        {
+          "id": "c_st16_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st16_cap"
+        }
+      ]
+    },
+    {
+      "id": "st16_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; the rim throws you into the closing wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_fd_c0",
+          "label": "And then.",
+          "target": "st16_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st16_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the frame and the wall meet through you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_fd_c1",
+          "label": "No time left.",
+          "target": "st16_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st16_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the frame and the wall meet through you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st16_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Thrown from the Rim"
+      },
+      "choices": []
+    },
+    {
+      "id": "st16_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a gear turner rides the drum round, catches your wrist on the turn, and rides you back to a room he keeps locked; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st16_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Caught on the Turn"
+      },
+      "choices": []
+    },
+    {
+      "id": "st17_ap0",
+      "body": "<<FILL role=rising words=58 beats='second person; you come to the Last Window; a single mirror stands at a low doorway, and in it your own reflection stands squarely between you and the way through'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_ap0",
+          "label": "Read the room.",
+          "target": "st17_gate"
+        }
+      ]
+    },
+    {
+      "id": "st17_gate",
+      "body": "<<FILL role=rising words=70 beats='second person; your reflection here moves only while the light burns, and mirrors you move for move so long as it can see you; it cannot follow in the dark; the lamp above will gutter, and in that black breath you must move, for while the light holds, any step you take it takes to block you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_gate_ok",
+          "label": "Wait for the lamp to gutter, then move in the dark.",
+          "target": "st17_pass"
+        },
+        {
+          "id": "c_st17_gate_f0",
+          "label": "Step for the door while the lamp still burns.",
+          "target": "st17_f0_c0"
+        },
+        {
+          "id": "c_st17_gate_f1",
+          "label": "Reach through the mirror to shove it aside.",
+          "target": "st17_f1_c0"
+        },
+        {
+          "id": "c_st17_gate_f2",
+          "label": "Wait for the reflection to look away first.",
+          "target": "st17_f2_c0"
+        },
+        {
+          "id": "c_st17_gate_f3",
+          "label": "Feint one way and go the other.",
+          "target": "st17_f3_c0"
+        },
+        {
+          "id": "c_st17_gate_gm",
+          "label": "Gamble and rush the mirror before you lose your nerve.",
+          "target": "st17_seen"
+        }
+      ]
+    },
+    {
+      "id": "st17_pass",
+      "body": "<<FILL role=rising words=54 beats='second person; the flame ducks and the mirror goes blind for one breath; you move in that black and are past the reflection before the light returns'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_pass",
+          "label": "Go on, deeper.",
+          "target": "st18_ap0"
+        }
+      ]
+    },
+    {
+      "id": "st17_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you move for the doorway in the full light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_f0_c0",
+          "label": "And then.",
+          "target": "st17_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st17_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the reflection steps with you to block the way and you walk your own face into the unyielding glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_f0_c1",
+          "label": "No time left.",
+          "target": "st17_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st17_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the reflection steps with you to block the way and you walk your own face into the unyielding glass'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st17_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into Your Own Face"
+      },
+      "choices": []
+    },
+    {
+      "id": "st17_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you put a hand to the glass to push your double away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_f1_c0",
+          "label": "And then.",
+          "target": "st17_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st17_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; your reflection's hand meets yours cold and closed and will not let the caught hand back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_f1_c1",
+          "label": "No time left.",
+          "target": "st17_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st17_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; your reflection's hand meets yours cold and closed and will not let the caught hand back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st17_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Hand to Cold Hand"
+      },
+      "choices": []
+    },
+    {
+      "id": "st17_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you hold and wait for your double to break and turn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_f2_c0",
+          "label": "And then.",
+          "target": "st17_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st17_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; the waiting is the death; it will never look away, for it only ever does what you do, and while you wait the lamp steadies and the keepers come'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_f2_c1",
+          "label": "No time left.",
+          "target": "st17_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st17_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the waiting is the death; it will never look away, for it only ever does what you do, and while you wait the lamp steadies and the keepers come'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st17_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "It Never Looks Away"
+      },
+      "choices": []
+    },
+    {
+      "id": "st17_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you throw a false step to draw the reflection wide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_f3_c0",
+          "label": "And then.",
+          "target": "st17_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st17_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; it feints exactly with you, for it is you, and closes the true side as you commit to it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_f3_c1",
+          "label": "No time left.",
+          "target": "st17_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st17_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; it feints exactly with you, for it is you, and closes the true side as you commit to it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st17_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "It Feints With You"
+      },
+      "choices": []
+    },
+    {
+      "id": "st17_seen",
+      "body": "<<FILL role=choice words=66 beats='second person; you charge the glass and your double at once, betting speed beats a copy that must wait to see you move; you may burst past before it reads you or drive full into it; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_seen_slip",
+          "label": "Trust it and go.",
+          "target": "st18_ap0"
+        },
+        {
+          "id": "c_st17_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st17_fd_c0"
+        },
+        {
+          "id": "c_st17_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st17_cap"
+        }
+      ]
+    },
+    {
+      "id": "st17_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; it meets your rush square in the glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_fd_c0",
+          "label": "And then.",
+          "target": "st17_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st17_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the last mirror keeps the face that ran at it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st17_fd_c1",
+          "label": "No time left.",
+          "target": "st17_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st17_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the last mirror keeps the face that ran at it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st17_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Full into the Last Mirror"
+      },
+      "choices": []
+    },
+    {
+      "id": "st17_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; as the lamp steadies a night watcher's arms come round you from the true dark, not the glass, and walk you back the way you fought in; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st17_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Taken from Behind the Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st18_ap0",
+      "body": "<<FILL role=rising words=61 beats='second person; you come to the Hall of a Thousand Masks; the last hall opens into a sphere of mirror where a thousand of you stand in every direction, and only one direction is a way and not a wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_ap0",
+          "label": "Read the room.",
+          "target": "st18_gate"
+        }
+      ]
+    },
+    {
+      "id": "st18_gate",
+      "body": "<<FILL role=rising words=74 beats='second person; the true exit is the one bearing where your reflections thin to nothing, for a door reflects no one; every crowded direction is a mirror packed with your doubles; walk toward the gap where the thousand yous fall away, never toward the thickest crowd of them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_gate_ok",
+          "label": "Walk toward the gap where your reflections thin.",
+          "target": "st18_pass"
+        },
+        {
+          "id": "c_st18_gate_f0",
+          "label": "Walk toward the thickest crowd of yourself.",
+          "target": "st18_f0_c0"
+        },
+        {
+          "id": "c_st18_gate_f1",
+          "label": "Wait for the reflections to settle and agree.",
+          "target": "st18_f1_c0"
+        },
+        {
+          "id": "c_st18_gate_f2",
+          "label": "Break the nearest you to open a way.",
+          "target": "st18_f2_c0"
+        },
+        {
+          "id": "c_st18_gate_f3",
+          "label": "Follow the you that beckons you on.",
+          "target": "st18_f3_c0"
+        },
+        {
+          "id": "c_st18_gate_gm",
+          "label": "Gamble and shut your eyes and walk a straight line.",
+          "target": "st18_seen"
+        }
+      ]
+    },
+    {
+      "id": "st18_pass",
+      "body": "<<FILL role=rising words=46 beats='second person; you find the one bearing empty of yourself and walk into it; the thousand doubles fall away behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_pass",
+          "label": "Go on, deeper.",
+          "target": "win_ap"
+        }
+      ]
+    },
+    {
+      "id": "st18_f0_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you go toward where the most of you stand, taking the crowd for company'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_f0_c0",
+          "label": "And then.",
+          "target": "st18_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "st18_f0_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; the crowd is the deepest mirror in the hall and you walk your thousand faces flat into it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_f0_c1",
+          "label": "No time left.",
+          "target": "st18_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "st18_f0_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the crowd is the deepest mirror in the hall and you walk your thousand faces flat into it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st18_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Thickest Crowd"
+      },
+      "choices": []
+    },
+    {
+      "id": "st18_f1_c0",
+      "body": "<<FILL role=rising words=51 beats='second person; you stand still to let the thousand doubles quiet and point one way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_f1_c0",
+          "label": "And then.",
+          "target": "st18_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "st18_f1_c1",
+      "body": "<<FILL role=rising words=50 beats='second person; the waiting is the last trap of the maze; the doubles only multiply the longer you hold, until every bearing is a wall of you and there is no gap left to find'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_f1_c1",
+          "label": "No time left.",
+          "target": "st18_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "st18_f1_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; the waiting is the last trap of the maze; the doubles only multiply the longer you hold, until every bearing is a wall of you and there is no gap left to find'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st18_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Doubles Multiply"
+      },
+      "choices": []
+    },
+    {
+      "id": "st18_f2_c0",
+      "body": "<<FILL role=rising words=54 beats='second person; you strike the reflection standing closest to make a door of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_f2_c0",
+          "label": "And then.",
+          "target": "st18_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "st18_f2_c1",
+      "body": "<<FILL role=rising words=54 beats='second person; it was solid mirror and it comes apart into a thousand of your own eyes at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_f2_c1",
+          "label": "No time left.",
+          "target": "st18_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "st18_f2_end",
+      "body": "<<FILL role=failure words=60 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; it was solid mirror and it comes apart into a thousand of your own eyes at once'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st18_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Thousand Eyes"
+      },
+      "choices": []
+    },
+    {
+      "id": "st18_f3_c0",
+      "body": "<<FILL role=rising words=48 beats='second person; you go after the single reflection that seems to wave you forward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_f3_c0",
+          "label": "And then.",
+          "target": "st18_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "st18_f3_c1",
+      "body": "<<FILL role=rising words=46 beats='second person; it leads you into the crowd, not the gap, for a reflection can only lead you back into the glass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_f3_c1",
+          "label": "No time left.",
+          "target": "st18_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "st18_f3_end",
+      "body": "<<FILL role=failure words=52 beats='second person; the glass keeps you; the labyrinth does not dwell, and no one comes; it leads you into the crowd, not the gap, for a reflection can only lead you back into the glass'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st18_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Beckoned into the Glass"
+      },
+      "choices": []
+    },
+    {
+      "id": "st18_seen",
+      "body": "<<FILL role=choice words=58 beats='second person; you close your eyes on the thousand of you and walk one straight line by feel, betting the gap lies ahead; blind, you may find the open bearing or a wall of yourself; if it holds you are through by a hair and stumbling into the next room with no breath to spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_seen_slip",
+          "label": "Trust it and go.",
+          "target": "win_ap"
+        },
+        {
+          "id": "c_st18_seen_fd",
+          "label": "Push your luck harder.",
+          "target": "st18_fd_c0"
+        },
+        {
+          "id": "c_st18_seen_cap",
+          "label": "Freeze at the wrong moment.",
+          "target": "st18_cap"
+        }
+      ]
+    },
+    {
+      "id": "st18_fd_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; you open your eyes against a wall of your own faces'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_fd_c0",
+          "label": "And then.",
+          "target": "st18_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "st18_fd_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the hall keeps the one who could not walk it blind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_fd_c1",
+          "label": "No time left.",
+          "target": "st18_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "st18_fd_end",
+      "body": "<<FILL role=failure words=56 beats='second person; the gamble takes you; the hall keeps the one who could not walk it blind'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st18_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Drifted into the Wall"
+      },
+      "choices": []
+    },
+    {
+      "id": "st18_cap",
+      "body": "<<FILL role=failure words=54 beats='second person; you are not killed but kept; a floor walker steps out of the one true gap, turns you by the shoulder, and walks you off before you reach it yourself; the way up is a locked one now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st18_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Turned at the Gap"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_ap",
+      "body": "<<FILL role=rising words=58 beats='second person; the spine ends at a plain door in a plain wall of glass, and beyond it the empty stage of the opera house stands grey with dawn; the deed that saves the pier are in your coat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_win_ap",
+          "label": "Face the last threshold.",
+          "target": "win_gate"
+        }
+      ]
+    },
+    {
+      "id": "win_gate",
+      "body": "<<FILL role=climax words=74 beats='second person; three ways lead up and out and each is real: the painted door that opens easy is the clean way, the splintered plank is quicker but it will cut, and the drainage grate lets you out unseen; the only deaths here are the mirror you smash to be sure, and the wait for the house lights to prove a way that needs no proving'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_win_clean",
+          "label": "Step into the painted door that opens easy.",
+          "target": "win_clean"
+        },
+        {
+          "id": "c_win_costly",
+          "label": "Go through the splintered plank, quick and sharp.",
+          "target": "win_costly"
+        },
+        {
+          "id": "c_win_quiet",
+          "label": "Slip out the drainage grate, unseen.",
+          "target": "win_quiet"
+        },
+        {
+          "id": "c_win_f0",
+          "label": "Smash the last mirror to be certain of it.",
+          "target": "win_f0_c0"
+        },
+        {
+          "id": "c_win_f1",
+          "label": "Wait for the house lights to prove the way.",
+          "target": "win_f1_c0"
+        },
+        {
+          "id": "c_win_gm",
+          "label": "Trust your own reflection to lead you up.",
+          "target": "win_seen"
+        }
+      ]
+    },
+    {
+      "id": "win_clean",
+      "body": "<<FILL role=resolution words=62 beats='second person; the painted door that opens easy is an open door; you climb into the empty house as the dawn comes grey through the high windows, the records safe, your name your own again; you came up clean'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_clean",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Up into the Grey Dawn"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_costly",
+      "body": "<<FILL role=resolution words=60 beats='second person; the splintered plank opens the way but its edge lays your arm as you pass; you come up onto the stage bleeding and shaking, but you come up, and the records come up with you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_costly",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Out, and Bleeding"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_quiet",
+      "body": "<<FILL role=resolution words=60 beats='second person; the drainage grate lets you out below the stalls where no one watches; you leave the labyrinth the way water leaves, unseen and unremarked, and no one ever knows you went down'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_quiet",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Quiet Way Out"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_f0_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; you strike the dark last mirror to prove it hollow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_win_f0_c0",
+          "label": "And then.",
+          "target": "win_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "win_f0_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the mirror was solid after all and it bursts inward across the threshold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_win_f0_c1",
+          "label": "No time left.",
+          "target": "win_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "win_f0_end",
+      "body": "<<FILL role=failure words=54 beats='second person; the glass keeps you one step short of the dawn; you were so near the top that no one below hears it happen'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Sure, and Wrong"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_f1_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; you hold at the threshold and wait for the house lights to come up and show the safe door plain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_win_f1_c0",
+          "label": "And then.",
+          "target": "win_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "win_f1_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; the delay is the last death of the labyrinth; the lights that come up are the keepers' lanterns, closing on the one who waited at the very door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_win_f1_c1",
+          "label": "No time left.",
+          "target": "win_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "win_f1_end",
+      "body": "<<FILL role=failure words=54 beats='second person; they take you on the last step with the dawn in sight; the way up closes over the records and over you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_f1_end",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Caught at the Threshold"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_seen",
+      "body": "<<FILL role=choice words=60 beats='second person; you turn to your own reflection at the threshold to let it lead you up, the way it has mirrored you the whole climb; a reflection can only show the way back, or by some grace the way you already chose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_win_seen_ok",
+          "label": "Follow it toward the dark door you had already found.",
+          "target": "win_quiet"
+        },
+        {
+          "id": "c_win_seen_fd",
+          "label": "Follow it wherever it points.",
+          "target": "win_seen_c0"
+        }
+      ]
+    },
+    {
+      "id": "win_seen_c0",
+      "body": "<<FILL role=rising words=50 beats='second person; the reflection points you back down the spine you climbed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_win_seen_c0",
+          "label": "And then.",
+          "target": "win_seen_c1"
+        }
+      ]
+    },
+    {
+      "id": "win_seen_c1",
+      "body": "<<FILL role=rising words=48 beats='second person; you follow your own face away from the dawn and the labyrinth folds its mirrors shut behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_win_seen_c1",
+          "label": "No time left.",
+          "target": "win_seen_end"
+        }
+      ]
+    },
+    {
+      "id": "win_seen_end",
+      "body": "<<FILL role=failure words=54 beats='second person; your reflection led you where reflections go, deeper in; the glass keeps the one who trusted it at the last'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "win_seen_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Led Back Down"
+      },
+      "choices": []
+    }
+  ]
+}

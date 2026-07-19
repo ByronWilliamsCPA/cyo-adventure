@@ -1,0 +1,89 @@
+{
+  "beats": {
+    "n_start": "morning light peeks into {THRESHOLD} and {HERO} wakes to a warm toasty smell drifting from {WORKSHOP}; today is the best baking day of all with {MENTOR}; {HERO} hops out of bed and scampers down {ENTRANCE}",
+    "n_kitchen": "{MENTOR} ties {HERO}'s little apron in a bow and props up {RECIPE_CARD} for {GOAL}; first the recipe needs {STEP1_ITEM} from the shelf; {HERO} rolls up his sleeves, ready to help",
+    "n_bowls": "the kitchen bowls stand in {STEP1_STACK} on the low shelf, and {STEP1_ITEM} sits at the very bottom of the stack; {HERO} reaches out his paws; he can lift the top bowls off one at a time or slide the bottom bowl out fast",
+    "n_bowl_oops": "{STEP1_STACK} teeters and totters and the bowls clatter down all around {HERO}, {STEP1_MISHAP_DETAIL}; nothing breaks and nobody is hurt; {MENTOR} chuckles, says one at a time, little paws, and helps him stack the tower back up",
+    "n_bowl_ok": "{HERO} lifts the bowls off one by one, steady and slow, until {STEP1_ITEM} is free; he carries it to the table like a treasure; {MENTOR} gives his ears a proud pat; next {RECIPE_CARD} says {STEP2_MATERIAL}",
+    "n_flour": "{STEP2_ITEM} sits open on the table, full to the brim with {STEP2_MATERIAL}; {MENTOR} holds {STEP1_ITEM} steady while {HERO} picks up {STEP2_TOOL}; he can scoop small scoops nice and slow or tip the whole crock over the bowl at once",
+    "n_flour_oops": "a big white cloud of {STEP2_MATERIAL} poofs up and {HERO} sneezes the squeakiest sneeze, achoo, and now he has {STEP2_MISHAP_DETAIL}; {MENTOR} giggles and wipes his nose with her apron, saying little scoops, slow paws; {HERO} dusts himself off, ready to try again",
+    "n_flour_ok": "three soft scoops of {STEP2_MATERIAL} whisper into {STEP1_ITEM}, one, two, three; {MENTOR} peeks in and says just right, little baker; {HERO} beams proudly; now {RECIPE_CARD} says {STEP3_MATERIAL}",
+    "n_seeds": "{STEP3_ITEM} glitters with {STEP3_MATERIAL}, and {TOKEN} sits on top, saved to crown the biggest bun; {HERO} hugs the jar close; he can pour the seeds into the bowl in a slow gentle stream or shake the jar hard upside down to hurry",
+    "n_acorn_chase": "{STEP3_MATERIAL} sprinkle every which way and {TOKEN} plops out, bounces off the table, and rolls away down {HALLWAY}; {HERO} scampers after it {STEP3_CHASE_PATH}, paws pattering, while {MENTOR} sweeps up the spill and laughs her warm laugh",
+    "n_acorn_back": "{TOKEN} spins to a stop against {MENTOR}'s slipper and {HERO} pounces on it with both paws, got it; he trots back to the table holding it high like a prize; {MENTOR} says gentle pours, no shakes, and hands him {STEP3_ITEM} again",
+    "n_seeds_ok": "{STEP3_MATERIAL} patter into {STEP2_MATERIAL} in a slow gentle stream and speckle it like freckles; {TOKEN} waits safely in {MENTOR}'s pocket for the biggest bun; {RECIPE_CARD} says {HONEY} comes next, and it is {HERO}'s favorite part",
+    "n_honey": "{MENTOR} opens {HONEY} and cups her warm paws over {HERO}'s paws on {MIX_TOOL}; together they drizzle a slow shiny spiral over the mixture, round and round; {HERO} licks one sweet drip off his thumb and grins",
+    "n_mix": "{HERO} stirs {MIX_TOOL} in slow round circles, like stirring soup, while {MENTOR} turns {STEP1_ITEM}; the mixture hugs together into a soft speckled dough; {HERO} pokes it and it springs right back; {MENTOR} says now the dough needs a little nap to grow puffy",
+    "n_rest": "the dough naps under a checked cloth by the warm stove while {HERO} and {MENTOR} sip {DRINK} in the big chair; {MENTOR} tells how she baked {GOAL} with her own grandma long ago in {WORKSHOP}; then she peeks under the cloth and the dough is puffy and ready",
+    "n_shape": "{MENTOR} dusts the table with {STEP2_MATERIAL} and rolls one perfect round bun to show {HERO} how, smooth as a river pebble; {TOKEN} is ready to crown the biggest one; {HERO} pats his own lump of dough; he can roll neat round buns just like {MENTOR}'s or squish fun shapes, {ROUTE_B_SHAPES}",
+    "n_tray_neat": "{HERO} rolls bun after bun, round and smooth, and lines them up on the tray in tidy rows; {MENTOR} presses {TOKEN} on top of the biggest one; the tray slides into {OVEN} and {THRESHOLD} starts to smell wonderful",
+    "n_tray_funny": "{HERO} squishes {ROUTE_B_SHAPES}, and a bun shaped just like {MENTOR_HAT}; {MENTOR} laughs her happy laugh and presses {TOKEN} onto the snail; the tray slides into {OVEN} and {THRESHOLD} starts to smell wonderful",
+    "n_oven": "through {OVEN}'s little window {HERO} watches his round buns puff up fatter and fatter; {THRESHOLD} smells of {HONEY} and toasty seeds; {MENTOR} says {BELL} will ting when they are done; {HERO} can wait for {BELL} or open the door for a tiny peek",
+    "n_peek_oops": "{HERO} opens {OVEN}'s door a crack and warm air whooshes out, whoosh, and the buns sigh and slump a little; {MENTOR} closes the door gently and whispers that buns need their beauty sleep; sure enough the buns begin to puff right back up while {HERO} hums a waiting song",
+    "n_golden": "ting goes {BELL} and {MENTOR} slides out a tray of golden {GOAL}, round and perfect, steam curling off their tops and {TOKEN} shining on the biggest one; {HERO} claps his floury paws; now comes the very best part of baking day",
+    "n_oven_funny": "through {OVEN}'s little window the star points turn golden and the snail bun puffs up round; {THRESHOLD} smells of {HONEY} and toasty seeds; {MENTOR} says {BELL} will ting when they are done; {HERO} can wait for {BELL} or open the door for a tiny peek",
+    "n_funny_peek": "{HERO} cracks the door open and a puff of warm steam curls his whiskers into silly squiggles; {MENTOR} laughs softly and shuts the door, saying the steam likes to stay in with the buns; {HERO} pats his whiskers flat and watches the wiggly shapes keep puffing",
+    "n_funny_out": "ting goes {BELL} and out comes the funniest tray in {THRESHOLD}, a golden star, a curly snail with {TOKEN} on top, and a bun just like {MENTOR_HAT}; {HERO} and {MENTOR} giggle together; now comes the very best part of baking day",
+    "e_teatime": "{HERO} and {MENTOR} spread the checked cloth under the round window and share warm {GOAL} with {DRINK}, just the two of them; {HONEY} is sweet and the seeds go crunch; {HERO} snuggles under {MENTOR}'s arm, already dreaming of the next baking day",
+    "e_neighbors": "{HERO} carries the basket of warm {GOAL} down {HALLWAY} and knocks on every round door; {NEIGHBOR1} and {NEIGHBOR2} sniff the sweet smell and cheer; soon {THRESHOLD} is munching happily, and everyone says {HERO} is a proper little baker now",
+    "e_perfect": "{HERO} lines the golden {GOAL} along the windowsill in a proud tidy row, with the bun crowned by {TOKEN} in the middle like a little king; {MENTOR} counts them and every single one is just right; she tells {HERO} he tried and tried until he got it, and that is what makes a perfect batch",
+    "e_funny": "{HERO} bites the wiggly star bun while it is still warm and sweet, and it is the most delicious bun he has ever tasted; {MENTOR} tries the hat-shaped bun and declares it scrumptious; the {GOAL} look funny and taste wonderful, and that is the very best kind of bun",
+    "e_recipe": "{MENTOR} fetches her pen and {HERO} draws a star bun, a snail bun, and a hat bun right on {RECIPE_CARD}, next to the writing from long ago; {MENTOR} writes {HERO}'s Wiggly Buns underneath; together they have discovered a brand-new family recipe to bake forever",
+    "e_silly": "{HERO} parades the funny tray down {HALLWAY} and the neighbors come peeking out of every round door; {NEIGHBOR1} pick the star, {NEIGHBOR2} picks the hat, and everyone giggles and munches; silly {GOAL}, it turns out, make {THRESHOLD} smile"
+  },
+  "titles": {
+    "e_teatime": "{A_PRIZE1}",
+    "e_neighbors": "{A_PRIZE2}",
+    "e_perfect": "{A_PRIZE3}",
+    "e_funny": "{B_PRIZE1}",
+    "e_recipe": "{B_PRIZE2}",
+    "e_silly": "{B_PRIZE3}"
+  },
+  "labels": {
+    "n_bowls": {
+      "c_bowls_slide": "Slide {STEP1_ITEM} out from the bottom."
+    },
+    "n_flour": {
+      "c_flour_tip": "Tip {STEP2_ITEM} over all at once."
+    },
+    "n_acorn_chase": {
+      "c_chase_catch": "Catch {TOKEN}!"
+    },
+    "n_seeds_ok": {
+      "c_seedsok_honey": "Bring {HONEY}."
+    },
+    "n_rest": {
+      "c_rest_shape": "Shape the {GOAL} with {MENTOR}."
+    },
+    "n_shape": {
+      "c_shape_neat": "Roll neat round buns like {MENTOR}'s.",
+      "c_shape_funny": "Squish fun shapes, {ROUTE_B_SHAPES}."
+    },
+    "n_tray_neat": {
+      "c_neat_oven": "Watch and wait by {OVEN}."
+    },
+    "n_tray_funny": {
+      "c_funny_oven": "Watch and wait by {OVEN}."
+    },
+    "n_oven": {
+      "c_oven_wait": "Wait for {BELL}."
+    },
+    "n_peek_oops": {
+      "c_peek_again": "Wait by {OVEN} again."
+    },
+    "n_golden": {
+      "c_golden_teatime": "Have a {DRINK} picnic with {MENTOR}.",
+      "c_golden_neighbors": "Take warm {GOAL} to the neighbors."
+    },
+    "n_oven_funny": {
+      "c_ofunny_wait": "Wait for {BELL}."
+    },
+    "n_funny_peek": {
+      "c_fpeek_again": "Wait by {OVEN} again."
+    },
+    "n_funny_out": {
+      "c_fout_recipe": "Draw the new {GOAL} on {RECIPE_CARD}.",
+      "c_fout_neighbors": "Show the silly {GOAL} to the neighbors."
+    }
+  }
+}

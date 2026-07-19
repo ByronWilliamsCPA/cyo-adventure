@@ -1,0 +1,326 @@
+{
+  "beats": {
+    "n_start": "{HERO_FULL} steps off the last bus into {TOWN}, the {ORCHARD} town where she was born, and finds it half a stranger to itself; the {WAR_MEMORIAL} lists names no one in the {TOWN_SQUARE} can place, her cousin {COUSIN} waves at a house {HERO} remembers as a {BAKERY}, and when she says the word {BAKERY} three people give her the same polite blank look; only {HERO} seems to carry the missing years, the vanished shopfronts, the empty chairs still pulled up to kitchen tables, and four threads tug at her at once, the {REC_LOCATION} records, the last living {ORCHARD}-{KEEPER_ROLE} on {KEE_LOCATION}, the family {PHO_MEDIUM}s that will not stay the same, and the sealed {CELLAR} beneath the old {CIDER_HOUSE}",
+    "rec_entry": "The {REC_LOCATION} smells of dust and floor wax; the {REC_DOCUMENT} of {TOWN} births and deaths lies open, but whole pages are blank where names were inked, the paper faintly warm as if the words left only moments ago, and the young {REC_CHAR} keeps losing his place mid-sentence",
+    "rec_a_p1": "{HERO} leans across the counter and asks the {REC_CHAR} who lived at number nine on the {TOWN_SQUARE}, and watches him grope for a memory that keeps sliding out of reach",
+    "rec_a_p2": "The {REC_CHAR} whispers that he keeps a {PHO_MEDIUM} of a girl he is sure is his daughter, though he cannot summon her name or her face the moment he looks away from it",
+    "rec_a_p3": "{HERO} copies the blank entries into her own notebook, off the {REC_DOCUMENT}, hoping ink she carries out of {TOWN} will hold where the {REC_DOCUMENT} ink will not",
+    "rec_a_p4": "The {REC_CHAR} hands her a magnifier and together they find a birth entry where the name has thinned to a grey smear, present and absent at once",
+    "rec_adec": "{HERO} asks the {REC_CHAR} to say aloud a name he cannot hold, and his hands shake so hard the pen rolls off the desk, and she must choose between mercy and the answer she needs",
+    "e_rec_a": "The {REC_CHAR} panics, shoves {HERO} out and bolts the hall, and the one door into the {TOWN}s records closes against her",
+    "rec_b_p1": "The lease {REC_B_LEDGER} runs back two centuries in a dozen different hands, cracked and foxed, smelling of the same warm dust as the blank {REC_DOCUMENT}",
+    "rec_b_p2": "{HERO} traces the fortieth-year clause across the centuries and finds it always followed a hard season, a failed harvest, a fever, a flood, some grief the {TOWN} could not carry",
+    "rec_b_p3": "In the margin beside the newest clause someone has drawn a small tree with {ROOT}s far deeper than its branches, and inked beneath it the single word enough",
+    "rec_b_p4": "Every fortieth year the same clause reappears in careful script, a promise that the {ORCHARD} shall keep a little in exchange for a fruitful season",
+    "rec_bdec": "The repeating clause always names a {KEEPER_ROLE}, and {HERO} can read the line calmly forward or tear the whole page free in fright",
+    "e_rec_b": "Outside, the ink fades from the stolen page to nothing in {HERO} fist, her one hard fact turned to blank paper",
+    "rec_conv": "The last named {KEEPER_ROLE}, inked forty years ago, was {HERO}\u2019s own {GRANDMOTHER}, and calmer now the {REC_CHAR} unlocks a back room where the forfeited years are shelved as sealed envelopes, one of them warm to the touch",
+    "rec_t_p1": "{HERO} breaks the warm seal and finds a {PHO_MEDIUM} of the {CIDER_HOUSE} {CELLAR} door standing open on darkness",
+    "rec_t_p2": "A second envelope holds a {REC_PHOTO} with a whole row of children scratched out, and a note reading they were the price of the year the mill burned",
+    "rec_t_p3": "{HERO} tucks the warm {PHO_MEDIUM}s inside her coat against her skin, as if her own heat could keep the images from fading like everything else in this {TOWN}",
+    "rec_t_p4": "Pencilled on the back of the first {PHO_MEDIUM} in a careful hand are the words it drinks from the {ROOT}, come before the next {DEADLINE}",
+    "rec_clue": "The envelope, the {REC_DOCUMENT}, the lease all point the same way, down to the {CIDER_HOUSE} {CELLAR} where something keeps the years",
+    "kee_entry": "{KEE_LOCATION} is all wind and bent apple trees, and at the top {KEE_CHAR_FULL}, the last {ORCHARD}-{KEEPER_ROLE}, sits pruning by feel because her eyes have gone; she knows {HERO} by the smell of the road on her, and says you are the one it cannot swallow, sit",
+    "kee_a_p1": "{KEE_CHAR} speaks of {PHENOMENON}, the slow forgetting that rises from the {OLDEST_TREE} when the {TOWN} forgets to feed it a name",
+    "kee_a_p2": "She tells how the {FOUNDERS} knelt at the {SPRING} in a starving winter and begged the {ORCHARD} to take their grief, and how it learned that grief is only memory with the edges still sharp",
+    "kee_a_p3": "Every {KEEPER_ROLE} since has fed it one willing name a year, and the last to do so before the line broke was {HERO}\u2019s own {GRANDMOTHER}",
+    "kee_a_p4": "She asks whether {HERO} is brave or only stubborn, because the two look alike right up until the very end",
+    "kee_adec": "{KEE_CHAR} waits for {HERO} to say what she means to do about the hunger on the hill, whether to starve it blindly or learn its price first",
+    "e_kee_a": "{KEE_CHAR} decides {HERO} is a fool who will only make it hungrier, and sends her down the hill with a warning she cannot understand",
+    "kee_b_p1": "The {KEEPER_ROLE} keeps a knotted {KEEPER_CORD}, one knot for every {KEEPER_ROLE} back to the {FOUNDERS}, hung from a nail worn smooth by generations",
+    "kee_b_p2": "{KEE_CHAR} guides {HERO} thumb over each knot and names the {KEEPER_ROLE} it stands for, her voice steady until it reaches the knots no living mind can attach to a face",
+    "kee_b_p3": "Past those the {KEEPER_CORD} is smooth for a whole arm length, one lost {KEEPER_ROLE} after another, a rope of forgotten guardians holding a {TOWN} that does not know it is held",
+    "kee_b_p4": "The knots past a certain year are worn slick, as if handled by hands that no longer remember tying them",
+    "kee_bdec": "The {KEEPER_CORD} runs long in {HERO}\u2019s hands, and she can trace the knots back to the founding with {KEE_CHAR}, or cut the line to try to end it",
+    "e_kee_b": "{HERO} saws the {KEEPER_ROLE} {KEEPER_CORD} in two and the loose knots scatter down the slope, cutting the last thread anyone held to the vanished years",
+    "kee_conv": "The {KEEPER_CORD} ends at her {GRANDMOTHER} knot, still tight and warm, with one fresh empty knot tied past it waiting for a name, and {KEE_CHAR} presses a withered {TOKEN_SEED} into {HERO} palm, the mark every {KEEPER_ROLE} carries",
+    "kee_t_p1": "{KEE_CHAR} says this is why {PHENOMENON} slides off you, you were never planted here, and describes the black {SPRING} under the {CIDER_HOUSE} where the founding {ROOT} learned to drink",
+    "kee_t_p2": "The {TOKEN_SEED} will green only in a hand {PHENOMENON} cannot touch, she says, and a green {TOKEN_SEED} is the {FOUNDERS} token, the sign that its bearer may bargain at the {SPRING}",
+    "kee_t_p3": "She cannot come down the hill on her own failing legs, but she promises to send {COUSIN} to the {CIDER_HOUSE} before the {DEADLINE} so {HERO} will not face the water alone",
+    "kee_t_p4": "She warns that the {ROOT} keeps what it takes and the first {DEADLINE} is only days away now",
+    "kee_clue": "{KEE_CHAR} last words send {HERO} to the {CELLAR}, where the oldest {ROOT} has cracked the founding wall and waits below in the dark",
+    "pho_entry": "In {COUSIN} {PHO_LOCATION} the family {PHO_MEDIUM}s will not hold still; a christening portrait loses a godmother between two blinks, a harvest crowd thins by a face each time {HERO} looks away, and the empty spaces heal over as if the missing were never there",
+    "pho_a_p1": "{HERO} lays every {PHO_MEDIUM} on the floorboards and pins the corners flat, determined to catch the erasure as it happens",
+    "pho_a_p2": "She films the pinned {PHO_MEDIUM}s on her phone, and on the small bright screen the vanishing happens slower, a face dimming frame by frame like a coal going grey",
+    "pho_a_p3": "When she plays the film back the erased faces are gone from the recording too, as if {PHENOMENON} reaches even into the memory of a machine that only borrowed the image",
+    "pho_a_p4": "For one heartbeat a woman stands at the {ORCHARD} gate, and then she is only a gap in the grass",
+    "pho_adec": "{HERO} can {PHO_MEDIUM} the {PHO_MEDIUM}s before they change, or panic and burn the fading ones to try to stop the bleeding",
+    "e_pho_a": "{HERO} sets a match to the fading prints, and the fire takes the last images of the forgotten, so not even the gaps remain to prove anyone was lost",
+    "pho_b_p1": "One {PHO_ALBUM} feels wrong in the hand, heavier, its images sharp and whole while everything around them fades",
+    "pho_b_p2": "The strange {PHO_ALBUM} has no people in it at all, only the {ORCHARD} through the seasons, the {OLDEST_TREE} standing a little taller and a little darker in every passing year",
+    "pho_b_p3": "Pressed between two pages {HERO} finds {PHO_KEEPSAKE} tied with thread, saved by someone who knew the pictures of people would not last",
+    "pho_b_p4": "Every picture in it is of the {ORCHARD}, the {CIDER_HOUSE}, the {OLDEST_TREE}, as if {PHENOMENON} guards its own face",
+    "pho_bdec": "{HERO} can compare the untouched {ORCHARD} {PHO_MEDIUM}s across the years, or close the strange {PHO_ALBUM} and walk away from it",
+    "e_pho_b": "{HERO} closes the strange {PHO_ALBUM}, telling herself {PHO_MEDIUM}s are only paper, and by morning cannot recall why the {PHO_LOCATION} mattered, the thread slipping even from her",
+    "pho_conv": "Laid in order the {ORCHARD} {PHO_MEDIUM}s show the {OLDEST_TREE} swelling year by year while the {TOWN} around it grows thin, and behind the last {PHO_MEDIUM}, tucked in the frame, is {HERO}\u2019s {GRANDMOTHER}\u2019s young face beside the {CELLAR} door holding the same withered {TOKEN_SEED}",
+    "pho_t_p1": "On the {PHO_ALBUM} final page, in her {GRANDMOTHER} hand, are the words go down to the {ROOT} before {DEADLINE}, it keeps the years there",
+    "pho_t_p2": "{HERO} compares the christening {PHO_MEDIUM} to the {PHO_ALBUM} and realises the missing godmother was a {KEEPER_ROLE}, remembered by the {ORCHARD} while the {TOWN} forgot her face",
+    "pho_t_p3": "She understands now why the {ORCHARD} {PHO_MEDIUM}s never change, the {ROOT} protects the image of the thing that feeds it, guarding its own long hunger against forgetting",
+    "pho_t_p4": "The {PHO_MEDIUM}s, whole and fading alike, all point {HERO} at the {CIDER_HOUSE} {CELLAR}",
+    "pho_clue": "The changing pictures and the whole ones agree, the answer waits below the {CIDER_HOUSE} where the {ROOT} drinks",
+    "cel_entry": "The {CIDER_HOUSE} leans empty at the {ORCHARD} edge, and its {CELLAR} door is sealed with a bar of {ORCHARD} wood grown over by living bark, as if the tree itself reached up to hold the door shut against anyone who would open it",
+    "cel_a_p1": "{HERO} works the {CEL_SEAL} bar loose splinter by splinter, and cold air breathes up from below",
+    "cel_a_p2": "The living bark bleeds a thin cider-smelling sap where her tools bite, and the whole door seems to flinch, wood shrinking from her like a hand pulled back from a flame",
+    "cel_a_p3": "Through the widening gap she can see the first steps slick with a {DEADLINE} that has no business being there in the mild autumn air of the {ORCHARD} above",
+    "cel_a_p4": "The draught carries a smell of apples and old water and something older underneath them both",
+    "cel_adec": "The open door gapes on darkness, and {HERO} can descend toward the pulsing light or lose her nerve and reseal it",
+    "e_cel_a": "{HERO} hammers the bark bar back into place and walks away, telling herself some doors are shut for good reason, and the {TOWN} keeps losing its years",
+    "cel_b_p1": "{HERO} drops a pebble down the dark stair and counts, and the count runs longer than the little building could ever hold",
+    "cel_b_p2": "The pebble never lands, or lands so far down that its knock returns as a whisper, and the cold that rises with the echo carries the smell of a hundred old kitchens",
+    "cel_b_p3": "She lowers her lamp on its cord and the flame leans sideways, drawn downward as if the dark itself were breathing in, patient and slow and endlessly hungry",
+    "cel_b_p4": "The steps descend past shelves of cider gone to vinegar toward a faint light that is not lamplight, pulsing slow like breath",
+    "cel_bdec": "{HERO} can follow the light down slowly, marking her steps, or retreat while she still remembers why she came",
+    "e_cel_b": "Halfway down {HERO} feels her own reason for coming thin and drain away, and she climbs back into daylight emptyhanded, the {CELLAR} having drunk her very purpose",
+    "cel_conv": "At the bottom the split wall lets the {OLDEST_TREE} taproot through, down into a black {SPRING}, and the water is not still, it holds faces and streets and seasons turning slowly in the deep",
+    "cel_t_p1": "The {SPRING} shows {HERO} her own reflection last of all, and hers alone does not dissolve into the drift of the drowned {TOWN}",
+    "cel_t_p2": "{HERO} kneels at the lip of the black water and the drowned faces turn up toward her lamp, mouths moving, asking to be remembered by anyone at all who still can",
+    "cel_t_p3": "Her {GRANDMOTHER}\u2019s face drifts among them, younger than {HERO} ever knew her, and for one moment it steadies and seems to smile before the current turns it under again",
+    "cel_t_p4": "Scratched into the wet stone above the water are the words the {ROOT} keeps, the {DEADLINE} sets it, remember for us all",
+    "cel_clue": "The {CELLAR}, the {SPRING}, the drowned faces, every thread has led {HERO} to this same black water beneath the tree",
+    "n_b1": "However {HERO} came, every thread ends at the split founding wall beneath the {CIDER_HOUSE}, at the black {SPRING} where the {OLDEST_TREE} taproot drinks; here {PHENOMENON} has a shape at last, not a curse but a bargain, the {FOUNDERS} traded the {TOWN}s memory for a harvest that never fails, letting the {ROOT} keep a little each season, and the keeping has grown greedy, swallowing years and faces and whole lives while the {TOWN} smiles and forgets it ever had them; the {SPRING} turns with everything {TOWN} has lost, and {HERO} must decide how to face a thing that eats remembering itself",
+    "b1a_p1": "{HERO} cups the black water and it does not take her memory, it shows her more, the {FOUNDERS} kneeling at this {SPRING} long ago",
+    "b1a_p2": "The {SPRING} is warm as blood against her fingers and it does not pull at her, it only offers, showing the {FOUNDERS} faces smoothing as their grief is drawn away down into the {ROOT}",
+    "b1a_p3": "She sees a {KEEPER_ROLE} walk willingly into the {ROOT}s embrace so the {TOWN} could forget a grief too heavy to carry through a hard winter",
+    "b1a_dec": "The water offers {HERO} a deeper truth if she will hold it a moment longer, or she can draw her hand back cold and unchanged",
+    "e_b1a": "{HERO} holds the water too long and it shows her only the drowned faces turning, until she pulls back shaking, no wiser and much colder",
+    "b1at_p1": "The {SPRING} teaches her that the {ROOT} cannot hold what it never touched, and {HERO} grew up far from {TOWN}, her memories banked elsewhere",
+    "b1at_p2": "The lesson settles in her like cold water finding its level, that the girl the {TOWN} cannot swallow might be the one who can make it give back",
+    "b1at_p3": "That distance is why {PHENOMENON} slides off her, and it may be the one thing that lets her reach in and take memory back out",
+    "b1b_p1": "{HERO} tries to pack the split wall with stone and {ORCHARD} {B1B_CLAY}, but the {ROOT} only drinks around her hands, patient and unbothered",
+    "b1b_p2": "The {B1B_CLAY} she packs turns to slurry and runs between her fingers into the {SPRING}, and the {ROOT} drinks even that, taking the very stone she meant to stop it with",
+    "b1b_p3": "She understands you cannot wall off a hunger, you can only feed it or fill it with something it will keep",
+    "b1b_dec": "The greening {TOKEN_SEED} in {HERO} palm steadies the faces where she touches the water, and she can learn from that or keep uselessly mortaring the wall",
+    "e_b1b": "{HERO} mortars the wall shut and for one proud hour it holds, then the {ROOT} splits it wider than before and a whole childhood of the {TOWN} drains away in the night",
+    "b1bt_p1": "Where {HERO} untaken memory touches the {SPRING} the drowned faces steady, as if her outsideness were a stone the current cannot move",
+    "b1bt_p2": "She sees she has been trying to plug a mouth when she should have been meeting a need, and a need can be answered with a gift as easily as with a theft",
+    "b1bt_p3": "Stopping {PHENOMENON} is not about closing a door but about giving the {ROOT} something it can keep forever instead of the living",
+    "b1c_p1": "{HERO} runs up into the {TOWN_SQUARE} shouting the names from the blank {REC_DOCUMENT}, and a few townsfolk flinch as if the sounds fit old wounds",
+    "b1c_p2": "She grabs old {B1C_NEIGHBOR_NAME} by the sleeve and says your wife, {B1C_NEIGHBOR_SPOUSE}, the {B1C_NEIGHBOR_SHOP}, and for a heartbeat his eyes fill and then go smooth again, the grief wiped clean before it can land",
+    "b1c_p3": "Most only stare, unable to hold a grief for people they can no longer recall, their faces closing like shutters",
+    "b1c_dec": "{COUSIN} keeps his memory a moment longer than the rest, and {HERO} can build on his stubborn love or shout herself hoarse alone",
+    "e_b1c": "The {TOWN_SQUARE} empties around {HERO} as she shouts, and by dusk even {COUSIN} looks at her strangely, and she stands alone with a fist of names no one will take",
+    "b1ct_p1": "{COUSIN} tells her {PHENOMENON} is weakest where love is stubborn, where someone flatly refuses to let go of a face",
+    "b1ct_p2": "One held memory is a crack of light under a shut door, proof that {PHENOMENON} can be resisted if enough hands refuse to let go all at once",
+    "b1ct_p3": "If enough of the {TOWN} could be made to remember at once, on purpose, their held memory might anchor what the {ROOT} keeps stealing",
+    "n_b2": "The threads knot into one truth: {HERO} is immune because she grew up beyond {TOWN}, her memories rooted in soil {PHENOMENON} never owned, and that same outsideness is a key; she alone can reach into the {SPRING} and lift memory back out without being drunk down with it; {KEE_CHAR} withered {TOKEN_SEED}, greening now in her palm, is the {FOUNDERS} old token, the mark a {KEEPER_ROLE} carries, and it will let the {ROOT} recognise her as one who may bargain; but a bargain has a price, and the {ROOT} does not give years back for nothing, so {HERO} must learn what stopping {PHENOMENON} will cost before she can choose how much to pay",
+    "b2t_p1": "{HERO} offers the {SPRING} a small memory to test its hunger, the taste of her {GRANDMOTHER} kitchen on a Sunday",
+    "b2t_p2": "The returned {B2T_LANE} smells of coal smoke and Sunday baking, solid enough to walk down, and then the {ROOT} gently reminds her it is only lent, and the price is not yet paid",
+    "b2t_p3": "The {ROOT} takes it gently and gives back, for one breath, a whole vanished {B2T_LANE} of houses shimmering into being",
+    "b2t_d1": "So it is a trade, memory for memory, the beloved for the lost; {HERO} can measure the true cost or snatch her hand back now.",
+    "e_b2ta": "Frightened by how much the {ROOT} will take, {HERO} pulls free and keeps every memory clenched tight, and the {TOWN} goes on quietly losing itself around her",
+    "b2t_m": "The {ROOT} will hold whatever she gives it forever, meaning whatever she surrenders she can never have again; she can follow the cost fully or give something rashly.",
+    "e_b2tb": "{HERO} lets the {SPRING} take her {GRANDMOTHER} whole, and the {B2T_LANE} returns, but she stands in it a stranger, unable to recall why the houses should mean anything at all",
+    "b2tt_p1": "{HERO} understands the true price now, to restore the {TOWN} she must feed the {ROOT} something she loves enough to lose",
+    "b2tt_p2": "The arithmetic is plain and cruel, the {TOWN} can be bought back memory for memory, and the buyer must be someone {PHENOMENON} cannot bill for its own",
+    "b2tt_p3": "The more she is willing to give, the more of {TOWN} will come rising back out of the deep",
+    "b2k_p1": "{HERO} feels the fresh unnamed knot on {KEE_CHAR} {KEEPER_CORD} pull at her wrist, the empty {KEEPER_ROLE} place waiting to be filled",
+    "b2k_p2": "The empty knot warms against her wrist like a living thing, eager, and she feels how easy it would be to simply give herself and let the whole {TOWN} forget its grief in peace",
+    "b2k_p3": "She understands she could tie herself to it, become the one the {ORCHARD} remembers so the {TOWN} need not be devoured",
+    "b2k_d1": "A {KEEPER_ROLE} is remembered only by the {ROOT} and forgotten by everyone else; {HERO} can study that fate or refuse it outright.",
+    "e_b2ka": "{HERO} refuses the {KEEPER_ROLE} knot and walks away from the {KEEPER_CORD}, and without a {KEEPER_ROLE} the {ROOT} simply keeps eating, until by winter {KEE_CHAR} herself is a name {HERO} alone remembers",
+    "b2k_m": "The price is to be slowly erased from the living world even while holding it together from below; she can grasp the whole of it or tie the knot too soon in fear.",
+    "e_b2kb": "{HERO} ties the fresh knot around her own wrist before she understands the whole of it, and the {TOWN} steadies while she begins to fade from {COUSIN}\u2019s eyes, a {KEEPER_ROLE} made in fear",
+    "b2kt_p1": "{HERO} sees the shape of the sacrifice, a {KEEPER_ROLE} anchors the {TOWN} by letting the {ORCHARD} keep her instead of the many",
+    "b2kt_p2": "A {KEEPER_ROLE} is loved only by the {ORCHARD} and lost to everyone above, and {HERO} is not ready to become a name that only a tree remembers, not yet, not in fear",
+    "b2kt_p3": "It is a life spent as the thing that remembers so that others may forget their grief in peace",
+    "n_b3": "Now {HERO} knows the price in full; the {ROOT} will give the {TOWN} back its stolen years, but only if it is given something to keep forever in their place, either a memory beloved enough to matter or a {KEEPER_ROLE} willing to be remembered by the {ORCHARD} and forgotten by the world; {KEE_CHAR} climbs down the {CELLAR} stair to stand with her, and {COUSIN} comes too, refusing to let {HERO} face the {SPRING} alone, and their being there changes the arithmetic, because a price paid by one is a wound and a price shared by many is only a scar; at the black {SPRING} beneath the {OLDEST_TREE}, with the {DEADLINE} gathering above, {HERO} must choose not whether to pay but how, and who pays alongside her",
+    "b3u_p1": "{HERO} sends {COUSIN} running through {TOWN} with the {REC_DOCUMENT} names, gathering everyone who will come to the {CIDER_HOUSE} before {DEADLINE}",
+    "b3u_p2": "{COUSIN} comes back breathless with a dozen townsfolk behind him, then a dozen more, drawn by a feeling they cannot name that tonight they must not forget on purpose",
+    "b3u_p3": "The plan is to make the {TOWN} remember together, out loud, all at once, so no single heart is drained to fill the {ROOT}",
+    "b3u_d1": "{HERO} can teach the {ROOT} a new bargain of shared keeping, or let the {TOWN} simply make peace with its smaller losses.",
+    "e_b3un": "{HERO} tells the gathered {TOWN} the {ORCHARD} was only lonely, and they choose to live with the losses, keeping what they have and mourning nothing they cannot name, a quiet peace with a quiet grief",
+    "b3u_m": "The weight must land on enough hands at once or it will crush the few who came; she can wait for all or rush the ritual.",
+    "e_b3us": "{HERO} begins before half the {TOWN} arrives, and the weight lands too heavy on too few, and the ones who came stagger back forgetting their own names, the chain snapping for want of hands",
+    "b3ut_p1": "{KEE_CHAR} shows {HERO} how to teach the {ROOT} a keeping spread across a hundred hearts rather than devouring one",
+    "b3ut_p2": "{KEE_CHAR}\u2019s voice reaches them from the top of the stair, teaching the old words that turn a devouring into a keeping, a hunger fed by one into a memory held by all",
+    "b3ut_p3": "The living will hold the {TOWN} memory between them like a chain, and the {ROOT} will keep through many instead of hollowing anyone",
+    "b3v_p1": "{HERO} cannot empty the whole {SPRING}, so she chooses one, kneeling with a single face fixed in her mind",
+    "b3v_p2": "She fixes the {NEIGHBOR_GIRL} in her mind, the gap-toothed grin, the way she always won at {B3V_GAME}, a whole small life the {TOWN} lost the same winter {HERO} was taken away",
+    "b3v_p3": "It is that girl she means to lift back into the light no matter the cost",
+    "b3v_d1": "{HERO} can brace to trade a piece of her own heart for the one soul, or simply learn who she would have saved.",
+    "e_b3vn": "{HERO} asks the {SPRING} only to show her who she would save, and it lifts a face to the surface, and she carries the knowing back up unspent, changed by it, having taken nothing and given nothing",
+    "b3v_m": "The {ROOT} offers one memory of {HERO}\u2019s own for one soul restored; she can pay the fair price or try to cheat it.",
+    "e_b3vs": "{HERO} tries to pull one soul free while surrendering nothing, and the {ROOT} closes hard, keeping both the lost one and the hour she wasted, and she surfaces having saved no one",
+    "b3vt_p1": "{HERO} braces to give up one precious thing so that one lost person may walk {TOWN} again, remembered by all",
+    "b3vt_p2": "One rescue, complete and clean, is a candle lit against a dark she cannot flood with light, and she decides a single saved life is not too small a thing to matter",
+    "b3vt_p3": "It is a small and complete mercy in a sea she knows she cannot empty by herself",
+    "b3w_p1": "{HERO} decides she does not need to defeat {PHENOMENON}, only to understand it well enough to live honestly beside it",
+    "b3w_p2": "The {ROOT} shows her the {FOUNDERS} not as villains but as parents who could not bury one more child and still rise to prune the trees, and who made a terrible mercy of forgetting",
+    "b3w_p3": "She asks the {ROOT} not for years but for the whole truth of the bargain the {FOUNDERS} made in their grief",
+    "b3w_d1": "{HERO} can accept an even trade for a single year, or try to force the whole hard truth into the {TOWN} at once.",
+    "e_b3wn": "{HERO} accepts the old bargain and asks for a single year back, the year she was born here, and the {ROOT} gives it and keeps a year of hers, a fair and bittersweet swap that leaves her both fuller and lighter",
+    "b3w_m": "The {ROOT}s long memory is a grief no one mind can hold alone; she can carry it wisely or pour it into the {TOWN} uninvited.",
+    "e_b3ws": "{HERO} tries to pour the {ROOT}s long memory into every mind in {TOWN}, and the {TOWN} reels, unable to bear a grief handed to them whole, and they turn from her, choosing forgetting over a truth too heavy",
+    "b3wt_p1": "The {SPRING} opens its long memory to {HERO}, the hard winters, the mercy and the theft tangled together as one old unhealed wound",
+    "b3wt_p2": "She means to meet the {OLDEST_TREE} the way you meet an old grief in the family, not to defeat it but to finally say aloud the names it has carried alone for two hundred years",
+    "b3wt_p3": "Carrying that understanding, she means to face the {OLDEST_TREE} not as an enemy but as the {KEEPER_ROLE} of a sorrow the whole {TOWN} must finally own",
+    "n_b4": "Every path brings {HERO} to the same place at last, the black {SPRING} beneath the {OLDEST_TREE} with the first {DEADLINE} silvering the {ORCHARD} overhead, the {TOWN} gathered on the stair or a single face held in her mind; the withered {TOKEN_SEED} in her palm is green and whole now, the {KEEPER_ROLE} token alive again, and the {ROOT} waits, ancient and patient, ready to make its bargain; this is the hinge of everything, the moment {PHENOMENON} can be turned from a hunger into a keeping, from a theft into a shared remembering, or lost for another forty years; whatever {HERO} carries down to the water now, the {TOWN} memory, a single name, an honest grief, she must offer it here and see what the {ORCHARD} chooses to give back",
+    "fin_all_1": "{HERO} presses the greening {TOKEN_SEED} to the black water and speaks the {FOUNDERS} bargain backward, not the {ORCHARD} keeps for us but we keep for the {ORCHARD}, and the {ROOT} shudders as a hundred living memories pour down the {CELLAR} stair at once",
+    "e_all_flood": "The flood of remembering is more than {HERO} can steer alone, and it scatters before it can anchor, leaving the {TOWN} dazed and the {ROOT} fed just enough to sleep, the great chance spent for a fragile partial calm",
+    "fin_all_2": "With {KEE_CHAR}\u2019s hands over hers and {COUSIN}\u2019s voice leading the crowd, {HERO} teaches the {ROOT} the new bargain, and the {SPRING} stops turning like a drain and begins to turn like a wheel, holding the {TOWN}\u2019s memory for it rather than swallowing it",
+    "fin_share_1": "{HERO} asks the gathered {TOWN} not to give up anything they love but to promise together, aloud, to remember, and the vow rises off them like warmth off a fire, and the {ROOT} leans toward it, curious at a thing offered freely",
+    "e_share_lost": "The crowds nerve fails as the {SPRING} stirs, and one by one they climb back toward the light, and {HERO} is left holding a vow no one will finish speaking, the {ROOT} settling back to its slow patient theft",
+    "fin_share_2": "The shared vow spreads thin across every heart in the {CELLAR} so no single person is drained, and the {ROOT}, offered a keeping it can hold without hollowing anyone, accepts the new bargain the way dry ground accepts rain",
+    "n_b5": "The {ROOT} accepts the shared keeping and the split wall knits shut with living bark, and up in the {ORCHARD} the vanished years come rising back into the {TOWN} like dawn filling a valley, streets, faces, the {BAKERY}, the {NEIGHBOR_GIRL}, all of it remembered at once by everyone who chose to hold it",
+    "e_all_restore": "{TOWN} wakes whole, every stolen year restored and now held safe by a {TOWN} that remembers on purpose, the {ORCHARD} bearing fruit without eating its {KEEPER_ROLE}s, and {HERO} stands in a {TOWN_SQUARE} full of names that finally fit their faces, the girl who taught a {TOWN} to keep itself",
+    "n_b5_2": "One face stays missing, {HERO}\u2019s own {GRANDMOTHER}, the last {KEEPER_ROLE}, whose memory the {ROOT} has held longest and deepest, and {HERO} realises she can leave her in peace or reach once more for the one soul the flood passed by",
+    "e_all_grandmother": "{HERO} reaches one last time and lifts her {GRANDMOTHER} up out of the deep water, and the old {KEEPER_ROLE} opens her eyes in a {TOWN} that suddenly remembers loving her, and the two of them stand in the restored {ORCHARD}, the long debt paid and the family whole again",
+    "e_all_rest": "{HERO} lets her {GRANDMOTHER} rest where she chose to be, remembered now by the {ROOT} as the {KEEPER_ROLE} who gave the {TOWN} its second chance, and {TOWN} lives on whole around that one gentle absence, a scar it will honour instead of forget",
+    "fin_one_1": "{HERO} holds one face steady in her mind, the {NEIGHBOR_GIRL} lost the winter she left, and offers the {ROOT} a single memory of her own in fair trade for that one life lifted back into the {TOWN}",
+    "e_one_hesitate": "{HERO} hesitates too long over which piece of herself to give, and the {DEADLINE} closes over the {SPRING} for another year, and the {NEIGHBOR_GIRL} stays a face in a fading {PHO_MEDIUM}, so close to saved that the near miss aches",
+    "fin_one_2": "{HERO} gives up her own first summer in {TOWN}, a small bright thing she can spare, and the {ROOT} takes it gently and lifts the {NEIGHBOR_GIRL} up out of the water, blinking, alive, remembered again by a {TOWN} that mourned her without knowing why",
+    "e_one_saved": "{HERO} climbs the {CELLAR} stair with the {NEIGHBOR_GIRL} beside her into a {TOWN} that gasps to remember her, and though {PHENOMENON} still sleeps below and the wider loss remains, one whole life walks {TOWN} again, bought back with a summer {HERO} will never miss as much as this is worth",
+    "e_one_content": "The {ROOT} will give no more than the fair one for one, and {HERO} accepts it, choosing not to bleed herself dry chasing everyone, and she walks home with the {NEIGHBOR_GIRL} and a hard gentle wisdom, that saving one completely is worth more than failing at saving all",
+    "fin_trade_1": "{HERO} kneels at the water not to win but to be honest with it, and she offers the {ROOT} her own memory of the day she first understood the {TOWN} was disappearing, trading her certainty for a single year given back to {TOWN}",
+    "e_trade_greed": "{HERO} asks for more years than she offered, and the {ROOT}, patient and exact, keeps what she gave and grants nothing, and she surfaces poorer by one memory and richer by no restored year, taught the cost of grasping",
+    "fin_trade_2": "The {ROOT} takes {HERO} certainty and gives back the year she asked for, the {BAKERY} on the {TOWN_SQUARE} with its warm lit window, and she understands she has not defeated {PHENOMENON} but made an honest peace with it, a fair exchange between a girl and an old grief",
+    "e_trade_even": "{HERO} climbs into a {TOWN} with one more street than it had that morning, carrying a little less of herself and a little more of {TOWN}, and settles into the bittersweet knowledge that some things return only when we agree to let other things go",
+    "e_trade_keeper_light": "{HERO} promises the {ROOT} a yearly visit, a {KEEPER_ROLE} who tends rather than surrenders, trading a single memory each {DEADLINE} for a single year returned, and she chooses to spend her life this way, slowly buying {TOWN} back one season at a time, neither wholly winning nor losing",
+    "e_trade_photo": "Unwilling to feed the {ROOT} anything she truly loves, {HERO} keeps back one thing it can never take, a single {PHO_MEDIUM} of the {ORCHARD} gate held so tight it creases, and she walks home with the {TOWN} still thinning around her, one saved image of everything lost"
+  },
+  "titles": {
+    "e_rec_a": "{REC_A_SETBACK}",
+    "e_rec_b": "{REC_B_SETBACK}",
+    "e_kee_a": "{KEE_A_SETBACK}",
+    "e_kee_b": "{KEE_B_SETBACK}",
+    "e_pho_a": "{PHO_A_SETBACK}",
+    "e_pho_b": "{PHO_B_SETBACK}",
+    "e_cel_a": "{CEL_A_SETBACK}",
+    "e_cel_b": "{CEL_B_SETBACK}",
+    "e_b1a": "{B1A_SETBACK}",
+    "e_b1b": "{B1B_SETBACK}",
+    "e_b1c": "{B1C_SETBACK}",
+    "e_b2ta": "{B2T_A_SETBACK}",
+    "e_b2tb": "{B2T_B_SETBACK}",
+    "e_b2ka": "{B2K_A_SETBACK}",
+    "e_b2kb": "{B2K_B_SETBACK}",
+    "e_b3un": "{B3U_N_OUTCOME}",
+    "e_b3us": "{B3U_S_SETBACK}",
+    "e_b3vn": "{B3V_N_OUTCOME}",
+    "e_b3vs": "{B3V_S_SETBACK}",
+    "e_b3wn": "{B3W_N_OUTCOME}",
+    "e_b3ws": "{B3W_S_SETBACK}",
+    "e_all_flood": "{ALL_FLOOD_SETBACK}",
+    "e_share_lost": "{SHARE_LOST_SETBACK}",
+    "e_all_restore": "{ALL_RESTORE_PRIZE}",
+    "e_all_grandmother": "{ALL_GRANDMOTHER_PRIZE}",
+    "e_all_rest": "{ALL_REST_PRIZE}",
+    "e_one_hesitate": "{ONE_HESITATE_SETBACK}",
+    "e_one_saved": "{ONE_SAVED_PRIZE}",
+    "e_one_content": "{ONE_CONTENT_PRIZE}",
+    "e_trade_greed": "{TRADE_GREED_SETBACK}",
+    "e_trade_even": "{TRADE_EVEN_OUTCOME}",
+    "e_trade_keeper_light": "{TRADE_KEEPER_OUTCOME}",
+    "e_trade_photo": "{TRADE_PHOTO_SETBACK}"
+  },
+  "labels": {
+    "n_start": {
+      "c_n_start_1": "Search the {REC_LOCATION} for the missing years.",
+      "c_n_start_2": "Climb {KEE_LOCATION} to the last {ORCHARD}-{KEEPER_ROLE}.",
+      "c_n_start_3": "Lay out the family {PHO_MEDIUM}s that keep changing.",
+      "c_n_start_4": "Force the sealed {CELLAR} under the {CIDER_HOUSE}."
+    },
+    "rec_entry": {
+      "c_rec_entry_1": "Question the frightened {REC_CHAR}.",
+      "c_rec_entry_2": "Read the oldest {ORCHARD} leases."
+    },
+    "rec_bdec": {
+      "c_rec_bdec_1": "Trace the clause forward in the {REC_B_LEDGER}."
+    },
+    "rec_conv": {
+      "c_rec_conv_1": "Follow it down toward the {ROOT}."
+    },
+    "rec_clue": {
+      "c_rec_clue_1": "Carry what you found to the {CIDER_HOUSE}."
+    },
+    "kee_entry": {
+      "c_kee_entry_1": "Ask {KEE_CHAR} what is eating {TOWN}.",
+      "c_kee_entry_2": "Examine the {KEEPER_ROLE}s knotted {KEEPER_CORD}."
+    },
+    "kee_bdec": {
+      "c_kee_bdec_1": "Let {KEE_CHAR} guide your fingers along the knots.",
+      "c_kee_bdec_2": "Cut the {KEEPER_CORD} to break the line."
+    },
+    "kee_conv": {
+      "c_kee_conv_1": "Follow it down toward the {ROOT}."
+    },
+    "kee_clue": {
+      "c_kee_clue_1": "Carry what you found to the {CIDER_HOUSE}."
+    },
+    "pho_entry": {
+      "c_pho_entry_2": "Search for a {PHO_MEDIUM} that will not change."
+    },
+    "pho_bdec": {
+      "c_pho_bdec_1": "Compare the {ORCHARD} {PHO_MEDIUM}s year by year.",
+      "c_pho_bdec_2": "Seal the {PHO_ALBUM} and walk away."
+    },
+    "pho_conv": {
+      "c_pho_conv_1": "Follow it down toward the {ROOT}."
+    },
+    "pho_clue": {
+      "c_pho_clue_1": "Carry what you found to the {CIDER_HOUSE}."
+    },
+    "cel_entry": {
+      "c_cel_entry_1": "Pry the {CEL_SEAL} door open."
+    },
+    "cel_conv": {
+      "c_cel_conv_1": "Follow it down toward the {ROOT}."
+    },
+    "cel_clue": {
+      "c_cel_clue_1": "Carry what you found to the {CIDER_HOUSE}."
+    },
+    "n_b1": {
+      "c_n_b1_1": "Reach into the {SPRING} to understand it.",
+      "c_n_b1_2": "Refuse it and try to wall the {ROOT} off.",
+      "c_n_b1_3": "Run and call {TOWN} to witness this."
+    },
+    "n_b2": {
+      "c_n_b2_1": "Weigh giving the {ROOT} a memory of your own.",
+      "c_n_b2_2": "Weigh taking the empty {KEEPER_ROLE}s place yourself."
+    },
+    "b2k_m": {
+      "c_b2k_m_2": "Tie yourself to the {KEEPER_ROLE} knot right now."
+    },
+    "n_b3": {
+      "c_n_b3_1": "Ask the whole {TOWN} to share the weight.",
+      "c_n_b3_2": "Offer the {ROOT} one thing to save one soul."
+    },
+    "b3u_d1": {
+      "c_b3u_d1_2": "Let {TOWN} forgive the {ORCHARD} and go home."
+    },
+    "b3u_m": {
+      "c_b3u_m_2": "Begin before all {TOWN} has arrived."
+    },
+    "b3v_d1": {
+      "c_b3v_d1_2": "Only ask the {ROOT} to show you her face."
+    },
+    "b3v_m": {
+      "c_b3v_m_2": "Demand the {ROOT} give without taking anything."
+    },
+    "b3w_d1": {
+      "c_b3w_d1_2": "Take back one year on the {ROOT}s own terms."
+    },
+    "n_b4": {
+      "c_n_b4_1": "Anchor the whole {TOWN}s memory at once.",
+      "c_n_b4_2": "Bind the shared vow of the living into the {ROOT}."
+    },
+    "fin_all_2": {
+      "c_fin_all_2_1": "Seal the new keeping into the {ROOT}."
+    },
+    "fin_share_1": {
+      "c_fin_share_1_1": "Bind the vow into the {ROOT}."
+    },
+    "n_b5": {
+      "c_n_b5_1": "Watch {TOWN} wake into its whole self."
+    },
+    "n_b5_2": {
+      "c_n_b5_2_1": "Reach for your {GRANDMOTHER} too."
+    },
+    "fin_trade_1": {
+      "c_fin_trade_1_2": "Grasp for more than the {ROOT} will give."
+    },
+    "fin_trade_2": {
+      "c_fin_trade_2_2": "Promise the {ROOT} a visit every {DEADLINE}."
+    }
+  }
+}

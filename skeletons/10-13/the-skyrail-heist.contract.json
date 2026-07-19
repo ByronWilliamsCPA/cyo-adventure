@@ -1,0 +1,3111 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-skyrail-heist",
+  "age_band": "10-13",
+  "legacy_lexicon": [
+    "Meridian",
+    "Cartographers' Union",
+    "Odal",
+    "Venn",
+    "Casse",
+    "Toma",
+    "Bel Toma",
+    "Rhee",
+    "Imma Rhee",
+    "Dorrin",
+    "Dorrin Sel",
+    "the Collector",
+    "Gate House",
+    "Termino",
+    "Termino Gate",
+    "Aqueduct Junction",
+    "Charter Room",
+    "Copperline",
+    "Copperline Viaduct",
+    "Saltglass",
+    "Saltglass Arches",
+    "Palegate",
+    "Palegate Rise",
+    "Circle Tram",
+    "the Aurelia",
+    "Meridian Line",
+    "orphan ledger",
+    "skyrail"
+  ],
+  "default_binding": {
+    "CITY": "Meridian",
+    "UNION_NAME": "the Cartographers' Union",
+    "AUTHORITY": "Odal",
+    "KEEPER": "Venn",
+    "SUSPECT": "Dorrin Sel",
+    "ANTAGONIST": "the Collector",
+    "ANTAGONIST_HQ": "the Gate House",
+    "BORDER_POST": "Termino Gate",
+    "VEHICLE": "the night express",
+    "SKYRAIL": "the elevated skyrail",
+    "LINE_NAME": "the Meridian Line",
+    "MISSION_ITEMS": "the deeds, water rights, and the orphan ledger",
+    "ORPHAN_LEDGER": "the orphan ledger",
+    "ARCHIVE_SOURCE": "the Charter Room",
+    "LEGAL_INSTRUMENT": "the writ",
+    "TARGET_CAR": "car nine",
+    "WRONG_CAR_A": "car seven",
+    "WRONG_CAR_B": "car four",
+    "WATERSTOP": "Aqueduct Junction",
+    "WATER_TOWER": "the water tower",
+    "DEADLINE_SIGN": "the water bag swinging clear of the tender",
+    "SAFETY_LAW": "no child on a moving car's outside, ever",
+    "SUMMONS": "the urgent bell",
+    "THRESHOLD": "the union hall above Central Station",
+    "BORDER": "the border",
+    "FALSE_COMPARTMENT": "the false bulkhead",
+    "CLUE_SEAM": "a fresh paint line and six rivet-painted screws",
+    "ARCHIVE_CONTAINER": "the three green crates",
+    "TRANSPORT_CART": "a loaded dray cart with two porters",
+    "ROUTE_PL_LEAD": "Casse",
+    "ROUTE_PL_BASE": "the switch tower",
+    "ROUTE_PL_METHOD": "one reading is a rumor, two readings are a fact",
+    "PL_WAYPOINT_1": "Copperline Viaduct",
+    "PL_WAYPOINT_2": "Saltglass Arches",
+    "PL_WAYPOINT_3": "Palegate Rise",
+    "PL_TRANSPORT": "the Circle Tram",
+    "PL_MILK_TRAIN": "the milk train",
+    "ROUTE_CL_LEAD": "Toma",
+    "ROUTE_CL_BASE": "the rigger's shed",
+    "ROUTE_CL_METHOD": "two anchors or nothing",
+    "CL_GANTRY": "the gantries",
+    "CL_CRADLE": "the service cradle",
+    "CL_HARNESS": "harness and line",
+    "CL_SKETCHBOOK": "the sketchbook",
+    "ROUTE_TK_LEAD": "Rhee",
+    "ROUTE_TK_BASE": "the dining car",
+    "TK_MAIL_CAR": "the mail vestibule",
+    "TK_RULE1": "ask before you accuse",
+    "TK_RULE2": "a door opened by its keeper stays open",
+    "TK_RULE3": "never crowd a frightened man",
+    "TK_WAYBILL": "the copied waybill",
+    "TK_DUPLICATE_BOOK": "the duplicate book",
+    "TK_WITNESS_SHEET": "the witness sheet",
+    "PL6_GATE": "Palegate Rise at 2:40",
+    "PL9_GATE": "opening car seven on an unverified count",
+    "CL_GATE": "one anchor set and the second skipped",
+    "TK4_GATE": "breaking the third rule at the vestibule door",
+    "PL1_PRIZE": "The Ninth Car",
+    "PL2_PRIZE": "The Orphan Ledger Comes Home",
+    "PL3_PRIZE": "The Purser's Arithmetic",
+    "PL4_PRIZE": "By the Book",
+    "PL5_PRIZE": "The Two Lamps",
+    "PL7_PRIZE": "The Border Ledger",
+    "PL8_PRIZE": "Checked Twice at Midnight",
+    "PL10_PRIZE": "The Standing Order",
+    "PL11_PRIZE": "Paper and Steam",
+    "PL12_PRIZE": "The Blank Line",
+    "PL13_PRIZE": "Three Crews, One Car",
+    "CL1_PRIZE": "The View From Above",
+    "CL2_PRIZE": "Cause From the Gantry",
+    "CL3_PRIZE": "The Boy on the Stairs",
+    "CL4_PRIZE": "Steady Hands",
+    "CL5_PRIZE": "Three Minutes of Lamplight",
+    "CL6_PRIZE": "Held for Water",
+    "CL7_PRIZE": "The Dawn Terminus",
+    "CL8_PRIZE": "What the Wire Carried",
+    "CL9_PRIZE": "Springs Ride Heavy",
+    "CL10_PRIZE": "Paint and Patience",
+    "CL11_PRIZE": "Rivet Grey",
+    "TK1_PRIZE": "The Keeper of Doors",
+    "TK2_PRIZE": "Formalities",
+    "TK3_PRIZE": "Seen Kindly",
+    "TK5_PRIZE": "The Watch Kept",
+    "TK6_PRIZE": "The Waiting Cart",
+    "TK7_PRIZE": "The Siding Order",
+    "TK8_PRIZE": "The Corridor Count",
+    "TK9_PRIZE": "Patterns in the Aisle",
+    "TK10_PRIZE": "The Corridor Parley",
+    "TK11_PRIZE": "The Rehearsed Question",
+    "TK12_PRIZE": "Signed and Timed",
+    "TK13_PRIZE": "The Duplicate Book",
+    "TK14_PRIZE": "The Clerk's Book",
+    "PL6_SETBACK": "One Flash Short",
+    "PL9_SETBACK": "The Seventh Car",
+    "CL12_SETBACK": "Two Anchors",
+    "CL13_SETBACK": "The Second Secret",
+    "TK4_SETBACK": "The Startled Hare"
+  },
+  "slots": [
+    {
+      "id": "CITY",
+      "scope": "global",
+      "meaning": "The city where the whole story takes place.",
+      "guidance": "A single named city; grounds every location as part of the same place.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "UNION_NAME",
+      "scope": "global",
+      "meaning": "The formal name of the youth guild running the recovery.",
+      "guidance": "A civic-sounding organization name a kid could plausibly belong to.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "AUTHORITY",
+      "scope": "global",
+      "meaning": "The senior adult leading the whole recovery and holding the legal writ.",
+      "guidance": "A calm, fair station-authority figure; never a source of peril to the crew.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEEPER",
+      "scope": "global",
+      "meaning": "The railway employee with the keys to the sealed car (the reluctant keeper of the secret).",
+      "guidance": "Courteous, conflicted, never violent; may waver but is never a threat.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SUSPECT",
+      "scope": "global",
+      "meaning": "The frightened junior clerk who hid the stolen archive.",
+      "guidance": "A scared kid-adjacent wrongdoer, sympathetic, never dangerous; treated gently by the story.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ANTAGONIST",
+      "scope": "global",
+      "meaning": "The unseen mastermind behind the theft, named but never on-page.",
+      "guidance": "An off-page schemer; referenced only through paperwork, never confronted physically.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "lethal"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ANTAGONIST_HQ",
+      "scope": "global",
+      "meaning": "The antagonist's home base, named on paperwork as the ultimate destination.",
+      "guidance": "A distant, bureaucratic-sounding place; never visited on-page.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BORDER_POST",
+      "scope": "global",
+      "meaning": "The border crossing point where the last-resort endings converge.",
+      "guidance": "A checkpoint with wardens; official and safe, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "VEHICLE",
+      "scope": "global",
+      "meaning": "The night train the archive is hidden aboard.",
+      "guidance": "A grand, fast passenger-and-freight train; the whole night's stage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SKYRAIL",
+      "scope": "global",
+      "meaning": "The elevated rail infrastructure the whole city's trains run on.",
+      "guidance": "A striking piece of city infrastructure, safe to walk beside or above.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LINE_NAME",
+      "scope": "global",
+      "meaning": "The formal name of the railway line the express runs on.",
+      "guidance": "A geographic-sounding line name.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MISSION_ITEMS",
+      "scope": "global",
+      "meaning": "The full list of recovered civic documents (the mission's object).",
+      "guidance": "Real paper records a city would miss: property, rights, and family records.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ORPHAN_LEDGER",
+      "scope": "global",
+      "meaning": "The single most poignant recovered document, named alone in several endings.",
+      "guidance": "A record that protects vulnerable children's inheritance; never itself dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ARCHIVE_SOURCE",
+      "scope": "global",
+      "meaning": "The room the archive was stolen from at the story's start.",
+      "guidance": "A civic records room; safe, formal, no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LEGAL_INSTRUMENT",
+      "scope": "global",
+      "meaning": "The legal document that authorizes the recovery and opens sealed cars.",
+      "guidance": "A formal writ or warrant; the story's one lawful key.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TARGET_CAR",
+      "scope": "global",
+      "meaning": "The specific freight car identifier hiding the archive.",
+      "guidance": "A plain numbered/lettered car designation.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WRONG_CAR_A",
+      "scope": "global",
+      "meaning": "A car mistakenly suspected instead of the true target (first wrong guess).",
+      "guidance": "A plain car designation, distinct from the true target and the other wrong guess.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WRONG_CAR_B",
+      "scope": "global",
+      "meaning": "A second car mistakenly suspected instead of the true target.",
+      "guidance": "A plain car designation, distinct from the target and the other wrong guess.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WATERSTOP",
+      "scope": "global",
+      "meaning": "The one long stop where all three crews converge at the deadline.",
+      "guidance": "A junction with a water tower; the story's meeting point and clock.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WATER_TOWER",
+      "scope": "global",
+      "meaning": "The tall landmark structure at the waterstop the cradle/crew work near.",
+      "guidance": "A tall, safe structure; a visual anchor for the convergence scenes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The recurring sensory cue that the safe window is closing.",
+      "guidance": "A visible, gradual cue giving fair warning; escalates slowly enough to retreat safely.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SAFETY_LAW",
+      "scope": "global",
+      "meaning": "The union's core safety rule protecting juniors from physical risk.",
+      "guidance": "A clear, absolute child-safety rule; must read as genuinely protective.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SUMMONS",
+      "scope": "global",
+      "meaning": "The opening signal that calls the hero to the union hall.",
+      "guidance": "A benign, urgent call to action; excitement, not alarm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The union's home base where the story opens and the first ending returns to.",
+      "guidance": "A welcoming home-base location; safe, always reachable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BORDER",
+      "scope": "global",
+      "meaning": "The story's hard deadline: the line the express must not cross with its secret.",
+      "guidance": "An administrative boundary, not a physical hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FALSE_COMPARTMENT",
+      "scope": "global",
+      "meaning": "The hidden compartment concealing the stolen archive aboard the target car.",
+      "guidance": "A cleverly hidden panel; discoverable by a sharp-eyed junior, never booby-trapped.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CLUE_SEAM",
+      "scope": "global",
+      "meaning": "The physical evidence (a seam and fasteners) that gives away the hidden compartment.",
+      "guidance": "A small, careful physical detail; a clue for careful eyes, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ARCHIVE_CONTAINER",
+      "scope": "global",
+      "meaning": "The containers the recovered archive rides home in.",
+      "guidance": "Ordinary sturdy containers; nothing dangerous to carry.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TRANSPORT_CART",
+      "scope": "global",
+      "meaning": "The cart waiting at the siding, sized to secretly move the archive onward.",
+      "guidance": "An innocent-looking cargo cart; suspicious only in context, never a threat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_PL_LEAD",
+      "scope": "route",
+      "meaning": "The adult who leads the Planners crew.",
+      "guidance": "Dry, exact, numbers-minded; calm authority, never a threat to the crew.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_CL_LEAD",
+          "ROUTE_TK_LEAD"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_PL_BASE",
+      "scope": "route",
+      "meaning": "The Planners' home base overlooking the city's rail network.",
+      "guidance": "A control-room-like space full of maps and schedules; safe workspace.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_PL_METHOD",
+      "scope": "route",
+      "meaning": "The Planners' guiding proverb about verifying a number before acting on it.",
+      "guidance": "A short, teachable rule about checking facts twice before acting.",
+      "constraints": {
+        "max_words": 12,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PL_WAYPOINT_1",
+      "scope": "route",
+      "meaning": "The first viaduct waypoint the Planners' evidence passes.",
+      "guidance": "A named viaduct/crossing; a waypoint, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PL_WAYPOINT_2",
+      "scope": "route",
+      "meaning": "The relay waypoint the Planners use to send coded messages.",
+      "guidance": "A named arches/relay point; a waypoint, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PL_WAYPOINT_3",
+      "scope": "route",
+      "meaning": "The border-side waypoint where the Planners' hardest choices land.",
+      "guidance": "A named rise/stop; a waypoint, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PL_TRANSPORT",
+      "scope": "route",
+      "meaning": "The fast city tram the Planners use to chase the express.",
+      "guidance": "A quick, safe city transit vehicle.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PL_MILK_TRAIN",
+      "scope": "route",
+      "meaning": "The slower overnight train the Planners sometimes ride instead.",
+      "guidance": "An ordinary, safe overnight local train.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_CL_LEAD",
+      "scope": "route",
+      "meaning": "The adult who leads the Climbers crew.",
+      "guidance": "Calm, exact, safety-first rigger; never reckless, never a threat.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_PL_LEAD",
+          "ROUTE_TK_LEAD"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_CL_BASE",
+      "scope": "route",
+      "meaning": "The Climbers' home base where harnesses and lines are kept.",
+      "guidance": "A well-organized gear room; safe workspace.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_CL_METHOD",
+      "scope": "route",
+      "meaning": "The Climbers' core safety rule about redundant anchoring.",
+      "guidance": "A short, absolute safety rule about never skipping a backup.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CL_GANTRY",
+      "scope": "route",
+      "meaning": "The fixed walkways the Climbers use to move above the tracks.",
+      "guidance": "A secured, railed walkway; always clipped in, never a fall hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CL_CRADLE",
+      "scope": "route",
+      "meaning": "The rigged platform that lowers a climber level with a car's roof.",
+      "guidance": "A properly rigged, load-tested platform; safe when both anchors are set.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CL_HARNESS",
+      "scope": "route",
+      "meaning": "The safety gear every Climber wears before going aloft.",
+      "guidance": "Properly fitted, checked-twice safety gear.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CL_SKETCHBOOK",
+      "scope": "route",
+      "meaning": "The notebook the Climbers use to record what they observe from height.",
+      "guidance": "A simple recording tool; harmless.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_TK_LEAD",
+      "scope": "route",
+      "meaning": "The adult who leads the Talkers crew.",
+      "guidance": "A skilled, patient parley-leader; persuasive, never coercive or threatening.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_PL_LEAD",
+          "ROUTE_CL_LEAD"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_TK_BASE",
+      "scope": "route",
+      "meaning": "The Talkers' main working space aboard the train itself.",
+      "guidance": "A comfortable train car used for quiet conversation.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TK_MAIL_CAR",
+      "scope": "route",
+      "meaning": "The Talkers' alternate working space among the train's paperwork.",
+      "guidance": "A quiet, paper-filled car; safe workspace.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TK_RULE1",
+      "scope": "route",
+      "meaning": "The Talkers' first parley rule: never accuse before asking.",
+      "guidance": "A short, teachable rule about fairness in questioning.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TK_RULE2",
+      "scope": "route",
+      "meaning": "The Talkers' second parley rule: let a keeper open their own door.",
+      "guidance": "A short, teachable rule about respecting who holds responsibility.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TK_RULE3",
+      "scope": "route",
+      "meaning": "The Talkers' third parley rule: never corner a frightened person.",
+      "guidance": "A short, teachable rule about gentleness with a scared wrongdoer.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TK_WAYBILL",
+      "scope": "route",
+      "meaning": "The forged shipping document the Talkers discover as evidence.",
+      "guidance": "A paper clue; discoverable and harmless to handle.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TK_DUPLICATE_BOOK",
+      "scope": "route",
+      "meaning": "The mail clerk's record book that reveals the forged waybill's original.",
+      "guidance": "A paper record; harmless to consult with permission.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TK_WITNESS_SHEET",
+      "scope": "route",
+      "meaning": "The written record of everything the Talkers observed overnight.",
+      "guidance": "A careful paper record; the Talkers' answer to physical evidence.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PL6_GATE",
+      "scope": "track",
+      "meaning": "The narrow, unforgiving stop-window where the Planners' relayed cause can fail.",
+      "guidance": "A tight but non-lethal window; missing it means delay, never harm. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "PL9_GATE",
+          "CL_GATE",
+          "TK4_GATE"
+        ]
+      }
+    },
+    {
+      "id": "PL9_GATE",
+      "scope": "track",
+      "meaning": "The moment the Planners commit to an unverified figure and open the wrong car.",
+      "guidance": "A non-lethal mistaken commit; opening the wrong car costs time, never safety. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "PL6_GATE",
+          "CL_GATE",
+          "TK4_GATE"
+        ]
+      }
+    },
+    {
+      "id": "CL_GATE",
+      "scope": "track",
+      "meaning": "The single-anchor shortcut the Climbers take to save time, which nearly costs them the line.",
+      "guidance": "A non-lethal near-miss; a jumped line is scary but stops short of harm. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "PL6_GATE",
+          "PL9_GATE",
+          "TK4_GATE"
+        ]
+      }
+    },
+    {
+      "id": "TK4_GATE",
+      "scope": "track",
+      "meaning": "The moment the Talkers break their own rule and corner the frightened clerk.",
+      "guidance": "A non-lethal social misstep; the clerk bolts, nobody is hurt. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "PL6_GATE",
+          "PL9_GATE",
+          "CL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "PL1_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Ninth Car' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL2_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Orphan Ledger Comes Home' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL3_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close (\"The Purser's Arithmetic\" originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL4_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('By the Book' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL5_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Two Lamps' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL7_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Border Ledger' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL8_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Checked Twice at Midnight' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL10_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Standing Order' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL11_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Paper and Steam' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL12_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Blank Line' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL13_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Three Crews, One Car' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL1_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The View From Above' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL2_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Cause From the Gantry' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL3_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Boy on the Stairs' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL4_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Steady Hands' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL5_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Three Minutes of Lamplight' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL6_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Held for Water' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL7_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Dawn Terminus' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL8_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('What the Wire Carried' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL9_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Springs Ride Heavy' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL10_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Paint and Patience' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL11_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Rivet Grey' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK1_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Keeper of Doors' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK2_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Formalities' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK3_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Seen Kindly' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK5_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Watch Kept' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK6_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Waiting Cart' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK7_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Siding Order' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK8_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Corridor Count' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK9_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Patterns in the Aisle' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK10_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Corridor Parley' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK11_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Rehearsed Question' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK12_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('Signed and Timed' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK13_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close ('The Duplicate Book' originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK14_PRIZE",
+      "scope": "ending",
+      "meaning": "Names the ending title for a successful/complete/discovery close (\"The Clerk's Book\" originally).",
+      "guidance": "A short, positive or reflective ending name; a benign discovery, achievement, or resolution.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL6_SETBACK",
+      "scope": "ending",
+      "meaning": "Names the ending title for a safe setback close ('One Flash Short' originally).",
+      "guidance": "A short setback name; the recovery is merely delayed, never anyone harmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "PL9_SETBACK",
+      "scope": "ending",
+      "meaning": "Names the ending title for a safe setback close ('The Seventh Car' originally).",
+      "guidance": "A short setback name; the recovery is merely delayed, never anyone harmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL12_SETBACK",
+      "scope": "ending",
+      "meaning": "Names the ending title for a safe setback close ('Two Anchors' originally).",
+      "guidance": "A short setback name; the recovery is merely delayed, never anyone harmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL13_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "CL13_SETBACK",
+      "scope": "ending",
+      "meaning": "Names the ending title for a safe setback close ('The Second Secret' originally).",
+      "guidance": "A short setback name; the recovery is merely delayed, never anyone harmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "TK4_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "TK4_SETBACK",
+      "scope": "ending",
+      "meaning": "Names the ending title for a safe setback close ('The Startled Hare' originally).",
+      "guidance": "A short setback name; the recovery is merely delayed, never anyone harmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "PL1_PRIZE",
+          "PL2_PRIZE",
+          "PL3_PRIZE",
+          "PL4_PRIZE",
+          "PL5_PRIZE",
+          "PL7_PRIZE",
+          "PL8_PRIZE",
+          "PL10_PRIZE",
+          "PL11_PRIZE",
+          "PL12_PRIZE",
+          "PL13_PRIZE",
+          "CL1_PRIZE",
+          "CL2_PRIZE",
+          "CL3_PRIZE",
+          "CL4_PRIZE",
+          "CL5_PRIZE",
+          "CL6_PRIZE",
+          "CL7_PRIZE",
+          "CL8_PRIZE",
+          "CL9_PRIZE",
+          "CL10_PRIZE",
+          "CL11_PRIZE",
+          "TK1_PRIZE",
+          "TK2_PRIZE",
+          "TK3_PRIZE",
+          "TK5_PRIZE",
+          "TK6_PRIZE",
+          "TK7_PRIZE",
+          "TK8_PRIZE",
+          "TK9_PRIZE",
+          "TK10_PRIZE",
+          "TK11_PRIZE",
+          "TK12_PRIZE",
+          "TK13_PRIZE",
+          "TK14_PRIZE",
+          "PL6_SETBACK",
+          "PL9_SETBACK",
+          "CL12_SETBACK",
+          "CL13_SETBACK"
+        ]
+      }
+    }
+  ]
+}

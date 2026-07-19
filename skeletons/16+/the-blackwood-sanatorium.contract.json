@@ -1,0 +1,272 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-blackwood-sanatorium",
+  "age_band": "16+",
+  "legacy_lexicon": [
+    "Wren",
+    "Wren Colefax",
+    "Colefax",
+    "Miriam",
+    "Blackwood",
+    "Blackwood Sanatorium",
+    "rotunda",
+    "watchman",
+    "demolition watchman",
+    "the flooded stairwell",
+    "the hydrotherapy hall",
+    "the cold rooms",
+    "the chapel and the graves",
+    "the boiler house",
+    "the superintendent's wing",
+    "the locked dormitories",
+    "the dispensary",
+    "the attic wards"
+  ],
+  "default_binding": {
+    "HERO": "Wren",
+    "KIN": "Miriam",
+    "THRESHOLD": "Blackwood Sanatorium",
+    "ENTRANCE": "the service gate",
+    "WATCHER": "watchman",
+    "DEADLINE": "dawn",
+    "DEADLINE_SIGN": "crew",
+    "GOAL": "the sealed ledgers that could clear her name",
+    "HUB_NAME": "rotunda",
+    "STAIR_NAME": "the flooded stairwell",
+    "HYDRO_NAME": "the hydrotherapy hall",
+    "MORGUE_NAME": "the cold rooms",
+    "CHAPEL_NAME": "the chapel and the graves",
+    "BOILER_NAME": "the boiler house",
+    "OFFICE_NAME": "the superintendent's wing",
+    "WARD_NAME": "the locked dormitories",
+    "DISPENSARY_NAME": "the dispensary",
+    "ATTIC_NAME": "the attic wards"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The lone investigator returning to the sealed building overnight.",
+      "guidance": "A single capable investigator with a personal stake in the building's secret; never armed with more than an incidental tool.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["KIN"]
+      }
+    },
+    {
+      "id": "KIN",
+      "scope": "global",
+      "meaning": "The deceased relative whose fate the hero is trying to uncover the truth about.",
+      "guidance": "A named relative who died (or disappeared) at this institution; the emotional stakes of the whole search.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The full proper name of the whole institution the story takes place inside, including its institution-type word.",
+      "guidance": "A place name plus its institution type (e.g. 'Blackwood Sanatorium', 'Kestrel Hollow Silo'); used both in full and, at a few points, as a bare short-form reference to the same place.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single point of entry and exit the hero uses at the start and on the abandon ending.",
+      "guidance": "A quiet, unguarded way in and out; always safe to reach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WATCHER",
+      "scope": "global",
+      "meaning": "The roaming staff/security figure whose hourly round threatens capture, not harm.",
+      "guidance": "A single patrol figure who is never armed and never violent; being found by them means capture or a forced retreat, never injury.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The time of day/event that ends the safe window for being inside.",
+      "guidance": "A survivable, fair-warning time pressure; being caught by it means a hurried retreat, never harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The outside workforce/force whose imminent arrival is the story's ticking clock.",
+      "guidance": "A short noun for the outside crew/team due at the deadline; their arrival is the visible sign time has run out.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The overarching prize: the records that would clear the kin's name, stated once at the outset.",
+      "guidance": "A plural-reading noun phrase for the records/proof being sought (e.g. records, documents, ledgers), so it agrees with the surrounding 'are somewhere inside'; a benign paper prize, never a weapon.",
+      "constraints": {
+        "max_words": 12,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HUB_NAME",
+      "scope": "global",
+      "meaning": "The central hall every wing opens off of; the safe hub the hero returns to between wings.",
+      "guidance": "A single, always-safe central chamber; wonder/dread over toxic hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STAIR_NAME",
+      "scope": "route",
+      "meaning": "The identity of the first wing: a flooded stairwell leading up to a records tower.",
+      "guidance": "A short, evocative wing name; distinguishable from the other eight wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "HYDRO_NAME", "MORGUE_NAME", "CHAPEL_NAME", "BOILER_NAME",
+          "OFFICE_NAME", "WARD_NAME", "DISPENSARY_NAME", "ATTIC_NAME"
+        ]
+      }
+    },
+    {
+      "id": "HYDRO_NAME",
+      "scope": "route",
+      "meaning": "The identity of the second wing: a hydrotherapy hall over a flooded sub-basement.",
+      "guidance": "A short, evocative wing name; distinguishable from the other eight wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "STAIR_NAME", "MORGUE_NAME", "CHAPEL_NAME", "BOILER_NAME",
+          "OFFICE_NAME", "WARD_NAME", "DISPENSARY_NAME", "ATTIC_NAME"
+        ]
+      }
+    },
+    {
+      "id": "MORGUE_NAME",
+      "scope": "route",
+      "meaning": "The identity of the third wing: the cold storage rooms and death register vault.",
+      "guidance": "A short, evocative wing name; distinguishable from the other eight wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "STAIR_NAME", "HYDRO_NAME", "CHAPEL_NAME", "BOILER_NAME",
+          "OFFICE_NAME", "WARD_NAME", "DISPENSARY_NAME", "ATTIC_NAME"
+        ]
+      }
+    },
+    {
+      "id": "CHAPEL_NAME",
+      "scope": "route",
+      "meaning": "The identity of the fourth wing: the deconsecrated chapel and its unmarked graves.",
+      "guidance": "A short, evocative wing name; distinguishable from the other eight wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "STAIR_NAME", "HYDRO_NAME", "MORGUE_NAME", "BOILER_NAME",
+          "OFFICE_NAME", "WARD_NAME", "DISPENSARY_NAME", "ATTIC_NAME"
+        ]
+      }
+    },
+    {
+      "id": "BOILER_NAME",
+      "scope": "route",
+      "meaning": "The identity of the fifth wing: the boiler house and its service tunnels.",
+      "guidance": "A short, evocative wing name; distinguishable from the other eight wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "STAIR_NAME", "HYDRO_NAME", "MORGUE_NAME", "CHAPEL_NAME",
+          "OFFICE_NAME", "WARD_NAME", "DISPENSARY_NAME", "ATTIC_NAME"
+        ]
+      }
+    },
+    {
+      "id": "OFFICE_NAME",
+      "scope": "route",
+      "meaning": "The identity of the sixth wing: the superintendent's administrative wing.",
+      "guidance": "A short, evocative wing name; distinguishable from the other eight wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "STAIR_NAME", "HYDRO_NAME", "MORGUE_NAME", "CHAPEL_NAME",
+          "BOILER_NAME", "WARD_NAME", "DISPENSARY_NAME", "ATTIC_NAME"
+        ]
+      }
+    },
+    {
+      "id": "WARD_NAME",
+      "scope": "route",
+      "meaning": "The identity of the seventh wing: the locked patient dormitories.",
+      "guidance": "A short, evocative wing name; distinguishable from the other eight wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "STAIR_NAME", "HYDRO_NAME", "MORGUE_NAME", "CHAPEL_NAME",
+          "BOILER_NAME", "OFFICE_NAME", "DISPENSARY_NAME", "ATTIC_NAME"
+        ]
+      }
+    },
+    {
+      "id": "DISPENSARY_NAME",
+      "scope": "route",
+      "meaning": "The identity of the eighth wing: the controlled-drugs dispensary.",
+      "guidance": "A short, evocative wing name; distinguishable from the other eight wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "STAIR_NAME", "HYDRO_NAME", "MORGUE_NAME", "CHAPEL_NAME",
+          "BOILER_NAME", "OFFICE_NAME", "WARD_NAME", "ATTIC_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ATTIC_NAME",
+      "scope": "route",
+      "meaning": "The identity of the ninth wing: the attic wards under the roof.",
+      "guidance": "A short, evocative wing name; distinguishable from the other eight wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": [
+          "STAIR_NAME", "HYDRO_NAME", "MORGUE_NAME", "CHAPEL_NAME",
+          "BOILER_NAME", "OFFICE_NAME", "WARD_NAME", "DISPENSARY_NAME"
+        ]
+      }
+    }
+  ]
+}

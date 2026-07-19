@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import asyncio
 import dataclasses
+import hashlib
 import uuid
 from typing import TYPE_CHECKING
 
@@ -32,7 +33,7 @@ from sqlalchemy import select
 
 from cyo_adventure.core.config import settings as _default_settings
 from cyo_adventure.core.database import get_session
-from cyo_adventure.core.exceptions import ResourceNotFoundError
+from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
@@ -42,6 +43,12 @@ from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.authoring_metadata import (
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
+)
+from cyo_adventure.generation.binding import (
+    bind_theme_to_contract,
+    contract_path_for,
+    load_contract_for,
+    render_bound_skeleton,
 )
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
@@ -60,6 +67,7 @@ from cyo_adventure.middleware.correlation import (
 )
 from cyo_adventure.moderation import run_moderation_pipeline
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -77,7 +85,11 @@ __all__ = [
 
 # Prompt version label stamped on every StorybookVersion row produced by this
 # worker. Bump when prompt templates change in a way that affects output shape.
-_PROMPT_VERSION = "v1"
+# "v2" (WS-2, OQ-6): spans BOTH the legacy free-text fill/generate prompts and
+# the new bound-fill prompt (build_bound_fill_prompt); the two are
+# disambiguated by the presence of the report's "theme_contract" audit block,
+# not by this label, so the bump is coarse by design.
+_PROMPT_VERSION = "v2"
 
 # Each generation job produces a fresh Storybook, so its sole version is 1.
 # Re-running generation creates a new job and a new Storybook id, not a new
@@ -130,6 +142,7 @@ async def _record_failure(
     *,
     provider: GenerationProvider | None,
     from_state: str = "running",
+    report: dict[str, object] | None = None,
 ) -> None:
     """Mark ``job`` failed, record the truncated error, and commit.
 
@@ -167,11 +180,19 @@ async def _record_failure(
             ``job.prompt_version`` here means a job that fails before or
             during generation still records which provider/prompt version it
             was attempted under (matching the success path).
+        report: Optional structured detail to stamp onto ``job.report``
+            alongside the truncated ``job.error`` string (WS-2: a fail-closed
+            slot-binding ``ValidationError`` carries a ``violations`` list in
+            its ``details`` that a 512-char message would truncate away).
+            ``None`` (the default) leaves ``job.report`` untouched, which is
+            every pre-existing call site's behavior.
     """
     job.status = "failed"
     job.error = str(exc)[:512]
     job.provider = _provider_label(provider)
     job.prompt_version = _PROMPT_VERSION
+    if report is not None:
+        job.report = report
 
     # #CRITICAL: data-integrity: this event must land in the SAME transaction
     # as the "failed" status write below (spec D1: event atomic with the
@@ -268,7 +289,11 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         ResourceNotFoundError: If ``authoring["skeleton_slug"]`` is missing or
             not a string.
         ValidationError: If the matched skeleton file fails structural
-            validation (see :func:`~cyo_adventure.generation.skeleton.load_skeleton`).
+            validation (see :func:`~cyo_adventure.generation.skeleton.load_skeleton`);
+            or (WS-2) if the skeleton is half-migrated (``{SLOT}`` tokens with
+            no sidecar contract), or its sidecar fails to bind/render -- both
+            fail closed, propagating unchanged into the caller's pipeline-
+            exception handling. No fill provider call is made in either case.
     """
     authoring = ctx.authoring
     skeleton_slug = authoring.get(SKELETON_SLUG_KEY)
@@ -301,23 +326,88 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         review_stage1_model if isinstance(review_stage1_model, str) else None
     )
 
-    # #ASSUME: external-resources: fill_skeleton now runs the Stage 1 fidelity
-    # gate inside its own bounded repair loop, so a persistently-flagged fill
-    # costs at most 1 fill + max_repairs repair provider calls plus the paired
-    # Stage 1 review calls, all sharing ONE budget. This replaces the removed
-    # worker-level outer loop, which re-ran fill_skeleton from scratch up to 3
-    # times (each with its own max_repairs) for up to 9 provider calls.
-    # #VERIFY: test_fill_skeleton_stage1_exhaustion_downgrades_with_key and
-    # test_fill_skeleton_stage1_fail_once_then_pass_returns_passed in
-    # tests/unit/test_orchestrator.py.
-    return await fill_skeleton(
-        skeleton,
+    # #CRITICAL: data-integrity: dispatch on sidecar presence (WS-2 design
+    # section 5.1). A legacy skeleton (no `<slug>.contract.json`) takes the
+    # byte-identical WS-1 free-text path below; a half-migrated skeleton
+    # ({SLOT} tokens with no sidecar) is a content defect the post-generation
+    # gate cannot see (a token is a valid non-empty string), so
+    # load_contract_for itself fails closed with a ValidationError that
+    # propagates unchanged into run_generation_job's pipeline-exception
+    # handler -- no fill provider call is ever made for it.
+    # #VERIFY: the no-sidecar (regression) and half-migrated worker tests in
+    # tests/unit/test_worker.py.
+    contract = load_contract_for(skeleton_path, skeleton)
+
+    if contract is None:
+        # #ASSUME: external-resources: fill_skeleton now runs the Stage 1
+        # fidelity gate inside its own bounded repair loop, so a
+        # persistently-flagged fill costs at most 1 fill + max_repairs repair
+        # provider calls plus the paired Stage 1 review calls, all sharing ONE
+        # budget. This replaces the removed worker-level outer loop, which
+        # re-ran fill_skeleton from scratch up to 3 times (each with its own
+        # max_repairs) for up to 9 provider calls.
+        # #VERIFY: test_fill_skeleton_stage1_exhaustion_downgrades_with_key and
+        # test_fill_skeleton_stage1_fail_once_then_pass_returns_passed in
+        # tests/unit/test_orchestrator.py.
+        return await fill_skeleton(
+            skeleton,
+            theme_brief_dict,
+            ctx.effective_provider,
+            ctx.pii,
+            settings=_default_settings,
+            review_stage1_model=review_stage1_model,
+            prep_model=ctx.prep_model,
+        )
+
+    # #CRITICAL: security: bind_theme_to_contract's return value is derived
+    # from an untrusted free-text theme_brief (OWASP LLM01) and stays
+    # untrusted-derived until validate_slot_bindings passes INSIDE that call
+    # (WS-2 design section 4.1). A ValidationError raised here (bind
+    # exhaustion) or by render_bound_skeleton (a post-condition failure) is
+    # deliberately left uncaught: it propagates into run_generation_job's
+    # existing `except Exception` around the _run_skeleton_fill call, which
+    # records the job "failed" and re-raises. There is no silent fallback to
+    # the free-text fill path (WS-2 OQ-1, ratified fail-closed) -- a brief the
+    # binder cannot fit to the contract must not bypass the deterministic
+    # slot validator by falling through to unconstrained free-text
+    # generation.
+    # #VERIFY: the bind-failure worker test asserts the fill provider's call
+    # log stays empty (no fill/repair call made) and the job fails with the
+    # violations recorded.
+    bindings = await bind_theme_to_contract(
+        contract, theme_brief_dict, ctx.effective_provider, ctx.pii
+    )
+    bound = render_bound_skeleton(skeleton, bindings)
+
+    outcome = await fill_skeleton(
+        bound,
         theme_brief_dict,
         ctx.effective_provider,
         ctx.pii,
         settings=_default_settings,
         review_stage1_model=review_stage1_model,
         prep_model=ctx.prep_model,
+        slot_bindings=bindings,
+    )
+
+    # WS-2 design section 7: the audit block a reviewer needs to see exactly
+    # what the theme changed. `bind_attempts` is deliberately omitted:
+    # bind_theme_to_contract does not report how many of its (at most
+    # max_attempts) LLM calls it actually used, and recording a hardcoded `1`
+    # would misrepresent a bind that succeeded only on its retry. Extending
+    # bind_theme_to_contract to return that count is out of this change's
+    # scope.
+    contract_path = contract_path_for(skeleton_path)
+    theme_contract_report: dict[str, object] = {
+        "skeleton_slug": contract.skeleton_slug,
+        "contract_version": contract.contract_version,
+        "contract_sha256": hashlib.sha256(contract_path.read_bytes()).hexdigest(),
+        "denylist_version": DENYLIST_VERSION,
+        "slot_bindings": bindings,
+    }
+    return dataclasses.replace(
+        outcome,
+        report={**outcome.report, "theme_contract": theme_contract_report},
     )
 
 
@@ -964,9 +1054,32 @@ async def run_generation_job(
                 else:
                     outcome = await generate_story(brief, effective_provider, pii)
             except Exception as exc:
+                # #CRITICAL: data-integrity: a WS-2 fail-closed slot-binding
+                # ValidationError (from generation.binding.bind_theme_to_contract
+                # or render_bound_skeleton) carries its violation list in
+                # exc.details["violations"], but job.error only stores the
+                # first 512 chars of str(exc) (the message), which drops that
+                # structured detail. Surface it onto job.report so an operator
+                # can see exactly what the binder/renderer rejected instead of
+                # a job row pointing at nothing informative.
+                # #VERIFY: the bind-failure worker test asserts the violation
+                # detail lands in the persisted report/error.
+                violations = (
+                    exc.details.get("violations")
+                    if isinstance(exc, ValidationError)
+                    else None
+                )
                 # Record failure and re-raise so RQ marks the job failed.
                 await _record_failure(
-                    session, job_row, exc, provider=effective_provider
+                    session,
+                    job_row,
+                    exc,
+                    provider=effective_provider,
+                    report=(
+                        {"slot_binding_violations": violations}
+                        if violations is not None
+                        else None
+                    ),
                 )
                 logger.exception(
                     "generation_job.pipeline_error",

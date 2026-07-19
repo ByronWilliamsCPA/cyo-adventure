@@ -101,121 +101,121 @@ state f_countdown #FFF9C4
 f_countdown : choice · 80w
 state e_ds_spill #FFCDD2
 e_ds_spill : setback (negative)
-e_ds_spill : "Runaway Dumplings"
+e_ds_spill : "Runaway {ROUTE_A_MISHAP}"
 state e_tc_slosh #FFCDD2
 e_tc_slosh : setback (negative)
-e_tc_slosh : "One Tray Too Full"
+e_tc_slosh : "{ROUTE_C_MISHAP}"
 state e_tm_spring #FFCDD2
 e_tm_spring : setback (negative)
-e_tm_spring : "Sproing Goes the Beetle"
+e_tm_spring : "{ROUTE_D_MISHAP}"
 state e_mc_gong #FFCDD2
 e_mc_gong : setback (negative)
-e_mc_gong : "The Mighty Gong Whack"
+e_mc_gong : "{ROUTE_F_MISHAP}"
 state e_wish_pip #C8E6C9
 e_wish_pip : completion (positive)
-e_wish_pip : "Pip's Own Wish"
+e_wish_pip : "{WISH_PIP}"
 state e_wish_market #C8E6C9
 e_wish_market : success (positive)
-e_wish_market : "A Wish Big Enough to Share"
+e_wish_market : "{WISH_MARKET}"
 state e_wish_brave #C8E6C9
 e_wish_brave : discovery (positive)
-e_wish_brave : "Wobbly Brave Letters"
+e_wish_brave : "{WISH_BRAVE}"
 state e_light_pip #C8E6C9
 e_light_pip : completion (positive)
-e_light_pip : "Pip Lights the Way"
+e_light_pip : "{LIGHT_PIP}"
 state e_light_together #C8E6C9
 e_light_together : success (positive)
-e_light_together : "One, Two, Three, Glow"
+e_light_together : "{LIGHT_TOGETHER}"
 state e_light_keeper #C8E6C9
 e_light_keeper : completion (positive)
-e_light_keeper : "The Old Way"
+e_light_keeper : "{LIGHT_KEEPER}"
 state e_up_pip #C8E6C9
 e_up_pip : success (positive)
-e_up_pip : "Pip Counts Us Down"
+e_up_pip : "{UP_PIP}"
 state e_up_chorus #C8E6C9
 e_up_chorus : completion (positive)
-e_up_chorus : "The Whole Square Counts"
+e_up_chorus : "{UP_CHORUS}"
 state e_up_song #C8E6C9
 e_up_song : success (positive)
-e_up_song : "Sung into the Sky"
+e_up_song : "{UP_SONG}"
 n_start --> n_meet : Peek behind the barrel.
-n_meet --> n_promise : Promise to help Pip before the ceremony.
-n_promise --> n_hub : Step into the lantern square.
-n_hub --> ds_entry : Follow the ginger steam to the dumpling ...
-n_hub --> pf_entry : Visit the paper folder and his cranes.
-n_hub --> tc_entry : Stop by the tea cart with the tiny stove...
-n_hub --> tm_entry : Look in at the toy mender's table.
-n_hub --> fs_entry : Wander over to the fruit stand.
-n_hub --> mc_entry : Drift toward the musicians' corner.
-n_hub --> f_steps : Head to the ceremony steps with Pip.
+n_meet --> n_promise : Promise to help {COMPANION} before {GOAL...
+n_promise --> n_hub : Step into {HUB}.
+n_hub --> ds_entry : Follow {ROUTE_A_LURE} to {ROUTE_A_STALL}...
+n_hub --> pf_entry : Visit {ROUTE_B_STALL} and his {ROUTE_B_G...
+n_hub --> tc_entry : Stop by {ROUTE_C_STALL} with {ROUTE_C_LU...
+n_hub --> tm_entry : Look in at {ROUTE_D_STALL}.
+n_hub --> fs_entry : Wander over to {ROUTE_E_STALL}.
+n_hub --> mc_entry : Drift toward {ROUTE_F_STALL}.
+n_hub --> f_steps : Head to {GOAL_STEPS} with {COMPANION}.
 ds_entry --> ds_carry : Carry the warm trays to the tables.
-ds_entry --> ds_fold : Join the folding table and pleat dumplin...
+ds_entry --> ds_fold : Join the folding table and pleat {ROUTE_...
 ds_carry --> ds_happy : Take one tray at a time, slow and steady...
 ds_carry --> e_ds_spill : Stack three trays high for one big trip.
-ds_happy --> ds_gift : Go collect Auntie Mo's thank-you.
-ds_fold --> ds_gift : See what Auntie Mo says next.
-ds_gift --> n_hub : Walk back to the lantern square.
-ds_gift --> f_steps : Head for the ceremony steps with Pip.
+ds_happy --> ds_gift : Go collect {ROUTE_A_KEEPER}'s thank-you.
+ds_fold --> ds_gift : See what {ROUTE_A_KEEPER} says next.
+ds_gift --> n_hub : Walk back to {HUB}.
+ds_gift --> f_steps : Head for {GOAL_STEPS} with {COMPANION}.
 pf_entry --> pf_scraps : Chase the drifting paper squares.
-pf_entry --> pf_sort : Sort the crane papers by color.
+pf_entry --> pf_sort : Sort the {ROUTE_B_GOOD} by color.
 pf_scraps --> pf_last : Ask the tall noodle cook for a boost.
 pf_scraps --> pf_breeze : Wait for the breeze to bring it down.
-pf_last --> pf_gift : Bring the rescued papers back to the fol...
-pf_breeze --> pf_gift : Carry the gold square back to the folder...
-pf_sort --> pf_gift : Hand the folder the last tidy tray.
-pf_gift --> n_hub : Walk back to the lantern square.
-pf_gift --> f_steps : Head for the ceremony steps with Pip.
+pf_last --> pf_gift : Bring the rescued papers back to {ROUTE_...
+pf_breeze --> pf_gift : Carry the gold square back to {ROUTE_B_K...
+pf_sort --> pf_gift : Hand {ROUTE_B_KEEPER} the last tidy tray...
+pf_gift --> n_hub : Walk back to {HUB}.
+pf_gift --> f_steps : Head for {GOAL_STEPS} with {COMPANION}.
 tc_entry --> tc_cups : Pass out the little clay cups.
 tc_entry --> tc_kettle : Refill the big kettle from the barrel.
 tc_cups --> tc_warm : Carry two cups at a time, nice and level...
 tc_cups --> e_tc_slosh : Load up the whole tray in one go.
-tc_warm --> tc_gift : Head back to Granny Osha's cart.
-tc_kettle --> tc_gift : See what Granny Osha has in mind.
-tc_gift --> n_hub : Walk back to the lantern square.
-tc_gift --> f_steps : Head for the ceremony steps with Pip.
+tc_warm --> tc_gift : Head back to {ROUTE_C_KEEPER}'s cart.
+tc_kettle --> tc_gift : See what {ROUTE_C_KEEPER} has in mind.
+tc_gift --> n_hub : Walk back to {HUB}.
+tc_gift --> f_steps : Head for {GOAL_STEPS} with {COMPANION}.
 tm_entry --> tm_screws : Sort the tin of tiny screws by size.
 tm_entry --> tm_gear : Hunt for the runaway gear under the stal...
 tm_screws --> tm_neat : Keep lining the screws up in neat rows.
 tm_screws --> e_tm_spring : Wind the beetle's key as far as it can g...
-tm_neat --> tm_gift : Come see what Mr. Fez is reaching for.
-tm_gear --> tm_gift : Come see what Mr. Fez is reaching for.
-tm_gift --> n_hub : Walk back to the lantern square.
-tm_gift --> f_steps : Head for the ceremony steps with Pip.
+tm_neat --> tm_gift : Come see what {ROUTE_D_KEEPER} is reachi...
+tm_gear --> tm_gift : Come see what {ROUTE_D_KEEPER} is reachi...
+tm_gift --> n_hub : Walk back to {HUB}.
+tm_gift --> f_steps : Head for {GOAL_STEPS} with {COMPANION}.
 fs_entry --> fs_stack : Rebuild the orange pyramid.
-fs_entry --> fs_bundle : Tie fruit bundles with the golden string...
+fs_entry --> fs_bundle : Tie {ROUTE_E_GOOD} bundles with {ITEM2}.
 fs_stack --> fs_tower : Build it the classic way, big ones on th...
 fs_stack --> fs_pattern : Try a fancy striped pattern.
-fs_tower --> fs_gift : Go get Auntie Plum's thank-you.
-fs_pattern --> fs_gift : Go see what Auntie Plum is twinkling abo...
-fs_bundle --> fs_gift : Watch what Auntie Plum snips off the spo...
-fs_gift --> n_hub : Walk back to the lantern square.
-fs_gift --> f_steps : Head for the ceremony steps with Pip.
+fs_tower --> fs_gift : Go get {ROUTE_E_KEEPER}'s thank-you.
+fs_pattern --> fs_gift : Go see what {ROUTE_E_KEEPER} is twinklin...
+fs_bundle --> fs_gift : Watch what {ROUTE_E_KEEPER} snips off th...
+fs_gift --> n_hub : Walk back to {HUB}.
+fs_gift --> f_steps : Head for {GOAL_STEPS} with {COMPANION}.
 mc_entry --> mc_pages : Hold the songbook pages against the bree...
 mc_entry --> mc_bells : Try the little brass bells with the drum...
 mc_bells --> mc_time : Ring the bells softly in time.
 mc_bells --> e_mc_gong : Give the big gong one mighty whack.
 mc_time --> mc_gift : Take a bow with the band.
-mc_pages --> mc_gift : Listen to what the fiddler asks Pip.
-mc_gift --> n_hub : Walk back to the lantern square.
-mc_gift --> f_steps : Head for the ceremony steps with Pip.
-f_steps --> f_paper : Help Pip fold and write her wish.
-f_steps --> f_lantern : Help Pip get her lantern ready to fly.
-f_steps --> f_friends : Gather the stall friends around Pip firs...
-f_paper --> f_whisper : Lean in so Pip can whisper her wish.
+mc_pages --> mc_gift : Listen to what {ROUTE_F_KEEPER} asks {CO...
+mc_gift --> n_hub : Walk back to {HUB}.
+mc_gift --> f_steps : Head for {GOAL_STEPS} with {COMPANION}.
+f_steps --> f_paper : Help {COMPANION} fold and write her wish...
+f_steps --> f_lantern : Help {COMPANION} get {LANTERN} ready to ...
+f_steps --> f_friends : Gather the stall friends around {COMPANI...
+f_paper --> f_whisper : Lean in so {COMPANION} can whisper her w...
 f_whisper --> f_write : Pick up the brush together.
-f_write --> e_wish_pip : Write Pip's wish just as she whispered i...
-f_write --> e_wish_market : Add a second wish for the whole market.
-f_write --> e_wish_brave : Hand Pip the brush to write it herself.
-f_lantern --> f_string : Tie on the golden string first.
-f_string --> f_flame : Get ready to light the lantern.
-f_flame --> e_light_pip : Let Pip light the wick all by herself.
+f_write --> e_wish_pip : Write {COMPANION}'s wish just as she whi...
+f_write --> e_wish_market : Add a second wish for all of {THRESHOLD}...
+f_write --> e_wish_brave : Hand {COMPANION} the brush to write it h...
+f_lantern --> f_string : Tie on {ITEM2} first.
+f_string --> f_flame : Get ready to light {LANTERN}.
+f_flame --> e_light_pip : Let {COMPANION} light the wick all by he...
 f_flame --> e_light_together : Light it together on a count of three.
 f_flame --> e_light_keeper : Ask the oldest keeper to light it the ol...
-f_friends --> f_circle : Bring everyone into a circle around Pip.
-f_circle --> f_countdown : Get ready to send the lantern up.
-f_countdown --> e_up_pip : Let Pip lead the count of three.
+f_friends --> f_circle : Bring everyone into a circle around {COM...
+f_circle --> f_countdown : Get ready to send {LANTERN} up.
+f_countdown --> e_up_pip : Let {COMPANION} lead the count of three.
 f_countdown --> e_up_chorus : Count down all together.
-f_countdown --> e_up_song : Hum the wish song and let it lift.
+f_countdown --> e_up_song : Hum {GOAL}'s song and let it lift.
 e_ds_spill --> [*]
 e_tc_slosh --> [*]
 e_tm_spring --> [*]

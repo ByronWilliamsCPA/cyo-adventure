@@ -1,0 +1,335 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-third-shift",
+  "age_band": "16+",
+  "legacy_lexicon": [
+    "Wren",
+    "Wren Calloway",
+    "Calloway",
+    "Halvers",
+    "Case",
+    "Meridian Annex",
+    "the Annex",
+    "Sub-Level 3",
+    "cold floor",
+    "cold-floor",
+    "cold drawer",
+    "amber",
+    "third shift",
+    "Odette",
+    "Odette Marsh",
+    "Marsh",
+    "Ibsen",
+    "Mr. Ibsen",
+    "Boyd",
+    "camera wall",
+    "record vault",
+    "witness log",
+    "off-system drive",
+    "stairwell B"
+  ],
+  "default_binding": {
+    "HERO": "Wren",
+    "SUPERVISOR": "Halvers",
+    "GHOST_NAME": "Case",
+    "ANNEX": "Meridian Annex",
+    "SEALED_FLOOR": "Sub-Level 3",
+    "COLD_ROOM": "cold floor",
+    "DEADLINE_SIGN": "amber",
+    "SHIFT_NAME": "third shift",
+    "BADGE": "badge",
+    "RECKONING": "count",
+    "ROUTE_A_CHAR": "Odette",
+    "ROUTE_A_PLACE": "camera wall",
+    "ROUTE_B_CHAR": "Ibsen",
+    "ROUTE_B_PLACE": "record vault",
+    "ROUTE_C_CHAR": "Boyd",
+    "ROUTE_C_PLACE": "plant",
+    "SE_STATIC": "static",
+    "SE_A2_LOG": "witness log",
+    "SE_A3_PLACE": "stairwell B",
+    "SE_A3_DRIVE": "off-system drive",
+    "AR_LEDGER": "ledger",
+    "MA_COAT": "coat",
+    "MA_CLIMATE": "climate",
+    "MA_BREAKER": "breaker",
+    "MA_ELEVATOR": "freight elevator"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The new night-shift hire whose choice of post and choices thereafter drive the whole story.",
+      "guidance": "A named new hire on her first overnight shift; observant, a little unsettled, never reckless for its own sake.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["SUPERVISOR", "GHOST_NAME", "ROUTE_A_CHAR", "ROUTE_B_CHAR", "ROUTE_C_CHAR"]
+      }
+    },
+    {
+      "id": "SUPERVISOR",
+      "scope": "global",
+      "meaning": "The night supervisor who sorts new hires into the three posts at the hub node.",
+      "guidance": "A calm, veteran overnight supervisor, twelve years on the job; briefs the induction rules and assigns posts.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO", "GHOST_NAME", "ROUTE_A_CHAR", "ROUTE_B_CHAR", "ROUTE_C_CHAR"]
+      }
+    },
+    {
+      "id": "GHOST_NAME",
+      "scope": "global",
+      "meaning": "The vanished worker every one of the three posts independently rediscovers; the mystery every track's endings resolve around.",
+      "guidance": "A single name for a former night-shift worker who signed in decades ago and was never signed out; referenced, half-seen, or found in records, never a menacing presence.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO", "SUPERVISOR", "ROUTE_A_CHAR", "ROUTE_B_CHAR", "ROUTE_C_CHAR"]
+      }
+    },
+    {
+      "id": "ANNEX",
+      "scope": "global",
+      "meaning": "The whole workplace the entire story is set inside; a records-and-holdings site that only comes alive overnight.",
+      "guidance": "A single named site/building; a place with an unlisted address, locked and dark by day, alive only for the overnight shift.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["SEALED_FLOOR", "COLD_ROOM", "ROUTE_A_PLACE", "ROUTE_B_PLACE", "ROUTE_C_PLACE"]
+      }
+    },
+    {
+      "id": "SEALED_FLOOR",
+      "scope": "global",
+      "meaning": "The specific, numbered floor/level that the building's floor plans deny exists, and that all three tracks converge toward.",
+      "guidance": "A single named sub-level/floor designation; off-limits without authorization; wonder and unease over dread.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ANNEX", "COLD_ROOM", "ROUTE_A_PLACE", "ROUTE_B_PLACE", "ROUTE_C_PLACE"]
+      }
+    },
+    {
+      "id": "COLD_ROOM",
+      "scope": "global",
+      "meaning": "The colloquial nickname for the sealed floor/its features, used adjectivally throughout all three tracks (e.g. as part of a camera, a door, a drawer).",
+      "guidance": "A short adjectival nickname for the sealed floor's chill; used constantly as a compound modifier, never on its own as the formal designation.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ANNEX", "SEALED_FLOOR", "ROUTE_A_PLACE", "ROUTE_B_PLACE", "ROUTE_C_PLACE"]
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The recurring visual warning cue (a corridor's color) that signals the building is actively searching/counting; the story's literal, escalating clock.",
+      "guidance": "A single warning color/signal word; gives fair warning (stand still until it clears), escalates gradually, never an instant hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SHIFT_NAME",
+      "scope": "global",
+      "meaning": "The name of the overnight work shift the whole story takes place during; the story's title concept.",
+      "guidance": "A short, workplace-schedule term naming the overnight rotation.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BADGE",
+      "scope": "global",
+      "meaning": "The identity object whose orientation (face out vs. face in) is the building's rule for who may be spoken to.",
+      "guidance": "A worn identity object with two readable faces; its orientation is a plain, non-violent social signal, never a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RECKONING",
+      "scope": "global",
+      "meaning": "The building's own nightly tally/audit mechanism, checking the living against its records; the story's central uncanny process.",
+      "guidance": "A short noun for a recurring tally/audit ritual; described as arithmetic and bookkeeping, not a hunt or a threat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CHAR",
+      "scope": "route",
+      "meaning": "The lead of the Security post (the camera wall); the hero's guide on that track.",
+      "guidance": "A veteran overnight camera-room watcher; calm, plainspoken, has kept this watch far longer than she says.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["ROUTE_B_CHAR", "ROUTE_C_CHAR", "HERO", "SUPERVISOR", "GHOST_NAME"]
+      }
+    },
+    {
+      "id": "ROUTE_A_PLACE",
+      "scope": "route",
+      "meaning": "The Security post's workspace: the room of monitors the hero watches from.",
+      "guidance": "A room lined with live monitors; the Security track's home base.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_B_PLACE", "ROUTE_C_PLACE", "ANNEX", "SEALED_FLOOR", "COLD_ROOM"]
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "The lead of the Archives post (the record vault); the hero's guide on that track.",
+      "guidance": "A veteran record-keeper; unhurried, precise, carries a private grief about one entry he has never closed.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["ROUTE_A_CHAR", "ROUTE_C_CHAR", "HERO", "SUPERVISOR", "GHOST_NAME"]
+      }
+    },
+    {
+      "id": "ROUTE_B_PLACE",
+      "scope": "route",
+      "meaning": "The Archives post's workspace: the vault of card records the hero files in.",
+      "guidance": "A long vault of record drawers under a single lamp; the Archives track's home base.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_A_PLACE", "ROUTE_C_PLACE", "ANNEX", "SEALED_FLOOR", "COLD_ROOM"]
+      }
+    },
+    {
+      "id": "ROUTE_C_CHAR",
+      "scope": "route",
+      "meaning": "The lead of the Maintenance post (the plant); the hero's guide on that track.",
+      "guidance": "A veteran plant engineer; matter-of-fact, protective of the new hire, quietly familiar with the building's stranger systems.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["ROUTE_A_CHAR", "ROUTE_B_CHAR", "HERO", "SUPERVISOR", "GHOST_NAME"]
+      }
+    },
+    {
+      "id": "ROUTE_C_PLACE",
+      "scope": "route",
+      "meaning": "The Maintenance post's workspace: the engineering spaces the hero tours and works in.",
+      "guidance": "The building's mechanical heart, generators and power bus and climate lines; the Maintenance track's home base.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_A_PLACE", "ROUTE_B_PLACE", "ANNEX", "SEALED_FLOOR", "COLD_ROOM"]
+      }
+    },
+    {
+      "id": "SE_STATIC",
+      "scope": "track",
+      "meaning": "The Security track's blank-feed visual motif: the interference filling the sealed floor's camera.",
+      "guidance": "A camera-interference texture that reads as empty but is not; a visual, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SE_A2_LOG",
+      "scope": "track",
+      "meaning": "The permanent record the hero can choose to sign at the end of the Security track's amber-sweep branch.",
+      "guidance": "A formal witness record; signing it is the track's success-leaning choice.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SE_A3_PLACE",
+      "scope": "track",
+      "meaning": "The specific stairwell landmark where the Security track's third branch (the flickering figure) plays out.",
+      "guidance": "A named stairwell/landing; a waypoint the hero can watch from a distance or go down to in person.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SE_A3_DRIVE",
+      "scope": "track",
+      "meaning": "The unofficial storage device holding the one surviving clip of the vanished worker, central to that branch's final choice.",
+      "guidance": "A private, off-the-books storage device; a benign object, the sole surviving evidence, not a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "AR_LEDGER",
+      "scope": "track",
+      "meaning": "The Archives track's master record system; the abstraction the vault exists to maintain.",
+      "guidance": "A record-keeping system/book that is described as never wrong, only ever incomplete; a benign paper object, not a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MA_COAT",
+      "scope": "track",
+      "meaning": "The vanished worker's folded coat, the key found object in the Maintenance track's climax.",
+      "guidance": "A worn garment left behind; a benign, sorrowful keepsake, not a weapon.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MA_CLIMATE",
+      "scope": "track",
+      "meaning": "The unexplained climate-control system keeping the sealed room comfortable; the Maintenance track's central mechanical mystery.",
+      "guidance": "A building climate-control subsystem; a benign mechanical detail, described in terms of comfort, not danger.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MA_BREAKER",
+      "scope": "track",
+      "meaning": "The electrical breaker the hero and her guide must reset early in the Maintenance track.",
+      "guidance": "A single electrical panel/breaker fixture; a mundane mechanical obstacle.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MA_ELEVATOR",
+      "scope": "track",
+      "meaning": "The building's freight lift, which stops answering after a fixed hour and forces the stairs.",
+      "guidance": "A single named freight conveyance; a mundane mechanical detail establishing the after-hours rule.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    }
+  ]
+}

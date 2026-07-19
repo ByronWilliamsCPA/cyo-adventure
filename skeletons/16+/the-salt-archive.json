@@ -34,34 +34,34 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=210 beats='Maren Coll arrives as new keeper of the Salt Archive above Saltmere on the night the low tide comes in wrong and the oldest vaults begin to drink the sea, and four ways to meet the drowning open before her'>>",
+      "body": "<<FILL role=setup words=210 beats='{HERO} arrives as new keeper of {THRESHOLD} above {TOWN} on {OPENING_MOMENT} and the oldest vaults begin to drink {DEADLINE_SIGN}, and four ways to meet the drowning open before her'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_start_0",
-          "label": "Catalogue the flooding vaults.",
+          "label": "Investigate {ROUTE_A_APPROACH}.",
           "target": "a0_1"
         },
         {
           "id": "c_n_start_1",
-          "label": "Find the last living contributor.",
+          "label": "Seek out {ROUTE_B_APPROACH}.",
           "target": "a1_1"
         },
         {
           "id": "c_n_start_2",
-          "label": "Open the founder sealed ledger.",
+          "label": "Open {ROUTE_C_APPROACH}.",
           "target": "a2_1"
         },
         {
           "id": "c_n_start_3",
-          "label": "Go out and read the sea.",
+          "label": "Face {ROUTE_D_APPROACH}.",
           "target": "a3_1"
         }
       ]
     },
     {
       "id": "a0_1",
-      "body": "<<FILL role=rising words=172 beats='Maren turns toward the catalogue of the flooding lowest vaults; salt damp beads on the stone and her lantern doubles in the standing water; a first wrongness snags her'>>",
+      "body": "<<FILL role=rising words=172 beats='{HERO} turns toward {ROUTE_A_APPROACH}; salt damp beads on the stone and her lantern doubles in {DEADLINE_SIGN}; a first wrongness snags her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -73,7 +73,7 @@
     },
     {
       "id": "a0_2",
-      "body": "<<FILL role=choice words=186 beats='the catalogue of the flooding lowest vaults offers Maren two ways in: press hard and risk being noticed by whatever the water answers to, or wait and let the archive keep its secret a while longer'>>",
+      "body": "<<FILL role=choice words=186 beats='{ROUTE_A_APPROACH} offers {HERO} two ways in: press hard and risk being noticed by whatever {DEADLINE_SIGN} answers to, or wait and let {THRESHOLD} keep its secret a while longer'>>",
       "is_ending": false,
       "choices": [
         {
@@ -90,7 +90,7 @@
     },
     {
       "id": "a0_3a",
-      "body": "<<FILL role=rising words=176 beats='pressed directly, the catalogue of the flooding lowest vaults yields a hard specific fact that will not sit still in Maren’s mind and points deeper under the tideline'>>",
+      "body": "<<FILL role=rising words=176 beats='pressed directly, {ROUTE_A_APPROACH} yields a hard specific fact that will not sit still in {HERO}'s mind and points deeper under the tideline'>>",
       "is_ending": false,
       "choices": [
         {
@@ -102,7 +102,7 @@
     },
     {
       "id": "a0_3b",
-      "body": "<<FILL role=choice words=181 beats='watching the catalogue of the flooding lowest vaults from the edge, Maren can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
+      "body": "<<FILL role=choice words=181 beats='watching {ROUTE_A_APPROACH} from the edge, {HERO} can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -119,7 +119,7 @@
     },
     {
       "id": "a0_4",
-      "body": "<<FILL role=rising words=169 beats='both readings of the catalogue of the flooding lowest vaults settle on the same small impossibility, and Maren feels the flooded floor tilt the whole building toward one question'>>",
+      "body": "<<FILL role=rising words=169 beats='both readings of {ROUTE_A_APPROACH} settle on the same small impossibility, and {HERO} feels the flooded floor tilt the whole building toward one question'>>",
       "is_ending": false,
       "choices": [
         {
@@ -131,7 +131,7 @@
     },
     {
       "id": "a0_desc_s1",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after the catalogue of the flooding lowest vaults, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_A_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -143,7 +143,7 @@
     },
     {
       "id": "a0_desc_s2",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after the catalogue of the flooding lowest vaults, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_A_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -155,7 +155,7 @@
     },
     {
       "id": "a0_desc_s3",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after the catalogue of the flooding lowest vaults, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_A_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -167,7 +167,7 @@
     },
     {
       "id": "a0_5",
-      "body": "<<FILL role=choice words=179 beats='the catalogue of the flooding lowest vaults shows Maren a name half dissolved in brine; she can carry the reading down toward the founder’s old pivot, or stop to record only the loss in front of her'>>",
+      "body": "<<FILL role=choice words=179 beats='{ROUTE_A_APPROACH} shows {HERO} a name half dissolved in brine; she can carry the reading down toward {FOUNDER}'s old pivot, or stop to record only the loss in front of her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -184,7 +184,7 @@
     },
     {
       "id": "a0_6",
-      "body": "<<FILL role=rising words=173 beats='carrying what the catalogue of the flooding lowest vaults has told her, Maren reaches the low landing toward the shared question the whole archive seems built around: why the tide takes what it takes'>>",
+      "body": "<<FILL role=rising words=173 beats='carrying what {ROUTE_A_APPROACH} has told her, {HERO} reaches the low landing toward the shared question {THRESHOLD} seems built around: why {DEADLINE} takes what it takes'>>",
       "is_ending": false,
       "choices": [
         {
@@ -196,29 +196,29 @@
     },
     {
       "id": "a0_e1",
-      "body": "<<FILL role=setback words=156 beats='the pull of the catalogue of the flooding lowest vaults closes over Maren before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, the water already higher'>>",
+      "body": "<<FILL role=setback words=156 beats='the pull of {ROUTE_A_APPROACH} closes over {HERO} before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, {DEADLINE_SIGN} already higher'>>",
       "is_ending": true,
       "ending": {
         "id": "e_001",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lost the Thread at The Flooding Vaults"
+        "title": "Lost the Thread at {ROUTE_A_GATE}"
       }
     },
     {
       "id": "a0_e2",
-      "body": "<<FILL role=revelation words=159 beats='Maren stays to record only the catalogue of the flooding lowest vaults and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how Saltmere forgets'>>",
+      "body": "<<FILL role=revelation words=159 beats='{HERO} stays to record only {ROUTE_A_APPROACH} and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how {TOWN} forgets'>>",
       "is_ending": true,
       "ending": {
         "id": "e_002",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "A Note on The Flooding Vaults"
+        "title": "A Note on {ROUTE_A_GATE}"
       }
     },
     {
       "id": "a1_1",
-      "body": "<<FILL role=rising words=172 beats='Maren turns toward Nan Ostler, the last living contributor; salt damp beads on the stone and her lantern doubles in the standing water; a first wrongness snags her'>>",
+      "body": "<<FILL role=rising words=172 beats='{HERO} turns toward {ROUTE_B_APPROACH}; salt damp beads on the stone and her lantern doubles in {DEADLINE_SIGN}; a first wrongness snags her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -230,7 +230,7 @@
     },
     {
       "id": "a1_2",
-      "body": "<<FILL role=choice words=186 beats='Nan Ostler, the last living contributor offers Maren two ways in: press hard and risk being noticed by whatever the water answers to, or wait and let the archive keep its secret a while longer'>>",
+      "body": "<<FILL role=choice words=186 beats='{ROUTE_B_APPROACH} offers {HERO} two ways in: press hard and risk being noticed by whatever {DEADLINE_SIGN} answers to, or wait and let {THRESHOLD} keep its secret a while longer'>>",
       "is_ending": false,
       "choices": [
         {
@@ -247,7 +247,7 @@
     },
     {
       "id": "a1_3a",
-      "body": "<<FILL role=rising words=176 beats='pressed directly, Nan Ostler, the last living contributor yields a hard specific fact that will not sit still in Maren’s mind and points deeper under the tideline'>>",
+      "body": "<<FILL role=rising words=176 beats='pressed directly, {ROUTE_B_APPROACH} yields a hard specific fact that will not sit still in {HERO}'s mind and points deeper under the tideline'>>",
       "is_ending": false,
       "choices": [
         {
@@ -259,7 +259,7 @@
     },
     {
       "id": "a1_3b",
-      "body": "<<FILL role=choice words=181 beats='watching Nan Ostler, the last living contributor from the edge, Maren can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
+      "body": "<<FILL role=choice words=181 beats='watching {ROUTE_B_APPROACH} from the edge, {HERO} can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -276,7 +276,7 @@
     },
     {
       "id": "a1_4",
-      "body": "<<FILL role=rising words=169 beats='both readings of Nan Ostler, the last living contributor settle on the same small impossibility, and Maren feels the flooded floor tilt the whole building toward one question'>>",
+      "body": "<<FILL role=rising words=169 beats='both readings of {ROUTE_B_APPROACH} settle on the same small impossibility, and {HERO} feels the flooded floor tilt the whole building toward one question'>>",
       "is_ending": false,
       "choices": [
         {
@@ -288,7 +288,7 @@
     },
     {
       "id": "a1_desc_s1",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after Nan Ostler, the last living contributor, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_B_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -300,7 +300,7 @@
     },
     {
       "id": "a1_desc_s2",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after Nan Ostler, the last living contributor, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_B_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -312,7 +312,7 @@
     },
     {
       "id": "a1_desc_s3",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after Nan Ostler, the last living contributor, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_B_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -324,7 +324,7 @@
     },
     {
       "id": "a1_5",
-      "body": "<<FILL role=choice words=179 beats='Nan Ostler, the last living contributor shows Maren a name half dissolved in brine; she can carry the reading down toward the founder’s old pivot, or stop to record only the loss in front of her'>>",
+      "body": "<<FILL role=choice words=179 beats='{ROUTE_B_APPROACH} shows {HERO} a name half dissolved in brine; she can carry the reading down toward {FOUNDER}'s old pivot, or stop to record only the loss in front of her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -341,7 +341,7 @@
     },
     {
       "id": "a1_6",
-      "body": "<<FILL role=rising words=173 beats='carrying what Nan Ostler, the last living contributor has told her, Maren reaches the low landing toward the shared question the whole archive seems built around: why the tide takes what it takes'>>",
+      "body": "<<FILL role=rising words=173 beats='carrying what {ROUTE_B_APPROACH} has told her, {HERO} reaches the low landing toward the shared question {THRESHOLD} seems built around: why {DEADLINE} takes what it takes'>>",
       "is_ending": false,
       "choices": [
         {
@@ -353,29 +353,29 @@
     },
     {
       "id": "a1_e1",
-      "body": "<<FILL role=setback words=156 beats='the pull of Nan Ostler, the last living contributor closes over Maren before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, the water already higher'>>",
+      "body": "<<FILL role=setback words=156 beats='the pull of {ROUTE_B_APPROACH} closes over {HERO} before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, {DEADLINE_SIGN} already higher'>>",
       "is_ending": true,
       "ending": {
         "id": "e_003",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lost the Thread at The Last Contributor"
+        "title": "Lost the Thread at {ROUTE_B_GATE}"
       }
     },
     {
       "id": "a1_e2",
-      "body": "<<FILL role=revelation words=159 beats='Maren stays to record only Nan Ostler, the last living contributor and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how Saltmere forgets'>>",
+      "body": "<<FILL role=revelation words=159 beats='{HERO} stays to record only {ROUTE_B_APPROACH} and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how {TOWN} forgets'>>",
       "is_ending": true,
       "ending": {
         "id": "e_004",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "A Note on The Last Contributor"
+        "title": "A Note on {ROUTE_B_GATE}"
       }
     },
     {
       "id": "a2_1",
-      "body": "<<FILL role=rising words=172 beats='Maren turns toward the founder Elias Verrin’s sealed ledger; salt damp beads on the stone and her lantern doubles in the standing water; a first wrongness snags her'>>",
+      "body": "<<FILL role=rising words=172 beats='{HERO} turns toward {ROUTE_C_APPROACH}; salt damp beads on the stone and her lantern doubles in {DEADLINE_SIGN}; a first wrongness snags her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -387,7 +387,7 @@
     },
     {
       "id": "a2_2",
-      "body": "<<FILL role=choice words=186 beats='the founder Elias Verrin’s sealed ledger offers Maren two ways in: press hard and risk being noticed by whatever the water answers to, or wait and let the archive keep its secret a while longer'>>",
+      "body": "<<FILL role=choice words=186 beats='{ROUTE_C_APPROACH} offers {HERO} two ways in: press hard and risk being noticed by whatever {DEADLINE_SIGN} answers to, or wait and let {THRESHOLD} keep its secret a while longer'>>",
       "is_ending": false,
       "choices": [
         {
@@ -404,7 +404,7 @@
     },
     {
       "id": "a2_3a",
-      "body": "<<FILL role=rising words=176 beats='pressed directly, the founder Elias Verrin’s sealed ledger yields a hard specific fact that will not sit still in Maren’s mind and points deeper under the tideline'>>",
+      "body": "<<FILL role=rising words=176 beats='pressed directly, {ROUTE_C_APPROACH} yields a hard specific fact that will not sit still in {HERO}'s mind and points deeper under the tideline'>>",
       "is_ending": false,
       "choices": [
         {
@@ -416,7 +416,7 @@
     },
     {
       "id": "a2_3b",
-      "body": "<<FILL role=choice words=181 beats='watching the founder Elias Verrin’s sealed ledger from the edge, Maren can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
+      "body": "<<FILL role=choice words=181 beats='watching {ROUTE_C_APPROACH} from the edge, {HERO} can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -433,7 +433,7 @@
     },
     {
       "id": "a2_4",
-      "body": "<<FILL role=rising words=169 beats='both readings of the founder Elias Verrin’s sealed ledger settle on the same small impossibility, and Maren feels the flooded floor tilt the whole building toward one question'>>",
+      "body": "<<FILL role=rising words=169 beats='both readings of {ROUTE_C_APPROACH} settle on the same small impossibility, and {HERO} feels the flooded floor tilt the whole building toward one question'>>",
       "is_ending": false,
       "choices": [
         {
@@ -445,7 +445,7 @@
     },
     {
       "id": "a2_desc_s1",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after the founder Elias Verrin’s sealed ledger, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_C_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -457,7 +457,7 @@
     },
     {
       "id": "a2_desc_s2",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after the founder Elias Verrin’s sealed ledger, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_C_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -469,7 +469,7 @@
     },
     {
       "id": "a2_desc_s3",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after the founder Elias Verrin’s sealed ledger, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_C_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -481,7 +481,7 @@
     },
     {
       "id": "a2_5",
-      "body": "<<FILL role=choice words=179 beats='the founder Elias Verrin’s sealed ledger shows Maren a name half dissolved in brine; she can carry the reading down toward the founder’s old pivot, or stop to record only the loss in front of her'>>",
+      "body": "<<FILL role=choice words=179 beats='{ROUTE_C_APPROACH} shows {HERO} a name half dissolved in brine; she can carry the reading down toward {FOUNDER}'s old pivot, or stop to record only the loss in front of her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -498,7 +498,7 @@
     },
     {
       "id": "a2_6",
-      "body": "<<FILL role=rising words=173 beats='carrying what the founder Elias Verrin’s sealed ledger has told her, Maren reaches the low landing toward the shared question the whole archive seems built around: why the tide takes what it takes'>>",
+      "body": "<<FILL role=rising words=173 beats='carrying what {ROUTE_C_APPROACH} has told her, {HERO} reaches the low landing toward the shared question {THRESHOLD} seems built around: why {DEADLINE} takes what it takes'>>",
       "is_ending": false,
       "choices": [
         {
@@ -510,29 +510,29 @@
     },
     {
       "id": "a2_e1",
-      "body": "<<FILL role=setback words=156 beats='the pull of the founder Elias Verrin’s sealed ledger closes over Maren before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, the water already higher'>>",
+      "body": "<<FILL role=setback words=156 beats='the pull of {ROUTE_C_APPROACH} closes over {HERO} before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, {DEADLINE_SIGN} already higher'>>",
       "is_ending": true,
       "ending": {
         "id": "e_005",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lost the Thread at The Sealed Ledger"
+        "title": "Lost the Thread at {ROUTE_C_GATE}"
       }
     },
     {
       "id": "a2_e2",
-      "body": "<<FILL role=revelation words=159 beats='Maren stays to record only the founder Elias Verrin’s sealed ledger and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how Saltmere forgets'>>",
+      "body": "<<FILL role=revelation words=159 beats='{HERO} stays to record only {ROUTE_C_APPROACH} and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how {TOWN} forgets'>>",
       "is_ending": true,
       "ending": {
         "id": "e_006",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "A Note on The Sealed Ledger"
+        "title": "A Note on {ROUTE_C_GATE}"
       }
     },
     {
       "id": "a3_1",
-      "body": "<<FILL role=rising words=172 beats='Maren turns toward the reclaiming tide against the cliff; salt damp beads on the stone and her lantern doubles in the standing water; a first wrongness snags her'>>",
+      "body": "<<FILL role=rising words=172 beats='{HERO} turns toward {ROUTE_D_APPROACH}; salt damp beads on the stone and her lantern doubles in {DEADLINE_SIGN}; a first wrongness snags her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -544,7 +544,7 @@
     },
     {
       "id": "a3_2",
-      "body": "<<FILL role=choice words=186 beats='the reclaiming tide against the cliff offers Maren two ways in: press hard and risk being noticed by whatever the water answers to, or wait and let the archive keep its secret a while longer'>>",
+      "body": "<<FILL role=choice words=186 beats='{ROUTE_D_APPROACH} offers {HERO} two ways in: press hard and risk being noticed by whatever {DEADLINE_SIGN} answers to, or wait and let {THRESHOLD} keep its secret a while longer'>>",
       "is_ending": false,
       "choices": [
         {
@@ -561,7 +561,7 @@
     },
     {
       "id": "a3_3a",
-      "body": "<<FILL role=rising words=176 beats='pressed directly, the reclaiming tide against the cliff yields a hard specific fact that will not sit still in Maren’s mind and points deeper under the tideline'>>",
+      "body": "<<FILL role=rising words=176 beats='pressed directly, {ROUTE_D_APPROACH} yields a hard specific fact that will not sit still in {HERO}'s mind and points deeper under the tideline'>>",
       "is_ending": false,
       "choices": [
         {
@@ -573,7 +573,7 @@
     },
     {
       "id": "a3_3b",
-      "body": "<<FILL role=choice words=181 beats='watching the reclaiming tide against the cliff from the edge, Maren can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
+      "body": "<<FILL role=choice words=181 beats='watching {ROUTE_D_APPROACH} from the edge, {HERO} can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -590,7 +590,7 @@
     },
     {
       "id": "a3_4",
-      "body": "<<FILL role=rising words=169 beats='both readings of the reclaiming tide against the cliff settle on the same small impossibility, and Maren feels the flooded floor tilt the whole building toward one question'>>",
+      "body": "<<FILL role=rising words=169 beats='both readings of {ROUTE_D_APPROACH} settle on the same small impossibility, and {HERO} feels the flooded floor tilt the whole building toward one question'>>",
       "is_ending": false,
       "choices": [
         {
@@ -602,7 +602,7 @@
     },
     {
       "id": "a3_desc_s1",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after the reclaiming tide against the cliff, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_D_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -614,7 +614,7 @@
     },
     {
       "id": "a3_desc_s2",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after the reclaiming tide against the cliff, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_D_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -626,7 +626,7 @@
     },
     {
       "id": "a3_desc_s3",
-      "body": "<<FILL role=rising words=168 beats='Maren goes down after the reclaiming tide against the cliff, the water climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} goes down after {ROUTE_D_APPROACH}, {DEADLINE_SIGN} climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -638,7 +638,7 @@
     },
     {
       "id": "a3_5",
-      "body": "<<FILL role=choice words=179 beats='the reclaiming tide against the cliff shows Maren a name half dissolved in brine; she can carry the reading down toward the founder’s old pivot, or stop to record only the loss in front of her'>>",
+      "body": "<<FILL role=choice words=179 beats='{ROUTE_D_APPROACH} shows {HERO} a name half dissolved in brine; she can carry the reading down toward {FOUNDER}'s old pivot, or stop to record only the loss in front of her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -655,7 +655,7 @@
     },
     {
       "id": "a3_6",
-      "body": "<<FILL role=rising words=173 beats='carrying what the reclaiming tide against the cliff has told her, Maren reaches the low landing toward the shared question the whole archive seems built around: why the tide takes what it takes'>>",
+      "body": "<<FILL role=rising words=173 beats='carrying what {ROUTE_D_APPROACH} has told her, {HERO} reaches the low landing toward the shared question {THRESHOLD} seems built around: why {DEADLINE} takes what it takes'>>",
       "is_ending": false,
       "choices": [
         {
@@ -667,29 +667,29 @@
     },
     {
       "id": "a3_e1",
-      "body": "<<FILL role=setback words=156 beats='the pull of the reclaiming tide against the cliff closes over Maren before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, the water already higher'>>",
+      "body": "<<FILL role=setback words=156 beats='the pull of {ROUTE_D_APPROACH} closes over {HERO} before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, {DEADLINE_SIGN} already higher'>>",
       "is_ending": true,
       "ending": {
         "id": "e_007",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lost the Thread at The Reclaiming Tide"
+        "title": "Lost the Thread at {ROUTE_D_GATE}"
       }
     },
     {
       "id": "a3_e2",
-      "body": "<<FILL role=revelation words=159 beats='Maren stays to record only the reclaiming tide against the cliff and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how Saltmere forgets'>>",
+      "body": "<<FILL role=revelation words=159 beats='{HERO} stays to record only {ROUTE_D_APPROACH} and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how {TOWN} forgets'>>",
       "is_ending": true,
       "ending": {
         "id": "e_008",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "A Note on The Reclaiming Tide"
+        "title": "A Note on {ROUTE_D_GATE}"
       }
     },
     {
       "id": "p1",
-      "body": "<<FILL role=revelation words=196 beats='every approach converges here: the tide does not rise blindly but climbs toward particular shelves, taking first the records the town most wanted gone, and Maren finally sees the pattern in the ruin'>>",
+      "body": "<<FILL role=revelation words=196 beats='every approach converges here: {DEADLINE} does not rise blindly but climbs toward particular shelves, taking first the records {TOWN} most wanted gone, and {HERO} finally sees the pattern in the ruin'>>",
       "is_ending": false,
       "choices": [
         {
@@ -701,7 +701,7 @@
     },
     {
       "id": "p1_reveal",
-      "body": "<<FILL role=rising words=187 beats='the water reads the archive like an index of shame, and Maren understands the flood is a choosing; she must decide how to test the choosing before it reaches the middle vaults'>>",
+      "body": "<<FILL role=rising words=187 beats='{DEADLINE_SIGN} reads {THRESHOLD} like an index of shame, and {HERO} understands the flood is a choosing; she must decide how to test the choosing before it reaches the middle vaults'>>",
       "is_ending": false,
       "choices": [
         {
@@ -713,34 +713,34 @@
     },
     {
       "id": "p1_gate",
-      "body": "<<FILL role=choice words=182 beats='three threads lead deeper from the choosing tide: the drowned marriage records, the contributor own withheld pages, and the muster rolls the town struck from memory'>>",
+      "body": "<<FILL role=choice words=182 beats='four threads lead deeper from the choosing {DEADLINE}: {ROUTE_MA_THREAD}, {ROUTE_MB_THREAD}, {ROUTE_MC_THREAD}, and {ROUTE_MD_THREAD}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p1_gate_0",
-          "label": "Follow the drowned marriage records.",
+          "label": "Follow {ROUTE_MA_THREAD}.",
           "target": "mA_1"
         },
         {
           "id": "c_p1_gate_1",
-          "label": "Follow the withheld pages.",
+          "label": "Follow {ROUTE_MB_THREAD}.",
           "target": "mB_1"
         },
         {
           "id": "c_p1_gate_2",
-          "label": "Follow the struck muster rolls.",
+          "label": "Follow {ROUTE_MC_THREAD}.",
           "target": "mC_1"
         },
         {
           "id": "c_p1_gate_3",
-          "label": "Follow the erased baptismal register.",
+          "label": "Follow {ROUTE_MD_THREAD}.",
           "target": "mD_1"
         }
       ]
     },
     {
       "id": "mA_1",
-      "body": "<<FILL role=rising words=177 beats='Maren wades to the drowned marriage records, where the vows the town later denied lie swelling in their boxes; the ink lifts off the page and rearranges as she watches'>>",
+      "body": "<<FILL role=rising words=177 beats='{HERO} wades to {ROUTE_MA_THREAD}, where {MA_LOST} lies swelling in its boxes; the ink lifts off the page and rearranges as she watches'>>",
       "is_ending": false,
       "choices": [
         {
@@ -752,7 +752,7 @@
     },
     {
       "id": "mA_pad_s1",
-      "body": "<<FILL role=rising words=170 beats='reading the drowned marriage records line by drowned line, Maren copies the water revisions into her book while the boxes sag and the tide keeps its patient climb'>>",
+      "body": "<<FILL role=rising words=170 beats='reading {ROUTE_MA_THREAD} line by drowned line, {HERO} copies {DEADLINE_SIGN} revisions into her book while the boxes sag and {DEADLINE} keeps its patient climb'>>",
       "is_ending": false,
       "choices": [
         {
@@ -764,7 +764,7 @@
     },
     {
       "id": "mA_pad_s2",
-      "body": "<<FILL role=rising words=170 beats='reading the drowned marriage records line by drowned line, Maren copies the water revisions into her book while the boxes sag and the tide keeps its patient climb'>>",
+      "body": "<<FILL role=rising words=170 beats='reading {ROUTE_MA_THREAD} line by drowned line, {HERO} copies {DEADLINE_SIGN} revisions into her book while the boxes sag and {DEADLINE} keeps its patient climb'>>",
       "is_ending": false,
       "choices": [
         {
@@ -776,7 +776,7 @@
     },
     {
       "id": "mA_2",
-      "body": "<<FILL role=choice words=183 beats='the drowned marriage records can be read as the water leaves it, changed, or dried and forced back to what it first said; each choice costs Maren something of the truth'>>",
+      "body": "<<FILL role=choice words=183 beats='{ROUTE_MA_THREAD} can be read as {DEADLINE_SIGN} leaves it, changed, or dried and forced back to what it first said; each choice costs {HERO} something of the truth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -793,7 +793,7 @@
     },
     {
       "id": "mA_3",
-      "body": "<<FILL role=rising words=175 beats='the revision of the drowned marriage records proves more honest than the original, and the discovery pulls Maren toward the second pivot'>>",
+      "body": "<<FILL role=rising words=175 beats='the revision of {ROUTE_MA_THREAD} proves more honest than the original, and the discovery pulls {HERO} toward the second pivot'>>",
       "is_ending": false,
       "choices": [
         {
@@ -805,7 +805,7 @@
     },
     {
       "id": "mA_4",
-      "body": "<<FILL role=choice words=180 beats='the drowned marriage records names a thing the archive was never meant to shelve; Maren can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
+      "body": "<<FILL role=choice words=180 beats='{ROUTE_MA_THREAD} names a thing {THRESHOLD} was never meant to shelve; {HERO} can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -822,7 +822,7 @@
     },
     {
       "id": "mA_5",
-      "body": "<<FILL role=rising words=172 beats='with the drowned marriage records rewritten in her hands, Maren climbs toward the second question under all the others: what was the Salt Archive actually built to hold'>>",
+      "body": "<<FILL role=rising words=172 beats='with {ROUTE_MA_THREAD} rewritten in her hands, {HERO} climbs toward the second question under all the others: what {THRESHOLD} was actually built to hold'>>",
       "is_ending": false,
       "choices": [
         {
@@ -834,29 +834,29 @@
     },
     {
       "id": "mA_e1",
-      "body": "<<FILL role=setback words=157 beats='Maren dries the drowned marriage records and forces the ink back to its first lie; the page holds, but she has helped Saltmere forget again, and the water only climbs faster'>>",
+      "body": "<<FILL role=setback words=157 beats='{HERO} dries {ROUTE_MA_THREAD} and forces the ink back to its first lie; the page holds, but she has helped {TOWN} forget again, and {DEADLINE_SIGN} only climbs faster'>>",
       "is_ending": true,
       "ending": {
         "id": "e_009",
         "valence": "negative",
         "kind": "setback",
-        "title": "Forced Back: The Vows the Town Forgot"
+        "title": "Forced Back: {MA_LOST}"
       }
     },
     {
       "id": "mA_e2",
-      "body": "<<FILL role=revelation words=160 beats='Maren seals the vault around the drowned marriage records and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
+      "body": "<<FILL role=revelation words=160 beats='{HERO} seals the vault around {ROUTE_MA_THREAD} and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
       "is_ending": true,
       "ending": {
         "id": "e_010",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Sealed Around the Vows the Town Kept"
+        "title": "Sealed Around {MA_KEPT}"
       }
     },
     {
       "id": "mB_1",
-      "body": "<<FILL role=rising words=177 beats='Maren wades to Nan Ostler’s withheld pages, where the pages she never let anyone read lie swelling in their boxes; the ink lifts off the page and rearranges as she watches'>>",
+      "body": "<<FILL role=rising words=177 beats='{HERO} wades to {ROUTE_MB_THREAD}, where {MB_LOST} lies swelling in its boxes; the ink lifts off the page and rearranges as she watches'>>",
       "is_ending": false,
       "choices": [
         {
@@ -868,7 +868,7 @@
     },
     {
       "id": "mB_pad_s1",
-      "body": "<<FILL role=rising words=170 beats='reading Nan Ostler’s withheld pages line by drowned line, Maren copies the water revisions into her book while the boxes sag and the tide keeps its patient climb'>>",
+      "body": "<<FILL role=rising words=170 beats='reading {ROUTE_MB_THREAD} line by drowned line, {HERO} copies {DEADLINE_SIGN} revisions into her book while the boxes sag and {DEADLINE} keeps its patient climb'>>",
       "is_ending": false,
       "choices": [
         {
@@ -880,7 +880,7 @@
     },
     {
       "id": "mB_pad_s2",
-      "body": "<<FILL role=rising words=170 beats='reading Nan Ostler’s withheld pages line by drowned line, Maren copies the water revisions into her book while the boxes sag and the tide keeps its patient climb'>>",
+      "body": "<<FILL role=rising words=170 beats='reading {ROUTE_MB_THREAD} line by drowned line, {HERO} copies {DEADLINE_SIGN} revisions into her book while the boxes sag and {DEADLINE} keeps its patient climb'>>",
       "is_ending": false,
       "choices": [
         {
@@ -892,7 +892,7 @@
     },
     {
       "id": "mB_2",
-      "body": "<<FILL role=choice words=183 beats='Nan Ostler’s withheld pages can be read as the water leaves it, changed, or dried and forced back to what it first said; each choice costs Maren something of the truth'>>",
+      "body": "<<FILL role=choice words=183 beats='{ROUTE_MB_THREAD} can be read as {DEADLINE_SIGN} leaves it, changed, or dried and forced back to what it first said; each choice costs {HERO} something of the truth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -909,7 +909,7 @@
     },
     {
       "id": "mB_3",
-      "body": "<<FILL role=rising words=175 beats='the revision of Nan Ostler’s withheld pages proves more honest than the original, and the discovery pulls Maren toward the second pivot'>>",
+      "body": "<<FILL role=rising words=175 beats='the revision of {ROUTE_MB_THREAD} proves more honest than the original, and the discovery pulls {HERO} toward the second pivot'>>",
       "is_ending": false,
       "choices": [
         {
@@ -921,7 +921,7 @@
     },
     {
       "id": "mB_4",
-      "body": "<<FILL role=choice words=180 beats='Nan Ostler’s withheld pages names a thing the archive was never meant to shelve; Maren can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
+      "body": "<<FILL role=choice words=180 beats='{ROUTE_MB_THREAD} names a thing {THRESHOLD} was never meant to shelve; {HERO} can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -938,7 +938,7 @@
     },
     {
       "id": "mB_5",
-      "body": "<<FILL role=rising words=172 beats='with Nan Ostler’s withheld pages rewritten in her hands, Maren climbs toward the second question under all the others: what was the Salt Archive actually built to hold'>>",
+      "body": "<<FILL role=rising words=172 beats='with {ROUTE_MB_THREAD} rewritten in her hands, {HERO} climbs toward the second question under all the others: what {THRESHOLD} was actually built to hold'>>",
       "is_ending": false,
       "choices": [
         {
@@ -950,29 +950,29 @@
     },
     {
       "id": "mB_e1",
-      "body": "<<FILL role=setback words=157 beats='Maren dries Nan Ostler’s withheld pages and forces the ink back to its first lie; the page holds, but she has helped Saltmere forget again, and the water only climbs faster'>>",
+      "body": "<<FILL role=setback words=157 beats='{HERO} dries {ROUTE_MB_THREAD} and forces the ink back to its first lie; the page holds, but she has helped {TOWN} forget again, and {DEADLINE_SIGN} only climbs faster'>>",
       "is_ending": true,
       "ending": {
         "id": "e_011",
         "valence": "negative",
         "kind": "setback",
-        "title": "Forced Back: The Pages She Never Shared"
+        "title": "Forced Back: {MB_LOST}"
       }
     },
     {
       "id": "mB_e2",
-      "body": "<<FILL role=revelation words=160 beats='Maren seals the vault around Nan Ostler’s withheld pages and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
+      "body": "<<FILL role=revelation words=160 beats='{HERO} seals the vault around {ROUTE_MB_THREAD} and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
       "is_ending": true,
       "ending": {
         "id": "e_012",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Sealed Around the Pages"
+        "title": "Sealed Around {MB_KEPT}"
       }
     },
     {
       "id": "mC_1",
-      "body": "<<FILL role=rising words=177 beats='Maren wades to the struck muster rolls, where the names Saltmere agreed to forget lie swelling in their boxes; the ink lifts off the page and rearranges as she watches'>>",
+      "body": "<<FILL role=rising words=177 beats='{HERO} wades to {ROUTE_MC_THREAD}, where {MC_LOST} lies swelling in its boxes; the ink lifts off the page and rearranges as she watches'>>",
       "is_ending": false,
       "choices": [
         {
@@ -984,7 +984,7 @@
     },
     {
       "id": "mC_pad_s1",
-      "body": "<<FILL role=rising words=170 beats='reading the struck muster rolls line by drowned line, Maren copies the water revisions into her book while the boxes sag and the tide keeps its patient climb'>>",
+      "body": "<<FILL role=rising words=170 beats='reading {ROUTE_MC_THREAD} line by drowned line, {HERO} copies {DEADLINE_SIGN} revisions into her book while the boxes sag and {DEADLINE} keeps its patient climb'>>",
       "is_ending": false,
       "choices": [
         {
@@ -996,7 +996,7 @@
     },
     {
       "id": "mC_pad_s2",
-      "body": "<<FILL role=rising words=170 beats='reading the struck muster rolls line by drowned line, Maren copies the water revisions into her book while the boxes sag and the tide keeps its patient climb'>>",
+      "body": "<<FILL role=rising words=170 beats='reading {ROUTE_MC_THREAD} line by drowned line, {HERO} copies {DEADLINE_SIGN} revisions into her book while the boxes sag and {DEADLINE} keeps its patient climb'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1008,7 +1008,7 @@
     },
     {
       "id": "mC_2",
-      "body": "<<FILL role=choice words=183 beats='the struck muster rolls can be read as the water leaves it, changed, or dried and forced back to what it first said; each choice costs Maren something of the truth'>>",
+      "body": "<<FILL role=choice words=183 beats='{ROUTE_MC_THREAD} can be read as {DEADLINE_SIGN} leaves it, changed, or dried and forced back to what it first said; each choice costs {HERO} something of the truth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1025,7 +1025,7 @@
     },
     {
       "id": "mC_3",
-      "body": "<<FILL role=rising words=175 beats='the revision of the struck muster rolls proves more honest than the original, and the discovery pulls Maren toward the second pivot'>>",
+      "body": "<<FILL role=rising words=175 beats='the revision of {ROUTE_MC_THREAD} proves more honest than the original, and the discovery pulls {HERO} toward the second pivot'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1037,7 +1037,7 @@
     },
     {
       "id": "mC_4",
-      "body": "<<FILL role=choice words=180 beats='the struck muster rolls names a thing the archive was never meant to shelve; Maren can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
+      "body": "<<FILL role=choice words=180 beats='{ROUTE_MC_THREAD} names a thing {THRESHOLD} was never meant to shelve; {HERO} can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1054,7 +1054,7 @@
     },
     {
       "id": "mC_5",
-      "body": "<<FILL role=rising words=172 beats='with the struck muster rolls rewritten in her hands, Maren climbs toward the second question under all the others: what was the Salt Archive actually built to hold'>>",
+      "body": "<<FILL role=rising words=172 beats='with {ROUTE_MC_THREAD} rewritten in her hands, {HERO} climbs toward the second question under all the others: what {THRESHOLD} was actually built to hold'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1066,29 +1066,29 @@
     },
     {
       "id": "mC_e1",
-      "body": "<<FILL role=setback words=157 beats='Maren dries the struck muster rolls and forces the ink back to its first lie; the page holds, but she has helped Saltmere forget again, and the water only climbs faster'>>",
+      "body": "<<FILL role=setback words=157 beats='{HERO} dries {ROUTE_MC_THREAD} and forces the ink back to its first lie; the page holds, but she has helped {TOWN} forget again, and {DEADLINE_SIGN} only climbs faster'>>",
       "is_ending": true,
       "ending": {
         "id": "e_013",
         "valence": "negative",
         "kind": "setback",
-        "title": "Forced Back: The Names Saltmere Erased"
+        "title": "Forced Back: {MC_LOST}"
       }
     },
     {
       "id": "mC_e2",
-      "body": "<<FILL role=revelation words=160 beats='Maren seals the vault around the struck muster rolls and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
+      "body": "<<FILL role=revelation words=160 beats='{HERO} seals the vault around {ROUTE_MC_THREAD} and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
       "is_ending": true,
       "ending": {
         "id": "e_014",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Sealed Around the Names of Saltmere"
+        "title": "Sealed Around {MC_KEPT}"
       }
     },
     {
       "id": "mD_1",
-      "body": "<<FILL role=rising words=177 beats='Maren wades to the erased baptismal register, where the births the town quietly unwrote lie swelling in their boxes; the ink lifts off the page and rearranges as she watches'>>",
+      "body": "<<FILL role=rising words=177 beats='{HERO} wades to {ROUTE_MD_THREAD}, where {MD_LOST} lies swelling in its boxes; the ink lifts off the page and rearranges as she watches'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1100,7 +1100,7 @@
     },
     {
       "id": "mD_pad_s1",
-      "body": "<<FILL role=rising words=170 beats='reading the erased baptismal register line by drowned line, Maren copies the water revisions into her book while the boxes sag and the tide keeps its patient climb'>>",
+      "body": "<<FILL role=rising words=170 beats='reading {ROUTE_MD_THREAD} line by drowned line, {HERO} copies {DEADLINE_SIGN} revisions into her book while the boxes sag and {DEADLINE} keeps its patient climb'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1112,7 +1112,7 @@
     },
     {
       "id": "mD_pad_s2",
-      "body": "<<FILL role=rising words=170 beats='reading the erased baptismal register line by drowned line, Maren copies the water revisions into her book while the boxes sag and the tide keeps its patient climb'>>",
+      "body": "<<FILL role=rising words=170 beats='reading {ROUTE_MD_THREAD} line by drowned line, {HERO} copies {DEADLINE_SIGN} revisions into her book while the boxes sag and {DEADLINE} keeps its patient climb'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1124,7 +1124,7 @@
     },
     {
       "id": "mD_2",
-      "body": "<<FILL role=choice words=183 beats='the erased baptismal register can be read as the water leaves it, changed, or dried and forced back to what it first said; each choice costs Maren something of the truth'>>",
+      "body": "<<FILL role=choice words=183 beats='{ROUTE_MD_THREAD} can be read as {DEADLINE_SIGN} leaves it, changed, or dried and forced back to what it first said; each choice costs {HERO} something of the truth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1141,7 +1141,7 @@
     },
     {
       "id": "mD_3",
-      "body": "<<FILL role=rising words=175 beats='the revision of the erased baptismal register proves more honest than the original, and the discovery pulls Maren toward the second pivot'>>",
+      "body": "<<FILL role=rising words=175 beats='the revision of {ROUTE_MD_THREAD} proves more honest than the original, and the discovery pulls {HERO} toward the second pivot'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1153,7 +1153,7 @@
     },
     {
       "id": "mD_4",
-      "body": "<<FILL role=choice words=180 beats='the erased baptismal register names a thing the archive was never meant to shelve; Maren can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
+      "body": "<<FILL role=choice words=180 beats='{ROUTE_MD_THREAD} names a thing {THRESHOLD} was never meant to shelve; {HERO} can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1170,7 +1170,7 @@
     },
     {
       "id": "mD_5",
-      "body": "<<FILL role=rising words=172 beats='with the erased baptismal register rewritten in her hands, Maren climbs toward the second question under all the others: what was the Salt Archive actually built to hold'>>",
+      "body": "<<FILL role=rising words=172 beats='with {ROUTE_MD_THREAD} rewritten in her hands, {HERO} climbs toward the second question under all the others: what {THRESHOLD} was actually built to hold'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1182,29 +1182,29 @@
     },
     {
       "id": "mD_e1",
-      "body": "<<FILL role=setback words=157 beats='Maren dries the erased baptismal register and forces the ink back to its first lie; the page holds, but she has helped Saltmere forget again, and the water only climbs faster'>>",
+      "body": "<<FILL role=setback words=157 beats='{HERO} dries {ROUTE_MD_THREAD} and forces the ink back to its first lie; the page holds, but she has helped {TOWN} forget again, and {DEADLINE_SIGN} only climbs faster'>>",
       "is_ending": true,
       "ending": {
         "id": "e_015",
         "valence": "negative",
         "kind": "setback",
-        "title": "Forced Back: The Births the Town Denied"
+        "title": "Forced Back: {MD_LOST}"
       }
     },
     {
       "id": "mD_e2",
-      "body": "<<FILL role=revelation words=160 beats='Maren seals the vault around the erased baptismal register and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
+      "body": "<<FILL role=revelation words=160 beats='{HERO} seals the vault around {ROUTE_MD_THREAD} and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
       "is_ending": true,
       "ending": {
         "id": "e_016",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Sealed Around the Register of Births"
+        "title": "Sealed Around {MD_KEPT}"
       }
     },
     {
       "id": "p2",
-      "body": "<<FILL role=revelation words=200 beats='the three threads reconverge and answer together: the Salt Archive was never built to keep the town records but to hold everything Saltmere chose to forget, a covenant with its own unremembering, and the sea has come to call the covenant in'>>",
+      "body": "<<FILL role=revelation words=200 beats='the four threads reconverge and answer together: {THRESHOLD} was never built to keep {TOWN}'s records but to hold everything {TOWN} chose to forget, a covenant with its own unremembering, and {DEADLINE_SIGN} has come to call the covenant in'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1216,7 +1216,7 @@
     },
     {
       "id": "p2_reveal",
-      "body": "<<FILL role=rising words=188 beats='Elias Verrin did not build a library, Maren realises, but a lung for the town shame, breathing what could not be said; the tide is the town’s own held breath let go at last'>>",
+      "body": "<<FILL role=rising words=188 beats='{FOUNDER} did not build a library, {HERO} realises, but a lung for {TOWN}'s shame, breathing what could not be said; {DEADLINE} is {TOWN}'s own held breath let go at last'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1228,29 +1228,29 @@
     },
     {
       "id": "p2_gate",
-      "body": "<<FILL role=choice words=179 beats='two ways remain to test the covenant before it drowns: the founder own confession folded into the ledger, and the living voice of the last woman who fed the archive its secrets'>>",
+      "body": "<<FILL role=choice words=179 beats='three ways remain to test the covenant before it drowns: {ROUTE_NA_CONFIDANT}, {ROUTE_NB_CONFIDANT}, and {ROUTE_NC_CONFIDANT}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p2_gate_0",
-          "label": "Read the founder confession.",
+          "label": "Read {ROUTE_NA_CONFIDANT}.",
           "target": "nA_1"
         },
         {
           "id": "c_p2_gate_1",
-          "label": "Sit with the last contributor.",
+          "label": "Sit with {ROUTE_NB_CONFIDANT}.",
           "target": "nB_1"
         },
         {
           "id": "c_p2_gate_2",
-          "label": "Read what the sea writes back.",
+          "label": "Read {ROUTE_NC_CONFIDANT}.",
           "target": "nC_1"
         }
       ]
     },
     {
       "id": "nA_1",
-      "body": "<<FILL role=rising words=178 beats='Maren comes to the founder folded confession; what Elias Verrin could not undo waits like held weather, and the salt light off the water makes the room feel underwater already'>>",
+      "body": "<<FILL role=rising words=178 beats='{HERO} comes to {ROUTE_NA_CONFIDANT}; {NA_GATE} waits like held weather, and the salt light off {DEADLINE_SIGN} makes the room feel underwater already'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1262,7 +1262,7 @@
     },
     {
       "id": "nA_pad_s1",
-      "body": "<<FILL role=rising words=171 beats='Maren trades honesty for honesty with the founder folded confession, and each thing she admits about herself unlocks another turn of what Elias Verrin could not undo, the water rising past the sill as they speak'>>",
+      "body": "<<FILL role=rising words=171 beats='{HERO} trades honesty for honesty with {ROUTE_NA_CONFIDANT}, and each thing she admits about herself unlocks another turn of {NA_GATE}, {DEADLINE_SIGN} rising past the sill as they speak'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1274,7 +1274,7 @@
     },
     {
       "id": "nA_pad_s2",
-      "body": "<<FILL role=rising words=171 beats='Maren trades honesty for honesty with the founder folded confession, and each thing she admits about herself unlocks another turn of what Elias Verrin could not undo, the water rising past the sill as they speak'>>",
+      "body": "<<FILL role=rising words=171 beats='{HERO} trades honesty for honesty with {ROUTE_NA_CONFIDANT}, and each thing she admits about herself unlocks another turn of {NA_GATE}, {DEADLINE_SIGN} rising past the sill as they speak'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1286,7 +1286,7 @@
     },
     {
       "id": "nA_pad_s3",
-      "body": "<<FILL role=rising words=171 beats='Maren trades honesty for honesty with the founder folded confession, and each thing she admits about herself unlocks another turn of what Elias Verrin could not undo, the water rising past the sill as they speak'>>",
+      "body": "<<FILL role=rising words=171 beats='{HERO} trades honesty for honesty with {ROUTE_NA_CONFIDANT}, and each thing she admits about herself unlocks another turn of {NA_GATE}, {DEADLINE_SIGN} rising past the sill as they speak'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1298,7 +1298,7 @@
     },
     {
       "id": "nA_2",
-      "body": "<<FILL role=choice words=182 beats='the founder folded confession will answer Maren honestly only if she gives something true in return; she can offer her own doubt, or keep her distance and take only what is freely shown'>>",
+      "body": "<<FILL role=choice words=182 beats='{ROUTE_NA_CONFIDANT} will answer {HERO} honestly only if she gives something true in return; she can offer her own doubt, or keep her distance and take only what is freely shown'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1315,7 +1315,7 @@
     },
     {
       "id": "nA_3",
-      "body": "<<FILL role=rising words=176 beats='in exchange, the founder folded confession gives Maren the last turn of the story, and it points at a document with her own name where no name of hers should be'>>",
+      "body": "<<FILL role=rising words=176 beats='in exchange, {ROUTE_NA_CONFIDANT} gives {HERO} the last turn of the story, and it points at a document with her own name where no name of hers should be'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1327,7 +1327,7 @@
     },
     {
       "id": "nA_4",
-      "body": "<<FILL role=choice words=177 beats='the founder folded confession sets the impossible page before Maren; she can carry it to the third pivot and face it, or refuse the page and keep the version of herself she arrived with'>>",
+      "body": "<<FILL role=choice words=177 beats='{ROUTE_NA_CONFIDANT} sets the impossible page before {HERO}; she can carry it to the third pivot and face it, or refuse the page and keep the version of herself she arrived with'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1344,7 +1344,7 @@
     },
     {
       "id": "nA_5",
-      "body": "<<FILL role=rising words=171 beats='with what the founder folded confession has given her, Maren climbs to the last turn, where the archive stops being about Saltmere and becomes about the keeper who came to save it'>>",
+      "body": "<<FILL role=rising words=171 beats='with what {ROUTE_NA_CONFIDANT} has given her, {HERO} climbs to the last turn, where {THRESHOLD} stops being about {TOWN} and becomes about the keeper who came to save it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1356,29 +1356,29 @@
     },
     {
       "id": "nA_e1",
-      "body": "<<FILL role=setback words=158 beats='Maren keeps her distance from the founder folded confession and takes only what is safe to take; she leaves with facts and without the truth, dry and unchanged and a little ashamed'>>",
+      "body": "<<FILL role=setback words=158 beats='{HERO} keeps her distance from {ROUTE_NA_CONFIDANT} and takes only what is safe to take; she leaves with facts and without the truth, dry and unchanged and a little ashamed'>>",
       "is_ending": true,
       "ending": {
         "id": "e_017",
         "valence": "negative",
         "kind": "setback",
-        "title": "Kept Distance: What Elias Verrin Left Unsaid"
+        "title": "Kept Distance: {NA_GATE}"
       }
     },
     {
       "id": "nA_e2",
-      "body": "<<FILL role=revelation words=161 beats='Maren refuses the page the founder folded confession offers and stays the woman she was; she preserves her own settled story and never learns what the archive wrote in her name'>>",
+      "body": "<<FILL role=revelation words=161 beats='{HERO} refuses the page {ROUTE_NA_CONFIDANT} offers and stays the woman she was; she preserves her own settled story and never learns what {THRESHOLD} wrote in her name'>>",
       "is_ending": true,
       "ending": {
         "id": "e_018",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Refused the Page Elias Verrin Left"
+        "title": "Refused the Page: {NA_GATE}"
       }
     },
     {
       "id": "nB_1",
-      "body": "<<FILL role=rising words=178 beats='Maren comes to Nan Ostler at her window; the last voice that fed the archive waits like held weather, and the salt light off the water makes the room feel underwater already'>>",
+      "body": "<<FILL role=rising words=178 beats='{HERO} comes to {ROUTE_NB_CONFIDANT}; {NB_GATE} waits like held weather, and the salt light off {DEADLINE_SIGN} makes the room feel underwater already'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1390,7 +1390,7 @@
     },
     {
       "id": "nB_pad_s1",
-      "body": "<<FILL role=rising words=171 beats='Maren trades honesty for honesty with Nan Ostler at her window, and each thing she admits about herself unlocks another turn of the last voice that fed the archive, the water rising past the sill as they speak'>>",
+      "body": "<<FILL role=rising words=171 beats='{HERO} trades honesty for honesty with {ROUTE_NB_CONFIDANT}, and each thing she admits about herself unlocks another turn of {NB_GATE}, {DEADLINE_SIGN} rising past the sill as they speak'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1402,7 +1402,7 @@
     },
     {
       "id": "nB_pad_s2",
-      "body": "<<FILL role=rising words=171 beats='Maren trades honesty for honesty with Nan Ostler at her window, and each thing she admits about herself unlocks another turn of the last voice that fed the archive, the water rising past the sill as they speak'>>",
+      "body": "<<FILL role=rising words=171 beats='{HERO} trades honesty for honesty with {ROUTE_NB_CONFIDANT}, and each thing she admits about herself unlocks another turn of {NB_GATE}, {DEADLINE_SIGN} rising past the sill as they speak'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1414,7 +1414,7 @@
     },
     {
       "id": "nB_pad_s3",
-      "body": "<<FILL role=rising words=171 beats='Maren trades honesty for honesty with Nan Ostler at her window, and each thing she admits about herself unlocks another turn of the last voice that fed the archive, the water rising past the sill as they speak'>>",
+      "body": "<<FILL role=rising words=171 beats='{HERO} trades honesty for honesty with {ROUTE_NB_CONFIDANT}, and each thing she admits about herself unlocks another turn of {NB_GATE}, {DEADLINE_SIGN} rising past the sill as they speak'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1426,7 +1426,7 @@
     },
     {
       "id": "nB_2",
-      "body": "<<FILL role=choice words=182 beats='Nan Ostler at her window will answer Maren honestly only if she gives something true in return; she can offer her own doubt, or keep her distance and take only what is freely shown'>>",
+      "body": "<<FILL role=choice words=182 beats='{ROUTE_NB_CONFIDANT} will answer {HERO} honestly only if she gives something true in return; she can offer her own doubt, or keep her distance and take only what is freely shown'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1443,7 +1443,7 @@
     },
     {
       "id": "nB_3",
-      "body": "<<FILL role=rising words=176 beats='in exchange, Nan Ostler at her window gives Maren the last turn of the story, and it points at a document with her own name where no name of hers should be'>>",
+      "body": "<<FILL role=rising words=176 beats='in exchange, {ROUTE_NB_CONFIDANT} gives {HERO} the last turn of the story, and it points at a document with her own name where no name of hers should be'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1455,7 +1455,7 @@
     },
     {
       "id": "nB_4",
-      "body": "<<FILL role=choice words=177 beats='Nan Ostler at her window sets the impossible page before Maren; she can carry it to the third pivot and face it, or refuse the page and keep the version of herself she arrived with'>>",
+      "body": "<<FILL role=choice words=177 beats='{ROUTE_NB_CONFIDANT} sets the impossible page before {HERO}; she can carry it to the third pivot and face it, or refuse the page and keep the version of herself she arrived with'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1472,7 +1472,7 @@
     },
     {
       "id": "nB_5",
-      "body": "<<FILL role=rising words=171 beats='with what Nan Ostler at her window has given her, Maren climbs to the last turn, where the archive stops being about Saltmere and becomes about the keeper who came to save it'>>",
+      "body": "<<FILL role=rising words=171 beats='with what {ROUTE_NB_CONFIDANT} has given her, {HERO} climbs to the last turn, where {THRESHOLD} stops being about {TOWN} and becomes about the keeper who came to save it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1484,29 +1484,29 @@
     },
     {
       "id": "nB_e1",
-      "body": "<<FILL role=setback words=158 beats='Maren keeps her distance from Nan Ostler at her window and takes only what is safe to take; she leaves with facts and without the truth, dry and unchanged and a little ashamed'>>",
+      "body": "<<FILL role=setback words=158 beats='{HERO} keeps her distance from {ROUTE_NB_CONFIDANT} and takes only what is safe to take; she leaves with facts and without the truth, dry and unchanged and a little ashamed'>>",
       "is_ending": true,
       "ending": {
         "id": "e_019",
         "valence": "negative",
         "kind": "setback",
-        "title": "Kept Distance: The Last Voice in the Archive"
+        "title": "Kept Distance: {NB_GATE}"
       }
     },
     {
       "id": "nB_e2",
-      "body": "<<FILL role=revelation words=161 beats='Maren refuses the page Nan Ostler at her window offers and stays the woman she was; she preserves her own settled story and never learns what the archive wrote in her name'>>",
+      "body": "<<FILL role=revelation words=161 beats='{HERO} refuses the page {ROUTE_NB_CONFIDANT} offers and stays the woman she was; she preserves her own settled story and never learns what {THRESHOLD} wrote in her name'>>",
       "is_ending": true,
       "ending": {
         "id": "e_020",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Refused the Page: The Last Voice"
+        "title": "Refused the Page: {NB_GATE}"
       }
     },
     {
       "id": "nC_1",
-      "body": "<<FILL role=rising words=178 beats='Maren comes to the sea’s own record against the glass; what the tide has been writing back waits like held weather, and the salt light off the water makes the room feel underwater already'>>",
+      "body": "<<FILL role=rising words=178 beats='{HERO} comes to {ROUTE_NC_CONFIDANT}; {NC_GATE} waits like held weather, and the salt light off {DEADLINE_SIGN} makes the room feel underwater already'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1518,7 +1518,7 @@
     },
     {
       "id": "nC_pad_s1",
-      "body": "<<FILL role=rising words=171 beats='Maren trades honesty for honesty with the sea’s own record against the glass, and each thing she admits about herself unlocks another turn of what the tide has been writing back, the water rising past the sill as they speak'>>",
+      "body": "<<FILL role=rising words=171 beats='{HERO} trades honesty for honesty with {ROUTE_NC_CONFIDANT}, and each thing she admits about herself unlocks another turn of {NC_GATE}, {DEADLINE_SIGN} rising past the sill as they speak'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1530,7 +1530,7 @@
     },
     {
       "id": "nC_pad_s2",
-      "body": "<<FILL role=rising words=171 beats='Maren trades honesty for honesty with the sea’s own record against the glass, and each thing she admits about herself unlocks another turn of what the tide has been writing back, the water rising past the sill as they speak'>>",
+      "body": "<<FILL role=rising words=171 beats='{HERO} trades honesty for honesty with {ROUTE_NC_CONFIDANT}, and each thing she admits about herself unlocks another turn of {NC_GATE}, {DEADLINE_SIGN} rising past the sill as they speak'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1542,7 +1542,7 @@
     },
     {
       "id": "nC_pad_s3",
-      "body": "<<FILL role=rising words=171 beats='Maren trades honesty for honesty with the sea’s own record against the glass, and each thing she admits about herself unlocks another turn of what the tide has been writing back, the water rising past the sill as they speak'>>",
+      "body": "<<FILL role=rising words=171 beats='{HERO} trades honesty for honesty with {ROUTE_NC_CONFIDANT}, and each thing she admits about herself unlocks another turn of {NC_GATE}, {DEADLINE_SIGN} rising past the sill as they speak'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1554,7 +1554,7 @@
     },
     {
       "id": "nC_2",
-      "body": "<<FILL role=choice words=182 beats='the sea’s own record against the glass will answer Maren honestly only if she gives something true in return; she can offer her own doubt, or keep her distance and take only what is freely shown'>>",
+      "body": "<<FILL role=choice words=182 beats='{ROUTE_NC_CONFIDANT} will answer {HERO} honestly only if she gives something true in return; she can offer her own doubt, or keep her distance and take only what is freely shown'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1571,7 +1571,7 @@
     },
     {
       "id": "nC_3",
-      "body": "<<FILL role=rising words=176 beats='in exchange, the sea’s own record against the glass gives Maren the last turn of the story, and it points at a document with her own name where no name of hers should be'>>",
+      "body": "<<FILL role=rising words=176 beats='in exchange, {ROUTE_NC_CONFIDANT} gives {HERO} the last turn of the story, and it points at a document with her own name where no name of hers should be'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1583,7 +1583,7 @@
     },
     {
       "id": "nC_4",
-      "body": "<<FILL role=choice words=177 beats='the sea’s own record against the glass sets the impossible page before Maren; she can carry it to the third pivot and face it, or refuse the page and keep the version of herself she arrived with'>>",
+      "body": "<<FILL role=choice words=177 beats='{ROUTE_NC_CONFIDANT} sets the impossible page before {HERO}; she can carry it to the third pivot and face it, or refuse the page and keep the version of herself she arrived with'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1600,7 +1600,7 @@
     },
     {
       "id": "nC_5",
-      "body": "<<FILL role=rising words=171 beats='with what the sea’s own record against the glass has given her, Maren climbs to the last turn, where the archive stops being about Saltmere and becomes about the keeper who came to save it'>>",
+      "body": "<<FILL role=rising words=171 beats='with what {ROUTE_NC_CONFIDANT} has given her, {HERO} climbs to the last turn, where {THRESHOLD} stops being about {TOWN} and becomes about the keeper who came to save it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1612,29 +1612,29 @@
     },
     {
       "id": "nC_e1",
-      "body": "<<FILL role=setback words=158 beats='Maren keeps her distance from the sea’s own record against the glass and takes only what is safe to take; she leaves with facts and without the truth, dry and unchanged and a little ashamed'>>",
+      "body": "<<FILL role=setback words=158 beats='{HERO} keeps her distance from {ROUTE_NC_CONFIDANT} and takes only what is safe to take; she leaves with facts and without the truth, dry and unchanged and a little ashamed'>>",
       "is_ending": true,
       "ending": {
         "id": "e_021",
         "valence": "negative",
         "kind": "setback",
-        "title": "Kept Distance: What the Tide Had Written"
+        "title": "Kept Distance: {NC_GATE}"
       }
     },
     {
       "id": "nC_e2",
-      "body": "<<FILL role=revelation words=161 beats='Maren refuses the page the sea’s own record against the glass offers and stays the woman she was; she preserves her own settled story and never learns what the archive wrote in her name'>>",
+      "body": "<<FILL role=revelation words=161 beats='{HERO} refuses the page {ROUTE_NC_CONFIDANT} offers and stays the woman she was; she preserves her own settled story and never learns what {THRESHOLD} wrote in her name'>>",
       "is_ending": true,
       "ending": {
         "id": "e_022",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Refused the Page: What the Tide Wrote"
+        "title": "Refused the Page: {NC_GATE}"
       }
     },
     {
       "id": "p3",
-      "body": "<<FILL role=revelation words=202 beats='both final threads meet on one impossible sheet: Maren Coll’s own name, in her own hand, signing an entry dated before she was ever hired, as though the archive had been waiting for a keeper it already knew'>>",
+      "body": "<<FILL role=revelation words=202 beats='all three threads meet on one impossible sheet: {HERO}'s own name, in her own hand, signing an entry dated before she was ever hired, as though {THRESHOLD} had been waiting for a keeper it already knew'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1646,7 +1646,7 @@
     },
     {
       "id": "p3_reveal",
-      "body": "<<FILL role=rising words=189 beats='the entry records a promise: that the last keeper would decide what Saltmere is allowed to remember, and Maren sees the flood has only ever been asking her to choose'>>",
+      "body": "<<FILL role=rising words=189 beats='the entry records a promise: that the last keeper would decide what {TOWN} is allowed to remember, and {HERO} sees the flood has only ever been asking her to choose'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1658,7 +1658,7 @@
     },
     {
       "id": "p3_name",
-      "body": "<<FILL role=rising words=185 beats='she reads her own signed words to their end while the water laps the top step, and the whole town memory now waits on what she does before dawn'>>",
+      "body": "<<FILL role=rising words=185 beats='she reads her own signed words to their end while {DEADLINE_SIGN} laps the top step, and the whole of {TOWN}'s memory now waits on what she does before dawn'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1670,34 +1670,34 @@
     },
     {
       "id": "p3_gate",
-      "body": "<<FILL role=choice words=192 beats='four ways to answer the drowning archive lie open, and each keeps a different thing: the town made whole, one saved treasure, peace with what cannot be kept, or the honest small salvage of a losing night'>>",
+      "body": "<<FILL role=choice words=192 beats='four ways to answer {THRESHOLD}'s drowning lie open, and each keeps a different thing: {TOWN} made whole, one saved treasure, peace with what cannot be kept, or the honest small salvage of a losing night'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p3_gate_0",
-          "label": "Reconcile the town with what it forgot.",
+          "label": "Begin {ROUTE_R1_RESOLVE}.",
           "target": "r1_1"
         },
         {
           "id": "c_p3_gate_1",
-          "label": "Save the one irreplaceable thing.",
+          "label": "Begin {ROUTE_R2_RESOLVE}.",
           "target": "r2_1"
         },
         {
           "id": "c_p3_gate_2",
-          "label": "Make peace with impermanence.",
+          "label": "Begin {ROUTE_R3_RESOLVE}.",
           "target": "r3_1"
         },
         {
           "id": "c_p3_gate_3",
-          "label": "Salvage what you can and let the rest go.",
+          "label": "Begin {ROUTE_R4_RESOLVE}.",
           "target": "r4_1"
         }
       ]
     },
     {
       "id": "r1_dsc_s1",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to reconciling Saltmere with what it chose to forget and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R1_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1709,7 +1709,7 @@
     },
     {
       "id": "r1_dsc_s2",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to reconciling Saltmere with what it chose to forget and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R1_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1721,7 +1721,7 @@
     },
     {
       "id": "r1_dsc_s3",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to reconciling Saltmere with what it chose to forget and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R1_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1733,7 +1733,7 @@
     },
     {
       "id": "r1_dsc_s4",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to reconciling Saltmere with what it chose to forget and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R1_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1745,7 +1745,7 @@
     },
     {
       "id": "r1_1",
-      "body": "<<FILL role=rising words=181 beats='Maren sets herself to reconciling Saltmere with what it chose to forget; the choice settles in her chest like ballast, and the flooded archive seems to lean in to watch how she will keep it'>>",
+      "body": "<<FILL role=rising words=181 beats='{HERO} sets herself to {ROUTE_R1_RESOLVE}; the choice settles in her chest like ballast, and {THRESHOLD} seems flooded and leaning in to watch how she will keep it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1757,7 +1757,7 @@
     },
     {
       "id": "r1_2",
-      "body": "<<FILL role=choice words=184 beats='reconciling Saltmere with what it chose to forget can be done gently, saving the fragile first, or decisively, taking the whole weight at once while the water still climbs'>>",
+      "body": "<<FILL role=choice words=184 beats='{ROUTE_R1_RESOLVE} can be done gently, saving the fragile first, or decisively, taking the whole weight at once while {DEADLINE_SIGN} still climbs'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1774,12 +1774,12 @@
     },
     {
       "id": "r1_3a",
-      "body": "<<FILL role=choice words=178 beats='working gently at reconciling Saltmere with what it chose to forget, Maren reaches a fork: trust Nan Ostler to carry half the burden, or bear it alone and spare the old woman the cost'>>",
+      "body": "<<FILL role=choice words=178 beats='working gently at {ROUTE_R1_RESOLVE}, {HERO} reaches a fork: trust {CONTRIBUTOR} to carry half the burden, or bear it alone and spare her the cost'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r1_3a_0",
-          "label": "Trust Nan with half.",
+          "label": "Trust {CONTRIBUTOR} with half.",
           "target": "r1_4"
         },
         {
@@ -1791,24 +1791,24 @@
     },
     {
       "id": "r1_3b",
-      "body": "<<FILL role=choice words=179 beats='taking the whole weight of reconciling Saltmere with what it chose to forget, Maren must choose fast: follow the founder method to the letter, or break from Elias Verrin and do it her own way'>>",
+      "body": "<<FILL role=choice words=179 beats='taking the whole weight of {ROUTE_R1_RESOLVE}, {HERO} must choose fast: follow {FOUNDER}'s method to the letter, or break from {FOUNDER} and do it her own way'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r1_3b_0",
-          "label": "Follow the founder method.",
+          "label": "Follow {FOUNDER}'s method.",
           "target": "r1_4"
         },
         {
           "id": "c_r1_3b_1",
-          "label": "Break from the founder.",
+          "label": "Break from {FOUNDER}.",
           "target": "r1_eb"
         }
       ]
     },
     {
       "id": "r1_aft_s1",
-      "body": "<<FILL role=rising words=173 beats='the two ways of reconciling Saltmere with what it chose to forget rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R1_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1820,7 +1820,7 @@
     },
     {
       "id": "r1_aft_s2",
-      "body": "<<FILL role=rising words=173 beats='the two ways of reconciling Saltmere with what it chose to forget rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R1_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1832,7 +1832,7 @@
     },
     {
       "id": "r1_aft_s3",
-      "body": "<<FILL role=rising words=173 beats='the two ways of reconciling Saltmere with what it chose to forget rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R1_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1844,7 +1844,7 @@
     },
     {
       "id": "r1_4",
-      "body": "<<FILL role=rising words=176 beats='whichever hand she used, reconciling Saltmere with what it chose to forget now comes down to what Maren is willing to give up, and the outcome narrows to a single stair'>>",
+      "body": "<<FILL role=rising words=176 beats='whichever hand she used, {ROUTE_R1_RESOLVE} now comes down to what {HERO} is willing to give up, and the outcome narrows to a single stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1856,12 +1856,12 @@
     },
     {
       "id": "r1_5",
-      "body": "<<FILL role=choice words=182 beats='at the last landing of reconciling Saltmere with what it chose to forget, Maren weighs the town claim against her own; she can put Saltmere first, or put the single irreplaceable thing first'>>",
+      "body": "<<FILL role=choice words=182 beats='at the last landing of {ROUTE_R1_RESOLVE}, {HERO} weighs {TOWN}'s claim against her own; she can put {TOWN} first, or put the single irreplaceable thing first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r1_5_0",
-          "label": "Put the town first.",
+          "label": "Put {TOWN} first.",
           "target": "r1_6"
         },
         {
@@ -1873,7 +1873,7 @@
     },
     {
       "id": "r1_6",
-      "body": "<<FILL role=choice words=177 beats='choosing the town in reconciling Saltmere with what it chose to forget, the water offers a final bargain: speak the forgotten thing aloud to the whole of Saltmere, or keep it and simply hold the line here'>>",
+      "body": "<<FILL role=choice words=177 beats='choosing {TOWN} in {ROUTE_R1_RESOLVE}, {DEADLINE_SIGN} offers a final bargain: speak the forgotten thing aloud to the whole of {TOWN}, or keep it and simply hold the line here'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1890,7 +1890,7 @@
     },
     {
       "id": "r1_7",
-      "body": "<<FILL role=choice words=181 beats='choosing the single thing in reconciling Saltmere with what it chose to forget, Maren must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
+      "body": "<<FILL role=choice words=181 beats='choosing the single thing in {ROUTE_R1_RESOLVE}, {HERO} must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1907,7 +1907,7 @@
     },
     {
       "id": "r1_8",
-      "body": "<<FILL role=choice words=178 beats='sealing the one thing of reconciling Saltmere with what it chose to forget above the tide, Maren has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
+      "body": "<<FILL role=choice words=178 beats='sealing the one thing of {ROUTE_R1_RESOLVE} above {DEADLINE}, {HERO} has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1924,7 +1924,7 @@
     },
     {
       "id": "r1_9",
-      "body": "<<FILL role=choice words=176 beats='at the very last of reconciling Saltmere with what it chose to forget, Maren holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps the archive next'>>",
+      "body": "<<FILL role=choice words=176 beats='at the very last of {ROUTE_R1_RESOLVE}, {HERO} holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps {THRESHOLD} next'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1941,95 +1941,95 @@
     },
     {
       "id": "r1_ea",
-      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Saltmere with what it chose to forget, bore it alone and the town held; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R1_RESOLVE}, {R1_OUTCOME_A}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_023",
         "valence": "positive",
         "kind": "success",
-        "title": "Bore It Alone and the Town Held"
+        "title": "{R1_OUTCOME_A}"
       }
     },
     {
       "id": "r1_eb",
-      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Saltmere with what it chose to forget, broke from the founder and made it new; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R1_RESOLVE}, {R1_OUTCOME_B}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_024",
         "valence": "positive",
         "kind": "completion",
-        "title": "Broke From the Founder and Made It New"
+        "title": "{R1_OUTCOME_B}"
       }
     },
     {
       "id": "r1_ec",
-      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Saltmere with what it chose to forget, the town remembers and is not broken; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R1_RESOLVE}, {R1_OUTCOME_C}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_025",
         "valence": "positive",
         "kind": "success",
-        "title": "The Town Remembers and Is Not Broken"
+        "title": "{R1_OUTCOME_C}"
       }
     },
     {
       "id": "r1_ed",
-      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Saltmere with what it chose to forget, held the line and kept the vault; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R1_RESOLVE}, {R1_OUTCOME_D}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_026",
         "valence": "positive",
         "kind": "completion",
-        "title": "Held the Line and Kept the Vault"
+        "title": "{R1_OUTCOME_D}"
       }
     },
     {
       "id": "r1_ee",
-      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Saltmere with what it chose to forget, carried the truth into the storm; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R1_RESOLVE}, {R1_OUTCOME_E}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_027",
         "valence": "positive",
         "kind": "success",
-        "title": "Carried the Truth Into the Storm"
+        "title": "{R1_OUTCOME_E}"
       }
     },
     {
       "id": "r1_ef",
-      "body": "<<FILL role=revelation words=163 beats='at the end of reconciling Saltmere with what it chose to forget, sealed the truth for a kinder year; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R1_RESOLVE}, {R1_OUTCOME_F}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_028",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Sealed the Truth for a Kinder Year"
+        "title": "{R1_OUTCOME_F}"
       }
     },
     {
       "id": "r1_eg",
-      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Saltmere with what it chose to forget, signed it true and the water fell; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R1_RESOLVE}, {R1_OUTCOME_G}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_029",
         "valence": "positive",
         "kind": "completion",
-        "title": "Signed It True and the Water Fell"
+        "title": "{R1_OUTCOME_G}"
       }
     },
     {
       "id": "r1_eh",
-      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Saltmere with what it chose to forget, left it unclaimed and the town chose; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R1_RESOLVE}, {R1_OUTCOME_H}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_030",
         "valence": "positive",
         "kind": "success",
-        "title": "Left It Unclaimed and the Town Chose"
+        "title": "{R1_OUTCOME_H}"
       }
     },
     {
       "id": "r2_dsc_s1",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to saving the one irreplaceable record of Saltmere and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R2_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2041,7 +2041,7 @@
     },
     {
       "id": "r2_dsc_s2",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to saving the one irreplaceable record of Saltmere and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R2_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2053,7 +2053,7 @@
     },
     {
       "id": "r2_dsc_s3",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to saving the one irreplaceable record of Saltmere and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R2_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2065,7 +2065,7 @@
     },
     {
       "id": "r2_dsc_s4",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to saving the one irreplaceable record of Saltmere and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R2_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2077,7 +2077,7 @@
     },
     {
       "id": "r2_1",
-      "body": "<<FILL role=rising words=181 beats='Maren sets herself to saving the one irreplaceable record of Saltmere; the choice settles in her chest like ballast, and the flooded archive seems to lean in to watch how she will keep it'>>",
+      "body": "<<FILL role=rising words=181 beats='{HERO} sets herself to {ROUTE_R2_RESOLVE}; the choice settles in her chest like ballast, and {THRESHOLD} seems flooded and leaning in to watch how she will keep it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2089,7 +2089,7 @@
     },
     {
       "id": "r2_2",
-      "body": "<<FILL role=choice words=184 beats='saving the one irreplaceable record of Saltmere can be done gently, saving the fragile first, or decisively, taking the whole weight at once while the water still climbs'>>",
+      "body": "<<FILL role=choice words=184 beats='{ROUTE_R2_RESOLVE} can be done gently, saving the fragile first, or decisively, taking the whole weight at once while {DEADLINE_SIGN} still climbs'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2106,12 +2106,12 @@
     },
     {
       "id": "r2_3a",
-      "body": "<<FILL role=choice words=178 beats='working gently at saving the one irreplaceable record of Saltmere, Maren reaches a fork: trust Nan Ostler to carry half the burden, or bear it alone and spare the old woman the cost'>>",
+      "body": "<<FILL role=choice words=178 beats='working gently at {ROUTE_R2_RESOLVE}, {HERO} reaches a fork: trust {CONTRIBUTOR} to carry half the burden, or bear it alone and spare her the cost'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r2_3a_0",
-          "label": "Trust Nan with half.",
+          "label": "Trust {CONTRIBUTOR} with half.",
           "target": "r2_4"
         },
         {
@@ -2123,24 +2123,24 @@
     },
     {
       "id": "r2_3b",
-      "body": "<<FILL role=choice words=179 beats='taking the whole weight of saving the one irreplaceable record of Saltmere, Maren must choose fast: follow the founder method to the letter, or break from Elias Verrin and do it her own way'>>",
+      "body": "<<FILL role=choice words=179 beats='taking the whole weight of {ROUTE_R2_RESOLVE}, {HERO} must choose fast: follow {FOUNDER}'s method to the letter, or break from {FOUNDER} and do it her own way'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r2_3b_0",
-          "label": "Follow the founder method.",
+          "label": "Follow {FOUNDER}'s method.",
           "target": "r2_4"
         },
         {
           "id": "c_r2_3b_1",
-          "label": "Break from the founder.",
+          "label": "Break from {FOUNDER}.",
           "target": "r2_eb"
         }
       ]
     },
     {
       "id": "r2_aft_s1",
-      "body": "<<FILL role=rising words=173 beats='the two ways of saving the one irreplaceable record of Saltmere rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R2_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2152,7 +2152,7 @@
     },
     {
       "id": "r2_aft_s2",
-      "body": "<<FILL role=rising words=173 beats='the two ways of saving the one irreplaceable record of Saltmere rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R2_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2164,7 +2164,7 @@
     },
     {
       "id": "r2_aft_s3",
-      "body": "<<FILL role=rising words=173 beats='the two ways of saving the one irreplaceable record of Saltmere rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R2_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2176,7 +2176,7 @@
     },
     {
       "id": "r2_4",
-      "body": "<<FILL role=rising words=176 beats='whichever hand she used, saving the one irreplaceable record of Saltmere now comes down to what Maren is willing to give up, and the outcome narrows to a single stair'>>",
+      "body": "<<FILL role=rising words=176 beats='whichever hand she used, {ROUTE_R2_RESOLVE} now comes down to what {HERO} is willing to give up, and the outcome narrows to a single stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2188,12 +2188,12 @@
     },
     {
       "id": "r2_5",
-      "body": "<<FILL role=choice words=182 beats='at the last landing of saving the one irreplaceable record of Saltmere, Maren weighs the town claim against her own; she can put Saltmere first, or put the single irreplaceable thing first'>>",
+      "body": "<<FILL role=choice words=182 beats='at the last landing of {ROUTE_R2_RESOLVE}, {HERO} weighs {TOWN}'s claim against her own; she can put {TOWN} first, or put the single irreplaceable thing first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r2_5_0",
-          "label": "Put the town first.",
+          "label": "Put {TOWN} first.",
           "target": "r2_6"
         },
         {
@@ -2205,7 +2205,7 @@
     },
     {
       "id": "r2_6",
-      "body": "<<FILL role=choice words=177 beats='choosing the town in saving the one irreplaceable record of Saltmere, the water offers a final bargain: speak the forgotten thing aloud to the whole of Saltmere, or keep it and simply hold the line here'>>",
+      "body": "<<FILL role=choice words=177 beats='choosing {TOWN} in {ROUTE_R2_RESOLVE}, {DEADLINE_SIGN} offers a final bargain: speak the forgotten thing aloud to the whole of {TOWN}, or keep it and simply hold the line here'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2222,7 +2222,7 @@
     },
     {
       "id": "r2_7",
-      "body": "<<FILL role=choice words=181 beats='choosing the single thing in saving the one irreplaceable record of Saltmere, Maren must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
+      "body": "<<FILL role=choice words=181 beats='choosing the single thing in {ROUTE_R2_RESOLVE}, {HERO} must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2239,7 +2239,7 @@
     },
     {
       "id": "r2_8",
-      "body": "<<FILL role=choice words=178 beats='sealing the one thing of saving the one irreplaceable record of Saltmere above the tide, Maren has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
+      "body": "<<FILL role=choice words=178 beats='sealing the one thing of {ROUTE_R2_RESOLVE} above {DEADLINE}, {HERO} has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2256,7 +2256,7 @@
     },
     {
       "id": "r2_9",
-      "body": "<<FILL role=choice words=176 beats='at the very last of saving the one irreplaceable record of Saltmere, Maren holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps the archive next'>>",
+      "body": "<<FILL role=choice words=176 beats='at the very last of {ROUTE_R2_RESOLVE}, {HERO} holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps {THRESHOLD} next'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2273,95 +2273,95 @@
     },
     {
       "id": "r2_ea",
-      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable record of Saltmere, saved the ledger alone; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R2_RESOLVE}, {R2_OUTCOME_A}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_031",
         "valence": "positive",
         "kind": "completion",
-        "title": "Saved the Ledger Alone"
+        "title": "{R2_OUTCOME_A}"
       }
     },
     {
       "id": "r2_eb",
-      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable record of Saltmere, broke the seal and carried it out; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R2_RESOLVE}, {R2_OUTCOME_B}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_032",
         "valence": "positive",
         "kind": "success",
-        "title": "Broke the Seal and Carried It Out"
+        "title": "{R2_OUTCOME_B}"
       }
     },
     {
       "id": "r2_ec",
-      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable record of Saltmere, spoke it and saved the page; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R2_RESOLVE}, {R2_OUTCOME_C}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_033",
         "valence": "positive",
         "kind": "completion",
-        "title": "Spoke It and Saved the Page"
+        "title": "{R2_OUTCOME_C}"
       }
     },
     {
       "id": "r2_ed",
-      "body": "<<FILL role=revelation words=163 beats='at the end of saving the one irreplaceable record of Saltmere, held the line and kept the one book; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R2_RESOLVE}, {R2_OUTCOME_D}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_034",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Held the Line and Kept the One Book"
+        "title": "{R2_OUTCOME_D}"
       }
     },
     {
       "id": "r2_ee",
-      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable record of Saltmere, ran the ledger through the storm; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R2_RESOLVE}, {R2_OUTCOME_E}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_035",
         "valence": "positive",
         "kind": "completion",
-        "title": "Ran the Ledger Through the Storm"
+        "title": "{R2_OUTCOME_E}"
       }
     },
     {
       "id": "r2_ef",
-      "body": "<<FILL role=setback words=163 beats='at the end of saving the one irreplaceable record of Saltmere, sealed it and lost the rest to salt; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=setback words=163 beats='at the end of {ROUTE_R2_RESOLVE}, {R2_OUTCOME_F}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_036",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sealed It and Lost the Rest to Salt"
+        "title": "{R2_OUTCOME_F}"
       }
     },
     {
       "id": "r2_eg",
-      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable record of Saltmere, signed and saved the founder hand; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R2_RESOLVE}, {R2_OUTCOME_G}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_037",
         "valence": "positive",
         "kind": "completion",
-        "title": "Signed and Saved the Founder Hand"
+        "title": "{R2_OUTCOME_G}"
       }
     },
     {
       "id": "r2_eh",
-      "body": "<<FILL role=revelation words=163 beats='at the end of saving the one irreplaceable record of Saltmere, left it unsigned but safe and dry; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R2_RESOLVE}, {R2_OUTCOME_H}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_038",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Left It Unsigned but Safe and Dry"
+        "title": "{R2_OUTCOME_H}"
       }
     },
     {
       "id": "r3_dsc_s1",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to making peace with what the sea will take and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R3_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2373,7 +2373,7 @@
     },
     {
       "id": "r3_dsc_s2",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to making peace with what the sea will take and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R3_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2385,7 +2385,7 @@
     },
     {
       "id": "r3_dsc_s3",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to making peace with what the sea will take and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R3_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2397,7 +2397,7 @@
     },
     {
       "id": "r3_dsc_s4",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to making peace with what the sea will take and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R3_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2409,7 +2409,7 @@
     },
     {
       "id": "r3_1",
-      "body": "<<FILL role=rising words=181 beats='Maren sets herself to making peace with what the sea will take; the choice settles in her chest like ballast, and the flooded archive seems to lean in to watch how she will keep it'>>",
+      "body": "<<FILL role=rising words=181 beats='{HERO} sets herself to {ROUTE_R3_RESOLVE}; the choice settles in her chest like ballast, and {THRESHOLD} seems flooded and leaning in to watch how she will keep it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2421,7 +2421,7 @@
     },
     {
       "id": "r3_2",
-      "body": "<<FILL role=choice words=184 beats='making peace with what the sea will take can be done gently, saving the fragile first, or decisively, taking the whole weight at once while the water still climbs'>>",
+      "body": "<<FILL role=choice words=184 beats='{ROUTE_R3_RESOLVE} can be done gently, saving the fragile first, or decisively, taking the whole weight at once while {DEADLINE_SIGN} still climbs'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2438,12 +2438,12 @@
     },
     {
       "id": "r3_3a",
-      "body": "<<FILL role=choice words=178 beats='working gently at making peace with what the sea will take, Maren reaches a fork: trust Nan Ostler to carry half the burden, or bear it alone and spare the old woman the cost'>>",
+      "body": "<<FILL role=choice words=178 beats='working gently at {ROUTE_R3_RESOLVE}, {HERO} reaches a fork: trust {CONTRIBUTOR} to carry half the burden, or bear it alone and spare her the cost'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r3_3a_0",
-          "label": "Trust Nan with half.",
+          "label": "Trust {CONTRIBUTOR} with half.",
           "target": "r3_4"
         },
         {
@@ -2455,24 +2455,24 @@
     },
     {
       "id": "r3_3b",
-      "body": "<<FILL role=choice words=179 beats='taking the whole weight of making peace with what the sea will take, Maren must choose fast: follow the founder method to the letter, or break from Elias Verrin and do it her own way'>>",
+      "body": "<<FILL role=choice words=179 beats='taking the whole weight of {ROUTE_R3_RESOLVE}, {HERO} must choose fast: follow {FOUNDER}'s method to the letter, or break from {FOUNDER} and do it her own way'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r3_3b_0",
-          "label": "Follow the founder method.",
+          "label": "Follow {FOUNDER}'s method.",
           "target": "r3_4"
         },
         {
           "id": "c_r3_3b_1",
-          "label": "Break from the founder.",
+          "label": "Break from {FOUNDER}.",
           "target": "r3_eb"
         }
       ]
     },
     {
       "id": "r3_aft_s1",
-      "body": "<<FILL role=rising words=173 beats='the two ways of making peace with what the sea will take rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R3_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2484,7 +2484,7 @@
     },
     {
       "id": "r3_aft_s2",
-      "body": "<<FILL role=rising words=173 beats='the two ways of making peace with what the sea will take rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R3_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2496,7 +2496,7 @@
     },
     {
       "id": "r3_aft_s3",
-      "body": "<<FILL role=rising words=173 beats='the two ways of making peace with what the sea will take rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R3_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2508,7 +2508,7 @@
     },
     {
       "id": "r3_4",
-      "body": "<<FILL role=rising words=176 beats='whichever hand she used, making peace with what the sea will take now comes down to what Maren is willing to give up, and the outcome narrows to a single stair'>>",
+      "body": "<<FILL role=rising words=176 beats='whichever hand she used, {ROUTE_R3_RESOLVE} now comes down to what {HERO} is willing to give up, and the outcome narrows to a single stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2520,12 +2520,12 @@
     },
     {
       "id": "r3_5",
-      "body": "<<FILL role=choice words=182 beats='at the last landing of making peace with what the sea will take, Maren weighs the town claim against her own; she can put Saltmere first, or put the single irreplaceable thing first'>>",
+      "body": "<<FILL role=choice words=182 beats='at the last landing of {ROUTE_R3_RESOLVE}, {HERO} weighs {TOWN}'s claim against her own; she can put {TOWN} first, or put the single irreplaceable thing first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r3_5_0",
-          "label": "Put the town first.",
+          "label": "Put {TOWN} first.",
           "target": "r3_6"
         },
         {
@@ -2537,7 +2537,7 @@
     },
     {
       "id": "r3_6",
-      "body": "<<FILL role=choice words=177 beats='choosing the town in making peace with what the sea will take, the water offers a final bargain: speak the forgotten thing aloud to the whole of Saltmere, or keep it and simply hold the line here'>>",
+      "body": "<<FILL role=choice words=177 beats='choosing {TOWN} in {ROUTE_R3_RESOLVE}, {DEADLINE_SIGN} offers a final bargain: speak the forgotten thing aloud to the whole of {TOWN}, or keep it and simply hold the line here'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2554,7 +2554,7 @@
     },
     {
       "id": "r3_7",
-      "body": "<<FILL role=choice words=181 beats='choosing the single thing in making peace with what the sea will take, Maren must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
+      "body": "<<FILL role=choice words=181 beats='choosing the single thing in {ROUTE_R3_RESOLVE}, {HERO} must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2571,7 +2571,7 @@
     },
     {
       "id": "r3_8",
-      "body": "<<FILL role=choice words=178 beats='sealing the one thing of making peace with what the sea will take above the tide, Maren has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
+      "body": "<<FILL role=choice words=178 beats='sealing the one thing of {ROUTE_R3_RESOLVE} above {DEADLINE}, {HERO} has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2588,7 +2588,7 @@
     },
     {
       "id": "r3_9",
-      "body": "<<FILL role=choice words=176 beats='at the very last of making peace with what the sea will take, Maren holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps the archive next'>>",
+      "body": "<<FILL role=choice words=176 beats='at the very last of {ROUTE_R3_RESOLVE}, {HERO} holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps {THRESHOLD} next'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2605,95 +2605,95 @@
     },
     {
       "id": "r3_ea",
-      "body": "<<FILL role=resolution words=163 beats='at the end of making peace with what the sea will take, let the low vaults go in peace; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R3_RESOLVE}, {R3_OUTCOME_A}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_039",
         "valence": "positive",
         "kind": "completion",
-        "title": "Let the Low Vaults Go in Peace"
+        "title": "{R3_OUTCOME_A}"
       }
     },
     {
       "id": "r3_eb",
-      "body": "<<FILL role=revelation words=163 beats='at the end of making peace with what the sea will take, broke from the founder’s fear of loss; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R3_RESOLVE}, {R3_OUTCOME_B}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_040",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Broke From the Founder’s Fear of Loss"
+        "title": "{R3_OUTCOME_B}"
       }
     },
     {
       "id": "r3_ec",
-      "body": "<<FILL role=revelation words=163 beats='at the end of making peace with what the sea will take, told the town and let it grieve; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R3_RESOLVE}, {R3_OUTCOME_C}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_041",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Told the Town and Let It Grieve"
+        "title": "{R3_OUTCOME_C}"
       }
     },
     {
       "id": "r3_ed",
-      "body": "<<FILL role=resolution words=163 beats='at the end of making peace with what the sea will take, held vigil while the water rose; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R3_RESOLVE}, {R3_OUTCOME_D}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_042",
         "valence": "positive",
         "kind": "completion",
-        "title": "Held Vigil While the Water Rose"
+        "title": "{R3_OUTCOME_D}"
       }
     },
     {
       "id": "r3_ee",
-      "body": "<<FILL role=revelation words=163 beats='at the end of making peace with what the sea will take, walked it out into the weather; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R3_RESOLVE}, {R3_OUTCOME_E}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_043",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Walked It Out Into the Weather"
+        "title": "{R3_OUTCOME_E}"
       }
     },
     {
       "id": "r3_ef",
-      "body": "<<FILL role=setback words=163 beats='at the end of making peace with what the sea will take, sealed it and felt the old dread; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=setback words=163 beats='at the end of {ROUTE_R3_RESOLVE}, {R3_OUTCOME_F}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_044",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sealed It and Felt the Old Dread"
+        "title": "{R3_OUTCOME_F}"
       }
     },
     {
       "id": "r3_eg",
-      "body": "<<FILL role=resolution words=163 beats='at the end of making peace with what the sea will take, named the loss and made it bearable; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=resolution words=163 beats='at the end of {ROUTE_R3_RESOLVE}, {R3_OUTCOME_G}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_045",
         "valence": "positive",
         "kind": "completion",
-        "title": "Named the Loss and Made It Bearable"
+        "title": "{R3_OUTCOME_G}"
       }
     },
     {
       "id": "r3_eh",
-      "body": "<<FILL role=revelation words=163 beats='at the end of making peace with what the sea will take, left no name on the empty shelf; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R3_RESOLVE}, {R3_OUTCOME_H}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_046",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Left No Name on the Empty Shelf"
+        "title": "{R3_OUTCOME_H}"
       }
     },
     {
       "id": "r4_dsc_s1",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to salvaging a single page from a losing night and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R4_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2705,7 +2705,7 @@
     },
     {
       "id": "r4_dsc_s2",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to salvaging a single page from a losing night and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R4_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2717,7 +2717,7 @@
     },
     {
       "id": "r4_dsc_s3",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to salvaging a single page from a losing night and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R4_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2729,7 +2729,7 @@
     },
     {
       "id": "r4_dsc_s4",
-      "body": "<<FILL role=rising words=174 beats='Maren commits to salvaging a single page from a losing night and starts down into the flooding stair, the water black and rising, her lantern the only warm thing left in the drowned archive'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} commits to {ROUTE_R4_RESOLVE} and starts down into the flooding stair, {DEADLINE_SIGN} black and rising, her lantern the only warm thing left in the drowned dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2741,7 +2741,7 @@
     },
     {
       "id": "r4_1",
-      "body": "<<FILL role=rising words=181 beats='Maren sets herself to salvaging a single page from a losing night; the choice settles in her chest like ballast, and the flooded archive seems to lean in to watch how she will keep it'>>",
+      "body": "<<FILL role=rising words=181 beats='{HERO} sets herself to {ROUTE_R4_RESOLVE}; the choice settles in her chest like ballast, and {THRESHOLD} seems flooded and leaning in to watch how she will keep it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2753,7 +2753,7 @@
     },
     {
       "id": "r4_2",
-      "body": "<<FILL role=choice words=184 beats='salvaging a single page from a losing night can be done gently, saving the fragile first, or decisively, taking the whole weight at once while the water still climbs'>>",
+      "body": "<<FILL role=choice words=184 beats='{ROUTE_R4_RESOLVE} can be done gently, saving the fragile first, or decisively, taking the whole weight at once while {DEADLINE_SIGN} still climbs'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2770,12 +2770,12 @@
     },
     {
       "id": "r4_3a",
-      "body": "<<FILL role=choice words=178 beats='working gently at salvaging a single page from a losing night, Maren reaches a fork: trust Nan Ostler to carry half the burden, or bear it alone and spare the old woman the cost'>>",
+      "body": "<<FILL role=choice words=178 beats='working gently at {ROUTE_R4_RESOLVE}, {HERO} reaches a fork: trust {CONTRIBUTOR} to carry half the burden, or bear it alone and spare her the cost'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r4_3a_0",
-          "label": "Trust Nan with half.",
+          "label": "Trust {CONTRIBUTOR} with half.",
           "target": "r4_4"
         },
         {
@@ -2787,24 +2787,24 @@
     },
     {
       "id": "r4_3b",
-      "body": "<<FILL role=choice words=179 beats='taking the whole weight of salvaging a single page from a losing night, Maren must choose fast: follow the founder method to the letter, or break from Elias Verrin and do it her own way'>>",
+      "body": "<<FILL role=choice words=179 beats='taking the whole weight of {ROUTE_R4_RESOLVE}, {HERO} must choose fast: follow {FOUNDER}'s method to the letter, or break from {FOUNDER} and do it her own way'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r4_3b_0",
-          "label": "Follow the founder method.",
+          "label": "Follow {FOUNDER}'s method.",
           "target": "r4_4"
         },
         {
           "id": "c_r4_3b_1",
-          "label": "Break from the founder.",
+          "label": "Break from {FOUNDER}.",
           "target": "r4_eb"
         }
       ]
     },
     {
       "id": "r4_aft_s1",
-      "body": "<<FILL role=rising words=173 beats='the two ways of salvaging a single page from a losing night rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R4_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2816,7 +2816,7 @@
     },
     {
       "id": "r4_aft_s2",
-      "body": "<<FILL role=rising words=173 beats='the two ways of salvaging a single page from a losing night rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R4_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2828,7 +2828,7 @@
     },
     {
       "id": "r4_aft_s3",
-      "body": "<<FILL role=rising words=173 beats='the two ways of salvaging a single page from a losing night rejoin on the narrow stair, water at her knees, one lantern left, and Maren works upward through the cold toward the last of the choosing'>>",
+      "body": "<<FILL role=rising words=173 beats='the two ways of {ROUTE_R4_RESOLVE} rejoin on the narrow stair, {DEADLINE_SIGN} at her knees, one lantern left, and {HERO} works upward through the cold toward the last of the choosing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2840,7 +2840,7 @@
     },
     {
       "id": "r4_4",
-      "body": "<<FILL role=rising words=176 beats='whichever hand she used, salvaging a single page from a losing night now comes down to what Maren is willing to give up, and the outcome narrows to a single stair'>>",
+      "body": "<<FILL role=rising words=176 beats='whichever hand she used, {ROUTE_R4_RESOLVE} now comes down to what {HERO} is willing to give up, and the outcome narrows to a single stair'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2852,12 +2852,12 @@
     },
     {
       "id": "r4_5",
-      "body": "<<FILL role=choice words=182 beats='at the last landing of salvaging a single page from a losing night, Maren weighs the town claim against her own; she can put Saltmere first, or put the single irreplaceable thing first'>>",
+      "body": "<<FILL role=choice words=182 beats='at the last landing of {ROUTE_R4_RESOLVE}, {HERO} weighs {TOWN}'s claim against her own; she can put {TOWN} first, or put the single irreplaceable thing first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r4_5_0",
-          "label": "Put the town first.",
+          "label": "Put {TOWN} first.",
           "target": "r4_6"
         },
         {
@@ -2869,7 +2869,7 @@
     },
     {
       "id": "r4_6",
-      "body": "<<FILL role=choice words=177 beats='choosing the town in salvaging a single page from a losing night, the water offers a final bargain: speak the forgotten thing aloud to the whole of Saltmere, or keep it and simply hold the line here'>>",
+      "body": "<<FILL role=choice words=177 beats='choosing {TOWN} in {ROUTE_R4_RESOLVE}, {DEADLINE_SIGN} offers a final bargain: speak the forgotten thing aloud to the whole of {TOWN}, or keep it and simply hold the line here'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2886,7 +2886,7 @@
     },
     {
       "id": "r4_7",
-      "body": "<<FILL role=choice words=181 beats='choosing the single thing in salvaging a single page from a losing night, Maren must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
+      "body": "<<FILL role=choice words=181 beats='choosing the single thing in {ROUTE_R4_RESOLVE}, {HERO} must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2903,7 +2903,7 @@
     },
     {
       "id": "r4_8",
-      "body": "<<FILL role=choice words=178 beats='sealing the one thing of salvaging a single page from a losing night above the tide, Maren has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
+      "body": "<<FILL role=choice words=178 beats='sealing the one thing of {ROUTE_R4_RESOLVE} above {DEADLINE}, {HERO} has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2920,7 +2920,7 @@
     },
     {
       "id": "r4_9",
-      "body": "<<FILL role=choice words=176 beats='at the very last of salvaging a single page from a losing night, Maren holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps the archive next'>>",
+      "body": "<<FILL role=choice words=176 beats='at the very last of {ROUTE_R4_RESOLVE}, {HERO} holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps {THRESHOLD} next'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2937,90 +2937,90 @@
     },
     {
       "id": "r4_ea",
-      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single page from a losing night, alone in the dark, one page saved; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=setback words=163 beats='at the end of {ROUTE_R4_RESOLVE}, {R4_OUTCOME_A}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_047",
         "valence": "negative",
         "kind": "setback",
-        "title": "Alone in the Dark, One Page Saved"
+        "title": "{R4_OUTCOME_A}"
       }
     },
     {
       "id": "r4_eb",
-      "body": "<<FILL role=revelation words=163 beats='at the end of salvaging a single page from a losing night, went off the founder’s map and kept a scrap; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R4_RESOLVE}, {R4_OUTCOME_B}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_048",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Went Off the Founder’s Map and Kept a Scrap"
+        "title": "{R4_OUTCOME_B}"
       }
     },
     {
       "id": "r4_ec",
-      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single page from a losing night, spoke to no one and saved the corner; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=setback words=163 beats='at the end of {ROUTE_R4_RESOLVE}, {R4_OUTCOME_C}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_049",
         "valence": "negative",
         "kind": "setback",
-        "title": "Spoke to No One and Saved the Corner"
+        "title": "{R4_OUTCOME_C}"
       }
     },
     {
       "id": "r4_ed",
-      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single page from a losing night, held the line till the line gave; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=setback words=163 beats='at the end of {ROUTE_R4_RESOLVE}, {R4_OUTCOME_D}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_050",
         "valence": "negative",
         "kind": "setback",
-        "title": "Held the Line Till the Line Gave"
+        "title": "{R4_OUTCOME_D}"
       }
     },
     {
       "id": "r4_ee",
-      "body": "<<FILL role=revelation words=163 beats='at the end of salvaging a single page from a losing night, carried one page into the rain; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R4_RESOLVE}, {R4_OUTCOME_E}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_051",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Carried One Page Into the Rain"
+        "title": "{R4_OUTCOME_E}"
       }
     },
     {
       "id": "r4_ef",
-      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single page from a losing night, sealed a vault that was already full; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=setback words=163 beats='at the end of {ROUTE_R4_RESOLVE}, {R4_OUTCOME_F}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_052",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sealed a Vault That Was Already Full"
+        "title": "{R4_OUTCOME_F}"
       }
     },
     {
       "id": "r4_eg",
-      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single page from a losing night, signed for a page and the rest was sea; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=setback words=163 beats='at the end of {ROUTE_R4_RESOLVE}, {R4_OUTCOME_G}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_053",
         "valence": "negative",
         "kind": "setback",
-        "title": "Signed for a Page and the Rest Was Sea"
+        "title": "{R4_OUTCOME_G}"
       }
     },
     {
       "id": "r4_eh",
-      "body": "<<FILL role=revelation words=163 beats='at the end of salvaging a single page from a losing night, unsigned, unsettled, but safe by dawn; the sea holds its level a moment as if listening, and Maren lets the night close on the choice she has made'>>",
+      "body": "<<FILL role=revelation words=163 beats='at the end of {ROUTE_R4_RESOLVE}, {R4_OUTCOME_H}; {DEADLINE_SIGN} holds its level a moment as if listening, and {HERO} lets the night close on the choice she has made'>>",
       "is_ending": true,
       "ending": {
         "id": "e_054",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Unsigned, Unsettled, but Safe by Dawn"
+        "title": "{R4_OUTCOME_H}"
       }
     }
   ]

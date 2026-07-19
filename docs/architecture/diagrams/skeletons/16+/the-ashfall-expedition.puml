@@ -15,10 +15,10 @@ state n_b00_0_1 #FFF9C4
 n_b00_0_1 : choice · 60w
 state n_e00_0a #FFCDD2
 n_e00_0a : setback (negative)
-n_e00_0a : "Turned Back by the Ashstorm"
+n_e00_0a : "Turned Back by the {SETBACK1}"
 state n_e00_0b #FFCDD2
 n_e00_0b : setback (negative)
-n_e00_0b : "Cut Off by the Lava Flow"
+n_e00_0b : "Cut Off by the {SETBACK2}"
 state n_b00_1_0 #D1C4E9
 n_b00_1_0 : rising · 95w
 state n_b00_1_1 #D1C4E9
@@ -34,7 +34,7 @@ state n_b00_2_2 #D1C4E9
 n_b00_2_2 : rising · 82w
 state n_e00_2 #FFCDD2
 n_e00_2 : setback (negative)
-n_e00_2 : "Forced Retreat to Base Camp"
+n_e00_2 : "Forced Retreat to {ENTRANCE}"
 state n_start #BBDEFB
 n_start : setup · 82w
 state n_b01_0_0 #D1C4E9
@@ -43,7 +43,7 @@ state n_b01_0_1 #D1C4E9
 n_b01_0_1 : rising · 88w
 state n_e01_0 #FFCDD2
 n_e01_0 : setback (negative)
-n_e01_0 : "Lost in the Cinder Haze"
+n_e01_0 : "Lost in the {SETBACK5}"
 state n_b01_1_0 #D1C4E9
 n_b01_1_0 : rising · 60w
 state n_b01_1_1 #D1C4E9
@@ -59,7 +59,7 @@ state n_b01_2_2 #D1C4E9
 n_b01_2_2 : rising · 100w
 state n_e01_2 #FFCDD2
 n_e01_2 : setback (negative)
-n_e01_2 : "Swallowed by the Marsh"
+n_e01_2 : "Swallowed by the {SETBACK4}"
 state n_h01 #FFF9C4
 n_h01 : choice · 74w
 state n_d02 #D1C4E9
@@ -70,14 +70,14 @@ state n_b02_0_1 #D1C4E9
 n_b02_0_1 : rising · 70w
 state n_e02_0 #FFCDD2
 n_e02_0 : setback (negative)
-n_e02_0 : "Sealed in the Collapsed Tube"
+n_e02_0 : "Sealed in the {SETBACK6}"
 state n_b02_1_0 #D1C4E9
 n_b02_1_0 : rising · 88w
 state n_b02_1_1 #D1C4E9
 n_b02_1_1 : rising · 60w
 state n_e02_1 #FFCDD2
 n_e02_1 : setback (negative)
-n_e02_1 : "Driven Down off the Ridge"
+n_e02_1 : "Driven Down off the {SETBACK3}"
 state n_b02_2_0 #D1C4E9
 n_b02_2_0 : rising · 95w
 state n_b02_2_1 #D1C4E9
@@ -86,7 +86,7 @@ state n_b02_2_2 #D1C4E9
 n_b02_2_2 : rising · 64w
 state n_e02_2 #FFCDD2
 n_e02_2 : setback (negative)
-n_e02_2 : "The Water Casks Fail"
+n_e02_2 : "The {SETBACK7} Fail"
 state n_h02 #FFF9C4
 n_h02 : choice · 90w
 state n_b03_0_0 #D1C4E9
@@ -95,17 +95,17 @@ state n_b03_0_1 #FFF9C4
 n_b03_0_1 : choice · 82w
 state n_e03_0a #FFCDD2
 n_e03_0a : setback (negative)
-n_e03_0a : "Beaten Back by the Heat"
+n_e03_0a : "Beaten Back by the {SETBACK8}"
 state n_e03_0b #FFCDD2
 n_e03_0b : setback (negative)
-n_e03_0b : "Scattered by the Tremor"
+n_e03_0b : "Scattered by the {SETBACK9}"
 state n_b03_1_0 #D1C4E9
 n_b03_1_0 : rising · 70w
 state n_b03_1_1 #D1C4E9
 n_b03_1_1 : rising · 88w
 state n_e03_1 #FFCDD2
 n_e03_1 : setback (negative)
-n_e03_1 : "Turned Back by the Ashstorm"
+n_e03_1 : "Turned Back by the {SETBACK1}"
 state n_b03_2_0 #D1C4E9
 n_b03_2_0 : rising · 60w
 state n_b03_2_1 #D1C4E9
@@ -114,7 +114,7 @@ state n_b03_2_2 #D1C4E9
 n_b03_2_2 : rising · 76w
 state n_e03_2 #FFCDD2
 n_e03_2 : setback (negative)
-n_e03_2 : "Cut Off by the Lava Flow"
+n_e03_2 : "Cut Off by the {SETBACK2}"
 state n_h03 #FFF9C4
 n_h03 : choice · 68w
 state n_d04 #D1C4E9
@@ -132,7 +132,7 @@ state n_b04_1_1 #D1C4E9
 n_b04_1_1 : rising · 70w
 state n_e04_1 #FFCDD2
 n_e04_1 : setback (negative)
-n_e04_1 : "Forced Retreat to Base Camp"
+n_e04_1 : "Forced Retreat to {ENTRANCE}"
 state n_b04_2_0 #D1C4E9
 n_b04_2_0 : rising · 88w
 state n_b04_2_1 #D1C4E9
@@ -141,7 +141,7 @@ state n_b04_2_2 #D1C4E9
 n_b04_2_2 : rising · 95w
 state n_e04_2 #FFCDD2
 n_e04_2 : setback (negative)
-n_e04_2 : "Lost in the Cinder Haze"
+n_e04_2 : "Lost in the {SETBACK5}"
 state n_h04 #FFF9C4
 n_h04 : choice · 96w
 state n_b05_0_0 #D1C4E9
@@ -157,7 +157,7 @@ state n_b05_1_1 #D1C4E9
 n_b05_1_1 : rising · 82w
 state n_e05_1 #FFCDD2
 n_e05_1 : setback (negative)
-n_e05_1 : "Swallowed by the Marsh"
+n_e05_1 : "Swallowed by the {SETBACK4}"
 state n_b05_2_0 #D1C4E9
 n_b05_2_0 : rising · 70w
 state n_b05_2_1 #D1C4E9
@@ -166,7 +166,7 @@ state n_b05_2_2 #D1C4E9
 n_b05_2_2 : rising · 60w
 state n_e05_2 #FFCDD2
 n_e05_2 : setback (negative)
-n_e05_2 : "Sealed in the Collapsed Tube"
+n_e05_2 : "Sealed in the {SETBACK6}"
 state n_h05 #FFF9C4
 n_h05 : choice · 78w
 state n_d06 #D1C4E9
@@ -177,17 +177,17 @@ state n_b06_0_1 #FFF9C4
 n_b06_0_1 : choice · 76w
 state n_e06_0a #FFCDD2
 n_e06_0a : setback (negative)
-n_e06_0a : "Driven Down off the Ridge"
+n_e06_0a : "Driven Down off the {SETBACK3}"
 state n_e06_0b #FFCDD2
 n_e06_0b : setback (negative)
-n_e06_0b : "The Water Casks Fail"
+n_e06_0b : "The {SETBACK7} Fail"
 state n_b06_1_0 #D1C4E9
 n_b06_1_0 : rising · 64w
 state n_b06_1_1 #D1C4E9
 n_b06_1_1 : rising · 100w
 state n_e06_1 #FFCDD2
 n_e06_1 : setback (negative)
-n_e06_1 : "Beaten Back by the Heat"
+n_e06_1 : "Beaten Back by the {SETBACK8}"
 state n_b06_2_0 #D1C4E9
 n_b06_2_0 : rising · 82w
 state n_b06_2_1 #D1C4E9
@@ -196,7 +196,7 @@ state n_b06_2_2 #D1C4E9
 n_b06_2_2 : rising · 88w
 state n_e06_2 #FFCDD2
 n_e06_2 : setback (negative)
-n_e06_2 : "Scattered by the Tremor"
+n_e06_2 : "Scattered by the {SETBACK9}"
 state n_h06 #FFF9C4
 n_h06 : choice · 86w
 state n_b07_0_0 #D1C4E9
@@ -205,14 +205,14 @@ state n_b07_0_1 #D1C4E9
 n_b07_0_1 : rising · 95w
 state n_e07_0 #FFCDD2
 n_e07_0 : setback (negative)
-n_e07_0 : "Turned Back by the Ashstorm"
+n_e07_0 : "Turned Back by the {SETBACK1}"
 state n_b07_1_0 #D1C4E9
 n_b07_1_0 : rising · 76w
 state n_b07_1_1 #D1C4E9
 n_b07_1_1 : rising · 64w
 state n_e07_1 #FFCDD2
 n_e07_1 : setback (negative)
-n_e07_1 : "Cut Off by the Lava Flow"
+n_e07_1 : "Cut Off by the {SETBACK2}"
 state n_b07_2_0 #D1C4E9
 n_b07_2_0 : rising · 100w
 state n_b07_2_1 #D1C4E9
@@ -232,14 +232,14 @@ state n_b08_0_1 #D1C4E9
 n_b08_0_1 : rising · 60w
 state n_e08_0 #FFCDD2
 n_e08_0 : setback (negative)
-n_e08_0 : "Forced Retreat to Base Camp"
+n_e08_0 : "Forced Retreat to {ENTRANCE}"
 state n_b08_1_0 #D1C4E9
 n_b08_1_0 : rising · 95w
 state n_b08_1_1 #D1C4E9
 n_b08_1_1 : rising · 76w
 state n_e08_1 #FFCDD2
 n_e08_1 : setback (negative)
-n_e08_1 : "Lost in the Cinder Haze"
+n_e08_1 : "Lost in the {SETBACK5}"
 state n_b08_2_0 #D1C4E9
 n_b08_2_0 : rising · 64w
 state n_b08_2_1 #D1C4E9
@@ -257,17 +257,17 @@ state n_b09_0_1 #FFF9C4
 n_b09_0_1 : choice · 88w
 state n_e09_0a #FFCDD2
 n_e09_0a : setback (negative)
-n_e09_0a : "Swallowed by the Marsh"
+n_e09_0a : "Swallowed by the {SETBACK4}"
 state n_e09_0b #FFCDD2
 n_e09_0b : setback (negative)
-n_e09_0b : "Sealed in the Collapsed Tube"
+n_e09_0b : "Sealed in the {SETBACK6}"
 state n_b09_1_0 #D1C4E9
 n_b09_1_0 : rising · 60w
 state n_b09_1_1 #D1C4E9
 n_b09_1_1 : rising · 95w
 state n_e09_1 #FFCDD2
 n_e09_1 : setback (negative)
-n_e09_1 : "Driven Down off the Ridge"
+n_e09_1 : "Driven Down off the {SETBACK3}"
 state n_b09_2_0 #D1C4E9
 n_b09_2_0 : rising · 76w
 state n_b09_2_1 #D1C4E9
@@ -276,7 +276,7 @@ state n_b09_2_2 #D1C4E9
 n_b09_2_2 : rising · 100w
 state n_e09_2 #FFCDD2
 n_e09_2 : setback (negative)
-n_e09_2 : "The Water Casks Fail"
+n_e09_2 : "The {SETBACK7} Fail"
 state n_h09 #FFF9C4
 n_h09 : choice · 74w
 state n_d10 #D1C4E9
@@ -287,14 +287,14 @@ state n_b10_0_1 #D1C4E9
 n_b10_0_1 : rising · 70w
 state n_e10_0 #FFCDD2
 n_e10_0 : setback (negative)
-n_e10_0 : "Beaten Back by the Heat"
+n_e10_0 : "Beaten Back by the {SETBACK8}"
 state n_b10_1_0 #D1C4E9
 n_b10_1_0 : rising · 88w
 state n_b10_1_1 #D1C4E9
 n_b10_1_1 : rising · 60w
 state n_e10_1 #FFCDD2
 n_e10_1 : setback (negative)
-n_e10_1 : "Scattered by the Tremor"
+n_e10_1 : "Scattered by the {SETBACK9}"
 state n_b10_2_0 #D1C4E9
 n_b10_2_0 : rising · 95w
 state n_b10_2_1 #D1C4E9
@@ -303,7 +303,7 @@ state n_b10_2_2 #D1C4E9
 n_b10_2_2 : rising · 64w
 state n_e10_2 #FFCDD2
 n_e10_2 : setback (negative)
-n_e10_2 : "Turned Back by the Ashstorm"
+n_e10_2 : "Turned Back by the {SETBACK1}"
 state n_h10 #FFF9C4
 n_h10 : choice · 90w
 state n_b11_0_0 #D1C4E9
@@ -312,7 +312,7 @@ state n_b11_0_1 #D1C4E9
 n_b11_0_1 : rising · 82w
 state n_e11_0 #FFCDD2
 n_e11_0 : setback (negative)
-n_e11_0 : "Cut Off by the Lava Flow"
+n_e11_0 : "Cut Off by the {SETBACK2}"
 state n_b11_1_0 #D1C4E9
 n_b11_1_0 : rising · 70w
 state n_b11_1_1 #D1C4E9
@@ -328,7 +328,7 @@ state n_b11_2_2 #D1C4E9
 n_b11_2_2 : rising · 76w
 state n_e11_2 #FFCDD2
 n_e11_2 : setback (negative)
-n_e11_2 : "Forced Retreat to Base Camp"
+n_e11_2 : "Forced Retreat to {ENTRANCE}"
 state n_h11 #FFF9C4
 n_h11 : choice · 68w
 state n_d12 #D1C4E9
@@ -339,7 +339,7 @@ state n_b12_0_1 #FFF9C4
 n_b12_0_1 : choice · 100w
 state n_e12_0a #FFCDD2
 n_e12_0a : setback (negative)
-n_e12_0a : "Lost in the Cinder Haze"
+n_e12_0a : "Lost in the {SETBACK5}"
 state n_e12_0b #FFCDD2
 n_e12_0b : setback (negative)
 n_e12_0b : "The Party Refuses to Go On"
@@ -349,7 +349,7 @@ state n_b12_1_1 #D1C4E9
 n_b12_1_1 : rising · 70w
 state n_e12_1 #FFCDD2
 n_e12_1 : setback (negative)
-n_e12_1 : "Swallowed by the Marsh"
+n_e12_1 : "Swallowed by the {SETBACK4}"
 state n_b12_2_0 #D1C4E9
 n_b12_2_0 : rising · 88w
 state n_b12_2_1 #D1C4E9
@@ -358,7 +358,7 @@ state n_b12_2_2 #D1C4E9
 n_b12_2_2 : rising · 95w
 state n_e12_2 #FFCDD2
 n_e12_2 : setback (negative)
-n_e12_2 : "Sealed in the Collapsed Tube"
+n_e12_2 : "Sealed in the {SETBACK6}"
 state n_h12 #FFF9C4
 n_h12 : choice · 96w
 state n_b13_0_0 #D1C4E9
@@ -367,14 +367,14 @@ state n_b13_0_1 #D1C4E9
 n_b13_0_1 : rising · 64w
 state n_e13_0 #FFCDD2
 n_e13_0 : setback (negative)
-n_e13_0 : "Driven Down off the Ridge"
+n_e13_0 : "Driven Down off the {SETBACK3}"
 state n_b13_1_0 #D1C4E9
 n_b13_1_0 : rising · 100w
 state n_b13_1_1 #D1C4E9
 n_b13_1_1 : rising · 82w
 state n_e13_1 #FFCDD2
 n_e13_1 : setback (negative)
-n_e13_1 : "The Water Casks Fail"
+n_e13_1 : "The {SETBACK7} Fail"
 state n_b13_2_0 #D1C4E9
 n_b13_2_0 : rising · 70w
 state n_b13_2_1 #D1C4E9
@@ -383,7 +383,7 @@ state n_b13_2_2 #D1C4E9
 n_b13_2_2 : rising · 60w
 state n_e13_2 #FFCDD2
 n_e13_2 : setback (negative)
-n_e13_2 : "Beaten Back by the Heat"
+n_e13_2 : "Beaten Back by the {SETBACK8}"
 state n_h13 #FFF9C4
 n_h13 : choice · 78w
 state n_d14 #D1C4E9
@@ -394,14 +394,14 @@ state n_b14_0_1 #D1C4E9
 n_b14_0_1 : rising · 76w
 state n_e14_0 #FFCDD2
 n_e14_0 : setback (negative)
-n_e14_0 : "Scattered by the Tremor"
+n_e14_0 : "Scattered by the {SETBACK9}"
 state n_b14_1_0 #D1C4E9
 n_b14_1_0 : rising · 64w
 state n_b14_1_1 #D1C4E9
 n_b14_1_1 : rising · 100w
 state n_e14_1 #FFCDD2
 n_e14_1 : setback (negative)
-n_e14_1 : "Turned Back by the Ashstorm"
+n_e14_1 : "Turned Back by the {SETBACK1}"
 state n_b14_2_0 #D1C4E9
 n_b14_2_0 : rising · 82w
 state n_b14_2_1 #D1C4E9
@@ -410,7 +410,7 @@ state n_b14_2_2 #D1C4E9
 n_b14_2_2 : rising · 88w
 state n_e14_2 #FFCDD2
 n_e14_2 : setback (negative)
-n_e14_2 : "Cut Off by the Lava Flow"
+n_e14_2 : "Cut Off by the {SETBACK2}"
 state n_h14 #FFF9C4
 n_h14 : choice · 86w
 state n_b15_0_0 #D1C4E9
@@ -422,14 +422,14 @@ n_e15_0a : setback (negative)
 n_e15_0a : "Supplies Run Out"
 state n_e15_0b #FFCDD2
 n_e15_0b : setback (negative)
-n_e15_0b : "Forced Retreat to Base Camp"
+n_e15_0b : "Forced Retreat to {ENTRANCE}"
 state n_b15_1_0 #D1C4E9
 n_b15_1_0 : rising · 76w
 state n_b15_1_1 #D1C4E9
 n_b15_1_1 : rising · 64w
 state n_e15_1 #FFCDD2
 n_e15_1 : setback (negative)
-n_e15_1 : "Lost in the Cinder Haze"
+n_e15_1 : "Lost in the {SETBACK5}"
 state n_b15_2_0 #D1C4E9
 n_b15_2_0 : rising · 100w
 state n_b15_2_1 #D1C4E9
@@ -449,14 +449,14 @@ state n_b16_0_1 #D1C4E9
 n_b16_0_1 : rising · 60w
 state n_e16_0 #FFCDD2
 n_e16_0 : setback (negative)
-n_e16_0 : "Swallowed by the Marsh"
+n_e16_0 : "Swallowed by the {SETBACK4}"
 state n_b16_1_0 #D1C4E9
 n_b16_1_0 : rising · 95w
 state n_b16_1_1 #D1C4E9
 n_b16_1_1 : rising · 76w
 state n_e16_1 #FFCDD2
 n_e16_1 : setback (negative)
-n_e16_1 : "Sealed in the Collapsed Tube"
+n_e16_1 : "Sealed in the {SETBACK6}"
 state n_b16_2_0 #D1C4E9
 n_b16_2_0 : rising · 64w
 state n_b16_2_1 #D1C4E9
@@ -465,7 +465,7 @@ state n_b16_2_2 #D1C4E9
 n_b16_2_2 : rising · 82w
 state n_e16_2 #FFCDD2
 n_e16_2 : setback (negative)
-n_e16_2 : "Driven Down off the Ridge"
+n_e16_2 : "Driven Down off the {SETBACK3}"
 state n_h16 #FFF9C4
 n_h16 : choice · 82w
 state n_b17_0_0 #D1C4E9
@@ -474,14 +474,14 @@ state n_b17_0_1 #D1C4E9
 n_b17_0_1 : rising · 88w
 state n_e17_0 #FFCDD2
 n_e17_0 : setback (negative)
-n_e17_0 : "The Water Casks Fail"
+n_e17_0 : "The {SETBACK7} Fail"
 state n_b17_1_0 #D1C4E9
 n_b17_1_0 : rising · 60w
 state n_b17_1_1 #D1C4E9
 n_b17_1_1 : rising · 95w
 state n_e17_1 #FFCDD2
 n_e17_1 : setback (negative)
-n_e17_1 : "Beaten Back by the Heat"
+n_e17_1 : "Beaten Back by the {SETBACK8}"
 state n_b17_2_0 #D1C4E9
 n_b17_2_0 : rising · 76w
 state n_b17_2_1 #D1C4E9
@@ -490,7 +490,7 @@ state n_b17_2_2 #D1C4E9
 n_b17_2_2 : rising · 100w
 state n_e17_2 #FFCDD2
 n_e17_2 : setback (negative)
-n_e17_2 : "Scattered by the Tremor"
+n_e17_2 : "Scattered by the {SETBACK9}"
 state n_h17 #FFF9C4
 n_h17 : choice · 74w
 state n_d18 #D1C4E9
@@ -501,10 +501,10 @@ state n_b18_0_1 #FFF9C4
 n_b18_0_1 : choice · 70w
 state n_e18_0a #FFCDD2
 n_e18_0a : setback (negative)
-n_e18_0a : "Turned Back by the Ashstorm"
+n_e18_0a : "Turned Back by the {SETBACK1}"
 state n_e18_0b #FFCDD2
 n_e18_0b : setback (negative)
-n_e18_0b : "Cut Off by the Lava Flow"
+n_e18_0b : "Cut Off by the {SETBACK2}"
 state n_b18_1_0 #D1C4E9
 n_b18_1_0 : rising · 88w
 state n_b18_1_1 #D1C4E9
@@ -520,7 +520,7 @@ state n_b18_2_2 #D1C4E9
 n_b18_2_2 : rising · 64w
 state n_e18_2 #FFCDD2
 n_e18_2 : setback (negative)
-n_e18_2 : "Forced Retreat to Base Camp"
+n_e18_2 : "Forced Retreat to {ENTRANCE}"
 state n_h18 #FFF9C4
 n_h18 : choice · 90w
 state n_b19_0_0 #D1C4E9
@@ -529,7 +529,7 @@ state n_b19_0_1 #D1C4E9
 n_b19_0_1 : rising · 82w
 state n_e19_0 #FFCDD2
 n_e19_0 : setback (negative)
-n_e19_0 : "Lost in the Cinder Haze"
+n_e19_0 : "Lost in the {SETBACK5}"
 state n_b19_1_0 #D1C4E9
 n_b19_1_0 : rising · 70w
 state n_b19_1_1 #D1C4E9
@@ -545,7 +545,7 @@ state n_b19_2_2 #D1C4E9
 n_b19_2_2 : rising · 76w
 state n_e19_2 #FFCDD2
 n_e19_2 : setback (negative)
-n_e19_2 : "Swallowed by the Marsh"
+n_e19_2 : "Swallowed by the {SETBACK4}"
 state n_h19 #FFF9C4
 n_h19 : choice · 68w
 state n_d20 #D1C4E9
@@ -556,14 +556,14 @@ state n_b20_0_1 #D1C4E9
 n_b20_0_1 : rising · 100w
 state n_e20_0 #FFCDD2
 n_e20_0 : setback (negative)
-n_e20_0 : "Sealed in the Collapsed Tube"
+n_e20_0 : "Sealed in the {SETBACK6}"
 state n_b20_1_0 #D1C4E9
 n_b20_1_0 : rising · 82w
 state n_b20_1_1 #D1C4E9
 n_b20_1_1 : rising · 70w
 state n_e20_1 #FFCDD2
 n_e20_1 : setback (negative)
-n_e20_1 : "Driven Down off the Ridge"
+n_e20_1 : "Driven Down off the {SETBACK3}"
 state n_b20_2_0 #D1C4E9
 n_b20_2_0 : rising · 88w
 state n_b20_2_1 #D1C4E9
@@ -572,7 +572,7 @@ state n_b20_2_2 #D1C4E9
 n_b20_2_2 : rising · 95w
 state n_e20_2 #FFCDD2
 n_e20_2 : setback (negative)
-n_e20_2 : "The Water Casks Fail"
+n_e20_2 : "The {SETBACK7} Fail"
 state n_h20 #FFF9C4
 n_h20 : choice · 96w
 state n_b21_0_0 #D1C4E9
@@ -581,17 +581,17 @@ state n_b21_0_1 #FFF9C4
 n_b21_0_1 : choice · 64w
 state n_e21_0a #FFCDD2
 n_e21_0a : setback (negative)
-n_e21_0a : "Beaten Back by the Heat"
+n_e21_0a : "Beaten Back by the {SETBACK8}"
 state n_e21_0b #FFCDD2
 n_e21_0b : setback (negative)
-n_e21_0b : "Scattered by the Tremor"
+n_e21_0b : "Scattered by the {SETBACK9}"
 state n_b21_1_0 #D1C4E9
 n_b21_1_0 : rising · 100w
 state n_b21_1_1 #D1C4E9
 n_b21_1_1 : rising · 82w
 state n_e21_1 #FFCDD2
 n_e21_1 : setback (negative)
-n_e21_1 : "Turned Back by the Ashstorm"
+n_e21_1 : "Turned Back by the {SETBACK1}"
 state n_b21_2_0 #D1C4E9
 n_b21_2_0 : rising · 70w
 state n_b21_2_1 #D1C4E9
@@ -600,7 +600,7 @@ state n_b21_2_2 #D1C4E9
 n_b21_2_2 : rising · 60w
 state n_e21_2 #FFCDD2
 n_e21_2 : setback (negative)
-n_e21_2 : "Cut Off by the Lava Flow"
+n_e21_2 : "Cut Off by the {SETBACK2}"
 state n_h21 #FFF9C4
 n_h21 : choice · 78w
 state n_d22 #D1C4E9
@@ -618,7 +618,7 @@ state n_b22_1_1 #D1C4E9
 n_b22_1_1 : rising · 100w
 state n_e22_1 #FFCDD2
 n_e22_1 : setback (negative)
-n_e22_1 : "Forced Retreat to Base Camp"
+n_e22_1 : "Forced Retreat to {ENTRANCE}"
 state n_b22_2_0 #D1C4E9
 n_b22_2_0 : rising · 82w
 state n_b22_2_1 #D1C4E9
@@ -627,7 +627,7 @@ state n_b22_2_2 #D1C4E9
 n_b22_2_2 : rising · 88w
 state n_e22_2 #FFCDD2
 n_e22_2 : setback (negative)
-n_e22_2 : "Lost in the Cinder Haze"
+n_e22_2 : "Lost in the {SETBACK5}"
 state n_h22 #FFF9C4
 n_h22 : choice · 86w
 state n_b23_0_0 #D1C4E9
@@ -643,7 +643,7 @@ state n_b23_1_1 #D1C4E9
 n_b23_1_1 : rising · 64w
 state n_e23_1 #FFCDD2
 n_e23_1 : setback (negative)
-n_e23_1 : "Swallowed by the Marsh"
+n_e23_1 : "Swallowed by the {SETBACK4}"
 state n_b23_2_0 #D1C4E9
 n_b23_2_0 : rising · 100w
 state n_b23_2_1 #D1C4E9
@@ -652,7 +652,7 @@ state n_b23_2_2 #D1C4E9
 n_b23_2_2 : rising · 70w
 state n_e23_2 #FFCDD2
 n_e23_2 : setback (negative)
-n_e23_2 : "Sealed in the Collapsed Tube"
+n_e23_2 : "Sealed in the {SETBACK6}"
 state n_h23 #FFF9C4
 n_h23 : choice · 72w
 state n_d24 #D1C4E9
@@ -663,17 +663,17 @@ state n_b24_0_1 #FFF9C4
 n_b24_0_1 : choice · 60w
 state n_e24_0a #FFCDD2
 n_e24_0a : setback (negative)
-n_e24_0a : "Driven Down off the Ridge"
+n_e24_0a : "Driven Down off the {SETBACK3}"
 state n_e24_0b #FFCDD2
 n_e24_0b : setback (negative)
-n_e24_0b : "The Water Casks Fail"
+n_e24_0b : "The {SETBACK7} Fail"
 state n_b24_1_0 #D1C4E9
 n_b24_1_0 : rising · 95w
 state n_b24_1_1 #D1C4E9
 n_b24_1_1 : rising · 76w
 state n_e24_1 #FFCDD2
 n_e24_1 : setback (negative)
-n_e24_1 : "Beaten Back by the Heat"
+n_e24_1 : "Beaten Back by the {SETBACK8}"
 state n_b24_2_0 #D1C4E9
 n_b24_2_0 : rising · 64w
 state n_b24_2_1 #D1C4E9
@@ -682,7 +682,7 @@ state n_b24_2_2 #D1C4E9
 n_b24_2_2 : rising · 82w
 state n_e24_2 #FFCDD2
 n_e24_2 : setback (negative)
-n_e24_2 : "Scattered by the Tremor"
+n_e24_2 : "Scattered by the {SETBACK9}"
 state n_h24 #FFF9C4
 n_h24 : choice · 82w
 state n_b25_0_0 #D1C4E9
@@ -691,14 +691,14 @@ state n_b25_0_1 #D1C4E9
 n_b25_0_1 : rising · 88w
 state n_e25_0 #FFCDD2
 n_e25_0 : setback (negative)
-n_e25_0 : "Turned Back by the Ashstorm"
+n_e25_0 : "Turned Back by the {SETBACK1}"
 state n_b25_1_0 #D1C4E9
 n_b25_1_0 : rising · 60w
 state n_b25_1_1 #D1C4E9
 n_b25_1_1 : rising · 95w
 state n_e25_1 #FFCDD2
 n_e25_1 : setback (negative)
-n_e25_1 : "Cut Off by the Lava Flow"
+n_e25_1 : "Cut Off by the {SETBACK2}"
 state n_b25_2_0 #D1C4E9
 n_b25_2_0 : rising · 76w
 state n_b25_2_1 #D1C4E9
@@ -718,14 +718,14 @@ state n_b26_0_1 #D1C4E9
 n_b26_0_1 : rising · 70w
 state n_e26_0 #FFCDD2
 n_e26_0 : setback (negative)
-n_e26_0 : "Forced Retreat to Base Camp"
+n_e26_0 : "Forced Retreat to {ENTRANCE}"
 state n_b26_1_0 #D1C4E9
 n_b26_1_0 : rising · 88w
 state n_b26_1_1 #D1C4E9
 n_b26_1_1 : rising · 60w
 state n_e26_1 #FFCDD2
 n_e26_1 : setback (negative)
-n_e26_1 : "Lost in the Cinder Haze"
+n_e26_1 : "Lost in the {SETBACK5}"
 state n_b26_2_0 #D1C4E9
 n_b26_2_0 : rising · 95w
 state n_b26_2_1 #D1C4E9
@@ -743,17 +743,17 @@ state n_b27_0_1 #FFF9C4
 n_b27_0_1 : choice · 82w
 state n_e27_0a #FFCDD2
 n_e27_0a : setback (negative)
-n_e27_0a : "Swallowed by the Marsh"
+n_e27_0a : "Swallowed by the {SETBACK4}"
 state n_e27_0b #FFCDD2
 n_e27_0b : setback (negative)
-n_e27_0b : "Sealed in the Collapsed Tube"
+n_e27_0b : "Sealed in the {SETBACK6}"
 state n_b27_1_0 #D1C4E9
 n_b27_1_0 : rising · 70w
 state n_b27_1_1 #D1C4E9
 n_b27_1_1 : rising · 88w
 state n_e27_1 #FFCDD2
 n_e27_1 : setback (negative)
-n_e27_1 : "Driven Down off the Ridge"
+n_e27_1 : "Driven Down off the {SETBACK3}"
 state n_b27_2_0 #D1C4E9
 n_b27_2_0 : rising · 60w
 state n_b27_2_1 #D1C4E9
@@ -762,7 +762,7 @@ state n_b27_2_2 #D1C4E9
 n_b27_2_2 : rising · 76w
 state n_e27_2 #FFCDD2
 n_e27_2 : setback (negative)
-n_e27_2 : "The Water Casks Fail"
+n_e27_2 : "The {SETBACK7} Fail"
 state n_h27 #FFF9C4
 n_h27 : choice · 68w
 state n_d28 #D1C4E9
@@ -773,14 +773,14 @@ state n_b28_0_1 #D1C4E9
 n_b28_0_1 : rising · 100w
 state n_e28_0 #FFCDD2
 n_e28_0 : setback (negative)
-n_e28_0 : "Beaten Back by the Heat"
+n_e28_0 : "Beaten Back by the {SETBACK8}"
 state n_b28_1_0 #D1C4E9
 n_b28_1_0 : rising · 82w
 state n_b28_1_1 #D1C4E9
 n_b28_1_1 : rising · 70w
 state n_e28_1 #FFCDD2
 n_e28_1 : setback (negative)
-n_e28_1 : "Scattered by the Tremor"
+n_e28_1 : "Scattered by the {SETBACK9}"
 state n_b28_2_0 #D1C4E9
 n_b28_2_0 : rising · 88w
 state n_b28_2_1 #D1C4E9
@@ -789,7 +789,7 @@ state n_b28_2_2 #D1C4E9
 n_b28_2_2 : rising · 95w
 state n_e28_2 #FFCDD2
 n_e28_2 : setback (negative)
-n_e28_2 : "Turned Back by the Ashstorm"
+n_e28_2 : "Turned Back by the {SETBACK1}"
 state n_h28 #FFF9C4
 n_h28 : choice · 96w
 state n_b29_0_0 #D1C4E9
@@ -798,7 +798,7 @@ state n_b29_0_1 #D1C4E9
 n_b29_0_1 : rising · 64w
 state n_e29_0 #FFCDD2
 n_e29_0 : setback (negative)
-n_e29_0 : "Cut Off by the Lava Flow"
+n_e29_0 : "Cut Off by the {SETBACK2}"
 state n_b29_1_0 #D1C4E9
 n_b29_1_0 : rising · 100w
 state n_b29_1_1 #D1C4E9
@@ -814,7 +814,7 @@ state n_b29_2_2 #D1C4E9
 n_b29_2_2 : rising · 60w
 state n_e29_2 #FFCDD2
 n_e29_2 : setback (negative)
-n_e29_2 : "Forced Retreat to Base Camp"
+n_e29_2 : "Forced Retreat to {ENTRANCE}"
 state n_h29 #FFF9C4
 n_h29 : choice · 78w
 state n_d30 #D1C4E9
@@ -825,7 +825,7 @@ state n_b30_0_1 #FFF9C4
 n_b30_0_1 : choice · 76w
 state n_e30_0a #FFCDD2
 n_e30_0a : setback (negative)
-n_e30_0a : "Lost in the Cinder Haze"
+n_e30_0a : "Lost in the {SETBACK5}"
 state n_e30_0b #FFCDD2
 n_e30_0b : setback (negative)
 n_e30_0b : "The Party Refuses to Go On"
@@ -835,7 +835,7 @@ state n_b30_1_1 #D1C4E9
 n_b30_1_1 : rising · 100w
 state n_e30_1 #FFCDD2
 n_e30_1 : setback (negative)
-n_e30_1 : "Swallowed by the Marsh"
+n_e30_1 : "Swallowed by the {SETBACK4}"
 state n_b30_2_0 #D1C4E9
 n_b30_2_0 : rising · 82w
 state n_b30_2_1 #D1C4E9
@@ -844,7 +844,7 @@ state n_b30_2_2 #D1C4E9
 n_b30_2_2 : rising · 88w
 state n_e30_2 #FFCDD2
 n_e30_2 : setback (negative)
-n_e30_2 : "Sealed in the Collapsed Tube"
+n_e30_2 : "Sealed in the {SETBACK6}"
 state n_h30 #FFF9C4
 n_h30 : choice · 86w
 state n_b31_0_0 #D1C4E9
@@ -853,14 +853,14 @@ state n_b31_0_1 #D1C4E9
 n_b31_0_1 : rising · 95w
 state n_e31_0 #FFCDD2
 n_e31_0 : setback (negative)
-n_e31_0 : "Driven Down off the Ridge"
+n_e31_0 : "Driven Down off the {SETBACK3}"
 state n_b31_1_0 #D1C4E9
 n_b31_1_0 : rising · 76w
 state n_b31_1_1 #D1C4E9
 n_b31_1_1 : rising · 64w
 state n_e31_1 #FFCDD2
 n_e31_1 : setback (negative)
-n_e31_1 : "The Water Casks Fail"
+n_e31_1 : "The {SETBACK7} Fail"
 state n_b31_2_0 #D1C4E9
 n_b31_2_0 : rising · 100w
 state n_b31_2_1 #D1C4E9
@@ -869,7 +869,7 @@ state n_b31_2_2 #D1C4E9
 n_b31_2_2 : rising · 70w
 state n_e31_2 #FFCDD2
 n_e31_2 : setback (negative)
-n_e31_2 : "Beaten Back by the Heat"
+n_e31_2 : "Beaten Back by the {SETBACK8}"
 state n_h31 #FFF9C4
 n_h31 : choice · 72w
 state n_d32 #D1C4E9
@@ -880,14 +880,14 @@ state n_b32_0_1 #D1C4E9
 n_b32_0_1 : rising · 60w
 state n_e32_0 #FFCDD2
 n_e32_0 : setback (negative)
-n_e32_0 : "Scattered by the Tremor"
+n_e32_0 : "Scattered by the {SETBACK9}"
 state n_b32_1_0 #D1C4E9
 n_b32_1_0 : rising · 95w
 state n_b32_1_1 #D1C4E9
 n_b32_1_1 : rising · 76w
 state n_e32_1 #FFCDD2
 n_e32_1 : setback (negative)
-n_e32_1 : "Turned Back by the Ashstorm"
+n_e32_1 : "Turned Back by the {SETBACK1}"
 state n_b32_2_0 #D1C4E9
 n_b32_2_0 : rising · 64w
 state n_b32_2_1 #D1C4E9
@@ -896,7 +896,7 @@ state n_b32_2_2 #D1C4E9
 n_b32_2_2 : rising · 82w
 state n_e32_2 #FFCDD2
 n_e32_2 : setback (negative)
-n_e32_2 : "Cut Off by the Lava Flow"
+n_e32_2 : "Cut Off by the {SETBACK2}"
 state n_h32 #FFF9C4
 n_h32 : choice · 82w
 state n_b33_0_0 #D1C4E9
@@ -908,14 +908,14 @@ n_e33_0a : setback (negative)
 n_e33_0a : "Supplies Run Out"
 state n_e33_0b #FFCDD2
 n_e33_0b : setback (negative)
-n_e33_0b : "Forced Retreat to Base Camp"
+n_e33_0b : "Forced Retreat to {ENTRANCE}"
 state n_b33_1_0 #D1C4E9
 n_b33_1_0 : rising · 60w
 state n_b33_1_1 #D1C4E9
 n_b33_1_1 : rising · 95w
 state n_e33_1 #FFCDD2
 n_e33_1 : setback (negative)
-n_e33_1 : "Lost in the Cinder Haze"
+n_e33_1 : "Lost in the {SETBACK5}"
 state n_b33_2_0 #D1C4E9
 n_b33_2_0 : rising · 76w
 state n_b33_2_1 #D1C4E9
@@ -935,14 +935,14 @@ state n_b34_0_1 #D1C4E9
 n_b34_0_1 : rising · 70w
 state n_e34_0 #FFCDD2
 n_e34_0 : setback (negative)
-n_e34_0 : "Swallowed by the Marsh"
+n_e34_0 : "Swallowed by the {SETBACK4}"
 state n_b34_1_0 #D1C4E9
 n_b34_1_0 : rising · 88w
 state n_b34_1_1 #D1C4E9
 n_b34_1_1 : rising · 60w
 state n_e34_1 #FFCDD2
 n_e34_1 : setback (negative)
-n_e34_1 : "Sealed in the Collapsed Tube"
+n_e34_1 : "Sealed in the {SETBACK6}"
 state n_b34_2_0 #D1C4E9
 n_b34_2_0 : rising · 95w
 state n_b34_2_1 #D1C4E9
@@ -951,7 +951,7 @@ state n_b34_2_2 #D1C4E9
 n_b34_2_2 : rising · 64w
 state n_e34_2 #FFCDD2
 n_e34_2 : setback (negative)
-n_e34_2 : "Driven Down off the Ridge"
+n_e34_2 : "Driven Down off the {SETBACK3}"
 state n_h34 #FFF9C4
 n_h34 : choice · 90w
 state n_b35_0_0 #D1C4E9
@@ -960,14 +960,14 @@ state n_b35_0_1 #D1C4E9
 n_b35_0_1 : rising · 82w
 state n_e35_0 #FFCDD2
 n_e35_0 : setback (negative)
-n_e35_0 : "The Water Casks Fail"
+n_e35_0 : "The {SETBACK7} Fail"
 state n_b35_1_0 #D1C4E9
 n_b35_1_0 : rising · 70w
 state n_b35_1_1 #D1C4E9
 n_b35_1_1 : rising · 88w
 state n_e35_1 #FFCDD2
 n_e35_1 : setback (negative)
-n_e35_1 : "Beaten Back by the Heat"
+n_e35_1 : "Beaten Back by the {SETBACK8}"
 state n_b35_2_0 #D1C4E9
 n_b35_2_0 : rising · 60w
 state n_b35_2_1 #D1C4E9
@@ -976,7 +976,7 @@ state n_b35_2_2 #D1C4E9
 n_b35_2_2 : rising · 76w
 state n_e35_2 #FFCDD2
 n_e35_2 : setback (negative)
-n_e35_2 : "Scattered by the Tremor"
+n_e35_2 : "Scattered by the {SETBACK9}"
 state n_h35 #FFF9C4
 n_h35 : choice · 68w
 state n_d36 #D1C4E9
@@ -987,10 +987,10 @@ state n_b36_0_1 #FFF9C4
 n_b36_0_1 : choice · 100w
 state n_e36_0a #FFCDD2
 n_e36_0a : setback (negative)
-n_e36_0a : "Turned Back by the Ashstorm"
+n_e36_0a : "Turned Back by the {SETBACK1}"
 state n_e36_0b #FFCDD2
 n_e36_0b : setback (negative)
-n_e36_0b : "Cut Off by the Lava Flow"
+n_e36_0b : "Cut Off by the {SETBACK2}"
 state n_b36_1_0 #D1C4E9
 n_b36_1_0 : rising · 82w
 state n_b36_1_1 #D1C4E9
@@ -1006,7 +1006,7 @@ state n_b36_2_2 #D1C4E9
 n_b36_2_2 : rising · 95w
 state n_e36_2 #FFCDD2
 n_e36_2 : setback (negative)
-n_e36_2 : "Forced Retreat to Base Camp"
+n_e36_2 : "Forced Retreat to {ENTRANCE}"
 state n_h36 #FFF9C4
 n_h36 : choice · 96w
 state n_b37_0_0 #D1C4E9
@@ -1015,7 +1015,7 @@ state n_b37_0_1 #D1C4E9
 n_b37_0_1 : rising · 64w
 state n_e37_0 #FFCDD2
 n_e37_0 : setback (negative)
-n_e37_0 : "Lost in the Cinder Haze"
+n_e37_0 : "Lost in the {SETBACK5}"
 state n_b37_1_0 #D1C4E9
 n_b37_1_0 : rising · 100w
 state n_b37_1_1 #D1C4E9
@@ -1031,7 +1031,7 @@ state n_b37_2_2 #D1C4E9
 n_b37_2_2 : rising · 60w
 state n_e37_2 #FFCDD2
 n_e37_2 : setback (negative)
-n_e37_2 : "Swallowed by the Marsh"
+n_e37_2 : "Swallowed by the {SETBACK4}"
 state n_h37 #FFF9C4
 n_h37 : choice · 78w
 state n_d38 #D1C4E9
@@ -1042,14 +1042,14 @@ state n_b38_0_1 #D1C4E9
 n_b38_0_1 : rising · 76w
 state n_e38_0 #FFCDD2
 n_e38_0 : setback (negative)
-n_e38_0 : "Sealed in the Collapsed Tube"
+n_e38_0 : "Sealed in the {SETBACK6}"
 state n_b38_1_0 #D1C4E9
 n_b38_1_0 : rising · 64w
 state n_b38_1_1 #D1C4E9
 n_b38_1_1 : rising · 100w
 state n_e38_1 #FFCDD2
 n_e38_1 : setback (negative)
-n_e38_1 : "Driven Down off the Ridge"
+n_e38_1 : "Driven Down off the {SETBACK3}"
 state n_b38_2_0 #D1C4E9
 n_b38_2_0 : rising · 82w
 state n_b38_2_1 #D1C4E9
@@ -1058,7 +1058,7 @@ state n_b38_2_2 #D1C4E9
 n_b38_2_2 : rising · 88w
 state n_e38_2 #FFCDD2
 n_e38_2 : setback (negative)
-n_e38_2 : "The Water Casks Fail"
+n_e38_2 : "The {SETBACK7} Fail"
 state n_h38 #FFF9C4
 n_h38 : choice · 86w
 state n_b39_0_0 #D1C4E9
@@ -1067,17 +1067,17 @@ state n_b39_0_1 #FFF9C4
 n_b39_0_1 : choice · 95w
 state n_e39_0a #FFCDD2
 n_e39_0a : setback (negative)
-n_e39_0a : "Beaten Back by the Heat"
+n_e39_0a : "Beaten Back by the {SETBACK8}"
 state n_e39_0b #FFCDD2
 n_e39_0b : setback (negative)
-n_e39_0b : "Scattered by the Tremor"
+n_e39_0b : "Scattered by the {SETBACK9}"
 state n_b39_1_0 #D1C4E9
 n_b39_1_0 : rising · 76w
 state n_b39_1_1 #D1C4E9
 n_b39_1_1 : rising · 64w
 state n_e39_1 #FFCDD2
 n_e39_1 : setback (negative)
-n_e39_1 : "Turned Back by the Ashstorm"
+n_e39_1 : "Turned Back by the {SETBACK1}"
 state n_b39_2_0 #D1C4E9
 n_b39_2_0 : rising · 100w
 state n_b39_2_1 #D1C4E9
@@ -1086,7 +1086,7 @@ state n_b39_2_2 #D1C4E9
 n_b39_2_2 : rising · 70w
 state n_e39_2 #FFCDD2
 n_e39_2 : setback (negative)
-n_e39_2 : "Cut Off by the Lava Flow"
+n_e39_2 : "Cut Off by the {SETBACK2}"
 state n_h39 #FFF9C4
 n_h39 : choice · 72w
 state n_d40 #D1C4E9
@@ -1104,7 +1104,7 @@ state n_b40_1_1 #D1C4E9
 n_b40_1_1 : rising · 76w
 state n_e40_1 #FFCDD2
 n_e40_1 : setback (negative)
-n_e40_1 : "Forced Retreat to Base Camp"
+n_e40_1 : "Forced Retreat to {ENTRANCE}"
 state n_b40_2_0 #D1C4E9
 n_b40_2_0 : rising · 64w
 state n_b40_2_1 #D1C4E9
@@ -1113,7 +1113,7 @@ state n_b40_2_2 #D1C4E9
 n_b40_2_2 : rising · 82w
 state n_e40_2 #FFCDD2
 n_e40_2 : setback (negative)
-n_e40_2 : "Lost in the Cinder Haze"
+n_e40_2 : "Lost in the {SETBACK5}"
 state n_h40 #FFF9C4
 n_h40 : choice · 82w
 state n_b41_0_0 #D1C4E9
@@ -1129,7 +1129,7 @@ state n_b41_1_1 #D1C4E9
 n_b41_1_1 : rising · 95w
 state n_e41_1 #FFCDD2
 n_e41_1 : setback (negative)
-n_e41_1 : "Swallowed by the Marsh"
+n_e41_1 : "Swallowed by the {SETBACK4}"
 state n_b41_2_0 #D1C4E9
 n_b41_2_0 : rising · 76w
 state n_b41_2_1 #D1C4E9
@@ -1138,7 +1138,7 @@ state n_b41_2_2 #D1C4E9
 n_b41_2_2 : rising · 100w
 state n_e41_2 #FFCDD2
 n_e41_2 : setback (negative)
-n_e41_2 : "Sealed in the Collapsed Tube"
+n_e41_2 : "Sealed in the {SETBACK6}"
 state n_h41 #FFF9C4
 n_h41 : choice · 74w
 state n_fin0 #FFE0B2
@@ -1153,13 +1153,13 @@ state n_fin4 #FFE0B2
 n_fin4 : climax · 104w
 state n_win_all #C8E6C9
 n_win_all : completion (positive)
-n_win_all : "The Whole Expedition Reaches the Valley"
+n_win_all : "{WIN_ALL}"
 state n_win_costly #C8E6C9
 n_win_costly : success (positive)
-n_win_costly : "A Costly Crossing"
+n_win_costly : "{WIN_COSTLY}"
 state n_win_scout #C8E6C9
 n_win_scout : success (positive)
-n_win_scout : "The Careful Descent"
+n_win_scout : "{WIN_SCOUT}"
 n_d00 --> n_h01 : Rejoin the column at the waypoint.
 n_b00_0_0 --> n_b00_0_1 : Keep going.
 n_b00_0_1 --> n_e00_0a : Take the low line through the hollow.
@@ -1171,7 +1171,7 @@ n_b00_2_1 --> n_b00_2_2 : Keep going.
 n_b00_2_2 --> n_e00_2 : Commit to the crossing.
 n_start --> n_h01 : Press on along the safe line.
 n_start --> n_d00 : Scout a flanking line before moving up.
-n_start --> n_b00_0_0 : Cut straight across the open ash to save...
+n_start --> n_b00_0_0 : Cut straight across the open {HAZARD} to...
 n_start --> n_b00_1_0 : Send a light party ahead to test the gro...
 n_start --> n_b00_2_0 : Push through despite the failing light.
 n_b01_0_0 --> n_b01_0_1 : Keep going.
@@ -1182,7 +1182,7 @@ n_b01_2_0 --> n_b01_2_1 : Keep going.
 n_b01_2_1 --> n_b01_2_2 : Keep going.
 n_b01_2_2 --> n_e01_2 : Commit to the crossing.
 n_h01 --> n_h02 : Press on along the safe line.
-n_h01 --> n_b01_0_0 : Cut straight across the open ash to save...
+n_h01 --> n_b01_0_0 : Cut straight across the open {HAZARD} to...
 n_h01 --> n_b01_1_0 : Send a light party ahead to test the gro...
 n_h01 --> n_b01_2_0 : Push through despite the failing light.
 n_d02 --> n_h03 : Rejoin the column at the waypoint.
@@ -1195,7 +1195,7 @@ n_b02_2_1 --> n_b02_2_2 : Keep going.
 n_b02_2_2 --> n_e02_2 : Commit to the crossing.
 n_h02 --> n_h03 : Press on along the safe line.
 n_h02 --> n_d02 : Scout a flanking line before moving up.
-n_h02 --> n_b02_0_0 : Cut straight across the open ash to save...
+n_h02 --> n_b02_0_0 : Cut straight across the open {HAZARD} to...
 n_h02 --> n_b02_1_0 : Send a light party ahead to test the gro...
 n_h02 --> n_b02_2_0 : Push through despite the failing light.
 n_b03_0_0 --> n_b03_0_1 : Keep going.
@@ -1207,7 +1207,7 @@ n_b03_2_0 --> n_b03_2_1 : Keep going.
 n_b03_2_1 --> n_b03_2_2 : Keep going.
 n_b03_2_2 --> n_e03_2 : Commit to the crossing.
 n_h03 --> n_h04 : Press on along the safe line.
-n_h03 --> n_b03_0_0 : Cut straight across the open ash to save...
+n_h03 --> n_b03_0_0 : Cut straight across the open {HAZARD} to...
 n_h03 --> n_b03_1_0 : Send a light party ahead to test the gro...
 n_h03 --> n_b03_2_0 : Push through despite the failing light.
 n_d04 --> n_h05 : Rejoin the column at the waypoint.
@@ -1220,7 +1220,7 @@ n_b04_2_1 --> n_b04_2_2 : Keep going.
 n_b04_2_2 --> n_e04_2 : Commit to the crossing.
 n_h04 --> n_h05 : Press on along the safe line.
 n_h04 --> n_d04 : Scout a flanking line before moving up.
-n_h04 --> n_b04_0_0 : Cut straight across the open ash to save...
+n_h04 --> n_b04_0_0 : Cut straight across the open {HAZARD} to...
 n_h04 --> n_b04_1_0 : Send a light party ahead to test the gro...
 n_h04 --> n_b04_2_0 : Push through despite the failing light.
 n_b05_0_0 --> n_b05_0_1 : Keep going.
@@ -1231,7 +1231,7 @@ n_b05_2_0 --> n_b05_2_1 : Keep going.
 n_b05_2_1 --> n_b05_2_2 : Keep going.
 n_b05_2_2 --> n_e05_2 : Commit to the crossing.
 n_h05 --> n_h06 : Press on along the safe line.
-n_h05 --> n_b05_0_0 : Cut straight across the open ash to save...
+n_h05 --> n_b05_0_0 : Cut straight across the open {HAZARD} to...
 n_h05 --> n_b05_1_0 : Send a light party ahead to test the gro...
 n_h05 --> n_b05_2_0 : Push through despite the failing light.
 n_d06 --> n_h07 : Rejoin the column at the waypoint.
@@ -1245,7 +1245,7 @@ n_b06_2_1 --> n_b06_2_2 : Keep going.
 n_b06_2_2 --> n_e06_2 : Commit to the crossing.
 n_h06 --> n_h07 : Press on along the safe line.
 n_h06 --> n_d06 : Scout a flanking line before moving up.
-n_h06 --> n_b06_0_0 : Cut straight across the open ash to save...
+n_h06 --> n_b06_0_0 : Cut straight across the open {HAZARD} to...
 n_h06 --> n_b06_1_0 : Send a light party ahead to test the gro...
 n_h06 --> n_b06_2_0 : Push through despite the failing light.
 n_b07_0_0 --> n_b07_0_1 : Keep going.
@@ -1256,7 +1256,7 @@ n_b07_2_0 --> n_b07_2_1 : Keep going.
 n_b07_2_1 --> n_b07_2_2 : Keep going.
 n_b07_2_2 --> n_e07_2 : Commit to the crossing.
 n_h07 --> n_h08 : Press on along the safe line.
-n_h07 --> n_b07_0_0 : Cut straight across the open ash to save...
+n_h07 --> n_b07_0_0 : Cut straight across the open {HAZARD} to...
 n_h07 --> n_b07_1_0 : Send a light party ahead to test the gro...
 n_h07 --> n_b07_2_0 : Push through despite the failing light.
 n_d08 --> n_h09 : Rejoin the column at the waypoint.
@@ -1269,7 +1269,7 @@ n_b08_2_1 --> n_b08_2_2 : Keep going.
 n_b08_2_2 --> n_e08_2 : Commit to the crossing.
 n_h08 --> n_h09 : Press on along the safe line.
 n_h08 --> n_d08 : Scout a flanking line before moving up.
-n_h08 --> n_b08_0_0 : Cut straight across the open ash to save...
+n_h08 --> n_b08_0_0 : Cut straight across the open {HAZARD} to...
 n_h08 --> n_b08_1_0 : Send a light party ahead to test the gro...
 n_h08 --> n_b08_2_0 : Push through despite the failing light.
 n_b09_0_0 --> n_b09_0_1 : Keep going.
@@ -1281,7 +1281,7 @@ n_b09_2_0 --> n_b09_2_1 : Keep going.
 n_b09_2_1 --> n_b09_2_2 : Keep going.
 n_b09_2_2 --> n_e09_2 : Commit to the crossing.
 n_h09 --> n_h10 : Press on along the safe line.
-n_h09 --> n_b09_0_0 : Cut straight across the open ash to save...
+n_h09 --> n_b09_0_0 : Cut straight across the open {HAZARD} to...
 n_h09 --> n_b09_1_0 : Send a light party ahead to test the gro...
 n_h09 --> n_b09_2_0 : Push through despite the failing light.
 n_d10 --> n_h11 : Rejoin the column at the waypoint.
@@ -1294,7 +1294,7 @@ n_b10_2_1 --> n_b10_2_2 : Keep going.
 n_b10_2_2 --> n_e10_2 : Commit to the crossing.
 n_h10 --> n_h11 : Press on along the safe line.
 n_h10 --> n_d10 : Scout a flanking line before moving up.
-n_h10 --> n_b10_0_0 : Cut straight across the open ash to save...
+n_h10 --> n_b10_0_0 : Cut straight across the open {HAZARD} to...
 n_h10 --> n_b10_1_0 : Send a light party ahead to test the gro...
 n_h10 --> n_b10_2_0 : Push through despite the failing light.
 n_b11_0_0 --> n_b11_0_1 : Keep going.
@@ -1305,7 +1305,7 @@ n_b11_2_0 --> n_b11_2_1 : Keep going.
 n_b11_2_1 --> n_b11_2_2 : Keep going.
 n_b11_2_2 --> n_e11_2 : Commit to the crossing.
 n_h11 --> n_h12 : Press on along the safe line.
-n_h11 --> n_b11_0_0 : Cut straight across the open ash to save...
+n_h11 --> n_b11_0_0 : Cut straight across the open {HAZARD} to...
 n_h11 --> n_b11_1_0 : Send a light party ahead to test the gro...
 n_h11 --> n_b11_2_0 : Push through despite the failing light.
 n_d12 --> n_h13 : Rejoin the column at the waypoint.
@@ -1319,7 +1319,7 @@ n_b12_2_1 --> n_b12_2_2 : Keep going.
 n_b12_2_2 --> n_e12_2 : Commit to the crossing.
 n_h12 --> n_h13 : Press on along the safe line.
 n_h12 --> n_d12 : Scout a flanking line before moving up.
-n_h12 --> n_b12_0_0 : Cut straight across the open ash to save...
+n_h12 --> n_b12_0_0 : Cut straight across the open {HAZARD} to...
 n_h12 --> n_b12_1_0 : Send a light party ahead to test the gro...
 n_h12 --> n_b12_2_0 : Push through despite the failing light.
 n_b13_0_0 --> n_b13_0_1 : Keep going.
@@ -1330,7 +1330,7 @@ n_b13_2_0 --> n_b13_2_1 : Keep going.
 n_b13_2_1 --> n_b13_2_2 : Keep going.
 n_b13_2_2 --> n_e13_2 : Commit to the crossing.
 n_h13 --> n_h14 : Press on along the safe line.
-n_h13 --> n_b13_0_0 : Cut straight across the open ash to save...
+n_h13 --> n_b13_0_0 : Cut straight across the open {HAZARD} to...
 n_h13 --> n_b13_1_0 : Send a light party ahead to test the gro...
 n_h13 --> n_b13_2_0 : Push through despite the failing light.
 n_d14 --> n_h15 : Rejoin the column at the waypoint.
@@ -1343,7 +1343,7 @@ n_b14_2_1 --> n_b14_2_2 : Keep going.
 n_b14_2_2 --> n_e14_2 : Commit to the crossing.
 n_h14 --> n_h15 : Press on along the safe line.
 n_h14 --> n_d14 : Scout a flanking line before moving up.
-n_h14 --> n_b14_0_0 : Cut straight across the open ash to save...
+n_h14 --> n_b14_0_0 : Cut straight across the open {HAZARD} to...
 n_h14 --> n_b14_1_0 : Send a light party ahead to test the gro...
 n_h14 --> n_b14_2_0 : Push through despite the failing light.
 n_b15_0_0 --> n_b15_0_1 : Keep going.
@@ -1355,7 +1355,7 @@ n_b15_2_0 --> n_b15_2_1 : Keep going.
 n_b15_2_1 --> n_b15_2_2 : Keep going.
 n_b15_2_2 --> n_e15_2 : Commit to the crossing.
 n_h15 --> n_h16 : Press on along the safe line.
-n_h15 --> n_b15_0_0 : Cut straight across the open ash to save...
+n_h15 --> n_b15_0_0 : Cut straight across the open {HAZARD} to...
 n_h15 --> n_b15_1_0 : Send a light party ahead to test the gro...
 n_h15 --> n_b15_2_0 : Push through despite the failing light.
 n_d16 --> n_h17 : Rejoin the column at the waypoint.
@@ -1368,7 +1368,7 @@ n_b16_2_1 --> n_b16_2_2 : Keep going.
 n_b16_2_2 --> n_e16_2 : Commit to the crossing.
 n_h16 --> n_h17 : Press on along the safe line.
 n_h16 --> n_d16 : Scout a flanking line before moving up.
-n_h16 --> n_b16_0_0 : Cut straight across the open ash to save...
+n_h16 --> n_b16_0_0 : Cut straight across the open {HAZARD} to...
 n_h16 --> n_b16_1_0 : Send a light party ahead to test the gro...
 n_h16 --> n_b16_2_0 : Push through despite the failing light.
 n_b17_0_0 --> n_b17_0_1 : Keep going.
@@ -1379,7 +1379,7 @@ n_b17_2_0 --> n_b17_2_1 : Keep going.
 n_b17_2_1 --> n_b17_2_2 : Keep going.
 n_b17_2_2 --> n_e17_2 : Commit to the crossing.
 n_h17 --> n_h18 : Press on along the safe line.
-n_h17 --> n_b17_0_0 : Cut straight across the open ash to save...
+n_h17 --> n_b17_0_0 : Cut straight across the open {HAZARD} to...
 n_h17 --> n_b17_1_0 : Send a light party ahead to test the gro...
 n_h17 --> n_b17_2_0 : Push through despite the failing light.
 n_d18 --> n_h19 : Rejoin the column at the waypoint.
@@ -1393,7 +1393,7 @@ n_b18_2_1 --> n_b18_2_2 : Keep going.
 n_b18_2_2 --> n_e18_2 : Commit to the crossing.
 n_h18 --> n_h19 : Press on along the safe line.
 n_h18 --> n_d18 : Scout a flanking line before moving up.
-n_h18 --> n_b18_0_0 : Cut straight across the open ash to save...
+n_h18 --> n_b18_0_0 : Cut straight across the open {HAZARD} to...
 n_h18 --> n_b18_1_0 : Send a light party ahead to test the gro...
 n_h18 --> n_b18_2_0 : Push through despite the failing light.
 n_b19_0_0 --> n_b19_0_1 : Keep going.
@@ -1404,7 +1404,7 @@ n_b19_2_0 --> n_b19_2_1 : Keep going.
 n_b19_2_1 --> n_b19_2_2 : Keep going.
 n_b19_2_2 --> n_e19_2 : Commit to the crossing.
 n_h19 --> n_h20 : Press on along the safe line.
-n_h19 --> n_b19_0_0 : Cut straight across the open ash to save...
+n_h19 --> n_b19_0_0 : Cut straight across the open {HAZARD} to...
 n_h19 --> n_b19_1_0 : Send a light party ahead to test the gro...
 n_h19 --> n_b19_2_0 : Push through despite the failing light.
 n_d20 --> n_h21 : Rejoin the column at the waypoint.
@@ -1417,7 +1417,7 @@ n_b20_2_1 --> n_b20_2_2 : Keep going.
 n_b20_2_2 --> n_e20_2 : Commit to the crossing.
 n_h20 --> n_h21 : Press on along the safe line.
 n_h20 --> n_d20 : Scout a flanking line before moving up.
-n_h20 --> n_b20_0_0 : Cut straight across the open ash to save...
+n_h20 --> n_b20_0_0 : Cut straight across the open {HAZARD} to...
 n_h20 --> n_b20_1_0 : Send a light party ahead to test the gro...
 n_h20 --> n_b20_2_0 : Push through despite the failing light.
 n_b21_0_0 --> n_b21_0_1 : Keep going.
@@ -1429,7 +1429,7 @@ n_b21_2_0 --> n_b21_2_1 : Keep going.
 n_b21_2_1 --> n_b21_2_2 : Keep going.
 n_b21_2_2 --> n_e21_2 : Commit to the crossing.
 n_h21 --> n_h22 : Press on along the safe line.
-n_h21 --> n_b21_0_0 : Cut straight across the open ash to save...
+n_h21 --> n_b21_0_0 : Cut straight across the open {HAZARD} to...
 n_h21 --> n_b21_1_0 : Send a light party ahead to test the gro...
 n_h21 --> n_b21_2_0 : Push through despite the failing light.
 n_d22 --> n_h23 : Rejoin the column at the waypoint.
@@ -1442,7 +1442,7 @@ n_b22_2_1 --> n_b22_2_2 : Keep going.
 n_b22_2_2 --> n_e22_2 : Commit to the crossing.
 n_h22 --> n_h23 : Press on along the safe line.
 n_h22 --> n_d22 : Scout a flanking line before moving up.
-n_h22 --> n_b22_0_0 : Cut straight across the open ash to save...
+n_h22 --> n_b22_0_0 : Cut straight across the open {HAZARD} to...
 n_h22 --> n_b22_1_0 : Send a light party ahead to test the gro...
 n_h22 --> n_b22_2_0 : Push through despite the failing light.
 n_b23_0_0 --> n_b23_0_1 : Keep going.
@@ -1453,7 +1453,7 @@ n_b23_2_0 --> n_b23_2_1 : Keep going.
 n_b23_2_1 --> n_b23_2_2 : Keep going.
 n_b23_2_2 --> n_e23_2 : Commit to the crossing.
 n_h23 --> n_h24 : Press on along the safe line.
-n_h23 --> n_b23_0_0 : Cut straight across the open ash to save...
+n_h23 --> n_b23_0_0 : Cut straight across the open {HAZARD} to...
 n_h23 --> n_b23_1_0 : Send a light party ahead to test the gro...
 n_h23 --> n_b23_2_0 : Push through despite the failing light.
 n_d24 --> n_h25 : Rejoin the column at the waypoint.
@@ -1467,7 +1467,7 @@ n_b24_2_1 --> n_b24_2_2 : Keep going.
 n_b24_2_2 --> n_e24_2 : Commit to the crossing.
 n_h24 --> n_h25 : Press on along the safe line.
 n_h24 --> n_d24 : Scout a flanking line before moving up.
-n_h24 --> n_b24_0_0 : Cut straight across the open ash to save...
+n_h24 --> n_b24_0_0 : Cut straight across the open {HAZARD} to...
 n_h24 --> n_b24_1_0 : Send a light party ahead to test the gro...
 n_h24 --> n_b24_2_0 : Push through despite the failing light.
 n_b25_0_0 --> n_b25_0_1 : Keep going.
@@ -1478,7 +1478,7 @@ n_b25_2_0 --> n_b25_2_1 : Keep going.
 n_b25_2_1 --> n_b25_2_2 : Keep going.
 n_b25_2_2 --> n_e25_2 : Commit to the crossing.
 n_h25 --> n_h26 : Press on along the safe line.
-n_h25 --> n_b25_0_0 : Cut straight across the open ash to save...
+n_h25 --> n_b25_0_0 : Cut straight across the open {HAZARD} to...
 n_h25 --> n_b25_1_0 : Send a light party ahead to test the gro...
 n_h25 --> n_b25_2_0 : Push through despite the failing light.
 n_d26 --> n_h27 : Rejoin the column at the waypoint.
@@ -1491,7 +1491,7 @@ n_b26_2_1 --> n_b26_2_2 : Keep going.
 n_b26_2_2 --> n_e26_2 : Commit to the crossing.
 n_h26 --> n_h27 : Press on along the safe line.
 n_h26 --> n_d26 : Scout a flanking line before moving up.
-n_h26 --> n_b26_0_0 : Cut straight across the open ash to save...
+n_h26 --> n_b26_0_0 : Cut straight across the open {HAZARD} to...
 n_h26 --> n_b26_1_0 : Send a light party ahead to test the gro...
 n_h26 --> n_b26_2_0 : Push through despite the failing light.
 n_b27_0_0 --> n_b27_0_1 : Keep going.
@@ -1503,7 +1503,7 @@ n_b27_2_0 --> n_b27_2_1 : Keep going.
 n_b27_2_1 --> n_b27_2_2 : Keep going.
 n_b27_2_2 --> n_e27_2 : Commit to the crossing.
 n_h27 --> n_h28 : Press on along the safe line.
-n_h27 --> n_b27_0_0 : Cut straight across the open ash to save...
+n_h27 --> n_b27_0_0 : Cut straight across the open {HAZARD} to...
 n_h27 --> n_b27_1_0 : Send a light party ahead to test the gro...
 n_h27 --> n_b27_2_0 : Push through despite the failing light.
 n_d28 --> n_h29 : Rejoin the column at the waypoint.
@@ -1516,7 +1516,7 @@ n_b28_2_1 --> n_b28_2_2 : Keep going.
 n_b28_2_2 --> n_e28_2 : Commit to the crossing.
 n_h28 --> n_h29 : Press on along the safe line.
 n_h28 --> n_d28 : Scout a flanking line before moving up.
-n_h28 --> n_b28_0_0 : Cut straight across the open ash to save...
+n_h28 --> n_b28_0_0 : Cut straight across the open {HAZARD} to...
 n_h28 --> n_b28_1_0 : Send a light party ahead to test the gro...
 n_h28 --> n_b28_2_0 : Push through despite the failing light.
 n_b29_0_0 --> n_b29_0_1 : Keep going.
@@ -1527,7 +1527,7 @@ n_b29_2_0 --> n_b29_2_1 : Keep going.
 n_b29_2_1 --> n_b29_2_2 : Keep going.
 n_b29_2_2 --> n_e29_2 : Commit to the crossing.
 n_h29 --> n_h30 : Press on along the safe line.
-n_h29 --> n_b29_0_0 : Cut straight across the open ash to save...
+n_h29 --> n_b29_0_0 : Cut straight across the open {HAZARD} to...
 n_h29 --> n_b29_1_0 : Send a light party ahead to test the gro...
 n_h29 --> n_b29_2_0 : Push through despite the failing light.
 n_d30 --> n_h31 : Rejoin the column at the waypoint.
@@ -1541,7 +1541,7 @@ n_b30_2_1 --> n_b30_2_2 : Keep going.
 n_b30_2_2 --> n_e30_2 : Commit to the crossing.
 n_h30 --> n_h31 : Press on along the safe line.
 n_h30 --> n_d30 : Scout a flanking line before moving up.
-n_h30 --> n_b30_0_0 : Cut straight across the open ash to save...
+n_h30 --> n_b30_0_0 : Cut straight across the open {HAZARD} to...
 n_h30 --> n_b30_1_0 : Send a light party ahead to test the gro...
 n_h30 --> n_b30_2_0 : Push through despite the failing light.
 n_b31_0_0 --> n_b31_0_1 : Keep going.
@@ -1552,7 +1552,7 @@ n_b31_2_0 --> n_b31_2_1 : Keep going.
 n_b31_2_1 --> n_b31_2_2 : Keep going.
 n_b31_2_2 --> n_e31_2 : Commit to the crossing.
 n_h31 --> n_h32 : Press on along the safe line.
-n_h31 --> n_b31_0_0 : Cut straight across the open ash to save...
+n_h31 --> n_b31_0_0 : Cut straight across the open {HAZARD} to...
 n_h31 --> n_b31_1_0 : Send a light party ahead to test the gro...
 n_h31 --> n_b31_2_0 : Push through despite the failing light.
 n_d32 --> n_h33 : Rejoin the column at the waypoint.
@@ -1565,7 +1565,7 @@ n_b32_2_1 --> n_b32_2_2 : Keep going.
 n_b32_2_2 --> n_e32_2 : Commit to the crossing.
 n_h32 --> n_h33 : Press on along the safe line.
 n_h32 --> n_d32 : Scout a flanking line before moving up.
-n_h32 --> n_b32_0_0 : Cut straight across the open ash to save...
+n_h32 --> n_b32_0_0 : Cut straight across the open {HAZARD} to...
 n_h32 --> n_b32_1_0 : Send a light party ahead to test the gro...
 n_h32 --> n_b32_2_0 : Push through despite the failing light.
 n_b33_0_0 --> n_b33_0_1 : Keep going.
@@ -1577,7 +1577,7 @@ n_b33_2_0 --> n_b33_2_1 : Keep going.
 n_b33_2_1 --> n_b33_2_2 : Keep going.
 n_b33_2_2 --> n_e33_2 : Commit to the crossing.
 n_h33 --> n_h34 : Press on along the safe line.
-n_h33 --> n_b33_0_0 : Cut straight across the open ash to save...
+n_h33 --> n_b33_0_0 : Cut straight across the open {HAZARD} to...
 n_h33 --> n_b33_1_0 : Send a light party ahead to test the gro...
 n_h33 --> n_b33_2_0 : Push through despite the failing light.
 n_d34 --> n_h35 : Rejoin the column at the waypoint.
@@ -1590,7 +1590,7 @@ n_b34_2_1 --> n_b34_2_2 : Keep going.
 n_b34_2_2 --> n_e34_2 : Commit to the crossing.
 n_h34 --> n_h35 : Press on along the safe line.
 n_h34 --> n_d34 : Scout a flanking line before moving up.
-n_h34 --> n_b34_0_0 : Cut straight across the open ash to save...
+n_h34 --> n_b34_0_0 : Cut straight across the open {HAZARD} to...
 n_h34 --> n_b34_1_0 : Send a light party ahead to test the gro...
 n_h34 --> n_b34_2_0 : Push through despite the failing light.
 n_b35_0_0 --> n_b35_0_1 : Keep going.
@@ -1601,7 +1601,7 @@ n_b35_2_0 --> n_b35_2_1 : Keep going.
 n_b35_2_1 --> n_b35_2_2 : Keep going.
 n_b35_2_2 --> n_e35_2 : Commit to the crossing.
 n_h35 --> n_h36 : Press on along the safe line.
-n_h35 --> n_b35_0_0 : Cut straight across the open ash to save...
+n_h35 --> n_b35_0_0 : Cut straight across the open {HAZARD} to...
 n_h35 --> n_b35_1_0 : Send a light party ahead to test the gro...
 n_h35 --> n_b35_2_0 : Push through despite the failing light.
 n_d36 --> n_h37 : Rejoin the column at the waypoint.
@@ -1615,7 +1615,7 @@ n_b36_2_1 --> n_b36_2_2 : Keep going.
 n_b36_2_2 --> n_e36_2 : Commit to the crossing.
 n_h36 --> n_h37 : Press on along the safe line.
 n_h36 --> n_d36 : Scout a flanking line before moving up.
-n_h36 --> n_b36_0_0 : Cut straight across the open ash to save...
+n_h36 --> n_b36_0_0 : Cut straight across the open {HAZARD} to...
 n_h36 --> n_b36_1_0 : Send a light party ahead to test the gro...
 n_h36 --> n_b36_2_0 : Push through despite the failing light.
 n_b37_0_0 --> n_b37_0_1 : Keep going.
@@ -1626,7 +1626,7 @@ n_b37_2_0 --> n_b37_2_1 : Keep going.
 n_b37_2_1 --> n_b37_2_2 : Keep going.
 n_b37_2_2 --> n_e37_2 : Commit to the crossing.
 n_h37 --> n_h38 : Press on along the safe line.
-n_h37 --> n_b37_0_0 : Cut straight across the open ash to save...
+n_h37 --> n_b37_0_0 : Cut straight across the open {HAZARD} to...
 n_h37 --> n_b37_1_0 : Send a light party ahead to test the gro...
 n_h37 --> n_b37_2_0 : Push through despite the failing light.
 n_d38 --> n_h39 : Rejoin the column at the waypoint.
@@ -1639,7 +1639,7 @@ n_b38_2_1 --> n_b38_2_2 : Keep going.
 n_b38_2_2 --> n_e38_2 : Commit to the crossing.
 n_h38 --> n_h39 : Press on along the safe line.
 n_h38 --> n_d38 : Scout a flanking line before moving up.
-n_h38 --> n_b38_0_0 : Cut straight across the open ash to save...
+n_h38 --> n_b38_0_0 : Cut straight across the open {HAZARD} to...
 n_h38 --> n_b38_1_0 : Send a light party ahead to test the gro...
 n_h38 --> n_b38_2_0 : Push through despite the failing light.
 n_b39_0_0 --> n_b39_0_1 : Keep going.
@@ -1651,7 +1651,7 @@ n_b39_2_0 --> n_b39_2_1 : Keep going.
 n_b39_2_1 --> n_b39_2_2 : Keep going.
 n_b39_2_2 --> n_e39_2 : Commit to the crossing.
 n_h39 --> n_h40 : Press on along the safe line.
-n_h39 --> n_b39_0_0 : Cut straight across the open ash to save...
+n_h39 --> n_b39_0_0 : Cut straight across the open {HAZARD} to...
 n_h39 --> n_b39_1_0 : Send a light party ahead to test the gro...
 n_h39 --> n_b39_2_0 : Push through despite the failing light.
 n_d40 --> n_h41 : Rejoin the column at the waypoint.
@@ -1664,7 +1664,7 @@ n_b40_2_1 --> n_b40_2_2 : Keep going.
 n_b40_2_2 --> n_e40_2 : Commit to the crossing.
 n_h40 --> n_h41 : Press on along the safe line.
 n_h40 --> n_d40 : Scout a flanking line before moving up.
-n_h40 --> n_b40_0_0 : Cut straight across the open ash to save...
+n_h40 --> n_b40_0_0 : Cut straight across the open {HAZARD} to...
 n_h40 --> n_b40_1_0 : Send a light party ahead to test the gro...
 n_h40 --> n_b40_2_0 : Push through despite the failing light.
 n_b41_0_0 --> n_b41_0_1 : Keep going.
@@ -1674,14 +1674,14 @@ n_b41_1_1 --> n_e41_1 : Commit to the crossing.
 n_b41_2_0 --> n_b41_2_1 : Keep going.
 n_b41_2_1 --> n_b41_2_2 : Keep going.
 n_b41_2_2 --> n_e41_2 : Commit to the crossing.
-n_h41 --> n_fin0 : Press on toward the far valley.
-n_h41 --> n_b41_0_0 : Cut straight across the open ash to save...
+n_h41 --> n_fin0 : Press on toward {LEG6_WAYPOINT}.
+n_h41 --> n_b41_0_0 : Cut straight across the open {HAZARD} to...
 n_h41 --> n_b41_1_0 : Send a light party ahead to test the gro...
 n_h41 --> n_b41_2_0 : Push through despite the failing light.
-n_fin0 --> n_fin1 : Press to the valley.
-n_fin1 --> n_fin2 : Press to the valley.
-n_fin2 --> n_fin3 : Press to the valley.
-n_fin3 --> n_fin4 : Press to the valley.
+n_fin0 --> n_fin1 : Press to {GOAL}.
+n_fin1 --> n_fin2 : Press to {GOAL}.
+n_fin2 --> n_fin3 : Press to {GOAL}.
+n_fin3 --> n_fin4 : Press to {GOAL}.
 n_fin4 --> n_win_all : Lead the whole expedition across togethe...
 n_fin4 --> n_win_costly : Split the party to force a faster crossi...
 n_fin4 --> n_win_scout : Send scouts first and hold the column ba...

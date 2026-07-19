@@ -1,0 +1,5211 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_thornwood_trial",
+  "version": 1,
+  "title": "The Thornwood Trial",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "adventure",
+      "courage",
+      "nature",
+      "coming-of-age"
+    ],
+    "estimated_minutes": 24,
+    "ending_count": 115,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "long",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=88 beats='Kai reaches the eaves of the Halyard Station as the Certification klaxon sounds, one day to cross the whole enchanted station and reach the Terminal Airlock by reactor shutdown to be named among the marshals; four ways lead in, the old cargo lift, the drained coolant duct, the scaffold catwalk, and the breached airlock seam'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Follow the old cargo lift.",
+          "target": "ap_1"
+        },
+        {
+          "id": "c_n_start_2",
+          "label": "Take the drained coolant duct.",
+          "target": "ap_2"
+        },
+        {
+          "id": "c_n_start_3",
+          "label": "Walk the scaffold catwalk.",
+          "target": "ap_3"
+        },
+        {
+          "id": "c_n_start_4",
+          "label": "Slip through the breached airlock seam.",
+          "target": "ap_4"
+        }
+      ]
+    },
+    {
+      "id": "ap_1",
+      "body": "<<FILL role=rising words=58 beats='the old cargo lift winds quiet under the first wires and brings Kai to the Cargo Maze mouth where all the ways knot together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ap_1_1",
+          "label": "Press on to the Cargo Maze mouth.",
+          "target": "h_maze"
+        }
+      ]
+    },
+    {
+      "id": "ap_2",
+      "body": "<<FILL role=rising words=58 beats='the drained coolant duct is easy footing until it climbs to the same knot of wire paths at the Cargo Maze mouth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ap_2_1",
+          "label": "Press on to the Cargo Maze mouth.",
+          "target": "h_maze"
+        }
+      ]
+    },
+    {
+      "id": "ap_3",
+      "body": "<<FILL role=rising words=58 beats='the scaffold catwalk is wide and old and ends, as every road here ends, at the mouth of the Cargo Maze'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ap_3_1",
+          "label": "Press on to the Cargo Maze mouth.",
+          "target": "h_maze"
+        }
+      ]
+    },
+    {
+      "id": "ap_4",
+      "body": "<<FILL role=rising words=58 beats='the breached airlock seam lets Kai in behind the wires and drops down to the Cargo Maze mouth from above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ap_4_1",
+          "label": "Press on to the Cargo Maze mouth.",
+          "target": "h_maze"
+        }
+      ]
+    },
+    {
+      "id": "e_maze_hub0",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze_hub0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Cargo Bay"
+      }
+    },
+    {
+      "id": "e_maze_hub1",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze_hub1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Cargo Bay"
+      }
+    },
+    {
+      "id": "x_mazeh_1_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_mazeh_1_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_mazeh_1_2"
+        }
+      ]
+    },
+    {
+      "id": "x_mazeh_1_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_mazeh_1_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_mazeh_1"
+        }
+      ]
+    },
+    {
+      "id": "e_mazeh_1",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_mazeh_1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Cargo Bay"
+      }
+    },
+    {
+      "id": "h_maze",
+      "body": "<<FILL role=hub words=74 beats='Kai stands where four wire paths knot together at the heart of the Cargo Maze, the marshal marks scratched on the trunks pointing every wrong way at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_maze_f",
+          "label": "Take the true marshal mark deeper into the Cargo Maze.",
+          "target": "b_maze_1"
+        },
+        {
+          "id": "c_h_maze_s0",
+          "label": "Take the wider, gentler way.",
+          "target": "e_maze_hub0"
+        },
+        {
+          "id": "c_h_maze_s1",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_maze_hub1"
+        },
+        {
+          "id": "c_h_maze_c0",
+          "label": "Try the narrow shortcut around the test.",
+          "target": "x_mazeh_1_1"
+        }
+      ]
+    },
+    {
+      "id": "e_maze_1_0",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze_1_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Cargo Bay"
+      }
+    },
+    {
+      "id": "x_maze1_2_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze1_2_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze1_2_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze1_2_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze1_2_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze1_2_3"
+        }
+      ]
+    },
+    {
+      "id": "x_maze1_2_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze1_2_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze1_2"
+        }
+      ]
+    },
+    {
+      "id": "e_maze1_2",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze1_2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cargo Bay Close In"
+      }
+    },
+    {
+      "id": "x_maze1_3_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze1_3_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze1_3_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze1_3_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze1_3_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze1_3"
+        }
+      ]
+    },
+    {
+      "id": "e_maze1_3",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze1_3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Cargo Bay"
+      }
+    },
+    {
+      "id": "b_maze_1",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Cargo Maze, weighing the marshal marks against the failing light and the cable underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_maze_1_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "b_maze_2"
+        },
+        {
+          "id": "c_b_maze_1_s0",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_maze_1_0"
+        },
+        {
+          "id": "c_b_maze_1_x0",
+          "label": "Double back and start over.",
+          "target": "x_maze1_2_1"
+        },
+        {
+          "id": "c_b_maze_1_x1",
+          "label": "Trust the easy looking path.",
+          "target": "x_maze1_3_1"
+        },
+        {
+          "id": "c_b_maze_1_rc0",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_maze_0_1"
+        }
+      ]
+    },
+    {
+      "id": "e_maze_2_0",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze_2_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cargo Bay Close In"
+      }
+    },
+    {
+      "id": "x_maze2_4_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze2_4_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze2_4_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze2_4_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze2_4_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze2_4"
+        }
+      ]
+    },
+    {
+      "id": "e_maze2_4",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze2_4",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Cargo Bay"
+      }
+    },
+    {
+      "id": "x_maze2_5_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze2_5_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze2_5_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze2_5_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze2_5_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze2_5_3"
+        }
+      ]
+    },
+    {
+      "id": "x_maze2_5_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze2_5_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze2_5"
+        }
+      ]
+    },
+    {
+      "id": "e_maze2_5",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze2_5",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Cargo Bay"
+      }
+    },
+    {
+      "id": "b_maze_2",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Cargo Maze, weighing the marshal marks against the failing light and the cable underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_maze_2_f",
+          "label": "Read the signs and press ahead.",
+          "target": "b_maze_3"
+        },
+        {
+          "id": "c_b_maze_2_s0",
+          "label": "Rush it before the dark comes.",
+          "target": "e_maze_2_0"
+        },
+        {
+          "id": "c_b_maze_2_x0",
+          "label": "Trust the easy looking path.",
+          "target": "x_maze2_4_1"
+        },
+        {
+          "id": "c_b_maze_2_x1",
+          "label": "Cut straight across the marks.",
+          "target": "x_maze2_5_1"
+        },
+        {
+          "id": "c_b_maze_2_rc1",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_maze_1_1"
+        }
+      ]
+    },
+    {
+      "id": "e_maze_3_0",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze_3_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Cargo Bay"
+      }
+    },
+    {
+      "id": "x_maze3_6_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze3_6_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze3_6_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze3_6_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze3_6_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze3_6_3"
+        }
+      ]
+    },
+    {
+      "id": "x_maze3_6_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze3_6_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze3_6"
+        }
+      ]
+    },
+    {
+      "id": "e_maze3_6",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze3_6",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Cargo Bay"
+      }
+    },
+    {
+      "id": "x_maze3_7_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze3_7_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze3_7_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze3_7_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze3_7_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze3_7"
+        }
+      ]
+    },
+    {
+      "id": "e_maze3_7",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze3_7",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cargo Bay Defeat Kai"
+      }
+    },
+    {
+      "id": "b_maze_3",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Cargo Maze, weighing the marshal marks against the failing light and the cable underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_maze_3_f",
+          "label": "Hold the pace and go on.",
+          "target": "b_maze_4"
+        },
+        {
+          "id": "c_b_maze_3_s0",
+          "label": "Double back and start over.",
+          "target": "e_maze_3_0"
+        },
+        {
+          "id": "c_b_maze_3_x0",
+          "label": "Cut straight across the marks.",
+          "target": "x_maze3_6_1"
+        },
+        {
+          "id": "c_b_maze_3_x1",
+          "label": "Chance the quicker line.",
+          "target": "x_maze3_7_1"
+        },
+        {
+          "id": "c_b_maze_3_rc2",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_maze_2_1"
+        }
+      ]
+    },
+    {
+      "id": "e_maze_4_0",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze_4_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Cargo Bay"
+      }
+    },
+    {
+      "id": "x_maze4_8_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze4_8_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze4_8_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze4_8_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze4_8_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze4_8"
+        }
+      ]
+    },
+    {
+      "id": "e_maze4_8",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze4_8",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cargo Bay Defeat Kai"
+      }
+    },
+    {
+      "id": "x_maze4_9_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze4_9_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze4_9_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze4_9_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze4_9_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze4_9_3"
+        }
+      ]
+    },
+    {
+      "id": "x_maze4_9_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze4_9_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze4_9"
+        }
+      ]
+    },
+    {
+      "id": "e_maze4_9",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze4_9",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Cargo Bay"
+      }
+    },
+    {
+      "id": "b_maze_4",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Cargo Maze, weighing the marshal marks against the failing light and the cable underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_maze_4_f",
+          "label": "Follow the warden marks onward.",
+          "target": "b_maze_5"
+        },
+        {
+          "id": "c_b_maze_4_s0",
+          "label": "Trust the easy looking path.",
+          "target": "e_maze_4_0"
+        },
+        {
+          "id": "c_b_maze_4_x0",
+          "label": "Chance the quicker line.",
+          "target": "x_maze4_8_1"
+        },
+        {
+          "id": "c_b_maze_4_x1",
+          "label": "Follow the sound instead.",
+          "target": "x_maze4_9_1"
+        }
+      ]
+    },
+    {
+      "id": "e_maze_5_0",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze_5_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cargo Bay Defeat Kai"
+      }
+    },
+    {
+      "id": "x_maze5_10_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze5_10_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze5_10_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze5_10_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze5_10_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze5_10_3"
+        }
+      ]
+    },
+    {
+      "id": "x_maze5_10_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze5_10_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze5_10"
+        }
+      ]
+    },
+    {
+      "id": "e_maze5_10",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze5_10",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Cargo Bay"
+      }
+    },
+    {
+      "id": "x_maze5_11_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze5_11_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_maze5_11_2"
+        }
+      ]
+    },
+    {
+      "id": "x_maze5_11_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_maze5_11_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_maze5_11"
+        }
+      ]
+    },
+    {
+      "id": "e_maze5_11",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_maze5_11",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Driven Off in the Cargo Bay"
+      }
+    },
+    {
+      "id": "b_maze_5",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Cargo Maze, weighing the marshal marks against the failing light and the cable underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_maze_5_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "h_grove"
+        },
+        {
+          "id": "c_b_maze_5_s0",
+          "label": "Cut straight across the marks.",
+          "target": "e_maze_5_0"
+        },
+        {
+          "id": "c_b_maze_5_x0",
+          "label": "Follow the sound instead.",
+          "target": "x_maze5_10_1"
+        },
+        {
+          "id": "c_b_maze_5_x1",
+          "label": "Take the wider, gentler way.",
+          "target": "x_maze5_11_1"
+        }
+      ]
+    },
+    {
+      "id": "rc_maze_0_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_maze_0_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_maze_0_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_maze_0_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_maze_0_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_maze_0_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_maze_0_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_maze_0_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "h_grove"
+        }
+      ]
+    },
+    {
+      "id": "rc_maze_1_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_maze_1_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_maze_1_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_maze_1_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_maze_1_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_maze_1_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_maze_1_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_maze_1_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_maze_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_maze_2_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_maze_2_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_maze_2_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_maze_2_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_maze_2_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_maze_2_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_maze_2_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_maze_2_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_maze_4"
+        }
+      ]
+    },
+    {
+      "id": "e_grove_hub0",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove_hub0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Reactor Deck"
+      }
+    },
+    {
+      "id": "e_grove_hub1",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove_hub1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Reactor Deck"
+      }
+    },
+    {
+      "id": "x_groveh_12_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_groveh_12_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_groveh_12_2"
+        }
+      ]
+    },
+    {
+      "id": "x_groveh_12_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_groveh_12_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_groveh_12"
+        }
+      ]
+    },
+    {
+      "id": "e_groveh_12",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_groveh_12",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Reactor Deck"
+      }
+    },
+    {
+      "id": "h_grove",
+      "body": "<<FILL role=hub words=74 beats='the ground drops into the Flooded Reactor Deck, where rusted service marshals stand knee deep in black coolant, and the first marshal of the Certification waits with a test of calm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_grove_f",
+          "label": "Take the true marshal mark deeper into the Flooded Reactor Deck.",
+          "target": "b_grove_1"
+        },
+        {
+          "id": "c_h_grove_s0",
+          "label": "Take the wider, gentler way.",
+          "target": "e_grove_hub0"
+        },
+        {
+          "id": "c_h_grove_s1",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_grove_hub1"
+        },
+        {
+          "id": "c_h_grove_c0",
+          "label": "Try the narrow shortcut around the test.",
+          "target": "x_groveh_12_1"
+        }
+      ]
+    },
+    {
+      "id": "e_grove_1_0",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove_1_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Reactor Deck"
+      }
+    },
+    {
+      "id": "x_grove1_13_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove1_13_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove1_13_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove1_13_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove1_13_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove1_13_3"
+        }
+      ]
+    },
+    {
+      "id": "x_grove1_13_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove1_13_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove1_13"
+        }
+      ]
+    },
+    {
+      "id": "e_grove1_13",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove1_13",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Reactor Deck Closes In"
+      }
+    },
+    {
+      "id": "x_grove1_14_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove1_14_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove1_14_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove1_14_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove1_14_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove1_14"
+        }
+      ]
+    },
+    {
+      "id": "e_grove1_14",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove1_14",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Reactor Deck"
+      }
+    },
+    {
+      "id": "b_grove_1",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Flooded Reactor Deck, weighing the marshal marks against the failing light and the sludge underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_grove_1_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "b_grove_2"
+        },
+        {
+          "id": "c_b_grove_1_s0",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_grove_1_0"
+        },
+        {
+          "id": "c_b_grove_1_x0",
+          "label": "Double back and start over.",
+          "target": "x_grove1_13_1"
+        },
+        {
+          "id": "c_b_grove_1_x1",
+          "label": "Trust the easy looking path.",
+          "target": "x_grove1_14_1"
+        },
+        {
+          "id": "c_b_grove_1_rc0",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_grove_0_1"
+        }
+      ]
+    },
+    {
+      "id": "e_grove_2_0",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove_2_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Reactor Deck Closes In"
+      }
+    },
+    {
+      "id": "x_grove2_15_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove2_15_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove2_15_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove2_15_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove2_15_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove2_15"
+        }
+      ]
+    },
+    {
+      "id": "e_grove2_15",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove2_15",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Reactor Deck"
+      }
+    },
+    {
+      "id": "x_grove2_16_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove2_16_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove2_16_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove2_16_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove2_16_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove2_16_3"
+        }
+      ]
+    },
+    {
+      "id": "x_grove2_16_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove2_16_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove2_16"
+        }
+      ]
+    },
+    {
+      "id": "e_grove2_16",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove2_16",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Reactor Deck"
+      }
+    },
+    {
+      "id": "b_grove_2",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Flooded Reactor Deck, weighing the marshal marks against the failing light and the sludge underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_grove_2_f",
+          "label": "Read the signs and press ahead.",
+          "target": "b_grove_3"
+        },
+        {
+          "id": "c_b_grove_2_s0",
+          "label": "Rush it before the dark comes.",
+          "target": "e_grove_2_0"
+        },
+        {
+          "id": "c_b_grove_2_x0",
+          "label": "Trust the easy looking path.",
+          "target": "x_grove2_15_1"
+        },
+        {
+          "id": "c_b_grove_2_x1",
+          "label": "Cut straight across the marks.",
+          "target": "x_grove2_16_1"
+        },
+        {
+          "id": "c_b_grove_2_rc1",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_grove_1_1"
+        }
+      ]
+    },
+    {
+      "id": "e_grove_3_0",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove_3_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Reactor Deck"
+      }
+    },
+    {
+      "id": "x_grove3_17_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove3_17_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove3_17_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove3_17_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove3_17_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove3_17_3"
+        }
+      ]
+    },
+    {
+      "id": "x_grove3_17_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove3_17_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove3_17"
+        }
+      ]
+    },
+    {
+      "id": "e_grove3_17",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove3_17",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Reactor Deck"
+      }
+    },
+    {
+      "id": "x_grove3_18_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove3_18_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove3_18_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove3_18_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove3_18_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove3_18"
+        }
+      ]
+    },
+    {
+      "id": "e_grove3_18",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove3_18",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Reactor Deck Defeats Kai"
+      }
+    },
+    {
+      "id": "b_grove_3",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Flooded Reactor Deck, weighing the marshal marks against the failing light and the sludge underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_grove_3_f",
+          "label": "Hold the pace and go on.",
+          "target": "b_grove_4"
+        },
+        {
+          "id": "c_b_grove_3_s0",
+          "label": "Double back and start over.",
+          "target": "e_grove_3_0"
+        },
+        {
+          "id": "c_b_grove_3_x0",
+          "label": "Cut straight across the marks.",
+          "target": "x_grove3_17_1"
+        },
+        {
+          "id": "c_b_grove_3_x1",
+          "label": "Chance the quicker line.",
+          "target": "x_grove3_18_1"
+        },
+        {
+          "id": "c_b_grove_3_rc2",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_grove_2_1"
+        }
+      ]
+    },
+    {
+      "id": "e_grove_4_0",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove_4_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Reactor Deck"
+      }
+    },
+    {
+      "id": "x_grove4_19_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove4_19_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove4_19_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove4_19_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove4_19_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove4_19"
+        }
+      ]
+    },
+    {
+      "id": "e_grove4_19",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove4_19",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Reactor Deck Defeats Kai"
+      }
+    },
+    {
+      "id": "x_grove4_20_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove4_20_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove4_20_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove4_20_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove4_20_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove4_20_3"
+        }
+      ]
+    },
+    {
+      "id": "x_grove4_20_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove4_20_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove4_20"
+        }
+      ]
+    },
+    {
+      "id": "e_grove4_20",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove4_20",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Reactor Deck"
+      }
+    },
+    {
+      "id": "b_grove_4",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Flooded Reactor Deck, weighing the marshal marks against the failing light and the sludge underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_grove_4_f",
+          "label": "Follow the warden marks onward.",
+          "target": "b_grove_5"
+        },
+        {
+          "id": "c_b_grove_4_s0",
+          "label": "Trust the easy looking path.",
+          "target": "e_grove_4_0"
+        },
+        {
+          "id": "c_b_grove_4_x0",
+          "label": "Chance the quicker line.",
+          "target": "x_grove4_19_1"
+        },
+        {
+          "id": "c_b_grove_4_x1",
+          "label": "Follow the sound instead.",
+          "target": "x_grove4_20_1"
+        }
+      ]
+    },
+    {
+      "id": "e_grove_5_0",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove_5_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Reactor Deck Defeats Kai"
+      }
+    },
+    {
+      "id": "x_grove5_21_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove5_21_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove5_21_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove5_21_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove5_21_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove5_21_3"
+        }
+      ]
+    },
+    {
+      "id": "x_grove5_21_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove5_21_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove5_21"
+        }
+      ]
+    },
+    {
+      "id": "e_grove5_21",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove5_21",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Reactor Deck"
+      }
+    },
+    {
+      "id": "x_grove5_22_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove5_22_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_grove5_22_2"
+        }
+      ]
+    },
+    {
+      "id": "x_grove5_22_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_grove5_22_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_grove5_22"
+        }
+      ]
+    },
+    {
+      "id": "e_grove5_22",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_grove5_22",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Driven Off in the Reactor Deck"
+      }
+    },
+    {
+      "id": "b_grove_5",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Flooded Reactor Deck, weighing the marshal marks against the failing light and the sludge underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_grove_5_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "h_warren"
+        },
+        {
+          "id": "c_b_grove_5_s0",
+          "label": "Cut straight across the marks.",
+          "target": "e_grove_5_0"
+        },
+        {
+          "id": "c_b_grove_5_x0",
+          "label": "Follow the sound instead.",
+          "target": "x_grove5_21_1"
+        },
+        {
+          "id": "c_b_grove_5_x1",
+          "label": "Take the wider, gentler way.",
+          "target": "x_grove5_22_1"
+        }
+      ]
+    },
+    {
+      "id": "rc_grove_0_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_grove_0_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_grove_0_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_grove_0_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_grove_0_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_grove_0_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_grove_0_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_grove_0_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "h_warren"
+        }
+      ]
+    },
+    {
+      "id": "rc_grove_1_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_grove_1_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_grove_1_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_grove_1_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_grove_1_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_grove_1_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_grove_1_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_grove_1_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_grove_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_grove_2_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_grove_2_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_grove_2_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_grove_2_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_grove_2_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_grove_2_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_grove_2_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_grove_2_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_grove_4"
+        }
+      ]
+    },
+    {
+      "id": "e_warren_hub0",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren_hub0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Drone Bay"
+      }
+    },
+    {
+      "id": "e_warren_hub1",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren_hub1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Drone Bay"
+      }
+    },
+    {
+      "id": "x_warrenh_23_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warrenh_23_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warrenh_23_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warrenh_23_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warrenh_23_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warrenh_23"
+        }
+      ]
+    },
+    {
+      "id": "e_warrenh_23",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warrenh_23",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Drone Bay"
+      }
+    },
+    {
+      "id": "h_warren",
+      "body": "<<FILL role=hub words=74 beats='the Drone Nest opens in a maze of vents and crawlways, the great sentry-drone-marshal pacing its ledge, watching to see whether Kai will fight, flee, or make peace'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_warren_f",
+          "label": "Take the true marshal mark deeper into the Drone Nest.",
+          "target": "b_warren_1"
+        },
+        {
+          "id": "c_h_warren_s0",
+          "label": "Take the wider, gentler way.",
+          "target": "e_warren_hub0"
+        },
+        {
+          "id": "c_h_warren_s1",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_warren_hub1"
+        },
+        {
+          "id": "c_h_warren_c0",
+          "label": "Try the narrow shortcut around the test.",
+          "target": "x_warrenh_23_1"
+        }
+      ]
+    },
+    {
+      "id": "e_warren_1_0",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren_1_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Drone Bay"
+      }
+    },
+    {
+      "id": "x_warren1_24_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren1_24_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren1_24_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren1_24_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren1_24_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren1_24_3"
+        }
+      ]
+    },
+    {
+      "id": "x_warren1_24_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren1_24_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren1_24"
+        }
+      ]
+    },
+    {
+      "id": "e_warren1_24",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren1_24",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drone Bay Closes In"
+      }
+    },
+    {
+      "id": "x_warren1_25_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren1_25_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren1_25_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren1_25_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren1_25_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren1_25"
+        }
+      ]
+    },
+    {
+      "id": "e_warren1_25",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren1_25",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Drone Bay"
+      }
+    },
+    {
+      "id": "b_warren_1",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Drone Nest, weighing the marshal marks against the failing light and the grating underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_warren_1_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "b_warren_2"
+        },
+        {
+          "id": "c_b_warren_1_s0",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_warren_1_0"
+        },
+        {
+          "id": "c_b_warren_1_x0",
+          "label": "Double back and start over.",
+          "target": "x_warren1_24_1"
+        },
+        {
+          "id": "c_b_warren_1_x1",
+          "label": "Trust the easy looking path.",
+          "target": "x_warren1_25_1"
+        },
+        {
+          "id": "c_b_warren_1_rc0",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_warren_0_1"
+        }
+      ]
+    },
+    {
+      "id": "e_warren_2_0",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren_2_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drone Bay Closes In"
+      }
+    },
+    {
+      "id": "x_warren2_26_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren2_26_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren2_26_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren2_26_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren2_26_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren2_26"
+        }
+      ]
+    },
+    {
+      "id": "e_warren2_26",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren2_26",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Drone Bay"
+      }
+    },
+    {
+      "id": "x_warren2_27_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren2_27_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren2_27_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren2_27_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren2_27_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren2_27_3"
+        }
+      ]
+    },
+    {
+      "id": "x_warren2_27_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren2_27_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren2_27"
+        }
+      ]
+    },
+    {
+      "id": "e_warren2_27",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren2_27",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Drone Bay"
+      }
+    },
+    {
+      "id": "b_warren_2",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Drone Nest, weighing the marshal marks against the failing light and the grating underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_warren_2_f",
+          "label": "Read the signs and press ahead.",
+          "target": "b_warren_3"
+        },
+        {
+          "id": "c_b_warren_2_s0",
+          "label": "Rush it before the dark comes.",
+          "target": "e_warren_2_0"
+        },
+        {
+          "id": "c_b_warren_2_x0",
+          "label": "Trust the easy looking path.",
+          "target": "x_warren2_26_1"
+        },
+        {
+          "id": "c_b_warren_2_x1",
+          "label": "Cut straight across the marks.",
+          "target": "x_warren2_27_1"
+        },
+        {
+          "id": "c_b_warren_2_rc1",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_warren_1_1"
+        }
+      ]
+    },
+    {
+      "id": "e_warren_3_0",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren_3_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Drone Bay"
+      }
+    },
+    {
+      "id": "x_warren3_28_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren3_28_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren3_28_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren3_28_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren3_28_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren3_28_3"
+        }
+      ]
+    },
+    {
+      "id": "x_warren3_28_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren3_28_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren3_28"
+        }
+      ]
+    },
+    {
+      "id": "e_warren3_28",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren3_28",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Drone Bay"
+      }
+    },
+    {
+      "id": "x_warren3_29_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren3_29_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren3_29_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren3_29_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren3_29_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren3_29"
+        }
+      ]
+    },
+    {
+      "id": "e_warren3_29",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren3_29",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drone Bay Defeats Kai"
+      }
+    },
+    {
+      "id": "b_warren_3",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Drone Nest, weighing the marshal marks against the failing light and the grating underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_warren_3_f",
+          "label": "Hold the pace and go on.",
+          "target": "b_warren_4"
+        },
+        {
+          "id": "c_b_warren_3_s0",
+          "label": "Double back and start over.",
+          "target": "e_warren_3_0"
+        },
+        {
+          "id": "c_b_warren_3_x0",
+          "label": "Cut straight across the marks.",
+          "target": "x_warren3_28_1"
+        },
+        {
+          "id": "c_b_warren_3_x1",
+          "label": "Chance the quicker line.",
+          "target": "x_warren3_29_1"
+        },
+        {
+          "id": "c_b_warren_3_rc2",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_warren_2_1"
+        }
+      ]
+    },
+    {
+      "id": "e_warren_4_0",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren_4_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Drone Bay"
+      }
+    },
+    {
+      "id": "x_warren4_30_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren4_30_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren4_30_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren4_30_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren4_30_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren4_30"
+        }
+      ]
+    },
+    {
+      "id": "e_warren4_30",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren4_30",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drone Bay Defeats Kai"
+      }
+    },
+    {
+      "id": "x_warren4_31_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren4_31_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren4_31_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren4_31_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren4_31_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren4_31_3"
+        }
+      ]
+    },
+    {
+      "id": "x_warren4_31_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren4_31_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren4_31"
+        }
+      ]
+    },
+    {
+      "id": "e_warren4_31",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren4_31",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Drone Bay"
+      }
+    },
+    {
+      "id": "b_warren_4",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Drone Nest, weighing the marshal marks against the failing light and the grating underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_warren_4_f",
+          "label": "Follow the warden marks onward.",
+          "target": "b_warren_5"
+        },
+        {
+          "id": "c_b_warren_4_s0",
+          "label": "Trust the easy looking path.",
+          "target": "e_warren_4_0"
+        },
+        {
+          "id": "c_b_warren_4_x0",
+          "label": "Chance the quicker line.",
+          "target": "x_warren4_30_1"
+        },
+        {
+          "id": "c_b_warren_4_x1",
+          "label": "Follow the sound instead.",
+          "target": "x_warren4_31_1"
+        }
+      ]
+    },
+    {
+      "id": "e_warren_5_0",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren_5_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drone Bay Defeats Kai"
+      }
+    },
+    {
+      "id": "x_warren5_32_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren5_32_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren5_32_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren5_32_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren5_32_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren5_32_3"
+        }
+      ]
+    },
+    {
+      "id": "x_warren5_32_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren5_32_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren5_32"
+        }
+      ]
+    },
+    {
+      "id": "e_warren5_32",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren5_32",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Drone Bay"
+      }
+    },
+    {
+      "id": "x_warren5_33_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren5_33_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_warren5_33_2"
+        }
+      ]
+    },
+    {
+      "id": "x_warren5_33_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_warren5_33_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_warren5_33"
+        }
+      ]
+    },
+    {
+      "id": "e_warren5_33",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_warren5_33",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Driven Off in the Drone Bay"
+      }
+    },
+    {
+      "id": "b_warren_5",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Drone Nest, weighing the marshal marks against the failing light and the grating underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_warren_5_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "h_council"
+        },
+        {
+          "id": "c_b_warren_5_s0",
+          "label": "Cut straight across the marks.",
+          "target": "e_warren_5_0"
+        },
+        {
+          "id": "c_b_warren_5_x0",
+          "label": "Follow the sound instead.",
+          "target": "x_warren5_32_1"
+        },
+        {
+          "id": "c_b_warren_5_x1",
+          "label": "Take the wider, gentler way.",
+          "target": "x_warren5_33_1"
+        }
+      ]
+    },
+    {
+      "id": "rc_warren_0_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_warren_0_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_warren_0_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_warren_0_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_warren_0_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_warren_0_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_warren_0_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_warren_0_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "h_council"
+        }
+      ]
+    },
+    {
+      "id": "rc_warren_1_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_warren_1_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_warren_1_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_warren_1_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_warren_1_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_warren_1_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_warren_1_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_warren_1_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_warren_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_warren_2_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_warren_2_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_warren_2_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_warren_2_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_warren_2_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_warren_2_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_warren_2_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_warren_2_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_warren_4"
+        }
+      ]
+    },
+    {
+      "id": "e_council_hub0",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council_hub0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Archive"
+      }
+    },
+    {
+      "id": "e_council_hub1",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council_hub1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Archive"
+      }
+    },
+    {
+      "id": "x_councilh_34_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_councilh_34_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_councilh_34_2"
+        }
+      ]
+    },
+    {
+      "id": "x_councilh_34_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_councilh_34_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_councilh_34"
+        }
+      ]
+    },
+    {
+      "id": "e_councilh_34",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_councilh_34",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Archive"
+      }
+    },
+    {
+      "id": "h_council",
+      "body": "<<FILL role=hub words=74 beats='the old server core fills the whole hollow, three masked marshals seated in its roots, and they will not let Kai pass until the second marshal test of logic is answered'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_council_f",
+          "label": "Take the true marshal mark deeper into the Archive Hold.",
+          "target": "b_council_1"
+        },
+        {
+          "id": "c_h_council_s0",
+          "label": "Take the wider, gentler way.",
+          "target": "e_council_hub0"
+        },
+        {
+          "id": "c_h_council_s1",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_council_hub1"
+        },
+        {
+          "id": "c_h_council_c0",
+          "label": "Try the narrow shortcut around the test.",
+          "target": "x_councilh_34_1"
+        }
+      ]
+    },
+    {
+      "id": "e_council_1_0",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council_1_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Archive"
+      }
+    },
+    {
+      "id": "x_council1_35_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council1_35_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council1_35_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council1_35_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council1_35_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council1_35_3"
+        }
+      ]
+    },
+    {
+      "id": "x_council1_35_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council1_35_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council1_35"
+        }
+      ]
+    },
+    {
+      "id": "e_council1_35",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council1_35",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Archive Closes In"
+      }
+    },
+    {
+      "id": "x_council1_36_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council1_36_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council1_36_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council1_36_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council1_36_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council1_36"
+        }
+      ]
+    },
+    {
+      "id": "e_council1_36",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council1_36",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Archive"
+      }
+    },
+    {
+      "id": "b_council_1",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Archive Hold, weighing the marshal marks against the failing light and the conduit underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_council_1_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "b_council_2"
+        },
+        {
+          "id": "c_b_council_1_s0",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_council_1_0"
+        },
+        {
+          "id": "c_b_council_1_x0",
+          "label": "Double back and start over.",
+          "target": "x_council1_35_1"
+        },
+        {
+          "id": "c_b_council_1_x1",
+          "label": "Trust the easy looking path.",
+          "target": "x_council1_36_1"
+        },
+        {
+          "id": "c_b_council_1_rc0",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_council_0_1"
+        }
+      ]
+    },
+    {
+      "id": "e_council_2_0",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council_2_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Archive Closes In"
+      }
+    },
+    {
+      "id": "x_council2_37_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council2_37_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council2_37_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council2_37_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council2_37_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council2_37"
+        }
+      ]
+    },
+    {
+      "id": "e_council2_37",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council2_37",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Archive"
+      }
+    },
+    {
+      "id": "x_council2_38_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council2_38_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council2_38_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council2_38_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council2_38_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council2_38_3"
+        }
+      ]
+    },
+    {
+      "id": "x_council2_38_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council2_38_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council2_38"
+        }
+      ]
+    },
+    {
+      "id": "e_council2_38",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council2_38",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Archive"
+      }
+    },
+    {
+      "id": "b_council_2",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Archive Hold, weighing the marshal marks against the failing light and the conduit underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_council_2_f",
+          "label": "Read the signs and press ahead.",
+          "target": "b_council_3"
+        },
+        {
+          "id": "c_b_council_2_s0",
+          "label": "Rush it before the dark comes.",
+          "target": "e_council_2_0"
+        },
+        {
+          "id": "c_b_council_2_x0",
+          "label": "Trust the easy looking path.",
+          "target": "x_council2_37_1"
+        },
+        {
+          "id": "c_b_council_2_x1",
+          "label": "Cut straight across the marks.",
+          "target": "x_council2_38_1"
+        },
+        {
+          "id": "c_b_council_2_rc1",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_council_1_1"
+        }
+      ]
+    },
+    {
+      "id": "e_council_3_0",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council_3_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Archive"
+      }
+    },
+    {
+      "id": "x_council3_39_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council3_39_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council3_39_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council3_39_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council3_39_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council3_39_3"
+        }
+      ]
+    },
+    {
+      "id": "x_council3_39_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council3_39_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council3_39"
+        }
+      ]
+    },
+    {
+      "id": "e_council3_39",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council3_39",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Archive"
+      }
+    },
+    {
+      "id": "x_council3_40_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council3_40_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council3_40_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council3_40_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council3_40_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council3_40"
+        }
+      ]
+    },
+    {
+      "id": "e_council3_40",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council3_40",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Archive Defeats Kai"
+      }
+    },
+    {
+      "id": "b_council_3",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Archive Hold, weighing the marshal marks against the failing light and the conduit underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_council_3_f",
+          "label": "Hold the pace and go on.",
+          "target": "b_council_4"
+        },
+        {
+          "id": "c_b_council_3_s0",
+          "label": "Double back and start over.",
+          "target": "e_council_3_0"
+        },
+        {
+          "id": "c_b_council_3_x0",
+          "label": "Cut straight across the marks.",
+          "target": "x_council3_39_1"
+        },
+        {
+          "id": "c_b_council_3_x1",
+          "label": "Chance the quicker line.",
+          "target": "x_council3_40_1"
+        },
+        {
+          "id": "c_b_council_3_rc2",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_council_2_1"
+        }
+      ]
+    },
+    {
+      "id": "e_council_4_0",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council_4_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Archive"
+      }
+    },
+    {
+      "id": "x_council4_41_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council4_41_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council4_41_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council4_41_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council4_41_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council4_41"
+        }
+      ]
+    },
+    {
+      "id": "e_council4_41",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council4_41",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Archive Defeats Kai"
+      }
+    },
+    {
+      "id": "x_council4_42_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council4_42_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council4_42_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council4_42_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council4_42_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council4_42_3"
+        }
+      ]
+    },
+    {
+      "id": "x_council4_42_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council4_42_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council4_42"
+        }
+      ]
+    },
+    {
+      "id": "e_council4_42",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council4_42",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Archive"
+      }
+    },
+    {
+      "id": "b_council_4",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Archive Hold, weighing the marshal marks against the failing light and the conduit underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_council_4_f",
+          "label": "Follow the warden marks onward.",
+          "target": "b_council_5"
+        },
+        {
+          "id": "c_b_council_4_s0",
+          "label": "Trust the easy looking path.",
+          "target": "e_council_4_0"
+        },
+        {
+          "id": "c_b_council_4_x0",
+          "label": "Chance the quicker line.",
+          "target": "x_council4_41_1"
+        },
+        {
+          "id": "c_b_council_4_x1",
+          "label": "Follow the sound instead.",
+          "target": "x_council4_42_1"
+        }
+      ]
+    },
+    {
+      "id": "e_council_5_0",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council_5_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Archive Defeats Kai"
+      }
+    },
+    {
+      "id": "x_council5_43_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council5_43_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council5_43_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council5_43_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council5_43_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council5_43_3"
+        }
+      ]
+    },
+    {
+      "id": "x_council5_43_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council5_43_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council5_43"
+        }
+      ]
+    },
+    {
+      "id": "e_council5_43",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council5_43",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Archive"
+      }
+    },
+    {
+      "id": "x_council5_44_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council5_44_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_council5_44_2"
+        }
+      ]
+    },
+    {
+      "id": "x_council5_44_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_council5_44_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_council5_44"
+        }
+      ]
+    },
+    {
+      "id": "e_council5_44",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_council5_44",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Driven Off in the Archive"
+      }
+    },
+    {
+      "id": "b_council_5",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Archive Hold, weighing the marshal marks against the failing light and the conduit underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_council_5_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "h_ridge"
+        },
+        {
+          "id": "c_b_council_5_s0",
+          "label": "Cut straight across the marks.",
+          "target": "e_council_5_0"
+        },
+        {
+          "id": "c_b_council_5_x0",
+          "label": "Follow the sound instead.",
+          "target": "x_council5_43_1"
+        },
+        {
+          "id": "c_b_council_5_x1",
+          "label": "Take the wider, gentler way.",
+          "target": "x_council5_44_1"
+        }
+      ]
+    },
+    {
+      "id": "rc_council_0_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_council_0_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_council_0_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_council_0_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_council_0_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_council_0_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_council_0_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_council_0_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "h_ridge"
+        }
+      ]
+    },
+    {
+      "id": "rc_council_1_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_council_1_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_council_1_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_council_1_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_council_1_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_council_1_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_council_1_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_council_1_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_council_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_council_2_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_council_2_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_council_2_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_council_2_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_council_2_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_council_2_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_council_2_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_council_2_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_council_4"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge_hub0",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge_hub0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Truss"
+      }
+    },
+    {
+      "id": "e_ridge_hub1",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge_hub1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Truss"
+      }
+    },
+    {
+      "id": "x_ridgeh_45_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridgeh_45_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridgeh_45_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridgeh_45_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridgeh_45_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridgeh_45"
+        }
+      ]
+    },
+    {
+      "id": "e_ridgeh_45",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridgeh_45",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Truss"
+      }
+    },
+    {
+      "id": "h_ridge",
+      "body": "<<FILL role=hub words=74 beats='the Outer Truss climbs toward the last light, the third marshal test of resolve strung along a wind-scoured solar truss above the whole darkening station'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_ridge_f",
+          "label": "Take the true marshal mark deeper into the Outer Truss.",
+          "target": "b_ridge_1"
+        },
+        {
+          "id": "c_h_ridge_s0",
+          "label": "Take the wider, gentler way.",
+          "target": "e_ridge_hub0"
+        },
+        {
+          "id": "c_h_ridge_s1",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_ridge_hub1"
+        },
+        {
+          "id": "c_h_ridge_c0",
+          "label": "Try the narrow shortcut around the test.",
+          "target": "x_ridgeh_45_1"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge_1_0",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge_1_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Truss"
+      }
+    },
+    {
+      "id": "x_ridge1_46_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge1_46_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge1_46_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge1_46_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge1_46_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge1_46_3"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge1_46_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge1_46_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge1_46"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge1_46",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge1_46",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Truss Closes In"
+      }
+    },
+    {
+      "id": "x_ridge1_47_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge1_47_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge1_47_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge1_47_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge1_47_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge1_47"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge1_47",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge1_47",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Truss"
+      }
+    },
+    {
+      "id": "b_ridge_1",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Outer Truss, weighing the marshal marks against the failing light and the girder underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_ridge_1_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "b_ridge_2"
+        },
+        {
+          "id": "c_b_ridge_1_s0",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_ridge_1_0"
+        },
+        {
+          "id": "c_b_ridge_1_x0",
+          "label": "Double back and start over.",
+          "target": "x_ridge1_46_1"
+        },
+        {
+          "id": "c_b_ridge_1_x1",
+          "label": "Trust the easy looking path.",
+          "target": "x_ridge1_47_1"
+        },
+        {
+          "id": "c_b_ridge_1_rc0",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_ridge_0_1"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge_2_0",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge_2_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Truss Closes In"
+      }
+    },
+    {
+      "id": "x_ridge2_48_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge2_48_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge2_48_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge2_48_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge2_48_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge2_48"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge2_48",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge2_48",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Truss"
+      }
+    },
+    {
+      "id": "x_ridge2_49_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge2_49_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge2_49_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge2_49_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge2_49_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge2_49_3"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge2_49_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge2_49_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge2_49"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge2_49",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge2_49",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Truss"
+      }
+    },
+    {
+      "id": "b_ridge_2",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Outer Truss, weighing the marshal marks against the failing light and the girder underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_ridge_2_f",
+          "label": "Read the signs and press ahead.",
+          "target": "b_ridge_3"
+        },
+        {
+          "id": "c_b_ridge_2_s0",
+          "label": "Rush it before the dark comes.",
+          "target": "e_ridge_2_0"
+        },
+        {
+          "id": "c_b_ridge_2_x0",
+          "label": "Trust the easy looking path.",
+          "target": "x_ridge2_48_1"
+        },
+        {
+          "id": "c_b_ridge_2_x1",
+          "label": "Cut straight across the marks.",
+          "target": "x_ridge2_49_1"
+        },
+        {
+          "id": "c_b_ridge_2_rc1",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_ridge_1_1"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge_3_0",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge_3_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Truss"
+      }
+    },
+    {
+      "id": "x_ridge3_50_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge3_50_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge3_50_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge3_50_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge3_50_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge3_50_3"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge3_50_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge3_50_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge3_50"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge3_50",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge3_50",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Truss"
+      }
+    },
+    {
+      "id": "x_ridge3_51_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge3_51_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge3_51_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge3_51_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge3_51_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge3_51"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge3_51",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge3_51",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Truss Defeats Kai"
+      }
+    },
+    {
+      "id": "b_ridge_3",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Outer Truss, weighing the marshal marks against the failing light and the girder underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_ridge_3_f",
+          "label": "Hold the pace and go on.",
+          "target": "b_ridge_4"
+        },
+        {
+          "id": "c_b_ridge_3_s0",
+          "label": "Double back and start over.",
+          "target": "e_ridge_3_0"
+        },
+        {
+          "id": "c_b_ridge_3_x0",
+          "label": "Cut straight across the marks.",
+          "target": "x_ridge3_50_1"
+        },
+        {
+          "id": "c_b_ridge_3_x1",
+          "label": "Chance the quicker line.",
+          "target": "x_ridge3_51_1"
+        },
+        {
+          "id": "c_b_ridge_3_rc2",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_ridge_2_1"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge_4_0",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge_4_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Truss"
+      }
+    },
+    {
+      "id": "x_ridge4_52_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge4_52_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge4_52_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge4_52_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge4_52_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge4_52"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge4_52",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge4_52",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Truss Defeats Kai"
+      }
+    },
+    {
+      "id": "x_ridge4_53_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge4_53_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge4_53_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge4_53_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge4_53_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge4_53_3"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge4_53_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge4_53_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge4_53"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge4_53",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge4_53",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Truss"
+      }
+    },
+    {
+      "id": "b_ridge_4",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Outer Truss, weighing the marshal marks against the failing light and the girder underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_ridge_4_f",
+          "label": "Follow the warden marks onward.",
+          "target": "b_ridge_5"
+        },
+        {
+          "id": "c_b_ridge_4_s0",
+          "label": "Trust the easy looking path.",
+          "target": "e_ridge_4_0"
+        },
+        {
+          "id": "c_b_ridge_4_x0",
+          "label": "Chance the quicker line.",
+          "target": "x_ridge4_52_1"
+        },
+        {
+          "id": "c_b_ridge_4_x1",
+          "label": "Follow the sound instead.",
+          "target": "x_ridge4_53_1"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge_5_0",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge_5_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Truss Defeats Kai"
+      }
+    },
+    {
+      "id": "x_ridge5_54_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge5_54_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge5_54_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge5_54_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge5_54_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge5_54_3"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge5_54_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge5_54_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge5_54"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge5_54",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge5_54",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Truss"
+      }
+    },
+    {
+      "id": "x_ridge5_55_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge5_55_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_ridge5_55_2"
+        }
+      ]
+    },
+    {
+      "id": "x_ridge5_55_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_ridge5_55_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_ridge5_55"
+        }
+      ]
+    },
+    {
+      "id": "e_ridge5_55",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_ridge5_55",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Driven Off in the Truss"
+      }
+    },
+    {
+      "id": "b_ridge_5",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Outer Truss, weighing the marshal marks against the failing light and the girder underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_ridge_5_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "h_gate"
+        },
+        {
+          "id": "c_b_ridge_5_s0",
+          "label": "Cut straight across the marks.",
+          "target": "e_ridge_5_0"
+        },
+        {
+          "id": "c_b_ridge_5_x0",
+          "label": "Follow the sound instead.",
+          "target": "x_ridge5_54_1"
+        },
+        {
+          "id": "c_b_ridge_5_x1",
+          "label": "Take the wider, gentler way.",
+          "target": "x_ridge5_55_1"
+        }
+      ]
+    },
+    {
+      "id": "rc_ridge_0_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_ridge_0_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_ridge_0_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_ridge_0_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_ridge_0_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_ridge_0_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_ridge_0_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_ridge_0_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "h_gate"
+        }
+      ]
+    },
+    {
+      "id": "rc_ridge_1_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_ridge_1_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_ridge_1_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_ridge_1_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_ridge_1_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_ridge_1_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_ridge_1_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_ridge_1_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_ridge_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_ridge_2_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_ridge_2_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_ridge_2_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_ridge_2_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_ridge_2_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_ridge_2_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_ridge_2_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_ridge_2_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_ridge_4"
+        }
+      ]
+    },
+    {
+      "id": "e_gate_hub0",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_hub0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Airlock"
+      }
+    },
+    {
+      "id": "e_gate_hub1",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_hub1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Airlock"
+      }
+    },
+    {
+      "id": "x_gateh_56_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gateh_56_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gateh_56_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gateh_56_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gateh_56_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gateh_56"
+        }
+      ]
+    },
+    {
+      "id": "e_gateh_56",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gateh_56",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Airlock"
+      }
+    },
+    {
+      "id": "h_gate",
+      "body": "<<FILL role=hub words=74 beats='the Terminal Airlock stands black against the last red band of reactor shutdown, its marshal bar drawn, and the klaxons that end the Certification have already begun to sound across the trees'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_gate_f",
+          "label": "Take the true marshal mark deeper into the Terminal Airlock.",
+          "target": "b_gate_1"
+        },
+        {
+          "id": "c_h_gate_s0",
+          "label": "Take the wider, gentler way.",
+          "target": "e_gate_hub0"
+        },
+        {
+          "id": "c_h_gate_s1",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_gate_hub1"
+        },
+        {
+          "id": "c_h_gate_c0",
+          "label": "Try the narrow shortcut around the test.",
+          "target": "x_gateh_56_1"
+        }
+      ]
+    },
+    {
+      "id": "e_gate_1_0",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_1_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Airlock"
+      }
+    },
+    {
+      "id": "x_gate1_57_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate1_57_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate1_57_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate1_57_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate1_57_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate1_57_3"
+        }
+      ]
+    },
+    {
+      "id": "x_gate1_57_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate1_57_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate1_57"
+        }
+      ]
+    },
+    {
+      "id": "e_gate1_57",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate1_57",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Airlock Closes In"
+      }
+    },
+    {
+      "id": "x_gate1_58_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate1_58_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate1_58_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate1_58_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate1_58_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate1_58"
+        }
+      ]
+    },
+    {
+      "id": "e_gate1_58",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate1_58",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Airlock"
+      }
+    },
+    {
+      "id": "b_gate_1",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Terminal Airlock, weighing the marshal marks against the failing light and the steel underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_gate_1_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "b_gate_2"
+        },
+        {
+          "id": "c_b_gate_1_s0",
+          "label": "Turn aside toward the strange light.",
+          "target": "e_gate_1_0"
+        },
+        {
+          "id": "c_b_gate_1_x0",
+          "label": "Double back and start over.",
+          "target": "x_gate1_57_1"
+        },
+        {
+          "id": "c_b_gate_1_x1",
+          "label": "Trust the easy looking path.",
+          "target": "x_gate1_58_1"
+        },
+        {
+          "id": "c_b_gate_1_rc0",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_gate_0_1"
+        }
+      ]
+    },
+    {
+      "id": "e_gate_2_0",
+      "body": "<<FILL role=ending words=50 beats='a wrong footing sends Kai down into a hollow with no handhold out, and the klaxons fade far off while the light goes'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_2_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Airlock Closes In"
+      }
+    },
+    {
+      "id": "x_gate2_59_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate2_59_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate2_59_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate2_59_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate2_59_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate2_59"
+        }
+      ]
+    },
+    {
+      "id": "e_gate2_59",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate2_59",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Airlock"
+      }
+    },
+    {
+      "id": "x_gate2_60_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate2_60_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate2_60_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate2_60_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate2_60_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate2_60_3"
+        }
+      ]
+    },
+    {
+      "id": "x_gate2_60_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate2_60_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate2_60"
+        }
+      ]
+    },
+    {
+      "id": "e_gate2_60",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate2_60",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Airlock"
+      }
+    },
+    {
+      "id": "b_gate_2",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Terminal Airlock, weighing the marshal marks against the failing light and the steel underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_gate_2_f",
+          "label": "Read the signs and press ahead.",
+          "target": "b_gate_3"
+        },
+        {
+          "id": "c_b_gate_2_s0",
+          "label": "Rush it before the dark comes.",
+          "target": "e_gate_2_0"
+        },
+        {
+          "id": "c_b_gate_2_x0",
+          "label": "Trust the easy looking path.",
+          "target": "x_gate2_59_1"
+        },
+        {
+          "id": "c_b_gate_2_x1",
+          "label": "Cut straight across the marks.",
+          "target": "x_gate2_60_1"
+        },
+        {
+          "id": "c_b_gate_2_rc1",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_gate_1_1"
+        }
+      ]
+    },
+    {
+      "id": "e_gate_3_0",
+      "body": "<<FILL role=ending words=50 beats='the marshal mark Kai trusted was a false one cut by some past failure, and it leads only to a dead wall of wire'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_3_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Wrong Turn in the Airlock"
+      }
+    },
+    {
+      "id": "x_gate3_61_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate3_61_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate3_61_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate3_61_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate3_61_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate3_61_3"
+        }
+      ]
+    },
+    {
+      "id": "x_gate3_61_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate3_61_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate3_61"
+        }
+      ]
+    },
+    {
+      "id": "e_gate3_61",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate3_61",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Airlock"
+      }
+    },
+    {
+      "id": "x_gate3_62_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate3_62_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate3_62_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate3_62_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate3_62_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate3_62"
+        }
+      ]
+    },
+    {
+      "id": "e_gate3_62",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate3_62",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Airlock Defeats Kai"
+      }
+    },
+    {
+      "id": "b_gate_3",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Terminal Airlock, weighing the marshal marks against the failing light and the steel underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_gate_3_f",
+          "label": "Hold the pace and go on.",
+          "target": "b_gate_4"
+        },
+        {
+          "id": "c_b_gate_3_s0",
+          "label": "Double back and start over.",
+          "target": "e_gate_3_0"
+        },
+        {
+          "id": "c_b_gate_3_x0",
+          "label": "Cut straight across the marks.",
+          "target": "x_gate3_61_1"
+        },
+        {
+          "id": "c_b_gate_3_x1",
+          "label": "Chance the quicker line.",
+          "target": "x_gate3_62_1"
+        },
+        {
+          "id": "c_b_gate_3_rc2",
+          "label": "Slip onto the wide warden run.",
+          "target": "rc_gate_2_1"
+        }
+      ]
+    },
+    {
+      "id": "e_gate_4_0",
+      "body": "<<FILL role=ending words=50 beats='the cold and the losing of the trail wear Kai down, and there is nothing to do but sit and wait for the searchers next day'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_4_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Snared in the Airlock"
+      }
+    },
+    {
+      "id": "x_gate4_63_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate4_63_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate4_63_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate4_63_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate4_63_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate4_63"
+        }
+      ]
+    },
+    {
+      "id": "e_gate4_63",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate4_63",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Airlock Defeats Kai"
+      }
+    },
+    {
+      "id": "x_gate4_64_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate4_64_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate4_64_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate4_64_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate4_64_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate4_64_3"
+        }
+      ]
+    },
+    {
+      "id": "x_gate4_64_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate4_64_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate4_64"
+        }
+      ]
+    },
+    {
+      "id": "e_gate4_64",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate4_64",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Airlock"
+      }
+    },
+    {
+      "id": "b_gate_4",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Terminal Airlock, weighing the marshal marks against the failing light and the steel underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_gate_4_f",
+          "label": "Follow the warden marks onward.",
+          "target": "b_gate_5"
+        },
+        {
+          "id": "c_b_gate_4_s0",
+          "label": "Trust the easy looking path.",
+          "target": "e_gate_4_0"
+        },
+        {
+          "id": "c_b_gate_4_x0",
+          "label": "Chance the quicker line.",
+          "target": "x_gate4_63_1"
+        },
+        {
+          "id": "c_b_gate_4_x1",
+          "label": "Follow the sound instead.",
+          "target": "x_gate4_64_1"
+        }
+      ]
+    },
+    {
+      "id": "e_gate_5_0",
+      "body": "<<FILL role=ending words=50 beats='Kai pushes too hard and too fast and blunders into a snarl that holds fast until long after reactor shutdown has passed'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_5_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Airlock Defeats Kai"
+      }
+    },
+    {
+      "id": "x_gate5_65_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate5_65_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate5_65_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate5_65_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate5_65_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate5_65_3"
+        }
+      ]
+    },
+    {
+      "id": "x_gate5_65_3",
+      "body": "<<FILL role=branch words=54 beats='the wrong way deepens, step 3, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate5_65_3_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate5_65"
+        }
+      ]
+    },
+    {
+      "id": "e_gate5_65",
+      "body": "<<FILL role=ending words=50 beats='the test is failed on a small thing, a rushed word, a wrong hand, and the marshal simply points the way back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate5_65",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted in the Airlock"
+      }
+    },
+    {
+      "id": "x_gate5_66_1",
+      "body": "<<FILL role=branch words=58 beats='the wrong way deepens, step 1, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate5_66_1_1",
+          "label": "Push on and hope it opens.",
+          "target": "x_gate5_66_2"
+        }
+      ]
+    },
+    {
+      "id": "x_gate5_66_2",
+      "body": "<<FILL role=branch words=62 beats='the wrong way deepens, step 2, wire and dark closing as Kai presses further from the marshal marks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_x_gate5_66_2_1",
+          "label": "Push on and hope it opens.",
+          "target": "e_gate5_66"
+        }
+      ]
+    },
+    {
+      "id": "e_gate5_66",
+      "body": "<<FILL role=ending words=50 beats='the way pinches shut in wire and dark and Kai cannot find a path back to the marks, and the Certification slips away for this season'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate5_66",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Driven Off in the Airlock"
+      }
+    },
+    {
+      "id": "b_gate_5",
+      "body": "<<FILL role=beat words=62 beats='Kai works deeper along the spine of the Terminal Airlock, weighing the marshal marks against the failing light and the steel underfoot as the way narrows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_gate_5_f",
+          "label": "Keep to the hardest, truest line.",
+          "target": "f_dusk"
+        },
+        {
+          "id": "c_b_gate_5_s0",
+          "label": "Cut straight across the marks.",
+          "target": "e_gate_5_0"
+        },
+        {
+          "id": "c_b_gate_5_x0",
+          "label": "Follow the sound instead.",
+          "target": "x_gate5_65_1"
+        },
+        {
+          "id": "c_b_gate_5_x1",
+          "label": "Take the wider, gentler way.",
+          "target": "x_gate5_66_1"
+        }
+      ]
+    },
+    {
+      "id": "rc_gate_0_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_gate_0_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_gate_0_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_gate_0_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_gate_0_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_gate_0_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_gate_0_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_gate_0_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "f_dusk"
+        }
+      ]
+    },
+    {
+      "id": "rc_gate_1_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_gate_1_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_gate_1_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_gate_1_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_gate_1_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_gate_1_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_gate_1_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_gate_1_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_gate_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_gate_2_1",
+      "body": "<<FILL role=branch words=60 beats='the run climbs over root and stone, promising to cut the corner off the Certification if Kai can keep the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_gate_2_1_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_gate_2_2"
+        }
+      ]
+    },
+    {
+      "id": "rc_gate_2_2",
+      "body": "<<FILL role=branch words=56 beats='shadow pools thick along the excursion and the marks grow few, but Kai pushes on hoping the run holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_gate_2_2_1",
+          "label": "Follow the warden run onward.",
+          "target": "rc_gate_2_3"
+        }
+      ]
+    },
+    {
+      "id": "rc_gate_2_3",
+      "body": "<<FILL role=reconverge words=60 beats='the side way twists back toward the spine of the trail, and Kai weighs whether to trust it or turn again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rc_gate_2_3_1",
+          "label": "Follow the warden run onward.",
+          "target": "b_gate_4"
+        }
+      ]
+    },
+    {
+      "id": "f_dusk",
+      "body": "<<FILL role=hub words=78 beats='Kai spills out of the trees before the Terminal Airlock as the last klaxon dies, the marshal bar still drawn, three marshals standing in the gateway to judge how the whole Certification was run'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_dusk_1",
+          "label": "Present yourself openly and ask to be named.",
+          "target": "f_name"
+        },
+        {
+          "id": "c_f_dusk_2",
+          "label": "Beg to pass by the Maintenance Crawl instead.",
+          "target": "f_wild"
+        },
+        {
+          "id": "c_f_dusk_3",
+          "label": "Try to slip the Airlock unseen in the dark.",
+          "target": "e_gate_slip"
+        },
+        {
+          "id": "c_f_dusk_4",
+          "label": "Sink down, spent, and let the klaxons pass.",
+          "target": "e_gate_late"
+        }
+      ]
+    },
+    {
+      "id": "f_name",
+      "body": "<<FILL role=beat words=70 beats='the head marshal asks Kai to account for the day, every mark read and creature met and test faced, and to name the one thing that carried Kai the whole way through the Halyard Station'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_name_1",
+          "label": "Answer that it was steadiness and the marks.",
+          "target": "e_win_warden"
+        },
+        {
+          "id": "c_f_name_2",
+          "label": "Answer that it was mercy shown to the beasts.",
+          "target": "e_win_wild"
+        },
+        {
+          "id": "c_f_name_3",
+          "label": "Answer that it was luck, and say so plainly.",
+          "target": "e_win_honest"
+        }
+      ]
+    },
+    {
+      "id": "f_wild",
+      "body": "<<FILL role=beat words=66 beats='the marshals will not open the great bar for a latecomer, but one marshal studies Kai and offers the Maintenance Crawl, a harder crossing that earns a lesser but real place if it is walked well'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_wild_1",
+          "label": "Walk the Maintenance Crawl and earn the lesser place.",
+          "target": "e_win_alt"
+        },
+        {
+          "id": "c_f_wild_2",
+          "label": "Refuse, and wait for next season instead.",
+          "target": "e_gate_next"
+        }
+      ]
+    },
+    {
+      "id": "e_win_warden",
+      "body": "<<FILL role=ending words=62 beats='the head marshal lays the green cord across Kai shoulders and names Kai a marshal of the Halyard Station, the whole test passed and the Terminal Airlock thrown open on the lit hall beyond'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_win_warden",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Named a Marshal of the Halyard Station"
+      }
+    },
+    {
+      "id": "e_win_wild",
+      "body": "<<FILL role=ending words=60 beats='the marshals judge that mercy to the Drone Bay beasts is the truest marshal heart of all, and Kai is named a marshal of the Maintenance Crawl with honour'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_win_wild",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Marshal of the Maintenance Crawl"
+      }
+    },
+    {
+      "id": "e_win_honest",
+      "body": "<<FILL role=ending words=58 beats='the marshals laugh, not unkindly, at so plain an answer, and name Kai a marshal all the same, for honesty is the first mark they look for'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_win_honest",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Named for a Plain True Answer"
+      }
+    },
+    {
+      "id": "e_win_alt",
+      "body": "<<FILL role=ending words=60 beats='Kai walks the Maintenance Crawl through the dark and comes out at dawn footsore but standing, given a real place among the outer marshals, a hard crossing well won'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_win_alt",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Dawn Crossing Won"
+      }
+    },
+    {
+      "id": "e_gate_slip",
+      "body": "<<FILL role=ending words=50 beats='the Airlock marshals see Kai the moment the shadow moves, and a Certification ended by sneaking is no pass at all, only a quiet walk back out'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_slip",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Caught Slipping the Airlock"
+      }
+    },
+    {
+      "id": "e_gate_late",
+      "body": "<<FILL role=ending words=50 beats='the last klaxon dies while Kai sits spent in the grass, the bar stays drawn, and the Certification is lost to be attempted again when the season turns'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_late",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benighted at the Terminal Airlock"
+      }
+    },
+    {
+      "id": "e_gate_next",
+      "body": "<<FILL role=ending words=50 beats='Kai will not take a lesser crossing on tired legs, and turns for home to try the whole Certification again next season with more read in the marks'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_e_gate_next",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back for Next Season"
+      }
+    }
+  ]
+}

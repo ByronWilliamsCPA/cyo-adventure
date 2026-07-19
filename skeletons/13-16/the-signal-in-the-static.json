@@ -34,85 +34,85 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=155 beats='Wren Callahan cannot sleep, so she climbs to the attic and switches on her late grandfather old shortwave radio; out of the hiss comes the same loop she heard last night, a womans voice reading a string of numbers, then a slow descending tone like a countdown that resets and begins again; three threads tug at her, the coordinates buried in the numbers, the dead relay station out on the headland, and the previous listener logbook her grandfather kept'>>",
+      "body": "<<FILL role=setup words=155 beats='{HERO} cannot sleep, so she climbs to the attic and switches on {KIN}'s old radio set; out of {NOISE} comes {SIGNAL} she heard last night, a voice reading a string of numbers, then {DEADLINE_SIGN} that resets and begins again; three threads tug at her, {ROUTE_A_CLUE} buried in the numbers, {THRESHOLD}, and {ROUTE_C_CLUE} {KIN} kept'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_start_1",
-          "label": "Plot the coordinates the voice keeps reading.",
+          "label": "Plot {ROUTE_A_CLUE} the voice keeps reading.",
           "target": "r_coord_1"
         },
         {
           "id": "c_n_start_2",
-          "label": "Bike out to the abandoned relay station.",
+          "label": "Bike out to {THRESHOLD}.",
           "target": "r_relay_1"
         },
         {
           "id": "c_n_start_3",
-          "label": "Dig out the previous listener logbook.",
+          "label": "Dig out {ROUTE_C_CLUE}.",
           "target": "r_notes_1"
         }
       ]
     },
     {
       "id": "r_coord_1",
-      "body": "<<FILL role=rising words=140 beats='Wren copies the numbers onto graph paper and treats them as latitude and longitude; two of them resolve to places she knows, the working harbor down the hill and the derelict water tower on the headland ridge, and she has to pick which to walk to before the batteries in her handheld die'>>",
+      "body": "<<FILL role=rising words=140 beats='{HERO} copies the numbers onto graph paper and treats them as {ROUTE_A_CLUE}; two of them resolve to places she knows, {A1_ZONE} down the hill and {A2_ZONE} on the ridge, and she has to pick which to walk to before her handheld radio's batteries run out'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_coord_1_1",
-          "label": "Head down to the harbor.",
+          "label": "Head down to {A1_ZONE}.",
           "target": "r_coord_harbor"
         },
         {
           "id": "c_r_coord_1_2",
-          "label": "Climb to the ridge water tower.",
+          "label": "Climb to {A2_ZONE}.",
           "target": "r_coord_tower"
         }
       ]
     },
     {
       "id": "r_coord_harbor",
-      "body": "<<FILL role=choice words=135 beats='The harbor is asleep, ropes ticking against masts; the coordinates point between the harbormaster hut, where a light still burns, and the old tide-gauge station on the breakwater that everyone says was shut years ago'>>",
+      "body": "<<FILL role=choice words=135 beats='{A1_ZONE} is asleep, ropes ticking against masts; {ROUTE_A_CLUE} point between {A1_OFFER1}, where a light still burns, and {A1_OFFER2} that everyone says was shut years ago'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_coord_harbor_1",
-          "label": "Knock at the harbormaster hut.",
+          "label": "Knock at {A1_OFFER1}.",
           "target": "r_coord_harbor_ask"
         },
         {
           "id": "c_r_coord_harbor_2",
-          "label": "Cross to the tide-gauge shed.",
+          "label": "Cross to {A1_OFFER2}.",
           "target": "r_coord_harbor_shed"
         },
         {
           "id": "c_r_coord_harbor_3",
-          "label": "Check the pier notice-board.",
+          "label": "Check {A1_LANDMARK}.",
           "target": "r_coord_notice"
         }
       ]
     },
     {
       "id": "r_coord_notice",
-      "body": "<<FILL role=rising words=120 beats='The pier notice-board is layered with faded flyers, but one index card is newer than the rest, a single frequency inked by a careful hand with the words if you hear the loop, it is real; someone has been leaving breadcrumbs for anyone who listens hard enough'>>",
+      "body": "<<FILL role=rising words=120 beats='{A1_LANDMARK} is layered with faded flyers, but {A1_FIND} is newer than the rest, inked by a careful hand with words claiming {SIGNAL} is real; someone has been leaving breadcrumbs for anyone who listens hard enough'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_coord_notice_1",
-          "label": "Examine the card more closely.",
+          "label": "Examine {A1_FIND} more closely.",
           "target": "r_coord_notice2"
         }
       ]
     },
     {
       "id": "r_coord_notice2",
-      "body": "<<FILL role=choice words=125 beats='The card frequency matches the loop exactly, and the ink is barely dry; Wren can follow the slip as the deliberate clue it plainly is, or she can decide a weathered index card proves nothing and let the wind have it'>>",
+      "body": "<<FILL role=choice words=125 beats='{A1_FIND}'s frequency matches {SIGNAL} exactly, and the ink is barely dry; {HERO} can follow the slip as the deliberate clue it plainly is, or she can decide a weathered card proves nothing and let the wind have it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_coord_notice2_1",
-          "label": "Follow the pinned frequency slip.",
+          "label": "Follow {A1_FIND}.",
           "target": "r_coord_beat"
         },
         {
@@ -124,7 +124,7 @@
     },
     {
       "id": "e_coord_notice",
-      "body": "<<FILL role=failure words=110 beats='Wren tells herself a scrap of card means nothing and lets it flap loose into the dark; only later, lying awake, does she wonder whose careful hand wrote it, and by then the pier is a mile behind her and the loop is just a sound she used to chase'>>",
+      "body": "<<FILL role=failure words=110 beats='{HERO} tells herself a scrap of card means nothing and lets it flap loose into the dark; only later does she wonder whose careful hand wrote it, and by then {SIGNAL} is just a sound she used to chase'>>",
       "is_ending": true,
       "ending": {
         "id": "e_coord_notice",
@@ -135,19 +135,19 @@
     },
     {
       "id": "r_coord_harbor_ask",
-      "body": "<<FILL role=rising words=130 beats='The harbormaster, Mr. Pell, listens to the loop on Wren’s phone and frowns; he says a signal like that used to run off the headland relay, and that whoever kept it going was stubborn as barnacles, then he points her toward the truth without quite meaning to'>>",
+      "body": "<<FILL role=rising words=130 beats='{A1_HELPER} listens to {SIGNAL} on {HERO}'s phone and frowns; he says a signal like that used to run off {THRESHOLD}, and that whoever kept it going was stubborn as barnacles, then he points her toward the truth without quite meaning to'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_coord_harbor_ask_1",
-          "label": "Follow the thread back to the relay.",
+          "label": "Follow the thread back to {THRESHOLD}.",
           "target": "r_coord_beat"
         }
       ]
     },
     {
       "id": "r_coord_harbor_shed",
-      "body": "<<FILL role=choice words=130 beats='The tide-gauge shed is padlocked but the window is cracked; inside, a dusty receiver blinks in time with the loop, proof the signal reaches here too, and Wren weighs forcing the warped door against simply logging the frequency and going home'>>",
+      "body": "<<FILL role=choice words=130 beats='{A1_OFFER2} is padlocked but the window is cracked; inside, {A1_DETAIL1} blinks in time with {SIGNAL}, proof it reaches here too, and {HERO} weighs forcing the warped door against simply logging the frequency and going home'>>",
       "is_ending": false,
       "choices": [
         {
@@ -164,19 +164,19 @@
     },
     {
       "id": "r_coord_shed_in",
-      "body": "<<FILL role=rising words=130 beats='The door gives with a groan; the receiver is wired to a hand-drawn card that reads relay KX, and Wren realizes the harbor set is only an echo of something broadcasting from the headland'>>",
+      "body": "<<FILL role=rising words=130 beats='The door gives with a groan; {A1_DETAIL1} is wired to a hand-drawn card reading relay {CALL_SIGN}, and {HERO} realizes this set is only an echo of something broadcasting from {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_coord_shed_in_1",
-          "label": "Trace it to the headland source.",
+          "label": "Trace it to {THRESHOLD}.",
           "target": "r_coord_beat"
         }
       ]
     },
     {
       "id": "e_coord_shed_leave",
-      "body": "<<FILL role=failure words=115 beats='Wren writes the frequency neatly in her notebook and walks home in the dark, telling herself she will come back with a plan; she never quite does, and the loop keeps counting down to no one, the harbor light blinking over an empty breakwater'>>",
+      "body": "<<FILL role=failure words=115 beats='{HERO} writes the frequency neatly in her notebook and walks home, telling herself she will come back with a plan; she never quite does, and {SIGNAL} keeps counting down to no one, a light blinking over an empty {A1_ZONE}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_coord_leave",
@@ -187,7 +187,7 @@
     },
     {
       "id": "r_coord_tower",
-      "body": "<<FILL role=choice words=135 beats='The water tower stands rusted against the stars, a stub of antenna still bolted to its cap; the loop is stronger here, and Wren can either climb the maintenance ladder toward that antenna or search the padlocked service box at the base'>>",
+      "body": "<<FILL role=choice words=135 beats='{A2_ZONE} stands rusted against the stars, a stub of antenna still bolted to its cap; {SIGNAL} is stronger here, and {HERO} can either climb {A2_OFFER1} or search {A2_OFFER2}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -197,26 +197,26 @@
         },
         {
           "id": "c_r_coord_tower_2",
-          "label": "Search the service box at the base.",
+          "label": "Search {A2_OFFER2}.",
           "target": "r_coord_base"
         }
       ]
     },
     {
       "id": "r_coord_climb",
-      "body": "<<FILL role=rising words=140 beats='Halfway up the cold ladder the wind shoves at Wren, but from the cap she sees a thin cable running off the tower and northeast along the ridge, straight toward the dark shape of the old relay station; the signal is not here, it only passes through'>>",
+      "body": "<<FILL role=rising words=140 beats='Halfway up {A2_OFFER1} the wind shoves at {HERO}, but from the cap she sees {A2_DETAIL1} running toward the dark shape of {THRESHOLD}; {SIGNAL} is not here, it only passes through'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_coord_climb_1",
-          "label": "Follow the cable to the relay.",
+          "label": "Follow the cable to {THRESHOLD}.",
           "target": "r_coord_beat"
         }
       ]
     },
     {
       "id": "r_coord_base",
-      "body": "<<FILL role=choice words=130 beats='The service box is furred with rust; one panel is loose enough to pry, though it might take her whole night, while a faded arrow stenciled on the concrete simply points along the ridge toward the relay'>>",
+      "body": "<<FILL role=choice words=130 beats='{A2_OFFER2} is furred with rust; one panel is loose enough to pry, though it might take her whole night, while {A2_DETAIL2} simply points along the ridge toward {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -226,26 +226,26 @@
         },
         {
           "id": "c_r_coord_base_2",
-          "label": "Follow the stenciled arrow instead.",
+          "label": "Follow {A2_DETAIL2} instead.",
           "target": "r_coord_base_out"
         }
       ]
     },
     {
       "id": "r_coord_base_in",
-      "body": "<<FILL role=rising words=125 beats='Inside the box is a junction and a laminated tag, KX RELAY, HEADLAND, do not disconnect; the tower is only a repeater, and the real transmitter is further out where the land ends'>>",
+      "body": "<<FILL role=rising words=125 beats='Inside {A2_OFFER2} is a junction and a laminated tag reading {CALL_SIGN} RELAY, DO NOT DISCONNECT; {A2_ZONE} is only a repeater, and the real transmitter is further out at {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_coord_base_in_1",
-          "label": "Head for the headland relay.",
+          "label": "Head for {THRESHOLD}.",
           "target": "r_coord_beat"
         }
       ]
     },
     {
       "id": "r_coord_base_out",
-      "body": "<<FILL role=rising words=120 beats='The stenciled arrows lead Wren along a cracked service path toward the headland; whoever laid this trail wanted it followed, and the loop grows steadier with every step'>>",
+      "body": "<<FILL role=rising words=120 beats='{A2_DETAIL2} leads {HERO} along a cracked service path toward {THRESHOLD}; whoever laid this trail wanted it followed, and {SIGNAL} grows steadier with every step'>>",
       "is_ending": false,
       "choices": [
         {
@@ -257,7 +257,7 @@
     },
     {
       "id": "r_coord_beat",
-      "body": "<<FILL role=rising words=130 beats='Wren pieces the harbor and tower clues together on her graph paper; every arrow, every echo, points to one source out on the headland, and the countdown in her ear feels suddenly less like noise and more like a message with an address'>>",
+      "body": "<<FILL role=rising words=130 beats='{HERO} pieces together every clue on her graph paper; every arrow, every echo, points to one source at {THRESHOLD}, and {DEADLINE_SIGN} feels suddenly less like noise and more like a message with an address'>>",
       "is_ending": false,
       "choices": [
         {
@@ -269,7 +269,7 @@
     },
     {
       "id": "r_coord_close",
-      "body": "<<FILL role=rising words=120 beats='The last leg of the coordinate trail brings Wren to a wind-scoured overlook above the relay compound; the loop is loudest here, unmistakably alive, and whatever it is, it is close enough now to touch'>>",
+      "body": "<<FILL role=rising words=120 beats='The last leg of {ROUTE_A_CLUE}'s trail brings {HERO} to a wind-scoured overlook above {THRESHOLD}; {SIGNAL} is loudest here, unmistakably alive, and whatever it is, it is close enough now to touch'>>",
       "is_ending": false,
       "choices": [
         {
@@ -281,29 +281,29 @@
     },
     {
       "id": "r_relay_1",
-      "body": "<<FILL role=rising words=140 beats='Wren wheels her bike onto the headland road; the relay station squats at the cliff edge, its mast a black needle against the moon, and two ways lead in, the exposed coast path along the fence line or the flooded service lane that curves behind the compound'>>",
+      "body": "<<FILL role=rising words=140 beats='{HERO} wheels her bike toward {THRESHOLD}; it squats at the cliff edge, its mast a black needle against the moon, and two ways lead in, {B1_ZONE} or {B2_ZONE} that curves behind the compound'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_relay_1_1",
-          "label": "Take the coast path along the fence.",
+          "label": "Take {B1_ZONE}.",
           "target": "r_re_path"
         },
         {
           "id": "c_r_relay_1_2",
-          "label": "Take the service lane behind.",
+          "label": "Take {B2_ZONE}.",
           "target": "r_re_lane"
         }
       ]
     },
     {
       "id": "r_re_path",
-      "body": "<<FILL role=choice words=130 beats='The coast path runs a hands-width from the fence and a long drop to the surf; the wind is vicious, and Wren spots a gap where the chain-link has peeled back, though part of her says to photograph the mast and retreat before she is blown off the ledge'>>",
+      "body": "<<FILL role=choice words=130 beats='{B1_ZONE} runs a hands-width from the fence above a long drop; the wind is vicious, and {HERO} spots {B1_GATE}, though part of her says to photograph the mast and retreat before she is blown off the ledge'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_re_path_1",
-          "label": "Slip through the peeled-back gap.",
+          "label": "Slip through {B1_GATE}.",
           "target": "r_re_gap"
         },
         {
@@ -315,7 +315,7 @@
     },
     {
       "id": "r_re_gap",
-      "body": "<<FILL role=rising words=130 beats='Wren squeezes through the gap into the compound; a weather-blistered sign reads RELAY KX, and a single window glows faintly, the same rhythm as the loop, someone or something inside still keeping it alive'>>",
+      "body": "<<FILL role=rising words=130 beats='{HERO} squeezes through {B1_GATE} into the compound; {B1_LANDMARK} reads RELAY {CALL_SIGN}, and {B1_DETAIL1}, the same rhythm as {SIGNAL}, someone or something inside still keeping it alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -327,7 +327,7 @@
     },
     {
       "id": "e_re_photo",
-      "body": "<<FILL role=failure words=115 beats='The gust nearly takes Wren off her feet, so she snaps three blurred photos of the mast and pedals home, heart hammering; the pictures show only a dark tower, and the loop plays on without her, a mystery she can describe but never solved'>>",
+      "body": "<<FILL role=failure words=115 beats='The gust nearly takes {HERO} off her feet, so she snaps three blurred photos and pedals home, heart hammering; the pictures show only a dark tower, and {SIGNAL} plays on without her, a mystery she can describe but never solve'>>",
       "is_ending": true,
       "ending": {
         "id": "e_relay_photo",
@@ -338,58 +338,58 @@
     },
     {
       "id": "r_re_lane",
-      "body": "<<FILL role=choice words=130 beats='The service lane is half under seawater but sheltered from the wind; ahead sits a gatehouse with a lit log board visible through the glass, while a side track detours to a squat transformer hut humming louder than the tide'>>",
+      "body": "<<FILL role=choice words=130 beats='{B2_ZONE} is half under seawater but sheltered from the wind; ahead sits {B2_OFFER1} with {B2_DETAIL1} visible through the glass, while a side track detours to {B2_OFFER2} humming louder than the tide, and another path ducks into {B2_OFFER3}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_re_lane_1",
-          "label": "Try the gatehouse and its log board.",
+          "label": "Try {B2_OFFER1}.",
           "target": "r_re_gatehouse"
         },
         {
           "id": "c_r_re_lane_2",
-          "label": "Wade to the humming transformer hut.",
+          "label": "Wade to {B2_OFFER2}.",
           "target": "r_re_hut"
         },
         {
           "id": "c_r_re_lane_3",
-          "label": "Duck into the flooded cellar entrance.",
+          "label": "Duck into {B2_OFFER3}.",
           "target": "r_re_cellar"
         }
       ]
     },
     {
       "id": "r_re_cellar",
-      "body": "<<FILL role=rising words=120 beats='The cellar steps drop into ankle-deep seawater and the reek of brine; taped above the tide line is a plastic sleeve holding a single operator note, and the water is rising with every set of waves that booms against the sea wall outside'>>",
+      "body": "<<FILL role=rising words=120 beats='{B2_OFFER3}'s steps drop into ankle-deep seawater and brine; taped above the waterline is a sleeve holding {B2_FIND}, and the water keeps rising with every wave outside'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_re_cellar_1",
-          "label": "Reach for the taped note.",
+          "label": "Reach for {B2_FIND}.",
           "target": "r_re_cellar2"
         }
       ]
     },
     {
       "id": "r_re_cellar2",
-      "body": "<<FILL role=choice words=125 beats='The note reads, loop stays up while I draw breath, signed with the call sign KX; Wren can peel the sleeve free and pocket the proof, or she can feel the cold water climbing past her knees and scramble back before the cellar fills'>>",
+      "body": "<<FILL role=choice words=125 beats='{B2_FIND} reads a vow to keep the channel open, signed with the call sign {CALL_SIGN}; {HERO} can peel it free and pocket the proof, or she can feel {B2_GATE} climbing past her knees and scramble back before the cellar fills'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_re_cellar2_1",
-          "label": "Salvage the taped operator note.",
+          "label": "Salvage {B2_FIND}.",
           "target": "r_relay_beat"
         },
         {
           "id": "c_r_re_cellar2_2",
-          "label": "Retreat from the rising water.",
+          "label": "Retreat from {B2_GATE}.",
           "target": "e_re_cellar"
         }
       ]
     },
     {
       "id": "e_re_cellar",
-      "body": "<<FILL role=failure words=110 beats='The water wins the argument; Wren backs up the streaming steps as the cellar swallows the note whole, and she stands dripping in the yard with nothing to show but a glimpse of a call sign and the certainty that she was one wave too slow'>>",
+      "body": "<<FILL role=failure words=110 beats='{B2_GATE} wins the argument; {HERO} backs up the streaming steps as the cellar swallows {B2_FIND} whole, and she stands dripping with nothing to show but a glimpse of a call sign and the certainty she was one wave too slow'>>",
       "is_ending": true,
       "ending": {
         "id": "e_re_cellar",
@@ -400,12 +400,12 @@
     },
     {
       "id": "r_re_gatehouse",
-      "body": "<<FILL role=choice words=130 beats='The gatehouse is unlocked and warm, as if just left; a wall board logs transmissions by hand in fresh ink, the last line only hours old, when a dog begins to bark somewhere in the dark and Wren must decide to read on or grab what she can and slip out'>>",
+      "body": "<<FILL role=choice words=130 beats='{B2_OFFER1} is unlocked and warm, as if just left; {B2_DETAIL1} logs transmissions by hand, the last line only hours old, when {B2_DETAIL2} sounds somewhere in the dark and {HERO} must decide to read on or grab what she can and slip out'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_re_gatehouse_1",
-          "label": "Study the handwritten log board.",
+          "label": "Study {B2_DETAIL1}.",
           "target": "r_re_log"
         },
         {
@@ -417,7 +417,7 @@
     },
     {
       "id": "r_re_log",
-      "body": "<<FILL role=rising words=130 beats='The log is decades deep in one patient hand; the final entries repeat a single note, loop holding, still no answer, and Wren understands the signal is not automatic at all but tended by a real, waiting person'>>",
+      "body": "<<FILL role=rising words=130 beats='{B2_DETAIL1} is decades deep in one patient hand; the final entries repeat a single note, still no answer, and {HERO} understands {SIGNAL} is not automatic at all but tended by a real, waiting person'>>",
       "is_ending": false,
       "choices": [
         {
@@ -429,43 +429,43 @@
     },
     {
       "id": "r_re_scrap",
-      "body": "<<FILL role=rising words=120 beats='Wren pockets a torn page and ducks out as the barking closes in; under a streetlight she reads a single line, for M, still holding, and the loop stops being a machine and becomes a message somebody meant for someone'>>",
+      "body": "<<FILL role=rising words=120 beats='{HERO} pockets a torn page and ducks out; under a streetlight she reads a single line addressed to {LISTENER}, still holding, and {SIGNAL} stops being a machine and becomes a message somebody meant for someone'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_re_scrap_1",
-          "label": "Chase down who M might be.",
+          "label": "Chase down who {LISTENER} might be.",
           "target": "r_relay_beat"
         }
       ]
     },
     {
       "id": "r_re_hut",
-      "body": "<<FILL role=rising words=125 beats='The transformer hut throbs with power feeding the mast; a maintenance sticker names the last technician who signed it, K. Alder, in handwriting Wren has already seen tonight on a dozen faded cards'>>",
+      "body": "<<FILL role=rising words=125 beats='{B2_OFFER2} throbs with power feeding the mast; {B2_DETAIL3} names {OPERATOR}, in handwriting {HERO} has already seen tonight on a dozen faded cards'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_re_hut_1",
-          "label": "Follow the name Alder inward.",
+          "label": "Follow {OPERATOR}'s name inward.",
           "target": "r_relay_beat"
         }
       ]
     },
     {
       "id": "r_relay_beat",
-      "body": "<<FILL role=rising words=130 beats='Standing in the dripping compound, Wren gathers what the station has told her; the loop is deliberate, tended, addressed, and it is counting toward something a real person set in motion and is still, somewhere, waiting on'>>",
+      "body": "<<FILL role=rising words=130 beats='Standing in the dripping compound, {HERO} gathers what {THRESHOLD} has told her; {SIGNAL} is deliberate, tended, addressed, and it is counting toward something a real person set in motion and is still, somewhere, waiting on'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_relay_beat_1",
-          "label": "Face the source of the signal.",
+          "label": "Face the source of {SIGNAL}.",
           "target": "r_relay_close"
         }
       ]
     },
     {
       "id": "r_relay_close",
-      "body": "<<FILL role=rising words=120 beats='Wren wipes the rain from her eyes and steps toward the one lit window; the loop pulses through the wall in time with the glow, and she knows that beyond this glass is the person who has been broadcasting into the dark all along'>>",
+      "body": "<<FILL role=rising words=120 beats='{HERO} wipes the rain from her eyes and steps toward the one lit window; {SIGNAL} pulses through the wall in time with the glow, and she knows beyond this glass is the person who has been broadcasting into the dark all along'>>",
       "is_ending": false,
       "choices": [
         {
@@ -477,46 +477,46 @@
     },
     {
       "id": "r_notes_1",
-      "body": "<<FILL role=rising words=140 beats='Back in the house, Wren hunts for her grandfather logbook; he listened to the airwaves for forty years and wrote it all down, and the book could be in the cedar trunk in the attic or out in his radio shed with its wall of pinned notes'>>",
+      "body": "<<FILL role=rising words=140 beats='Back home, {HERO} hunts for {ROUTE_C_CLUE}; {KIN} listened to the airwaves for forty years and wrote it all down, and it could be in {C1_ZONE} or out in {C2_ZONE} with its wall of pinned notes'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_notes_1_1",
-          "label": "Open the cedar trunk in the attic.",
+          "label": "Open {C1_ZONE}.",
           "target": "r_no_trunk"
         },
         {
           "id": "c_r_notes_1_2",
-          "label": "Search the radio shed.",
+          "label": "Search {C2_ZONE}.",
           "target": "r_no_shed"
         }
       ]
     },
     {
       "id": "r_no_trunk",
-      "body": "<<FILL role=choice words=130 beats='The trunk breathes out cedar and old paper; inside lie a water-stained logbook and a fat bundle of QSL cards, the postcards operators mailed to confirm a contact, and Wren can only read one carefully before her eyes give out'>>",
+      "body": "<<FILL role=choice words=130 beats='{C1_ZONE} breathes out cedar and old paper; inside lie {C1_FIND1} and {C1_FIND2}, plus {C1_FIND3}, and {HERO} can only read one carefully before her eyes give out'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_no_trunk_1",
-          "label": "Read the water-stained logbook.",
+          "label": "Read {C1_FIND1}.",
           "target": "r_no_book"
         },
         {
           "id": "c_r_no_trunk_2",
-          "label": "Sort through the QSL cards.",
+          "label": "Sort through {C1_FIND2}.",
           "target": "r_no_cards"
         },
         {
           "id": "c_r_no_trunk_3",
-          "label": "Untie the ribboned bundle of letters.",
+          "label": "Untie {C1_FIND3}.",
           "target": "r_no_letters"
         }
       ]
     },
     {
       "id": "r_no_letters",
-      "body": "<<FILL role=rising words=120 beats='Under the cards lies a ribboned bundle of letters her grandfather never sent, all addressed to the relay; the top one begins, Kell, she may still be out there, keep the channel open, and Wren realizes the two old men shared this vigil across the water for years'>>",
+      "body": "<<FILL role=rising words=120 beats='Under the cards lies {C1_FIND3}, letters {KIN} never sent, all addressed to {THRESHOLD}; the top one begs {OPERATOR} to keep the channel open, and {HERO} realizes the two old men shared this vigil for years'>>",
       "is_ending": false,
       "choices": [
         {
@@ -528,12 +528,12 @@
     },
     {
       "id": "r_no_letters2",
-      "body": "<<FILL role=choice words=125 beats='The letter names Alder plainly and pleads with him not to give up on his daughter; it feels like reading a stranger heart, and Wren can press on because the loop needs an answer, or she can retie the ribbon, deciding some grief is not hers to open'>>",
+      "body": "<<FILL role=choice words=125 beats='The letter names {OPERATOR} plainly and pleads with him not to give up on {LISTENER}; it feels like reading a stranger's heart, and {HERO} can press on because {SIGNAL} needs an answer, or she can retie the ribbon, deciding some grief is not hers to open'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_no_letters2_1",
-          "label": "Read the letter that names Alder.",
+          "label": "Read the letter that names {OPERATOR}.",
           "target": "r_notes_beat"
         },
         {
@@ -545,7 +545,7 @@
     },
     {
       "id": "e_no_letters",
-      "body": "<<FILL role=failure words=110 beats='Wren reknots the ribbon and sets the letters gently back, unwilling to pry into two old men sorrow; it is a kind choice and a final one, for the names and frequencies she needed were folded inside, and without them the trail simply ends in a drawer full of respect'>>",
+      "body": "<<FILL role=failure words=110 beats='{HERO} reknots the ribbon and sets the letters gently back, unwilling to pry into two old men's sorrow; it is a kind choice and a final one, for the names and frequencies she needed were folded inside, and the trail simply ends'>>",
       "is_ending": true,
       "ending": {
         "id": "e_no_letters",
@@ -556,7 +556,7 @@
     },
     {
       "id": "r_no_book",
-      "body": "<<FILL role=rising words=135 beats='Her grandfather logged the KX loop for years, always with the same underlined note, ALDER still transmitting, why; the last page, dated the week he died, simply asks whether anyone will finally answer the poor man'>>",
+      "body": "<<FILL role=rising words=135 beats='{KIN} logged {SIGNAL} for years, always with the same underlined note asking why {OPERATOR} was still transmitting; the last page, dated the week he died, simply asks whether anyone will finally answer the poor man'>>",
       "is_ending": false,
       "choices": [
         {
@@ -568,12 +568,12 @@
     },
     {
       "id": "r_no_cards",
-      "body": "<<FILL role=choice words=130 beats='The QSL cards are from listeners all over the coast, all logging the same stubborn signal; one card, heavier than the rest, names an exact frequency and a call sign, KX ALDER, while the others are only friendly postcards she could set aside'>>",
+      "body": "<<FILL role=choice words=130 beats='{C1_FIND2} are from listeners all over the coast, all logging the same stubborn signal; one card, heavier than the rest, names an exact frequency and {C1_DETAIL1}, while the others are only friendly postcards she could set aside'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_no_cards_1",
-          "label": "Chase the card naming KX Alder.",
+          "label": "Chase the card naming {OPERATOR}.",
           "target": "r_no_freq"
         },
         {
@@ -585,19 +585,19 @@
     },
     {
       "id": "r_no_freq",
-      "body": "<<FILL role=rising words=125 beats='The card gives Wren a name to hang the mystery on, Alder, and a frequency that matches the loop to the decimal; whoever Alder is, the whole coast of listeners has been quietly hearing him for years and no one ever answered'>>",
+      "body": "<<FILL role=rising words=125 beats='{C1_DETAIL1} gives {HERO} a name to hang the mystery on, and a frequency matching {SIGNAL} to the decimal; whoever {OPERATOR} is, the whole coast of listeners has quietly heard him for years and no one ever answered'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_no_freq_1",
-          "label": "Find out who Alder is.",
+          "label": "Find out who {OPERATOR} is.",
           "target": "r_notes_beat"
         }
       ]
     },
     {
       "id": "e_no_cards_end",
-      "body": "<<FILL role=failure words=110 beats='Wren stacks the postcards back in the trunk and closes the lid, meaning to come back when she is less tired; morning brings school and homework and ordinary noise, and the cards, and the signal, slip quietly back into the past'>>",
+      "body": "<<FILL role=failure words=110 beats='{HERO} stacks the postcards back in {C1_ZONE} and closes the lid, meaning to come back when she is less tired; morning brings school and ordinary noise, and the cards, and {SIGNAL}, slip quietly back into the past'>>",
       "is_ending": true,
       "ending": {
         "id": "e_notes_cards",
@@ -608,24 +608,24 @@
     },
     {
       "id": "r_no_shed",
-      "body": "<<FILL role=choice words=130 beats='The radio shed smells of solder and dust; her grandfather tuning notes are pinned in ranks across one wall, but the filing cabinet where he kept his correspondence is padlocked, and the only key she knows of is lost somewhere in the house'>>",
+      "body": "<<FILL role=choice words=130 beats='{C2_ZONE} smells of solder and dust; {C2_DETAIL1} are pinned in ranks across one wall, but a padlocked filing cabinet is out of reach, and {HERO} weighs reading {C2_OFFER1} against forcing {C2_OFFER2}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_no_shed_1",
-          "label": "Read the pinned tuning notes.",
+          "label": "Read {C2_OFFER1}.",
           "target": "r_no_tuning"
         },
         {
           "id": "c_r_no_shed_2",
-          "label": "Try to force the padlocked cabinet.",
+          "label": "Try to force {C2_OFFER2}.",
           "target": "e_no_locked"
         }
       ]
     },
     {
       "id": "r_no_tuning",
-      "body": "<<FILL role=rising words=130 beats='One yellowed note is circled twice, KX loop, headland relay, operator ALDER, do not give up on him; her grandfather had been trying to reach the sender for decades, and now the task, unfinished, has passed to Wren'>>",
+      "body": "<<FILL role=rising words=130 beats='One yellowed note among {C2_DETAIL1} is circled twice, naming {THRESHOLD} and {OPERATOR}, do not give up on him; {KIN} had been trying to reach the sender for decades, and now the task, unfinished, has passed to {HERO}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -637,7 +637,7 @@
     },
     {
       "id": "e_no_locked",
-      "body": "<<FILL role=failure words=110 beats='The padlock will not yield and the hasp is screwed tight; without the key the cabinet keeps its secrets, and by the time Wren thinks to search for it the trail has gone cold, the loop just one more thing her grandfather understood and she never will'>>",
+      "body": "<<FILL role=failure words=110 beats='{C2_OFFER2} will not yield and the hasp is screwed tight; without the key it keeps its secrets, and by the time {HERO} thinks to search for it the trail has gone cold, {SIGNAL} just one more thing {KIN} understood and she never will'>>",
       "is_ending": true,
       "ending": {
         "id": "e_notes_locked",
@@ -648,19 +648,19 @@
     },
     {
       "id": "r_notes_beat",
-      "body": "<<FILL role=rising words=130 beats='Everything she has found among her grandfather papers converges on one stubborn fact, a man named Alder has been transmitting from the headland for a lifetime, and Wren is holding the only thread that leads back to him'>>",
+      "body": "<<FILL role=rising words=130 beats='Everything {HERO} has found among {KIN}'s papers converges on one stubborn fact, {OPERATOR} has been transmitting from {THRESHOLD} for a lifetime, and she is holding the only thread that leads back to him'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_notes_beat_1",
-          "label": "Follow Alder thread to the source.",
+          "label": "Follow {OPERATOR}'s thread to the source.",
           "target": "r_notes_close"
         }
       ]
     },
     {
       "id": "r_notes_close",
-      "body": "<<FILL role=rising words=120 beats='Papers spread across her grandfather desk, Wren traces the last line of his research to its end; there is nothing left to read and only one thing left to do, go to the headland and face the man her grandfather could never quite reach'>>",
+      "body": "<<FILL role=rising words=120 beats='Papers spread across {KIN}'s desk, {HERO} traces the last line of his research to its end; there is nothing left to read and only one thing left to do, go to {THRESHOLD} and face the man {KIN} could never quite reach'>>",
       "is_ending": false,
       "choices": [
         {
@@ -672,7 +672,7 @@
     },
     {
       "id": "n_b1",
-      "body": "<<FILL role=discovery words=150 beats='However she got here, Wren arrives at the same certainty; the signal is no accident and no machine left running, it is the deliberate work of one person, K. Alder, the relay last operator, looping the same numbers and the same countdown for years because nobody has ever answered back; the who is settled, and it only sharpens the harder questions'>>",
+      "body": "<<FILL role=discovery words=150 beats='However she got here, {HERO} arrives at the same certainty; {SIGNAL} is no accident and no machine left running, it is the deliberate work of one person, {OPERATOR}, {THRESHOLD}'s last operator, looping the same numbers and {DEADLINE_SIGN} for years because nobody has ever answered back; the who is settled, and it only sharpens the harder questions'>>",
       "is_ending": false,
       "choices": [
         {
@@ -684,7 +684,7 @@
     },
     {
       "id": "n_b1_echo",
-      "body": "<<FILL role=rising words=130 beats='Wren pins Alder name to her corkboard beside the frequency she has traced; the loop cycles again in her headphones, patient and sad, and two ways forward open, to crack the coded numbers themselves or to learn who Alder really is'>>",
+      "body": "<<FILL role=rising words=130 beats='{HERO} pins {OPERATOR}'s name to her corkboard beside the frequency she has traced; {SIGNAL} cycles again in her headphones, patient and sad, and two ways forward open, to crack the coded numbers themselves or to learn who {OPERATOR} really is'>>",
       "is_ending": false,
       "choices": [
         {
@@ -696,7 +696,7 @@
     },
     {
       "id": "n_b1_choice",
-      "body": "<<FILL role=choice words=130 beats='The mystery has a person at its center now, but a person is not an answer; Wren can bend her attention to the numbers Alder reads, hunting the code hidden in them, or she can chase Alder himself through the town records and the people who remember him'>>",
+      "body": "<<FILL role=choice words=130 beats='The mystery has a person at its center now, but a person is not an answer; {HERO} can bend her attention to the numbers {OPERATOR} reads, hunting the code hidden in them, or she can chase {OPERATOR} himself through the town records and the people who remember him'>>",
       "is_ending": false,
       "choices": [
         {
@@ -706,48 +706,48 @@
         },
         {
           "id": "c_n_b1_choice_2",
-          "label": "Find out who Alder is.",
+          "label": "Find out who {OPERATOR} is.",
           "target": "m_who_1"
         }
       ]
     },
     {
       "id": "m_numbers_1",
-      "body": "<<FILL role=choice words=135 beats='Wren writes the number string out in full and stares; it could be a book cipher keyed to a text she already owns, her grandfather logbook maybe, or it could be timestamps, a countdown ticking toward one fixed moment, and each theory needs a different tool'>>",
+      "body": "<<FILL role=choice words=135 beats='{HERO} writes the number string out in full and stares; it could be {D_TOOL1} keyed to a text she already owns, {ROUTE_C_CLUE} maybe, or it could be {D_TOOL2}, ticking toward one fixed moment, and each theory needs a different tool'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_numbers_1_1",
-          "label": "Test it as a book cipher.",
+          "label": "Test it as {D_TOOL1}.",
           "target": "m_num_cipher"
         },
         {
           "id": "c_m_numbers_1_2",
-          "label": "Test it as a countdown of timestamps.",
+          "label": "Test it as {D_TOOL2}.",
           "target": "m_num_time"
         }
       ]
     },
     {
       "id": "m_num_cipher",
-      "body": "<<FILL role=choice words=130 beats='Using the logbook page numbers, Wren maps each figure to a word; fragments surface, holding and answer and the letter M, enough to feel real, but one cluster stays gibberish and she must decide whether to keep forcing the logbook key or switch to a second book he underlined'>>",
+      "body": "<<FILL role=choice words=130 beats='Using {D1_KEY1}, {HERO} maps each figure to a word; fragments surface, {D1_FRAGMENT} and the letter {LISTENER}, enough to feel real, but one cluster stays gibberish and she must decide whether to keep forcing {D1_KEY1} or switch to {D1_KEY2}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_num_cipher_1",
-          "label": "Keep forcing the logbook key.",
+          "label": "Keep forcing {D1_KEY1}.",
           "target": "m_num_cracked"
         },
         {
           "id": "c_m_num_cipher_2",
-          "label": "Switch to the underlined second book.",
+          "label": "Switch to {D1_KEY2}.",
           "target": "m_num_book2"
         }
       ]
     },
     {
       "id": "m_num_cracked",
-      "body": "<<FILL role=rising words=130 beats='The logbook key holds; the numbers resolve into a plain, aching sentence, still holding the channel open for M, and the final group is not a word at all but a running count, the loop is measuring how long is left'>>",
+      "body": "<<FILL role=rising words=130 beats='{D1_KEY1} holds; the numbers resolve into a plain, aching sentence, {D1_FRAGMENT} for {LISTENER}, and the final group is not a word at all but a running count, {SIGNAL} is measuring how long is left'>>",
       "is_ending": false,
       "choices": [
         {
@@ -759,7 +759,7 @@
     },
     {
       "id": "m_num_book2",
-      "body": "<<FILL role=choice words=130 beats='The second underlined book is a battered tide table, and against it the stubborn cluster finally speaks, a date and an hour; but the rest turns to noise on this key, and Wren must judge whether she has enough or has hit a wall'>>",
+      "body": "<<FILL role=choice words=130 beats='{D1_KEY2} is battered, and against it the stubborn cluster finally speaks, a date and an hour; but the rest turns to noise on this key, and {HERO} must judge whether she has enough or has hit a wall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -776,7 +776,7 @@
     },
     {
       "id": "m_num_cracked2",
-      "body": "<<FILL role=rising words=125 beats='The tide-table key gives Wren a single decoded certainty, a date and hour only days away, wrapped around the same repeated plea for M; the numbers are a clock, and the clock is nearly run down'>>",
+      "body": "<<FILL role=rising words=125 beats='{D1_KEY2} gives {HERO} a single decoded certainty, a date and hour only days away, wrapped around {D1_FRAGMENT} for {LISTENER}; the numbers are a clock, and the clock is nearly run down'>>",
       "is_ending": false,
       "choices": [
         {
@@ -788,7 +788,7 @@
     },
     {
       "id": "e_num_gibberish",
-      "body": "<<FILL role=failure words=115 beats='The cipher slips through Wren’s fingers, every new key spitting out fresh nonsense until the numbers blur together; she closes her notebooks well past midnight, no closer to the meaning, the loop still counting in the dark toward a total she cannot read'>>",
+      "body": "<<FILL role=failure words=115 beats='The cipher slips through {HERO}'s fingers, every new key spitting out fresh nonsense until the numbers blur together; she closes her notebooks well past midnight, no closer to the meaning, {SIGNAL} still counting in the dark toward a total she cannot read'>>",
       "is_ending": true,
       "ending": {
         "id": "e_num_gibberish",
@@ -799,24 +799,24 @@
     },
     {
       "id": "m_num_time",
-      "body": "<<FILL role=choice words=130 beats='Treating the string as timestamps, Wren logs the intervals between broadcasts; they are shrinking, each cycle a little shorter than the last, and she can either keep timing the loop to project its end or map the shrinking pattern against a calendar'>>",
+      "body": "<<FILL role=choice words=130 beats='Treating the string as {D_TOOL2}, {HERO} logs the intervals between broadcasts; they are shrinking, each cycle a little shorter than the last, and she can either keep {D2_METHOD1} to project its end or {D2_METHOD2} against the pattern'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_num_time_1",
-          "label": "Keep timing the shrinking intervals.",
+          "label": "Keep {D2_METHOD1}.",
           "target": "m_num_intervals"
         },
         {
           "id": "c_m_num_time_2",
-          "label": "Map the pattern onto a calendar.",
+          "label": "Try {D2_METHOD2}.",
           "target": "m_num_pattern"
         }
       ]
     },
     {
       "id": "m_num_intervals",
-      "body": "<<FILL role=rising words=125 beats='The intervals are collapsing on a curve; Wren plots them and the line drives toward zero within the week, the loop is not eternal after all, it is counting down, and something happens when it reaches the bottom'>>",
+      "body": "<<FILL role=rising words=125 beats='The intervals are collapsing on a curve; {HERO} plots them and the line drives toward zero within the week, {SIGNAL} is not eternal after all, it is counting down, and something happens when it reaches the bottom'>>",
       "is_ending": false,
       "choices": [
         {
@@ -828,7 +828,7 @@
     },
     {
       "id": "m_num_pattern",
-      "body": "<<FILL role=choice words=130 beats='Laid over a calendar the intervals lock onto one date, and beside it in the loop sits the repeated letter M; Wren can commit to that reading and push on, or she can decide she is forcing a pattern that is not really there and stop'>>",
+      "body": "<<FILL role=choice words=130 beats='Laid over a calendar the intervals lock onto one date, and beside it in {SIGNAL} sits the repeated letter {LISTENER}; {HERO} can commit to that reading and push on, or she can decide she is forcing a pattern that is not really there and stop'>>",
       "is_ending": false,
       "choices": [
         {
@@ -845,7 +845,7 @@
     },
     {
       "id": "m_num_countdown",
-      "body": "<<FILL role=rising words=125 beats='Wren circles the date twice; the loop is a countdown to that exact night, threaded through with a name, and whatever Alder set in motion is meant to finish then whether anyone is listening or not'>>",
+      "body": "<<FILL role=rising words=125 beats='{HERO} circles the date twice; {SIGNAL} is a countdown to that exact night, threaded through with a name, and whatever {OPERATOR} set in motion is meant to finish then whether anyone is listening or not'>>",
       "is_ending": false,
       "choices": [
         {
@@ -857,7 +857,7 @@
     },
     {
       "id": "e_num_giveup",
-      "body": "<<FILL role=failure words=115 beats='Doubt wins; Wren decides she has been reading shapes into static, the way people see faces in clouds, and she puts her charts away for good; the loop keeps its rhythm without her, and she never learns she was right all along'>>",
+      "body": "<<FILL role=failure words=115 beats='Doubt wins; {HERO} decides she has been reading shapes into {NOISE}, the way people see faces in clouds, and she puts her charts away for good; {SIGNAL} keeps its rhythm without her, and she never learns she was right all along'>>",
       "is_ending": true,
       "ending": {
         "id": "e_num_giveup",
@@ -868,29 +868,29 @@
     },
     {
       "id": "m_who_1",
-      "body": "<<FILL role=choice words=135 beats='To find Alder, Wren needs someone who remembers; the county library keeps microfilm of the local paper going back a century, and old Mrs. Okafor at the marina has mended nets beside that headland since before the relay was built'>>",
+      "body": "<<FILL role=choice words=135 beats='To find {OPERATOR}, {HERO} needs someone who remembers; {E_SOURCE1} goes back a century, and {E_SOURCE2} has known that headland since before {THRESHOLD} was built'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_who_1_1",
-          "label": "Search the library microfilm.",
+          "label": "Search {E_SOURCE1}.",
           "target": "m_who_film"
         },
         {
           "id": "c_m_who_1_2",
-          "label": "Ask Mrs. Okafor at the marina.",
+          "label": "Ask {E_SOURCE2}.",
           "target": "m_who_okafor"
         }
       ]
     },
     {
       "id": "m_who_film",
-      "body": "<<FILL role=choice words=130 beats='The microfilm reader whirs; Wren finds a decommission notice, the relay closed, its staff let go, and a photograph of a lone technician who refused a transfer, but the archive is shutting for renovation within the hour and she cannot read every reel'>>",
+      "body": "<<FILL role=choice words=130 beats='The reader whirs; {HERO} finds {E1_FIND}, {THRESHOLD} closed, its staff let go, and a photograph of a lone technician who refused a transfer, but {E_SOURCE1} is shutting within the hour and she cannot read every reel'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_who_film_1",
-          "label": "Read the decommission article closely.",
+          "label": "Read {E1_FIND} closely.",
           "target": "m_who_article"
         },
         {
@@ -902,7 +902,7 @@
     },
     {
       "id": "m_who_article",
-      "body": "<<FILL role=rising words=130 beats='The article names him, Kell Alder, the one operator who stayed on unpaid after the shutdown, insisting the relay still had a job to do; the reporter thought it a sad eccentricity, but Wren reads the loop underneath it now'>>",
+      "body": "<<FILL role=rising words=130 beats='The article names him, {OPERATOR}, the one operator who stayed on unpaid after the shutdown, insisting {THRESHOLD} still had a job to do; the reporter thought it a sad eccentricity, but {HERO} reads {SIGNAL} underneath it now'>>",
       "is_ending": false,
       "choices": [
         {
@@ -914,19 +914,19 @@
     },
     {
       "id": "m_who_photo",
-      "body": "<<FILL role=rising words=125 beats='Wren shoots the pages just as the lights dim; later, zooming in, she reads the caption, K. Alder, relay operator, and a margin note in a librarian hand, he never did stop broadcasting, did he, which tells her the loop has outlived the whole town memory'>>",
+      "body": "<<FILL role=rising words=125 beats='{HERO} shoots the pages just as the lights dim; later, zooming in, she reads the caption naming {OPERATOR}, and a margin note wondering if he ever stopped broadcasting, which tells her {SIGNAL} has outlived the whole town's memory'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_who_photo_1",
-          "label": "Trace the loop long life.",
+          "label": "Trace {SIGNAL}'s long life.",
           "target": "n_b2"
         }
       ]
     },
     {
       "id": "m_who_okafor",
-      "body": "<<FILL role=choice words=130 beats='Mrs. Okafor hands Wren a mug of tea and studies her a long moment; she knew Kell Alder, she says, knew what he lost and what he would not let go of, then she pauses, weighing whether the girl truly wants to carry this or should be sent gently home to bed'>>",
+      "body": "<<FILL role=choice words=130 beats='{E_SOURCE2} hands {HERO} a mug of tea and studies her a long moment; she knew {OPERATOR}, she says, knew {E2_DETAIL}, then she pauses, weighing whether the girl truly wants to carry this or should be sent gently home to bed'>>",
       "is_ending": false,
       "choices": [
         {
@@ -943,7 +943,7 @@
     },
     {
       "id": "m_who_story",
-      "body": "<<FILL role=rising words=135 beats='Satisfied, Mrs. Okafor tells it plain; Alder’s daughter left after a terrible quarrel and never wrote, and he swore he would keep a channel open for her until she answered, a promise he has kept alone for thirty years'>>",
+      "body": "<<FILL role=rising words=135 beats='Satisfied, {E_SOURCE2} tells it plain; {OPERATOR}'s daughter left after a terrible quarrel and never wrote, and he swore he would keep a channel open for her until she answered, a promise he has kept alone for thirty years'>>",
       "is_ending": false,
       "choices": [
         {
@@ -955,7 +955,7 @@
     },
     {
       "id": "e_who_warn",
-      "body": "<<FILL role=failure words=115 beats='Wren hesitates a beat too long, and Mrs. Okafor kindly decides the past is too heavy for a school night; she walks Wren to the door with a pat and a thermos, and the story of Kell Alder stays sealed in an old woman memory, the loop still calling in the cold'>>",
+      "body": "<<FILL role=failure words=115 beats='{HERO} hesitates a beat too long, and {E_SOURCE2} kindly decides the past is too heavy for a school night; she walks {HERO} to the door with a pat and a thermos, and the story of {OPERATOR} stays sealed in an old woman's memory, {SIGNAL} still calling in the cold'>>",
       "is_ending": true,
       "ending": {
         "id": "e_who_warn",
@@ -966,7 +966,7 @@
     },
     {
       "id": "n_b2",
-      "body": "<<FILL role=discovery words=150 beats='The threads knot into one answer; the signal repeats because it is a countdown that resets every time it goes unanswered, and it is not broadcast to the world at all, it is addressed, aimed at a single listener marked only M in Alder logs; for thirty years he has held a channel open for someone who never called back, restarting the loop each time the silence won'>>",
+      "body": "<<FILL role=discovery words=150 beats='The threads knot into one answer; {SIGNAL} repeats because it is a countdown that resets every time it goes unanswered, and it is not broadcast to the world at all, it is addressed, aimed at a single listener marked only {LISTENER} in {OPERATOR}'s logs; for thirty years he has held a channel open for someone who never called back, restarting {SIGNAL} each time the silence won'>>",
       "is_ending": false,
       "choices": [
         {
@@ -978,7 +978,7 @@
     },
     {
       "id": "n_b2_echo",
-      "body": "<<FILL role=rising words=130 beats='Wren sits back, headphones warm against her ears, the loop suddenly unbearably human; two questions remain and they braid together, who exactly is M, and what happens when this newest countdown finally reaches zero'>>",
+      "body": "<<FILL role=rising words=130 beats='{HERO} sits back, headphones warm against her ears, {SIGNAL} suddenly unbearably human; two questions remain and they braid together, who exactly is {LISTENER}, and what happens when this newest countdown finally reaches zero'>>",
       "is_ending": false,
       "choices": [
         {
@@ -990,70 +990,70 @@
     },
     {
       "id": "n_b2_choice",
-      "body": "<<FILL role=choice words=130 beats='She cannot answer a signal she does not understand; Wren can hunt down who M really is, the listener Alder has waited a lifetime for, or she can work out exactly what the shrinking countdown is racing toward'>>",
+      "body": "<<FILL role=choice words=130 beats='She cannot answer a signal she does not understand; {HERO} can hunt down who {LISTENER} really is, the one {OPERATOR} has waited a lifetime for, or she can work out exactly what the shrinking countdown is racing toward'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_b2_choice_1",
-          "label": "Find out who M is.",
+          "label": "Find out who {LISTENER} is.",
           "target": "mm_listener_1"
         },
         {
           "id": "c_n_b2_choice_2",
-          "label": "Find out what the countdown reaches.",
+          "label": "Find out what {DEADLINE_SIGN} reaches.",
           "target": "mm_count_1"
         }
       ]
     },
     {
       "id": "mm_listener_1",
-      "body": "<<FILL role=choice words=135 beats='M could be a person or a place; Wren can dig into Alder family, the daughter Mrs. Okafor mentioned, or she can test the darker thought that M is a coordinate, a landfall he keeps naming for a ship or a soul that never arrives'>>",
+      "body": "<<FILL role=choice words=135 beats='{LISTENER} could be a person or a place; {HERO} can try {F_METHOD1}, or she can {F_METHOD2}, a landfall he keeps naming for a ship or a soul that never arrives'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mm_listener_1_1",
-          "label": "Search Alder family for M.",
+          "label": "Search {OPERATOR}'s family for {LISTENER}.",
           "target": "mm_list_family"
         },
         {
           "id": "c_mm_listener_1_2",
-          "label": "Test M as a place on the map.",
+          "label": "Test {LISTENER} as a place on the map.",
           "target": "mm_list_place"
         }
       ]
     },
     {
       "id": "mm_list_family",
-      "body": "<<FILL role=choice words=130 beats='Public records give Wren a daughter, Marin Alder, gone from the county three decades back; there is also a sister listed as next of kin, still local, and Wren must choose which Alder to pin her hope on with the clock already shrinking'>>",
+      "body": "<<FILL role=choice words=130 beats='{F1_LEAD1} shows a daughter gone from the county three decades back; there is also {F1_LEAD2}, still local, and {HERO} must choose which lead to pin her hope on with the clock already shrinking'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mm_list_family_1",
-          "label": "Trace the daughter, Marin.",
+          "label": "Trace the daughter, {LISTENER}.",
           "target": "mm_list_daughter"
         },
         {
           "id": "c_mm_list_family_2",
-          "label": "Trace the local sister instead.",
+          "label": "Trace {F1_LEAD2} instead.",
           "target": "mm_list_sister"
         }
       ]
     },
     {
       "id": "mm_list_daughter",
-      "body": "<<FILL role=rising words=130 beats='Marin is the M, Alder’s daughter, who walked out after their last fight and has drifted from town to town since; the loop is his standing apology, broadcast on the frequency they once shared, waiting for the day she tunes back in'>>",
+      "body": "<<FILL role=rising words=130 beats='{LISTENER} is {OPERATOR}'s daughter, who walked out after their last fight and has drifted from town to town since; {SIGNAL} is his standing apology, broadcast on the frequency they once shared, waiting for the day she tunes back in'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mm_list_daughter_1",
-          "label": "Fix on reaching Marin.",
+          "label": "Fix on reaching {LISTENER}.",
           "target": "n_b3"
         }
       ]
     },
     {
       "id": "mm_list_sister",
-      "body": "<<FILL role=rising words=125 beats='The sister, reached by phone, weeps softly; M is Marin, she confirms, Kell only child, and she gives Wren the last address she has, a long shot two towns west, and one plea, please, before it is too late for them both'>>",
+      "body": "<<FILL role=rising words=125 beats='{F1_LEAD2}, reached by phone, weeps softly; she confirms {LISTENER} is {OPERATOR}'s only child, and gives {HERO} the last address she has, a long shot two towns west, and one plea before it is too late for them both'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1065,12 +1065,12 @@
     },
     {
       "id": "mm_list_place",
-      "body": "<<FILL role=choice words=130 beats='On the chart, M could mark a mooring off the headland where a boat once went down; Wren can chase that landfall reading, or she can admit the map is leading her in circles while the real answer is a person, not a place'>>",
+      "body": "<<FILL role=choice words=130 beats='On the chart, {LISTENER} could mark {F2_LANDMARK} off the headland where a boat once went down; {HERO} can chase that reading, or she can admit the map is leading her in circles while the real answer is a person, not a place'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mm_list_place_1",
-          "label": "Check the mooring the chart shows.",
+          "label": "Check {F2_LANDMARK}.",
           "target": "mm_list_map"
         },
         {
@@ -1082,19 +1082,19 @@
     },
     {
       "id": "mm_list_map",
-      "body": "<<FILL role=rising words=125 beats='The mooring is a memorial buoy, and its plaque carries a name, Marin, painted the year Alder’s daughter vanished; M is not a place after all but a person the whole headland has quietly mourned, and she may yet be alive to hear him'>>",
+      "body": "<<FILL role=rising words=125 beats='{F2_LANDMARK}'s plaque carries a name, {LISTENER}, painted the year {OPERATOR}'s daughter vanished; {LISTENER} is not a place after all but a person the whole headland has quietly mourned, and she may yet be alive to hear him'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mm_list_map_1",
-          "label": "Turn the search toward Marin herself.",
+          "label": "Turn the search toward {LISTENER} herself.",
           "target": "n_b3"
         }
       ]
     },
     {
       "id": "e_list_deadend",
-      "body": "<<FILL role=failure words=115 beats='Wren chases the map in widening circles until every lead folds back on itself; exhausted, she saves a clean recording of the loop to her phone and lets the search go, carrying a mystery she can play for people but never finish'>>",
+      "body": "<<FILL role=failure words=115 beats='{HERO} chases the map in widening circles until every lead folds back on itself; exhausted, she saves a clean recording of {SIGNAL} to her phone and lets the search go, carrying a mystery she can play for people but never finish'>>",
       "is_ending": true,
       "ending": {
         "id": "e_list_deadend",
@@ -1105,41 +1105,41 @@
     },
     {
       "id": "mm_count_1",
-      "body": "<<FILL role=choice words=135 beats='To pin the countdown target, Wren can extrapolate the shrinking loop straight to its zero point, or she can test her hunch that it is timed to the coast itself, to a tide or a storm swelling toward the headland this very week'>>",
+      "body": "<<FILL role=choice words=135 beats='To pin the countdown target, {HERO} can try {G_METHOD1}, or she can test her hunch it is timed to the coast itself, to {G2_WEATHER} swelling toward the headland this very week'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mm_count_1_1",
-          "label": "Extrapolate the loop to zero.",
+          "label": "{G_METHOD1}.",
           "target": "mm_count_time"
         },
         {
           "id": "c_mm_count_1_2",
-          "label": "Test it against the tide and weather.",
+          "label": "{G_METHOD2}.",
           "target": "mm_count_tide"
         }
       ]
     },
     {
       "id": "mm_count_time",
-      "body": "<<FILL role=choice words=130 beats='The math lands the zero point on a night only days off; but a countdown needs a thing to reach, and Wren must decide whether zero marks the relay failing power cell finally dying or a message Alder set to play automatically when the wait runs out'>>",
+      "body": "<<FILL role=choice words=130 beats='The math lands the zero point on a night only days off; but a countdown needs a thing to reach, and {HERO} must decide whether zero marks {DEADLINE} finally failing or {FAREWELL} playing automatically when the wait runs out'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mm_count_time_1",
-          "label": "Read zero as the power cell dying.",
+          "label": "Read zero as {DEADLINE} failing.",
           "target": "mm_count_extrap"
         },
         {
           "id": "c_mm_count_time_2",
-          "label": "Read zero as a final message firing.",
+          "label": "Read zero as {FAREWELL} firing.",
           "target": "mm_count_clock"
         }
       ]
     },
     {
       "id": "mm_count_extrap",
-      "body": "<<FILL role=rising words=125 beats='The relay runs on a decades-old power cell, and Wren extrapolation matches its rated end almost to the hour; when it dies the loop dies with it, and Alder thirty-year channel to Marin goes dark forever unless someone acts first'>>",
+      "body": "<<FILL role=rising words=125 beats='{THRESHOLD} runs on {DEADLINE}, and {HERO}'s extrapolation matches its rated end almost to the hour; when it fails {SIGNAL} fails with it, and {OPERATOR}'s thirty-year channel to {LISTENER} goes dark unless someone acts first'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1151,7 +1151,7 @@
     },
     {
       "id": "mm_count_clock",
-      "body": "<<FILL role=rising words=125 beats='Buried in the logs Wren finds it, a scheduled final transmission, one last message queued to play when the countdown ends and then erase itself, Alder goodbye to Marin, set to speak once into the dark and be gone'>>",
+      "body": "<<FILL role=rising words=125 beats='Buried in the logs {HERO} finds it, {FAREWELL}, {OPERATOR}'s goodbye to {LISTENER}, set to speak once into the dark and be gone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1163,12 +1163,12 @@
     },
     {
       "id": "mm_count_tide",
-      "body": "<<FILL role=choice words=130 beats='The countdown does align with an incoming spring tide and a gale forecast for the headland; that could mean the storm will simply drown the failing relay, and Wren can raise the alarm about it or hold back, unsure she has the story right'>>",
+      "body": "<<FILL role=choice words=130 beats='The countdown does align with {G2_WEATHER} forecast for the headland; that could mean the storm will simply swamp {THRESHOLD}, and {HERO} can raise the alarm or hold back, unsure she has the story right'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mm_count_tide_1",
-          "label": "Warn someone about the storm and relay.",
+          "label": "Warn someone about {G2_WEATHER} and the relay.",
           "target": "mm_count_warn"
         },
         {
@@ -1180,7 +1180,7 @@
     },
     {
       "id": "mm_count_warn",
-      "body": "<<FILL role=rising words=125 beats='Wren connects it, the gale will swamp the headland the same night the cell dies, ending the loop twice over; the countdown is real and physical now, weather and machinery closing on one hour, and the window to act is almost shut'>>",
+      "body": "<<FILL role=rising words=125 beats='{HERO} connects it, {G2_WEATHER} will swamp the headland the same night {DEADLINE} fails, ending {SIGNAL} twice over; the countdown is real and physical now, weather and machinery closing on one hour, and the window to act is almost shut'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1192,7 +1192,7 @@
     },
     {
       "id": "e_count_wait",
-      "body": "<<FILL role=failure words=115 beats='Wren decides she needs to be sure before she troubles anyone, so she waits one more night to double-check her figures; in the morning the loop is gone, only clean hiss where the countdown used to be, the relay silenced while she hesitated'>>",
+      "body": "<<FILL role=failure words=115 beats='{HERO} decides she needs to be sure before she troubles anyone, so she waits one more night to double-check her figures; in the morning {SIGNAL} is gone, only clean {NOISE} where the countdown used to be, {THRESHOLD} silenced while she hesitated'>>",
       "is_ending": true,
       "ending": {
         "id": "e_count_wait",
@@ -1203,7 +1203,7 @@
     },
     {
       "id": "n_b3",
-      "body": "<<FILL role=discovery words=155 beats='Everything Wren has gathered snaps into one clear, ticking shape; the countdown ends this coming night, when the relay ancient power cell finally fails, and the moment it does a last message will play, Kell Alder recorded farewell to the one he has waited so long to reach, and then erase itself into silence with the storm rolling in behind it; thirty years of waiting come down to one hour, and Wren is the only person who knows'>>",
+      "body": "<<FILL role=discovery words=155 beats='Everything {HERO} has gathered snaps into one clear, ticking shape; the countdown ends this coming night, when {DEADLINE} finally fails, and the moment it does {FAREWELL} will play, {OPERATOR}'s recorded farewell to the one he has waited so long to reach, and then erase itself into silence with {G2_WEATHER} rolling in behind it; thirty years of waiting come down to one hour, and {HERO} is the only person who knows'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1215,7 +1215,7 @@
     },
     {
       "id": "n_b3_echo",
-      "body": "<<FILL role=rising words=130 beats='Rain begins to freckle the window as Wren weighs her options; the headland is a bike ride away, her grandfather transmitter still works, and the town has people who could move faster than she can, but every path runs against the same shrinking clock'>>",
+      "body": "<<FILL role=rising words=130 beats='Rain begins to freckle the window as {HERO} weighs her options; {THRESHOLD} is a bike ride away, {KIN}'s transmitter still works, and the town has people who could move faster than she can, but every path runs against the same shrinking clock'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1227,17 +1227,17 @@
     },
     {
       "id": "n_b3_choice",
-      "body": "<<FILL role=climax words=140 beats='One hour, three ways to spend it; Wren can race to the relay station itself and answer the signal at its source, she can use her grandfather rig to rebroadcast the message wide enough that its intended listener might hear it, or she can rouse the people who could reach the headland faster and surer than a girl on a bike in a gale'>>",
+      "body": "<<FILL role=climax words=140 beats='One hour, three ways to spend it; {HERO} can race to {THRESHOLD} itself and answer {SIGNAL} at its source, she can use {KIN}'s rig to rebroadcast {FAREWELL} wide enough that {LISTENER} might hear it, or she can rouse people who could reach the headland faster and surer than a girl on a bike in a gale'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_b3_choice_1",
-          "label": "Race to the relay station.",
+          "label": "Race to {THRESHOLD}.",
           "target": "f_station_1"
         },
         {
           "id": "c_n_b3_choice_2",
-          "label": "Rebroadcast the message yourself.",
+          "label": "Rebroadcast {FAREWELL} yourself.",
           "target": "f_relay_1"
         },
         {
@@ -1249,29 +1249,29 @@
     },
     {
       "id": "f_station_1",
-      "body": "<<FILL role=climax words=140 beats='Wren pedals into the rising storm and reaches the relay gate chained shut; the mast light pulses with the loop above her, minutes left on the clock, and she can go over the rattling fence into the yard or gamble on the service road that curls to a back entrance'>>",
+      "body": "<<FILL role=climax words=140 beats='{HERO} pedals into {G2_WEATHER} and reaches {H_ENTRY}; the mast light pulses with {SIGNAL} above her, minutes left on the clock, and she can go over the rattling fence into {H1_ZONE} or gamble on {H2_ZONE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_station_1_1",
-          "label": "Go over the fence into the yard.",
+          "label": "Go over the fence into {H1_ZONE}.",
           "target": "f_st_fence"
         },
         {
           "id": "c_f_station_1_2",
-          "label": "Take the service road to the back.",
+          "label": "Take {H2_ZONE}.",
           "target": "f_st_road"
         }
       ]
     },
     {
       "id": "f_st_fence",
-      "body": "<<FILL role=climax words=140 beats='Wren tops the fence and drops into the flooded yard; the control room door hangs ajar ahead, spilling faint light, but the exposed climb has cost her precious minutes and the wind is trying to peel her off the concrete, so she can push straight for that door or catch her breath first'>>",
+      "body": "<<FILL role=climax words=140 beats='{HERO} tops the fence and drops into {H1_ZONE}; {H1_ROOM}'s door hangs ajar ahead, spilling faint light, but the exposed climb has cost her precious minutes and {H1_GATE} is trying to peel her off the concrete, so she can push straight for that door or catch her breath first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_st_fence_1",
-          "label": "Push straight for the control room.",
+          "label": "Push straight for {H1_ROOM}.",
           "target": "f_st_control"
         },
         {
@@ -1283,63 +1283,63 @@
     },
     {
       "id": "f_st_control",
-      "body": "<<FILL role=climax words=145 beats='Inside, the control room is a shrine of dials and one glowing console counting down in red; Wren can seize the microphone and answer the transmitter directly, or she can see the failing power cell guttering and try to stabilize it before it dies mid-message'>>",
+      "body": "<<FILL role=climax words=145 beats='Inside, {H1_ROOM} is a shrine of dials and one glowing console counting down in red; {HERO} can seize {H1_CHOICE1} and answer the transmitter directly, or she can see {DEADLINE} guttering and try to stabilize it before it fails mid-message'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_st_control_1",
-          "label": "Seize the mic and answer the signal.",
+          "label": "Seize {H1_CHOICE1} and answer {SIGNAL}.",
           "target": "f_st_answer"
         },
         {
           "id": "c_f_st_control_2",
-          "label": "Try to stabilize the dying power cell.",
+          "label": "Try to stabilize {DEADLINE}.",
           "target": "f_st_power"
         }
       ]
     },
     {
       "id": "f_st_answer",
-      "body": "<<FILL role=climax words=145 beats='The countdown reads under a minute; Wren finds Alder patched contact list open on the desk, Marin newest number circled and never dialed, and she can bridge that line and let the recorded message finally reach a living ear, or simply key the transmitter to halt the wipe and save the whole archive of his waiting'>>",
+      "body": "<<FILL role=climax words=145 beats='The countdown reads under a minute; {HERO} finds {OPERATOR}'s contact list open on the desk, {H1_CONTACT} never dialed, and she can bridge that line and let {FAREWELL} finally reach a living ear, or simply key the transmitter to halt the wipe and save {H1_ARCHIVE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_st_answer_1",
-          "label": "Bridge the line to Marin and play it.",
+          "label": "Bridge the line to {LISTENER} and play it.",
           "target": "e_st_reunite"
         },
         {
           "id": "c_f_st_answer_2",
-          "label": "Halt the wipe and save the archive.",
+          "label": "Halt the wipe and save {H1_ARCHIVE}.",
           "target": "e_st_archive"
         }
       ]
     },
     {
       "id": "e_st_reunite",
-      "body": "<<FILL role=success words=130 beats='Wren dials the circled number and patches it through as the counter hits zero; across three towns a phone rings, a startled woman answers, and her father recorded voice, thirty years patient, fills the line, still holding the channel open for you, Marin, and this time somebody is there to hear it'>>",
+      "body": "<<FILL role=success words=130 beats='{HERO} dials {H1_CONTACT} and patches it through as the counter hits zero; across three towns a phone rings, a startled woman answers, and her father's recorded voice, thirty years patient, fills the line, still holding the channel open for {LISTENER}, and this time somebody is there to hear it'>>",
       "is_ending": true,
       "ending": {
         "id": "e_st_reunite",
         "valence": "positive",
         "kind": "success",
-        "title": "The Channel Answered"
+        "title": "{H1_PRIZE1}"
       }
     },
     {
       "id": "e_st_archive",
-      "body": "<<FILL role=completion words=125 beats='Wren keys the override a breath before the wipe; the countdown freezes, the loop steadies, and thirty years of Alder logs and messages are saved intact, a whole patient archive of love preserved so that when Marin is found, every word he sent will still be waiting for her'>>",
+      "body": "<<FILL role=completion words=125 beats='{HERO} keys the override a breath before the wipe; the countdown freezes, {SIGNAL} steadies, and thirty years of {OPERATOR}'s logs and messages are saved intact, {H1_ARCHIVE} preserved so that when {LISTENER} is found, every word he sent will still be waiting for her'>>",
       "is_ending": true,
       "ending": {
         "id": "e_st_archive",
         "valence": "positive",
         "kind": "completion",
-        "title": "Nothing Is Erased"
+        "title": "{H1_PRIZE2}"
       }
     },
     {
       "id": "f_st_power",
-      "body": "<<FILL role=climax words=140 beats='The power cell is a corroded brick barely holding voltage; Wren remembers her grandfather spare battery in her pack and can splice it in to buy the relay hours and then call the whole thing in properly, or she can nurse the dying cell by hand and pray it lasts through one last broadcast'>>",
+      "body": "<<FILL role=climax words=140 beats='{DEADLINE} is a corroded brick barely holding voltage; {HERO} remembers {KIN}'s spare battery in her pack and can splice it in to buy {THRESHOLD} hours and then call the whole thing in properly, or she can nurse it by hand and pray it lasts through one last broadcast'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1349,25 +1349,25 @@
         },
         {
           "id": "c_f_st_power_2",
-          "label": "Nurse the dying cell by hand.",
+          "label": "Nurse {DEADLINE} by hand.",
           "target": "e_st_record"
         }
       ]
     },
     {
       "id": "e_st_stabilize",
-      "body": "<<FILL role=completion words=125 beats='The spliced cell catches and the console steadies; Wren gets the relay stable, then phones the coast radio club with the whole story, and by dawn Alder loop is safe on backup power while volunteers begin the search for Marin, the countdown stopped and the waiting handed on to people who can finish it'>>",
+      "body": "<<FILL role=completion words=125 beats='The spliced cell catches and the console steadies; {HERO} gets {THRESHOLD} stable, then phones {I_GROUP} with the whole story, and by dawn {OPERATOR}'s loop is safe on backup power while volunteers begin the search for {LISTENER}, the countdown stopped and the waiting handed on to people who can finish it'>>",
       "is_ending": true,
       "ending": {
         "id": "e_st_stabilize",
         "valence": "positive",
         "kind": "completion",
-        "title": "Bought More Time"
+        "title": "{H1_PRIZE3}"
       }
     },
     {
       "id": "e_st_record",
-      "body": "<<FILL role=failure words=120 beats='Wren’s hands are steady but the cell is too far gone; it fails with a small final click just as the message begins, cutting Alder’s farewell to a single word, Marin, before the room goes dark and silent, though Wren’s clean recording of that last word is all that survives the night'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO}'s hands are steady but {DEADLINE} is too far gone; it fails with a small final click just as {FAREWELL} begins, cutting {OPERATOR}'s farewell to a single word, {LISTENER}, before the room goes dark and silent, though {HERO}'s clean recording of that last word is all that survives the night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_st_record",
@@ -1378,7 +1378,7 @@
     },
     {
       "id": "e_st_hesitate",
-      "body": "<<FILL role=failure words=115 beats='Pinned by the wind at the yard edge, Wren loses her nerve and her seconds together; by the time she forces herself to the door the console has already gone dark, the countdown spent, and she is left in a dead control room with a mystery solved one minute too late'>>",
+      "body": "<<FILL role=failure words=115 beats='Pinned by {H1_GATE}, {HERO} loses her nerve and her seconds together; by the time she forces herself to the door the console has already gone dark, the countdown spent, and she is left in a dead {H1_ROOM} with a mystery solved one minute too late'>>",
       "is_ending": true,
       "ending": {
         "id": "e_st_hesitate",
@@ -1389,29 +1389,29 @@
     },
     {
       "id": "f_st_road",
-      "body": "<<FILL role=climax words=140 beats='The service road is longer but sheltered, and Wren pedals hard around to a back door standing open; a lamp burns inside, and there, hunched over the console he has tended for thirty years, is an old man she can only be Kell Alder himself, or she finds the door locked after all and time bleeding away'>>",
+      "body": "<<FILL role=climax words=140 beats='{H2_ZONE} is longer but sheltered, and {HERO} pedals hard around to a back door standing open; a lamp burns inside, and there, hunched over the console he has tended for thirty years, is {OPERATOR} himself, or she finds {H2_GATE} after all and time bleeding away'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_st_road_1",
-          "label": "Find Alder himself at the console.",
+          "label": "Find {OPERATOR} himself at {H1_ROOM}.",
           "target": "f_st_alder"
         },
         {
           "id": "c_f_st_road_2",
-          "label": "Find the back door locked, and wait.",
+          "label": "Find {H2_GATE}, and wait.",
           "target": "e_st_wait"
         }
       ]
     },
     {
       "id": "f_st_alder",
-      "body": "<<FILL role=climax words=145 beats='Kell Alder turns, startled to find a girl dripping in his doorway; Wren blurts everything she has pieced together, the loop, the countdown, Marin, and she can beg him to let the message go out live tonight while there is still power, or watch him shake his head, certain after thirty years that no one is really listening'>>",
+      "body": "<<FILL role=climax words=145 beats='{OPERATOR} turns, startled to find a girl dripping in his doorway; {HERO} blurts everything she has pieced together, {SIGNAL}, the countdown, {LISTENER}, and she can beg him to let {FAREWELL} go out live tonight while there is still power, or watch him shake his head, certain after thirty years no one is really listening'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_st_alder_1",
-          "label": "Convince Alder to send it live.",
+          "label": "Convince {OPERATOR} to send it live.",
           "target": "e_st_alder_send"
         },
         {
@@ -1423,18 +1423,18 @@
     },
     {
       "id": "e_st_alder_send",
-      "body": "<<FILL role=success words=130 beats='Something in Wren certainty reaches the old man; Alder wipes his eyes, leans to the mic, and instead of the recording speaks live for the first time in decades, telling the open channel he is still here, still sorry, still waiting, and two towns west a woman who never stopped listening finally lifts the handset'>>",
+      "body": "<<FILL role=success words=130 beats='Something in {HERO}'s certainty reaches the old man; {OPERATOR} wipes his eyes, leans to {H1_CHOICE1}, and instead of the recording speaks live for the first time in decades, telling the open channel he is still here, still sorry, still waiting, and two towns west {LISTENER}, who never stopped listening, finally lifts the handset'>>",
       "is_ending": true,
       "ending": {
         "id": "e_st_alder_send",
         "valence": "positive",
         "kind": "success",
-        "title": "Live, After Thirty Years"
+        "title": "{H2_PRIZE1}"
       }
     },
     {
       "id": "e_st_alder_refuse",
-      "body": "<<FILL role=failure words=120 beats='Alder only shakes his head; thirty years of silence have convinced him no answer is coming, and he will not risk hoping again tonight, not even for a stranger. Wren leaves her notebook of everything she found on his desk and bikes home in the rain, the choice, and the loop, left in his tired hands'>>",
+      "body": "<<FILL role=failure words=120 beats='{OPERATOR} only shakes his head; thirty years of silence have convinced him no answer is coming, and he will not risk hoping again tonight, not even for a stranger. {HERO} leaves her notebook of everything she found on his desk and bikes home in the rain, the choice, and {SIGNAL}, left in his tired hands'>>",
       "is_ending": true,
       "ending": {
         "id": "e_st_alder_refuse",
@@ -1445,7 +1445,7 @@
     },
     {
       "id": "e_st_wait",
-      "body": "<<FILL role=failure words=115 beats='The back door is bolted and no knock brings anyone; Wren huddles under the eave counting the minutes until the mast light stutters and goes still, the countdown finished on the far side of a locked door, so close she could hear the last tone fade through the wall'>>",
+      "body": "<<FILL role=failure words=115 beats='{H2_GATE} is bolted and no knock brings anyone; {HERO} huddles under the eave counting the minutes until the mast light stutters and goes still, the countdown finished on the far side of a locked door, so close she could hear the last tone fade through the wall'>>",
       "is_ending": true,
       "ending": {
         "id": "e_st_wait",
@@ -1456,41 +1456,41 @@
     },
     {
       "id": "f_relay_1",
-      "body": "<<FILL role=climax words=140 beats='Wren stays home and runs for the attic instead; if she cannot reach the headland in time, she can amplify Alder message so far and wide that Marin might stumble on it, using her grandfather own transmitter, or she can wake the town amateur radio club to throw it across their whole county net'>>",
+      "body": "<<FILL role=climax words=140 beats='{HERO} stays home and runs for the attic instead; if she cannot reach {THRESHOLD} in time, she can amplify {FAREWELL} so far and wide that {LISTENER} might stumble on it, using {KIN}'s own transmitter, or she can wake {I_GROUP} to throw it across the whole county net'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_relay_1_1",
-          "label": "Use your grandfather transmitter.",
+          "label": "Use {KIN}'s transmitter.",
           "target": "f_re_rig"
         },
         {
           "id": "c_f_relay_1_2",
-          "label": "Call the town radio club net.",
+          "label": "Call {I_GROUP}'s net.",
           "target": "f_re_club"
         }
       ]
     },
     {
       "id": "f_re_rig",
-      "body": "<<FILL role=climax words=140 beats='Her grandfather rig hums to life under Wren hands, warm and familiar; she can boost the relay loop and splice Marin name across every band she can legally reach, praying it carries, or she can push the old set past its limits for more range than it was ever built to give'>>",
+      "body": "<<FILL role=climax words=140 beats='{KIN}'s rig hums to life under {HERO}'s hands, warm and familiar; she can boost {SIGNAL} and splice {LISTENER}'s name across every band she can legally reach, praying it carries, or she can push the old set past its limits for more range than it was ever built to give'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_re_rig_1",
-          "label": "Boost the loop and call for Marin.",
+          "label": "{I1_ACTION1}.",
           "target": "f_re_boost"
         },
         {
           "id": "c_f_re_rig_2",
-          "label": "Push the old rig past its limits.",
+          "label": "{I1_ACTION2}.",
           "target": "e_re_fuse"
         }
       ]
     },
     {
       "id": "f_re_boost",
-      "body": "<<FILL role=climax words=140 beats='Wren rebroadcasts Alder message on a steady boost, Marin name riding the loop out across the dark coast; for a long minute there is only hiss, and then she must decide whether the faint carrier swelling on the return frequency is truly an answer or just her own hope, and whether to keep calling'>>",
+      "body": "<<FILL role=climax words=140 beats='{HERO} rebroadcasts {FAREWELL} on a steady boost, {LISTENER}'s name riding {SIGNAL} out across the dark coast; for a long minute there is only {NOISE}, and then she must decide whether the faint carrier swelling back is truly an answer or just her own hope, and whether to keep calling'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1507,29 +1507,29 @@
     },
     {
       "id": "e_re_answer",
-      "body": "<<FILL role=success words=130 beats='The carrier resolves into a voice, hesitant and disbelieving, asking who is broadcasting her name; Wren explains in a rush, her father, the relay, thirty years, and hands the channel to the loop, and Marin listens to her father waiting message with a stranger girl as witness, the silence finally, gently broken'>>",
+      "body": "<<FILL role=success words=130 beats='The carrier resolves into a voice, hesitant and disbelieving, asking who is broadcasting her name; {HERO} explains in a rush, her father, {THRESHOLD}, thirty years, and hands the channel to {SIGNAL}, and {LISTENER} listens to her father's waiting message with a stranger girl as witness, the silence finally, gently broken'>>",
       "is_ending": true,
       "ending": {
         "id": "e_re_answer",
         "valence": "positive",
         "kind": "success",
-        "title": "A Voice Comes Back"
+        "title": "{I1_PRIZE1}"
       }
     },
     {
       "id": "e_re_neighbor",
-      "body": "<<FILL role=completion words=125 beats='No answer comes for Marin, but a neighbor two streets over hears the whole broadcast and calls, shaken, promising to spread it through every relay and club she knows; Wren has not closed the loop herself, yet she has thrown Alder message far past the headland, and now a hundred listeners will carry it on'>>",
+      "body": "<<FILL role=completion words=125 beats='No answer comes for {LISTENER}, but a neighbor two streets over hears the whole broadcast and calls, shaken, promising to spread it through every relay and club she knows; {HERO} has not closed {SIGNAL} herself, yet she has thrown {FAREWELL} far past {THRESHOLD}, and now a hundred listeners will carry it on'>>",
       "is_ending": true,
       "ending": {
         "id": "e_re_neighbor",
         "valence": "positive",
         "kind": "completion",
-        "title": "Carried Onward"
+        "title": "{I1_PRIZE2}"
       }
     },
     {
       "id": "e_re_fuse",
-      "body": "<<FILL role=failure words=115 beats='Wren pushes the old rig too hard and it dies in a wisp of blue smoke and the smell of scorched solder; the attic goes quiet, her grandfather transmitter finished the same night as Alder loop, and she is left with a dark set and a message she could not send'>>",
+      "body": "<<FILL role=failure words=115 beats='{HERO} pushes the old rig too hard and it dies in a wisp of blue smoke and the smell of scorched solder; the attic goes quiet, {KIN}'s transmitter finished the same night as {OPERATOR}'s loop, and she is left with a dark set and a message she could not send'>>",
       "is_ending": true,
       "ending": {
         "id": "e_re_fuse",
@@ -1540,7 +1540,7 @@
     },
     {
       "id": "f_re_club",
-      "body": "<<FILL role=climax words=140 beats='Wren rings the amateur radio club emergency line; a sleepy operator answers, then wakes fully as the story spills out, and he can throw Alder message onto the county-wide net at once for maximum reach, or she can hear that no one is on shift and only a recorder is listening at this hour'>>",
+      "body": "<<FILL role=climax words=140 beats='{HERO} rings {I_GROUP}'s emergency line; {I2_CONTACT} answers, then wakes fully as the story spills out, and he can throw {FAREWELL} onto the county-wide net at once for maximum reach, or she can hear that no one is on shift and only a recorder is listening at this hour'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1557,7 +1557,7 @@
     },
     {
       "id": "f_re_net",
-      "body": "<<FILL role=climax words=140 beats='The club fires Alder message across the whole county net, dozens of stations relaying Marin name into the storm; within minutes reports trickle back, and Wren must judge whether the strong relay from a town two ridges west, where a woman is asking urgent questions, is the lead she has prayed for or a coincidence to chase'>>",
+      "body": "<<FILL role=climax words=140 beats='{I_GROUP} fires {FAREWELL} across the whole county net, dozens of stations relaying {LISTENER}'s name into {G2_WEATHER}; within minutes reports trickle back, and {HERO} must judge whether {I2_LEAD} is the lead she has prayed for or a coincidence to chase'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1567,36 +1567,36 @@
         },
         {
           "id": "c_f_re_net_2",
-          "label": "Log every lead for the club to follow.",
+          "label": "Log every lead for {I_GROUP} to follow.",
           "target": "e_re_log"
         }
       ]
     },
     {
       "id": "e_re_found",
-      "body": "<<FILL role=success words=130 beats='The lead is real; the woman two ridges west is Marin, up late and idly scanning the bands she abandoned decades ago, and the sound of her own name in her father old loop stops her cold. The club patches her through to the relay, and Kell Alder thirty-year wait ends in a single trembling hello'>>",
+      "body": "<<FILL role=success words=130 beats='The lead is real; the woman two ridges west is {LISTENER}, up late and idly scanning the bands she abandoned decades ago, and the sound of her own name in her father's old loop stops her cold. {I_GROUP} patches her through to {THRESHOLD}, and {OPERATOR}'s thirty-year wait ends in a single trembling hello'>>",
       "is_ending": true,
       "ending": {
         "id": "e_re_found",
         "valence": "positive",
         "kind": "success",
-        "title": "Two Ridges West"
+        "title": "{I2_PRIZE1}"
       }
     },
     {
       "id": "e_re_log",
-      "body": "<<FILL role=completion words=125 beats='Wren cannot be sure any single lead is Marin, so she logs them all and hands the club a complete file, the frequency, the story, every promising callback; the net keeps the message circulating night after night, and though Wren does not see the ending herself, Alder loop is finally in a hundred searching hands'>>",
+      "body": "<<FILL role=completion words=125 beats='{HERO} cannot be sure any single lead is {LISTENER}, so she logs them all and hands {I_GROUP} a complete file, the frequency, the story, every promising callback; the net keeps {FAREWELL} circulating night after night, and though {HERO} does not see the ending herself, {OPERATOR}'s loop is finally in a hundred searching hands'>>",
       "is_ending": true,
       "ending": {
         "id": "e_re_log",
         "valence": "positive",
         "kind": "completion",
-        "title": "A Hundred Searching Hands"
+        "title": "{I2_PRIZE2}"
       }
     },
     {
       "id": "e_re_message",
-      "body": "<<FILL role=failure words=115 beats='Only the after-hours recorder answers, and Wren leaves the whole story into the void, hoping someone plays it back at dawn; but dawn is after the countdown, and by the time a club volunteer hears her message the relay loop has already fallen silent, her call arriving a night too late'>>",
+      "body": "<<FILL role=failure words=115 beats='Only the after-hours recorder answers, and {HERO} leaves the whole story into the void, hoping someone plays it back at dawn; but dawn is after the countdown, and by the time a club volunteer hears her message {THRESHOLD}'s loop has already fallen silent, her call arriving a night too late'>>",
       "is_ending": true,
       "ending": {
         "id": "e_re_message",
@@ -1607,24 +1607,24 @@
     },
     {
       "id": "f_help_1",
-      "body": "<<FILL role=climax words=140 beats='Wren decides she cannot do this alone against the clock; she can phone the coast guard auxiliary, who treat any headland beacon seriously and can reach the relay by road in minutes, or she can track down Alder old colleague from the relay days, a man who would understand every word of what she has found'>>",
+      "body": "<<FILL role=climax words=140 beats='{HERO} decides she cannot do this alone against the clock; she can phone {J_METHOD1}, who treat any headland beacon seriously and can reach {THRESHOLD} by road in minutes, or she can track down {J_METHOD2}, a man who would understand every word of what she has found'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_help_1_1",
-          "label": "Call the coast guard auxiliary.",
+          "label": "Call {J_METHOD1}.",
           "target": "f_he_cg"
         },
         {
           "id": "c_f_help_1_2",
-          "label": "Find Alder old colleague.",
+          "label": "Find {J_METHOD2}.",
           "target": "f_he_colleague"
         }
       ]
     },
     {
       "id": "f_he_cg",
-      "body": "<<FILL role=climax words=140 beats='The auxiliary duty officer takes Wren seriously the moment she says a beacon on the headland is counting down in a storm; he can dispatch a crew to the relay to secure it as a live signal, or he can hesitate, unable to log a mystery loop as a real emergency without more than a schoolgirl word'>>",
+      "body": "<<FILL role=climax words=140 beats='{J1_HELPER} takes {HERO} seriously the moment she says a beacon on the headland is counting down in {G2_WEATHER}; he can dispatch a crew to {THRESHOLD} to secure it as a live signal, or he can hesitate, unable to log a mystery loop as a real emergency without more than a schoolgirl's word'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1634,53 +1634,53 @@
         },
         {
           "id": "c_f_he_cg_2",
-          "label": "Watch him dismiss it as static.",
+          "label": "Watch him dismiss it as {NOISE}.",
           "target": "e_he_dismiss"
         }
       ]
     },
     {
       "id": "f_he_act",
-      "body": "<<FILL role=climax words=140 beats='A crew rolls for the headland with Wren guiding them by phone; reaching the relay ahead of the storm, they radio back that the console is alive and counting, and Wren must tell them what matters most in the last minute, to trace the message intended listener or to preserve the failing station whole'>>",
+      "body": "<<FILL role=climax words=140 beats='A crew rolls for the headland with {HERO} guiding them by phone; reaching {THRESHOLD} ahead of {G2_WEATHER}, they radio back that the console is alive and counting, and {HERO} must tell them what matters most in the last minute, to trace {FAREWELL}'s intended listener or to preserve the failing station whole'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_he_act_1",
-          "label": "Have them trace and reach Marin.",
+          "label": "Have them trace and reach {LISTENER}.",
           "target": "e_he_escort"
         },
         {
           "id": "c_f_he_act_2",
-          "label": "Have them secure and save the relay.",
+          "label": "Have them secure and save {THRESHOLD}.",
           "target": "e_he_safe"
         }
       ]
     },
     {
       "id": "e_he_escort",
-      "body": "<<FILL role=success words=130 beats='The crew patches Wren straight into the relay, and with their gear behind Alder thirty-year loop the signal leaps its old limits; they trace the return call to Marin within the hour and hold the channel open until father and daughter are, at last and across all that silence, speaking to each other'>>",
+      "body": "<<FILL role=success words=130 beats='The crew patches {HERO} straight into {THRESHOLD}, and with their gear behind {OPERATOR}'s thirty-year loop the signal leaps its old limits; they trace the return call to {LISTENER} within the hour and hold the channel open until father and daughter are, at last and across all that silence, speaking to each other'>>",
       "is_ending": true,
       "ending": {
         "id": "e_he_escort",
         "valence": "positive",
         "kind": "success",
-        "title": "Guided In"
+        "title": "{J1_PRIZE1}"
       }
     },
     {
       "id": "e_he_safe",
-      "body": "<<FILL role=completion words=125 beats='The crew secures the relay minutes before the storm hits, swapping the dead cell and locking the loop safely onto backup power; nothing is lost, and with the station stable the auxiliary opens a proper search for Marin, crediting the whole discovery to the girl who would not let a strange signal go'>>",
+      "body": "<<FILL role=completion words=125 beats='The crew secures {THRESHOLD} minutes before {G2_WEATHER} hits, swapping {DEADLINE} and locking {SIGNAL} safely onto backup power; nothing is lost, and with the station stable {J_METHOD1} opens a proper search for {LISTENER}, crediting the whole discovery to the girl who would not let a strange signal go'>>",
       "is_ending": true,
       "ending": {
         "id": "e_he_safe",
         "valence": "positive",
         "kind": "completion",
-        "title": "Secured Before the Storm"
+        "title": "{J1_PRIZE2}"
       }
     },
     {
       "id": "e_he_dismiss",
-      "body": "<<FILL role=failure words=115 beats='Without a real emergency to log, the officer thanks Wren politely and files her call under curiosities; no crew rolls, and out on the headland the countdown runs down unwatched, the loop dying in the gale while the one report that could have saved it sits closed in a duty logbook'>>",
+      "body": "<<FILL role=failure words=115 beats='Without a real emergency to log, {J1_HELPER} thanks {HERO} politely and files her call under curiosities; no crew rolls, and out on the headland the countdown runs down unwatched, {SIGNAL} dying in {G2_WEATHER} while the one report that could have saved it sits closed in a duty logbook'>>",
       "is_ending": true,
       "ending": {
         "id": "e_he_dismiss",
@@ -1691,12 +1691,12 @@
     },
     {
       "id": "f_he_colleague",
-      "body": "<<FILL role=climax words=140 beats='Wren tracks down Alder old relay colleague, Ruiz, retired across the bay; he goes quiet when she describes the loop, then says he always feared Kell would do this, and he can drive out to help her reach the station in time, or she can learn his number is years dead and the man long moved away'>>",
+      "body": "<<FILL role=climax words=140 beats='{HERO} tracks down {J2_HELPER}; he goes quiet when she describes {SIGNAL}, then says he always feared {OPERATOR} would do this, and he can drive out to help her reach {THRESHOLD} in time, or she can learn his number is years dead and the man long moved away'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_he_colleague_1",
-          "label": "Team up with Ruiz to reach the relay.",
+          "label": "Team up with {J2_HELPER} to reach {THRESHOLD}.",
           "target": "f_he_join"
         },
         {
@@ -1708,7 +1708,7 @@
     },
     {
       "id": "f_he_join",
-      "body": "<<FILL role=climax words=140 beats='Ruiz meets Wren at the headland gate with keys he never returned; he knows the console cold, and together they can complete Alder scheduled transmission the right way before the cell dies, or Wren can step back and let the old professional take it from here, her part in the search already done'>>",
+      "body": "<<FILL role=climax words=140 beats='{J2_HELPER} meets {HERO} at {H_ENTRY} with keys he never returned; he knows the console cold, and together they can complete {OPERATOR}'s scheduled transmission the right way before {DEADLINE} fails, or {HERO} can step back and let the old professional take it from here, her part in the search already done'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1718,25 +1718,25 @@
         },
         {
           "id": "c_f_he_join_2",
-          "label": "Step back and let Ruiz finish it.",
+          "label": "Step back and let {J2_HELPER} finish it.",
           "target": "e_he_takeover"
         }
       ]
     },
     {
       "id": "e_he_complete",
-      "body": "<<FILL role=success words=130 beats='Side by side, Wren and Ruiz bring the relay to full power and send Alder message out clean and strong on the exact frequency Marin once knew; when the answer comes, faint then sure, Ruiz grips Wren shoulder, and the loop that counted down alone for thirty years ends with two people there to hear it land'>>",
+      "body": "<<FILL role=success words=130 beats='Side by side, {HERO} and {J2_HELPER} bring {THRESHOLD} to full power and send {FAREWELL} out clean and strong on the exact frequency {LISTENER} once knew; when the answer comes, faint then sure, {J2_HELPER} grips {HERO}'s shoulder, and {SIGNAL}, which counted down alone for thirty years, ends with two people there to hear it land'>>",
       "is_ending": true,
       "ending": {
         "id": "e_he_complete",
         "valence": "positive",
         "kind": "success",
-        "title": "Two People There"
+        "title": "{J2_PRIZE1}"
       }
     },
     {
       "id": "e_he_takeover",
-      "body": "<<FILL role=failure words=120 beats='Wren hands Ruiz the story and steps back, and he takes over with the ease of a man who built the place; she bikes home certain it is in good hands, yet she never hears how it ends, whether Marin answered or the loop simply stopped, her long night closing on a question she will always carry'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} hands {J2_HELPER} the story and steps back, and he takes over with the ease of a man who built the place; she bikes home certain it is in good hands, yet she never hears how it ends, whether {LISTENER} answered or {SIGNAL} simply stopped, her long night closing on a question she will always carry'>>",
       "is_ending": true,
       "ending": {
         "id": "e_he_takeover",
@@ -1747,7 +1747,7 @@
     },
     {
       "id": "e_he_dead",
-      "body": "<<FILL role=failure words=115 beats='The number rings out to a stranger; Ruiz moved away years ago and left no forwarding line, and every other name from the relay days has scattered or passed on. Wren sits with the dead phone as the clock runs down, the one person who could have helped her already gone beyond reach'>>",
+      "body": "<<FILL role=failure words=115 beats='The number rings out to a stranger; {J2_HELPER} moved away years ago and left no forwarding line, and every other name from the relay days has scattered or passed on. {HERO} sits with the dead phone as the clock runs down, the one person who could have helped her already gone beyond reach'>>",
       "is_ending": true,
       "ending": {
         "id": "e_he_dead",

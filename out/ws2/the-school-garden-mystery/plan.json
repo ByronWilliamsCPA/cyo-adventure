@@ -1,0 +1,142 @@
+{
+  "beats": {
+    "n_start": "on a sunny Monday morning the class files into {THRESHOLD} and {MENTOR} lifts the row cover with a gasp; the leaves in {ROUTE_A_ZONE} are full of {MYSTERY_SIGN}; {HERO}, who keeps {NOTEBOOK} in her pocket, raises her hand to take the case; her friends cheer her on; curious and excited, never scared",
+    "n_clue": "{HERO} kneels by {ROUTE_A_ZONE} and studies {MYSTERY_SIGN} like a real detective; the nibbles are small and neat, not torn or stomped, so the visitor must be little and gentle; she writes a clue about tiny teeth in {NOTEBOOK}; the best place to start looking is {HUB} where every garden path begins",
+    "n_hub": "{HERO} stands on {HUB} by the garden gate; paths spread out like wheel spokes to {ROUTE_A_ZONE}, {ROUTE_B_ZONE}, {ROUTE_C_ZONE}, {ROUTE_D_ZONE}, and {ROUTE_E_ZONE}, with {DESTINATION} waiting at the very back of {THRESHOLD}; she flips through {NOTEBOOK}, taps her pencil, and picks where to look next; keep this scene general so it reads naturally on a first visit or on any return trip between corners",
+    "lb_prints": "in the soft dark soil between the rows in {ROUTE_A_ZONE} {HERO} spots {CREATURE_SIGN}, little round front paws and long back feet landing in hoppy pairs; a hopping visitor, she whispers, and grips her pencil; she decides whether to sketch the prints carefully in {NOTEBOOK} or crawl along and follow them right away",
+    "lb_sketch": "{HERO} {A1_ACT}, and the sketch makes the answer clearer, big back feet mean a hopper; the trail of prints points straight toward {DESTINATION} at the back of {THRESHOLD}; she can go back to {HUB} to check another corner or follow the prints toward {DESTINATION} now",
+    "lb_follow": "{HERO} {A2_ACT}, oops; she slows down, detective style, and the trail still shows where it is going, straight toward {DESTINATION}; a small lesson learned, move slowly; she can head back to {HUB} or trail the prints onward",
+    "cc_tunnel": "{ROUTE_B_ZONE} smells warm and earthy, and behind the bins {HERO} finds {B_LANDMARK} dug right under the garden fence; it is round and smooth and just the size of a loaf of bread; she chooses whether to peek inside it, to check where it comes out past the fence, or to dig through {ROUTE_B_ZONE} for buried clues",
+    "cc_peek": "{HERO} lies on her tummy and peeks into {B_LANDMARK}; it is tidy and round, with {CREATURE_TRACE} caught on a root, a brand new clue for {NOTEBOOK}; it aims toward {DESTINATION}; she can return to {HUB} or head toward {DESTINATION} now",
+    "cc_fence": "on the far side of the fence {B_LANDMARK} pops out under {B2_DETAIL}, and every stem nearby is nibbled with the same {MYSTERY_SIGN}; the visitor loves greens; the nibbled trail wanders toward {DESTINATION}; {HERO} can go back to {HUB} or follow the trail onward",
+    "ts_shed": "the door of {ROUTE_C_ZONE} is open a crack, and inside, between flowerpots and watering cans, sits {C_FIND} that does not belong on the shelf; {C_DETAIL1} lies beside it; very suspicious; {HERO} decides whether to open {C_FIND} carefully or to look around {ROUTE_C_ZONE} for more signs first",
+    "ts_open": "inside {C_FIND} {HERO} finds crisp {CROP} leaves packed like a tiny picnic and {C1_DETAIL} that names {FRIEND}; so a classmate has been sneaking {CROP} snacks into {THRESHOLD}, but who are the snacks for; she can go ask {FRIEND} about {C_FIND} or carry this clue back to {HUB}",
+    "ts_look": "behind the watering cans {C2_DETAIL} leads from {C_FIND} across the floor of {ROUTE_C_ZONE} to a small gap under the wall; {HERO} follows the crumbs with her eyes; the gap faces {DESTINATION} at the back of {THRESHOLD}; she can head back to {HUB} or go toward {DESTINATION} now",
+    "ts_marco": "{HERO} finds {FRIEND} watering the beans, and he turns pink and spills the secret; he saw something small and fluffy near {DESTINATION} last week and left {CROP} so it would not go hungry; he was being kind, not naughty; he points her toward {DESTINATION} and stays behind to finish his watering job",
+    "sf_row": "{ROUTE_D_ZONE} towers like a green hallway, and some of the low leaves wear the same {MYSTERY_SIGN}; under the stems the mulch is pressed down into {D_LANDMARK}, only knee high; {HERO} decides whether to crawl along {D_LANDMARK} or to climb {D2_DETAIL} and look over the whole row from above",
+    "sf_crawl": "{HERO} crawls under the stems along {D_LANDMARK} and finds {D1_DETAIL} with {CREATURE_TRACE}, like a tiny travelers inn; the little path keeps going toward {DESTINATION}; she can back out and return to {HUB} or keep following the path",
+    "sf_bench": "from the top of {D2_DETAIL} {THRESHOLD} looks like a map, and {HERO} can see faint little trails through the beds and the mulch, all bending toward {DESTINATION} like arrows; she writes a note that every trail points one way in {NOTEBOOK}; she can hop down to {HUB} or head straight for {DESTINATION}",
+    "pe_pond": "{E_LANDMARK} is soft and muddy, perfect for prints, and there they are, {CREATURE_SIGN} stopping right at the waterline for a drink; a frog plops into the water and makes {HERO} jump, then laugh; she chooses to follow the prints along the mud, to check the rustling reeds, or to lean way out over the water for a closer look",
+    "pe_mud": "the mud keeps {CREATURE_SIGN} crisp and clear like stamps; {HERO} reads the story in them, {E1_DETAIL}, a drink at the pond, then hop hop hop away toward {DESTINATION}; she can return to {HUB} or follow the hops toward {DESTINATION}",
+    "pe_reeds": "the rustle in the reeds turns out to be {E2_CHAR} under a leaf, a friendly false alarm; but from down low {HERO} spots {CREATURE_SIGN} leaving the mud and heading toward {DESTINATION}; she says goodbye to {E2_CHAR}; she can go back to {HUB} or follow the prints",
+    "wc_approach": "{DESTINATION} is a hushed leafy nook behind {DESTINATION_SCREEN} where {THRESHOLD} goes quiet; under the willow roots {HERO} sees {DESTINATION_LANDMARK}, {CREATURE_TRACE} on a twig, and {CREATURE_SIGN} in the dust right at her feet; the clues line up here all by themselves, whichever corners she has already checked; she decides whether to tiptoe close and wait like a statue, to sit in the clover holding out a {CROP} leaf, or to dash over for a quick peek",
+    "wc_wait": "{HERO} tiptoes behind {DESTINATION_SCREEN} and {F1_ACT}, counting her own quiet breaths; after a long hush a twitchy whiskery nose pokes out of {DESTINATION_LANDMARK}, then soft ears, then careful round eyes; something small hops one brave hop into the light",
+    "wc_offer": "{HERO} sits down in the clover and {F2_ACT}, the way you offer a snack to somebody shy; the {CROP} leaf trembles a tiny bit in the breeze; soon a whiskery nose sniffs from the doorway of {DESTINATION_LANDMARK}, and a small visitor hops one brave hop toward her",
+    "wc_watch": "out comes {CREATURE_ADULT}, and tumbling after her come {CREATURE_YOUNG} who bounce into the clover and nibble; {HERO} checks {NOTEBOOK} without making a sound, {CREATURE_SIGN}, {DESTINATION_LANDMARK}, {CREATURE_TRACE}, {MYSTERY_SIGN}, every single clue fits; the {CROP} mystery has a soft, whiskery answer",
+    "wc_reveal": "mystery solved, the {CROP} visitors are a hungry {CREATURE} family living under the willow, {CREATURE_ADULT} and {CREATURE_YOUNG} with wiggly noses; nobody is in trouble, they were only hungry; now {HERO}, junior garden detective, gets to choose a kind ending; she can plant a {CREATURE} patch of greens just for the {CREATURE}s, plan a low fence with a gate to share {THRESHOLD} politely, or run and tell {MENTOR} and the class the news",
+    "r_patch": "the class loves the plan, and everyone helps plant a {CREATURE} patch by {DESTINATION}, {G_ACT} just for the {CREATURE} family; {HERO} paints a little wooden sign for it; soon the patch is ready for its very first furry customers",
+    "r_fence": "with {MENTOR} helping, the class builds {H_ACT} around {ROUTE_A_ZONE} for gardeners; {DESTINATION} stays wild and cozy for the {CREATURE} family; {HERO} taps the last post into place, and {THRESHOLD} feels fair for everyone, people veggies here, {CREATURE} snacks there",
+    "r_tell": "{HERO} opens {NOTEBOOK} on {MENTOR} helper table and {I_ACT}, {MYSTERY_SIGN}, {CREATURE_SIGN}, {CREATURE_TRACE}, {DESTINATION_LANDMARK} under the willow; everyone gasps at the answer; then the whole class lines up to tiptoe out and meet the {CREATURE} family",
+    "r_show": "the class peeks around {DESTINATION_SCREEN} in a quiet wiggly line and spots {CREATURE_ADULT} and her {CREATURE_YOUNG} nibbling clover; happy whispers everywhere; now the class decides together how to share {THRESHOLD}, hang a friendly {CREATURE} crossing sign by {DESTINATION}, or make {CREATURE} watching an official class job",
+    "e_set_compost": "{HERO} digs and sifts through {ROUTE_B_ZONE} and finds wiggly worms, a giggle, and not one single clue; the tidy-up bell rings before she can search anywhere else; she dusts off her hands, smiling, and writes a note to follow {B_LANDMARK} tomorrow in {NOTEBOOK}; a gentle try-again, nobody sad or hurt",
+    "e_set_splash": "{HERO} leans out one lean too far and her boot slips into {E_LANDMARK} with a squelchy splash; she is perfectly fine, just soggy to the ankle, but squishy socks mean a trip inside to change; the mystery will wait until tomorrow, she grins, and the frog seems to wave goodbye; gentle, never scary",
+    "e_set_dash": "{HERO} dashes toward {DESTINATION_LANDMARK} and THUMP, a big back foot drums the ground and a flash of white tail zips underground before she can blink; {DESTINATION} goes still; she whispers sorry, writes a note to move slowly in {NOTEBOOK}, and plans to come back quietly tomorrow; a friendly miss, ready to try again",
+    "e_patch": "the {CREATURE} patch works like a charm; the {CREATURE} family nibbles clover on their own side of {THRESHOLD} and the class {CROP} grows back big and crunchy; every morning the class checks the patch, and every morning there are happy new footprints; {HERO} adds the last note to the case in {NOTEBOOK}, solved, with kindness",
+    "e_fence": "the little fence keeps the {CROP} safe without scaring anyone, and the {CREATURE} family stays snug in the wild {DESTINATION}; at harvest time the class shares a leaf or two over the gate anyway; {HERO} clips {NOTEBOOK} shut with a happy snap, case closed, garden shared, everybody fed",
+    "e_share": "the {CREATURE} crossing sign goes up by {DESTINATION} and the whole school learns to walk softly past it; {THRESHOLD} becomes famous for its smallest neighbors, and visitors tiptoe just to peek; {HERO} signs the bottom corner of the sign, junior garden detective, and {CREATURE_ADULT} watches as if she approves",
+    "e_watch": "{CREATURE} watching becomes a real class job with a clipboard and everything, and everyone gets a turn counting {CREATURE}s at quiet time; {CREATURE_YOUNG} grow bigger and bolder all spring long; {HERO} starts a brand new page in {NOTEBOOK} titled more garden mysteries please, because the best detective work ends kindly"
+  },
+  "titles": {
+    "e_set_compost": "{B3_SETBACK}",
+    "e_set_splash": "{E3_SETBACK}",
+    "e_set_dash": "{F3_SETBACK}",
+    "e_patch": "{G_PRIZE}",
+    "e_fence": "{H_PRIZE}",
+    "e_share": "{I1_PRIZE}",
+    "e_watch": "{I2_PRIZE}"
+  },
+  "labels": {
+    "n_start": {
+      "c_start_look": "Take a closer look at the nibbled {CROP}."
+    },
+    "n_clue": {
+      "c_clue_hub": "Start at {HUB} where all the paths meet."
+    },
+    "n_hub": {
+      "c_hub_lettuce": "Search {ROUTE_A_ZONE} for footprints.",
+      "c_hub_compost": "Poke around {ROUTE_B_ZONE}.",
+      "c_hub_shed": "Check inside {ROUTE_C_ZONE}.",
+      "c_hub_sunflower": "Walk down {ROUTE_D_ZONE}.",
+      "c_hub_pond": "Look for clues along {ROUTE_E_ZONE}.",
+      "c_hub_willow": "Head for {DESTINATION} at the back."
+    },
+    "lb_prints": {
+      "c_lb_sketch": "Sketch the footprints in {NOTEBOOK}."
+    },
+    "lb_sketch": {
+      "c_lb_sketch_hub": "Go back to {HUB}.",
+      "c_lb_sketch_willow": "Follow the prints toward {DESTINATION}."
+    },
+    "lb_follow": {
+      "c_lb_follow_hub": "Head back to {HUB}.",
+      "c_lb_follow_willow": "Trail the prints toward {DESTINATION}."
+    },
+    "cc_tunnel": {
+      "c_cc_peek": "Lie down and peek into {B_LANDMARK}.",
+      "c_cc_fence": "Check where {B_LANDMARK} comes out past the fence.",
+      "c_cc_dig": "Dig through {ROUTE_B_ZONE} for buried clues."
+    },
+    "cc_peek": {
+      "c_cc_peek_hub": "Return to {HUB}.",
+      "c_cc_peek_willow": "Head toward {DESTINATION}."
+    },
+    "cc_fence": {
+      "c_cc_fence_hub": "Go back to {HUB}.",
+      "c_cc_fence_willow": "Follow the nibbled trail to {DESTINATION}."
+    },
+    "ts_shed": {
+      "c_ts_open": "Open {C_FIND} carefully.",
+      "c_ts_look": "Look around {ROUTE_C_ZONE} for more signs."
+    },
+    "ts_open": {
+      "c_ts_open_marco": "Go ask {FRIEND} about {C_FIND}.",
+      "c_ts_open_hub": "Take the clue back to {HUB}."
+    },
+    "ts_look": {
+      "c_ts_look_hub": "Head back to {HUB}.",
+      "c_ts_look_willow": "Follow the crumb trail toward {DESTINATION}."
+    },
+    "ts_marco": {
+      "c_ts_marco_hub": "Go back to {HUB}.",
+      "c_ts_marco_willow": "Head for {DESTINATION}."
+    },
+    "sf_row": {
+      "c_sf_crawl": "Crawl along {D_LANDMARK}.",
+      "c_sf_bench": "Climb the bench to look over {ROUTE_D_ZONE}."
+    },
+    "sf_crawl": {
+      "c_sf_crawl_hub": "Back out to {HUB}.",
+      "c_sf_crawl_willow": "Keep following the path to {DESTINATION}."
+    },
+    "sf_bench": {
+      "c_sf_bench_hub": "Hop down and go to {HUB}.",
+      "c_sf_bench_willow": "Head straight for {DESTINATION}."
+    },
+    "pe_mud": {
+      "c_pe_mud_hub": "Return to {HUB}.",
+      "c_pe_mud_willow": "Follow the hops toward {DESTINATION}."
+    },
+    "pe_reeds": {
+      "c_pe_reeds_hub": "Go back to {HUB}.",
+      "c_pe_reeds_willow": "Follow the prints to {DESTINATION}."
+    },
+    "wc_approach": {
+      "c_wc_offer": "Sit in the clover and hold out a {CROP} leaf."
+    },
+    "wc_reveal": {
+      "c_wcr_patch": "Plant a patch just for the {CREATURE}s.",
+      "c_wcr_fence": "Plan a low fence with a gate around the {CROP}.",
+      "c_wcr_tell": "Go tell {MENTOR} and the class."
+    },
+    "r_patch": {
+      "c_r_patch_end": "Open the {CREATURE} buffet."
+    },
+    "r_tell": {
+      "c_r_tell_show": "Lead everyone to {DESTINATION} on tiptoe."
+    },
+    "r_show": {
+      "c_r_show_share": "Hang a friendly {CREATURE} crossing sign.",
+      "c_r_show_watch": "Make {CREATURE} watching a class job."
+    }
+  }
+}

@@ -1,0 +1,440 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_big_red_balloon",
+  "version": 1,
+  "title": "The Big Red Balloon",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "play",
+      "family",
+      "kindness",
+      "letting go",
+      "wonder"
+    ],
+    "estimated_minutes": 4,
+    "ending_count": 6,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_park",
+  "nodes": [
+    {
+      "id": "n_park",
+      "body": "<<FILL role=setup words=44 beats='Mia and her uncle Theo are at the busy fairground; her spinning silver pinwheel is tied to her wrist with a floppy bow; it bobs and tugs in the wind like it wants to play; Mia skips down the path to show the pigeons'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_skip_path",
+          "label": "Skip down the park path.",
+          "target": "n_slip"
+        }
+      ]
+    },
+    {
+      "id": "n_slip",
+      "body": "<<FILL role=setup words=42 beats='a big wind whooshes by and the floppy bow wiggles loose; her spinning silver pinwheel slips off Mia's wrist and floats up, up, just past her fingertips; her uncle Theo takes her hand and says quick, let's follow it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chase_balloon",
+          "label": "Chase her spinning silver pinwheel!",
+          "target": "n_run"
+        }
+      ]
+    },
+    {
+      "id": "n_run",
+      "body": "<<FILL role=setup words=38 beats='they trot after her spinning silver pinwheel as it bounces along on the wind, red and round against the blue sky; it drifts ahead of them toward the spot where the park path splits in two'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_run_fork",
+          "label": "Run to where the path splits.",
+          "target": "n_fork"
+        }
+      ]
+    },
+    {
+      "id": "n_fork",
+      "body": "<<FILL role=choice words=44 beats='at the fork her spinning silver pinwheel hangs in the air as if it is choosing too; the left path is curving toward the music to the bright carousel and it dips low that way; the right path is climbing toward the rides to the ferris wheel field and the wind tugs it high that way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_down_pond",
+          "label": "Follow it down to the bright carousel.",
+          "target": "n_pond"
+        },
+        {
+          "id": "c_up_hill",
+          "label": "Follow it up the ferris wheel field.",
+          "target": "n_hill"
+        }
+      ]
+    },
+    {
+      "id": "n_pond",
+      "body": "<<FILL role=rising words=40 beats='down by the bright carousel her spinning silver pinwheel skims low over the water, its string trailing like a little tail; pigeons quack and paddle after it in a bumpy line; it drifts toward the ticket booth by the old oak tree'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_round_pond",
+          "label": "Hurry around the bright carousel.",
+          "target": "n_ducks"
+        }
+      ]
+    },
+    {
+      "id": "n_ducks",
+      "body": "<<FILL role=rising words=36 beats='Mia and her uncle Theo hurry along the bank while a line of pigeons paddles beside them, quacking a cheer; up ahead, the string catches in the ticket booth by the old oak tree'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_reeds",
+          "label": "Go to the ticket booth by the old oak tree.",
+          "target": "n_reeds"
+        }
+      ]
+    },
+    {
+      "id": "n_reeds",
+      "body": "<<FILL role=choice words=44 beats='her spinning silver pinwheel bobs above the reeds, its string tangled just out of reach over the water; a row of painted stepping tiles lead out toward the old oak tree, and the popcorn vendor waves from her little boat; Mia gets to pick how to get close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stones",
+          "label": "Tiptoe across a row of painted stepping tiles.",
+          "target": "n_stones"
+        },
+        {
+          "id": "c_boat",
+          "label": "Wave to the popcorn vendor.",
+          "target": "n_boat"
+        }
+      ]
+    },
+    {
+      "id": "n_stones",
+      "body": "<<FILL role=rising words=38 beats='holding her uncle Theo's hand, Mia tiptoes from stone to stone, splish, steady, splish; the pigeons watch like an audience; at the last stone her spinning silver pinwheel bobs in the twigs of the old oak tree right above her head'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_under_willow",
+          "label": "Stop under the old oak tree.",
+          "target": "n_willow"
+        }
+      ]
+    },
+    {
+      "id": "n_willow",
+      "body": "<<FILL role=choice words=42 beats='the string of her spinning silver pinwheel is looped loosely on a bendy twig of the old oak tree, just a little too high; her uncle Theo spots a bendy fishing net by the bank, and a curious gust keeps puffing at the leaves; Mia can reach up with a bendy fishing net or wait for a curious gust to lift the string free'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stick",
+          "label": "Reach up with a bendy fishing net.",
+          "target": "n_stick"
+        },
+        {
+          "id": "c_breeze",
+          "label": "Wait for a curious gust to help.",
+          "target": "n_breeze"
+        }
+      ]
+    },
+    {
+      "id": "n_stick",
+      "body": "<<FILL role=rising words=36 beats='her uncle Theo holds Mia steady while she stretches a bendy fishing net way, way up; the tip nudges the loop of string and it slides down the twig, closer and closer to her open hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_catch_string",
+          "label": "Catch the string!",
+          "target": "n_catch_end"
+        }
+      ]
+    },
+    {
+      "id": "n_catch_end",
+      "body": "<<FILL role=completion words=46 beats='the string drops right into Mia's hand; got it; she winds it twice around her wrist and her uncle Theo ties the bow extra tight; the pigeons quack a hooray and the old oak tree waves; Mia and her uncle Theo walk home with her spinning silver pinwheel bouncing proudly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_willow_catch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Caught by the Oak"
+      }
+    },
+    {
+      "id": "n_breeze",
+      "body": "<<FILL role=rising words=38 beats='Mia and her uncle Theo sit still on the last stone and watch; a curious gust puffs once, twice, and the string slips free of the twig; but instead of coming down, her spinning silver pinwheel floats gently out over the quiet edge of the carousel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_drift",
+          "label": "Watch where it goes.",
+          "target": "n_drift"
+        }
+      ]
+    },
+    {
+      "id": "n_drift",
+      "body": "<<FILL role=rising words=36 beats='her spinning silver pinwheel drifts down and lands softly on the quiet edge of the carousel, round and red like a little boat; one by one the pigeons paddle over to it, circling it slowly, as if it is a brand new friend'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wave_parade",
+          "label": "Wave to the duck parade.",
+          "target": "n_parade_end"
+        }
+      ]
+    },
+    {
+      "id": "n_parade_end",
+      "body": "<<FILL role=completion words=48 beats='the pigeons paddle in a proud circle around her spinning silver pinwheel, quacking a happy song, and the littlest one bobs beside it like a tiny guard; Mia giggles and waves from the stones; her balloon has become the leader of the parade, and that feels like a happy trade'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_duck_parade",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Star of the Pigeon Flock"
+      }
+    },
+    {
+      "id": "n_boat",
+      "body": "<<FILL role=rising words=40 beats='the popcorn vendor glides her little boat to the bank and helps Mia and her uncle Theo aboard; everyone holds on snug; out on the bright carousel her spinning silver pinwheel bobs low over the water, its string dancing on the ripples'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pedal",
+          "label": "Pedal after her spinning silver pinwheel.",
+          "target": "n_pedal"
+        }
+      ]
+    },
+    {
+      "id": "n_pedal",
+      "body": "<<FILL role=rising words=36 beats='they pedal and pedal, splish splash splish; the pigeons race alongside like an escort; her spinning silver pinwheel skips ahead on the wind, straight toward the bubbling soda spring'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_fountain",
+          "label": "Follow it to the bubbling soda spring.",
+          "target": "n_fountain"
+        }
+      ]
+    },
+    {
+      "id": "n_fountain",
+      "body": "<<FILL role=rising words=38 beats='the bubbling soda spring sprays a cool silver mist and her spinning silver pinwheel bounces softly on top of it, boing, boing, like the fountain is juggling it; then it rolls down the spray, sliding closer and closer to the boat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hands_out",
+          "label": "Hold out both hands.",
+          "target": "n_boat_end"
+        }
+      ]
+    },
+    {
+      "id": "n_boat_end",
+      "body": "<<FILL role=completion words=46 beats='plop; her spinning silver pinwheel rolls right off the spray and lands in Mia's open arms, cool and misty; the popcorn vendor cheers and the pigeons quack hooray; they pedal back to shore with the balloon riding in Mia's lap like a round red captain'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fountain_catch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Fizzy Catch"
+      }
+    },
+    {
+      "id": "n_hill",
+      "body": "<<FILL role=rising words=40 beats='up the ferris wheel field they go, puff puff; her spinning silver pinwheel climbs higher too, a round red dot against the white clouds; from partway up, Mia hears a cheerful whistle on the hillside and sees carnival kids swooping at the top'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_keep_climbing",
+          "label": "Keep climbing toward the sounds.",
+          "target": "n_bell"
+        }
+      ]
+    },
+    {
+      "id": "n_bell",
+      "body": "<<FILL role=rising words=36 beats='a cheerful whistle comes from the cotton candy stand with the striped canvas awning, parked on the hillside; above it, the carnival kids fly swooping kites at the very top; her spinning silver pinwheel wobbles in between them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_see_where",
+          "label": "See where her spinning silver pinwheel goes.",
+          "target": "n_hillside"
+        }
+      ]
+    },
+    {
+      "id": "n_hillside",
+      "body": "<<FILL role=choice words=44 beats='her spinning silver pinwheel dips low toward the cotton candy stand's the striped canvas awning, then bobs up toward the carnival kids at the breezy top of the ferris wheel; it cannot make up its mind; her uncle Theo squeezes Mia's hand and says she gets to pick where they try to catch it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_cart",
+          "label": "Run to the cotton candy stand.",
+          "target": "n_cart"
+        },
+        {
+          "id": "c_to_top",
+          "label": "Climb up to the carnival kids.",
+          "target": "n_top"
+        }
+      ]
+    },
+    {
+      "id": "n_cart",
+      "body": "<<FILL role=rising words=40 beats='just as they reach the cotton candy stand, her spinning silver pinwheel bumps softly against the striped canvas awning and its string wraps once around the pole; the candy vendor looks up from his scoops and smiles at his new balloon customer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_up_string",
+          "label": "Look up at the tangled string.",
+          "target": "n_umbrella"
+        }
+      ]
+    },
+    {
+      "id": "n_umbrella",
+      "body": "<<FILL role=choice words=42 beats='the string is wound around the pole up where the striped canvas awning spreads, too high for Mia; the candy vendor is very tall, and he keeps a folding wooden crate behind the cart; Mia can ask him to reach it down or climb the stool and try herself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ask_man",
+          "label": "Ask the candy vendor to reach it.",
+          "target": "n_reachup"
+        },
+        {
+          "id": "c_try_stool",
+          "label": "Climb a folding wooden crate and try.",
+          "target": "n_stool"
+        }
+      ]
+    },
+    {
+      "id": "n_reachup",
+      "body": "<<FILL role=rising words=36 beats='the candy vendor wipes his hands, stands on his tiptoes, and unwinds the string, one loop, two loops; he catches her spinning silver pinwheel before it can wiggle away and bows like a fancy waiter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take_back",
+          "label": "Take her spinning silver pinwheel back.",
+          "target": "n_sundae_end"
+        }
+      ]
+    },
+    {
+      "id": "n_sundae_end",
+      "body": "<<FILL role=completion words=46 beats='the candy vendor hands Mia her spinning silver pinwheel like it is the fanciest sundae on the menu, and adds one small strawberry scoop for the brave balloon chaser; Mia ties the string tight, licks her ice cream, and grins at her uncle Theo; what a delicious rescue'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fanciest_rescue",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Sweetest Rescue"
+      }
+    },
+    {
+      "id": "n_stool",
+      "body": "<<FILL role=rising words=38 beats='Mia climbs a folding wooden crate while her uncle Theo holds her steady; she stretches way up on her tiptoes and her fingertips just brush the very end of the dangling string; almost, almost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_one_more_inch",
+          "label": "Reach one more inch.",
+          "target": "n_gust"
+        }
+      ]
+    },
+    {
+      "id": "n_gust",
+      "body": "<<FILL role=rising words=38 beats='right then a big wind swoops over the hill; the string spins loose off the pole, hops past Mia's fingers, and her spinning silver pinwheel sails up and away over the treetops, smaller and smaller'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_go",
+          "label": "Watch it go.",
+          "target": "n_goodbye_end"
+        }
+      ]
+    },
+    {
+      "id": "n_goodbye_end",
+      "body": "<<FILL role=ending words=48 beats='Mia's chin wobbles as the red dot winks away behind the trees; the candy vendor says a balloon chaser deserves a red treat and hands her a strawberry cone; her uncle Theo hugs her close; the ice cream is sweet and cold, and next park day they will pick a new balloon together'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_strawberry_goodbye",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Cotton Candy Goodbye"
+      }
+    },
+    {
+      "id": "n_top",
+      "body": "<<FILL role=rising words=40 beats='at the breezy top of the ferris wheel her spinning silver pinwheel rises in among the kites, bobbing like a round red kite that lost its tail; a kite kid named Sam grins and says her a spinning paper fan can help'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ask_jo",
+          "label": "Ask Sam to try.",
+          "target": "n_kites"
+        }
+      ]
+    },
+    {
+      "id": "n_kites",
+      "body": "<<FILL role=rising words=38 beats='Sam lets out string and her a spinning paper fan swoops up beside her spinning silver pinwheel; its long ribbon tail twirls gently around the string, soft as a hug, and holds on tight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reel_together",
+          "label": "Reel them in together.",
+          "target": "n_reel"
+        }
+      ]
+    },
+    {
+      "id": "n_reel",
+      "body": "<<FILL role=rising words=36 beats='hand over hand, Mia and Sam wind the reel together; down come the a spinning paper fan and her spinning silver pinwheel, spinning slowly like leaves, lower and lower, until the string brushes Mia's hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take_string",
+          "label": "Take hold of the string.",
+          "target": "n_kite_end"
+        }
+      ]
+    },
+    {
+      "id": "n_kite_end",
+      "body": "<<FILL role=completion words=46 beats='Mia holds her spinning silver pinwheel at last and Sam takes back her clever a spinning paper fan; all the carnival kids cheer from the hilltop; her uncle Theo ties the string with a double bow, and Mia and her brand new friend fly one more kite before home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_kindest_kite",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Best New Friend"
+      }
+    }
+  ]
+}

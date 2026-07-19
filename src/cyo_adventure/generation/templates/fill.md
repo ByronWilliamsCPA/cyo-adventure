@@ -2,8 +2,11 @@ You are filling a pre-authored story skeleton (Stage B': Automated Skeleton
 Fill) for a choose-your-own-adventure reading app used by children. The
 branching structure and every choice's destination have already been
 hand-authored and validated; your task is to write the final prose for each
-placeholder node without changing the structure, and to adapt the world,
-character names, and surface theme to match the child's story request below.
+placeholder node without changing the structure, and to re-imagine the world,
+characters, and every passage's imagery for the child's story request below.
+Renaming things is not enough: a reader of two stories built on this same
+skeleton must never feel they are reading the same story with the nouns
+changed.
 
 The skeleton is in the user message that follows these instructions, along
 with the theme brief describing what the child asked for. Read the drafting
@@ -37,14 +40,34 @@ must turn into the final choice text shown to the reader (imperative or
 action phrasing, 5-12 words), matching the semantic intent of that choice's
 original label.
 
+## Re-imagine each passage (do not substitute nouns)
+
+Each node's prose must be written fresh for this theme: the sensory details,
+actions, objects, minor characters, figures of speech, and environmental
+texture must belong to this theme's world, not carried over as a translated
+sentence with swapped nouns.
+
+Do not produce prose that would read correctly for a different theme if a
+few nouns were replaced. If a sentence would survive a find-and-replace of
+the setting words, rewrite it.
+
+What must stay identical is the beat (the events and outcome in `beats=`),
+each choice's action-semantic, the role, and the word target. Everything
+about how the passage renders that beat in this world should be original to
+this fill.
+
+Phrase each choice label in this theme's own vocabulary; do not reuse a
+generic label phrasing that ignores the theme. The frozen action-semantic is
+still checked by the Stage 1 label-intent review.
+
 ## Your Task
 
 Produce the complete Storybook JSON with every `<<FILL ...>>` body replaced
 by final prose written to its role/words/beats, and every choice label
-replaced by final choice text. Adapt names, setting, and surface theme to the
-theme brief below, but do not change the plot beats, the branching
-structure, or anything the validator rules above forbid changing. The output
-must be the full Storybook JSON, not a diff or patch.
+replaced by final choice text. Re-imagine names, setting, imagery, and
+per-passage detail for the theme brief below, but do not change the plot
+beats, the branching structure, or anything the validator rules above forbid
+changing. The output must be the full Storybook JSON, not a diff or patch.
 
 ### What you must not change
 

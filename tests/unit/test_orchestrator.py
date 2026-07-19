@@ -872,3 +872,80 @@ async def test_fill_skeleton_without_settings_never_runs_stage1(
     assert outcome.status == "passed"
     assert outcome.attempts == 0
     assert len(provider.calls) == 1
+
+
+# ---------------------------------------------------------------------------
+# Test: fill_skeleton WS-2 bound-fill prompt selection (slot_bindings)
+# ---------------------------------------------------------------------------
+#
+# `slot_bindings` selects the initial-fill prompt variant only; every other
+# fill_skeleton behavior (repair loop, Stage 1 fold) is untouched by this
+# parameter, so these tests only assert on the prompt the mock provider
+# actually received.
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_with_slot_bindings_builds_bound_fill_prompt() -> None:
+    """slot_bindings supplied -> the initial fill prompt is the bound-fill variant.
+
+    build_bound_fill_prompt's user block carries a labeled
+    '## Bound Theme Values' data section (fill_bound.md) that the plain
+    build_fill_prompt variant never contains; its presence in the actual
+    prompt the mock provider received is the signal this test pins.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+    pii = PiiContext(child_names=frozenset())
+    slot_bindings = {"HERO": "Priya", "A1_GATE": "the jammed hatch"}
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, pii, slot_bindings=slot_bindings
+    )
+
+    assert outcome.status == "passed"
+    assert len(provider.calls) == 1
+    prompt = provider.calls[0]
+    assert "Bound Theme Values" in prompt
+    assert "Priya" in prompt
+    assert "the jammed hatch" in prompt
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_without_slot_bindings_builds_plain_fill_prompt() -> None:
+    """slot_bindings=None (the default) builds the ordinary build_fill_prompt
+    variant, with no bound-theme-values data block -- the regression pin every
+    existing (WS-1) caller of fill_skeleton relies on.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+    pii = PiiContext(child_names=frozenset())
+
+    outcome = await fill_skeleton(skeleton, {"premise": "a fox"}, provider, pii)
+
+    assert outcome.status == "passed"
+    assert len(provider.calls) == 1
+    assert "Bound Theme Values" not in provider.calls[0]
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_slot_bindings_default_is_byte_identical_prompt() -> None:
+    """The default (no slot_bindings) call produces the EXACT same prompt as
+    an explicit slot_bindings=None call, and matches build_fill_prompt
+    directly -- pinning that adding the parameter changed nothing for callers
+    that do not pass it.
+    """
+    from cyo_adventure.generation.prompts import build_fill_prompt
+
+    skeleton = _skeleton_with_fill_placeholder()
+    theme_brief: dict[str, object] = {"premise": "a fox"}
+    expected = build_fill_prompt(json.dumps(skeleton), json.dumps(theme_brief))
+
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+    pii = PiiContext(child_names=frozenset())
+
+    await fill_skeleton(skeleton, theme_brief, provider, pii)
+
+    assert provider.calls[0] == expected.user

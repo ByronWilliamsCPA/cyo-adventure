@@ -1,0 +1,61 @@
+{
+  "beats": {
+    "n_window": "rain patters on the window while {HERO} watches; {OPENING_MOMENT}; {COMPANION} smiles and says today is {OCCASION}; {HERO} cheers and runs to find his rain things",
+    "n_door": "{HERO} tugs on {READY_GEAR}, zip; {COMPANION} opens {ENTRANCE} to a drippy, shiny world that smells like wet leaves; the wet sidewalk sparkles as if it is waiting just for them",
+    "n_gate": "{FIRST_PUDDLE} waits, round like a cookie, right at the start of {THRESHOLD}; {HERO} does a warm-up hop, splish; {COMPANION} laughs and takes his hand, and they walk down to the corner",
+    "n_corner": "at the corner the walk splits two ways; down {ROUTE_A_LURE}, trees drip and little puddles dot the path like polka dots; down {ROUTE_B_LURE}, rainwater hurries along the curb in a chattering little stream; {COMPANION} says {HERO} gets to pick",
+    "n_lane": "under the dripping trees, raindrops go plip plop on {HERO}'s hood; he hops puddle to puddle down the polka-dot lane; then he stops, because {A_FORK_SIGN} catches his eye on the wet path just ahead",
+    "n_wiggle": "it is {A1_CREATURE}, wiggling on the hard wet path far from any dirt; just past it shines {A2_LANDMARK}, smooth as a mirror; {COMPANION} asks what {HERO} wants to do, help {A1_CREATURE} get home or tiptoe to {A2_LANDMARK}",
+    "n_worm_carry": "{HERO} finds {A1_CARRY_ITEM} and {COMPANION} helps him scoot {A1_CREATURE} gently onto it, like a tiny stretcher; slow and careful, step by step, they carry {A1_CREATURE} over to {A1_DESTINATION}",
+    "n_worm_end": "{A1_CREATURE} slides into {A1_DESTINATION} and does a happy wiggle, home at last; {COMPANION} gives {HERO} a high five with a squelchy glove; they splash all the way home for warm cocoa, and {HERO} tells the story of {A1_CREATURE} at dinner",
+    "n_mirror": "{A2_LANDMARK} is the biggest puddle {HERO} has ever seen, flat and shiny, holding a whole upside-down sky with {A2_SKY_DETAIL}; {HERO} backs up three big steps and bends his knees",
+    "n_mirror_climax": "{COMPANION} counts one, two, three; {HERO} runs, boots thumping, raincoat flapping, and jumps as high as he can over {A2_LANDMARK}; for one whole second he is flying",
+    "n_splash_end": "SPLASH; silver drops fly up like fireworks and patter down on their hoods; {A2_LANDMARK} wobbles into giggly rings; {HERO} is soaked and {COMPANION} is soaked and nobody minds one bit, because that was the biggest {A2_PRIZE} of the whole day",
+    "n_hill": "rainwater hurries along the curb in a busy little stream, burbling downhill; {B1_BOAT} sails past, spins, and zooms away; far down at the bottom of the hill, the clouds are opening and {B2_SIGN} pokes through",
+    "n_stream_fork": "{HERO} trots beside the chattering stream; {COMPANION} spots {B1_BOAT} in the making, and far below {B2_SIGN} grows brighter and warmer; {HERO} can race {B1_BOAT} down the stream, or follow {B2_SIGN} all the way down the hill",
+    "n_race": "{HERO} sets {B1_BOAT} on the stream and it zips off, bobbing and twirling through tiny rapids, past a twig and around a pebble; {HERO} runs alongside, cheering his boat on",
+    "n_race_finish": "near the bottom of the hill the water swirls toward {B1_FINISH_LANDMARK}, the finish line; {B1_BOAT} wobbles, tips, then rights itself and shoots ahead; {HERO} reaches out his hand just in time",
+    "n_race_end": "got it; {HERO} scoops up the champion {B1_PRIZE} right at the finish line, drippy and proud; {COMPANION} cheers hooray; {HERO} tucks the winning leaf into his pocket like a shiny medal, and they stomp-splash all the way home to tell everyone",
+    "n_downhill": "they follow {B2_SIGN} down the hill as the drizzle turns to sprinkles and then to nothing at all; every puddle turns gold in the new light, like little mirrors full of treasure, and the wet street begins to sparkle",
+    "n_sky": "{COMPANION} stops at the bottom of the hill and points up over the rooftops; {HERO} tips his head way back, holds {COMPANION}'s hand tight, and looks up, up, up",
+    "n_rainbow_end": "a whole {B2_PRIZE} arches over the town, its bands of color glowing in the washed-clean sky; {HERO} and {COMPANION} name every color together and walk home right under it, the best surprise of {OCCASION}"
+  },
+  "titles": {
+    "n_worm_end": "A Home for {A1_PRIZE}",
+    "n_splash_end": "The Biggest {A2_PRIZE}",
+    "n_race_end": "Champion {B1_PRIZE}",
+    "n_rainbow_end": "The {B2_PRIZE} Surprise"
+  },
+  "labels": {
+    "n_window": {
+      "c_get_ready": "Put on {READY_GEAR}."
+    },
+    "n_door": {
+      "c_step_out": "Step outside with {COMPANION}."
+    },
+    "n_corner": {
+      "c_lane": "Take {ROUTE_A_LURE}.",
+      "c_hill": "Take {ROUTE_B_LURE}."
+    },
+    "n_lane": {
+      "c_look_close": "Look closer at {A_FORK_SIGN}."
+    },
+    "n_wiggle": {
+      "c_help_worm": "Help {A1_CREATURE} home.",
+      "c_mirror": "Tiptoe to {A2_LANDMARK}."
+    },
+    "n_worm_carry": {
+      "c_set_down": "Set {A1_CREATURE} down gently."
+    },
+    "n_mirror_climax": {
+      "c_splash": "Come down with a great big {A2_PRIZE}."
+    },
+    "n_stream_fork": {
+      "c_race": "Race {B1_BOAT}.",
+      "c_sun": "Follow {B2_SIGN} down."
+    },
+    "n_race_finish": {
+      "c_catch": "Catch {B1_BOAT}."
+    }
+  }
+}

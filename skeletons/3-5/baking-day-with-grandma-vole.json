@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=42 beats='morning light peeks into the cozy burrow and Pip Vole wakes to a warm toasty smell drifting from the kitchen; today is baking day with Grandma Vole, the best day of all; Pip hops out of bed and scampers down the root tunnel'>>",
+      "body": "<<FILL role=setup words=42 beats='morning light peeks into {THRESHOLD} and {HERO} wakes to a warm toasty smell drifting from {WORKSHOP}; today is the best baking day of all with {MENTOR}; {HERO} hops out of bed and scampers down {ENTRANCE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -46,7 +46,7 @@
     },
     {
       "id": "n_kitchen",
-      "body": "<<FILL role=setup words=40 beats='Grandma Vole ties Pip’s little apron in a bow and props up the old worn recipe card for seed-honey buns; first the recipe needs the big brown mixing bowl from the shelf; Pip rolls up his sleeves, ready to help'>>",
+      "body": "<<FILL role=setup words=40 beats='{MENTOR} ties {HERO}'s little apron in a bow and props up {RECIPE_CARD} for {GOAL}; first the recipe needs {STEP1_ITEM} from the shelf; {HERO} rolls up his sleeves, ready to help'>>",
       "is_ending": false,
       "choices": [
         {
@@ -58,7 +58,7 @@
     },
     {
       "id": "n_bowls",
-      "body": "<<FILL role=choice words=42 beats='the kitchen bowls stand in a tall wobbly tower on the low shelf, and the big brown mixing bowl sits at the very bottom of the stack; Pip reaches out his paws; he can lift the top bowls off one at a time or slide the bottom bowl out fast'>>",
+      "body": "<<FILL role=choice words=42 beats='the kitchen bowls stand in {STEP1_STACK} on the low shelf, and {STEP1_ITEM} sits at the very bottom of the stack; {HERO} reaches out his paws; he can lift the top bowls off one at a time or slide the bottom bowl out fast'>>",
       "is_ending": false,
       "choices": [
         {
@@ -68,14 +68,14 @@
         },
         {
           "id": "c_bowls_slide",
-          "label": "Slide the bottom bowl out fast.",
+          "label": "Slide {STEP1_ITEM} out from the bottom.",
           "target": "n_bowl_oops"
         }
       ]
     },
     {
       "id": "n_bowl_oops",
-      "body": "<<FILL role=rising words=40 beats='the tower teeters and totters and the wooden bowls clatter down all around Pip, one landing on his head like a silly hat; nothing breaks and nobody is hurt; Grandma chuckles, says one at a time, little paws, and helps him stack the tower back up'>>",
+      "body": "<<FILL role=rising words=40 beats='{STEP1_STACK} teeters and totters and the bowls clatter down all around {HERO}, {STEP1_MISHAP_DETAIL}; nothing breaks and nobody is hurt; {MENTOR} chuckles, says one at a time, little paws, and helps him stack the tower back up'>>",
       "is_ending": false,
       "choices": [
         {
@@ -87,7 +87,7 @@
     },
     {
       "id": "n_bowl_ok",
-      "body": "<<FILL role=rising words=36 beats='Pip lifts the bowls off one by one, steady and slow, until the big brown bowl is free; he carries it to the table like a treasure; Grandma gives his ears a proud pat; next the recipe card says flour'>>",
+      "body": "<<FILL role=rising words=36 beats='{HERO} lifts the bowls off one by one, steady and slow, until {STEP1_ITEM} is free; he carries it to the table like a treasure; {MENTOR} gives his ears a proud pat; next {RECIPE_CARD} says {STEP2_MATERIAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -99,7 +99,7 @@
     },
     {
       "id": "n_flour",
-      "body": "<<FILL role=choice words=42 beats='the flour crock sits open on the table, full to the brim with soft pale flour; Grandma holds the big brown bowl steady while Pip picks up the little wooden scoop; he can scoop small scoops nice and slow or tip the whole crock over the bowl at once'>>",
+      "body": "<<FILL role=choice words=42 beats='{STEP2_ITEM} sits open on the table, full to the brim with {STEP2_MATERIAL}; {MENTOR} holds {STEP1_ITEM} steady while {HERO} picks up {STEP2_TOOL}; he can scoop small scoops nice and slow or tip the whole crock over the bowl at once'>>",
       "is_ending": false,
       "choices": [
         {
@@ -109,14 +109,14 @@
         },
         {
           "id": "c_flour_tip",
-          "label": "Tip the whole crock over at once.",
+          "label": "Tip {STEP2_ITEM} over all at once.",
           "target": "n_flour_oops"
         }
       ]
     },
     {
       "id": "n_flour_oops",
-      "body": "<<FILL role=rising words=40 beats='a big white flour cloud poofs up and Pip sneezes the squeakiest sneeze, achoo, and now he has a flour mustache and flour eyebrows; Grandma giggles and wipes his nose with her apron, saying little scoops, slow paws; Pip dusts himself off, ready to try again'>>",
+      "body": "<<FILL role=rising words=40 beats='a big white cloud of {STEP2_MATERIAL} poofs up and {HERO} sneezes the squeakiest sneeze, achoo, and now he has {STEP2_MISHAP_DETAIL}; {MENTOR} giggles and wipes his nose with her apron, saying little scoops, slow paws; {HERO} dusts himself off, ready to try again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -128,7 +128,7 @@
     },
     {
       "id": "n_flour_ok",
-      "body": "<<FILL role=rising words=36 beats='three soft scoops of flour whisper into the big brown bowl, one, two, three; Grandma peeks in and says just right, little baker; Pip beams under his clean whiskers; now the recipe card says seeds'>>",
+      "body": "<<FILL role=rising words=36 beats='three soft scoops of {STEP2_MATERIAL} whisper into {STEP1_ITEM}, one, two, three; {MENTOR} peeks in and says just right, little baker; {HERO} beams proudly; now {RECIPE_CARD} says {STEP3_MATERIAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -140,7 +140,7 @@
     },
     {
       "id": "n_seeds",
-      "body": "<<FILL role=choice words=44 beats='the seed jar glitters with stripy sunflower seeds, and one shiny brown acorn sits on top, saved to crown the biggest bun; Pip hugs the jar close; he can pour the seeds into the bowl in a slow gentle stream or shake the jar hard upside down to hurry'>>",
+      "body": "<<FILL role=choice words=44 beats='{STEP3_ITEM} glitters with {STEP3_MATERIAL}, and {TOKEN} sits on top, saved to crown the biggest bun; {HERO} hugs the jar close; he can pour the seeds into the bowl in a slow gentle stream or shake the jar hard upside down to hurry'>>",
       "is_ending": false,
       "choices": [
         {
@@ -157,19 +157,19 @@
     },
     {
       "id": "n_acorn_chase",
-      "body": "<<FILL role=rising words=40 beats='seeds sprinkle every which way and the shiny acorn plops out, bounces off the table, and rolls away down the burrow hall; Pip scampers after it past the pantry and around the root cellar, paws pattering, while Grandma sweeps up seeds and laughs her warm laugh'>>",
+      "body": "<<FILL role=rising words=40 beats='{STEP3_MATERIAL} sprinkle every which way and {TOKEN} plops out, bounces off the table, and rolls away down {HALLWAY}; {HERO} scampers after it {STEP3_CHASE_PATH}, paws pattering, while {MENTOR} sweeps up the spill and laughs her warm laugh'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_chase_catch",
-          "label": "Catch that rolling acorn!",
+          "label": "Catch {TOKEN}!",
           "target": "n_acorn_back"
         }
       ]
     },
     {
       "id": "n_acorn_back",
-      "body": "<<FILL role=rising words=38 beats='the acorn spins to a stop against Grandma’s slipper and Pip pounces on it with both paws, got it; he trots back to the table holding it high like a prize; Grandma says gentle pours, no shakes, and hands him the seed jar again'>>",
+      "body": "<<FILL role=rising words=38 beats='{TOKEN} spins to a stop against {MENTOR}'s slipper and {HERO} pounces on it with both paws, got it; he trots back to the table holding it high like a prize; {MENTOR} says gentle pours, no shakes, and hands him {STEP3_ITEM} again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -181,19 +181,19 @@
     },
     {
       "id": "n_seeds_ok",
-      "body": "<<FILL role=rising words=36 beats='the seeds patter into the flour in a slow gentle stream and speckle it like freckles; the shiny acorn waits safely in Grandma’s pocket for the biggest bun; the recipe card says honey comes next, and honey is Pip’s favorite part'>>",
+      "body": "<<FILL role=rising words=36 beats='{STEP3_MATERIAL} patter into {STEP2_MATERIAL} in a slow gentle stream and speckle it like freckles; {TOKEN} waits safely in {MENTOR}'s pocket for the biggest bun; {RECIPE_CARD} says {HONEY} comes next, and it is {HERO}'s favorite part'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_seedsok_honey",
-          "label": "Bring the honey pot.",
+          "label": "Bring {HONEY}.",
           "target": "n_honey"
         }
       ]
     },
     {
       "id": "n_honey",
-      "body": "<<FILL role=rising words=38 beats='Grandma opens the golden honey pot and cups her warm paws over Pip’s paws on the spoon; together they drizzle a slow shiny spiral over the flour and seeds, round and round; Pip licks one sweet drip off his thumb and grins'>>",
+      "body": "<<FILL role=rising words=38 beats='{MENTOR} opens {HONEY} and cups her warm paws over {HERO}'s paws on {MIX_TOOL}; together they drizzle a slow shiny spiral over the mixture, round and round; {HERO} licks one sweet drip off his thumb and grins'>>",
       "is_ending": false,
       "choices": [
         {
@@ -205,7 +205,7 @@
     },
     {
       "id": "n_mix",
-      "body": "<<FILL role=rising words=38 beats='Pip stirs the wooden spoon in slow round circles, like stirring soup, while Grandma turns the bowl; the flour and seeds and honey hug together into a soft speckled dough; Pip pokes it and it springs right back; Grandma says now the dough needs a little nap to grow puffy'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} stirs {MIX_TOOL} in slow round circles, like stirring soup, while {MENTOR} turns {STEP1_ITEM}; the mixture hugs together into a soft speckled dough; {HERO} pokes it and it springs right back; {MENTOR} says now the dough needs a little nap to grow puffy'>>",
       "is_ending": false,
       "choices": [
         {
@@ -217,65 +217,65 @@
     },
     {
       "id": "n_rest",
-      "body": "<<FILL role=rising words=40 beats='the dough naps under a checked cloth by the warm stove while Pip and Grandma sip mint tea in the big chair; Grandma tells how she baked seed-honey buns with her own grandma long ago in this very kitchen; then she peeks under the cloth and the dough is puffy and ready'>>",
+      "body": "<<FILL role=rising words=40 beats='the dough naps under a checked cloth by the warm stove while {HERO} and {MENTOR} sip {DRINK} in the big chair; {MENTOR} tells how she baked {GOAL} with her own grandma long ago in {WORKSHOP}; then she peeks under the cloth and the dough is puffy and ready'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rest_shape",
-          "label": "Shape the buns with Grandma.",
+          "label": "Shape the {GOAL} with {MENTOR}.",
           "target": "n_shape"
         }
       ]
     },
     {
       "id": "n_shape",
-      "body": "<<FILL role=choice words=42 beats='Grandma dusts the table with flour and rolls one perfect round bun to show Pip how, smooth as a river pebble; the shiny acorn is ready to crown the biggest one; Pip pats his own lump of dough; he can roll neat round buns just like Grandma’s or squish fun shapes, stars and snails and hats'>>",
+      "body": "<<FILL role=choice words=42 beats='{MENTOR} dusts the table with {STEP2_MATERIAL} and rolls one perfect round bun to show {HERO} how, smooth as a river pebble; {TOKEN} is ready to crown the biggest one; {HERO} pats his own lump of dough; he can roll neat round buns just like {MENTOR}'s or squish fun shapes, {ROUTE_B_SHAPES}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_shape_neat",
-          "label": "Roll neat round buns like Grandma’s.",
+          "label": "Roll neat round buns like {MENTOR}'s.",
           "target": "n_tray_neat"
         },
         {
           "id": "c_shape_funny",
-          "label": "Squish fun shapes, stars and snails.",
+          "label": "Squish fun shapes, {ROUTE_B_SHAPES}.",
           "target": "n_tray_funny"
         }
       ]
     },
     {
       "id": "n_tray_neat",
-      "body": "<<FILL role=rising words=38 beats='Pip rolls bun after bun, round and smooth, and lines them up on the tray in tidy rows; Grandma presses the shiny acorn on top of the biggest one; the tray slides into the warm oven and the whole burrow starts to smell wonderful'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} rolls bun after bun, round and smooth, and lines them up on the tray in tidy rows; {MENTOR} presses {TOKEN} on top of the biggest one; the tray slides into {OVEN} and {THRESHOLD} starts to smell wonderful'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_neat_oven",
-          "label": "Watch and wait by the warm oven.",
+          "label": "Watch and wait by {OVEN}.",
           "target": "n_oven"
         }
       ]
     },
     {
       "id": "n_tray_funny",
-      "body": "<<FILL role=rising words=38 beats='Pip squishes a wiggly star, a curly snail, and a bun shaped just like Grandma’s sun hat; Grandma laughs her happy laugh and presses the shiny acorn onto the snail; the tray slides into the warm oven and the whole burrow starts to smell wonderful'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} squishes {ROUTE_B_SHAPES}, and a bun shaped just like {MENTOR_HAT}; {MENTOR} laughs her happy laugh and presses {TOKEN} onto the snail; the tray slides into {OVEN} and {THRESHOLD} starts to smell wonderful'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_funny_oven",
-          "label": "Watch and wait by the warm oven.",
+          "label": "Watch and wait by {OVEN}.",
           "target": "n_oven_funny"
         }
       ]
     },
     {
       "id": "n_oven",
-      "body": "<<FILL role=choice words=40 beats='through the little oven window Pip watches his round buns puff up fatter and fatter; the burrow smells of honey and toasty seeds; Grandma says the little bell will ting when the buns are done; Pip can wait for the bell or open the door for a tiny peek'>>",
+      "body": "<<FILL role=choice words=40 beats='through {OVEN}'s little window {HERO} watches his round buns puff up fatter and fatter; {THRESHOLD} smells of {HONEY} and toasty seeds; {MENTOR} says {BELL} will ting when they are done; {HERO} can wait for {BELL} or open the door for a tiny peek'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_oven_wait",
-          "label": "Wait for the little bell.",
+          "label": "Wait for {BELL}.",
           "target": "n_golden"
         },
         {
@@ -287,29 +287,29 @@
     },
     {
       "id": "n_peek_oops",
-      "body": "<<FILL role=rising words=38 beats='Pip opens the oven door a crack and warm air whooshes out, whoosh, and the buns sigh and slump a little; Grandma closes the door gently and whispers that buns need their beauty sleep; sure enough the buns begin to puff right back up while Pip hums a waiting song'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} opens {OVEN}'s door a crack and warm air whooshes out, whoosh, and the buns sigh and slump a little; {MENTOR} closes the door gently and whispers that buns need their beauty sleep; sure enough the buns begin to puff right back up while {HERO} hums a waiting song'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_peek_again",
-          "label": "Wait by the warm oven again.",
+          "label": "Wait by {OVEN} again.",
           "target": "n_oven"
         }
       ]
     },
     {
       "id": "n_golden",
-      "body": "<<FILL role=choice words=42 beats='ting goes the little bell and Grandma slides out a tray of golden seed-honey buns, round and perfect, steam curling off their tops and the acorn shining on the biggest one; Pip claps his floury paws; now comes the very best part of baking day'>>",
+      "body": "<<FILL role=choice words=42 beats='ting goes {BELL} and {MENTOR} slides out a tray of golden {GOAL}, round and perfect, steam curling off their tops and {TOKEN} shining on the biggest one; {HERO} claps his floury paws; now comes the very best part of baking day'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_golden_teatime",
-          "label": "Have a teatime picnic with Grandma.",
+          "label": "Have a {DRINK} picnic with {MENTOR}.",
           "target": "e_teatime"
         },
         {
           "id": "c_golden_neighbors",
-          "label": "Take warm buns to the neighbors.",
+          "label": "Take warm {GOAL} to the neighbors.",
           "target": "e_neighbors"
         },
         {
@@ -321,12 +321,12 @@
     },
     {
       "id": "n_oven_funny",
-      "body": "<<FILL role=choice words=40 beats='through the little oven window the star points turn golden and the snail bun puffs up round; the burrow smells of honey and toasty seeds; Grandma says the little bell will ting when the buns are done; Pip can wait for the bell or open the door for a tiny peek'>>",
+      "body": "<<FILL role=choice words=40 beats='through {OVEN}'s little window the star points turn golden and the snail bun puffs up round; {THRESHOLD} smells of {HONEY} and toasty seeds; {MENTOR} says {BELL} will ting when they are done; {HERO} can wait for {BELL} or open the door for a tiny peek'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ofunny_wait",
-          "label": "Wait for the little bell.",
+          "label": "Wait for {BELL}.",
           "target": "n_funny_out"
         },
         {
@@ -338,19 +338,19 @@
     },
     {
       "id": "n_funny_peek",
-      "body": "<<FILL role=rising words=38 beats='Pip cracks the door open and a puff of warm steam curls his whiskers into silly squiggles; Grandma laughs softly and shuts the door, saying the steam likes to stay in with the buns; Pip pats his whiskers flat and watches the wiggly shapes keep puffing'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} cracks the door open and a puff of warm steam curls his whiskers into silly squiggles; {MENTOR} laughs softly and shuts the door, saying the steam likes to stay in with the buns; {HERO} pats his whiskers flat and watches the wiggly shapes keep puffing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fpeek_again",
-          "label": "Wait by the warm oven again.",
+          "label": "Wait by {OVEN} again.",
           "target": "n_oven_funny"
         }
       ]
     },
     {
       "id": "n_funny_out",
-      "body": "<<FILL role=choice words=42 beats='ting goes the little bell and out comes the funniest tray in the whole burrow, a golden star, a curly snail with the shiny acorn on top, and a bun just like Grandma’s hat; Pip and Grandma giggle together; now comes the very best part of baking day'>>",
+      "body": "<<FILL role=choice words=42 beats='ting goes {BELL} and out comes the funniest tray in {THRESHOLD}, a golden star, a curly snail with {TOKEN} on top, and a bun just like {MENTOR_HAT}; {HERO} and {MENTOR} giggle together; now comes the very best part of baking day'>>",
       "is_ending": false,
       "choices": [
         {
@@ -360,80 +360,80 @@
         },
         {
           "id": "c_fout_recipe",
-          "label": "Draw the new buns on the recipe card.",
+          "label": "Draw the new {GOAL} on {RECIPE_CARD}.",
           "target": "e_recipe"
         },
         {
           "id": "c_fout_neighbors",
-          "label": "Show the silly buns to the neighbors.",
+          "label": "Show the silly {GOAL} to the neighbors.",
           "target": "e_silly"
         }
       ]
     },
     {
       "id": "e_teatime",
-      "body": "<<FILL role=completion words=44 beats='Pip and Grandma spread the checked cloth under the round burrow window and share warm seed-honey buns with mint tea, just the two of them; the honey is sweet and the seeds go crunch; Pip snuggles under Grandma’s arm, already dreaming of the next baking day'>>",
+      "body": "<<FILL role=completion words=44 beats='{HERO} and {MENTOR} spread the checked cloth under the round window and share warm {GOAL} with {DRINK}, just the two of them; {HONEY} is sweet and the seeds go crunch; {HERO} snuggles under {MENTOR}'s arm, already dreaming of the next baking day'>>",
       "is_ending": true,
       "ending": {
         "id": "end_teatime",
         "valence": "positive",
         "kind": "completion",
-        "title": "A Teatime Picnic for Two"
+        "title": "{A_PRIZE1}"
       }
     },
     {
       "id": "e_neighbors",
-      "body": "<<FILL role=completion words=44 beats='Pip carries the basket of warm buns down the burrow hall and knocks on every round door; the mouse twins and old Mister Mole sniff the honey smell and cheer; soon the whole burrow is munching happily, and everyone says Pip is a proper little baker now'>>",
+      "body": "<<FILL role=completion words=44 beats='{HERO} carries the basket of warm {GOAL} down {HALLWAY} and knocks on every round door; {NEIGHBOR1} and {NEIGHBOR2} sniff the sweet smell and cheer; soon {THRESHOLD} is munching happily, and everyone says {HERO} is a proper little baker now'>>",
       "is_ending": true,
       "ending": {
         "id": "end_neighbors",
         "valence": "positive",
         "kind": "success",
-        "title": "Warm Buns for the Whole Burrow"
+        "title": "{A_PRIZE2}"
       }
     },
     {
       "id": "e_perfect",
-      "body": "<<FILL role=completion words=44 beats='Pip lines the golden buns along the windowsill in a proud tidy row, with the acorn bun in the middle like a little king; Grandma counts them and every single one is just right; she tells Pip he tried and tried until he got it, and that is what makes a perfect batch'>>",
+      "body": "<<FILL role=completion words=44 beats='{HERO} lines the golden {GOAL} along the windowsill in a proud tidy row, with the bun crowned by {TOKEN} in the middle like a little king; {MENTOR} counts them and every single one is just right; she tells {HERO} he tried and tried until he got it, and that is what makes a perfect batch'>>",
       "is_ending": true,
       "ending": {
         "id": "end_perfect",
         "valence": "positive",
         "kind": "success",
-        "title": "The Perfect Golden Batch"
+        "title": "{A_PRIZE3}"
       }
     },
     {
       "id": "e_funny",
-      "body": "<<FILL role=completion words=44 beats='Pip bites the wiggly star bun while it is still warm and honey-sweet, and it is the most delicious bun he has ever tasted; Grandma tries the hat bun and declares it scrumptious; the buns look funny and taste wonderful, and that is the very best kind of bun'>>",
+      "body": "<<FILL role=completion words=44 beats='{HERO} bites the wiggly star bun while it is still warm and sweet, and it is the most delicious bun he has ever tasted; {MENTOR} tries the hat-shaped bun and declares it scrumptious; the {GOAL} look funny and taste wonderful, and that is the very best kind of bun'>>",
       "is_ending": true,
       "ending": {
         "id": "end_funny",
         "valence": "positive",
         "kind": "completion",
-        "title": "Funny Shapes, Yummy Buns"
+        "title": "{B_PRIZE1}"
       }
     },
     {
       "id": "e_recipe",
-      "body": "<<FILL role=completion words=44 beats='Grandma fetches her pen and Pip draws a star bun, a snail bun, and a hat bun right on the old recipe card, next to the writing from long ago; Grandma writes Pip’s Wiggly Buns underneath; together they have discovered a brand-new family recipe to bake forever'>>",
+      "body": "<<FILL role=completion words=44 beats='{MENTOR} fetches her pen and {HERO} draws a star bun, a snail bun, and a hat bun right on {RECIPE_CARD}, next to the writing from long ago; {MENTOR} writes {HERO}'s Wiggly Buns underneath; together they have discovered a brand-new family recipe to bake forever'>>",
       "is_ending": true,
       "ending": {
         "id": "end_recipe",
         "valence": "positive",
         "kind": "discovery",
-        "title": "A Brand-New Family Recipe"
+        "title": "{B_PRIZE2}"
       }
     },
     {
       "id": "e_silly",
-      "body": "<<FILL role=completion words=44 beats='Pip parades the funny tray down the burrow hall and the neighbors come peeking out of every round door; the mouse twins pick the star, old Mister Mole picks the hat, and everyone giggles and munches; silly buns, it turns out, make the whole burrow smile'>>",
+      "body": "<<FILL role=completion words=44 beats='{HERO} parades the funny tray down {HALLWAY} and the neighbors come peeking out of every round door; {NEIGHBOR1} pick the star, {NEIGHBOR2} picks the hat, and everyone giggles and munches; silly {GOAL}, it turns out, make {THRESHOLD} smile'>>",
       "is_ending": true,
       "ending": {
         "id": "end_silly",
         "valence": "positive",
         "kind": "success",
-        "title": "Silly Buns Make Everyone Smile"
+        "title": "{B_PRIZE3}"
       }
     }
   ]

@@ -34,39 +34,39 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=115 beats='Wren has dreamed of the sky her whole life, so when the great airship Cirrus casts off from the mooring tower she is already aboard, hidden in a coil of rope, a real stowaway at last; the humming boarding deck stretches around her and nobody has spotted her yet; four passages lead away into the belly of the ship, and she must choose one before a crewman turns around'>>",
+      "body": "<<FILL role=setup words=115 beats='{HERO} has dreamed of the sky her whole life, so when {THRESHOLD} casts off from {ENTRANCE} she is already aboard, hidden in a coil of rope, {OPENING_MOMENT}; the humming boarding deck stretches around her and nobody has spotted her yet; four passages lead away into the belly of the ship, and she must choose one before a crewman turns around'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_start_eng",
-          "label": "Slip down toward the roaring engine room.",
+          "label": "Slip down toward {ROUTE_A_ZONE}.",
           "target": "a_eng1"
         },
         {
           "id": "c_start_hold",
-          "label": "Creep into the dark cargo hold.",
+          "label": "Creep into {ROUTE_B_ZONE}.",
           "target": "b_hold1"
         },
         {
           "id": "c_start_nest",
-          "label": "Climb up toward the crow's nest.",
+          "label": "Climb up toward {ROUTE_C_ZONE}.",
           "target": "c_nest1"
         },
         {
           "id": "c_start_salon",
-          "label": "Sneak into the grand saloon.",
+          "label": "Sneak into {ROUTE_D_ZONE}.",
           "target": "d_salon1"
         }
       ]
     },
     {
       "id": "a_eng1",
-      "body": "<<FILL role=rising words=100 beats='the engine room roars with brass pistons and the warm smell of oil; a broad-shouldered stoker shovels coal with his back to her, and a narrow catwalk runs above the machines toward a quieter corner where the pipes glow'>>",
+      "body": "<<FILL role=rising words=100 beats='{ROUTE_A_ZONE} roars with brass pistons and the warm smell of oil; {A_CHAR} shovels coal with his back to her, and {A_LANDMARK} runs above the machines toward a quieter corner where the pipes glow'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_eng_deep",
-          "label": "Creep along the catwalk deeper in.",
+          "label": "Creep along {A_LANDMARK} deeper in.",
           "target": "a_eng_deep"
         },
         {
@@ -78,12 +78,12 @@
     },
     {
       "id": "a_eng_deep",
-      "body": "<<FILL role=choice words=100 beats='past the pistons the engine room opens into a maze of humming pipes; one way is bright with dials and gauges that show the ship's heartbeat, the other drops toward the coal bunkers where something small is scuffling in the dark'>>",
+      "body": "<<FILL role=choice words=100 beats='past the pistons {ROUTE_A_ZONE} opens into {A1_ZONE}; one way is bright with {A1_OFFER1} that show the ship's heartbeat, the other drops toward {A1_OFFER2} where something small is scuffling in the dark'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_eng_a",
-          "label": "Study the glowing dials.",
+          "label": "Study {A1_OFFER1}.",
           "target": "a_eng_a"
         },
         {
@@ -95,19 +95,19 @@
     },
     {
       "id": "a_eng_a",
-      "body": "<<FILL role=rising words=95 beats='the dials tick and tremble, showing steam and lift and altitude; Wren works out how the huge engine breathes, and a low hatch beyond the gauges leads toward the middle of the ship where the corridors join'>>",
+      "body": "<<FILL role=rising words=95 beats='{A1_OFFER1} tick and tremble, showing steam and lift and altitude; {HERO} works out how the huge engine breathes, and {A1_PASSAGE} beyond the gauges leads toward the middle of the ship where the corridors join'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_eng_a_go",
-          "label": "Duck through the low hatch.",
+          "label": "Duck through {A1_PASSAGE}.",
           "target": "a_eng_a2"
         }
       ]
     },
     {
       "id": "a_eng_a2",
-      "body": "<<FILL role=rising words=95 beats='the hatch lets onto a snug maintenance passage warmed by the engines; oil-lamps swing on hooks, and a faint mewing sound drifts down the corridor toward the heart of the Cirrus'>>",
+      "body": "<<FILL role=rising words=95 beats='{A1_PASSAGE} lets onto a snug maintenance passage warmed by the engines; oil-lamps swing on hooks, and a faint mewing sound drifts down the corridor toward the heart of {SHIP_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -119,19 +119,19 @@
     },
     {
       "id": "a_eng_b",
-      "body": "<<FILL role=rising words=95 beats='the coal bunkers are hot and dim; the scuffling turns out to be nothing frightening, only a loose hatch swinging, but through it she glimpses a warmer passage and hears a small, hopeful mewing'>>",
+      "body": "<<FILL role=rising words=95 beats='{A1_OFFER2} are hot and dim; the scuffling turns out to be nothing frightening, only {A2_LATCH} swinging, but through it she glimpses a warmer passage and hears a small, hopeful mewing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_eng_b_go",
-          "label": "Squeeze through the loose hatch.",
+          "label": "Squeeze through {A2_LATCH}.",
           "target": "a_eng_b2"
         }
       ]
     },
     {
       "id": "a_eng_b2",
-      "body": "<<FILL role=rising words=95 beats='beyond the hatch a service corridor runs warm and quiet along the engine's flank; the mewing is closer now, coming from somewhere near the middle of the ship where all the low passages seem to meet'>>",
+      "body": "<<FILL role=rising words=95 beats='beyond {A2_LATCH} a service corridor runs warm and quiet along the engine's flank; the mewing is closer now, coming from somewhere near the middle of the ship where all the low passages seem to meet'>>",
       "is_ending": false,
       "choices": [
         {
@@ -143,7 +143,7 @@
     },
     {
       "id": "a_eng_conv",
-      "body": "<<FILL role=rising words=95 beats='the warm engine passages funnel Wren into a snug junction full of spare rope and folded canvas; the mewing is very near now, and a small pair of eyes shines at her from behind a crate'>>",
+      "body": "<<FILL role=rising words=95 beats='the warm engine passages funnel {HERO} into {A_CONV} full of spare rope and folded canvas; the mewing is very near now, and a small pair of eyes shines at her from behind a crate'>>",
       "is_ending": false,
       "choices": [
         {
@@ -155,12 +155,12 @@
     },
     {
       "id": "a_eng_risk",
-      "body": "<<FILL role=choice words=100 beats='Wren dashes across the open floor, but the stoker begins to turn; she can throw herself flat behind the coal chute and hope, or freeze where she stands in the lamplight'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} dashes across the open floor, but {A_CHAR} begins to turn; she can throw herself flat behind {A_HIDE} and hope, or freeze where she stands in the lamplight'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_eng_recover",
-          "label": "Dive behind the coal chute.",
+          "label": "Dive behind {A_HIDE}.",
           "target": "a_eng_recover"
         },
         {
@@ -172,7 +172,7 @@
     },
     {
       "id": "a_eng_recover",
-      "body": "<<FILL role=rising words=90 beats='crouched behind the coal chute, Wren holds her breath until the stoker shrugs and turns back to his fire; when his shovel starts again she slips deeper into the maze of humming pipes'>>",
+      "body": "<<FILL role=rising words=90 beats='crouched behind {A_HIDE}, {HERO} holds her breath until {A_CHAR} shrugs and turns back to his fire; when his shovel starts again she slips deeper into {A1_ZONE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -184,64 +184,64 @@
     },
     {
       "id": "e_set_eng",
-      "body": "<<FILL role=failure words=88 beats='the stoker spots her at once and, not unkindly, walks her up to the purser's office; she waits on a bench while the Cirrus flies on, then is set down safe and sound at the very next mooring tower, her stowaway voyage over before it truly began'>>",
+      "body": "<<FILL role=failure words=88 beats='{A_CHAR} spots her at once and, not unkindly, walks her up to {PURSER}'s office; she waits on a bench while {SHIP_NAME} flies on, then is set down safe and sound at the very next {ENTRANCE}, her stowaway voyage over before it truly began'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_eng",
         "valence": "negative",
         "kind": "setback",
-        "title": "Caught by the Coal Fire"
+        "title": "Caught by {A_GATE}"
       }
     },
     {
       "id": "b_hold1",
-      "body": "<<FILL role=rising words=100 beats='the cargo hold is a cavern of lashed crates and swaying lanterns; ropes creak overhead, and two ways beckon, a tidy aisle stacked with labelled boxes and a shadowed gap where the netting has come loose'>>",
+      "body": "<<FILL role=rising words=100 beats='{ROUTE_B_ZONE} is a cavern of lashed crates and swaying lanterns; ropes creak overhead, and two ways beckon, {B_AISLE} stacked with labelled boxes and {B_GAP} where the netting has come loose'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hold_deep",
-          "label": "Follow the tidy aisle of crates.",
+          "label": "Follow {B_AISLE} of crates.",
           "target": "b_hold_deep"
         },
         {
           "id": "c_hold_risk",
-          "label": "Wriggle into the loose netting.",
+          "label": "Wriggle into {B_GAP}.",
           "target": "b_hold_risk"
         }
       ]
     },
     {
       "id": "b_hold_deep",
-      "body": "<<FILL role=choice words=100 beats='the aisle runs deep into the hold; one row of crates is stamped with the crest of a faraway city, and beside it a low tunnel of stacked barrels leads toward the warm middle of the ship'>>",
+      "body": "<<FILL role=choice words=100 beats='{B_AISLE} runs deep into the hold; one row of crates is stamped with {B_OFFER1}, and beside it {B_OFFER2} leads toward the warm middle of the ship'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hold_a",
-          "label": "Read the crest on the crates.",
+          "label": "Read {B_OFFER1} on the crates.",
           "target": "b_hold_a"
         },
         {
           "id": "c_hold_b",
-          "label": "Crawl through the barrel tunnel.",
+          "label": "Crawl through {B_OFFER2}.",
           "target": "b_hold_b"
         }
       ]
     },
     {
       "id": "b_hold_a",
-      "body": "<<FILL role=rising words=95 beats='the crest is a leaping silver fish above three clouds, the mark of a coast Wren has only read about; the crates hum faintly, and past them a gap in the cargo opens toward the heart of the Cirrus'>>",
+      "body": "<<FILL role=rising words=95 beats='{B_OFFER1} is {B_DETAIL}, the mark of a coast {HERO} has only read about; the crates hum faintly, and past them {B_PASSAGE} opens toward the heart of {SHIP_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hold_a_go",
-          "label": "Slip through the gap in the cargo.",
+          "label": "Slip through {B_PASSAGE}.",
           "target": "b_hold_a2"
         }
       ]
     },
     {
       "id": "b_hold_a2",
-      "body": "<<FILL role=rising words=95 beats='the gap becomes a snug walkway between towers of freight; a lantern sways, throwing soft light, and somewhere ahead a small pair of eyes catches the glow and blinks'>>",
+      "body": "<<FILL role=rising words=95 beats='{B_PASSAGE} becomes a snug walkway between towers of freight; a lantern sways, throwing soft light, and somewhere ahead a small pair of eyes catches the glow and blinks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -253,7 +253,7 @@
     },
     {
       "id": "b_hold_b",
-      "body": "<<FILL role=rising words=95 beats='the barrel tunnel is snug and creaking, but it holds; Wren wriggles along it and out the far end into a warmer part of the hold, where the cargo thins and a walkway leads inward'>>",
+      "body": "<<FILL role=rising words=95 beats='{B_OFFER2} is snug and creaking, but it holds; {HERO} wriggles along it and out the far end into a warmer part of the hold, where the cargo thins and a walkway leads inward'>>",
       "is_ending": false,
       "choices": [
         {
@@ -277,7 +277,7 @@
     },
     {
       "id": "b_hold_conv",
-      "body": "<<FILL role=rising words=95 beats='the hold walkways bring Wren to a snug nook of coiled rope and spare canvas near the ship's heart; the little sound comes again, and two bright eyes peep at her from behind a crate'>>",
+      "body": "<<FILL role=rising words=95 beats='the hold walkways bring {HERO} to a snug nook of coiled rope and spare canvas near {SHIP_NAME}'s heart; the little sound comes again, and two bright eyes peep at her from behind a crate'>>",
       "is_ending": false,
       "choices": [
         {
@@ -289,7 +289,7 @@
     },
     {
       "id": "b_hold_risk",
-      "body": "<<FILL role=choice words=100 beats='the loose netting drops Wren into a maze of unlashed crates that shift as the ship rolls; a wall of cargo leans toward her, and she must scramble clear at once or squeeze into a gap and wait it out'>>",
+      "body": "<<FILL role=choice words=100 beats='{B_HIDE} drops {HERO} into a maze of unlashed crates that shift as the ship rolls; a wall of cargo leans toward her, and she must scramble clear at once or squeeze into a gap and wait it out'>>",
       "is_ending": false,
       "choices": [
         {
@@ -306,7 +306,7 @@
     },
     {
       "id": "b_hold_recover",
-      "body": "<<FILL role=rising words=90 beats='Wren rolls clear just as the crates settle with a groan; heart thumping, she steadies the nearest box, then picks a safer route back toward the tidy aisle deeper in the hold'>>",
+      "body": "<<FILL role=rising words=90 beats='{HERO} rolls clear just as the crates settle with a groan; heart thumping, she steadies the nearest box, then picks a safer route back toward {B_AISLE} deeper in the hold'>>",
       "is_ending": false,
       "choices": [
         {
@@ -318,7 +318,7 @@
     },
     {
       "id": "e_set_hold",
-      "body": "<<FILL role=failure words=88 beats='the shifting cargo boxes her into a snug corner she cannot climb out of, and she has to call for help; a surprised deckhand lifts the crates aside and, once she is safe, the purser sees her ashore at the next port, dusty and disappointed but perfectly unharmed'>>",
+      "body": "<<FILL role=failure words=88 beats='the shifting cargo boxes her into a snug corner she cannot climb out of, and she has to call for help; a surprised deckhand lifts the crates aside and, once she is safe, {PURSER} sees her ashore at {ENTRANCE}, dusty and disappointed but perfectly unharmed'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_hold",
@@ -329,41 +329,41 @@
     },
     {
       "id": "c_nest1",
-      "body": "<<FILL role=rising words=100 beats='the ladder to the crow's nest climbs through cold, whistling air; far below the deck tilts and the clouds slide past; two ways offer themselves, a sheltered inner ladder and an open rung-run along the swaying mast'>>",
+      "body": "<<FILL role=rising words=100 beats='the ladder to {ROUTE_C_ZONE} climbs through cold, whistling air; far below the deck tilts and the clouds slide past; two ways offer themselves, {C_LADDER} and {C_RUNG} along the swaying mast'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_nest_deep",
-          "label": "Climb the sheltered inner ladder.",
+          "label": "Climb {C_LADDER}.",
           "target": "c_nest_deep"
         },
         {
           "id": "c_nest_risk",
-          "label": "Edge along the open mast rungs.",
+          "label": "Edge along {C_RUNG}.",
           "target": "c_nest_risk"
         }
       ]
     },
     {
       "id": "c_nest_deep",
-      "body": "<<FILL role=choice words=100 beats='the inner ladder brings her to the little round nest where a spyglass hangs on a hook; from here she can study the great silver envelope above or slide down a rope-run toward the warm inner decks'>>",
+      "body": "<<FILL role=choice words=100 beats='{C_LADDER} brings her to the little round nest where {C_SPYGLASS} hangs on a hook; from here she can study {C_ENVELOPE} above or slide down {C_ROPEDOWN} toward the warm inner decks'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_nest_a",
-          "label": "Study the envelope through the spyglass.",
+          "label": "Study {C_ENVELOPE} through {C_SPYGLASS}.",
           "target": "c_nest_a"
         },
         {
           "id": "c_nest_b",
-          "label": "Slide down the rope-run inward.",
+          "label": "Slide down {C_ROPEDOWN} inward.",
           "target": "c_nest_b"
         }
       ]
     },
     {
       "id": "c_nest_a",
-      "body": "<<FILL role=rising words=95 beats='through the spyglass the envelope is a whole silver sky of ribs and seams; Wren sees how the great gasbags give the ship its lift, then follows a rigging line down toward the warmer inner decks'>>",
+      "body": "<<FILL role=rising words=95 beats='through {C_SPYGLASS} {C_ENVELOPE} is a whole silver sky of ribs and seams; {HERO} sees how the great gasbags give the ship its lift, then follows a rigging line down toward the warmer inner decks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -387,7 +387,7 @@
     },
     {
       "id": "c_nest_b",
-      "body": "<<FILL role=rising words=95 beats='the rope-run carries her quickly down out of the biting wind; she lands soft on a coil of canvas, and a warm inner passage opens ahead, humming with the distant engines'>>",
+      "body": "<<FILL role=rising words=95 beats='{C_ROPEDOWN} carries her quickly down out of the biting wind; she lands soft on a coil of canvas, and a warm inner passage opens ahead, humming with the distant engines'>>",
       "is_ending": false,
       "choices": [
         {
@@ -399,7 +399,7 @@
     },
     {
       "id": "c_nest_b2",
-      "body": "<<FILL role=rising words=95 beats='the inner passage is snug and lamplit; the wind is only a memory now, and a small hopeful mewing echoes along the corridor, drawing Wren toward the middle of the Cirrus'>>",
+      "body": "<<FILL role=rising words=95 beats='the inner passage is snug and lamplit; the wind is only a memory now, and a small hopeful mewing echoes along the corridor, drawing her toward the middle of the Cirrus'>>",
       "is_ending": false,
       "choices": [
         {
@@ -411,7 +411,7 @@
     },
     {
       "id": "c_nest_conv",
-      "body": "<<FILL role=rising words=95 beats='the inner ways bring Wren to a cosy nook of rope and folded sail near the ship's heart; the mewing sounds again, close by, and two shining eyes watch her from behind a crate'>>",
+      "body": "<<FILL role=rising words=95 beats='the inner ways bring {HERO} to a cosy nook of rope and folded sail near {SHIP_NAME}'s heart; the mewing sounds again, close by, and two shining eyes watch her from behind a crate'>>",
       "is_ending": false,
       "choices": [
         {
@@ -423,7 +423,7 @@
     },
     {
       "id": "c_nest_risk",
-      "body": "<<FILL role=choice words=100 beats='out on the open rungs the wind snatches at Wren's coat and the mast sways under her hands; a gust rocks the ship, and she must grab the safety line at once or try to scramble up before the next gust hits'>>",
+      "body": "<<FILL role=choice words=100 beats='out on {C_RUNG} the wind snatches at {HERO}'s coat and the mast sways under her hands; a gust rocks the ship, and she must grab the safety line at once or try to scramble up before the next gust hits'>>",
       "is_ending": false,
       "choices": [
         {
@@ -440,7 +440,7 @@
     },
     {
       "id": "c_nest_recover",
-      "body": "<<FILL role=rising words=90 beats='Wren clips onto the safety line just as the gust punches past; she waits, knuckles white, until the air steadies, then climbs back to the sheltered inner ladder with her heart hammering'>>",
+      "body": "<<FILL role=rising words=90 beats='{HERO} clips onto the safety line just as the gust punches past; she waits, knuckles white, until the air steadies, then climbs back to {C_LADDER} with her heart hammering'>>",
       "is_ending": false,
       "choices": [
         {
@@ -452,52 +452,52 @@
     },
     {
       "id": "e_set_nest",
-      "body": "<<FILL role=failure words=88 beats='the gust leaves her clinging and calling until the lookout hauls her in over the rail of the nest, safe but shaking; kindly, the lookout keeps her warm until the ship reaches port, where she is helped down to the ground, foiled but entirely unhurt'>>",
+      "body": "<<FILL role=failure words=88 beats='the gust leaves her clinging and calling until the lookout hauls her in over the rail of the nest, safe but shaking; kindly, the lookout keeps her warm until {SHIP_NAME} reaches {ENTRANCE}, where she is helped down to the ground, foiled but entirely unhurt'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_nest",
         "valence": "negative",
         "kind": "setback",
-        "title": "Down from the Windy Nest"
+        "title": "Down from {C_GATE}"
       }
     },
     {
       "id": "d_salon1",
-      "body": "<<FILL role=rising words=100 beats='the grand saloon glows with brass and velvet, passengers laughing over supper; a waiter's trolley rolls by, and Wren spies two ways to slip through unseen, along the curtained wall or under the long linen tables'>>",
+      "body": "<<FILL role=rising words=100 beats='{ROUTE_D_ZONE} glows with brass and velvet, passengers laughing over supper; {D_TROLLEY} rolls by, and {HERO} spies two ways to slip through unseen, along {D_WALL} or under {D_TABLES}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_salon_deep",
-          "label": "Edge along the curtained wall.",
+          "label": "Edge along {D_WALL}.",
           "target": "d_salon_deep"
         },
         {
           "id": "c_salon_risk",
-          "label": "Duck under the linen tables.",
+          "label": "Duck under {D_TABLES}.",
           "target": "d_salon_risk"
         }
       ]
     },
     {
       "id": "d_salon_deep",
-      "body": "<<FILL role=choice words=100 beats='the curtains hide a service alcove; from here a glass case of ship's models catches Wren's eye, and beside it a steward's door swings toward the working heart of the Cirrus'>>",
+      "body": "<<FILL role=choice words=100 beats='{D_WALL} hide a service alcove; from here {D_MODELS} catches {HERO}'s eye, and beside it {D_DOOR} swings toward the working heart of {SHIP_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_salon_a",
-          "label": "Peer into the case of ship's models.",
+          "label": "Peer into {D_MODELS}.",
           "target": "d_salon_a"
         },
         {
           "id": "c_salon_b",
-          "label": "Slip through the steward's door.",
+          "label": "Slip through {D_DOOR}.",
           "target": "d_salon_b"
         }
       ]
     },
     {
       "id": "d_salon_a",
-      "body": "<<FILL role=rising words=95 beats='the models show the Cirrus in cutaway, and one deck is painted over as if hidden on purpose; puzzled, Wren notes it, then follows the steward's corridor toward the inner decks'>>",
+      "body": "<<FILL role=rising words=95 beats='{D_MODELS} show {SHIP_NAME} in cutaway, and one deck is painted over as if hidden on purpose; puzzled, {HERO} notes it, then follows the steward's corridor toward the inner decks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -521,7 +521,7 @@
     },
     {
       "id": "d_salon_b",
-      "body": "<<FILL role=rising words=95 beats='the steward's door lets onto a pantry passage stacked with trays; Wren pinches a crust of bread for later and follows the plain corridor away from the saloon toward the working decks'>>",
+      "body": "<<FILL role=rising words=95 beats='{D_DOOR} lets onto a pantry passage stacked with trays; {HERO} pinches a crust of bread for later and follows the plain corridor away from {ROUTE_D_ZONE} toward the working decks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -545,7 +545,7 @@
     },
     {
       "id": "d_salon_conv",
-      "body": "<<FILL role=rising words=95 beats='the inner corridors gather Wren into a quiet nook of rope and sailcloth near the heart of the ship; the little sound comes once more, and two bright eyes shine at her from behind a crate'>>",
+      "body": "<<FILL role=rising words=95 beats='the inner corridors gather {HERO} into a quiet nook of rope and sailcloth near the heart of {SHIP_NAME}; the little sound comes once more, and two bright eyes shine at her from behind a crate'>>",
       "is_ending": false,
       "choices": [
         {
@@ -557,12 +557,12 @@
     },
     {
       "id": "d_salon_risk",
-      "body": "<<FILL role=choice words=100 beats='under the tables Wren freezes between passengers' shoes, and a waiter's foot swings straight toward her; she can roll aside behind the trolley and stay hidden, or bolt for the nearest door in the open'>>",
+      "body": "<<FILL role=choice words=100 beats='under {D_TABLES} {HERO} freezes between passengers' shoes, and a waiter's foot swings straight toward her; she can roll aside behind {D_TROLLEY} and stay hidden, or bolt for the nearest door in the open'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_salon_recover",
-          "label": "Roll behind the serving trolley.",
+          "label": "Roll behind {D_TROLLEY}.",
           "target": "d_salon_recover"
         },
         {
@@ -574,7 +574,7 @@
     },
     {
       "id": "d_salon_recover",
-      "body": "<<FILL role=rising words=90 beats='Wren tucks behind the trolley just as the waiter passes, close enough to smell the soup; when the coast clears she slips out the other side and makes for the curtained service alcove'>>",
+      "body": "<<FILL role=rising words=90 beats='{HERO} tucks behind {D_TROLLEY} just as the waiter passes, close enough to smell the soup; when the coast clears she slips out the other side and makes for the curtained service alcove'>>",
       "is_ending": false,
       "choices": [
         {
@@ -586,57 +586,57 @@
     },
     {
       "id": "e_set_salon",
-      "body": "<<FILL role=failure words=88 beats='she bolts into full view and a startled passenger cries out; the steward catches her gently by the sleeve and sits her in the purser's office with a warm bun while the ship flies on, then sees her safely ashore at the next port, her secret out too soon'>>",
+      "body": "<<FILL role=failure words=88 beats='she bolts into full view and a startled passenger cries out; the steward catches her gently by the sleeve and sits her in {PURSER}'s office with a warm bun while {SHIP_NAME} flies on, then sees her safely ashore at {ENTRANCE}, her secret out too soon'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_salon",
         "valence": "negative",
         "kind": "setback",
-        "title": "Spotted in the Saloon"
+        "title": "Spotted in {D_GATE}"
       }
     },
     {
       "id": "n_friend",
-      "body": "<<FILL role=choice words=115 beats='BOTTLENECK: whichever way Wren came, all the inner passages meet at this cosy nook, and here she finds the secret the ship has been keeping, a small grey stowaway cat named Pip who has been living on scraps and hiding from the crew; Pip trusts her at once, and now she has a friend aboard; three ways lead on, toward the galley, the captain's cabin, or up into the rigging'>>",
+      "body": "<<FILL role=choice words=115 beats='BOTTLENECK: whichever way {HERO} came, all the inner passages meet at this cosy nook, and here she finds the secret {SHIP_NAME} has been keeping, {COMPANION} who has been living on scraps and hiding from the crew; {COMPANION} trusts her at once, and now she has a friend aboard; three ways lead on, toward {ROUTE_E_ZONE}, {ROUTE_F_ZONE}, or up into {ROUTE_G_ZONE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_friend_galley",
-          "label": "Sneak to the galley with Pip for food.",
+          "label": "Sneak to {ROUTE_E_ZONE} with {COMPANION} for food.",
           "target": "f_galley1"
         },
         {
           "id": "c_friend_cabin",
-          "label": "Slip toward the captain's cabin.",
+          "label": "Slip toward {ROUTE_F_ZONE}.",
           "target": "f_cabin1"
         },
         {
           "id": "c_friend_rig",
-          "label": "Climb into the rigging with Pip.",
+          "label": "Climb into {ROUTE_G_ZONE} with {COMPANION}.",
           "target": "f_rig1"
         }
       ]
     },
     {
       "id": "f_galley1",
-      "body": "<<FILL role=choice words=100 beats='the galley steams with the smell of stew; the cook is busy at the far stove, and Pip's nose twitches; Wren can creep to the open larder or wait behind the flour sacks for a clear moment'>>",
+      "body": "<<FILL role=choice words=100 beats='{ROUTE_E_ZONE} steams with the smell of stew; {E_CHAR} is busy at the far stove, and {COMPANION}'s nose twitches; {HERO} can creep to {E_LARDER} or wait behind {E_SACKS} for a clear moment'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_galley_a",
-          "label": "Creep to the open larder.",
+          "label": "Creep to {E_LARDER}.",
           "target": "f_galley_a"
         },
         {
           "id": "c_galley_b",
-          "label": "Wait behind the flour sacks.",
+          "label": "Wait behind {E_SACKS}.",
           "target": "f_galley_b"
         }
       ]
     },
     {
       "id": "f_galley_a",
-      "body": "<<FILL role=rising words=95 beats='the larder is a treasure of bread and cheese; Wren fills her pockets and sets a scrap down for Pip, and as they eat, the deck gives a sudden uneasy lurch and the lamps swing hard'>>",
+      "body": "<<FILL role=rising words=95 beats='{E_LARDER} is a treasure of bread and cheese; {HERO} fills her pockets and sets a scrap down for {COMPANION}, and as they eat, {DEADLINE_SIGN} sweeps through the ship'>>",
       "is_ending": false,
       "choices": [
         {
@@ -648,12 +648,12 @@
     },
     {
       "id": "f_galley_b",
-      "body": "<<FILL role=choice words=100 beats='behind the flour sacks Wren waits, but Pip sneezes at the dust; the cook's head starts to turn, and she must scoop Pip up and slip out fast or hold still and hope he did not hear'>>",
+      "body": "<<FILL role=choice words=100 beats='behind {E_SACKS} {HERO} waits, but {COMPANION} sneezes at the dust; {E_CHAR}'s head starts to turn, and she must scoop {COMPANION} up and slip out fast or hold still and hope he did not hear'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_galley_b_go",
-          "label": "Scoop up Pip and slip out fast.",
+          "label": "Scoop up {COMPANION} and slip out fast.",
           "target": "f_galley_mid"
         },
         {
@@ -665,7 +665,7 @@
     },
     {
       "id": "f_galley_mid",
-      "body": "<<FILL role=rising words=95 beats='out in the corridor the whole ship groans and tilts; loose tins roll past and a bell begins to clang somewhere above; Wren tucks Pip into her coat and hurries toward the noise and the swaying light'>>",
+      "body": "<<FILL role=rising words=95 beats='out in the corridor {DEADLINE_SIGN} rolls through the ship; loose tins roll past and a bell begins to clang somewhere above; {HERO} tucks {COMPANION} into her coat and hurries toward the noise and the swaying light'>>",
       "is_ending": false,
       "choices": [
         {
@@ -677,7 +677,7 @@
     },
     {
       "id": "e_set_galley",
-      "body": "<<FILL role=failure words=88 beats='the cook turns and finds a girl and a cat among his flour sacks; more astonished than angry, he feeds them both and marches Wren to the purser, who keeps her safe until the ship lands and sees her home from the next port, well fed and foiled'>>",
+      "body": "<<FILL role=failure words=88 beats='{E_CHAR} turns and finds a girl and {COMPANION} among {E_SACKS}; more astonished than angry, he feeds them both and marches {HERO} to {PURSER}, who keeps her safe until {SHIP_NAME} lands and sees her home from {ENTRANCE}, well fed and foiled'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_galley",
@@ -688,7 +688,7 @@
     },
     {
       "id": "f_cabin1",
-      "body": "<<FILL role=choice words=100 beats='the captain's cabin door stands ajar on a room of charts and instruments; the captain is not there, but voices murmur near; Wren can slip inside for a quick look or listen at the door first'>>",
+      "body": "<<FILL role=choice words=100 beats='{ROUTE_F_ZONE} door stands ajar on {F_CHARTS}; {CAPTAIN} is not there, but voices murmur near; {HERO} can slip inside for a quick look or listen at the door first'>>",
       "is_ending": false,
       "choices": [
         {
@@ -705,7 +705,7 @@
     },
     {
       "id": "f_cabin_a",
-      "body": "<<FILL role=rising words=95 beats='through the gap Wren hears the officers speak low of a secret cargo and a course set to outrun the coming weather; before she can hear more, the ship shudders and a warning bell begins to ring'>>",
+      "body": "<<FILL role=rising words=95 beats='through the gap {HERO} hears the officers speak low of a secret cargo and a course set to outrun {DEADLINE}; before she can hear more, {DEADLINE_SIGN} begins'>>",
       "is_ending": false,
       "choices": [
         {
@@ -717,24 +717,24 @@
     },
     {
       "id": "f_cabin_b",
-      "body": "<<FILL role=choice words=100 beats='inside, the charts show a route bending sharply around a great grey smudge of storm; footsteps approach the door, and Wren must duck behind the long curtain at once or dive under the chart table'>>",
+      "body": "<<FILL role=choice words=100 beats='inside, {F_CHARTS} show a route bending sharply around a great grey smudge of {DEADLINE}; footsteps approach the door, and {HERO} must duck behind {F_CURTAIN} at once or dive under {F_TABLE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cabin_b_go",
-          "label": "Duck behind the long curtain.",
+          "label": "Duck behind {F_CURTAIN}.",
           "target": "f_cabin_mid"
         },
         {
           "id": "c_cabin_fail",
-          "label": "Dive under the chart table.",
+          "label": "Dive under {F_TABLE}.",
           "target": "e_set_cabin"
         }
       ]
     },
     {
       "id": "f_cabin_mid",
-      "body": "<<FILL role=rising words=95 beats='the corridor outside pitches as the ship meets rough air; the warning bell clangs harder and boots pound overhead; Wren holds Pip close and follows the running crew toward the trouble'>>",
+      "body": "<<FILL role=rising words=95 beats='the corridor outside pitches as {SHIP_NAME} meets rough air; {DEADLINE_SIGN} clangs harder and boots pound overhead; {HERO} holds {COMPANION} close and follows the running crew toward the trouble'>>",
       "is_ending": false,
       "choices": [
         {
@@ -746,35 +746,35 @@
     },
     {
       "id": "e_set_cabin",
-      "body": "<<FILL role=failure words=88 beats='the first officer strides in and finds two small feet under the chart table; surprised but gentle, she hands Wren to the purser, who keeps her safe through the flight and sends her ashore at the next port, her peek at the captain's secret cut short'>>",
+      "body": "<<FILL role=failure words=88 beats='the first officer strides in and finds two small feet under {F_TABLE}; surprised but gentle, she hands {HERO} to {PURSER}, who keeps her safe through the flight and sends her ashore at {ENTRANCE}, her peek at {CAPTAIN}'s secret cut short'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_cabin",
         "valence": "negative",
         "kind": "setback",
-        "title": "Under the Chart Table"
+        "title": "Under {F_GATE}"
       }
     },
     {
       "id": "f_rig1",
-      "body": "<<FILL role=choice words=100 beats='the inner rigging is a warm forest of ropes between the decks; Pip scampers ahead, sure-footed, and Wren follows; a steady catwalk runs one way and a swinging rope-bridge sways the other toward the great envelope'>>",
+      "body": "<<FILL role=choice words=100 beats='{ROUTE_G_ZONE} is a warm forest of ropes between the decks; {COMPANION} scampers ahead, sure-footed, and {HERO} follows; {G_CATWALK} runs one way and {G_BRIDGE} sways the other toward {C_ENVELOPE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rig_a",
-          "label": "Take the steady catwalk.",
+          "label": "Take {G_CATWALK}.",
           "target": "f_rig_a"
         },
         {
           "id": "c_rig_b",
-          "label": "Cross the swinging rope-bridge.",
+          "label": "Cross {G_BRIDGE}.",
           "target": "f_rig_b"
         }
       ]
     },
     {
       "id": "f_rig_a",
-      "body": "<<FILL role=rising words=95 beats='the catwalk gives Wren a grand view of the envelope's inner sky of gasbags; Pip walks the rail like a rope-dancer, and then the whole ship leans as a first hard gust of the storm shoves against the hull'>>",
+      "body": "<<FILL role=rising words=95 beats='{G_CATWALK} gives {HERO} a grand view of {C_ENVELOPE}'s inner sky of gasbags; {COMPANION} walks the rail like a rope-dancer, and then {SHIP_NAME} leans as {DEADLINE_SIGN} shoves against the hull'>>",
       "is_ending": false,
       "choices": [
         {
@@ -786,7 +786,7 @@
     },
     {
       "id": "f_rig_b",
-      "body": "<<FILL role=choice words=100 beats='halfway across the rope-bridge a gust sets it swinging wildly and Pip clings to Wren's shoulder; she must lunge for the far platform now or freeze and grip the ropes until it settles'>>",
+      "body": "<<FILL role=choice words=100 beats='halfway across {G_BRIDGE} a gust sets it swinging wildly and {COMPANION} clings to {HERO}'s shoulder; she must lunge for the far platform now or freeze and grip the ropes until it settles'>>",
       "is_ending": false,
       "choices": [
         {
@@ -803,7 +803,7 @@
     },
     {
       "id": "f_rig_mid",
-      "body": "<<FILL role=rising words=95 beats='the rigging shakes as the storm takes hold; below, a bell clangs and officers shout orders; Wren tucks Pip safe and climbs down toward the din to see what is happening to the ship'>>",
+      "body": "<<FILL role=rising words=95 beats='{ROUTE_G_ZONE} shakes as {DEADLINE} takes hold; below, {DEADLINE_SIGN} and officers shout orders; {HERO} tucks {COMPANION} safe and climbs down toward the din to see what is happening to {SHIP_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -815,23 +815,23 @@
     },
     {
       "id": "e_set_rig",
-      "body": "<<FILL role=failure words=88 beats='the bridge bucks until a rigger swings across and carries Wren and Pip back to solid footing, safe but scolded; he keeps them beside him out of the wind for the rest of the flight, and at the next port Wren is helped down to the ground, grounded from the sky for now'>>",
+      "body": "<<FILL role=failure words=88 beats='{G_BRIDGE} bucks until a rigger swings across and carries {HERO} and {COMPANION} back to solid footing, safe but scolded; he keeps them beside him out of the wind for the rest of the flight, and at {ENTRANCE} {HERO} is helped down to the ground, grounded from the sky for now'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_rig",
         "valence": "negative",
         "kind": "setback",
-        "title": "Grounded from the Rigging"
+        "title": "Grounded from {G_GATE}"
       }
     },
     {
       "id": "n_storm",
-      "body": "<<FILL role=choice words=115 beats='BOTTLENECK: every path brings Wren into the heart of the ship just as the storm truly hits; rain lashes the ports, the Cirrus pitches, and lift is failing as the great envelope strains; the crew are stretched thin and frightened, and a small stowaway who knows the ship might actually help; she can head to the open weather deck, join the struggling crew, or go down to the deep hold where the ship is groaning worst'>>",
+      "body": "<<FILL role=choice words=115 beats='BOTTLENECK: every path brings {HERO} into the heart of {SHIP_NAME} just as {DEADLINE} truly hits; rain lashes the ports, {SHIP_NAME} pitches, and lift is failing as {C_ENVELOPE} strains; the crew are stretched thin and frightened, and a small stowaway who knows the ship might actually help; she can head to {ROUTE_H_ZONE}, join the struggling crew, or go down to {ROUTE_J_ZONE} where the ship is groaning worst'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_storm_deck",
-          "label": "Fight your way to the weather deck.",
+          "label": "Fight your way to {ROUTE_H_ZONE}.",
           "target": "s_deck1"
         },
         {
@@ -841,31 +841,31 @@
         },
         {
           "id": "c_storm_hold",
-          "label": "Go down to the groaning deep hold.",
+          "label": "Go down to the groaning {ROUTE_J_ZONE}.",
           "target": "s_hold1"
         }
       ]
     },
     {
       "id": "s_deck1",
-      "body": "<<FILL role=choice words=100 beats='the weather deck is a roar of wind and spray; a loose control line whips free near the rail, and the deck tilts hard; Wren can crawl low to reach the line or grab the nearest stanchion and steady herself first'>>",
+      "body": "<<FILL role=choice words=100 beats='{ROUTE_H_ZONE} is a roar of wind and spray; {H_LINE} whips free near the rail, and the deck tilts hard; {HERO} can crawl low to reach the line or grab {H_STANCHION} and steady herself first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_deck_a",
-          "label": "Crawl low toward the loose line.",
+          "label": "Crawl low toward {H_LINE}.",
           "target": "s_deck_a"
         },
         {
           "id": "c_deck_b",
-          "label": "Grab a stanchion and steady up.",
+          "label": "Grab {H_STANCHION} and steady up.",
           "target": "s_deck_b"
         }
       ]
     },
     {
       "id": "s_deck_a",
-      "body": "<<FILL role=rising words=95 beats='flat on her belly Wren snags the whipping line and loops it round a cleat; a soaked officer sees, gives her a startled nod, and points her toward a hatch that drops into the ship's deep hold'>>",
+      "body": "<<FILL role=rising words=95 beats='flat on her belly {HERO} snags {H_LINE} and loops it round a cleat; a soaked officer sees, gives her a startled nod, and points her toward a hatch that drops into {SHIP_NAME}'s {ROUTE_J_ZONE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -877,7 +877,7 @@
     },
     {
       "id": "s_deck_b",
-      "body": "<<FILL role=choice words=100 beats='clinging to the stanchion, Wren catches her breath, but a wave of wind sends a crate skidding at her; she can scramble down the deck hatch to safety now or make a dash across the open deck for the wheelhouse'>>",
+      "body": "<<FILL role=choice words=100 beats='clinging to {H_STANCHION}, {HERO} catches her breath, but a wave of wind sends a crate skidding at her; she can scramble down the deck hatch to safety now or make a dash across the open deck for the wheelhouse'>>",
       "is_ending": false,
       "choices": [
         {
@@ -894,7 +894,7 @@
     },
     {
       "id": "s_deck_mid",
-      "body": "<<FILL role=rising words=95 beats='below decks the noise softens to a deep groan of straining timber; the sound is worst from far down in the hold, where the ship seems to be fighting to hold something in; Wren follows the groan downward'>>",
+      "body": "<<FILL role=rising words=95 beats='below decks the noise softens to a deep groan of straining timber; the sound is worst from far down in {ROUTE_J_ZONE}, where {SHIP_NAME} seems to be fighting to hold something in; {HERO} follows the groan downward'>>",
       "is_ending": false,
       "choices": [
         {
@@ -906,7 +906,7 @@
     },
     {
       "id": "e_set_storm1",
-      "body": "<<FILL role=failure words=88 beats='the wind is too strong for a dash and a rigger drags Wren back and bundles her below to a safe cabin, cat and all, to wait out the blow; she is warm and unhurt, but by the time the storm passes the crew have set things right without her, and she rides quietly to port'>>",
+      "body": "<<FILL role=failure words=88 beats='the wind is too strong for a dash and a rigger drags {HERO} back and bundles her below to a safe cabin, {COMPANION} and all, to wait out the blow; she is warm and unhurt, but by the time {DEADLINE} passes the crew have set things right without her, and she rides quietly to {ENTRANCE}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_storm1",
@@ -917,7 +917,7 @@
     },
     {
       "id": "s_crew1",
-      "body": "<<FILL role=choice words=100 beats='the crew heave together on a straining halyard, boots sliding on the wet floor; they are one pair of hands short, and Wren is small but willing; she can grab the rope's end and pull or run for the sand-buckets they keep shouting for'>>",
+      "body": "<<FILL role=choice words=100 beats='the crew heave together on {ROUTE_I_ZONE}, boots sliding on the wet floor; they are one pair of hands short, and {HERO} is small but willing; she can grab the rope's end and pull or run for {I_BUCKETS} they keep shouting for'>>",
       "is_ending": false,
       "choices": [
         {
@@ -927,14 +927,14 @@
         },
         {
           "id": "c_crew_b",
-          "label": "Run for the sand-buckets they need.",
+          "label": "Run for {I_BUCKETS} they need.",
           "target": "s_crew_b"
         }
       ]
     },
     {
       "id": "s_crew_a",
-      "body": "<<FILL role=rising words=95 beats='Wren throws her weight on the rope and the extra pull is just enough; the halyard holds, the crew cheer her hoarsely, and the bosun jerks a thumb toward a ladder leading down into the deep hold where help is needed next'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} throws her weight on the rope and the extra pull is just enough; {ROUTE_I_ZONE} holds, the crew cheer her hoarsely, and {BOSUN} jerks a thumb toward a ladder leading down into {ROUTE_J_ZONE} where help is needed next'>>",
       "is_ending": false,
       "choices": [
         {
@@ -946,7 +946,7 @@
     },
     {
       "id": "s_crew_b",
-      "body": "<<FILL role=choice words=100 beats='Wren hauls the heavy sand-buckets over, but the deck heaves and a bucket tips; she can steady the load and finish the job or let it go and scramble clear as it slides'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} hauls {I_BUCKETS} over, but the deck heaves and a bucket tips; she can steady the load and finish the job or let it go and scramble clear as it slides'>>",
       "is_ending": false,
       "choices": [
         {
@@ -963,7 +963,7 @@
     },
     {
       "id": "s_crew_mid",
-      "body": "<<FILL role=rising words=95 beats='the crew have Wren's measure now and wave her on; a deep, sad groan rolls up from the very bottom of the ship, unlike any storm sound, and the bosun mutters that the trouble is in the sealed hold below'>>",
+      "body": "<<FILL role=rising words=95 beats='the crew have {HERO}'s measure now and wave her on; a deep, sad groan rolls up from the very bottom of {SHIP_NAME}, unlike any storm sound, and {BOSUN} mutters that the trouble is in the sealed {ROUTE_J_ZONE} below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -975,7 +975,7 @@
     },
     {
       "id": "e_set_storm2",
-      "body": "<<FILL role=failure words=88 beats='the sliding buckets knock Wren off her feet and a big kind hand catches her before she tumbles; the bosun sits her safely out of the way with Pip until the worst is over, and though she is unhurt, the ship is steadied without her and carried on to port'>>",
+      "body": "<<FILL role=failure words=88 beats='the sliding {I_BUCKETS} knock {HERO} off her feet and a big kind hand catches her before she tumbles; {BOSUN} sits her safely out of the way with {COMPANION} until the worst is over, and though she is unhurt, {SHIP_NAME} is steadied without her and carried on to {ENTRANCE}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_storm2",
@@ -986,24 +986,24 @@
     },
     {
       "id": "s_hold1",
-      "body": "<<FILL role=choice words=100 beats='the deep hold is where the ship groans loudest, and the sound is not just timber, it is alive and afraid; a great sealed door blocks the way, with a small inspection hatch beside it and a keyed panel above'>>",
+      "body": "<<FILL role=choice words=100 beats='{ROUTE_J_ZONE} is where {SHIP_NAME} groans loudest, and the sound is not just timber, it is alive and afraid; {J_DOOR} blocks the way, with {J_HATCH} beside it and {J_PANEL} above'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hold_hatch",
-          "label": "Peer through the small inspection hatch.",
+          "label": "Peer through {J_HATCH}.",
           "target": "s_hold_a"
         },
         {
           "id": "c_hold_panel",
-          "label": "Study the keyed control panel.",
+          "label": "Study {J_PANEL}.",
           "target": "s_hold_b"
         }
       ]
     },
     {
       "id": "s_hold_a",
-      "body": "<<FILL role=rising words=95 beats='through the hatch Wren sees a vast dim chamber and in it something huge and gentle and frightened, pale as cloud; Pip presses to the glass and mews, and the great shape answers with a low, sad note'>>",
+      "body": "<<FILL role=rising words=95 beats='through {J_HATCH} {HERO} sees a vast dim chamber and in it something huge and gentle and frightened, pale as cloud; {COMPANION} presses to the glass and mews, and the great shape answers with a low, sad note'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1015,7 +1015,7 @@
     },
     {
       "id": "s_hold_b",
-      "body": "<<FILL role=rising words=95 beats='the panel is labelled in the captain's careful hand, tending, feeding, calming; it is not a cargo lock at all but the door to a living thing's shelter, and it stands ajar as the storm rattles the ship'>>",
+      "body": "<<FILL role=rising words=95 beats='{J_PANEL} is labelled in {CAPTAIN}'s careful hand, tending, feeding, calming; it is not a cargo lock at all but the door to a living thing's shelter, and it stands ajar as {DEADLINE} rattles {SHIP_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1027,7 +1027,7 @@
     },
     {
       "id": "s_hold_mid",
-      "body": "<<FILL role=rising words=95 beats='Wren slips inside the great chamber; the storm booms against the hull and the huge pale shape shivers, and she understands she is standing in the ship's deepest secret, close enough now to see what the Cirrus truly carries'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} slips inside the great chamber; {DEADLINE} booms against the hull and the huge pale shape shivers, and she understands she is standing in {SHIP_NAME}'s deepest secret, close enough now to see what {SHIP_NAME} truly carries'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1039,12 +1039,12 @@
     },
     {
       "id": "n_secret",
-      "body": "<<FILL role=choice words=120 beats='BOTTLENECK: all roads lead to the sealed heart of the ship, and here Wren learns the secret the Cirrus has been keeping; the hold holds a young sky-whale, a wondrous cloud-grey creature the captain rescued and is smuggling to a safe sanctuary far from those who would hunt it; the calf is called Nimbus, and the storm has it panicked, its thrashing making the ship pitch worse; Wren can move to help save the ship, hurry to reveal the secret to those who can steer, or fetch the crew and captain'>>",
+      "body": "<<FILL role=choice words=120 beats='BOTTLENECK: all roads lead to the sealed heart of {SHIP_NAME}, and here {HERO} learns the secret {SHIP_NAME} has been keeping; the hold holds {SECRET_KIND}, a wondrous cloud-grey creature {CAPTAIN} rescued and is smuggling to {SECRET_SANCTUARY} far from those who would hunt it; the calf is called {SECRET_NAME}, and {DEADLINE} has it panicked, its thrashing making the ship pitch worse; {HERO} can move to help save the ship, hurry to reveal the secret to those who can steer, or fetch the crew and {CAPTAIN}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_secret_save",
-          "label": "Try to help calm Nimbus and save the ship.",
+          "label": "Try to help calm {SECRET_NAME} and save the ship.",
           "target": "p_save1"
         },
         {
@@ -1054,14 +1054,14 @@
         },
         {
           "id": "c_secret_people",
-          "label": "Fetch the crew and the captain.",
+          "label": "Fetch the crew and {CAPTAIN}.",
           "target": "p_people1"
         }
       ]
     },
     {
       "id": "p_save1",
-      "body": "<<FILL role=choice words=100 beats='Nimbus rolls and bumps the hull, and every bump throws the ship; Wren edges closer with Pip, who is not afraid at all; she can hum the low sound Pip makes to soothe the calf, or reach up to loosen the tangled harness pinning one great fin'>>",
+      "body": "<<FILL role=choice words=100 beats='{SECRET_NAME} rolls and bumps the hull, and every bump throws the ship; {HERO} edges closer with {COMPANION}, who is not afraid at all; she can hum the low sound {COMPANION} makes to soothe the calf, or reach up to loosen {K_HARNESS} pinning one great fin'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1071,14 +1071,14 @@
         },
         {
           "id": "c_save_b",
-          "label": "Loosen the tangled harness.",
+          "label": "Loosen {K_HARNESS}.",
           "target": "p_save_b"
         }
       ]
     },
     {
       "id": "p_save_a",
-      "body": "<<FILL role=rising words=95 beats='Wren hums the way Pip does and the great calf stills, one huge cloudy eye fixing on her; its thrashing slows, and with it the wild pitching of the ship eases a little, enough for her to think what to do next'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} hums the way {COMPANION} does and {SECRET_NAME} stills, one huge cloudy eye fixing on her; its thrashing slows, and with it the wild pitching of the ship eases a little, enough for her to think what to do next'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1090,7 +1090,7 @@
     },
     {
       "id": "p_save_b",
-      "body": "<<FILL role=rising words=95 beats='Wren works the twisted harness free of the calf's fin; Nimbus gives a grateful shudder and settles lower in the hold, steadier now, and the ship stops lurching quite so hard beneath her feet'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} works {K_HARNESS} free of the calf's fin; {SECRET_NAME} gives a grateful shudder and settles lower in the hold, steadier now, and the ship stops lurching quite so hard beneath her feet'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1102,7 +1102,7 @@
     },
     {
       "id": "p_save_mid",
-      "body": "<<FILL role=rising words=95 beats='calmer now, Nimbus follows Wren's humming; she realises the calf steadies when she is near, and that if she can reach the bridge she can tell the captain how to use that; she climbs toward the wheelhouse with Pip leading'>>",
+      "body": "<<FILL role=rising words=95 beats='calmer now, {SECRET_NAME} follows {HERO}'s humming; she realises the calf steadies when she is near, and that if she can reach the bridge she can tell {CAPTAIN} how to use that; she climbs toward the wheelhouse with {COMPANION} leading'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1114,24 +1114,24 @@
     },
     {
       "id": "p_reveal1",
-      "body": "<<FILL role=choice words=100 beats='Wren turns to race for the bridge with her news, but the storm has jammed the main companionway; she can take the long safe stair around or risk the short flooded passage that is quicker but rising with rainwater'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} turns to race for the bridge with her news, but {DEADLINE} has jammed the main companionway; she can take {L_STAIR} around or risk {L_FLOOD} that is quicker but rising with rainwater'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_reveal_a",
-          "label": "Take the long safe stair.",
+          "label": "Take {L_STAIR}.",
           "target": "p_reveal_a"
         },
         {
           "id": "c_reveal_fail",
-          "label": "Risk the short flooded passage.",
+          "label": "Risk {L_FLOOD}.",
           "target": "e_set_reveal"
         }
       ]
     },
     {
       "id": "p_reveal_a",
-      "body": "<<FILL role=rising words=95 beats='the long stair is slow but sound; Wren climbs it two steps at a time with Pip clinging to her collar, rehearsing what she will say, that the hold holds a living calf and its fear is what rocks the ship'>>",
+      "body": "<<FILL role=rising words=95 beats='{L_STAIR} is slow but sound; {HERO} climbs it two steps at a time with {COMPANION} clinging to her collar, rehearsing what she will say, that the hold holds {SECRET_KIND} and its fear is what rocks the ship'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1143,7 +1143,7 @@
     },
     {
       "id": "p_reveal_a2",
-      "body": "<<FILL role=rising words=95 beats='near the top the stair opens on the officers' corridor, loud with orders and the boom of the storm; the wheelhouse door is just ahead, and Wren gathers her breath to burst in with the truth'>>",
+      "body": "<<FILL role=rising words=95 beats='near the top {L_STAIR} opens on the officers' corridor, loud with orders and the boom of {DEADLINE}; the wheelhouse door is just ahead, and {HERO} gathers her breath to burst in with the truth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1155,7 +1155,7 @@
     },
     {
       "id": "p_reveal_mid",
-      "body": "<<FILL role=rising words=95 beats='Wren reaches the wheelhouse door as the ship shudders again; she can hear the captain calling for anything that might steady the vessel, and she knows the answer is a frightened calf in the hold; she steps in'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} reaches the wheelhouse door as the ship shudders again; she can hear {CAPTAIN} calling for anything that might steady the vessel, and she knows the answer is {SECRET_KIND} frightened in the hold; she steps in'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1167,59 +1167,59 @@
     },
     {
       "id": "e_set_reveal",
-      "body": "<<FILL role=failure words=88 beats='the flooded passage rises faster than Wren expects and she has to wade back before it is too deep, cold and dripping and delayed; by the time she reaches the bridge the crew have wrestled the ship level on their own, and she is bundled off to dry out and ride safely to port'>>",
+      "body": "<<FILL role=failure words=88 beats='{L_FLOOD} rises faster than {HERO} expects and she has to wade back before it is too deep, cold and dripping and delayed; by the time she reaches the bridge the crew have wrestled the ship level on their own, and she is bundled off to dry out and ride safely to {ENTRANCE}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_reveal",
         "valence": "negative",
         "kind": "setback",
-        "title": "Too Slow Through the Flood"
+        "title": "Too Slow Through {L_GATE}"
       }
     },
     {
       "id": "p_people1",
-      "body": "<<FILL role=choice words=100 beats='Wren decides she cannot fix this alone and goes for help; she can find the friendly bosun she pulled ropes with, or go straight to the captain who alone knows the calf's ways'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} decides she cannot fix this alone and goes for help; she can find the friendly {BOSUN} she pulled ropes with, or go straight to {CAPTAIN} who alone knows the calf's ways'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_people_a",
-          "label": "Fetch the friendly bosun.",
+          "label": "Fetch the friendly {BOSUN}.",
           "target": "p_people_a"
         },
         {
           "id": "c_people_b",
-          "label": "Go straight to the captain.",
+          "label": "Go straight to {CAPTAIN}.",
           "target": "p_people_b"
         }
       ]
     },
     {
       "id": "p_people_a",
-      "body": "<<FILL role=rising words=95 beats='the bosun listens wide-eyed as Wren gasps out the secret, then grins and says the captain will want to hear this from her own mouth; together they push up through the storm toward the wheelhouse'>>",
+      "body": "<<FILL role=rising words=95 beats='{BOSUN} listens wide-eyed as {HERO} gasps out the secret, then grins and says {CAPTAIN} will want to hear this from her own mouth; together they push up through {DEADLINE} toward the wheelhouse'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_people_a_go",
-          "label": "Go with the bosun to the wheelhouse.",
+          "label": "Go with {BOSUN} to the wheelhouse.",
           "target": "p_people_mid"
         }
       ]
     },
     {
       "id": "p_people_b",
-      "body": "<<FILL role=rising words=95 beats='Wren finds the captain braced at a rain-streaked port, grim and tired; when she blurts that she has seen Nimbus and can calm the calf, the captain's eyes go sharp with sudden hope, and she waves Wren toward the wheel'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} finds {CAPTAIN} braced at a rain-streaked port, grim and tired; when she blurts that she has seen {SECRET_NAME} and can calm the calf, {CAPTAIN}'s eyes go sharp with sudden hope, and she waves {HERO} toward the wheel'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_people_b_go",
-          "label": "Follow the captain to the wheel.",
+          "label": "Follow {CAPTAIN} to the wheel.",
           "target": "p_people_mid"
         }
       ]
     },
     {
       "id": "p_people_mid",
-      "body": "<<FILL role=rising words=95 beats='crew and captain and stowaway crowd toward the bridge with one shared hope; the ship pitches under them, but for the first time the grown-ups are listening to Wren, and the wheelhouse doors swing open ahead'>>",
+      "body": "<<FILL role=rising words=95 beats='crew and {CAPTAIN} and stowaway crowd toward the bridge with one shared hope; the ship pitches under them, but for the first time the grown-ups are listening to {HERO}, and the wheelhouse doors swing open ahead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1231,22 +1231,22 @@
     },
     {
       "id": "n_bridge",
-      "body": "<<FILL role=choice words=120 beats='BOTTLENECK: every route ends here on the storm-tossed bridge, where the captain and crew turn to Wren as the one person who has calmed the frightened sky-whale; the Cirrus is losing height and the storm is close to winning; there is time for one clear choice to save the ship, and Wren must decide how she will help, by steadying Nimbus so the ship flies true, patching the straining envelope, taking a hand at the great wheel, or telling everyone the secret so the crew can act as one'>>",
+      "body": "<<FILL role=choice words=120 beats='BOTTLENECK: every route ends here on the storm-tossed bridge, where {CAPTAIN} and crew turn to {HERO} as the one person who has calmed {SECRET_KIND}; {SHIP_NAME} is losing height and {DEADLINE} is close to winning; there is time for one clear choice to save the ship, and {HERO} must decide how she will help, by steadying {SECRET_NAME} so the ship flies true, patching {C_ENVELOPE}, taking a hand at the great wheel, or telling everyone the secret so the crew can act as one'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_bridge_steer",
-          "label": "Steady Nimbus so the ship can fly true.",
+          "label": "Steady {SECRET_NAME} so the ship can fly true.",
           "target": "b_steer1"
         },
         {
           "id": "c_bridge_patch",
-          "label": "Help patch the straining envelope.",
+          "label": "Help patch {C_ENVELOPE}.",
           "target": "b_patch1"
         },
         {
           "id": "c_bridge_free",
-          "label": "Help ease Nimbus to open air.",
+          "label": "Help ease {SECRET_NAME} to open air.",
           "target": "b_free1"
         },
         {
@@ -1258,12 +1258,12 @@
     },
     {
       "id": "b_steer1",
-      "body": "<<FILL role=choice words=100 beats='the captain asks Wren to keep Nimbus calm through a speaking-tube while the crew fly the ship; steadiness is everything now; Wren can hum slow and sure into the tube, or rush her song, frightened, as the storm howls'>>",
+      "body": "<<FILL role=choice words=100 beats='{CAPTAIN} asks {HERO} to keep {SECRET_NAME} calm through {N_TUBE} while the crew fly the ship; steadiness is everything now; {HERO} can hum slow and sure into the tube, or rush her song, frightened, as {DEADLINE} howls'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_steer_ok",
-          "label": "Hum slow and sure into the tube.",
+          "label": "Hum slow and sure into {N_TUBE}.",
           "target": "b_steer_ok"
         },
         {
@@ -1275,7 +1275,7 @@
     },
     {
       "id": "b_steer_ok",
-      "body": "<<FILL role=rising words=95 beats='Wren keeps her voice slow and warm, and far below Nimbus answers, growing still; with the calf calm the ship stops fighting itself and the crew feel the wheel come alive under their hands again'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} keeps her voice slow and warm, and far below {SECRET_NAME} answers, growing still; with the calf calm the ship stops fighting itself and the crew feel the wheel come alive under their hands again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1287,7 +1287,7 @@
     },
     {
       "id": "b_steer_ok2",
-      "body": "<<FILL role=climax words=100 beats='minute by minute Wren hums the sky-whale through the heart of the storm while the crew hold their course; the lift steadies, the pitching fades, and at last the Cirrus climbs out above the clouds into calm, moonlit air, saved by a stowaway's steady song'>>",
+      "body": "<<FILL role=climax words=100 beats='minute by minute {HERO} hums {SECRET_KIND} through the heart of {DEADLINE} while the crew hold their course; the lift steadies, the pitching fades, and at last {SHIP_NAME} climbs out above the clouds into calm, moonlit air, saved by a stowaway's steady song'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1299,7 +1299,7 @@
     },
     {
       "id": "e_set_final",
-      "body": "<<FILL role=failure words=88 beats='Wren's song comes out too fast and frightened, and Nimbus will not settle; the crew have to fight the storm the hard way and win it without her, safe but exhausted; grateful all the same, the captain lands to set Wren gently ashore at the next port with a promise she may try again someday'>>",
+      "body": "<<FILL role=failure words=88 beats='{HERO}'s song comes out too fast and frightened, and {SECRET_NAME} will not settle; the crew have to fight {DEADLINE} the hard way and win it without her, safe but exhausted; grateful all the same, {CAPTAIN} lands to set {HERO} gently ashore at {ENTRANCE} with a promise she may try again someday'>>",
       "is_ending": true,
       "ending": {
         "id": "e_set_final",
@@ -1310,7 +1310,7 @@
     },
     {
       "id": "e_win_save_ship",
-      "body": "<<FILL role=completion words=95 beats='the Cirrus sails on through clean night air, saved because a stowaway kept a sky-whale calm; the captain shakes Wren's hand before the whole crew and names her the ship's own, and Nimbus reaches the sanctuary safe; Wren has found her place in the sky at last, with Pip purring on her shoulder; the greatest ending of all'>>",
+      "body": "<<FILL role=completion words=95 beats='{SHIP_NAME} sails on through clean night air, saved because a stowaway kept {SECRET_KIND} calm; {CAPTAIN} shakes {HERO}'s hand before the whole crew and names her the ship's own, and {SECRET_NAME} reaches {SECRET_SANCTUARY} safe; {HERO} has found her place in the sky at last, with {COMPANION} purring on her shoulder; the greatest ending of all'>>",
       "is_ending": true,
       "ending": {
         "id": "e_win_save_ship",
@@ -1321,24 +1321,24 @@
     },
     {
       "id": "b_patch1",
-      "body": "<<FILL role=choice words=100 beats='the great envelope is tearing where the gasbags strain; a rigger needs a small brave pair of hands to help thread the patch-line through the ribs; Wren can climb the inner rigging to reach the tear or work the winch that pulls the patch tight from below'>>",
+      "body": "<<FILL role=choice words=100 beats='{C_ENVELOPE} is tearing where the gasbags strain; a rigger needs a small brave pair of hands to help thread the patch-line through the ribs; {HERO} can climb {ROUTE_G_ZONE} to reach {O_TEAR} or work {O_WINCH} that pulls the patch tight from below'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_patch_ok",
-          "label": "Climb the rigging to reach the tear.",
+          "label": "Climb {ROUTE_G_ZONE} to reach {O_TEAR}.",
           "target": "b_patch_ok"
         },
         {
           "id": "c_patch_alt",
-          "label": "Work the winch from below.",
+          "label": "Work {O_WINCH} from below.",
           "target": "b_patch_alt"
         }
       ]
     },
     {
       "id": "b_patch_ok",
-      "body": "<<FILL role=rising words=95 beats='light and quick, Wren scrambles where a grown rigger cannot fit and threads the patch-line through the straining ribs; the rigger hauls it tight, the tear closes, and the ship stops bleeding away its precious lift'>>",
+      "body": "<<FILL role=rising words=95 beats='light and quick, {HERO} scrambles where a grown rigger cannot fit and threads the patch-line through the straining ribs; the rigger hauls it tight, {O_TEAR} closes, and the ship stops bleeding away its precious lift'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1350,7 +1350,7 @@
     },
     {
       "id": "b_patch_alt",
-      "body": "<<FILL role=rising words=95 beats='Wren throws herself on the winch handle and cranks with all her weight; slowly the patch draws tight over the tear, the rigger cheers, and steady lift returns just as the crew wrestle the ship level'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} throws herself on {O_WINCH} handle and cranks with all her weight; slowly the patch draws tight over {O_TEAR}, the rigger cheers, and steady lift returns just as the crew wrestle the ship level'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1362,18 +1362,18 @@
     },
     {
       "id": "e_win_patch",
-      "body": "<<FILL role=completion words=92 beats='with the envelope patched the Cirrus rides out the storm and climbs into the stars; the riggers swear the little stowaway saved them, and the captain, hearing all, lets Wren stay aboard as helper to the crew; Nimbus reaches safe harbour, and Wren has earned her passage through the sky'>>",
+      "body": "<<FILL role=completion words=92 beats='with {C_ENVELOPE} patched {SHIP_NAME} rides out {DEADLINE} and climbs into the stars; the riggers swear the little stowaway saved them, and {CAPTAIN}, hearing all, lets {HERO} stay aboard as helper to the crew; {SECRET_NAME} reaches {SECRET_SANCTUARY}, and {HERO} has earned her passage through the sky'>>",
       "is_ending": true,
       "ending": {
         "id": "e_win_patch",
         "valence": "positive",
         "kind": "success",
-        "title": "The Mended Envelope"
+        "title": "The Mended {O_PRIZE1}"
       }
     },
     {
       "id": "e_win_steer",
-      "body": "<<FILL role=completion words=92 beats='steady lift wins the day, and the ship rights herself over the calming sea of cloud; the crew lift Wren onto their shoulders, and the captain, laughing for the first time all night, says any sailor who works a winch like that has a berth on the Cirrus whenever she likes'>>",
+      "body": "<<FILL role=completion words=92 beats='steady lift wins the day, and {SHIP_NAME} rights herself over the calming sea of cloud; the crew lift {HERO} onto their shoulders, and {CAPTAIN}, laughing for the first time all night, says any sailor who works {O_WINCH} like that has a berth on {SHIP_NAME} whenever she likes'>>",
       "is_ending": true,
       "ending": {
         "id": "e_win_steer",
@@ -1384,7 +1384,7 @@
     },
     {
       "id": "b_free1",
-      "body": "<<FILL role=choice words=100 beats='Wren sees that Nimbus is frantic because it longs for the open sky; the calf is nearly grown, and the storm has torn loose a great cargo door; she can help ease the sky-whale out to fly beside the ship, or coax it to a calmer inner bay first'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} sees that {SECRET_NAME} is frantic because it longs for the open sky; the calf is nearly grown, and {DEADLINE} has torn loose {P_DOOR}; she can help ease {SECRET_KIND} out to fly beside the ship, or coax it to {P_BAY} first'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1394,14 +1394,14 @@
         },
         {
           "id": "c_free_alt",
-          "label": "Coax Nimbus to a calmer inner bay.",
+          "label": "Coax {SECRET_NAME} to {P_BAY}.",
           "target": "b_free_alt"
         }
       ]
     },
     {
       "id": "b_free_ok",
-      "body": "<<FILL role=rising words=95 beats='with the captain's nod Wren hums Nimbus toward the torn door; the great calf gathers itself and slips out into the storm-wind, and instead of falling it rises, spreading cloud-grey fins, wheeling free beside the labouring ship'>>",
+      "body": "<<FILL role=rising words=95 beats='with {CAPTAIN}'s nod {HERO} hums {SECRET_NAME} toward {P_DOOR}; the great calf gathers itself and slips out into the storm-wind, and instead of falling it rises, spreading cloud-grey fins, wheeling free beside the labouring ship'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1413,7 +1413,7 @@
     },
     {
       "id": "b_free_ok2",
-      "body": "<<FILL role=climax words=100 beats='free at last, Nimbus swims through the storm as easily as through calm water, and where it flies the winds seem to gentle; the sky-whale shepherds the Cirrus out of the worst of the weather, then soars ahead to guide the ship the last miles to its safe harbour'>>",
+      "body": "<<FILL role=climax words=100 beats='free at last, {SECRET_NAME} swims through {DEADLINE} as easily as through calm water, and where it flies the winds seem to gentle; {SECRET_KIND} shepherds {SHIP_NAME} out of the worst of the weather, then soars ahead to guide the ship the last miles to {SECRET_SANCTUARY}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1425,18 +1425,18 @@
     },
     {
       "id": "e_win_free",
-      "body": "<<FILL role=completion words=95 beats='the sky-whale leads the Cirrus safe out of the storm and home, and the whole crew watch in wonder as Nimbus circles the mooring tower once before winging off to the wild sky; the captain tells Wren the calf owes its freedom to her, and she may sail with them always; a soaring, joyful ending'>>",
+      "body": "<<FILL role=completion words=95 beats='{SECRET_KIND} leads {SHIP_NAME} safe out of {DEADLINE} and home, and the whole crew watch in wonder as {SECRET_NAME} circles {ENTRANCE} once before winging off to the wild sky; {CAPTAIN} tells {HERO} the calf owes its freedom to her, and she may sail with them always; a soaring, joyful ending'>>",
       "is_ending": true,
       "ending": {
         "id": "e_win_free",
         "valence": "positive",
         "kind": "success",
-        "title": "The Sky-Whale Rises"
+        "title": "The {P_PRIZE1} Rises"
       }
     },
     {
       "id": "b_free_alt",
-      "body": "<<FILL role=rising words=95 beats='judging the storm too wild for a young calf, Wren instead hums Nimbus into a sheltered inner bay and pads it round with canvas; safe and calm, the sky-whale stops thrashing, and the ship steadies enough for the crew to fly it clear'>>",
+      "body": "<<FILL role=rising words=95 beats='judging {DEADLINE} too wild for a young calf, {HERO} instead hums {SECRET_NAME} into {P_BAY} and pads it round with canvas; safe and calm, {SECRET_KIND} stops thrashing, and the ship steadies enough for the crew to fly it clear'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1448,18 +1448,18 @@
     },
     {
       "id": "e_win_friend",
-      "body": "<<FILL role=completion words=92 beats='snug in its padded bay, Nimbus rides out the storm calm and safe, and the Cirrus carries it gently on to the sanctuary at journey's end; the keepers there marvel that a stowaway kept the calf so quiet, and Wren gets to see Nimbus set free among its own kind; a warm, tender ending'>>",
+      "body": "<<FILL role=completion words=92 beats='snug in {P_BAY}, {SECRET_NAME} rides out {DEADLINE} calm and safe, and {SHIP_NAME} carries it gently on to {SECRET_SANCTUARY} at journey's end; the keepers there marvel that a stowaway kept the calf so quiet, and {HERO} gets to see {SECRET_NAME} set free among its own kind; a warm, tender ending'>>",
       "is_ending": true,
       "ending": {
         "id": "e_win_friend",
         "valence": "positive",
         "kind": "success",
-        "title": "Nimbus Safe Ashore"
+        "title": "{SECRET_NAME} Safe Ashore"
       }
     },
     {
       "id": "b_tell1",
-      "body": "<<FILL role=choice words=100 beats='Wren decides the ship's best chance is everyone pulling together, so she tells the whole secret aloud; how she shares it now will shape what happens, to the working crew who can act, to the captain who must choose, or by showing them all Nimbus itself'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} decides the ship's best chance is everyone pulling together, so she tells the whole secret aloud; how she shares it now will shape what happens, to the working crew who can act, to {CAPTAIN} who must choose, or by showing them all {SECRET_NAME} itself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1469,19 +1469,19 @@
         },
         {
           "id": "c_tell_captain",
-          "label": "Put it to the captain.",
+          "label": "Put it to {CAPTAIN}.",
           "target": "b_tell_captain"
         },
         {
           "id": "c_tell_reveal",
-          "label": "Show them all the sky-whale.",
+          "label": "Show them all {SECRET_NAME}.",
           "target": "b_tell_reveal"
         }
       ]
     },
     {
       "id": "b_tell_crew",
-      "body": "<<FILL role=rising words=95 beats='the crew take Wren's word without a blink and split into teams, some to soothe the calf, some to fly the ship; with everyone working as one the Cirrus fights clear of the storm, and the sailors count Wren one of their own'>>",
+      "body": "<<FILL role=rising words=95 beats='the crew take {HERO}'s word without a blink and split into teams, some to soothe the calf, some to fly the ship; with everyone working as one {SHIP_NAME} fights clear of {DEADLINE}, and the sailors count {HERO} one of their own'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1493,7 +1493,7 @@
     },
     {
       "id": "e_win_crew",
-      "body": "<<FILL role=completion words=92 beats='the crew win through the storm together, and afterward they hang a hammock for Wren in their own quarters and stitch her name on a spare jersey; the bosun says a girl who works this hard is no stowaway but a shipmate, and Wren sails on as the youngest of the Cirrus crew; a proud, happy ending'>>",
+      "body": "<<FILL role=completion words=92 beats='the crew win through {DEADLINE} together, and afterward they hang a hammock for {HERO} in their own quarters and stitch her name on a spare jersey; {BOSUN} says a girl who works this hard is no stowaway but a shipmate, and {HERO} sails on as the youngest of {SHIP_NAME}'s crew; a proud, happy ending'>>",
       "is_ending": true,
       "ending": {
         "id": "e_win_crew",
@@ -1504,24 +1504,24 @@
     },
     {
       "id": "b_tell_captain",
-      "body": "<<FILL role=choice words=100 beats='the captain hears Wren out, then must decide; she can trust this brave stowaway with a real task at the calf's side, or thank her and send her below to safety while the officers handle the storm'>>",
+      "body": "<<FILL role=choice words=100 beats='{CAPTAIN} hears {HERO} out, then must decide; she can trust this brave stowaway with a real task at the calf's side, or thank her and send her below to safety while the officers handle {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tell_cap_win",
-          "label": "Accept the captain's trust and a real task.",
+          "label": "Accept {CAPTAIN}'s trust and a real task.",
           "target": "e_win_captain"
         },
         {
           "id": "c_tell_cap_home",
-          "label": "Let the captain send you safely below.",
+          "label": "Let {CAPTAIN} send you safely below.",
           "target": "e_neu_home"
         }
       ]
     },
     {
       "id": "e_win_captain",
-      "body": "<<FILL role=completion words=95 beats='the captain gives Wren a real task and she rises to it, keeping Nimbus calm at the officers' side until the storm breaks; when the sky clears the captain enters her name in the ship's log with her own hand and calls her the bravest passenger the Cirrus ever carried; a triumphant, honoured ending'>>",
+      "body": "<<FILL role=completion words=95 beats='{CAPTAIN} gives {HERO} a real task and she rises to it, keeping {SECRET_NAME} calm at the officers' side until {DEADLINE} breaks; when the sky clears {CAPTAIN} enters her name in the ship's log with her own hand and calls her the bravest passenger {SHIP_NAME} ever carried; a triumphant, honoured ending'>>",
       "is_ending": true,
       "ending": {
         "id": "e_win_captain",
@@ -1532,7 +1532,7 @@
     },
     {
       "id": "e_neu_home",
-      "body": "<<FILL role=ending words=88 beats='Wren lets the captain tuck her safely below with Pip, and the crew bring the ship through without her; she never gets to help save the day, but she has ridden a storm in a real sky-ship and glimpsed a living sky-whale, and she is set down at port with a wave and a wonderful secret to keep; a safe, wondering ending'>>",
+      "body": "<<FILL role=ending words=88 beats='{HERO} lets {CAPTAIN} tuck her safely below with {COMPANION}, and the crew bring the ship through without her; she never gets to help save the day, but she has ridden {DEADLINE} in a real sky-ship and glimpsed {SECRET_KIND}, and she is set down at {ENTRANCE} with a wave and a wonderful secret to keep; a safe, wondering ending'>>",
       "is_ending": true,
       "ending": {
         "id": "e_neu_home",
@@ -1543,7 +1543,7 @@
     },
     {
       "id": "b_tell_reveal",
-      "body": "<<FILL role=rising words=95 beats='instead of only telling, Wren leads the captain and crew down to the hatch and shows them Nimbus in the flesh, cloud-grey and gentle; the sight melts every doubt, and together, awed and united, they set about calming the calf and saving the ship'>>",
+      "body": "<<FILL role=rising words=95 beats='instead of only telling, {HERO} leads {CAPTAIN} and crew down to the hatch and shows them {SECRET_NAME} in the flesh, cloud-grey and gentle; the sight melts every doubt, and together, awed and united, they set about calming the calf and saving the ship'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1555,13 +1555,13 @@
     },
     {
       "id": "e_win_discovery",
-      "body": "<<FILL role=completion words=95 beats='with the whole ship let in on the wonder, crew and captain work as one to soothe Nimbus and fly the Cirrus safe through the storm; the secret is a secret no more but a shared marvel, and Wren, the stowaway who revealed it, is thanked by every soul aboard and welcomed to sail on; a wondrous, uniting ending'>>",
+      "body": "<<FILL role=completion words=95 beats='with the whole ship let in on the wonder, crew and {CAPTAIN} work as one to soothe {SECRET_NAME} and fly {SHIP_NAME} safe through {DEADLINE}; the secret is a secret no more but a shared marvel, and {HERO}, the stowaway who revealed it, is thanked by every soul aboard and welcomed to sail on; a wondrous, uniting ending'>>",
       "is_ending": true,
       "ending": {
         "id": "e_win_discovery",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Secret of the Cirrus"
+        "title": "The Secret of {SHIP_NAME}"
       }
     }
   ]

@@ -1,0 +1,473 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-teddy-bears-picnic",
+  "age_band": "3-5",
+  "legacy_lexicon": [
+    "Clover",
+    "Owl",
+    "teddy bear",
+    "teddy bears",
+    "checked blanket",
+    "picnic bell",
+    "beehive",
+    "bramble bush",
+    "bramble",
+    "big red ball",
+    "paper kite",
+    "music box",
+    "mossy stump",
+    "meadow",
+    "honey",
+    "oak",
+    "grasshopper"
+  ],
+  "default_binding": {
+    "HERO": "Clover",
+    "THRESHOLD": "the sunny meadow",
+    "ENTRANCE": "the checked blanket",
+    "GOAL": "teddy bears picnic",
+    "GUESTS": "the teddy bears",
+    "SIGNAL": "the little picnic bell",
+    "CONTAINER": "the basket",
+    "ROUTE_A_CHAR": "the round beehive",
+    "ROUTE_A_LURE": "the bees",
+    "ROUTE_A_OFFER": "a pot of golden honey",
+    "ROUTE_A_MISHAP": "Buzzy Bees",
+    "ROUTE_B_CHAR": "the bramble bush",
+    "ROUTE_B_LURE": "red berries",
+    "ROUTE_B_OFFER": "a basket of red berries",
+    "ROUTE_B_MISHAP": "Tumbling Berries",
+    "ROUTE_C_CHAR": "the tall meadow grass",
+    "ROUTE_C_LURE": "the big red ball",
+    "ROUTE_C_MISHAP": "a Ticklish Hopper",
+    "ROUTE_C_PRIZE": "The Rolling Red Ball",
+    "ROUTE_D_CHAR": "the old wooden fence",
+    "ROUTE_D_LURE": "the bright paper kite",
+    "ROUTE_D_MISHAP": "a Windy Muddle",
+    "ROUTE_D_PRIZE": "The High Bright Kite",
+    "ROUTE_E_CHAR": "a branch of the oak",
+    "ROUTE_E_LURE": "sleepy Owl",
+    "ROUTE_E_MISHAP": "a Pile of Leaves",
+    "ROUTE_F_CHAR": "a mossy stump",
+    "ROUTE_F_LURE": "the little music box",
+    "ROUTE_F_MISHAP": "a Jumbled Tune",
+    "ROUTE_F_PRIZE": "A Sweet Little Tune",
+    "SONG_PRIZE": "The Picnic Song",
+    "NAP_PRIZE": "A Cozy Sunny Nap"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist (a young animal or kid) hosting the picnic.",
+      "guidance": "A single kid-relatable protagonist who is capable, gentle, and never reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole open, sunny place the picnic and its errands happen in.",
+      "guidance": "A safe, open outdoor (or otherwise bright and cheerful) setting; wonder and warmth over any hint of danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single home base the hero always returns to, whether with a treat or after a setback.",
+      "guidance": "Always reachable, always safe and welcoming; the picnic grows here piece by piece.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The gathering/celebration the hero is building toward (bare noun phrase, no leading article).",
+      "guidance": "A warm, communal celebration any small child would recognize as fun and safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GUESTS",
+      "scope": "global",
+      "meaning": "The collective group of friends who gradually gather for the celebration.",
+      "guidance": "A plural, friendly cast; never a source of peril to the hero or to each other.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SIGNAL",
+      "scope": "global",
+      "meaning": "The small object or action the hero uses to call everyone together.",
+      "guidance": "A gentle, cheerful summons (a sound, a wave, a call); usable at any time, any number of times.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CONTAINER",
+      "scope": "global",
+      "meaning": "The empty carrier the hero sets out at the start, which fills as the picnic grows.",
+      "guidance": "A simple, everyday carrying object appropriate to the theme.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CHAR",
+      "scope": "route",
+      "meaning": "The place route A's errand is fetched from.",
+      "guidance": "A benign, kid-safe spot; nothing that bites, stings for real, or harms.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LURE",
+      "scope": "route",
+      "meaning": "The creature or thing announced when the hero picks route A at the hub.",
+      "guidance": "A distinct, friendly identity; clearly different from the other five errands.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_OFFER",
+      "scope": "route",
+      "meaning": "The treat route A brings back to the picnic.",
+      "guidance": "A carriable, edible-or-harmless treat; taking it harms nothing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when route A's risky choice is taken (setback). Names ending e_honey_oops.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm; the hero always laughs and heads home to try again.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "The place route B's errand is fetched from.",
+      "guidance": "A benign, kid-safe spot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_LURE",
+      "scope": "route",
+      "meaning": "The thing announced when the hero picks route B at the hub.",
+      "guidance": "A distinct, friendly identity; clearly different from the other five errands.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_OFFER",
+      "scope": "route",
+      "meaning": "The treat route B brings back to the picnic.",
+      "guidance": "A carriable, edible-or-harmless treat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when route B's risky choice is taken (setback). Names ending e_berry_oops.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_CHAR",
+      "scope": "route",
+      "meaning": "The terrain route C's item is found in.",
+      "guidance": "A benign, kid-safe patch of ground.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_LURE",
+      "scope": "route",
+      "meaning": "The plaything announced when the hero picks route C at the hub; also the plaything used again in the final game.",
+      "guidance": "A distinct, friendly identity; clearly different from the other five errands.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when route C's risky choice is taken (setback). Names ending e_ball_oops.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the closing game built around route C's plaything (success). Names ending e_ball_game.",
+      "guidance": "Positive; a joyful, safe group game.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "ROUTE_D_PRIZE",
+          "ROUTE_F_PRIZE",
+          "SONG_PRIZE",
+          "NAP_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_CHAR",
+      "scope": "route",
+      "meaning": "The place route D's item is found resting.",
+      "guidance": "A benign, kid-safe spot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_LURE",
+      "scope": "route",
+      "meaning": "The plaything announced when the hero picks route D at the hub; also the plaything used again in the final game.",
+      "guidance": "A distinct, friendly identity; clearly different from the other five errands.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_E_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when route D's risky choice is taken (setback). Names ending e_kite_oops.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the closing game built around route D's plaything (success). Names ending e_kite_game.",
+      "guidance": "Positive; a joyful, safe group game.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "ROUTE_C_PRIZE",
+          "ROUTE_F_PRIZE",
+          "SONG_PRIZE",
+          "NAP_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_E_CHAR",
+      "scope": "route",
+      "meaning": "The resting spot of the friend invited via route E.",
+      "guidance": "A benign, kid-safe spot the friend naps in.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_E_LURE",
+      "scope": "route",
+      "meaning": "The sleepy friend the hero invites to the picnic via route E.",
+      "guidance": "A distinct, friendly, sleepy character; clearly different from the other five errands; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_F_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_E_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when route E's risky choice is taken (setback). Names ending e_owl_oops.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm; the friend is never hurt or upset.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_F_CHAR",
+      "scope": "route",
+      "meaning": "The spot route F's item sits closed on.",
+      "guidance": "A benign, kid-safe resting place.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_F_LURE",
+      "scope": "route",
+      "meaning": "The plaything announced when the hero picks route F at the hub; also the plaything used again in the closing finale.",
+      "guidance": "A distinct, friendly identity; clearly different from the other five errands.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_F_MISHAP",
+      "scope": "ending",
+      "meaning": "Ending: the silly, harmless mishap when route F's risky choice is taken (setback). Names ending e_music_oops.",
+      "guidance": "A funny, embarrassing hiccup with zero real harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_F_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the closing musical moment built around route F's plaything (success). Names ending e_music_finale.",
+      "guidance": "Positive; a cozy, shared musical moment.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "ROUTE_C_PRIZE",
+          "ROUTE_D_PRIZE",
+          "SONG_PRIZE",
+          "NAP_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "SONG_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the closing group song (completion). Names ending e_song.",
+      "guidance": "Positive; a warm, communal singalong moment.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "ROUTE_C_PRIZE",
+          "ROUTE_D_PRIZE",
+          "ROUTE_F_PRIZE",
+          "NAP_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "NAP_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the closing cozy nap (completion). Names ending e_nap.",
+      "guidance": "Positive; a peaceful, contented rest after the celebration.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "ROUTE_C_PRIZE",
+          "ROUTE_D_PRIZE",
+          "ROUTE_F_PRIZE",
+          "SONG_PRIZE"
+        ]
+      }
+    }
+  ]
+}

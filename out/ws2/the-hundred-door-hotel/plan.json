@@ -1,0 +1,453 @@
+{
+  "beats": {
+    "n_start": "{HERO} {HERO_SURNAME}, eleven, stands in the rain-washed dusk before the {THRESHOLD} Hotel, a hundred dark windows and one grand door; her family inherited it yesterday from {PRIOR_KEEPER}, its last keeper, and it has been closed for forty years; Mom and Dad are downstairs in the office arguing happily with paperwork, so {HERO} is the one holding the brass ring of one hundred numbered keys and the candle lantern; the hotel does not feel empty, it feels like a held breath; she decides someone should say hello to it properly, tonight",
+    "n_doors": "the lobby by lantern light, marble and dust sheets, a {FIN_CHANDELIER} asleep in canvas, a staircase wide enough for a parade; {HERO}'s footsteps wake little echoes that seem pleased about it; and at the far end, impossibly, one small lamp is burning at the long front desk, polished amid the dust, as if the hotel kept one corner ready all these years; warm curiosity, a delicious shiver, never dread",
+    "n_pearl": "behind the desk stands a small silver-haired woman {HERO} can see the wallpaper through, straightening a register with see-through hands; she is {MATRIARCH}, and she is kind and glad and utterly unsurprising about being a ghost; she explains gently: her family built and kept the {THRESHOLD}, five of them in all, and on the night of the hotel's {OCCASION} a great storm shut everything down and the evening was never finished; in the forty quiet years since, her family has faded apart across the floors and forgotten one another, even their names, even her; she keeps the desk so the lights stay on for them; she asks {HERO} for one great favor, find them, and help finish the evening at last, one grand night in the {FINALE_ZONE}",
+    "n_hub": "the grand staircase landing, the crossroads of the whole {THRESHOLD}; from here the hotel spreads out like an opened hand: below, the lamplit {ROUTE_L_ZONE} behind the front desk; along one corridor, the double doors of the {ROUTE_K_ZONE} breathing a faint warm smell; behind frosted glass, the green glow of the {ROUTE_G_ZONE}; above, the {ROUTE_F_ZONE} where something quick is laughing; higher still, the narrow stair to the {ROUTE_R_ZONE}; and straight across, the shut grand doors of the {FINALE_ZONE} itself; keep this scene general so it reads naturally on a first visit or on any return trip between wings",
+    "lb_gate": "the {ROUTE_L_ZONE} by lantern light, seen from the foot of the stairs: dust sheets draped like sleeping swans, tall windows striped with moonlight, and the long front desk with its one faithful lamp where {MATRIARCH} keeps her post; behind the counter a doorway shows a wall of pigeonhole mailboxes, and a side door stands ajar on a room of brass sockets and cords; keep this arrival general so it reads naturally on a first visit or any return",
+    "lb_desk": "{MATRIARCH} at her desk, polishing the silver call bell in small patient circles; she brightens at {HERO}'s company like a lamp turned up; write her welcome warm and general, the kind that works the same whether this is {HERO}'s first stop after the staircase or the fifth time tonight she has drifted back to the desk; behind {MATRIARCH} a {L_KEYWALL} gleams, every key polished though no guest has come in forty years",
+    "lb_ask": "{MATRIARCH} tries to remember her family and comes back with everything except the people: someone who smelled of bread and thyme, someone who hummed to plants, two small someones who were never not running; the names and faces slide away like water off glass, and her lamp dims a shade before she straightens and brightens it herself; everything the {THRESHOLD} ever knew is written down somewhere, she says, that is what a hotel is, a building that keeps track of its people",
+    "lb_ball": "{MATRIARCH} lights up telling the preparations for the {OCCASION}: a {K_CAKE} taller than the two smallest members of staff, gardenia buttonholes ordered by the hundred, a brand-new waltz written just for the night; then she reaches for who the {K_CAKE} was shaped like and who wrote the waltz, and the memory slips, and she laughs at herself sadly, a hostess who has mislaid her own party",
+    "lb_storm": "the storm, told the way {MATRIARCH} remembers it, in sounds: rain like gravel on the tall windows, the lights failing between one dance and the next, guests laughing at first and then hurrying, doors shutting one hundred times; we always meant to finish it, she says, we kept saying soon; write her telling entry-neutral, the same story fresh on a first hearing or turned over deeper on a return, never a one-time confession",
+    "lb_keywall": "{MATRIARCH} walks {HERO} down the {L_KEYWALL} like a captain showing her ship: every key polished every night, room by room, because habits are how you love a building; her hand hovers over hook 100 at the end, a key smaller and brighter than the rest, and for a moment she cannot say why polishing that one always takes the longest",
+    "lb_mail": "the {L_MAILROOM}: one hundred pigeonholes floor to ceiling, most empty, a few still holding shapes that make {HERO}'s lantern hand slow down; box 9 has a yellowed envelope that smells faintly of thyme; box 44 bristles with folded {L_DARTS}; and the top row, up a {L_LADDER}, keeps its secrets in shadow",
+    "lb_box9": "the envelope holds a {L_MENU} in careful cursive: seven courses for the {OCCASION}, each dish named like a member of an orchestra, and at the bottom, underlined twice, FOR {MATRIARCH}'S {OCCASION}; whoever cooked for this hotel was not staff only, he was somebody's son, and the kitchen was where he said so",
+    "lb_box44": "the darts are folded from luggage tags, creased sharp by practiced small fingers, and tucked behind them is a {L_SCORESHEET} in two different scrawls, M VS M, BEST OF 1000, GAME PAUSED; the pause has lasted a very long time; {HERO} smooths one dart flat and folds it back better than she found it",
+    "lb_ladder": "the {L_LADDER} grumbles along its rail; the top row of pigeonholes sits in forty years of soft gray dust, all except one box whose front is wiped clean in a neat circle, as if someone small once polished a porthole to look through; the ladder wobbles cheerfully under {HERO}'s sneakers, opinionated but willing",
+    "lb_topbox": "inside lies a flat box lined with tissue: one {L_GARDENIA_KEEPSAKE}, still faintly sweet, and a note in a round green-inked hand, FOR THE BUTTONHOLES, FROM THE WINTER GARDEN, WITH LOVE, W; the flower is forty years old and looks ready to be worn tonight; somebody grew things for this family the way other people write letters",
+    "lb_switch": "the {L_SWITCHBOARD}: a wall of brass sockets and cloth-wrapped cords, a headset on a hook, and a {L_HORN} like a great ear trumpet aimed at the whole hotel; one socket, room by room long dead, still carries a faint furry buzz, a line that never quite hung up; {HERO}'s fingers itch toward the cords",
+    "lb_plug": "the line opens like a seashell held to her ear: not voices but the hotel itself, faraway and alive, a whisk ticking a bowl, a {G_CAN} filling, quick feet on carpet, the slow creak of something dome-shaped turning; every sound a floor, every floor still busy in its faded way; {HERO} holds her breath so as not to interrupt",
+    "lb_listen": "she sorts the sounds like a detective: the whisk lives below the warm smell, the {G_CAN} behind the frosted glass, the running feet own the numbered floors, the creak turns under the stars; four corners, four faded someones keeping their old posts, exactly as {MATRIARCH} said; the hotel has been holding its family all along",
+    "lb_speak": "{HERO} leans to the mouthpiece and says the truest thing she has: {MATRIARCH} is at the desk, and she misses you; the buzz goes very still, the whole line listening; then, faint as a music box under a pillow, the line hums three bars of a waltz back to her before settling into a warmer kind of quiet; message received, somewhere",
+    "lb_horn": "{HERO} clears her throat and pages the {THRESHOLD}: good evening, this is the front desk, {MATRIARCH} is here and the lights are on; her voice rolls away down a hundred corridors and fades; a long hush; then, far and faint, four answers come one after another, a pot lid clashed like a cymbal, a tap-tap on tin, two knocks in perfect unison, a whistle down a stairwell; heard, heard, heard, and heard",
+    "lb_office": "the {L_OFFICE} behind the desk: a rolltop desk with a stubborn latch, a {L_PORTRAIT} turned to face the wall, a {L_CLOCK} stopped and dusty, and a lower drawer packed with letters in rubber bands gone brittle; the room smells of ink and quiet; everything in it seems to be waiting to be asked a question",
+    "lb_portrait": "the {L_PORTRAIT} shows five figures on the hotel's front steps on some bright opening day, but time has softened every face to a warm blur, as if even paint can fade apart; the shapes still tell their story, a tall figure in cook's whites, one in gardening gloves and a sun hat, two small ones in bellhop uniforms mid-fidget, and at the center a woman with a little silver bell in her painted hand",
+    "lb_rolltop": "the latch gives and the rolltop rattles up over the one book {HERO} has been hoping for, the {L_LEDGER} for the {OCCASION}; the guest list opens flat, and the top five lines are written in {MATRIARCH}'s own copperplate, {COOK}, FAMILY; {GARDENER}, FAMILY; {TWIN_A}, FAMILY; {TWIN_B}, FAMILY; and last, smaller, {MATRIARCH}, FAMILY FIRST, GUESTS AFTER; five names, safe in ink all along",
+    "lb_names": "{COOK}, {GARDENER}, {TWIN_A}, {TWIN_B}, {MATRIARCH}; {HERO} reads them slowly, like ringing five small bells, and the office listens; the lamp flame stands taller, dust motes swirl up in a slow glad spiral like confetti practicing, and somewhere out in the lobby the desk bell gives one bright unstruck ding; on the mantel the stopped dusty clock seems to lean toward the sound, wanting to join in; names have weight in this hotel",
+    "lb_clock": "the {L_CLOCK} winds sweetly and starts with a tick like a heartbeat found; when it chimes the hour, other clocks answer from far rooms one by one, late by seconds, like sleepy voices joining a song, until the whole dark hotel is agreeing softly about the time; a building synchronizing itself around one small act of care",
+    "lb_show": "{HERO} spreads tonight's lobby findings across the desk blotter; write this general, whatever she happens to carry this trip, a menu, a paper dart, a pressed flower, a ledger, or only news, so it reads true on any path; {MATRIARCH} touches each find or each word like a keeper checking room by room, and her lamp burns warmer with every one; the hotel kept track of us, she whispers, I knew it would; her eyes come up bright and resolved",
+    "lb_story": "{MATRIARCH}'s story, told steady and warm, entry-neutral, the full truth fresh on a first hearing or the same truth going deeper on a return: the storm that stopped the ball, the years the family kept the hotel anyway, the slow fading that came after the doors closed, each of them drifting to the floor they loved best until even names wore thin; and the desk, kept so anyone finding their way home would see the lights on; it is not the hotel that needs reopening, she finishes, it is the evening that needs finishing",
+    "lb_door100": "door 100, {MATRIARCH} says, and her voice goes soft as flannel: the family suite at the top of the house, the one door we kept for ourselves; the plan was always to end the {OCCASION} up there, all five of us on its balcony over the town; she polishes its small bright key without looking, the habit older than the forgetting",
+    "lb_promise": "{HERO} gives her word as the new keeper of the hundred keys, and {MATRIARCH} stands straighter than lamplight, sets her cap, and begins polishing the silver bell for the big night; write the parting general so it reads the same however {HERO} got here; the grand staircase waits through the archway, and across the landing the {FINALE_ZONE} doors wait for someone with a key and a promise",
+    "e_lb_ladder": "the ladder has opinions about tiptoes; it glides grandly sideways with {HERO} aboard like a slow parade float, and she rides it all the way to the wall with a squawk, upsetting three pigeonholes of ancient postcards on the way; no bruises, only a blizzard of forty-year-old mail to gather by lantern light, and by the time the last card is boxed the windows are going gray; {MATRIARCH} walks her to the door, ruffles her hair, and calls her the best help in decades; tomorrow night, the top row, with both hands on the rungs",
+    "e_lb_horn": "{HERO} waits by the horn, chin on her fists, listening to the hotel settle; the answers do not come down, not tonight, faded feet are slow feet, and the big carpeted dark between floors is a long way for a thin memory to travel; she wakes at dawn in the switchboard chair under a blanket she does not remember, the headset hung neatly back on its hook, and a peppermint on the ledger beside her; not a failure, a first hello; next time she will bring the party to them",
+    "e_lb_chimes": "{HERO} follows the chiming up through the dark, winding every clock she finds, the grandfather on the mezzanine, the little enamel clock in the card room, the drum-bellied kitchen timer that makes her jump; by dawn the {THRESHOLD} ticks in one voice for the first time in forty years, and {HERO} knows the whole building the way you know a song; the party is not tonight, but a hotel that agrees about the time is a hotel getting ready; she sleeps till noon and dreams in ticks and chimes",
+    "e_lb_letters": "the letters are {PRIOR_KEEPER}'s, one a year for forty years, all addressed simply TO THE {THRESHOLD}: news of the town, pressed flowers, apologies for the long closing, and in every single one the same closing line, KEEP THEM COMPANY TILL SOMEONE YOUNGER COMES; {HERO} reads by lantern until the sky pinks, understanding at last that she was not an accident of paperwork, she was expected; she walks home holding the last letter like a ticket to something that has already begun",
+    "e_lb_keys": "they sort the hundred keys together, and every key turns out to be a story {MATRIARCH} can still tell, the honeymooners of room 12, the opera singer in 61 who practiced into the wardrobe, the dog that was smuggled into 27 inside a hatbox and smuggled out three sizes bigger; the stories last until the windows silver, and when {HERO} finally yawns her way home the ring in her pocket no longer feels like metal, it feels like a book; the party will keep for one more night, the stories nearly did not",
+    "kt_doors": "the kitchen's double doors swing at a touch, and the impossible smell arrives first, warm bread and thyme in a hotel closed forty years; beyond the doors a corridor splits three ways, toward the great main kitchen where copper glints, down a narrow pantry passage lined with shelves, and toward a bakery where an oven ticks with heat; keep this arrival general so it reads naturally on a first visit or any return",
+    "kt_main": "the great kitchen: a city of copper pots, a stove glowing with ghost-light, and at its heart a broad transparent man in cook's whites, tasting from a long spoon and humming; write him general and re-entry-safe, a cook mid-shift whether {HERO} is seeing him for the first time or the third, he takes a midnight visitor in easy stride, {ROUTE_K_ZONE} are never closed to hungry children; steam that is not quite steam curls up through him and he salts it anyway",
+    "kt_hello": "the cook beams like an oven door opening, waves {HERO} onto a stool at the worktable, and is three sentences into the secret of proper soup before she has sat down; he talks recipes the way other people talk about their families, which may be exactly what he is doing; midway he reaches for the name of whoever taught him the thyme trick, and the sentence just, softly, runs out",
+    "kt_soup": "the soup steams like real soup and tastes like memory, warm and buttery and somehow exactly like the best birthday {HERO} ever had; she says so and the cook goes pink with pride clear through; food remembers, he says, tapping his nose, even when cooks forget; the word forget lands on the table between them, quiet as a dropped napkin",
+    "kt_watch": "from the doorway {HERO} watches him plate seven beautiful courses, carry them to the long {K_STAFFTABLE}, set them down just so, wait with his hands folded, sigh, clear them, and begin again; it is the saddest, kindest loop she has ever seen, a meal kept ready for people who never come; on the order rail above the pass one {K_TICKET} flutters, and the {K_STAFFTABLE}'s five chairs sit in a row",
+    "kt_chairs": "five places, set perfectly; five chairs, each worn its own way, two nicked low down by swinging feet, one dusted forever with flour, one with a folded gardening glove left over the back like a bookmark, and one tall stool at the head with a cushion flattened by years of somebody small and upright; a {FIN_TABLE} with the family missing, and the cook still setting it",
+    "kt_ticket": "the ticket, in copperplate {HERO} has seen the like of at the front desk: SEVEN COURSES FOR THE {OCCASION}, FAMILY TABLE FIRST, and a single initial, P; the order that was never cancelled, so the kitchen never stopped; forty years of soup kept warm because nobody rang down to say otherwise",
+    "kt_who": "he circles the question like a pot he is afraid to burn: someone with flour on her sleeves and a little silver bell always at her elbow, someone who ran this whole house and still baked on Sundays; my mother, he says, wondering, I had a mother, in this very building, didn't I; his hat flickers brighter for a breath, then steadies",
+    "kt_for": "for the {FIN_TABLE}, he says at once, then stops, ladle in the air; whoever they are; the order never came down to cancel, you see, so I keep it warm; forty years, he agrees, is a long time to keep a meal warm, but you do not stop cooking for your people just because you have mislaid them; {HERO}'s chest aches in the good sad way",
+    "kt_cook": "aprons on, and {HERO} is stirring while the cook narrates like a kindly storm; and a strange thing happens as they work: the busier his hands, the closer his memory creeps; the bread smell, he murmurs, my mother baked on Sundays even with a full brigade downstairs, and her name, her name was right there on the tip of the ladle; write this beat re-entry-safe, a memory circling nearer, never a one-time confession",
+    "kt_tell": "{MATRIARCH}; the name goes through the kitchen like a struck bell, every copper pot ringing faintly in answer; write this re-entry-safe, the name striking fresh on a first telling and ringing deeper on a return, never a one-time revelation; the cook grips the worktable, eyes wide, whispering it twice, and for a moment he is bright as noon; he unties his apron to go to her, and falters at the doors, faded too thin to cross the dark alone; cooks come when dinner is called, he says finally, call a proper dinner, small guest, and I will come to her through any dark in this house",
+    "kt_gentle": "{HERO} holds her tongue and stirs; the cook works the memory like dough, thyme, the thyme came from under glass, from the garden, from, and his face opens like a window, my sister grew the thyme, I have a sister, a sister with a sun hat and opinions about my parsley; he laughs out loud at the ceiling, one name closer to whole, and the stove burns brighter for it",
+    "kt_show": "he holds the ticket the way you hold a photograph, and reads the initial with his thumb; P, he says, P rang the bell at the desk, P kept the whole house in her apron pocket, P is, and the word {MATRIARCH} arrives before the name does, which is somehow better; he presses the ticket flat over his heart, then pins it back on the rail, top of the queue, where an order about to be filled belongs",
+    "kt_pantry": "the pantry passage: shelves to the ceiling labeled in three different handwritings, copperplate, a round green scrawl, and two matching squiggles that fight for space on the same labels; at the end, a cold-room door wears a coat of frost though no machine has run in decades, and a ladder leans toward the high preserve shelves",
+    "kt_cold": "inside the cold room, glowing faintly with its own winter, stands the {K_CAKE}; five tiers, sugar gardenias, {THRESHOLD} 100 in silver script, candles set but never lit, kept perfect all this time by frost and stubborn love; on the middle tier stand five small {K_CAKE_FIGURES}, a cook, a gardener in a sun hat, two tiny bellhops, and a woman with a speck of a silver bell",
+    "kt_figures": "{HERO} memorizes the sugar family: the cook's proud chest, the gardener's tipped hat, the twins caught mid-shove, the small upright woman with the bell; whoever iced this {K_CAKE} knew these five by heart and put that heart on the middle tier where everyone would see; a portrait in sugar, waiting forty years to be cut and shared",
+    "kt_cakechef": "the cook stands before the {K_CAKE} with his hat pressed to his chest; write this re-entry-safe, awe that reads the same on any visit; I made this, he says, I remember the icing, three nights, and the little figures last of all; he touches the sugar woman's bell with one enormous gentle finger; five of us, he counts, wonder growing, five, and the candles never lit; well; a {K_CAKE} this patient deserves its party, and a cook who remembers how many he loves is halfway to remembering who",
+    "kt_shelf": "the high shelves hold ranked preserve jars, and a row labeled in the round green hand, W'S PLUMS, TRADE FOR PASTRY, AS ALWAYS; a barter older than {HERO}, plums down from some garden, pastry up in exchange, a family economy still visible in glass and paper; one jar sits out of rank, lid loose, as if someone meant to check it",
+    "kt_bakery": "the bakery: an oven warm with no fire, dough rising under a cloth like a slow breath, flour handprints on the table edge, and floury footprints crossing the tiles; on the worktable a loaf is braided in a {K_LOAF}, and carved neat into the table's edge, ONE STRAND FOR EACH OF US; the room smells like Sunday morning in the middle of the night",
+    "kt_oven": "inside, a {K_BUNS} shaped like stars, golden, fragrant, and never quite finished, because you do not serve the party bread before the party; the oven has been holding them at almost-ready for forty years, the most patient oven in the world; from deeper in the {ROUTE_K_ZONE} drifts a hummed tune, three-four time, kept low like a secret",
+    "kt_song": "the humming is the cook's, a waltz worked into his kneading, push and turn and fold in three-four time; caught at it, he chuckles; my mother's waltz, he says, she wound the {FIN_GRAMOPHONE} every, and he frowns at his floury hands, every what, every when; the tune knows its occasion even if he cannot name it; write him re-entry-safe, the same warm puzzlement on any visit",
+    "kt_flour": "the footprints loop the worktable, pause at the {K_LOAF}, and end at a little brass door in the wall, a {K_DUMBWAITER}, which chooses that moment to rattle politely, arriving; the {ROUTE_K_ZONE}, {HERO} is learning, are never empty and never still, only quiet, the way a heart is quiet between beats",
+    "kt_dumb": "the {K_DUMBWAITER} holds a tray: one cocoa, still steaming, and a folded note, FOR THE SMALL GUEST, UP LATE; the hotel knows she is here, and the kitchen has opinions about children and bedtime; the little lift waits, rope creaking gently, big enough, just barely, for a curious eleven-year-old with poor impulse control",
+    "kt_note": "{HERO} prints her best letters, THANK YOU, {MATRIARCH} IS AT THE DESK AND MISSES YOU ALL, COME TO THE {FINALE_ZONE} WHEN YOU HEAR THE CALL, and sets the note on the tray; the {K_DUMBWAITER} rises like a held breath, and a moment later, somewhere above, there is a clatter of pure joy, pans rung like churchbells; message delivered",
+    "kt_promise": "the cook ties on a fresh apron with the snap of a man who has been waiting forty years for exactly this; write the scene general, whichever memories stirred tonight, so it reads the same on any path; he begins prepping the {OCCASION} feast in earnest, seven courses and star buns and the {K_CAKE}'s hundred candles counted twice, and his orders to {HERO} are simple: ready the hall, then call dinner, and no cook in this world or the next will be late",
+    "e_kt_jam": "the jar comes willingly but its shelf-mates come too, a slow tipping avalanche of forty-year-old plum jam that {HERO} catches, juggles, and mostly wears; nothing breaks but her dignity; the cook appears at the crash, takes in the purple catastrophe, and laughs until the pots ring, then hands her a cloth and scrubs beside her, telling jam stories till the windows pale; she squelches home at dawn smelling of plums, with one rescued jar for breakfast and orders to come back hungry; the pantry keeps score, but kindly",
+    "e_kt_cocoa": "the cocoa is the warmest thing {HERO} has ever held, and drinking it is like being tucked in from the inside; she sits down on the flour sacks just for a minute, just to finish it, and the bakery's bread-warm dark does the rest; she wakes at dawn floury and deeply rested, a clean apron spread over her like a blanket and a note pinned to her sleeve, BREAKFAST AT EIGHT, SMALL GUEST; the party will need another night, but somewhere in this hotel, someone tucks people in on principle",
+    "e_kt_ride": "the {K_DUMBWAITER} accepts her weight with a doubtful creak and rises exactly one floor and a half before stopping dead between floors, {HERO} folded up like a letter in a very small envelope, more embarrassed than scared; unseen hands crank her gently back down, and the tray returns her to the kitchen with a new note in flour-dusted capitals, STAIRS EXIST; she laughs till her ears burn, promises the empty air to use them, and takes those stairs home at dawn, dignity in her pocket, grinning the whole way",
+    "e_kt_sketch": "{HERO} sketches the five {K_CAKE_FIGURES} into her pocket notebook by lantern light, the proud cook, the tipped sun hat, the mid-shove twins, the small upright woman with her bell, until her fingers are cold and the candle is a thumb of wax; when she finally slips home at dawn she knows the {THRESHOLD}'s family by heart, the way you know faces you love; whoever she meets in this hotel from now on, she will recognize them on sight, and that feels like the real beginning of the rescue",
+    "e_kt_feast": "she stays, and it becomes a feast of one guest and seven courses, each dish arriving with its story, the soup that won a bet, the fish that once impressed a duchess, the star buns invented for two small people who demanded edible constellations; {HERO} tastes everything and hears everything, and the cook glows brighter with every told tale; the windows silver before the dessert course, so they shake hands across the worktable like colleagues, the feast will be finished on the night itself, and she will not eat lunch for a week",
+    "wg_doors": "the frosted double doors of the {ROUTE_G_ZONE} breathe warm green air into the cold corridor, and stepping through is stepping into another season: glass arching high overhead, palms and ferns crowding the lantern light, tiny moths of glow drifting between leaves; keep this arrival general so it reads naturally on a first visit or any return; ahead a main path disappears under a small indoor rain, a side door shows a {G_SHED}, and somewhere unseen, water is singing",
+    "wg_mist": "the glasshouse makes its own weather: a cloud the size of a rowboat drifts under the ridgepole, raining a fine warm rain on a bed of ferns that lean into it gratefully; {HERO} holds out a palm and the rain is real, or real enough; somebody, or something, is minding the seasons in here, forty years after the boilers died",
+    "wg_leaf": "from under a leaf as big as an umbrella {HERO} watches the cloud make its rounds, watering bed after bed in a patient circuit, pausing longest over the seedlings; weather does not behave like this on its own; weather behaves like this when a gardener asks it nicely for forty years running",
+    "wg_path": "the palm path glows with night-bloomers, flowers that open for the moon and moths; and ahead, unmistakably, a {G_CAN} is walking, or rather tipping itself along the beds in small careful pours, floating at exactly the height a hand would hold it; write the sight re-entry-safe, wonder without alarm, the garden's ordinary miracle on any visit",
+    "wg_follow": "{HERO} trails the can from bed to bed; it waters in a pattern, thorough as a nurse's rounds, and its route bends steadily toward a bed at the garden's heart where white buds glow in ranks like small moons; whoever holds that can is heading for the gardenias, and {HERO}'s feet decide to arrive there too",
+    "wg_hello": "the can pauses mid-pour, and around it a woman fades gently in, sun hat, earth-stained apron, a squint of kind appraisal; write her greeting warm and entry-neutral, taking a midnight child in stride the same way on any visit, gardens keep all hours, love, mind the moss; she goes right on watering as she talks, because plants do not wait on conversation",
+    "wg_grow": "gardenias, mostly, she says, nodding at the ranked white buds, a hundred buttonholes' worth; there is to be an evening, you know; when {HERO} asks when the evening is, the gardener's face does the thing {HERO} is learning to recognize, reaching for a fact that has worn through; soon, she settles on, it has been soon for a good while now; the order is older than dust and she keeps it fresh anyway",
+    "wg_water": "they water together down the long beds, and the gardener introduces her plants like family, because, {HERO} slowly realizes, that is what they are; the {G_PEPPER} by the warm wall is {COOK}, likes the cooking smells, that one; the {G_ROSE} is {MATRIARCH}, blooms best when the lobby bell rings; and two vines racing up one trellis are {TWIN_A} and {TWIN_B}, tie themselves in knots, those two; she cannot say why the names are those names; her hands remember the family her mind lost",
+    "wg_plants": "the tour: the {COOK} pepper leans hard toward the kitchen vent and fruits spicy; the {MATRIARCH} rose has climbed forty years toward the lobby door and rings faintly, petal against petal, when the wind is right; the {G_VINES} finish their race up the trellis in a dead heat every single season, tied in a fair-and-square knot at the top; a whole family, kept alive in green",
+    "wg_trellis": "up close the {G_VINES}' knot is a careful thing, two stems crossed and recrossed into a handshake at the trellis top, no winner, no loser, every year the same; they would have wanted it that way, the gardener says fondly, and then stops, trowel in the air, wondering aloud who they are; the question hangs in the green air like a moth",
+    "wg_rose": "the {MATRIARCH} rose grows against the glass nearest the lobby, every bloom faced the same way like a choir facing its conductor, toward the front desk somewhere beyond the frost; when {HERO} leans close the petals brush together with the smallest silver sound, a bell heard through a wall of years; the gardener pats the stem like a shoulder",
+    "wg_tell": "{HERO} says it plain and kind, using only what she knows for certain: this garden has been keeping a family, a family of five, and one of them, a small silver-haired lady called {MATRIARCH}, is downstairs at the front desk right now, keeping the lights on and missing them all; the gardener goes very still; a wind moves through the shut glasshouse, every leaf turning as if the whole garden looked up at once; write her wonder re-entry-safe, the truth landing fresh on a first telling and settling deeper on a return, never a one-time confession; then the evening is finally coming, she whispers, and the buds along the bed tremble like held applause",
+    "wg_order": "she keeps the order under a flowerpot like treasure under a mattress: a slip in faded copperplate, ONE HUNDRED GARDENIAS FOR THE {OCCASION}, FAMILY BUTTONHOLES FIRST, FIVE, and the single initial P; five first, she repeats, tapping the word, I have kept five bushes best of all and never once known why; she looks toward the heart of the garden",
+    "wg_gardenias": "the {G_GARDENBED} at the garden's heart: a hundred buds closed tight as promises, ranked and ready, and at the center a ring of five older bushes, glossier, deeper, tended like the crown jewels; keep this bed general and re-entry-safe, it reads the same whether {HERO} wandered here alone or was led; the five bushes stand in a circle like people holding hands",
+    "wg_five": "planted the year the hotel turned one hundred, she says, or was to; one for each of, and the sentence frays exactly there, the way worn cloth gives at the same seam every time; the five bushes lean in as if listening for the end of it; their roots, {HERO} notices, have grown together underground, five plants sharing one grip on the earth",
+    "wg_fountain": "the {G_FOUNTAIN}: a stone basin dry for decades that nonetheless sounds of water, and in its empty bowl swim goldfish made of soft light, circling, flicking, entirely content in their remembered pond; coins glint among the leaves at the bottom, and an old brass tap crusted green hides under the rim; the singing is the fish, or the memory of water, or both",
+    "wg_fish": "the fish nibble her fingers with tiny harmless sparks, ticklish as soda bubbles, then school up in a bright arrow and hold the shape, pointing insistently along the path toward the heart of the garden; fish with opinions; {HERO} laughs out loud and the arrow wags, pleased with itself",
+    "wg_coins": "wishing coins, decades of them, coppers gone green among the leaves; but at the basin's center five silver coins lie fused edge to edge in a perfect ring, as if five wishes were made in the same breath and never let go of each other; scratched around the ring's rim, tiny, ONE WISH EACH, AND WE ALL WISHED THE SAME",
+    "wg_wish": "we wished, she says slowly, hat brim low, together, that the evening would never end; and gently, {HERO} understands the trick of it: the evening never began, so the wish is still out there, unspent, waiting like a coin in the air; wishes keep, in fountains, the gardener says, that is what fountains are for; her eyes come up under the hat brim, brighter than they were",
+    "wg_shed": "the {G_SHED}: seed drawers labeled in the round green hand, two child-size gloves hung on one peg like small salutes, an espalier chart marked O TRADES PASTRY FOR PLUMS, FAIR IS FAIR, and up through the roof, magnificently, a great {G_FIGTREE} has grown, taking the shed with it as if the building agreed to become a treehouse; a {G_LEDGER} lies open on the bench",
+    "wg_ledger": "the ledger's last entry, dated forty years back: PLANTED FIVE GARDENIA BUSHES FOR THE FAMILY ROW, ALL OF US, ONE EACH, HANDS IN THE DIRT, BEST DAY; and pressed beneath the words, five thumbprints in dried soil, two of them very small; proof you could hold, that five people once knelt in one bed laughing, and that the garden has been keeping their handshake alive ever since",
+    "wg_seeds": "the drawer marked FOR THE NEXT KEEPER holds easy seeds in labeled packets, radish, sunflower, thyme, and instructions written in three different hands taking polite turns on the same card, copperplate, green scrawl, twin squiggles; a starter garden, prepared long ago for somebody exactly like {HERO}; her name is not on it, and it is still unmistakably addressed to her",
+    "wg_fig": "up the ladder into the {G_FIGTREE_CROWN}, where a plank platform is wedged among branches, child-built and child-sized, with a biscuit tin of treasures and a brass spyglass lashed to a limb, aimed out through a clear pane at the night; a crow's nest in a tree in a shed in a hotel; two particular children, {HERO} suspects, are behind every comfortable inch of it",
+    "wg_spy": "the spyglass is aimed, dead steady, at the {ROUTE_R_ZONE} dome across the night, and painted on that far dome, faint with years, a five-pointed star; five again; the whole hotel is signed with fives, like a family writing its initials everywhere it loved; {HERO} lowers the spyglass thinking hard",
+    "wg_promise": "the gardener snips five almost-open gardenias and stands them in a jar of water like white flames; for the buttonholes, she says, cut the rest the moment you call us down, and mind you open the glasshouse doors wide that night, gardens hate to miss a party; write the parting general so it reads the same however {HERO} got here; she is already deadheading the hundred-bud bed, humming in three-four time, a gardener with a deadline at last",
+    "e_wg_tap": "the tap grinds a quarter turn and the garden's ancient sprinklers all fire at once, every bed, every path, a jubilant indoor rainstorm forty years in the pipes; {HERO} is soaked to the eyebrows in three seconds flat; the gardener appears through the downpour laughing like a kettle, wrestles the tap home, wraps {HERO} in clean burlap like a prize marrow, and walks her to the doors; come back dry, she orders fondly; the garden drips and gleams all night, cleaner and greener for the accident, and {HERO} squelches home grinning",
+    "e_wg_fish": "{HERO} stays with the {G_FISH}, and the {G_FISH} approve; she teaches them to loop, they teach her their circling game, and the empty basin becomes the best aquarium in the world, no water required; when the glass overhead silvers toward dawn the fish tuck themselves under the leaves like coins going back in a purse, and one, the smallest, laps her wrist twice in plain goodbye; she walks home glowing faintly about the fingers, and if you ask her, completely certain they will remember her, because some things in this hotel never once forgot how",
+    "e_wg_climb": "one branch higher proves one branch too many; the fig dips, {HERO} swings, and the compost heap below receives her like a warm brown pillow that has been expecting guests; nothing hurt but leaf-litter pride; the gardener picks her out, tuts leaves from her hair, and pronounces the climb nearly excellent, footwork wants practice; scrubbed at the potting sink and sent home under a graying sky, {HERO} leaves with an official invitation to learn the tree properly, lowest branch first, in daylight, like a gardener",
+    "e_wg_plant": "{HERO} plants the starter row by lantern light, radish, sunflower, thyme, with the gardener's ghost hands hovering over hers, tilting the trowel, spacing the seeds, pressing the earth down like tucking in a bed; it takes hours and it takes no time at all; when the sky pales she stands up stiff and dirt-kneed over her first garden, hers, in soil her family now keeps; the party waits one more night, but something of {HERO} is growing in the {THRESHOLD} now, and that changes what the hotel is to her forever",
+    "e_wg_bloom": "the night-blooming hour comes at three, and the whole glasshouse opens at once, a hundred gardenias and every moonflower with them, petals unfolding in slow applause until the air is white and sweet and snowing petals under glass; the gardener stands hat-off in the middle of it, and {HERO} stands beside her, and neither says a word because some hours are for watching; when it ends at first light, {HERO} is given one bloom for her buttonhole and an escort to the doors; the rest, the gardener says, are saving themselves for the evening",
+    "gf_stairs": "the {ROUTE_F_ZONE}, landing after landing spiraling up into the dark, doors 10 to 99 asleep behind their brass numbers; from somewhere above come running feet, a service bell rung on the move, ding-ding-ding, and two-part giggling; keep this arrival general so it reads naturally on a first visit or any return; a caged {F_LIFT} waits on the landing, and the stair climbs on toward the quiet ninth floor at the top",
+    "gf_three": "floor three's corridor stretches long and carpeted, doors 30 to 39 standing at attention; a {F_TROLLEY} rockets past all by itself, takes the corner on two wheels like a getaway pony, and stops dead outside a plain door marked LINEN; the giggling has gone suspiciously silent, which any detective knows means an audience is hoped for; write the corridor re-entry-safe, the game freshly afoot on any visit",
+    "gf_chase": "the chase ends at the corridor's turn: trolley parked, innocent as a choirboy, and behind the window curtains two lumps are being extremely still in exactly the shapes of two children holding their breath; {HERO} has played this game; the only question is how to play it best; a service door also stands ajar nearby, breathing the shortcut smell of back corridors",
+    "gf_playalong": "{HERO} strolls the corridor lamenting theatrically, no bellhops anywhere, and her with all this heavy invisible luggage; the curtains detonate; two bellhop kids tumble out mid-bow, caps crooked, delighted beyond containment, A GUEST, FINALLY, do you have BAGS, can we CARRY them; write the pair entry-neutral, they greet any audience with the same joyous ceremony whether {HERO} is brand new or back for more",
+    "gf_yank": "the curtain whips back on, nothing, two bellhop caps spinning on the rod and the giggling now directly behind her; reversed, outmaneuvered, {HERO} spins to an empty corridor and a trolley that has crept a foot closer on its own; somewhere a grandfather clock chuckles, or possibly that is also them; this floor plays tag at tournament level",
+    "gf_tag": "the wildest game of tag in {HERO}'s career, up one corridor and down the service stair, laughter always one doorway ahead, until all three of them collapse on the landing carpet at once, breathless and even; the two fade in properly then, bellhop uniforms, crooked caps, faces bright as struck matches, and shake her hand twice each, formal and backwards",
+    "gf_wait": "{HERO} sits cross-legged in the middle of the corridor and counts to twenty out loud, calm as Sunday; at fourteen two heads emerge from the next doorway, impressed despite themselves, she is GOOD; formal introductions follow, bellhop style, caps doffed in unison, at your service and ALSO at your service; write their ceremony entry-neutral, performed with full delight on any visit",
+    "gf_ask": "they are bellhops, the best in the building, on shift a while now, which is bellhop for forty years; they keep the floors warmed up for the guests who will come for the big night, whenever that is; they bunk in the {F_LINEN}; and there is a rule, the grandmother rule, NO RUNNING IN THE LOBBY, which is why they never go downstairs at all, or we would LOSE THE GAME; asked who made the rule, they go quiet in stereo, reaching for a face that will not come",
+    "gf_rule": "someone with a silver bell made the rule, they say, someone who ran the whole hotel and smelled of Sunday baking; you do not break HER rules, she was the entire {THRESHOLD} in one apron; they miss her without remembering her, which is the saddest trick time knows; both caps droop, then rally, because sad is against bellhop regulations",
+    "gf_tellp": "{HERO} tells them what she knows first-hand from tonight: at the front desk, right now, sits a small silver-haired lady named {MATRIARCH}, polishing a silver bell and keeping the lights on; the name lands like a dropped tea tray; both twins flicker cap-bright, {MATRIARCH}, and then, in a rush, does she still keep peppermints in the third drawer down; they remember drawers, sweets, rules, everything but her face, and they are suddenly desperate to fix that",
+    "gf_game": "the Great Corridor Game, explained at speed with both twins talking in relay: doors are goals, rolled towels are balls, the trolley is the chariot, banking shots off the lucky dent in door 36 is legal and encouraged; behind door 33 they show her the {F_SCOREWALL}, tally marks flooding the paint floor to ceiling, M VS M, BEST OF 1000, and the score frozen at 499 to 499",
+    "gf_score": "you do not play the last point of a best-of-a-thousand in an empty hotel, they explain, patient as teachers; the final point is the whole game, so it waits for the party, when everyone will watch and somebody with a silver bell rings the start; they have been 499 to 499 for forty years, saving the best point for an audience; write their patience entry-neutral, proud and matter-of-fact on any visit, never a confession",
+    "gf_play": "a practice round, then, guest versus house; {HERO} rides the {F_TROLLEY} while one twin pushes and the other defends door 35 with a pillow shield, and the towel-ball sails and bounces and the corridor thunders with entirely safe mayhem; {HERO} learns the bank shot off the lucky dent, the underarm lob, the sacred rule that hitting the {FIN_CHANDELIER} is a do-over; she has not laughed this hard all year",
+    "gf_trick": "the triple-bank shot: off door 36's lucky dent, off the radiator, off the skirting, and the towel-ball drops into the trolley basket sweet as a sunset; both twins scream with joy, declare her an honorary bellhop, and crown her with a spare cap two sizes too small; somewhere below, the hotel's pipes knock twice, which the twins swear is applause",
+    "gf_deal": "the deal is struck bellhop-fashion, white-glove handshakes, both twins at once, crossed arms; write the deal re-entry-safe, sworn fresh on a first visit or gladly and solemnly re-sworn on a return, never a one-time ceremony; when the call comes and the hall is bright, they will come down, walking in the lobby, RUNNING on the stairs, and play the final point of the Great Corridor Game before the whole assembled family, grandmother's bell to start it; and afterward, they announce, they will carry every bag in the building forever, which is bellhop for happily ever after",
+    "gf_lift": "the {F_LIFT} is a brass birdcage that remembers being grand; its panel carries buttons one to nine polished by decades of thumbs, and at the top, set apart, one unnumbered button of pearl shell, unlabeled and lovelier than the rest; the cage smells of oil and peppermint; somewhere above, the running feet cross a landing and fade",
+    "gf_pearlbtn": "the lift hums, considers, and does not move; instead a little enamel sign flips over behind the grille, hand-painted, FAMILY FLOOR, PARTY GUESTS ONLY, OPENS ON THE {OCCASION}; the hotel is saving a floor the way you save the top of the wedding {K_CAKE}; {HERO} rests a finger on the pearl button a moment, promising it an occasion",
+    "gf_nine": "the ninth floor, top of the numbered world, quieter and dustier, doors 90 to 99 dreaming; and at the corridor's end, where door 100 ought to be, there is no door at all, only a door-shaped outline in the wall, paint a shade warmer than the wall around it, with a small bright keyhole set at hand height in the plaster; a door that is not there, with a lock that is",
+    "gf_keyhole": "none of the hundred keys fits, not even the small bright one that looks most hopeful; but the keyhole warms under {HERO}'s fingers like a hand closing around hers, and scratched in the plaster beneath, half worn away, she reads OPENS FOR ALL FIVE TOGETHER; a door that requires a family, in a hotel that lost track of one; {HERO} sits back on her heels, understanding something enormous",
+    "gf_ear": "through the wall, faint as a music box in a snowstorm, {HERO} hears a waltz playing, and under it five voices laughing at once, a party sealed in the plaster like summer sealed in a jar; the wall is warm as a sleeping animal; whatever waits behind the hundredth door, it is not gone, it is kept; she steps back with her heart drumming softly",
+    "gf_linen": "the {F_LINEN} is the twins' den, and it is magnificent: a {F_FORT} of hotel sheets rigged like a schooner, a {F_BOTTLECAPS} collection ranked on the shelf like medals, a shoe-shine kit arranged as an altar to professionalism, and on the wall a drawing in old butcher paper, five figures holding hands, kid-drawn, the faces gone soft with forty years of looking; a {F_CHUTE} door gleams in the corner",
+    "gf_drawing": "the drawing's five figures hold hands in a row before a hundred-windowed hotel; the labels underneath have worn to ghosts, all but one word under the tall center figure, {MATRIARCH}; behind {HERO} two voices arrive mid-scold, HEY, that is PRIVATE, and then, smaller, in duet, do you know who they are, we forgot; the question is offered up like a towel-ball, hopeful and brave",
+    "gf_caps": "the bottle caps are ranked by campaign, they explain, medals from the {K_DUMBWAITER}, which sends them up with snacks when nobody is looking; HE saves them for us, they say, and cannot say who HE is, only that the caps keep coming, forty years of tribute riding up a rope in the dark; a family still passing notes it cannot read, and never once missing a delivery",
+    "gf_promise": "send-off, bellhop style: caps straightened, trolley parked in its bay and polished for the big night, and {HERO} escorted to the stair landing with full honors, one twin marching before her and one behind; write the parting general so it reads the same however tonight's games unfolded; at the rail they salute in unison and remind her, loudly, whispering, that they will be listening for the call with both ears each",
+    "e_gf_lost": "the service corridors are a maze with a sense of humor; {HERO} pops out of the laundry-chute room, a shoe-shine nook, and a cupboard of two hundred lampshades, while invisible giggles conduct her along on a game of warmer-colder she is definitely losing; by the time she finds a window the sky is gray and her lantern is yawning; on her sleeve, discovered at the door, somebody has pinned a hand-drawn map of every shortcut on the floor, labeled FOR NEXT TIME, SO IT IS FAIR; a defeat, sportingly refereed",
+    "e_gf_early": "they look at each other, and because {HERO} asked with her whole heart, they play it, point one thousand, in an empty corridor with no bell to start it; the towel-ball arcs, banks, drops, perfect, and lands with no sound at all, and everybody feels it at once, the point does not count, the corridor knows, the wall will not take the mark; by morning the tally reads 499 to 499 again, and the twins are relieved instead of sad, told you, party point; {HERO} heads home at dawn owing them an audience, and meaning to pay",
+    "e_gf_rounds": "one more round becomes five becomes thirty; the corridor game has no natural ending and neither do the twins, and {HERO} plays until her arms are noodles and her laugh is cracked and the windows have gone traitorously pale; she surrenders on the carpet, honorable and destroyed, and the twins tuck her in the wing chair by the landing window like champions honoring the fallen; she wakes to her dad calling her name up the stairwell, one real peppermint on the chair arm, and the {F_SCOREWALL}, she notices, now carries one small new column marked J",
+    "e_gf_chute": "the chute sighs warm air like a sleeping whale, and {HERO}'s lantern lid clatters off down its throat, which means an expedition; three floors of spiral dark deliver her to the basement laundry, where clean sheets are folding themselves midair in stacks, unbothered by the century; they take one look at the tired child in their doorway and fold her in too, snug as an envelope, in the world's best-made bed; she wakes at dawn in room 31 with the door propped open and sun on the carpet, tucked in by experts, her lantern lid polished on the nightstand",
+    "e_gf_fort": "the {F_FORT} feast is crackers, forty-year peppermints in perfect condition, and secrets by lantern light: which doors stick, which floors sing, where the good echoes live, how to ride a trolley without squeaking the wheel; {HERO} trades them the outside world, buses, television, the existence of new peppermints, and their eyes go round as coins; the fort sails on till the windows pale, and she leaves knowing the hotel like a crewmate, sworn in with a {F_BOTTLECAPS} medal of her very own pinned over her heart",
+    "ob_stairs": "the last stair narrows and climbs into wind-sound, walls curving close, and ends at a round door like a ship's hatch with a brass wheel; partway up, the stairwell wall is hung with little framed photographs climbing alongside the steps; keep this ascent general so it reads naturally on a first visit or any return; behind the hatch something vast and hollow hums with the weather",
+    "ob_gallery": "the photographs are the same scene, year after year after year: five figures on this rooftop under summer stars, deck chairs in a row; the faces have faded to warm blurs but the shapes hold true, a tall one in cook's whites, a sun hat, two small saluting uniforms, and a small upright woman at the center of every single frame; the last photograph hangs beside an empty hook",
+    "ob_dome": "the observatory dome: a great brass telescope aimed through the half-open shutter at a slice of stars, {R_CHARTS} papering the curved walls, and five stools of five heights in a tidy row, tallest to smallest to one with a cushion; the dome hums in the wind like a shell remembering the sea; keep this room general and re-entry-safe, the same waiting wonder on any visit",
+    "ob_scope": "the eyepiece is warm, as if someone just stepped away, and through it the stars swim close enough to touch; tied to the focus knob is a small card, LAST AIMED AT THE PERSEIDS, LEAVE HER POINTED THERE FOR US, and beneath the words five sets of initials in five hands, P, O, W, M, M; a telescope kept like a promise, aimed at a patch of August sky",
+    "ob_perseids": "the eyepiece frames a modest patch of sky, unremarkable until you know it: the radiant of the Perseids, the meteor shower that returns every August like a family visit; the chart pinned nearest the scope counts the days in a childish tally, and {HERO} does the arithmetic twice with her heart speeding up, the shower is due back this very week; the sky has scheduled the party",
+    "ob_charts": "the {R_CHARTS} are annotated in five hands taking turns: copperplate noting WISH MADE beside a meteor's path, grease pencil marking SUPPER AT MOONRISE, round green ink reminding that SEEDS WANT MOONLIGHT TOO, and two rival scrawls keeping meteor count down the margin, 51 against 51, tied, of course; one wall, one sky, one family all over it",
+    "ob_names": "the doorframe carries height marks in pencil, five columns of them, re-drawn year after year: two columns climbing fast and jostling each other, three holding steady and dignified, and every mark dated in the same careful hand; the last five marks all share one date, and after it the doorframe goes clean; a family measured itself here, right up until it stopped",
+    "ob_book": "the {R_LOG}'s last entry, forty years old, in copperplate: {OCCASION} TOMORROW, ALL FIVE OF US TOO EXCITED TO SLEEP, WATCHED AN EARLY METEOR AND MADE OUR WISH TOGETHER; WHATEVER HAPPENS, WE END EVERY GREAT EVENING ON THIS ROOF; {HERO} reads it twice and closes the book gently, like tucking it in; now she knows how a {THRESHOLD} evening is supposed to end",
+    "ob_orrery": "the little brass machine is an {R_ORRERY}, but its sun is the {THRESHOLD} itself, a tiny hotel at the center, and its planets are five small figures that glide around it when wound: one circling the desk, one the {ROUTE_K_ZONE}, one the garden, two chasing along the floors, and then, once each turn, all five meeting at the {FINALE_ZONE} and rising together to the roof before beginning again; the family's whole year, in clockwork, still running true",
+    "ob_crank": "the shutter crank grinds, groans, gives, and the dome's whole slice of sky yawns wide, stars pouring in; better, the dome itself rotates on its rail with a carousel-smooth glide when the crank turns, the heavens wheeling politely past the telescope; {HERO}, being eleven, immediately understands the possibilities of a room that spins",
+    "ob_roof": "the roof walk: a wide boarded path behind a high safe rail, the town asleep far below, wind fresh off the dark; overhead looms the hotel's great unlit sign, THE {THRESHOLD} in a hundred cold bulbs, and along the boards the paint is worn in a curious pattern of scuffs; at the walk's end a small {R_TURRET} stands with its locker; keep the rooftop general and re-entry-safe on any visit",
+    "ob_moon": "the scuffs trace a repeating square with a little swing at each corner, and {HERO} has seen this diagram at school, it is a waltz, worn into the boards, danced here so many times the roof kept the steps; standing in the worn marks she can almost hear the tune arriving up the stairwells; they danced up here too, after; everything in this hotel ends in three-four time",
+    "ob_sign": "the {R_SWITCHBOX} is brass and serious, two switches inside: one furred with corrosion and labeled EVERY NIGHT, long dead, and one polished bright as new, labeled OCCASIONS, THE FAMILY WILL KNOW; forty years of dust everywhere except that one bright toggle, which somebody keeps ready; write this find general, reading the same on any visit; {HERO}'s thumb hovers",
+    "ob_flip": "one bulb answers, just one, the lamp at the center of the big M, warming to a soft ember-glow and holding there, patient, like a banked fire saying not yet, soon; and deep in the building beneath her feet {HERO} feels more than hears four faint far answers rise, a bell-note, a pot lid, a tap on tin, a double knock; the switch works; it is simply waiting, like everything here, for the real occasion; she eases it back with enormous respect",
+    "ob_turret": "the {R_TURRET}'s locker opens on party rigging: a line of a hundred little pennants rolled tight, a coil of halyard, and beneath them a {R_CHEST} with brass corners breathing out the smell of ginger and wool; the turret rail overlooks the whole dark roof walk and the hundred-bulb sign; a crow's nest waiting for a festival",
+    "ob_pennants": "a dozen pennants run up the halyard and the wind snaps them bright and chattering against the stars, the first festival colors this roof has flown in forty years; and behind her, soft but unmistakable, comes a patter of applause with no hands in sight, warm as a lit window; {HERO} bows to the dark, which seems only polite, and the applause dissolves into wind that has clearly enjoyed itself",
+    "ob_chest": "the {R_CHEST} is the family's roof kit, packed by someone who loved them: five rolled deck chairs with name tags worn blank, two of them small; a biscuit tin, empty but still gingery; one blanket sized for five people who sit close; and on top, a {R_WHISTLE} on a lanyard, its little tag reading SUPPER'S READY, THREE BLASTS; {HERO} holds forty years of family evenings in one chest and breathes the ginger smell",
+    "ob_whistle": "one soft blast, hardly more than a breath, and the whole building exhales beneath her: doors settle in their frames, pipes hum one warm note, and up from four far corners come the answers, a pot lid, a watering-can tap, two knocks in unison, and last, faint and silver, a bell; {HERO} laughs out loud, alone on a roof at midnight, because the {THRESHOLD} is a family that still answers supper calls, and she is the one holding the whistle",
+    "ob_promise": "{HERO} squares the roof away like a keeper: pennant line coiled to run free, whistle on its hook, {R_SWITCHBOX} closed over its one bright toggle, chest latched but unlocked; the roof is ready to end a great evening the way this family always ended them; write this tidy-up general so it reads the same however tonight's climb unfolded; below her feet a hundred dark rooms wait for the party that starts everything",
+    "e_ob_ride": "the dome takes {HERO}'s enthusiasm and runs with it; the crank handle pops off in her hand mid-spin and the great shell carries on, two stately full laps of the heavens with {HERO} riding the rail like a very slow comet, before winding itself down with a satisfied clunk; taped inside the empty handle socket she finds a note in two rival scrawls, IT DOES THAT, and under it, SO DID WE; she reattaches the handle, dizzy and grinning, and takes the stairs down to bed while the stars stop revolving; the sky will hold its place until tomorrow",
+    "e_ob_banner": "the grand 100 banner is not a pennant, it is a sail, and the night wind has been waiting forty years for exactly this; the banner fills, hauls, and turns {HERO} into an anchor with her heels braced and her hat gone to the harbor, feet never leaving the boards but every button tested; she wrestles it down, folds it breathless, and lays it back in the locker, where it settles with the smugness of fabric that has made its point: the grand banner flies on the grand night, in company, with more hands; dawn is graying as she climbs down, windburned and wiser",
+    "e_ob_camp": "she sets the five chairs in their worn dents facing the Perseid patch, spreads the big blanket, and keeps the family's watch for them; the roof is quiet, the town sleeps, the stars wheel at their own pace; and near dawn one early meteor goes over, bright and brief, and {HERO}, sitting in the smallest chair, makes the family's wish for them since they cannot be here to make it; she will not say what it was, but walking home under a paling sky she is certain it is already coming true",
+    "e_ob_orrery": "{HERO} winds the little brass hotel again and again until the pattern lives in her hands: desk, kitchen, garden, floors, and then everyone to the {FINALE_ZONE}, everyone to the roof, around and around, a year of love with a crank on the side; by the time the windows pale she can close her eyes and walk the whole family through their whole day in her head; the party waits one more night, but {HERO} comes down the stairs carrying the {THRESHOLD}'s heartbeat, and a keeper who knows the heartbeat can never really get lost",
+    "e_ob_plan": "she opens the {R_LOG} to the first blank page in forty years and writes the plan in her best hand: chairs so, blanket so, whistle at moonrise, pennants up, one meteor minimum, everybody stays till the ginger tin is empty; the pen moves easy, as if the page had been saving itself; she signs it JUNE, NEWEST KEEPER, and under her name, in the morning, she will swear the ink added five small initials of its own; the {R_LOG} goes back on the desk, pointed at the door, ready",
+    "fin_approach": "the {FINALE_ZONE}'s grand doors, tall as trees, carved with the number 100 in a wreath of gardenias; this is the room {MATRIARCH} asked for, the evening that was never finished, and the proof is right here on site: through the crack between the doors {HERO} can see a banner sagging in the dark, sheeted tables still waiting, a {FIN_CHANDELIER} hung with forty years of quiet; write this so it reads naturally whether the {FINALE_ZONE} is {HERO}'s first stop of the night or her last, whatever wings she has already wandered; the ring of hundred keys holds one stamped {FINALE_ZONE}, warm in her fingers",
+    "fin_peek": "through the crack, the whole story stands frozen mid-party: THE {THRESHOLD} IS 100 on a banner, chairs angled toward a stage, a {FIN_GRAMOPHONE} with its arm lifted as if interrupted between one note and the next; nothing spooky moves; it is a room that has been holding its breath politely for forty years, waiting for someone to come finish it; {HERO}'s shiver turns into resolve",
+    "fin_doors": "the {FINALE_ZONE} key turns like it was oiled yesterday, and the doors swing wide without a creak, as if they had been practicing; lantern light rolls down a hall vast as a ship, over parquet dim with dust and mirrors gone cloudy; the air smells faintly of candle wax and gardenias, kept safe all this time; the room seems to straighten up, hopeful",
+    "fin_hall": "{HERO} stands in the middle of the great floor and thinks like a keeper: a party needs light, music, and a table; the {FIN_CHANDELIER} hangs dark in its canvas with candle boxes stacked by the winch; the little stage holds a {FIN_GRAMOPHONE} and a record cabinet; the {FIN_TABLE} sleeps under dust sheets by the windows; keep this survey general, whichever corners already glow from earlier work, so it reads the same on a first pass or a return trip",
+    "fp_light1": "the {FIN_CHANDELIER} winch wakes with a groan and lets the great crystal ring float down to {HERO}'s height; the candle boxes hold one hundred pale candles, wrapped in paper like presents; she works steadily, setting each candle in its cup, and the crystals chime softly as if counting along with her",
+    "fp_light2": "the winch carries the blazing ring back up to the ceiling and the {FINALE_ZONE} catches fire with gold, candlelight doubled in the cloudy mirrors and tripled in the polished floor where {HERO}'s footprints have swept lanes through the dust; shadows scurry to the corners and settle there like well-behaved guests; the room is waking",
+    "fp_music1": "on the stage the {FIN_GRAMOPHONE}'s brass horn is dusty but whole, and in the record cabinet one sleeve stands apart from the rest, marked in careful copperplate, {MATRIARCH}'S WALTZ, FOR THE {OCCASION}; {HERO} winds the crank slow and steady, the way you wind something precious, and the turntable begins to breathe",
+    "fp_music2": "one bar of the waltz swells out of the horn and the whole room leans toward it; dust lifts off the chairs like held breath let go; somewhere far off in the hotel something answers, a soft thump, a clink, a patter, then hush; {HERO} lifts the needle gently, saving the song for the moment it belongs to",
+    "fp_table1": "the dust sheets come off the long table like sails coming down, and underneath the linen is still crisp and white, set and abandoned in the same hour forty years ago; at the head of the table five places stand slightly apart from the rest, the family's seats, kept first before any guest, just as {MATRIARCH} said there were five",
+    "fp_table2": "{HERO} sets the five places with the best of everything the sideboard offers, candlesticks, folded napkins, polished silver; rather than guess which of the five belongs at which seat, she writes one card in her best letters for all of them together and stands it at the center, THE FAMILY, {THRESHOLD} 100; the five chairs seem to square their shoulders",
+    "fin_ready": "{HERO} turns a slow circle in the great hall; corner by corner the {FINALE_ZONE} is coming back to life, and the parts still waiting look eager rather than sad; write this moment general, whichever task she has just finished, one more corner glowing than before; the question now is whether the room wants more hands or whether it is time to call the family home",
+    "fin_summon": "by the service door {HERO} finds the hotel's three voices, kept side by side for occasions: a great bronze {FIN_GONG} with its mallet on a velvet hook, a braided {FIN_BELLWIRE} labeled FRONT DESK that runs away into the wall, and the {FIN_GRAMOPHONE} waiting on stage with the doors of the {FINALE_ZONE} standing open to the dark hotel; three honest ways to call a faded family to one bright room; {HERO} weighs them with her heart thudding",
+    "fs_gong": "the gong's bronze note rolls out of the {FINALE_ZONE} and down every pipe and shaft and stairwell like warm thunder; the building carries it gladly to its farthest floors; and back through the same pipes come answers, a clang of pot lids, a tap on a {G_CAN}, a double knock, a whistle down a stair; the {THRESHOLD}'s family has heard dinner called",
+    "fs_bell": "{HERO} pulls the braided wire and far below the silver bell at the front desk begins to ring, and then, strangely and wonderfully, it keeps ringing on its own, ring for ring, as if a practiced hand has taken over; the sound multiplies up the stairwells until the whole hotel is one soft carillon saying the same word, home, home, home",
+    "fs_waltz": "{HERO} sets the needle down and lets {MATRIARCH}'S WALTZ pour out of the horn, through the flung-wide doors, into the dark halls like lamplight spilling; the hotel becomes an instrument around the song, banisters humming, {FIN_CHANDELIER} chiming the melody back; no one who ever loved this tune could sleep through it, however faded they have grown",
+    "fin_gather": "and they come; a warmth of bread and thyme arrives ahead of a broad cook with his sleeves rolled, wiping his hands on a fresh apron; a smell of rain and leaves arrives with a woman in a sun hat, a jar of white buds against her hip; two bellhop caps come racing each other down the banister and land in a tumble of giggles at the door; write each arrival so it reads warmly whether {HERO} already met them in tonight's wandering or is seeing them for the very first time, strangers to her or friends, they are plainly, achingly, a family arriving at a party; yet all four hesitate at the threshold, looking toward the one empty place at the head of the table",
+    "fin_pearl": "{HERO} takes the lobby stairs two at a time; {MATRIARCH} is at her desk, straightening the register like always, but her lamp is trembling; your family is in the {FINALE_ZONE}, {HERO} says, and they are waiting for you; {MATRIARCH} closes the book, picks up her silver bell, smooths her collar with see-through hands, and steps out from behind the desk for the first time in forty years; every lamp in the lobby rises to meet her",
+    "fin_reunion": "at the doors, recognition returns the way candles catch, one wick lighting the next; the cook's face crumples and clears, {MATRIARCH}, he says, I am {COOK}, I never stopped keeping your supper warm; the gardener laughs through tears, {GARDENER}, she says, I grew your buttonholes every year; the twins collide into {MATRIARCH}'s skirts shouting {TWIN_A} and {TWIN_B} and both at once; and {MATRIARCH} says every name back like setting down heavy luggage at last; as they remember one another the fading runs backward, color climbing into their edges, five ghosts growing bright as lanterns; {HERO} stands in the doorway of the reunion she built",
+    "fin_evening": "the {OCCASION}, forty years late and not one bit spoiled; the waltz plays and {MATRIARCH} dances with each of her family in turn; a feast arrives course by course as if it had been kept warm all this time; gardenias appear at every buttonhole, {HERO}'s too; there are corridor games that spill in and out of the doorway, and a {K_CAKE} with a hundred candles that light themselves when the family laughs; {HERO} is passed from dance to dance like a guest of honor, which, everyone agrees, she is; the clock across the hall begins to gather itself toward midnight",
+    "fin_midnight": "at the first stroke of midnight the five stand together glowing their brightest, and {MATRIARCH} takes {HERO}'s hands in her cool bright ones; the evening is finished at last, she says, and a finished evening frees a family to choose; we can rest now, all together, the way we always meant to end a great night, or we can stay and keep the {THRESHOLD} with your family as it wakes again; and because you gave us back to each other, newest keeper of the hundred keys, we would like you to help us choose; the clock strikes on, unhurried, while {HERO} looks from face to bright face",
+    "fr_rest": "{MATRIARCH} nods as if {HERO} has passed a final, gentle test; then we end it properly, she says, we always finish a great evening on the roof, under the stars, all of us; the family climbs the hotel together, {HERO} in the middle of them, up through the sleeping floors to the rooftop where the night is clear and enormous and the deck chairs wait in their old worn dents facing the meteor sky",
+    "fr_stay": "the twins cheer so hard their caps fall off, {COOK} is already planning breakfast menus, and {GARDENER} declares the {ROUTE_G_ZONE} will need a bigger gate for guests; {MATRIARCH} rings her silver bell once, softly, to make it official; the {THRESHOLD} will reopen with two families keeping it, one you can see through and one you cannot; there is only one question left, and everyone looks at {HERO} to settle it",
+    "fr_each": "{MATRIARCH} smiles the way grandmothers smile when a child says something older than its years; then each heart chooses its own door, she agrees; the family joins hands in the candlelight, {HERO}'s hands folded into the circle too, and they decide to speak their wishes somewhere fitting; the twins vote loudly for the roof and the stars; {MATRIARCH} looks toward the top floor, where a door-shaped outline waits at the end of the ninth-floor corridor, the hundredth door that never was",
+    "e_rest_stars": "they watch the sky in a row of creaking deck chairs, one blanket over ten knees, and when the first meteor crosses the Perseid patch the family brightens with it, laughing, waving to {HERO}, growing lighter and gladder until they are the same silver as the starlight, resting at last, together, mid-joy; the hotel below them exhales forty years of held breath; {HERO} walks down through a building that now feels like a blessing instead of a mystery, and every August after, when the meteors return, the {THRESHOLD}'s windows seem to shine a little on their own, like family visiting",
+    "e_rest_waltz": "the {FIN_GRAMOPHONE}'s song drifts all the way up the stairwells, and on the roof walk the family dances, {MATRIARCH} with {COOK}, {GARDENER} with both twins at once, and every one of them with {HERO} in turn, her sneakers finding the waltz worn into the boards; at the final turn of the final bar they bow to her, all five, and fade the way candle flames settle when the wick is done and the room is warm; morning finds the {FINALE_ZONE} bright, the hundred keys polished on their ring, and one white gardenia laid on the front desk beside a silver bell at rest",
+    "e_stay_secret": "the {THRESHOLD} reopens in {HERO}, banner and brass band, and becomes gently famous for things nobody can quite explain: luggage that arrives before the guest does, suppers kept perfectly warm, gardenias that appear on bad days exactly when needed, a front desk where late arrivals always find one lamp lit; the guests say the hotel feels like being remembered; only {HERO}'s family knows why, and on quiet nights {HERO} does her homework at the front desk while a silver bell rings itself, softly, just to keep her company",
+    "e_stay_open": "they reopen as exactly what they are, THE HUNDRED-DOOR HOTEL, FAMILY RUN FOR ONE HUNDRED AND FORTY YEARS, SOME STAFF SEE-THROUGH, ALL STAFF KIND; children write letters asking if the twins will race them down the corridor, and the twins always win but carry the loser's bag like champions; {COOK}'s dining room needs booking a season ahead; {GARDENER} teaches a gardening club under glass; {MATRIARCH} greets every guest by name on the second visit; and at the end of the ninth-floor corridor a hundredth door stands where the outline used to be, marked FAMILY, always warm to the touch",
+    "e_each_wishes": "under the meteor sky each of them speaks; the twins choose to stay, being nowhere near done playing; {COOK} stays, because a kitchen is never closed; {GARDENER} will winter with her garden and summer with the stars, half and half, like a bulb; and {MATRIARCH} chooses rest, but rest the way grandmothers rest, nearby, with the door ajar; none of it is goodbye, she tells {HERO}, family is a door that stays on the ring; when the {THRESHOLD} reopens, its keys hang bright at the desk, and five of them are always polished brightest",
+    "e_each_door": "at the end of the ninth-floor corridor they whisper, one by one, into the little keyhole in the door-shaped outline, and under {HERO}'s hand the hundredth door becomes real, swings wide, and opens on their own best evening, kept the way the hotel keeps everything, warm and ready: the {FINALE_ZONE} golden, the waltz mid-turn, the {K_CAKE} mid-laugh; now whenever any of them wishes, to visit, to rest a while, to come back and dance, the door is there, and {HERO} holds its key; the {THRESHOLD} reopens that summer with a hundred doors for guests and one door, the best one, for family"
+  },
+  "titles": {
+    "e_lb_ladder": "The Ladder Takes a Ride",
+    "e_lb_horn": "Four Answers, No Footsteps",
+    "e_lb_chimes": "The Hotel Agrees About the Time",
+    "e_lb_letters": "Till Someone Younger Comes",
+    "e_lb_keys": "One Hundred Keys, One Hundred Stories",
+    "e_kt_jam": "The Plum Jam Avalanche",
+    "e_kt_cocoa": "Cocoa Gets the Last Word",
+    "e_kt_ride": "Stairs Exist",
+    "e_kt_sketch": "A Family Drawn From Sugar",
+    "e_kt_feast": "Seven Courses and Their Stories",
+    "e_wg_tap": "The Forty-Year Rainstorm",
+    "e_wg_fish": "The Goldfish Made of Light",
+    "e_wg_climb": "The Compost Heap Catches",
+    "e_wg_plant": "The Next Keeper's Row",
+    "e_wg_bloom": "The Night-Blooming Hour",
+    "e_gf_lost": "Warmer, Colder, Morning",
+    "e_gf_early": "The Point That Would Not Count",
+    "e_gf_rounds": "Thirty Rounds Past Bedtime",
+    "e_gf_chute": "The Laundry That Tucks You In",
+    "e_gf_fort": "Sworn Into the {F_FORT}",
+    "e_ob_ride": "Two Laps of the Heavens",
+    "e_ob_banner": "The Banner Wants a Calmer Night",
+    "e_ob_camp": "Keeping the Family's Watch",
+    "e_ob_orrery": "The Clockwork Year",
+    "e_ob_plan": "The First New Page",
+    "e_rest_stars": "The Wish Comes Home",
+    "e_rest_waltz": "The Last Waltz of the {THRESHOLD}",
+    "e_stay_secret": "The Hotel That Remembers You",
+    "e_stay_open": "One Hundred Doors, All Open",
+    "e_each_wishes": "A Door on Every Ring",
+    "e_each_door": "The Hundredth Door"
+  },
+  "labels": {
+    "n_hub": {
+      "c_hub_lobby": "Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk.",
+      "c_hub_kitchen": "Follow the warm bread smell to the {ROUTE_K_ZONE}.",
+      "c_hub_garden": "Push through the frosted doors of the {ROUTE_G_ZONE}.",
+      "c_hub_floors": "Climb to the {ROUTE_F_ZONE} and that quick laughter.",
+      "c_hub_roof": "Take the narrow stair up toward the {ROUTE_R_ZONE}.",
+      "c_hub_ballroom": "Cross to the grand {FINALE_ZONE} doors."
+    },
+    "lb_gate": {
+      "c_lbg_desk": "Go to {MATRIARCH} at the glowing desk.",
+      "c_lbg_mail": "Slip behind the counter to the {L_MAILROOM}.",
+      "c_lbg_switch": "Ease open the side door to the old {L_SWITCHBOARD}."
+    },
+    "lb_desk": {
+      "c_lbd_family": "Ask {MATRIARCH} about her family."
+    },
+    "lb_ask": {
+      "c_lba_mail": "Search the {L_MAILROOM} for what the hotel kept.",
+      "c_lba_office": "Try the {L_OFFICE} behind the desk."
+    },
+    "lb_ball": {
+      "c_lbb_office": "Go look for the reservation book in the {L_OFFICE}."
+    },
+    "lb_storm": {
+      "c_lbs_mail": "Check what the {L_MAILROOM} still holds from that night."
+    },
+    "lb_keywall": {
+      "c_lbk_office": "Slip into the {L_OFFICE} behind the desk."
+    },
+    "lb_mail": {
+      "c_lbm_dart": "Unfold the {L_DARTS} in box 44."
+    },
+    "lb_box9": {
+      "c_lb9_show": "Carry the {L_MENU} to {MATRIARCH} at the desk.",
+      "c_lb9_switch": "Check the {L_SWITCHBOARD} too."
+    },
+    "lb_box44": {
+      "c_lb44_show": "Take a dart and the {L_SCORESHEET} to {MATRIARCH}.",
+      "c_lb44_switch": "Check the {L_SWITCHBOARD} too."
+    },
+    "lb_topbox": {
+      "c_lbt_show": "Bring the {L_GARDENIA_KEEPSAKE} down to {MATRIARCH}.",
+      "c_lbt_switch": "Look into the {L_SWITCHBOARD} as well."
+    },
+    "lb_switch": {
+      "c_lbw_horn": "Page the whole hotel through the {L_HORN}.",
+      "c_lbw_office": "Leave it and try the {L_OFFICE}."
+    },
+    "lb_listen": {
+      "c_lbli_show": "Go tell {MATRIARCH} what the line just told you."
+    },
+    "lb_speak": {
+      "c_lbsp_show": "Tell {MATRIARCH} what the line hummed."
+    },
+    "lb_horn": {
+      "c_lbh_show": "Run and tell {MATRIARCH} the whole hotel answered."
+    },
+    "lb_office": {
+      "c_lbo_letters": "Slip the rubber band off the {L_LETTERBUNDLE}."
+    },
+    "lb_portrait": {
+      "c_lbpo_show": "Carry the portrait out to {MATRIARCH}."
+    },
+    "lb_rolltop": {
+      "c_lbr_show": "Carry the ledger straight to {MATRIARCH}."
+    },
+    "lb_names": {
+      "c_lbn_show": "Bring the ledger and the names to {MATRIARCH}.",
+      "c_lbn_clock": "First, wind the stopped {L_CLOCK} back to life."
+    },
+    "lb_clock": {
+      "c_lbc_show": "Go show {MATRIARCH} what you have found tonight."
+    },
+    "lb_promise": {
+      "c_lbpr_fin": "Go straight to the {FINALE_ZONE} and begin.",
+      "c_lbpr_stay": "Stay a while and sort the hundred keys with {MATRIARCH}."
+    },
+    "kt_watch": {
+      "c_ktw_ticket": "Quietly read the {K_TICKET} on the rail.",
+      "c_ktw_chairs": "Look closer at the five chairs at the {K_STAFFTABLE}."
+    },
+    "kt_chairs": {
+      "c_ktc_ticket": "Read the {K_TICKET} on the order rail."
+    },
+    "kt_for": {
+      "c_ktf_ticket": "Go find the original {K_TICKET} on the rail."
+    },
+    "kt_cook": {
+      "c_ktk_tell": "Tell him the lady at the front desk is called {MATRIARCH}."
+    },
+    "kt_show": {
+      "c_ktsh_promise": "Promise him the {OCCASION} will finally be called."
+    },
+    "kt_cold": {
+      "c_ktcold_fig": "Lean close and study the five {K_CAKE_FIGURES}.",
+      "c_ktcold_main": "Go find the cook and ask about the {K_CAKE}."
+    },
+    "kt_figures": {
+      "c_ktfig_chef": "Bring the cook to see his own {K_CAKE}."
+    },
+    "kt_shelf": {
+      "c_ktsl_jar": "Reach up and check the {K_JAR}."
+    },
+    "kt_song": {
+      "c_ktso_tell": "Tell him the lady at the desk is called {MATRIARCH}."
+    },
+    "kt_flour": {
+      "c_ktfl_dumb": "Open the little brass {K_DUMBWAITER} door."
+    },
+    "kt_dumb": {
+      "c_ktdu_ride": "Climb in and ride the {K_DUMBWAITER}."
+    },
+    "kt_promise": {
+      "c_ktpr_fin": "Go straight to the {FINALE_ZONE} and begin."
+    },
+    "wg_doors": {
+      "c_wgd_shed": "Try the side door to the {G_SHED}."
+    },
+    "wg_path": {
+      "c_wgp_follow": "Follow the walking {G_CAN} quietly."
+    },
+    "wg_follow": {
+      "c_wgf_gard": "Slip ahead to the {G_GARDENBED}."
+    },
+    "wg_rose": {
+      "c_wgr_gard": "Walk on to the {G_GARDENBED}."
+    },
+    "wg_fountain": {
+      "c_wgfo_fish": "Dip a hand among the {G_FISH}."
+    },
+    "wg_fish": {
+      "c_wgfi_follow": "Follow the fish-arrow toward the {G_GARDENBED}.",
+      "c_wgfi_stay": "Stay and play with the {G_FISH} a while."
+    },
+    "wg_wish": {
+      "c_wgwi_gard": "Walk with her to the {G_GARDENBED}."
+    },
+    "wg_shed": {
+      "c_wgs_ledger": "Read the open {G_LEDGER}.",
+      "c_wgs_fig": "Climb the ladder into the {G_FIGTREE}'s branches."
+    },
+    "wg_seeds": {
+      "c_wgse_ledger": "Read the {G_LEDGER} next."
+    },
+    "wg_fig": {
+      "c_wgfg_higher": "Climb higher into the {G_FIGTREE_CROWN}."
+    },
+    "wg_promise": {
+      "c_wgpr_fin": "Go straight to the {FINALE_ZONE} and begin."
+    },
+    "gf_stairs": {
+      "c_gfs_lift": "Ride the caged {F_LIFT}."
+    },
+    "gf_three": {
+      "c_gf3_chase": "Chase after the {F_TROLLEY}."
+    },
+    "gf_linen": {
+      "c_gfln_draw": "Look closely at the {F_DRAWING}.",
+      "c_gfln_caps": "Admire the {F_BOTTLECAPS} museum properly.",
+      "c_gfln_chute": "Peek down the gleaming {F_CHUTE}."
+    },
+    "gf_drawing": {
+      "c_gfdr_caps": "First, ask about the {F_BOTTLECAPS} medals."
+    },
+    "gf_caps": {
+      "c_gfcp_draw": "Ask about the {F_DRAWING} on the wall."
+    },
+    "gf_promise": {
+      "c_gfpr_fin": "Go straight to the {FINALE_ZONE} and begin.",
+      "c_gfpr_fort": "Stay for the {F_FORT} midnight feast first."
+    },
+    "ob_dome": {
+      "c_obd_scope": "Look through the {R_TELESCOPE}.",
+      "c_obd_charts": "Study the {R_CHARTS} on the curved wall."
+    },
+    "ob_scope": {
+      "c_obsc_charts": "Take the five initials to the {R_CHARTS}."
+    },
+    "ob_perseids": {
+      "c_obp_charts": "Check the wall {R_CHARTS} against the date.",
+      "c_obp_book": "Open the observation {R_LOG} on the desk."
+    },
+    "ob_charts": {
+      "c_obc_book": "Open the leather observation {R_LOG} on the desk."
+    },
+    "ob_names": {
+      "c_obn_book": "Find that last date in the observation {R_LOG}."
+    },
+    "ob_book": {
+      "c_obb_orrery": "Wind the little brass machine beside the {R_LOG}."
+    },
+    "ob_roof": {
+      "c_obr_sign": "Find the sign's {R_SWITCHBOX}.",
+      "c_obr_turret": "Walk to the {R_TURRET} at the end."
+    },
+    "ob_moon": {
+      "c_obm_sign": "Go find the sign's {R_SWITCHBOX}."
+    },
+    "ob_flip": {
+      "c_obf_turret": "Walk on to the {R_TURRET}."
+    },
+    "ob_turret": {
+      "c_obt_chest": "Open the {R_CHEST}."
+    },
+    "ob_pennants": {
+      "c_obpe_chest": "Open the {R_CHEST} next."
+    },
+    "ob_chest": {
+      "c_obch_whistle": "Try one soft blast on the {R_WHISTLE}."
+    },
+    "ob_promise": {
+      "c_obpr_fin": "Go straight down to the {FINALE_ZONE} and begin.",
+      "c_obpr_plan": "Stay and write the after-party plan into the observation {R_LOG}."
+    },
+    "fin_approach": {
+      "c_fin_unlock": "Fit the {FINALE_ZONE} key and unlock the grand doors."
+    },
+    "fin_hall": {
+      "c_hall_light": "See to the {FIN_CHANDELIER} and its hundred candles.",
+      "c_hall_music": "See to the {FIN_GRAMOPHONE} on the little stage.",
+      "c_hall_table": "See to the {FIN_TABLE}."
+    },
+    "fp_light1": {
+      "c_light_up": "Hoist the {FIN_CHANDELIER} home and light the hundred candles."
+    },
+    "fin_summon": {
+      "c_sum_gong": "Strike the great {FIN_GONG}.",
+      "c_sum_bell": "Pull the {FIN_BELLWIRE} that rings at {MATRIARCH}'s desk."
+    },
+    "fin_gather": {
+      "c_gather_pearl": "Run down and bring {MATRIARCH} from her desk."
+    },
+    "fin_pearl": {
+      "c_pearl_walk": "Walk her up to the {FINALE_ZONE} doors."
+    },
+    "fin_midnight": {
+      "c_mid_stay": "Ask them to stay and help wake the {THRESHOLD}."
+    }
+  }
+}

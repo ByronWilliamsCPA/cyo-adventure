@@ -34,80 +34,80 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=120 beats='Mari Vega, twelve, is awake past midnight when her grandmother Pilar's old portable shortwave field set, inherited in spring and silent ever since, clicks itself on from the timer preset nobody ever understood; through the static a calm voice reads five-figure number groups, pauses, and says FIRST LIGHT, FIRST LIGHT; the voice, recorded long ago, is unmistakably her grandmother's; taped under the dial in worn print is a label reading WREN LISTENS; Mari grabs a pencil and copies the groups with her heart drumming'>>",
+      "body": "<<FILL role=setup words=120 beats='{HERO}, twelve, is awake past {OPENING_MOMENT} when {ANCESTOR}'s {DEVICE}, inherited in spring and silent ever since, clicks itself on from the timer preset nobody ever understood; through the static a calm voice reads five-figure number groups, pauses, and says {DEADLINE}, {DEADLINE}; the voice, recorded long ago, is unmistakably {ANCESTOR}'s; taped under the dial in worn print is a label reading {CALLSIGN} LISTENS; {HERO} grabs a pencil and copies the groups with her heart drumming'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_start_teo",
-          "label": "Wake your brother Teo, quietly.",
+          "label": "Wake {COMPANION}, quietly.",
           "target": "n_teo"
         }
       ]
     },
     {
       "id": "n_teo",
-      "body": "<<FILL role=setup words=105 beats='Teo, sixteen, grumbles awake, hears the voice, and sits bolt upright; he fetches grandma's operating logbook from the shelf while the broadcast repeats on the half hour and promises to end at first light; they wake Mom, who takes one look at the logbook, goes quiet in a remembering way, and sets the rules: stay together, phones charged, bike lights on, Teo leads, home by breakfast, and text me from wherever this takes you'>>",
+      "body": "<<FILL role=setup words=105 beats='{COMPANION}, sixteen, grumbles awake, hears the voice, and sits bolt upright; he fetches {GUIDE_LOG} from the shelf while the broadcast repeats on the half hour and promises to end at {DEADLINE}; they wake {GUARDIAN}, who takes one look at {GUIDE_LOG}, goes quiet in a remembering way, and sets the rules: stay together, phones charged, bike lights on, {COMPANION} leads, home by breakfast, and text me from wherever this takes you'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_teo_decode",
-          "label": "Spread the logbook on the kitchen table and decode the numbers.",
+          "label": "Spread {GUIDE_LOG} on the kitchen table and decode the numbers.",
           "target": "n_decode"
         }
       ]
     },
     {
       "id": "n_decode",
-      "body": "<<FILL role=setup words=115 beats='At the kitchen table the logbook gives up grandma's letter grid, and the groups resolve one by one into five places they know: WATER TOWER, ORPHEUM, BUOY SHED, MAP ROOM, BEACON MAST, each with its own short hint group; the last line reads FIVE WRENS SING, THEN COME HOME TO THE NEST; when Teo swings the field set's rotating loop antenna, the signal peaks on one steady bearing, east across town, no matter where they stand; the countdown to first light is already running'>>",
+      "body": "<<FILL role=setup words=115 beats='At the kitchen table {CIPHER} gives up its pattern, and the groups resolve one by one into five places they know: {ROUTE_A_LURE}, {ROUTE_B_LURE}, {ROUTE_C_LURE}, {ROUTE_D_LURE}, {ROUTE_E_LURE}, each with its own short hint group; the last line reads {TONE_MOTIF}, then come home to {GOAL}; when {COMPANION} swings {ANTENNA}, the signal peaks on one steady bearing, east across town, no matter where they stand; the countdown to {DEADLINE} is already running'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_decode_ride",
-          "label": "Ride out into the sleeping town.",
+          "label": "Ride out into {THRESHOLD}.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_hub",
-      "body": "<<FILL role=choice words=110 beats='The town square by the dry anchor fountain, five streets spoking away under sodium lamps, the sea a soft breath beyond the rooftops; the field set murmurs its patient numbers from Teo's handlebar basket and the loop antenna keeps pulling east; keep this scene general so it reads naturally on a first arrival or on any return trip between sites; around them wait the orchard lane up to the water tower, Main Street down to the shuttered Orpheum, the harbor road, the green in front of the library, the cinder path to Beacon Hill, and always that steady eastward bearing'>>",
+      "body": "<<FILL role=choice words=110 beats='{ENTRANCE}, five streets spoking away under sodium lamps, the sea a soft breath beyond the rooftops; {DEVICE} murmurs its patient numbers from {COMPANION}'s handlebar basket and {ANTENNA} keeps pulling east; keep this scene general so it reads naturally on a first arrival or on any return trip between sites; around them wait {ROUTE_A_APPROACH} up to {ROUTE_A_LURE}, the road down to {ROUTE_B_LURE}, {ROUTE_C_APPROACH}, {ROUTE_D_APPROACH} to {ROUTE_D_LURE}, {ROUTE_E_APPROACH} to {ROUTE_E_LURE}, and always that steady eastward bearing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hub_tower",
-          "label": "Ride the orchard lane up to the water tower.",
+          "label": "Ride {ROUTE_A_APPROACH} up to {ROUTE_A_LURE}.",
           "target": "wt_lane"
         },
         {
           "id": "c_hub_cinema",
-          "label": "Coast down Main Street to the shuttered Orpheum.",
+          "label": "Coast down Main Street to {ROUTE_B_LURE}.",
           "target": "cn_marquee"
         },
         {
           "id": "c_hub_harbor",
-          "label": "Take the harbor road out to the buoy shed.",
+          "label": "Take {ROUTE_C_APPROACH} out to {ROUTE_C_LURE}.",
           "target": "hb_road"
         },
         {
           "id": "c_hub_library",
-          "label": "Cut across the green to the library map room.",
+          "label": "Cut across {ROUTE_D_APPROACH} to {ROUTE_D_LURE}.",
           "target": "lb_green"
         },
         {
           "id": "c_hub_mast",
-          "label": "Climb the cinder path to the mast on Beacon Hill.",
+          "label": "Climb {ROUTE_E_APPROACH} to {ROUTE_E_LURE}.",
           "target": "bh_path"
         },
         {
           "id": "c_hub_nest",
-          "label": "Follow the loop antenna's steady bearing east to the source.",
+          "label": "Follow {ANTENNA}'s steady bearing east to {GOAL}.",
           "target": "fin_bearing"
         }
       ]
     },
     {
       "id": "wt_lane",
-      "body": "<<FILL role=rising words=90 beats='The orchard lane climbs between sleeping trees and the water tower rises ahead on six riveted legs, the town name painted pale on the tank against the stars; the field set murmurs the tower's hint group as they ride; write the approach general enough to read naturally whether this is their first stop of the night or a return'>>",
+      "body": "<<FILL role=rising words=90 beats='{ROUTE_A_APPROACH} climbs between sleeping trees and {ROUTE_A_LURE} rises ahead on six riveted legs, the town name painted pale on the tank against the stars; {DEVICE} murmurs the tower's hint group as they ride; write the approach general enough to read naturally whether this is their first stop of the night or a return'>>",
       "is_ending": false,
       "choices": [
         {
@@ -119,7 +119,7 @@
     },
     {
       "id": "wt_gap",
-      "body": "<<FILL role=rising words=85 beats='The chain-link has a gap by a bent post that every kid in town knows; slipping through, they stand under the tank as if under a giant's table, legs going up forever, a slow drip ticking somewhere in the dark ironwork overhead'>>",
+      "body": "<<FILL role=rising words=85 beats='The chain-link fence around {ROUTE_A_LURE} has a gap by a bent post that every kid in town knows; slipping through, they stand under the tank as if under a giant's table, legs going up forever, a slow drip ticking somewhere in the dark ironwork overhead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -131,12 +131,12 @@
     },
     {
       "id": "wt_gate",
-      "body": "<<FILL role=choice words=105 beats='In the gravel lot Teo works the tower's hint group through the grid and it comes out SIX LEGS, ONE SINGS, READ LOW; around them stand a small maintenance shed with a latch but no lock, the six great legs each stenciled with a number, and the ladder up the tank wrapped in a locked anti-climb cage'>>",
+      "body": "<<FILL role=choice words=105 beats='In the gravel lot {COMPANION} works the tower's hint group through {CIPHER} and it comes out SIX LEGS, ONE SINGS, READ LOW; around them stand a small maintenance shed with a latch but no lock, the six great legs each stenciled with a number, and up the tank stands the {ROUTE_A_GATE}, its rungs already glinting with frost'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wt_gate_shed",
-          "label": "Look inside the maintenance shed.",
+          "label": "Look inside {ROUTE_A_ZONE}.",
           "target": "wt_shed"
         },
         {
@@ -146,19 +146,19 @@
         },
         {
           "id": "c_wt_gate_ladder",
-          "label": "Size up the caged ladder.",
+          "label": "Size up the {ROUTE_A_GATE}.",
           "target": "wt_ladder"
         }
       ]
     },
     {
       "id": "wt_ladder",
-      "body": "<<FILL role=choice words=95 beats='The cage is locked and the rungs above it glitter with frost; READ LOW nags at Mari while Teo zooms his phone camera up the painted letters and finds nothing but paint; either the hint means the answer waits down here, or somebody has to climb around the outside of a frozen cage in the dark'>>",
+      "body": "<<FILL role=choice words=95 beats='The {ROUTE_A_GATE} is locked, and its rungs glitter with frost; READ LOW nags at {HERO} while {COMPANION} zooms his phone camera up the painted letters and finds nothing but paint; either the hint means the answer waits down here, or somebody has to climb around the outside of the {ROUTE_A_GATE} in the dark'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wt_ladder_climb",
-          "label": "Climb around the outside of the cage anyway.",
+          "label": "Climb around the outside of the {ROUTE_A_GATE} anyway.",
           "target": "e_wt_climb"
         },
         {
@@ -170,7 +170,7 @@
     },
     {
       "id": "wt_legs",
-      "body": "<<FILL role=choice words=95 beats='Six legs stenciled 1 to 6 for the maintenance crews, all alike in the torchlight; ONE SINGS; write this beat neutral so it reads the same whether they come from the lot or double back from the ladder; a leg that sings must sound different from its five silent sisters, or else carry some mark the others lack'>>",
+      "body": "<<FILL role=choice words=95 beats='Six legs stenciled 1 to 6 for the maintenance crews, all alike in the torchlight; ONE SINGS; write this beat neutral so it reads the same whether they come from the lot or double back from the {ROUTE_A_GATE}; a leg that sings must sound different from its five silent sisters, or else carry some mark the others lack'>>",
       "is_ending": false,
       "choices": [
         {
@@ -187,48 +187,48 @@
     },
     {
       "id": "wt_tap",
-      "body": "<<FILL role=rising words=90 beats='Knuckles on cold steel: five legs answer with a dead thud, but leg four rings, a low bell note that hangs in the dark air, something hollow bolted to the steel; at exactly eye height on that leg sits a small hinged junction box'>>",
+      "body": "<<FILL role=rising words=90 beats='Knuckles on cold steel: five legs answer with a dead thud, but leg four answers back with {ROUTE_A_DETAIL1}, something hollow bolted to the steel; at exactly eye height on that leg sits {ROUTE_A_FIND}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wt_tap_box",
-          "label": "Open the little box on leg four.",
+          "label": "Open {ROUTE_A_FIND} on leg four.",
           "target": "wt_box"
         }
       ]
     },
     {
       "id": "wt_marks",
-      "body": "<<FILL role=rising words=85 beats='Torchlight slides over rivets and stencils until it snags on leg four: a small diamond scratched at eye height, the same mark that dots the margins of grandma's logbook, right beside a hinged junction box bolted to the steel'>>",
+      "body": "<<FILL role=rising words=85 beats='Torchlight slides over rivets and stencils until it snags on leg four: a scratched {MARKER} at eye height, the same mark that dots the margins of {GUIDE_LOG}, right beside {ROUTE_A_FIND} bolted to the steel'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wt_marks_box",
-          "label": "Open the box under the scratched diamond.",
+          "label": "Open {ROUTE_A_FIND} under the scratched {MARKER}.",
           "target": "wt_box"
         }
       ]
     },
     {
       "id": "wt_box",
-      "body": "<<FILL role=choice words=95 beats='The box holds dead fuses and one laminated card in grandma's print: PAINT KEEPS BETTER THAN PAPER, LITTLE WREN; on the card's back is a pencil sketch of a shelf of paint cans; write the find neutral so it reads naturally whichever way the legs led them here, by ringing note or by scratched diamond'>>",
+      "body": "<<FILL role=choice words=95 beats='{ROUTE_A_FIND} holds dead fuses and one laminated card in {ANCESTOR}'s print: PAINT KEEPS BETTER THAN PAPER, LITTLE {CALLSIGN}; on the card's back is a pencil sketch of a shelf of paint cans; write the find neutral so it reads naturally whichever way the legs led them here, by ringing note or by scratched {MARKER}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wt_box_shed",
-          "label": "Head for the shed and its shelves.",
+          "label": "Head for {ROUTE_A_ZONE} and its shelves.",
           "target": "wt_shed"
         },
         {
           "id": "c_wt_box_card",
-          "label": "Puzzle over the card with Teo first.",
+          "label": "Puzzle over {ROUTE_A_CLUE} with {COMPANION} first.",
           "target": "wt_card"
         }
       ]
     },
     {
       "id": "wt_card",
-      "body": "<<FILL role=rising words=90 beats='Teo turns the card under his light: in the sketch one can is shaded dark, third from the left; and he works out why paint, of all things: the tank's letters look hand-painted because they were, a volunteer crew repainted this tower once, and a paint store would be exactly where an old painter could hide something'>>",
+      "body": "<<FILL role=rising words=90 beats='{COMPANION} turns {ROUTE_A_CLUE} under his light: in the sketch one can is shaded dark, third from the left; and he works out why paint, of all things: the tank's letters look hand-painted because they were, a volunteer crew repainted this tower once, and a paint store would be exactly where an old painter could hide something'>>",
       "is_ending": false,
       "choices": [
         {
@@ -240,7 +240,7 @@
     },
     {
       "id": "wt_shed",
-      "body": "<<FILL role=choice words=100 beats='The shed opens on a latch, no lock: valve charts, a workbench, a shelf of old paint cans, and on the wall a framed photograph of a paint crew up on the catwalk, decades old; keep the scene general so it lands the same whether they walk in cold from the lot or arrive hunting a sketched shelf'>>",
+      "body": "<<FILL role=choice words=100 beats='{ROUTE_A_ZONE} opens on a latch, no lock: valve charts, a workbench, a shelf of old paint cans, and on the wall a framed photograph of a paint crew up on the catwalk, decades old; keep the scene general so it lands the same whether they walk in cold from the lot or arrive hunting a sketched shelf'>>",
       "is_ending": false,
       "choices": [
         {
@@ -257,7 +257,7 @@
     },
     {
       "id": "wt_photo",
-      "body": "<<FILL role=rising words=90 beats='The caption reads TOWER REPAINT, VOLUNTEERS OF THE NIGHTJAR RADIO CLUB; front row, brush raised, laughing at the camera, stands a young Grandma Pilar; on the frame's edge someone chalked a small arrow, long ago, pointing back toward the paint shelf'>>",
+      "body": "<<FILL role=rising words=90 beats='The caption reads TOWER REPAINT, VOLUNTEERS OF {CLUB_NAME}; front row, brush raised, laughing at the camera, stands a young {ANCESTOR}; on the frame's edge someone chalked a small arrow, long ago, pointing back toward the paint shelf'>>",
       "is_ending": false,
       "choices": [
         {
@@ -269,7 +269,7 @@
     },
     {
       "id": "wt_cans",
-      "body": "<<FILL role=rising words=95 beats='Among the rusted cans one label is hand-lettered WREN BLUE; it lifts far too light for paint, and inside, dry as the day it was hidden, waits a rolled oilcloth bundle; write the moment neutral so it works whether the shelf was searched straight away or found by following the photograph's chalk arrow'>>",
+      "body": "<<FILL role=rising words=95 beats='Among the rusted cans one label is hand-lettered {CALLSIGN} BLUE; it lifts far too light for paint, and inside, dry as the day it was hidden, waits {ROUTE_A_CACHE}; write the moment neutral so it works whether the shelf was searched straight away or found by following the photograph's chalk arrow'>>",
       "is_ending": false,
       "choices": [
         {
@@ -281,47 +281,47 @@
     },
     {
       "id": "wt_cache",
-      "body": "<<FILL role=choice words=110 beats='Inside the oilcloth: a small brass tag shaped like a wren, stamped with the single word EVERY, and a slip in grandma's hand remembering the repaint summer, the whole club singing rounds on the catwalk while the paint dried and her keeping time on the rail; beneath it the familiar line, FIVE WRENS SING, THEN COME HOME TO THE NEST; the tag goes warm in Mari's pocket and the night is still open'>>",
+      "body": "<<FILL role=choice words=110 beats='Inside {ROUTE_A_CACHE}: a small brass tag shaped like a bird, stamped with the single word {ROUTE_A_TAG}, and a slip in {ANCESTOR}'s hand remembering the repaint summer, the whole club singing rounds on the catwalk while the paint dried and her keeping time on the rail; beneath it the familiar line, {TONE_MOTIF}, then come home to {GOAL}; the tag goes warm in {HERO}'s pocket and the night is still open'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wt_cache_hub",
-          "label": "Ride back to the square.",
+          "label": "Ride back to {ENTRANCE}.",
           "target": "n_hub"
         },
         {
           "id": "c_wt_cache_nest",
-          "label": "Follow the bearing east to the Nest.",
+          "label": "Follow the bearing east to {GOAL}.",
           "target": "fin_bearing"
         }
       ]
     },
     {
       "id": "e_wt_climb",
-      "body": "<<FILL role=failure words=90 beats='Two rungs up the outside of the cage her trainer skids on frosted steel and Teo's hand is already on her jacket, easing her down; they sit on the gravel until their hearts slow; the clue said READ LOW, and grandma never made her club climb anything; palms stinging and pride dented, they ride home under a paling sky, leaving the hunt for another, warmer night; a lesson about frost, taken with dignity'>>",
+      "body": "<<FILL role=failure words=90 beats='Two rungs up the outside of the {ROUTE_A_GATE} her trainer skids on frosted steel and {COMPANION}'s hand is already on her jacket, easing her down; they sit on the gravel until their hearts slow; the clue said READ LOW, and {ANCESTOR} never made her club climb anything; palms stinging and pride dented, they ride home under {DEADLINE_SIGN}, leaving the hunt for another, warmer night; a lesson about frost, taken with dignity'>>",
       "is_ending": true,
       "ending": {
         "id": "end_wt_climb",
         "valence": "negative",
         "kind": "setback",
-        "title": "Frost on the Rungs"
+        "title": "Frost on the {ROUTE_A_GATE}"
       }
     },
     {
       "id": "cn_marquee",
-      "body": "<<FILL role=rising words=90 beats='Main Street is empty and silver; the Orpheum's dead marquee still spells half a title in crooked letters; the cinema's hint group works out to ROW J SEAT TWELVE, WHERE THE LIGHT LIVES; the front doors are chained, but a margin note in grandma's logbook mentions the stage door in the alley that never latched properly; keep the arrival general for a first visit or a return'>>",
+      "body": "<<FILL role=rising words=90 beats='Main Street is empty and silver; {ROUTE_B_LURE}'s dead marquee still spells half a title in crooked letters; the cinema's hint group works out to ROW J SEAT TWELVE, WHERE THE LIGHT LIVES; the front doors are chained, but a margin note in {GUIDE_LOG} mentions {ROUTE_B_APPROACH} in the alley that never latched properly; keep the arrival general for a first visit or a return'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cn_marquee_alley",
-          "label": "Slip down the alley to the stage door.",
+          "label": "Slip down the alley to {ROUTE_B_APPROACH}.",
           "target": "cn_alley"
         }
       ]
     },
     {
       "id": "cn_alley",
-      "body": "<<FILL role=choice words=95 beats='The stage door gives with a push, unlatched exactly as the logbook promised; inside is dust, old velvet, and the deep held breath of an empty theater; from the dark wings two ways open: the double doors into the auditorium, and a narrow stair marked PROJECTION in flaking gilt'>>",
+      "body": "<<FILL role=choice words=95 beats='{ROUTE_B_APPROACH} gives with a push, unlatched exactly as {GUIDE_LOG} promised; inside is dust, old velvet, and the deep held breath of an empty theater; from the dark wings two ways open: the double doors into the auditorium, and a narrow stair marked PROJECTION in flaking gilt'>>",
       "is_ending": false,
       "choices": [
         {
@@ -338,7 +338,7 @@
     },
     {
       "id": "cn_stalls",
-      "body": "<<FILL role=choice words=100 beats='The auditorium: rows of seats under dust sheets like a sleeping audience, the screen a pale blank wall; ROW J is out there somewhere under the sheets; and up on the stage, behind the screen's edge, loom the shapes of the great speaker horns the old radio club once borrowed for its shows'>>",
+      "body": "<<FILL role=choice words=100 beats='The auditorium: rows of seats under dust sheets like a sleeping audience, the screen a pale blank wall; ROW J is out there somewhere under the sheets; and up on the stage, behind the screen's edge, loom the shapes of the great speaker horns {CLUB_NAME} once borrowed for its shows'>>",
       "is_ending": false,
       "choices": [
         {
@@ -355,7 +355,7 @@
     },
     {
       "id": "cn_rowj",
-      "body": "<<FILL role=choice words=95 beats='Row J under its sheet, seats folded shut like all the rest; but seat twelve's armrest carries a small brass plate engraved THE WREN'S SEAT, polished brighter than fifty years of dust should allow'>>",
+      "body": "<<FILL role=choice words=95 beats='Row J under its sheet, seats folded shut like all the rest; but seat twelve's armrest carries a small brass plate engraved THE {CALLSIGN}'S SEAT, polished brighter than fifty years of dust should allow'>>",
       "is_ending": false,
       "choices": [
         {
@@ -372,7 +372,7 @@
     },
     {
       "id": "cn_under",
-      "body": "<<FILL role=rising words=85 beats='Under-seat archaeology: springs, dust, gum gone to stone; then her fingers find the brass plate's mounting screws from behind, and they are thumb-loose, turned a hundred times, meant to be turned again'>>",
+      "body": "<<FILL role=rising words=85 beats='Under-seat archaeology: springs, dust, gum gone to stone; then her fingers find {ROUTE_B_DETAIL1}'s mounting screws from behind, and they are thumb-loose, turned a hundred times, meant to be turned again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -384,7 +384,7 @@
     },
     {
       "id": "cn_tip",
-      "body": "<<FILL role=rising words=85 beats='The seat folds down with a thump that rolls around the empty hall like a single clap; nothing is taped beneath it, but up close the brass plate sits proud of the wood and rocks under her fingertip, its screws thumb-loose on purpose'>>",
+      "body": "<<FILL role=rising words=85 beats='The seat folds down with a thump that rolls around the empty hall like a single clap; nothing is taped beneath it, but up close {ROUTE_B_DETAIL1} sits proud of the wood and rocks under her fingertip, its screws thumb-loose on purpose'>>",
       "is_ending": false,
       "choices": [
         {
@@ -396,7 +396,7 @@
     },
     {
       "id": "cn_plate",
-      "body": "<<FILL role=rising words=95 beats='Behind the plate a shallow hollow is carved into the armrest, holding a rolled slip: NOT IN THE DARK, LITTLE WREN, THE PRIZE LIVES WHERE THE LIGHT LIVES; every eye in this hall spent its evenings looking away from the answer, up at the little window where the light comes from; write the find neutral for either way of reaching it, from under the seat or over it'>>",
+      "body": "<<FILL role=rising words=95 beats='Behind {ROUTE_B_DETAIL1} a shallow hollow is carved into the armrest, holding a rolled slip: NOT IN THE DARK, LITTLE {CALLSIGN}, THE PRIZE LIVES WHERE THE LIGHT LIVES; every eye in this hall spent its evenings looking away from the answer, up at the little window where the light comes from; write the find neutral for either way of reaching it, from under the seat or over it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -408,7 +408,7 @@
     },
     {
       "id": "cn_stage",
-      "body": "<<FILL role=choice words=95 beats='Up the side steps onto the stage; behind the screen's edge the horn alcove waits, but the boards on this side are soft with age, and one flexes under her toe with a groan, dark pit space showing through the gaps'>>",
+      "body": "<<FILL role=choice words=95 beats='Up the side steps onto the stage; behind the screen's edge the horn alcove waits, but the {ROUTE_B_GATE} on this side flexes under her toe with a groan, dark pit space showing through the gaps'>>",
       "is_ending": false,
       "choices": [
         {
@@ -425,7 +425,7 @@
     },
     {
       "id": "cn_horns",
-      "body": "<<FILL role=rising words=90 beats='The speaker horns rise taller than Teo, mouths full of dark, the machines that once gave the radio club its thunder; chalked neatly on the biggest horn's frame are a small diamond and the words EVERY SHOW ENDS AT THE BOOTH'>>",
+      "body": "<<FILL role=rising words=90 beats='The speaker horns rise taller than {COMPANION}, mouths full of dark, the machines that once gave {CLUB_NAME} its thunder; chalked neatly on the biggest horn's frame are a {MARKER} and the words EVERY SHOW ENDS AT THE BOOTH'>>",
       "is_ending": false,
       "choices": [
         {
@@ -437,7 +437,7 @@
     },
     {
       "id": "cn_boothstairs",
-      "body": "<<FILL role=choice words=90 beats='The narrow stair coils up past a crooked PRIVATE sign to the booth landing, where the door stands ajar on darkness and a round brass porthole window looks in beside it; write this landing neutral so it reads naturally from any direction the theater has funneled them'>>",
+      "body": "<<FILL role=choice words=90 beats='The narrow stair coils up past a crooked PRIVATE sign to the booth landing, where the door stands ajar on darkness and {ROUTE_B_DETAIL2} looks in beside it; write this landing neutral so it reads naturally from any direction the theater has funneled them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -447,31 +447,31 @@
         },
         {
           "id": "c_cn_stairs_port",
-          "label": "Look through the porthole first.",
+          "label": "Look through {ROUTE_B_DETAIL2} first.",
           "target": "cn_port"
         }
       ]
     },
     {
       "id": "cn_port",
-      "body": "<<FILL role=rising words=85 beats='Through the glass: the projector crouched like a sleeping brass animal, a splicing bench, and a wall rack of film tins in neat rows, except for one tin standing nose-out of line as if it has been waiting to be noticed'>>",
+      "body": "<<FILL role=rising words=85 beats='Through the glass: the projector crouched like a sleeping brass animal, a splicing bench, and a wall rack of film tins in neat rows, except for {ROUTE_B_FIND} standing nose-out of line as if it has been waiting to be noticed'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cn_port_in",
-          "label": "Go in to the out-of-line tin.",
+          "label": "Go in to {ROUTE_B_FIND}.",
           "target": "cn_booth"
         }
       ]
     },
     {
       "id": "cn_booth",
-      "body": "<<FILL role=choice words=100 beats='The booth smells of oil and dust gone cold decades ago; the rack's labels are hand-inked, and the out-of-line tin reads THE MIDNIGHT MATINEE, FINAL REEL, in grandma's print; the projector's lamp housing stands open and threaded, ready, as if someone always meant for one more show; keep the room neutral for a first or return visit'>>",
+      "body": "<<FILL role=choice words=100 beats='{ROUTE_B_FIND} in the booth smells of oil and dust gone cold decades ago; the rack's labels are hand-inked, and it reads {ROUTE_B_PRIZE}, FINAL REEL, in {ANCESTOR}'s print; the projector's lamp housing stands open and threaded, ready, as if someone always meant for one more show; keep the room neutral for a first or return visit'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cn_booth_open",
-          "label": "Open the tin.",
+          "label": "Open {ROUTE_B_FIND}.",
           "target": "cn_cache"
         },
         {
@@ -483,70 +483,70 @@
     },
     {
       "id": "cn_cache",
-      "body": "<<FILL role=choice words=110 beats='No film inside; the tin is lined with felt and holds a brass wren tag stamped VOICE and a slip in grandma's hand: the Midnight Matinee, once a year the club filled this hall with a radio play through the big horns, and she voiced the storm so well the front row put their umbrellas up; beneath, the line, FIVE WRENS SING, THEN COME HOME TO THE NEST; the tag clinks into Mari's pocket'>>",
+      "body": "<<FILL role=choice words=110 beats='No film inside; {ROUTE_B_FIND} is lined with felt and holds a small brass tag stamped {ROUTE_B_TAG}, and a slip in {ANCESTOR}'s hand: {ROUTE_B_PRIZE}, once a year {CLUB_NAME} filled this hall with a radio play through the big horns, and she voiced the storm so well the front row put their umbrellas up; beneath, the line, {TONE_MOTIF}, then come home to {GOAL}; the tag clinks into {HERO}'s pocket'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cn_cache_hub",
-          "label": "Back to the square.",
+          "label": "Back to {ENTRANCE}.",
           "target": "n_hub"
         },
         {
           "id": "c_cn_cache_nest",
-          "label": "Follow the bearing east to the Nest.",
+          "label": "Follow the bearing east to {GOAL}.",
           "target": "fin_bearing"
         }
       ]
     },
     {
       "id": "e_cn_boards",
-      "body": "<<FILL role=failure words=90 beats='The soft board cracks and her leg drops knee-deep into the under-stage dark; Teo has her by both arms before the fright even lands; a scraped shin, a torn sock, a long careful crawl back to the solid wings; on the alley steps they take stock and call it honestly: no treasure is worth a broken ankle in an empty building at night; they wedge the stage door shut behind them and pedal home limping-proud, the hunt paused, not lost'>>",
+      "body": "<<FILL role=failure words=90 beats='The {ROUTE_B_GATE} cracks and her leg drops knee-deep into the under-stage dark; {COMPANION} has her by both arms before the fright even lands; a scraped shin, a torn sock, a long careful crawl back to the solid wings; on the alley steps they take stock and call it honestly: no treasure is worth a broken ankle in an empty building at night; they wedge {ROUTE_B_APPROACH} shut behind them and pedal home limping-proud, the hunt paused, not lost'>>",
       "is_ending": true,
       "ending": {
         "id": "end_cn_boards",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Soft Board"
+        "title": "The {ROUTE_B_GATE}"
       }
     },
     {
       "id": "e_cn_reel",
-      "body": "<<FILL role=ending words=95 beats='The projector clatters awake and the screen fills, not with film stars but with the club's own home footage: this very hall packed for the Midnight Matinee, paper tickets waving, and through some past hand's patching of projector to horns rolls grandma's storm scene, wind and thunder made of voice and tray-rattled tin; Mari and Teo sink into row J and watch until the reel runs out and the booth window goes gray; the hunt can wait a night, they have seen the show'>>",
+      "body": "<<FILL role=ending words=95 beats='The projector clatters awake and the screen fills, not with film stars but with the club's own home footage: this very hall packed for {ROUTE_B_PRIZE}, paper tickets waving, and through some past hand's patching of projector to horns rolls {ANCESTOR}'s storm scene, wind and thunder made of voice and tray-rattled tin; {HERO} and {COMPANION} sink into row J and watch until the reel runs out and the booth window goes gray; the hunt can wait a night, they have seen the show'>>",
       "is_ending": true,
       "ending": {
         "id": "end_cn_reel",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Midnight Matinee"
+        "title": "{ROUTE_B_PRIZE}"
       }
     },
     {
       "id": "hb_road",
-      "body": "<<FILL role=rising words=90 beats='The harbor road: masts ticking, halyards ringing their small bells, black water breathing slow against the quay; out along the far quay stands the buoy shed, and past it one window of the harbor office glows yellow, somebody awake at this hour; write the approach general for a first ride out or a return'>>",
+      "body": "<<FILL role=rising words=90 beats='{ROUTE_C_APPROACH}: masts ticking, halyards ringing their small bells, black water breathing slow against the quay; out along the far quay stands {ROUTE_C_LURE}, and past it one window of the harbor office glows yellow, somebody awake at this hour; write the approach general for a first ride out or a return'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hb_road_wall",
-          "label": "Ride out along the harbor wall.",
+          "label": "Ride out along {ROUTE_C_APPROACH}.",
           "target": "hb_wall"
         }
       ]
     },
     {
       "id": "hb_wall",
-      "body": "<<FILL role=rising words=85 beats='The wall's lamps space out pools of light with long dark gaps between; far out in the channel a bell buoy clanks its slow patient note, the sound this town falls asleep to; ahead wait the buoy shed's big rolling doors and, beyond them, the lit office window'>>",
+      "body": "<<FILL role=rising words=85 beats='{ROUTE_C_APPROACH}'s lamps space out pools of light with long dark gaps between; far out in the channel a bell buoy clanks its slow patient note, the sound this town falls asleep to; ahead wait {ROUTE_C_LURE}'s big rolling doors and, beyond them, the lit office window'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hb_wall_quay",
-          "label": "Come up to the buoy shed doors.",
+          "label": "Come up to {ROUTE_C_LURE}'s doors.",
           "target": "hb_quay"
         }
       ]
     },
     {
       "id": "hb_quay",
-      "body": "<<FILL role=choice words=100 beats='The shed's rolling doors wear a serious padlock; the office window's light spills yellow onto the quay stones a little farther on; and below the shed's seaward side, a dinghy is tied at the water steps near a small hatch above the tideline, though it sits oddly low in the water, paint peeling and oars dusty, the look of a boat nobody has trusted in a long while'>>",
+      "body": "<<FILL role=choice words=100 beats='{ROUTE_C_LURE}'s rolling doors wear a serious padlock; the office window's light spills yellow onto the quay stones a little farther on; and below the shed's seaward side, {ROUTE_C_GATE} is tied at the water steps near a small hatch above the tideline, though it sits oddly low in the water, paint peeling and oars dusty, the look of a boat nobody has trusted in a long while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -561,14 +561,14 @@
         },
         {
           "id": "c_hb_quay_dinghy",
-          "label": "Row the dinghy around to the sea hatch.",
+          "label": "Row the {ROUTE_C_GATE} around to the sea hatch.",
           "target": "e_hb_dinghy"
         }
       ]
     },
     {
       "id": "hb_doors",
-      "body": "<<FILL role=choice words=90 beats='The padlock is solid and the hasp is welded on, but the old doors have shrunk with age and a torch-wide gap runs between them; and among the faded harbor stencils on the planks one small painted shape is no stencil at all: a neat little diamond'>>",
+      "body": "<<FILL role=choice words=90 beats='The padlock is solid and the hasp is welded on, but the old doors have shrunk with age and a torch-wide gap runs between them; and among the faded harbor stencils on the planks one small painted shape is no stencil at all: a {MARKER}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -597,7 +597,7 @@
     },
     {
       "id": "hb_office",
-      "body": "<<FILL role=choice words=105 beats='The harbor office: kettle, charts, a VHF murmuring the shipping weather, and Mr. Okafor the harbormaster keeping the pre-dawn watch; on his desk lies a pad of penciled five-figure groups in a neat old-fashioned hand, tonight's broadcast, copied; write his greeting warm and general so it lands the same on a first knock of the night or on a return visit'>>",
+      "body": "<<FILL role=choice words=105 beats='The harbor office: kettle, charts, a VHF murmuring the shipping weather, and Mr. Okafor the harbormaster keeping the pre-dawn watch; on his desk lies a pad of penciled five-figure groups in a neat old-fashioned hand, tonight's {BROADCAST}, copied; write his greeting warm and general so it lands the same on a first knock of the night or on a return visit'>>",
       "is_ending": false,
       "choices": [
         {
@@ -614,48 +614,48 @@
     },
     {
       "id": "hb_show",
-      "body": "<<FILL role=rising words=95 beats='He reads Mari's page and goes very still; that is Wren's grid, he says; he was the Nightjar Radio Club's youngest member and copied his first net at this very desk; he cannot leave the watch until the day man comes, but he slides a brass key across the counter: the bell buoy at the back, and she would want a Vega to be the one to open it'>>",
+      "body": "<<FILL role=rising words=95 beats='He reads {HERO}'s page and goes very still; that is {CALLSIGN}'s grid, he says; he was {CLUB_NAME}'s youngest member and copied his first net at this very desk; he cannot leave the watch until the day man comes, but he slides {ROUTE_C_FIND} across the counter: the bell buoy at the back, and {ANCESTOR} would want a {FAMILY_NAME} to be the one to open it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hb_show_key",
-          "label": "Take the key.",
+          "label": "Take {ROUTE_C_FIND}.",
           "target": "hb_key"
         }
       ]
     },
     {
       "id": "hb_pad",
-      "body": "<<FILL role=rising words=95 beats='The pad's top sheet is tonight; underneath lie older sheets in the same hand but rounder and younger, nets he copied here as a teenager and never threw away; he taps the small diamond doodled in the margin: the Nightjars, the midnight club of a night-shift town, cannery and harbor and hospital, and Pilar Vega the best of them; then he reaches into the drawer for a brass key'>>",
+      "body": "<<FILL role=rising words=95 beats='The pad's top sheet is tonight; underneath lie older sheets in the same hand but rounder and younger, nets he copied here as a teenager and never threw away; he taps the small {MARKER} doodled in the margin: {CLUB_NAME}, the midnight club of a night-shift town, cannery and harbor and hospital, and {ANCESTOR} the best of them; then he reaches into the drawer for {ROUTE_C_FIND}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hb_pad_key",
-          "label": "Take the key he holds out.",
+          "label": "Take {ROUTE_C_FIND} he holds out.",
           "target": "hb_key"
         }
       ]
     },
     {
       "id": "hb_key",
-      "body": "<<FILL role=choice words=95 beats='The key is warm from his hand; the kettle has just boiled and the cocoa tin is already down off the shelf; outside, the shed waits in the dark and the field set keeps murmuring its countdown; write the moment neutral for either doorway that brought them to it'>>",
+      "body": "<<FILL role=choice words=95 beats='{ROUTE_C_FIND} is warm from his hand; the kettle has just boiled and the cocoa tin is already down off the shelf; outside, {ROUTE_C_LURE} waits in the dark and {DEVICE} keeps murmuring its countdown; write the moment neutral for either doorway that brought them to it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hb_key_shed",
-          "label": "Go open the buoy shed now.",
+          "label": "Go open {ROUTE_C_LURE} now.",
           "target": "hb_shed"
         },
         {
           "id": "c_hb_key_stories",
-          "label": "Stay for a mug and his Nightjar stories.",
+          "label": "Stay for a mug and his {MEMBER_TERM} stories.",
           "target": "e_hb_stories"
         }
       ]
     },
     {
       "id": "hb_shed",
-      "body": "<<FILL role=choice words=95 beats='The key turns a small side door and the buoy herd looms up in torchlight, iron and salt and tar; at the back on its cradle rests the retired bell buoy, bell still hung in its cage, and the hint group said THE RETIRED BELL REMEMBERS'>>",
+      "body": "<<FILL role=choice words=95 beats='{ROUTE_C_FIND} turns a small side door and the buoy herd looms up in torchlight, iron and salt and tar; at the back on its cradle rests the retired bell buoy, bell still hung in its cage, and the hint group said THE RETIRED BELL REMEMBERS'>>",
       "is_ending": false,
       "choices": [
         {
@@ -684,7 +684,7 @@
     },
     {
       "id": "hb_cage",
-      "body": "<<FILL role=rising words=85 beats='Fingers along the cage frame find a patch of newer paint; under the torch it resolves into a small diamond and a painted arrow pointing up into the bell's dark throat, where her reaching knuckles knock the clapper and something on its chain rattles in answer'>>",
+      "body": "<<FILL role=rising words=85 beats='Fingers along the cage frame find a patch of newer paint; under the torch it resolves into a {MARKER} and a painted arrow pointing up into the bell's dark throat, where her reaching knuckles knock the clapper and something on its chain rattles in answer'>>",
       "is_ending": false,
       "choices": [
         {
@@ -696,24 +696,24 @@
     },
     {
       "id": "hb_cache",
-      "body": "<<FILL role=choice words=110 beats='The cylinder unscrews: a brass wren tag stamped FINDS, and a rolled slip in grandma's hand about the fog nights, the club taking turns on the harbor wall ringing answers out to the bell buoy so nobody at sea felt alone, because a voice finds you in the fog, little wren; and beneath it the line, FIVE WRENS SING, THEN COME HOME TO THE NEST; write the find neutral for either path through the bell'>>",
+      "body": "<<FILL role=choice words=110 beats='The cylinder unscrews: a small brass tag stamped {ROUTE_C_TAG}, and a rolled slip in {ANCESTOR}'s hand about the fog nights, the club taking turns on {ROUTE_C_APPROACH} ringing answers out to the bell buoy so nobody at sea felt alone, because a voice finds you in the fog, little {CALLSIGN}; and beneath it the line, {TONE_MOTIF}, then come home to {GOAL}; write the find neutral for either path through the bell'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hb_cache_hub",
-          "label": "Ride back to the square.",
+          "label": "Ride back to {ENTRANCE}.",
           "target": "n_hub"
         },
         {
           "id": "c_hb_cache_nest",
-          "label": "Follow the bearing east to the Nest.",
+          "label": "Follow the bearing east to {GOAL}.",
           "target": "fin_bearing"
         }
       ]
     },
     {
       "id": "e_hb_dinghy",
-      "body": "<<FILL role=failure words=90 beats='Two oar-pulls out and the dinghy is ankle-deep, hauled out for caulking and never meant to float tonight; they put back in an undignified hurry, boots full of harbor, and stand dripping on the steps while the bell buoy clanks somewhere out in the dark, unbothered; Teo quotes the rule from grandma's logbook margin, never go on the water tired; soaked socks, warm shame, and a slow ride home with the hunt saved for a drier night'>>",
+      "body": "<<FILL role=failure words=90 beats='Two oar-pulls out and the {ROUTE_C_GATE} is ankle-deep, hauled out for caulking and never meant to float tonight; they put back in an undignified hurry, boots full of harbor, and stand dripping on the steps while the bell buoy clanks somewhere out in the dark, unbothered; {COMPANION} quotes the rule from {GUIDE_LOG}'s margin, never go on the water tired; soaked socks, warm shame, and a slow ride home with the hunt saved for a drier night'>>",
       "is_ending": true,
       "ending": {
         "id": "end_hb_dinghy",
@@ -724,18 +724,18 @@
     },
     {
       "id": "e_hb_stories",
-      "body": "<<FILL role=ending words=100 beats='The cocoa goes down and the stories come out: the night the club counted a trawler home through fog by bell-rings, the Christmas net with paper hats over headphones, the way Pilar could tune a signal out of pure noise like coaxing a cat off a roof; the day man arrives with the gulls and the sky already pearl-gray, first light spent, the shed unopened; but the club is alive in the telling, and Mr. Okafor shakes both their hands like colleagues; they will be back, and he will be listening'>>",
+      "body": "<<FILL role=ending words=100 beats='The cocoa goes down and the stories come out: the night {CLUB_NAME} counted a trawler home through fog by bell-rings, the Christmas net with paper hats over headphones, the way {ANCESTOR} could tune a signal out of pure noise like coaxing a cat off a roof; the day man arrives with the gulls and the sky already pearl-gray, {DEADLINE} spent, {ROUTE_C_LURE} unopened; but the club is alive in the telling, and Mr. Okafor shakes both their hands like colleagues; they will be back, and he will be listening'>>",
       "is_ending": true,
       "ending": {
         "id": "end_hb_stories",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Youngest Nightjar"
+        "title": "The Youngest {MEMBER_TERM}"
       }
     },
     {
       "id": "lb_green",
-      "body": "<<FILL role=rising words=85 beats='Cutting across the dew-wet green toward the dark library and its one lit porch lamp; the map room's hint group works out to MAP ROOM, THE DRAWER OF THE FOUNDING YEAR, MIND THE BELL; quick in, quick out, Teo says, this one is a pit stop; keep the approach general for any point in the night'>>",
+      "body": "<<FILL role=rising words=85 beats='Cutting across {ROUTE_D_APPROACH} toward the dark library and its one lit porch lamp; {ROUTE_D_LURE}'s hint group works out to MAP ROOM, THE DRAWER OF THE FOUNDING YEAR, MIND THE BELL; quick in, quick out, {COMPANION} says, this one is a pit stop; keep the approach general for any point in the night'>>",
       "is_ending": false,
       "choices": [
         {
@@ -747,7 +747,7 @@
     },
     {
       "id": "lb_porch",
-      "body": "<<FILL role=choice words=95 beats='The service door under the porch lamp; above the lintel the library's stone owl stares down, and above the door frame hangs a small black box with a bell dome, the night bell, MIND THE BELL; everyone's gran knows the librarians have hidden an after-hours key up behind the owl since before Mom was born'>>",
+      "body": "<<FILL role=choice words=95 beats='The service door under the porch lamp; above the lintel the library's stone owl stares down, and above the door frame hangs a small black box holding the night {ROUTE_D_GATE}, marked MIND THE BELL; everyone's gran knows the librarians have hidden an after-hours key up behind the owl since before {GUARDIAN} was born'>>",
       "is_ending": false,
       "choices": [
         {
@@ -764,7 +764,7 @@
     },
     {
       "id": "lb_key",
-      "body": "<<FILL role=rising words=85 beats='Her fingers find the worn brass key on its ancient nail behind the owl's wing; the lock turns as if oiled for exactly this, the door opens on the smell of paper and floor wax, and the night bell above the frame keeps its peace'>>",
+      "body": "<<FILL role=rising words=85 beats='Her fingers find the worn brass key on its ancient nail behind the owl's wing; the lock turns as if oiled for exactly this, the door opens on the smell of paper and floor wax, and the {ROUTE_D_GATE} above the frame keeps its peace'>>",
       "is_ending": false,
       "choices": [
         {
@@ -776,12 +776,12 @@
     },
     {
       "id": "lb_hall",
-      "body": "<<FILL role=choice words=90 beats='The reading hall by moonlight, tables silver, stacks fading into the dark; the map room's glass door waits at the far end, and midway one green-shaded lamp has been left burning over a display table, a small island of light in the hush'>>",
+      "body": "<<FILL role=choice words=90 beats='The reading hall by moonlight, tables silver, stacks fading into the dark; {ROUTE_D_LURE}'s glass door waits at the far end, and midway one green-shaded lamp has been left burning over a display table, a small island of light in the hush'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lb_hall_maproom",
-          "label": "Go straight for the map room.",
+          "label": "Go straight for {ROUTE_D_LURE}.",
           "target": "lb_maproom"
         },
         {
@@ -793,24 +793,24 @@
     },
     {
       "id": "lb_table",
-      "body": "<<FILL role=rising words=85 beats='The display is half-built, town anniversaries pinned on card; one card reads THE NIGHTJAR RADIO CLUB, FOUNDED 1975, beside a photograph of a dozen night-shift faces crowded around a kitchen table of radios; the founding year, handed to them in passing, like the library meant to help'>>",
+      "body": "<<FILL role=rising words=85 beats='The display is half-built, town anniversaries pinned on card; one card reads {CLUB_NAME}, FOUNDED 1975, beside a photograph of a dozen night-shift faces crowded around a kitchen table of radios; the founding year, handed to them in passing, like the library meant to help'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lb_table_maproom",
-          "label": "On to the map room.",
+          "label": "On to {ROUTE_D_LURE}.",
           "target": "lb_maproom"
         }
       ]
     },
     {
       "id": "lb_maproom",
-      "body": "<<FILL role=choice words=95 beats='The map room is one wide cabinet of flat drawers labeled by year, the town on paper a hundred times over; THE DRAWER OF THE FOUNDING YEAR; and on one drawer's label, visible only up close, someone long ago inked a tiny diamond; write the room neutral for either way in, direct or by way of the display table'>>",
+      "body": "<<FILL role=choice words=95 beats='{ROUTE_D_LURE} is one wide cabinet of flat drawers labeled by year, the town on paper a hundred times over; THE DRAWER OF THE FOUNDING YEAR; and on one drawer's label, visible only up close, someone long ago inked a tiny {MARKER}; write the room neutral for either way in, direct or by way of the display table'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lb_maproom_diamond",
-          "label": "Open the drawer with the little inked diamond.",
+          "label": "Open the drawer with the little inked {MARKER}.",
           "target": "lb_drawer"
         },
         {
@@ -822,7 +822,7 @@
     },
     {
       "id": "lb_hunt",
-      "body": "<<FILL role=rising words=85 beats='Drawer after drawer whispers open, coastlines and street grids sliding past under the torch; then the beam snags on a label inked with a tiny diamond beside its year, 1975, and the hunt through the years is over'>>",
+      "body": "<<FILL role=rising words=85 beats='Drawer after drawer whispers open, coastlines and street grids sliding past under the torch; then the beam snags on a label inked with a tiny {MARKER} beside its year, 1975, and the hunt through the years is over'>>",
       "is_ending": false,
       "choices": [
         {
@@ -834,35 +834,35 @@
     },
     {
       "id": "lb_drawer",
-      "body": "<<FILL role=choice words=115 beats='The 1975 survey: the whole town in fine ink, and drawn onto it five faded circles, water tower, cinema, buoy shed, this very library, the Beacon Hill mast, with pencil lines running from all five to one spot on the old rail spur east of the fairgrounds, marked with a tiny drawn wren; taped in the drawer's corner, a capsule holding a brass wren tag stamped ITS and a slip in grandma's hand, the night we founded the club we divided the town into listening posts, and I circled my favorites; the map says on paper what the loop antenna has hummed all night, everything points east; write the find neutral for either route to this drawer'>>",
+      "body": "<<FILL role=choice words=115 beats='{ROUTE_D_FIND}: the whole town in fine ink, and drawn onto it five faded circles, {ROUTE_A_LURE}, {ROUTE_B_LURE}, {ROUTE_C_LURE}, this very library, {ROUTE_E_LURE}, with pencil lines running from all five to one spot on the old rail spur east of the fairgrounds, marked with a tiny drawn bird; taped in the drawer's corner, a capsule holding a small brass tag stamped {ROUTE_D_TAG} and a slip in {ANCESTOR}'s hand, the night we founded the club we divided the town into listening posts, and I circled my favorites; the map says on paper what {ANTENNA} has hummed all night, everything points east; write the find neutral for either route to this drawer'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lb_drawer_hub",
-          "label": "Ease the drawer shut and head back to the square.",
+          "label": "Ease the drawer shut and head back to {ENTRANCE}.",
           "target": "n_hub"
         },
         {
           "id": "c_lb_drawer_nest",
-          "label": "Follow the map's pencil lines east to the Nest.",
+          "label": "Follow the map's pencil lines east to {GOAL}.",
           "target": "fin_bearing"
         }
       ]
     },
     {
       "id": "e_lb_alarm",
-      "body": "<<FILL role=failure words=90 beats='The handle turns a quarter-inch and the night bell goes off like a tin thunderstorm over their heads; a light comes on in the librarian's cottage across the green; they stand and wait, honest, while Ms. Kettle arrives in dressing gown and slippers, silences the bell with one practiced whack, and hears them out; she is kinder than her bell but firm: the map room by daylight, with her, and your mother hears about tonight from you and no one else; a red-eared walk home'>>",
+      "body": "<<FILL role=failure words=90 beats='The handle turns a quarter-inch and the {ROUTE_D_GATE} goes off like a tin thunderstorm over their heads; a light comes on in the librarian's cottage across the green; they stand and wait, honest, while Ms. Kettle arrives in dressing gown and slippers, silences the {ROUTE_D_GATE} with one practiced whack, and hears them out; she is kinder than her {ROUTE_D_GATE} but firm: {ROUTE_D_LURE} by daylight, with her, and {GUARDIAN} hears about tonight from you and no one else; a red-eared walk home'>>",
       "is_ending": true,
       "ending": {
         "id": "end_lb_alarm",
         "valence": "negative",
         "kind": "setback",
-        "title": "Mind the Bell"
+        "title": "Mind the {ROUTE_D_GATE}"
       }
     },
     {
       "id": "bh_path",
-      "body": "<<FILL role=choice words=95 beats='The cinder path up Beacon Hill starts by the allotment gates; high above, the mast's red beacon pulses slow as a heartbeat against the stars; two ways climb from here, the long patient switchbacks or the steep scree chute the big kids brag about; keep the foot of the hill general for any hour of the night'>>",
+      "body": "<<FILL role=choice words=95 beats='{ROUTE_E_APPROACH} up {ROUTE_E_LURE} starts by the allotment gates; high above, the mast's red beacon pulses slow as a heartbeat against the stars; two ways climb from here, the long patient switchbacks or the {ROUTE_E_GATE} the big kids brag about; keep the foot of the hill general for any hour of the night'>>",
       "is_ending": false,
       "choices": [
         {
@@ -872,7 +872,7 @@
         },
         {
           "id": "c_bh_path_scree",
-          "label": "Scramble straight up the scree chute.",
+          "label": "Scramble straight up the {ROUTE_E_GATE}.",
           "target": "e_bh_scree"
         }
       ]
@@ -891,7 +891,7 @@
     },
     {
       "id": "bh_wind",
-      "body": "<<FILL role=rising words=85 beats='At the hill's shoulder the night wind takes over, and the wind up here is singing: long steel notes hanging in the air, swelling and fading, the mast's guy wires played like harp strings; the hint group said WHERE THE WIRES SING, THE THIRD ANCHOR'>>",
+      "body": "<<FILL role=rising words=85 beats='At the hill's shoulder the night wind takes over, and the wind up here is singing: {ROUTE_E_DETAIL1}, hanging in the air, swelling and fading, the mast's guy wires played like harp strings; the hint group said WHERE THE WIRES SING, THE THIRD ANCHOR'>>",
       "is_ending": false,
       "choices": [
         {
@@ -920,7 +920,7 @@
     },
     {
       "id": "bh_listen",
-      "body": "<<FILL role=rising words=85 beats='Ear tipped to the wind: each wire holds its own note, and the chord slowly turns as gusts walk across the hill, the whole summit one instrument; grandma stood here, both of them know it without saying so; the wires slope away downhill like strings on a tilted harp, pointing to their anchors'>>",
+      "body": "<<FILL role=rising words=85 beats='Ear tipped to the wind: each wire holds its own note, and the chord slowly turns as gusts walk across the hill, the whole summit one instrument; {ANCESTOR} stood here, both of them know it without saying so; the wires slope away downhill like strings on a tilted harp, pointing to their anchors'>>",
       "is_ending": false,
       "choices": [
         {
@@ -932,7 +932,7 @@
     },
     {
       "id": "bh_anchors",
-      "body": "<<FILL role=choice words=95 beats='The anchor blocks sit out in the bracken, concrete shoulders with steel plates stamped A1, A2, A3; the third anchor stands a little apart, beside an old stone survey pillar with a brass cap; write the blocks neutral so the scene reads the same whether they came straight down or stayed to listen first'>>",
+      "body": "<<FILL role=choice words=95 beats='The anchor blocks sit out in the bracken, concrete shoulders with steel plates stamped A1, A2, A3; the third anchor stands a little apart, beside {ROUTE_E_DETAIL2}; write the blocks neutral so the scene reads the same whether they came straight down or stayed to listen first'>>",
       "is_ending": false,
       "choices": [
         {
@@ -942,38 +942,38 @@
         },
         {
           "id": "c_bh_anchors_pillar",
-          "label": "Check the survey pillar beside it.",
+          "label": "Check {ROUTE_E_DETAIL2} beside it.",
           "target": "bh_pillar"
         }
       ]
     },
     {
       "id": "bh_plate",
-      "body": "<<FILL role=rising words=85 beats='A3's plate carries a ring of bolts, all weathered gray except one: a brass bolt head stamped with a tiny diamond, and it turns under her fingers, threaded smooth, as if someone has greased it faithfully once a year'>>",
+      "body": "<<FILL role=rising words=85 beats='A3's plate carries a ring of bolts, all weathered gray except one: {ROUTE_E_FIND} stamped with a tiny {MARKER}, and it turns under her fingers, threaded smooth, as if someone has greased it faithfully once a year'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_bh_plate_hollow",
-          "label": "Turn the brass bolt out.",
+          "label": "Turn {ROUTE_E_FIND} out.",
           "target": "bh_hollow"
         }
       ]
     },
     {
       "id": "bh_pillar",
-      "body": "<<FILL role=rising words=85 beats='The survey pillar's brass benchmark cap is engraved with the mapmakers' arrow, and around the arrow someone has added a ring of tiny stamped diamonds and one scratched line pointing straight at the base of anchor three, where a single bolt head glints brass among the gray'>>",
+      "body": "<<FILL role=rising words=85 beats='{ROUTE_E_DETAIL2}'s brass benchmark cap is engraved with the mapmakers' arrow, and around the arrow someone has added a ring of tiny stamped {MARKER}s and one scratched line pointing straight at the base of anchor three, where {ROUTE_E_FIND} glints brass among the gray'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_bh_pillar_hollow",
-          "label": "Go turn that brass bolt.",
+          "label": "Go turn {ROUTE_E_FIND}.",
           "target": "bh_hollow"
         }
       ]
     },
     {
       "id": "bh_hollow",
-      "body": "<<FILL role=rising words=95 beats='The brass bolt draws a small cover plate with it, and behind the plate is a dry cavity cast into the concrete itself, made when the anchor was poured; whoever built this cache built it to outlast everything on the hill; inside waits a brass cylinder; write the find neutral for either clue that led here, plate or pillar'>>",
+      "body": "<<FILL role=rising words=95 beats='{ROUTE_E_FIND} draws a small cover plate with it, and behind the plate is a dry cavity cast into the concrete itself, made when the anchor was poured; whoever built this cache built it to outlast everything on the hill; inside waits a brass cylinder; write the find neutral for either clue that led here, plate or pillar'>>",
       "is_ending": false,
       "choices": [
         {
@@ -985,7 +985,7 @@
     },
     {
       "id": "bh_cache",
-      "body": "<<FILL role=rising words=105 beats='The tag inside reads HOME; the slip remembers the night the club strung a longwire from this mast and heard Japan, Alaska, a ship off Chile, our little town talking to the whole turning Earth, and from this hill, little wren, everything is in range; beneath it, the line, FIVE WRENS SING, THEN COME HOME TO THE NEST'>>",
+      "body": "<<FILL role=rising words=105 beats='The tag inside reads {ROUTE_E_TAG}; the slip remembers the night {CLUB_NAME} strung a longwire from this mast and heard Japan, Alaska, a ship off Chile, our little town talking to the whole turning Earth, and from this hill, little {CALLSIGN}, everything is in range; beneath it, the line, {TONE_MOTIF}, then come home to {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -997,24 +997,24 @@
     },
     {
       "id": "bh_view",
-      "body": "<<FILL role=choice words=100 beats='The whole town lies below, harbor to fairgrounds, lamps going out one by one; Teo swings the field set's loop slowly and the numbers peak, not at the mast at all but down the far slope, east past the fairgrounds where the old rail spur runs, and there among the dark fields one small amber window is lit'>>",
+      "body": "<<FILL role=choice words=100 beats='The whole town lies below, harbor to fairgrounds, lamps going out one by one; {COMPANION} swings {DEVICE}'s loop slowly and the numbers peak, not at the mast at all but down the far slope, east past the fairgrounds where the old rail spur runs, and there among the dark fields one small amber window is lit'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_bh_view_hub",
-          "label": "Coast back down to the square.",
+          "label": "Coast back down to {ENTRANCE}.",
           "target": "n_hub"
         },
         {
           "id": "c_bh_view_nest",
-          "label": "Ride the far slope straight for that amber window.",
+          "label": "Ride the far slope straight for {GOAL}.",
           "target": "fin_bearing"
         }
       ]
     },
     {
       "id": "e_bh_scree",
-      "body": "<<FILL role=failure words=90 beats='Halfway up, the chute moves; not a fall, a slither, the whole slope of loose stone walking out from under them until they are back at the bottom sitting down hard, palms skinned, one bike wheel still spinning; they patch up with the tape in Teo's bag and take honest stock: the hill is not going anywhere, but skin only grows back so fast; they walk the bikes home under a paling sky, and the switchbacks will still be there tomorrow'>>",
+      "body": "<<FILL role=failure words=90 beats='Halfway up, the {ROUTE_E_GATE} moves; not a fall, a slither, the whole slope of loose stone walking out from under them until they are back at the bottom sitting down hard, palms skinned, one bike wheel still spinning; they patch up with the tape in {COMPANION}'s bag and take honest stock: the hill is not going anywhere, but skin only grows back so fast; they walk the bikes home under {DEADLINE_SIGN}, and the switchbacks will still be there tomorrow'>>",
       "is_ending": true,
       "ending": {
         "id": "end_bh_scree",
@@ -1025,7 +1025,7 @@
     },
     {
       "id": "fin_bearing",
-      "body": "<<FILL role=rising words=100 beats='Following the loop antenna's steady bearing east, past the fairgrounds fence and onto the grass-grown old rail spur; write this arrival fully neutral so it reads naturally whenever in the night it happens and whatever has come before it; the numbers grow in the field set and then, faintly, arrive from somewhere ahead too, the same voice a half-beat early, the night speaking in stereo with itself; down the rails stands a squat brick-and-wood signal box with one amber-lit upper window, a longwire running from its roof to a tall ash tree'>>",
+      "body": "<<FILL role=rising words=100 beats='Following {ANTENNA}'s steady bearing east, past the fairgrounds fence and onto the grass-grown old rail spur; write this arrival fully neutral so it reads naturally whenever in the night it happens and whatever has come before it; the numbers grow in {DEVICE} and then, faintly, arrive from somewhere ahead too, the same voice a half-beat early, the night speaking in stereo with itself; down the rails stands a squat brick-and-wood signal box with one amber-lit upper window, a longwire running from its roof to a tall ash tree'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1037,17 +1037,17 @@
     },
     {
       "id": "fin_gate",
-      "body": "<<FILL role=choice words=105 beats='The signal box up close: brick base, wooden upper storey, outside stairs to a landing door; a weathered board reads MILEPOST 7 SIGNAL BOX, and beneath it a smaller painted sign, THE WREN'S NEST, NIGHTJAR RADIO CLUB, EST. 1975; the door holds an old lever lock, the sash window glows amber above the stair rail, and through the glass the patient voice reads on; keep this entry visit-neutral for any point in the night'>>",
+      "body": "<<FILL role=choice words=105 beats='The signal box up close: brick base, wooden upper storey, outside stairs to a landing door; a weathered board reads MILEPOST 7 SIGNAL BOX, and beneath it a smaller painted sign, {GOAL}, {CLUB_NAME}, EST. 1975; the door holds an old lever lock, the sash window glows amber above the stair rail, and through the glass the patient voice reads on; keep this entry visit-neutral for any point in the night'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fing_key",
-          "label": "Hunt for the key a wren would leave.",
+          "label": "Hunt for the key a {CALLSIGN} would leave.",
           "target": "fin_search"
         },
         {
           "id": "c_fing_window",
-          "label": "Stretch from the stair rail to the sash window.",
+          "label": "Stretch from the stair rail to the {FIN_GATE1}.",
           "target": "e_fin_window"
         },
         {
@@ -1059,7 +1059,7 @@
     },
     {
       "id": "fin_door_listen",
-      "body": "<<FILL role=choice words=90 beats='Through the door: the voice, the soft clunk of relays, the hiss of tape moving reel to reel, machinery keeping a decades-long appointment all by itself; and behind the numbers, faint as a pulse, a clock ticking toward first light'>>",
+      "body": "<<FILL role=choice words=90 beats='Through the door: the voice, the soft clunk of relays, the hiss of tape moving reel to reel, machinery keeping a decades-long appointment all by itself; and behind the numbers, faint as a pulse, a clock ticking toward {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1076,12 +1076,12 @@
     },
     {
       "id": "fin_search",
-      "body": "<<FILL role=choice words=90 beats='Where would radio people leave a key; the landing door has a lintel under fifty years of paint, and over by the antenna anchor on the ash tree hangs a small weathered birdhouse, a wren box, sitting exactly where a longwire needs tending; write the hunt neutral for either doorway that brought them to it'>>",
+      "body": "<<FILL role=choice words=90 beats='Where would radio people leave a key; the landing door has a lintel under fifty years of paint, and over by the antenna anchor on the ash tree hangs {FIN_KEYBOX}, sitting exactly where a longwire needs tending; write the hunt neutral for either doorway that brought them to it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fins_wrenbox",
-          "label": "Open the wren box on the ash tree.",
+          "label": "Open {FIN_KEYBOX} on the ash tree.",
           "target": "fin_wrenbox"
         },
         {
@@ -1093,19 +1093,19 @@
     },
     {
       "id": "fin_lintel",
-      "body": "<<FILL role=rising words=80 beats='Nothing on the lintel but paint layers and one spider with opinions; but from up on the stair rail, eye level with the tree, the little wren box by the antenna anchor looks freshly weatherproofed for something supposedly fifty years old'>>",
+      "body": "<<FILL role=rising words=80 beats='Nothing on the lintel but paint layers and one spider with opinions; but from up on the stair rail, eye level with the tree, {FIN_KEYBOX} by the antenna anchor looks freshly weatherproofed for something supposedly fifty years old'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_flin_box",
-          "label": "Go open the wren box.",
+          "label": "Go open {FIN_KEYBOX}.",
           "target": "fin_wrenbox"
         }
       ]
     },
     {
       "id": "fin_wrenbox",
-      "body": "<<FILL role=rising words=90 beats='The wren box's floor slides out like a matchbox drawer; inside, wrapped in wax paper, lies a key, and with it a small tag in grandma's print: FOR WHOEVER IS STILL LISTENING; write the find neutral for either path that led to the tree'>>",
+      "body": "<<FILL role=rising words=90 beats='{FIN_KEYBOX}'s floor slides out like a matchbox drawer; inside, wrapped in wax paper, lies a key, and with it a small tag in {ANCESTOR}'s print: FOR WHOEVER IS STILL LISTENING; write the find neutral for either path that led to the tree'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1141,7 +1141,7 @@
     },
     {
       "id": "fin_inside",
-      "body": "<<FILL role=choice words=110 beats='The room holds three pulls at once: a wall of photographs and postcards behind the desk; the club logbook lying open on the desk beside a microphone on its stand; and the humming rack itself, reels and valves and the timer's brass wheel creeping toward its last notch, with a card in a stand reading FINAL TRANSMISSION ENDS AT FIRST LIGHT; keep the room's welcome neutral, it reads the same whenever the night delivers its visitors'>>",
+      "body": "<<FILL role=choice words=110 beats='The room holds three pulls at once: a wall of photographs and postcards behind the desk; {GUIDE_LOG} lying open on the desk beside a microphone on its stand; and the humming rack itself, reels and valves and the timer's brass wheel creeping toward its last notch, with a card in a stand reading FINAL TRANSMISSION ENDS AT {DEADLINE}; keep the room's welcome neutral, it reads the same whenever the night delivers its visitors'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1151,7 +1151,7 @@
         },
         {
           "id": "c_fini_log",
-          "label": "Read the open logbook.",
+          "label": "Read {GUIDE_LOG}, open on the desk.",
           "target": "fin_log"
         },
         {
@@ -1163,7 +1163,7 @@
     },
     {
       "id": "fin_wall",
-      "body": "<<FILL role=choice words=105 beats='The photographs tell the whole story plainly, whatever the night has already shown: the Nightjar Radio Club, night-shift faces in headphones and paper hats, grandma young at this very desk; captions in her print; and one typed card at the end: when the cannery closed and the club scattered, Pilar Vega built this station and her hunt so the town would keep one more net in it; recap only these path-universal facts, the broadcast, the bearing, the countdown, what this wall itself shows; the sky in the window is turning'>>",
+      "body": "<<FILL role=choice words=105 beats='The photographs tell the whole story plainly, whatever the night has already shown: {CLUB_NAME}, night-shift faces in headphones and paper hats, {ANCESTOR} young at this very desk; captions in her print; and one typed card at the end: when the cannery closed and the club scattered, {ANCESTOR} built this station and her hunt so the town would keep one more net in it; recap only these path-universal facts, {BROADCAST}, the bearing, the countdown, what this wall itself shows; the sky in the window is turning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1180,19 +1180,19 @@
     },
     {
       "id": "fin_log",
-      "body": "<<FILL role=rising words=105 beats='The logbook's last entry is in grandma's hand, dated the spring she died: TO WHOEVER FINDS THE NEST, at first light today the station ends its watch; you may let her sign off as built, keep her singing, or give her to the town, and any of the three is right; sign the log, little wren, whoever you are; below runs a page of members' callsigns and telephone numbers, most gently crossed through, a few not'>>",
+      "body": "<<FILL role=rising words=105 beats='{GUIDE_LOG}'s last entry is in {ANCESTOR}'s hand, dated the spring she died: TO WHOEVER FINDS {GOAL}, at {DEADLINE} today the station ends its watch; you may let her sign off as built, keep her singing, or give her to the town, and any of the three is right; sign the log, little {CALLSIGN}, whoever you are; below runs a page of members' callsigns and telephone numbers, most gently crossed through, a few not'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_finlog_rack",
-          "label": "Carry the logbook over to the humming rack.",
+          "label": "Carry {GUIDE_LOG} over to the humming rack.",
           "target": "fin_rack"
         }
       ]
     },
     {
       "id": "fin_rack",
-      "body": "<<FILL role=choice words=115 beats='At the rack the timer's brass wheel sits close to its last cam; the microphone waits on the desk, wired through a toggle labeled in grandma's print, LISTEN and SPEAK; the voice reads on, pausing between groups as if leaving room for someone; keep this decision beat visit-neutral and recap only path-universal facts, the all-night broadcast, the eastward bearing, the countdown now nearly spent; however much of her trail the night has held, it ends in this room, and what becomes of the Nest is theirs to choose before first light'>>",
+      "body": "<<FILL role=choice words=115 beats='At the rack the timer's brass wheel sits close to its last cam; the microphone waits on the desk, wired through a toggle labeled in {ANCESTOR}'s print, LISTEN and SPEAK; the voice reads on, pausing between groups as if leaving room for someone; keep this decision beat visit-neutral and recap only path-universal facts, {BROADCAST}, the eastward bearing, the countdown now nearly spent; however much of her trail the night has held, it ends in this room, and what becomes of {GOAL} is theirs to choose before {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1207,14 +1207,14 @@
         },
         {
           "id": "c_finr_share",
-          "label": "Give the Nest to the people it was built from.",
+          "label": "Give {GOAL} to the people it was built from.",
           "target": "fin_share"
         }
       ]
     },
     {
       "id": "fin_answer",
-      "body": "<<FILL role=choice words=100 beats='The toggle clicks to SPEAK; the reels keep turning, recording now as well as playing, because grandma built her station to listen back; the next pause between groups opens like a held breath; and on the desk stands a small frame holding a typed sign-off script laid out in her careful style'>>",
+      "body": "<<FILL role=choice words=100 beats='The toggle clicks to SPEAK; the reels keep turning, recording now as well as playing, because {ANCESTOR} built her station to listen back; the next pause between groups opens like a held breath; and on the desk stands a small frame holding a typed sign-off script laid out in her careful style'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1231,7 +1231,7 @@
     },
     {
       "id": "f_answer_own",
-      "body": "<<FILL role=choice words=100 beats='Mari keys the mic and says it plainly: her name, whose granddaughter she is, and that the town is still listening; her voice goes onto the same tape as grandma's, the two of them together in the archive now; the toggle rests under her hand, the reels turn, and the sky beyond the window is graying fast'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} keys the mic and says it plainly: her name, whose granddaughter she is, and that the town is still listening; her voice goes onto the same tape as {ANCESTOR}'s, the two of them together in the archive now; the toggle rests under her hand, the reels turn, and {DEADLINE_SIGN} is fast beyond the window'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1248,7 +1248,7 @@
     },
     {
       "id": "f_answer_script",
-      "body": "<<FILL role=choice words=100 beats='The framed script is the club's old net-closing, ending with the lines THIS IS WREN, THE NET IS CLOSED, EVERY VOICE FINDS ITS HOME, 73 AND GOODNIGHT; read aloud in this room, the closing line lands like the whole night said out loud at last; the timer's wheel edges toward its final cam while she steadies her breath'>>",
+      "body": "<<FILL role=choice words=100 beats='The framed script is the club's old net-closing, ending with the lines THIS IS {CALLSIGN}, THE NET IS CLOSED, {ROUTE_A_TAG} {ROUTE_B_TAG} {ROUTE_C_TAG} {ROUTE_D_TAG} {ROUTE_E_TAG}, 73 AND GOODNIGHT; read aloud in this room, the closing line lands like the whole night said out loud at last; the timer's wheel edges toward its final cam while she steadies her breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1265,7 +1265,7 @@
     },
     {
       "id": "fin_keep",
-      "body": "<<FILL role=choice words=100 beats='The shelf holds a maintenance folder in grandma's print, diagrams of the timer, the tape path, the winding crank, all kept simple on purpose, teachable; so the station can keep singing, the only real question is who its keepers will be and how far they will take the keeping'>>",
+      "body": "<<FILL role=choice words=100 beats='The shelf holds a maintenance folder in {ANCESTOR}'s print, diagrams of the timer, the tape path, the winding crank, all kept simple on purpose, teachable; so the station can keep singing, the only real question is who its keepers will be and how far they will take the keeping'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1282,7 +1282,7 @@
     },
     {
       "id": "f_keep_wind",
-      "body": "<<FILL role=rising words=95 beats='Together they follow the diagram, crank the clockwork until the spring sits firm, and re-cue the reels; the station takes the winding like an old cat settling deeper into its chair; next year, same frequency, same midnight; and the key goes back into the wren box afterward, because keepers put things back where wrens can find them'>>",
+      "body": "<<FILL role=rising words=95 beats='Together they follow the diagram, crank the clockwork until the spring sits firm, and re-cue the reels; the station takes the winding like an old cat settling deeper into its chair; next year, same frequency, same midnight; and the key goes back into {FIN_KEYBOX} afterward, because keepers put things back where {CALLSIGN}s can find them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1294,24 +1294,24 @@
     },
     {
       "id": "f_keep_learn",
-      "body": "<<FILL role=rising words=95 beats='By torch and desk lamp they copy what matters into Teo's phone: the frequency, the timer diagram, the manual's title, and the few uncrossed names on the logbook's last page who could still teach them; the plan builds itself on the ride home, licenses, callsigns, lessons; the station will not just survive, it will be understood'>>",
+      "body": "<<FILL role=rising words=95 beats='By torch and desk lamp they copy what matters into {COMPANION}'s phone: the frequency, the timer diagram, the manual's title, and the few uncrossed names on {GUIDE_LOG}'s last page who could still teach them; the plan builds itself on the ride home, licenses, callsigns, lessons; the station will not just survive, it will be understood'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fkl_end",
-          "label": "Start the long apprenticeship at first light.",
+          "label": "Start the long apprenticeship at {DEADLINE}.",
           "target": "e_win_apprentice"
         }
       ]
     },
     {
       "id": "fin_share",
-      "body": "<<FILL role=choice words=100 beats='The Nest was built out of people, night-shifters and neighbors and family; the logbook's page of telephone numbers sits open on the desk and Teo's phone sits charged in his pocket, and between them run two roads: bring family here now, before the watch ends, or use the station's own voice to hand the hunt onward'>>",
+      "body": "<<FILL role=choice words=100 beats='{GOAL} was built out of people, night-shifters and neighbors and family; {GUIDE_LOG}'s page of telephone numbers sits open on the desk and {COMPANION}'s phone sits charged in his pocket, and between them run two roads: bring family here now, before the watch ends, or use the station's own voice to hand the hunt onward'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fsh_family",
-          "label": "Call Mom to come, right now, before first light.",
+          "label": "Call {GUARDIAN} to come, right now, before {DEADLINE}.",
           "target": "f_share_family"
         },
         {
@@ -1323,7 +1323,7 @@
     },
     {
       "id": "f_share_family",
-      "body": "<<FILL role=rising words=95 beats='Mom answers on the first ring, awake after all, and the headlights come bumping up the rail lane in minutes; she climbs into the amber light, sees her mother's handwriting on every label and lever, and puts her hand over her mouth; the three of them fit in front of the desk exactly, as if the room had been measured for it'>>",
+      "body": "<<FILL role=rising words=95 beats='{GUARDIAN} answers on the first ring, awake after all, and the headlights come bumping up the rail lane in minutes; she climbs into the amber light, sees {ANCESTOR}'s handwriting on every label and lever, and puts her hand over her mouth; the three of them fit in front of the desk exactly, as if the room had been measured for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1335,7 +1335,7 @@
     },
     {
       "id": "f_share_hunt",
-      "body": "<<FILL role=rising words=95 beats='With minutes left they key the mic and read five new groups of their own, planned fast in fierce whispers, five new places worth finding, and a recorded promise that the Nest will call again; the machine takes their voices in and keeps them beside grandma's, the answer reel winding the future on next to the past'>>",
+      "body": "<<FILL role=rising words=95 beats='With minutes left they key the mic and read five new groups of their own, planned fast in fierce whispers, five new places worth finding, and a recorded promise that {GOAL} will call again; the machine takes their voices in and keeps them beside {ANCESTOR}'s, the answer reel winding the future on next to the past'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1347,7 +1347,7 @@
     },
     {
       "id": "e_fin_window",
-      "body": "<<FILL role=failure words=90 beats='The stretch from the stair rail is longer than it looked and the sash is painted shut anyway; a boot slips, a shin barks on the rail, and Teo hauls her back by the jacket with both their hearts going like drum solos; sitting on the stairs they agree on the obvious, nobody breaks into the Nest, least of all family; the amber window glows on above them as they head home to come back with better ideas, and daylight'>>",
+      "body": "<<FILL role=failure words=90 beats='The stretch from the stair rail is longer than it looked and the {FIN_GATE1} is painted shut anyway; a boot slips, a shin barks on the rail, and {COMPANION} hauls her back by the jacket with both their hearts going like drum solos; sitting on the stairs they agree on the obvious, nobody breaks into {GOAL}, least of all family; the amber window glows on above them as they head home to come back with better ideas, and daylight'>>",
       "is_ending": true,
       "ending": {
         "id": "end_fin_window",
@@ -1358,18 +1358,18 @@
     },
     {
       "id": "e_fin_late",
-      "body": "<<FILL role=failure words=95 beats='One more caption, then one more, and then the voice changes: the numbers stop and the sign-off begins while they are still at the wall; by the time they reach the desk the words are already ending and the reels wind down with a long sigh; first light, exactly as promised; they missed the moment to answer, but they stood in the right room and heard her say goodnight; they lock up softly, slide the key back into the wren box for the next listener, and walk home planning the telling of it'>>",
+      "body": "<<FILL role=failure words=95 beats='One more caption, then one more, and then the voice changes: the numbers stop and the sign-off begins while they are still at the wall; by the time they reach the desk the words are already ending and the reels wind down with a long sigh; {DEADLINE}, exactly as promised; they missed the moment to answer, but they stood in the right room and heard her say goodnight; they lock up softly, slide the key back into {FIN_KEYBOX} for the next listener, and walk home planning the telling of it'>>",
       "is_ending": true,
       "ending": {
         "id": "end_fin_late",
         "valence": "negative",
         "kind": "setback",
-        "title": "First Light Comes Anyway"
+        "title": "{DEADLINE} Comes Anyway"
       }
     },
     {
       "id": "e_fin_listen",
-      "body": "<<FILL role=ending words=95 beats='They sit shoulder to shoulder on the wooden stairs and let the last broadcast play out through the door: groups, pauses, and at first light a sign-off in that beloved voice, heard through weathered wood with the first birds starting up around them; some doors you open, and some watches you simply witness; they walk home full and quiet, saving the question of the key for daylight and Mom, while the amber light clicks off behind them like a goodnight'>>",
+      "body": "<<FILL role=ending words=95 beats='They sit shoulder to shoulder on the wooden stairs and let the last broadcast play out through the door: groups, pauses, and at {DEADLINE} a sign-off in that beloved voice, heard through weathered wood with the first birds starting up around them; some doors you open, and some watches you simply witness; they walk home full and quiet, saving the question of the key for daylight and {GUARDIAN}, while the amber light clicks off behind them like a goodnight'>>",
       "is_ending": true,
       "ending": {
         "id": "end_fin_listen",
@@ -1380,7 +1380,7 @@
     },
     {
       "id": "e_win_net",
-      "body": "<<FILL role=completion words=105 beats='The hiss holds, and then, one by one, voices: an old careful voice from across town that might be keeping a harbor watch, then farther ones, callsigns surfacing out of the static like lights coming on, old Nightjars who never quite stopped listening and heard the final night go out; Mari takes the check-ins the way her grandmother must have, name by name, while first light fills the window; the net, it turns out, was never closed, it was only waiting for a voice at this desk'>>",
+      "body": "<<FILL role=completion words=105 beats='The hiss holds, and then, one by one, voices: an old careful voice from across town that might be keeping a harbor watch, then farther ones, callsigns surfacing out of the static like lights coming on, old {MEMBER_TERM}s who never quite stopped listening and heard the final night go out; {HERO} takes the check-ins the way her grandmother must have, name by name, while {DEADLINE} fills the window; the net, it turns out, was never closed, it was only waiting for a voice at this desk'>>",
       "is_ending": true,
       "ending": {
         "id": "end_win_net",
@@ -1391,7 +1391,7 @@
     },
     {
       "id": "e_win_answer",
-      "body": "<<FILL role=completion words=95 beats='She signs the logbook beneath grandma's final entry, granddaughter under grandmother; at first light the voice reads its last group, says its goodnight, and the reels stop with her answer safely inside the archive, the last voice on the tape a Vega once again; the station finishes its watch complete, and Mari walks out into the birdsong carrying the key and the whole story home to breakfast'>>",
+      "body": "<<FILL role=completion words=95 beats='She signs the logbook beneath {ANCESTOR}'s final entry, granddaughter under grandmother; at {DEADLINE} the voice reads its last group, says its goodnight, and the reels stop with her answer safely inside the archive, the last voice on the tape a {FAMILY_NAME} once again; the station finishes its watch complete, and {HERO} walks out into the birdsong carrying the key and the whole story home to breakfast'>>",
       "is_ending": true,
       "ending": {
         "id": "end_win_answer",
@@ -1402,18 +1402,18 @@
     },
     {
       "id": "e_win_signoff",
-      "body": "<<FILL role=completion words=100 beats='Mari reads it exactly as written, steady as she can manage: THIS IS WREN, THE NET IS CLOSED, EVERY VOICE FINDS ITS HOME, 73 AND GOODNIGHT; the cam trips, the reels slow, the valve glow fades like embers banked for the night; the station ends its watch precisely as its builder designed, closed in family voice; they sign the log, return the key to the wren box, and walk home through first light letting the quiet be part of the gift'>>",
+      "body": "<<FILL role=completion words=100 beats='{HERO} reads it exactly as written, steady as she can manage: THIS IS {CALLSIGN}, THE NET IS CLOSED, {ROUTE_A_TAG} {ROUTE_B_TAG} {ROUTE_C_TAG} {ROUTE_D_TAG} {ROUTE_E_TAG}, 73 AND GOODNIGHT; the cam trips, the reels slow, the valve glow fades like embers banked for the night; the station ends its watch precisely as its builder designed, closed in family voice; they sign the log, return the key to {FIN_KEYBOX}, and walk home through {DEADLINE} letting the quiet be part of the gift'>>",
       "is_ending": true,
       "ending": {
         "id": "end_win_signoff",
         "valence": "positive",
         "kind": "completion",
-        "title": "Every Voice Finds Its Home"
+        "title": "{ROUTE_A_TAG} {ROUTE_B_TAG} {ROUTE_C_TAG} {ROUTE_D_TAG} {ROUTE_E_TAG}"
       }
     },
     {
       "id": "e_win_encore",
-      "body": "<<FILL role=completion words=100 beats='She reads the closing as written, and then, before the cam can trip, adds one line of her own: the Nest will open again, same night next year; to make the promise true they wind the timer together until the spring sits firm; the station accepts its encore, one more year, wound and waiting; walking home through the gray-gold light they are already keeping a secret the size of a year, and it fits in their pockets like a brass key'>>",
+      "body": "<<FILL role=completion words=100 beats='She reads the closing as written, and then, before the cam can trip, adds one line of her own: {GOAL} will open again, same night next year; to make the promise true they wind the timer together until the spring sits firm; the station accepts its encore, one more year, wound and waiting; walking home through the gray-gold light they are already keeping a secret the size of a year, and it fits in their pockets like a brass key'>>",
       "is_ending": true,
       "ending": {
         "id": "end_win_encore",
@@ -1424,18 +1424,18 @@
     },
     {
       "id": "e_win_keepers",
-      "body": "<<FILL role=completion words=95 beats='Hands are shaken in the amber light, and the midnight frequency has keepers again; through the year that follows they come back on quiet nights to dust and wind and listen, learning the room by heart; and when the station next wakes the town, two more voices are on the tape welcoming whoever is clever enough to find it; the hunt stands ready, the Nest stays warm, the watch goes on'>>",
+      "body": "<<FILL role=completion words=95 beats='Hands are shaken in the amber light, and {STORY_MOTIF} has keepers again; through the year that follows they come back on quiet nights to dust and wind and listen, learning the room by heart; and when the station next wakes the town, two more voices are on the tape welcoming whoever is clever enough to find it; the hunt stands ready, {GOAL} stays warm, the watch goes on'>>",
       "is_ending": true,
       "ending": {
         "id": "end_win_keepers",
         "valence": "positive",
         "kind": "success",
-        "title": "Keepers of the Midnight Frequency"
+        "title": "Keepers of {STORY_MOTIF}"
       }
     },
     {
       "id": "e_win_apprentice",
-      "body": "<<FILL role=completion words=100 beats='Months of Saturdays later there are two framed licenses on the Nest's wall beneath grandma's photographs, two new callsigns inked into the logbook, and the last uncrossed names of the old club teaching them code over cocoa; when the station next speaks it will be maintained, understood, and loved by keepers who know every valve by its first name; the watch continues, properly crewed'>>",
+      "body": "<<FILL role=completion words=100 beats='Months of Saturdays later there are two framed licenses on {GOAL}'s wall beneath {ANCESTOR}'s photographs, two new callsigns inked into the logbook, and the last uncrossed names of the old club teaching them code over cocoa; when the station next speaks it will be maintained, understood, and loved by keepers who know every valve by its first name; the watch continues, properly crewed'>>",
       "is_ending": true,
       "ending": {
         "id": "end_win_apprentice",
@@ -1446,24 +1446,24 @@
     },
     {
       "id": "e_win_family",
-      "body": "<<FILL role=completion words=100 beats='Three of them stand shoulder to shoulder as the station reads its last groups; Mom's hand finds Mari's on one side and Teo's on the other; the sign-off comes in the voice all three of them know best, and nobody needs to say anything at all; when the reels stop, Mom signs the logbook beneath her children's names, and they leave together into first light, a family handed its inheritance while it could still be heard'>>",
+      "body": "<<FILL role=completion words=100 beats='Three of them stand shoulder to shoulder as the station reads its last groups; {GUARDIAN}'s hand finds {HERO}'s on one side and {COMPANION}'s on the other; the sign-off comes in the voice all three of them know best, and nobody needs to say anything at all; when the reels stop, {GUARDIAN} signs the logbook beneath her children's names, and they leave together into {DEADLINE}, a family handed its inheritance while it could still be heard'>>",
       "is_ending": true,
       "ending": {
         "id": "end_win_family",
         "valence": "positive",
         "kind": "completion",
-        "title": "Three at First Light"
+        "title": "Three at {DEADLINE}"
       }
     },
     {
       "id": "e_win_passiton",
-      "body": "<<FILL role=completion words=100 beats='The next time the midnight frequency wakes, a year on, other kids' windows light up around town; five new sites, built through a summer of family workdays and borrowed ladders; grandma's voice opens the broadcast and Mari's closes it, a living voice at each end of the night; the hunt is no longer a memorial, it is a tradition, passed on exactly the way the Nightjars would have wanted'>>",
+      "body": "<<FILL role=completion words=100 beats='The next time {STORY_MOTIF} wakes, a year on, other kids' windows light up around town; five new sites, built through a summer of family workdays and borrowed ladders; {ANCESTOR}'s voice opens the broadcast and {HERO}'s closes it, a living voice at each end of the night; the hunt is no longer a memorial, it is a tradition, passed on exactly the way {MEMBER_TERM}s would have wanted'>>",
       "is_ending": true,
       "ending": {
         "id": "end_win_passiton",
         "valence": "positive",
         "kind": "success",
-        "title": "New Wrens"
+        "title": "New {CALLSIGN}s"
       }
     }
   ]

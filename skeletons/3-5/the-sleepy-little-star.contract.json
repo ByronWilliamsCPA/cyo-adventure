@@ -1,0 +1,304 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-sleepy-little-star",
+  "age_band": "3-5",
+  "legacy_lexicon": [
+    "Twinkle",
+    "Moon",
+    "sleepy meadow",
+    "firefly",
+    "moonbeam"
+  ],
+  "default_binding": {
+    "HERO": "Twinkle",
+    "HERO_ROLE": "the littlest star",
+    "COMPANION": "kind, round Moon",
+    "THRESHOLD": "the wide night sky above the sleepy meadow",
+    "HOME": "her fluffy cloud bed",
+    "ENTRANCE": "her very own spot in the sky",
+    "OPENING_MOMENT": "dusk, as the sky turns soft purple",
+    "HERO_FEATURE": "points",
+    "CLIMB_AID": "silvery moonbeam",
+    "CHILDREN": "children in pajamas",
+    "ROUTE_A_CHAR": "the fluffy cloud",
+    "ROUTE_B_CHAR": "a big sparkle wiggle",
+    "ROUTE_C_CHAR": "the world below",
+    "A2_FIND": "a firefly",
+    "B1_LANDING": "a puff of cloud",
+    "B2_SCENE": "the tall grass far below",
+    "WIGGLE_GLITTER": "gold glitter",
+    "SLIDE_LOW": "the treetops",
+    "LOW_HOUSES": "little houses with warm yellow windows",
+    "LULLABY_SONG": "a twinkle song",
+    "OTHER_STARS": "the other little stars",
+    "GOODNIGHT_PRIZE": "Little World",
+    "LULLABY_PRIZE": "Lullaby",
+    "FRIENDS_PRIZE": "A Sky Full of Friends"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist, a tiny star on her first night to shine.",
+      "guidance": "A single small, kid-relatable protagonist (name or role); gentle and a little shy, not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["COMPANION"]
+      }
+    },
+    {
+      "id": "HERO_ROLE",
+      "scope": "global",
+      "meaning": "The hero's epithet: what kind of small, new thing she is.",
+      "guidance": "A short, warm descriptor used at her introduction and in closing lines (e.g. 'the littlest star'); never frightening.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The hero's gentle guide who is present throughout the night.",
+      "guidance": "Kind, calm, encouraging; never a source of peril; reacts with warmth (smiles, hums, chuckles kindly).",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, gentle place the story happens inside.",
+      "guidance": "One open, cozy expanse the hero shines from; wonder over dread; no lethal hazards, no toxic air, nothing frightening.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HOME",
+      "scope": "global",
+      "meaning": "The hero's cozy resting place where she wakes at the story's start.",
+      "guidance": "A soft, safe place to sleep/wake; purely comforting imagery.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The hero's own spot, the destination she must return to and finally shine from.",
+      "guidance": "Always reachable and safe to reach; the hub every retry loop floats back to.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The moment/condition that makes tonight the hero's first night to shine.",
+      "guidance": "A gentle, recurring nightly moment (dusk, a particular gathering of light); non-lethal, calm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HERO_FEATURE",
+      "scope": "global",
+      "meaning": "The small physical feature the hero squeezes or shakes when nervous or wiggling.",
+      "guidance": "A bare, harmless body part/feature natural to the hero's form (e.g. points, ears, wings); never a weapon-like feature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CLIMB_AID",
+      "scope": "global",
+      "meaning": "The gentle helper thing the hero can grab to climb back up or to hold while shining.",
+      "guidance": "A soft, safe, liftable/climbable aid; no equipment that could injure.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CHILDREN",
+      "scope": "global",
+      "meaning": "The sleepy watchers below who are waiting for the hero's light.",
+      "guidance": "Warm, cozy household imagery; the children are never in danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CHAR",
+      "scope": "route",
+      "meaning": "The hiding-and-resting strategy the hero can try first (route A).",
+      "guidance": "A soft, cozy hiding spot; comforting, never isolating in a scary way.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "The energetic wake-up-the-sparkle strategy the hero can try (route B).",
+      "guidance": "A fun, wobbly, silly movement; playful, never dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_CHAR",
+      "scope": "route",
+      "meaning": "The peek-at-the-world-below strategy the hero can try (route C).",
+      "guidance": "A safe, low vantage point to look around from; nothing to fall into harm from.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_FIND",
+      "scope": "track",
+      "meaning": "The small friendly creature the hero's first tiny sparkle reaches on route A.",
+      "guidance": "A tiny, harmless, friendly creature that answers the hero's light with its own.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_LANDING",
+      "scope": "track",
+      "meaning": "The soft place the hero tumbles onto after wiggling too fast (route B retry).",
+      "guidance": "A soft, giggle-inducing landing spot; a comic pratfall, never a real fall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_SCENE",
+      "scope": "track",
+      "meaning": "The gently swaying scenery far below that the hero's sway mirrors (route B forward).",
+      "guidance": "A calm, swaying natural image; purely soothing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WIGGLE_GLITTER",
+      "scope": "track",
+      "meaning": "The sparkly shake-off the hero's wiggle produces (route B).",
+      "guidance": "A fun, sparkly visual with no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SLIDE_LOW",
+      "scope": "track",
+      "meaning": "The low point the hero slips down to on route C before recovering.",
+      "guidance": "A safe, soft-landing low point; the slip is silly, never a dangerous fall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LOW_HOUSES",
+      "scope": "track",
+      "meaning": "The cozy homes the hero sees from down low on route C.",
+      "guidance": "Warm, inviting household imagery seen from a safe distance.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LULLABY_SONG",
+      "scope": "track",
+      "meaning": "The soft song the hero and companion can sing together at the end.",
+      "guidance": "A gentle, sleepy tune; purely comforting.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OTHER_STARS",
+      "scope": "track",
+      "meaning": "The other small lights the hero can invite to shine alongside her.",
+      "guidance": "Friendly peers who join happily; never rivals or a source of exclusion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOODNIGHT_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: winking goodnight to the watchers below (completion). Names ending end_goodnight.",
+      "guidance": "Positive, calm, sleepy imagery; the closing half of the 'Goodnight, ...' title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["LULLABY_PRIZE", "FRIENDS_PRIZE"]
+      }
+    },
+    {
+      "id": "LULLABY_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: singing the world to sleep with the companion (success). Names ending end_lullaby.",
+      "guidance": "Positive; a single warm word naming the song/ending, combined with {HERO} in the title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["GOODNIGHT_PRIZE", "FRIENDS_PRIZE"]
+      }
+    },
+    {
+      "id": "FRIENDS_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: inviting the other little lights to shine together (success). Names ending end_friends.",
+      "guidance": "Positive; the full ending title naming a sky/place full of joined friends.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["GOODNIGHT_PRIZE", "LULLABY_PRIZE"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,331 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-red-meridian-run",
+  "age_band": "16+",
+  "legacy_lexicon": [
+    "Meridian Strait",
+    "the Meridian Strait",
+    "the harbor boom",
+    "the inner buoys",
+    "channel buoys",
+    "the patrol lane",
+    "the searchlight reach",
+    "the listening post",
+    "the minefield narrows",
+    "the wreck bar",
+    "the gun line",
+    "the fog bank",
+    "the picket line",
+    "the inshore boom",
+    "the tidal bar",
+    "the wired beach",
+    "the pilot",
+    "a small blockaded-side runner",
+    "blockaded-side runner",
+    "the cargo",
+    "The Clean Run",
+    "The Costly Run",
+    "The Quiet Arrival"
+  ],
+  "default_binding": {
+    "HERO": "the pilot",
+    "VESSEL": "a small blockaded-side runner",
+    "STRAIT": "the Meridian Strait",
+    "CARGO": "the cargo",
+    "ST01_OBSTACLE": "the harbor boom",
+    "ST02_OBSTACLE": "the inner buoys",
+    "ST03_OBSTACLE": "the patrol lane",
+    "ST04_OBSTACLE": "the searchlight reach",
+    "ST05_OBSTACLE": "the listening post",
+    "ST06_OBSTACLE": "the minefield narrows",
+    "ST07_OBSTACLE": "the wreck bar",
+    "ST08_OBSTACLE": "the gun line",
+    "ST09_OBSTACLE": "the fog bank",
+    "ST10_OBSTACLE": "the picket line",
+    "ST11_OBSTACLE": "the inshore boom",
+    "ST12_OBSTACLE": "the tidal bar",
+    "ST13_OBSTACLE": "the wired beach",
+    "WIN_CLEAN_TITLE": "The Clean Run",
+    "WIN_COSTLY_TITLE": "The Costly Run",
+    "WIN_QUIET_TITLE": "The Quiet Arrival"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The second-person protagonist's role aboard the crossing.",
+      "guidance": "A single unnamed role title for the second-person protagonist; capable, non-reckless, non-violent.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "VESSEL",
+      "scope": "global",
+      "meaning": "The type of craft the hero pilots across the strait for the whole run.",
+      "guidance": "A small, fast, deniable craft suited to a night crossing under a blockade; no weapon imagery.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STRAIT",
+      "scope": "global",
+      "meaning": "The named body of water the whole run crosses; the story's single bounded, hazardous space.",
+      "guidance": "A single named strait/channel/crossing the story never leaves; no toxic or unbreathable air as a hazard.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CARGO",
+      "scope": "global",
+      "meaning": "The delivered goods that give the run its purpose (named at the two successful/completion endings).",
+      "guidance": "A single benign, carriable delivered good or document; never a weapon, never graphic.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST01_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 1 of 13 (a harbor barrier at the mouth of the strait).",
+      "guidance": "A physical barrier obstacle with a narrow legitimate way through; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST02_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 2 of 13 (a marked field of true/false channel markers).",
+      "guidance": "A field of markers/signs, some genuine and some decoys; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST03_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 3 of 13 (a patrolling guard vessel's fixed lane).",
+      "guidance": "A patrolled lane or route with a predictable, timeable turn; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST04_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 4 of 13 (a sweeping searchlight over open water).",
+      "guidance": "A sweeping detection beam/scanner with a readable rhythm; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST05_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 5 of 13 (a listening post that hears engine noise).",
+      "guidance": "A sound-based detection post; defeated by quiet, not violence; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST06_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 6 of 13 (a field of moored charges with a narrow clear lane).",
+      "guidance": "A hazard field with one narrow safe lane through it; no toxic hazard as the obstacle itself (the deterministic 'lethal'/'weapon' half of the mine hazard belongs to the fixed, unslotted fail-branch prose, not this slot).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST07_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 7 of 13 (a grounded wreck with one safe channel around it).",
+      "guidance": "A grounded/sunken obstruction with one scoured safe channel; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST08_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 8 of 13 (a shore battery's ranged, rhythmic barrage).",
+      "guidance": "A ranged, rhythmic bombardment pattern with a safe lull; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST09_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 9 of 13 (a fog bank crossed by held compass course).",
+      "guidance": "A concealing natural hazard crossed by discipline (a held course), not brute force; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST10_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 10 of 13 (a spaced line of lamp-signalling guard boats).",
+      "guidance": "A spaced line of watch-posts with a dark gap between them; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST11_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 11 of 13 (an inner boom patrolled by a warden's skiff).",
+      "guidance": "A second barrier patrolled by a single roving guard craft on a fixed round; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST12_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 12 of 13 (a breaking tidal bar with a timed safe slot).",
+      "guidance": "A natural water hazard crossed on correct timing, not force; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST13_OBSTACLE",
+      "scope": "track",
+      "meaning": "The named hazard/checkpoint identity at station 13 of 13 (the final wired landing beach with one cleared lane).",
+      "guidance": "A staked barrier belt on the landing itself, with one legitimate cleared lane; no toxic hazard as the obstacle itself.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WIN_CLEAN_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: the full, silent success where both hero and cargo cross clean (fixed SUCCESS ending).",
+      "guidance": "A short, quietly triumphant title naming the clean-run ending; positive, non-violent.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "WIN_COSTLY_TITLE",
+          "WIN_QUIET_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "WIN_COSTLY_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: a harder, battered but successful completion of the run (fixed COMPLETION ending).",
+      "guidance": "A short title naming a hard-won completion; battered but through, never graphic.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "WIN_CLEAN_TITLE",
+          "WIN_QUIET_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "WIN_QUIET_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: the cargo is surrendered but the hero survives; a spent, non-triumphant completion (fixed COMPLETION ending).",
+      "guidance": "A short, wry, quiet title naming survival without the prize.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "WIN_CLEAN_TITLE",
+          "WIN_COSTLY_TITLE"
+        ]
+      }
+    }
+  ]
+}

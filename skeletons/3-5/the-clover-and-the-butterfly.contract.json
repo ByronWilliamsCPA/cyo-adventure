@@ -1,0 +1,413 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-clover-and-the-butterfly",
+  "age_band": "3-5",
+  "legacy_lexicon": [
+    "Clover",
+    "Pip",
+    "butterfly",
+    "daisy",
+    "daisies",
+    "bumblebee"
+  ],
+  "default_binding": {
+    "HERO": "Clover the kitten",
+    "GOAL": "the blue butterfly",
+    "THRESHOLD": "the sunny garden",
+    "ENTRANCE": "the sunny porch",
+    "ROUTE_A_ZONE": "the daisy patch",
+    "ROUTE_B_ZONE": "the little pond",
+    "ROUTE_C_ZONE": "the tall grass",
+    "A1_LURE": "bumblebee",
+    "A1_SETBACK": "The Busy Bumblebee",
+    "A2_LANDMARK": "the stone birdbath",
+    "A2_DETAIL1": "robin",
+    "A2_LANDMARK2": "ripe red strawberries",
+    "A2_ZONE": "a cozy clover nook",
+    "A2_OFFER1": "the little flower ring",
+    "A2_PRIZE1": "nose",
+    "A2_PRIZE2": "The Daisy Crown",
+    "B1_LURE": "frog",
+    "B1_SETBACK": "Peekaboo Frog",
+    "B2_LANDMARK1": "the tall reeds",
+    "B2_DETAIL1": "dragonfly",
+    "B2_LANDMARK2": "mossy log",
+    "B2_DETAIL2": "hedgehog",
+    "B2_ZONE": "a cool, shady corner",
+    "B2_OFFER1": "Pip",
+    "B2_DETAIL3": "a friendly little bunny nibbling sweet clover leaves",
+    "B2_DETAIL4": "ripe red strawberries",
+    "B2_PRIZE": "Berries to Share",
+    "C1_LANDMARK": "the fence",
+    "C2_LANDMARK1": "a row of tall golden sunflowers",
+    "C2_LANDMARK2": "a little wooden garden gate",
+    "C2_ZONE": "a quiet flower corner",
+    "C2_LANDMARK3": "arch",
+    "C2_PRIZE": "Under the Flower Arch"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child-facing protagonist (an animal in the original theme).",
+      "guidance": "A single small, gentle creature (name plus kind); curious, never reckless; referenced by name throughout.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The small, delightful thing the hero follows through the whole story.",
+      "guidance": "A gentle, roaming creature or object the hero wants to keep in sight; never itself a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, safe place the story happens inside.",
+      "guidance": "A familiar, enclosed, sunny outdoor space; wonder, not danger; no hazards of any kind.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The safe home spot a setback ending returns the hero to.",
+      "guidance": "A cozy, always-reachable resting spot; a setback always ends here, warm and content.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_ZONE",
+      "scope": "route",
+      "meaning": "The first destination named at the opening three-way choice.",
+      "guidance": "A distinct, inviting patch of the threshold; must read as clearly different from the other two.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_B_ZONE", "ROUTE_C_ZONE"]
+      }
+    },
+    {
+      "id": "ROUTE_B_ZONE",
+      "scope": "route",
+      "meaning": "The second destination named at the opening three-way choice.",
+      "guidance": "Distinct from A and C; a gentle water-adjacent or open feature works well but is not required.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_A_ZONE", "ROUTE_C_ZONE"]
+      }
+    },
+    {
+      "id": "ROUTE_C_ZONE",
+      "scope": "route",
+      "meaning": "The third destination named at the opening three-way choice.",
+      "guidance": "Distinct from A and B; a low, tickly, or overgrown feature works well but is not required.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": ["ROUTE_A_ZONE", "ROUTE_B_ZONE"]
+      }
+    },
+    {
+      "id": "A1_LURE",
+      "scope": "track",
+      "meaning": "The small creature encountered on route A that can distract the hero from the goal.",
+      "guidance": "A harmless, charming small creature; the distraction is gentle, never scary.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: the hero stayed with the A1_LURE and the goal wandered off (setback).",
+      "guidance": "A warm, gentle setback title naming the distraction; the ending must still feel content, not sad.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_LANDMARK",
+      "scope": "track",
+      "meaning": "The first landmark passed on route A's continuing path.",
+      "guidance": "A small, safe, pleasant garden feature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_DETAIL1",
+      "scope": "track",
+      "meaning": "The small creature met at A2_LANDMARK.",
+      "guidance": "A harmless, cheerful small animal; purely decorative wonder, not a choice point.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_LANDMARK2",
+      "scope": "track",
+      "meaning": "The second landmark on route A's continuing path, reached just before the final zone.",
+      "guidance": "A small, safe, edible or sensory garden feature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_ZONE",
+      "scope": "track",
+      "meaning": "The cozy nook where route A's final choice happens.",
+      "guidance": "A soft, safe, intimate little pocket of the garden.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_OFFER1",
+      "scope": "track",
+      "meaning": "The small found object in A2_ZONE that leads to the crown ending.",
+      "guidance": "A tiny, safe, wearable or carryable garden trinket.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_PRIZE1",
+      "scope": "ending",
+      "meaning": "The single body-part word used in the 'On {HERO}'s ___' ending title (nose ending).",
+      "guidance": "A single gentle, huggable body-part word appropriate to the hero's kind; used both in prose and in the ending title.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A2_PRIZE2", "B2_PRIZE", "C2_PRIZE"]
+      }
+    },
+    {
+      "id": "A2_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: the crown/keepsake success ending on route A.",
+      "guidance": "A warm, positive title naming a small keepsake the hero keeps.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A2_PRIZE1", "B2_PRIZE", "C2_PRIZE"]
+      }
+    },
+    {
+      "id": "B1_LURE",
+      "scope": "track",
+      "meaning": "The small creature encountered on route B that can distract the hero from the goal.",
+      "guidance": "A harmless, playful small creature; the distraction is a fun game, never scary.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: the hero played with the B1_LURE and the goal wandered off (setback).",
+      "guidance": "A playful, gentle setback title; the ending must still feel content, not sad.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_LANDMARK1",
+      "scope": "track",
+      "meaning": "The first landmark on route B's continuing path.",
+      "guidance": "A gentle, plant-like or water-adjacent garden feature that is safe to walk near.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DETAIL1",
+      "scope": "track",
+      "meaning": "A small, wondrous creature glimpsed at B2_LANDMARK1.",
+      "guidance": "A harmless, quick, sparkly small creature; pure wonder, not a choice point.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_LANDMARK2",
+      "scope": "track",
+      "meaning": "The second landmark on route B's continuing path.",
+      "guidance": "A soft, low garden feature that gives a small animal shelter.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DETAIL2",
+      "scope": "track",
+      "meaning": "The small sleeping creature found at B2_LANDMARK2.",
+      "guidance": "A harmless, dozing small animal the hero is careful not to wake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_ZONE",
+      "scope": "track",
+      "meaning": "The sheltered corner where the hero meets the new friend.",
+      "guidance": "A cozy, shaded, safe little pocket of the garden.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_OFFER1",
+      "scope": "track",
+      "meaning": "The name of the new friend the hero meets on route B.",
+      "guidance": "A single friendly small-animal name; used consistently for every reference to this character.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DETAIL3",
+      "scope": "track",
+      "meaning": "A short description of the new friend and what they are doing when first met.",
+      "guidance": "A gentle, kid-relatable small-animal descriptor plus a harmless activity (e.g. eating a snack).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DETAIL4",
+      "scope": "track",
+      "meaning": "The small snack the hero and new friend share in the ending.",
+      "guidance": "A safe, garden-grown treat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the shared-snack, new-friendship success ending on route B.",
+      "guidance": "A warm, positive title naming the shared treat or the new friendship.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A2_PRIZE1", "A2_PRIZE2", "C2_PRIZE"]
+      }
+    },
+    {
+      "id": "C1_LANDMARK",
+      "scope": "track",
+      "meaning": "The boundary feature the goal escapes over in route C's setback ending.",
+      "guidance": "A safe, ordinary boundary feature of the threshold; the goal escapes over/past it, no harm implied.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_LANDMARK1",
+      "scope": "track",
+      "meaning": "The first landmark on route C's continuing (tiptoe) path.",
+      "guidance": "A tall, gentle row of plants the hero passes beneath.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_LANDMARK2",
+      "scope": "track",
+      "meaning": "The small threshold feature the goal slips through on route C.",
+      "guidance": "A small, safe, passable garden boundary feature (never locked, never dangerous).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_ZONE",
+      "scope": "track",
+      "meaning": "The quiet flowering corner beyond C2_LANDMARK2.",
+      "guidance": "A calm, safe, secluded flower-filled pocket of the garden.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_LANDMARK3",
+      "scope": "track",
+      "meaning": "The single overhead garden feature where the final ending happens.",
+      "guidance": "A single bare noun for a small overhead garden structure the hero can sit beneath.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the calm, restful success ending on route C.",
+      "guidance": "A warm, positive title naming the resting spot from C2_LANDMARK3.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A2_PRIZE1", "A2_PRIZE2", "B2_PRIZE"]
+      }
+    }
+  ]
+}

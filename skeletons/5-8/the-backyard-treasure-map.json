@@ -34,233 +34,233 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=85 beats='Nina and Theo find an old rolled-up map inside a dusty jar under Grandpa's big backyard oak; the map is hand-drawn with a dotted line and a red X somewhere at the end; the friends grin and decide which landmark on the map to follow first; sunny, safe, and excited'>>",
+      "body": "<<FILL role=setup words=85 beats='{HERO} and {COMPANION} find {MAP} inside a dusty jar under {ROUTE_A_LURE} in {THRESHOLD}; {MAP} is hand-drawn, showing {MAP_LINE} and {TREASURE_MARK} somewhere at the end; the friends grin and decide which landmark on the map to follow first; sunny, safe, and excited'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_start_oak",
-          "label": "Follow the map to the great old oak.",
+          "label": "Follow the map to {ROUTE_A_LURE}.",
           "target": "o_intro"
         },
         {
           "id": "c_start_shed",
-          "label": "Follow the map to the garden shed.",
+          "label": "Follow the map to {ROUTE_B_LURE}.",
           "target": "r_intro"
         },
         {
           "id": "c_start_stream",
-          "label": "Follow the map down to the stream.",
+          "label": "Follow the map down to {ROUTE_C_LURE}.",
           "target": "s_intro"
         }
       ]
     },
     {
       "id": "o_intro",
-      "body": "<<FILL role=rising words=68 beats='the dotted line points first to the great old oak at the top of the garden; Nina holds the map while Theo counts the paces; the oak is so big that three kids could hide behind it; the line seems to split near its roots'>>",
+      "body": "<<FILL role=rising words=68 beats='{MAP_LINE} points first to {ROUTE_A_LURE} at the top of {THRESHOLD}; {HERO} holds {MAP} while {COMPANION} counts the paces; {ROUTE_A_LURE} is so big that three kids could hide behind it; {MAP_LINE} seems to split near its roots'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_go",
-          "label": "Search around the roots of the oak.",
+          "label": "Search around the roots of {ROUTE_A_LURE}.",
           "target": "o_fork"
         }
       ]
     },
     {
       "id": "o_fork",
-      "body": "<<FILL role=choice words=78 beats='at the foot of the oak the dotted line splits into two faint trails; one wiggles toward the mossy hollow log where something is croaking softly, the other loops toward the old tire swing hanging from a low branch; the friends decide which way the map means'>>",
+      "body": "<<FILL role=choice words=78 beats='at the foot of {ROUTE_A_LURE} {MAP_LINE} splits into two faint trails; one wiggles toward {A1_LANDMARK1} where {A1_SIGN} calls out, the other loops toward {A2_LANDMARK1}; the friends decide which way the map means'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_hollow",
-          "label": "Take the trail to the hollow log.",
+          "label": "Take the trail to {A1_LANDMARK1}.",
           "target": "o_hollow_1"
         },
         {
           "id": "c_o_swing",
-          "label": "Take the trail to the tire swing.",
+          "label": "Take the trail to {A2_LANDMARK1}.",
           "target": "o_swing_1"
         }
       ]
     },
     {
       "id": "o_hollow_1",
-      "body": "<<FILL role=rising words=64 beats='they follow the trail to the hollow log lying in the long grass; it is bigger than a barrel and one end is dark and cool; a friendly croaking sound comes from somewhere deep inside it'>>",
+      "body": "<<FILL role=rising words=64 beats='they follow the trail to {A1_LANDMARK1} lying in the long grass; it is bigger than a barrel and one end is dark and cool; {A1_SIGN} comes from somewhere deep inside it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_hollow_1",
-          "label": "Peek inside the hollow log.",
+          "label": "Peek inside {A1_LANDMARK1}.",
           "target": "o_hollow_2"
         }
       ]
     },
     {
       "id": "o_hollow_2",
-      "body": "<<FILL role=rising words=70 beats='Nina peeks into the hollow log with her flashlight while Theo checks the map; the dotted line seems to go right through the log and out the other side; the croaking grows busier, like a tiny cheerful crowd'>>",
+      "body": "<<FILL role=rising words=70 beats='{HERO} peeks into {A1_LANDMARK1} with her flashlight while {COMPANION} checks {MAP}; {MAP_LINE} seems to go right through the log and out the other side; {A1_SIGN} grows busier, like a tiny cheerful crowd'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_hollow_2",
-          "label": "Follow the map through the log.",
+          "label": "Follow the map through {A1_LANDMARK1}.",
           "target": "o_hollow_app"
         }
       ]
     },
     {
       "id": "o_hollow_app",
-      "body": "<<FILL role=choice words=80 beats='past the log the map is smudged by an old raindrop and two little paths lead away; one path is dry and dusty going back toward the fence, the other is soft and mossy going down toward the damp corner of the garden; they must guess which one the mapmaker meant'>>",
+      "body": "<<FILL role=choice words=80 beats='past {A1_LANDMARK1} {MAP} is smudged by an old raindrop and two little paths lead away; one is {A1_DEADEND_PATH}, the other is {A1_ONWARD_PATH}; they must guess which one the mapmaker meant'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hollow_dry",
-          "label": "Try the dry dusty path.",
+          "label": "Try {A1_DEADEND_PATH}.",
           "target": "e_set_hollow"
         },
         {
           "id": "c_hollow_moss",
-          "label": "Try the soft mossy path.",
+          "label": "Try {A1_ONWARD_PATH}.",
           "target": "o_hollow_3"
         }
       ]
     },
     {
       "id": "e_set_hollow",
-      "body": "<<FILL role=ending words=70 beats='the dry path just curves back to the garden fence and stops at a pile of old flowerpots, with no X and no treasure in sight; the friends laugh, roll the map up, and skip back to the porch for a big glass of cold lemonade, happy to try again tomorrow'>>",
+      "body": "<<FILL role=ending words=70 beats='{A1_DEADEND_PATH} just curves back to the fence and stops at a pile of old {A1_DEADEND_FIND}, with no {TREASURE_MARK} and no treasure in sight; the friends laugh, roll up {MAP}, and skip back to {ENTRANCE} for {COMFORT_TREAT}, happy to try again tomorrow'>>",
       "is_ending": true,
       "ending": {
         "id": "end_set_hollow",
         "valence": "negative",
         "kind": "setback",
-        "title": "Back to the Flowerpots"
+        "title": "Back to the {A1_DEADEND_FIND}"
       }
     },
     {
       "id": "o_hollow_3",
-      "body": "<<FILL role=rising words=66 beats='the mossy path is springy and cool under their sneakers; ferns brush their knees and the croaking grows louder and happier; Theo whispers that it sounds like hundreds of tiny voices all talking at once'>>",
+      "body": "<<FILL role=rising words=66 beats='{A1_ONWARD_PATH} is springy and cool under their sneakers; ferns brush their knees and {A1_SIGN} grows louder and happier; {COMPANION} whispers that it sounds like hundreds of tiny voices all talking at once'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_hollow_3",
-          "label": "Follow the mossy path deeper.",
+          "label": "Follow {A1_ONWARD_PATH} deeper.",
           "target": "o_hollow_4"
         }
       ]
     },
     {
       "id": "o_hollow_4",
-      "body": "<<FILL role=rising words=68 beats='the path dips into a shady green hollow where the ground is soft and dotted with smooth flat stones; each stone looks a little like a tiny doorway; the friends step carefully and follow the dotted line deeper'>>",
+      "body": "<<FILL role=rising words=68 beats='the path dips into {A1_ZONE_HINT} where the ground is soft; each stone looks a little like a tiny doorway; the friends step carefully and follow {MAP_LINE} deeper'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_hollow_4",
-          "label": "Step into the shady green hollow.",
+          "label": "Step into {A1_ZONE_HINT}.",
           "target": "o_hollow_5"
         }
       ]
     },
     {
       "id": "o_hollow_5",
-      "body": "<<FILL role=rising words=64 beats='in the green hollow they find a ring of round pebbles set out like a tiny wall; behind it, plump spotted toads sit on leaf-thrones and lily-pad chairs; not one of them hops away'>>",
+      "body": "<<FILL role=rising words=64 beats='in {A1_ZONE_HINT} they find {A1_RING} set out like a tiny wall; behind it, {A1_CREATURES} sit on leaf-thrones and lily-pad chairs; not one of them hops away'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_hollow_5",
-          "label": "Tiptoe up to the ring of pebbles.",
+          "label": "Tiptoe up to {A1_RING}.",
           "target": "o_hollow_6"
         }
       ]
     },
     {
       "id": "o_hollow_6",
-      "body": "<<FILL role=rising words=70 beats='the biggest toad wears a crown of clover and blinks slowly at the visitors; Nina and Theo kneel down very gently so they will not frighten anyone; the map's red X is drawn right here in the corner'>>",
+      "body": "<<FILL role=rising words=70 beats='{A1_LEADER} wears {A1_CROWN} and blinks slowly at the visitors; {HERO} and {COMPANION} kneel down very gently so they will not frighten anyone; {TREASURE_MARK} is drawn right here in the corner'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_hollow_6",
-          "label": "Kneel down by the toad king.",
+          "label": "Kneel down by {A1_LEADER}.",
           "target": "e_toad_king"
         }
       ]
     },
     {
       "id": "e_toad_king",
-      "body": "<<FILL role=completion words=78 beats='the friends have found a whole tiny toad kingdom hidden in the shady hollow, with a clover-crowned toad king on his leafy throne; they promise to keep it secret and safe, and leave a soft green leaf as a gift; all the way home they can hardly stop grinning'>>",
+      "body": "<<FILL role=completion words=78 beats='the friends have found {A1_PRIZE} hidden in {A1_ZONE_HINT}, with {A1_LEADER} wearing {A1_CROWN} on his leafy throne; they promise to keep it secret and safe, and leave a soft green leaf as a gift; all the way home they can hardly stop grinning'>>",
       "is_ending": true,
       "ending": {
         "id": "end_toad_king",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Toad Kingdom"
+        "title": "{A1_PRIZE}"
       }
     },
     {
       "id": "o_swing_1",
-      "body": "<<FILL role=rising words=66 beats='they follow the loop of the trail to the old tire swing hanging from a low oak branch; the tire turns slowly in the breeze; someone has tied bright ribbons to the rope that flutter and shine'>>",
+      "body": "<<FILL role=rising words=66 beats='they follow the loop of the trail to {A2_LANDMARK1} hanging from a low branch of {ROUTE_A_LURE}; the tire turns slowly in the breeze; someone has tied {A2_DETAIL1} to the rope that flutter and shine'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_swing_1",
-          "label": "Look at the ribbons on the swing.",
+          "label": "Look at {A2_DETAIL1} on {A2_LANDMARK1}.",
           "target": "o_swing_2"
         }
       ]
     },
     {
       "id": "o_swing_2",
-      "body": "<<FILL role=rising words=70 beats='Theo gives the tire a gentle push and hears a soft tinkling sound from higher up in the tree; Nina looks at the map, where the dotted line climbs the trunk toward the leaves; the tinkling sounds just like tiny bells'>>",
+      "body": "<<FILL role=rising words=70 beats='{COMPANION} gives the tire a gentle push and hears {A2_SIGN} from higher up in {ROUTE_A_LURE}; {HERO} looks at {MAP}, where {MAP_LINE} climbs the trunk toward the leaves; {A2_SIGN} sounds just like tiny bells'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_swing_2",
-          "label": "Listen for the tinkling sound.",
+          "label": "Listen for {A2_SIGN}.",
           "target": "o_swing_app"
         }
       ]
     },
     {
       "id": "o_swing_app",
-      "body": "<<FILL role=choice words=78 beats='the dotted line splits at a knot in the trunk; one branch of the line goes left toward the thick prickly leaves, the other goes right along a smooth low limb that is easy to walk; the friends choose which way to follow the ringing'>>",
+      "body": "<<FILL role=choice words=78 beats='{MAP_LINE} splits at a knot in the trunk; one branch goes toward {A2_DEADEND_PATH}, the other goes along {A2_ONWARD_PATH} that is easy to walk; the friends choose which way to follow the ringing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_swing_left",
-          "label": "Climb toward the prickly leaves.",
+          "label": "Climb toward {A2_DEADEND_PATH}.",
           "target": "e_set_swing"
         },
         {
           "id": "c_swing_right",
-          "label": "Walk along the smooth low limb.",
+          "label": "Walk along {A2_ONWARD_PATH}.",
           "target": "o_swing_3"
         }
       ]
     },
     {
       "id": "e_set_swing",
-      "body": "<<FILL role=ending words=68 beats='the prickly left branch is a tangle of twigs that leads nowhere but an empty bird box; the friends give up on that route with a giggle, hop off the swing, and head back to the porch for lemonade and a rest, sure the X is hiding somewhere else'>>",
+      "body": "<<FILL role=ending words=68 beats='{A2_DEADEND_PATH} is a tangle of twigs that leads nowhere but an empty {A2_DEADEND_FIND}; the friends give up on that route with a giggle, hop off {A2_LANDMARK1}, and head back to {ENTRANCE} for {COMFORT_TREAT} and a rest, sure {TREASURE_MARK} is hiding somewhere else'>>",
       "is_ending": true,
       "ending": {
         "id": "end_set_swing",
         "valence": "negative",
         "kind": "setback",
-        "title": "Just an Empty Bird Box"
+        "title": "Just an Empty {A2_DEADEND_FIND}"
       }
     },
     {
       "id": "o_swing_3",
-      "body": "<<FILL role=rising words=64 beats='the smooth low limb is easy to balance along, and the tinkling gets clearer with every step; Nina keeps one hand on the trunk while Theo watches the map; the branch curves toward a sunny gap in the leaves'>>",
+      "body": "<<FILL role=rising words=64 beats='{A2_ONWARD_PATH} is easy to balance along, and {A2_SIGN} gets clearer with every step; {HERO} keeps one hand on the trunk while {COMPANION} watches {MAP}; the branch curves toward {A2_ZONE_HINT}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_swing_3",
-          "label": "Balance along toward the ringing.",
+          "label": "Balance along toward {A2_SIGN}.",
           "target": "o_swing_4"
         }
       ]
     },
     {
       "id": "o_swing_4",
-      "body": "<<FILL role=rising words=68 beats='they reach a place where hundreds of little things dangle from the twigs on bits of string; keys, shells, spoons, and buttons all knock together in the wind; the whole tree seems to be singing softly'>>",
+      "body": "<<FILL role=rising words=68 beats='they reach {A2_ZONE_HINT} where hundreds of little things dangle from the twigs on bits of string; {A2_DANGLERS} all knock together in the wind; the whole tree seems to be singing softly'>>",
       "is_ending": false,
       "choices": [
         {
@@ -272,7 +272,7 @@
     },
     {
       "id": "o_swing_5",
-      "body": "<<FILL role=rising words=66 beats='someone long ago hung a wind chime on every branch of this hidden corner of the oak; sunlight bounces off the shiny bits and scatters little rainbows on the leaves; the friends stand very still and just listen'>>",
+      "body": "<<FILL role=rising words=66 beats='someone long ago hung {A2_CHIMES} on every branch of this hidden corner of {ROUTE_A_LURE}; sunlight bounces off the shiny bits and scatters little rainbows on the leaves; the friends stand very still and just listen'>>",
       "is_ending": false,
       "choices": [
         {
@@ -284,100 +284,100 @@
     },
     {
       "id": "o_swing_6",
-      "body": "<<FILL role=rising words=72 beats='in the middle of the singing branches hangs the biggest chime of all, made from an old watering can and shining spoons; the map's red X floats right beside it; Nina reaches out and gives it the gentlest touch'>>",
+      "body": "<<FILL role=rising words=72 beats='in the middle of the singing branches hangs {A2_BIG_CHIME}; {TREASURE_MARK} floats right beside it; {HERO} reaches out and gives it the gentlest touch'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_swing_6",
-          "label": "Touch the biggest chime gently.",
+          "label": "Touch {A2_BIG_CHIME} gently.",
           "target": "e_chime"
         }
       ]
     },
     {
       "id": "e_chime",
-      "body": "<<FILL role=completion words=76 beats='the friends have found a secret wind-chime tree that sings all by itself whenever the breeze blows; they add one small shell of their own to the branches so the tree will sing a little louder; they walk home humming the tree's happy tune'>>",
+      "body": "<<FILL role=completion words=76 beats='the friends have found {A2_PRIZE}, a tree that sings all by itself whenever the breeze blows; they add one small shell of their own to the branches so it will sing a little louder; they walk home humming its happy tune'>>",
       "is_ending": true,
       "ending": {
         "id": "end_chime",
         "valence": "positive",
         "kind": "success",
-        "title": "The Wind-Chime Tree"
+        "title": "{A2_PRIZE}"
       }
     },
     {
       "id": "r_intro",
-      "body": "<<FILL role=rising words=68 beats='the dotted line points next across the lawn to the little green garden shed near the fence; Theo hops over a flowerbed while Nina reads the map; the shed door hangs open just a crack, and something inside gives a soft creak'>>",
+      "body": "<<FILL role=rising words=68 beats='{MAP_LINE} points next across the lawn to {ROUTE_B_LURE} near the fence; {COMPANION} hops over a flowerbed while {HERO} reads {MAP}; the shed door hangs open just a crack, and something inside gives a soft creak'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_go",
-          "label": "Sneak up to the garden shed.",
+          "label": "Sneak up to {ROUTE_B_LURE}.",
           "target": "r_fork"
         }
       ]
     },
     {
       "id": "r_fork",
-      "body": "<<FILL role=choice words=78 beats='behind the shed the trail on the map splits in two; one line slips inside the shed's open door into the cool shadows, the other runs off toward the big grey rock pile stacked against the back fence; the friends pick which to explore'>>",
+      "body": "<<FILL role=choice words=78 beats='behind {ROUTE_B_LURE} the trail on {MAP} splits in two; one line slips inside {ROUTE_B_LURE}'s open door into the cool shadows, the other runs off toward {B2_LANDMARK1} stacked against the back fence; the friends pick which to explore'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_shed",
-          "label": "Slip inside the shed door.",
+          "label": "Slip inside {ROUTE_B_LURE}'s door.",
           "target": "r_shed_1"
         },
         {
           "id": "c_r_rock",
-          "label": "Head to the big rock pile.",
+          "label": "Head to {B2_LANDMARK1}.",
           "target": "r_rock_1"
         }
       ]
     },
     {
       "id": "r_shed_1",
-      "body": "<<FILL role=rising words=64 beats='they push the shed door open and dusty golden light spills across old flowerpots and coiled hoses; it smells of soil and dry wood; the dotted line leads to the far dark corner behind the wheelbarrow'>>",
+      "body": "<<FILL role=rising words=64 beats='they push {ROUTE_B_LURE}'s door open and dusty golden light spills across old flowerpots and coiled hoses; it smells of soil and dry wood; {MAP_LINE} leads to {B1_LANDMARK1}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_shed_1",
-          "label": "Follow the light to the corner.",
+          "label": "Follow the light to {B1_LANDMARK1}.",
           "target": "r_shed_2"
         }
       ]
     },
     {
       "id": "r_shed_2",
-      "body": "<<FILL role=rising words=70 beats='Nina tiptoes past rakes and watering cans while Theo holds the map steady; in the corner a stack of crates is piled up like steps, and a faint light glows from a gap near the roof; something up there looks cozy'>>",
+      "body": "<<FILL role=rising words=70 beats='{HERO} tiptoes past rakes and watering cans while {COMPANION} holds {MAP} steady; in {B1_LANDMARK1} {B1_CRATES} is piled up like steps, and {B1_ZONE_HINT} glows; something up there looks cozy'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_shed_2",
-          "label": "Look at the stack of crates.",
+          "label": "Look at {B1_CRATES}.",
           "target": "r_shed_app"
         }
       ]
     },
     {
       "id": "r_shed_app",
-      "body": "<<FILL role=choice words=80 beats='the map is torn right at this spot and two ways go on; a low gap leads under the workbench into the dark, and a wobbly ladder of crates climbs up toward the glowing gap near the roof; the friends decide which way the X wants them to go'>>",
+      "body": "<<FILL role=choice words=80 beats='{MAP} is torn right at this spot and two ways go on; {B1_DEADEND_PATH} leads into the dark, and {B1_ONWARD_PATH} climbs up toward {B1_ZONE_HINT}; the friends decide which way {TREASURE_MARK} wants them to go'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_shed_back",
-          "label": "Crawl under the workbench.",
+          "label": "Crawl through {B1_DEADEND_PATH}.",
           "target": "e_set_shed"
         },
         {
           "id": "c_shed_in",
-          "label": "Climb the crate ladder up.",
+          "label": "Climb {B1_ONWARD_PATH} up.",
           "target": "r_shed_3"
         }
       ]
     },
     {
       "id": "e_set_shed",
-      "body": "<<FILL role=ending words=70 beats='the low gap under the workbench is just a cobwebby dead end full of old plant pots and a sleepy woodlouse; the friends back out sneezing and laughing, dust the map off, and trot back to the porch for cold lemonade before trying another trail'>>",
+      "body": "<<FILL role=ending words=70 beats='{B1_DEADEND_PATH} is just a cobwebby dead end with old plant pots and a {B1_DEADEND_FIND}; the friends back out sneezing and laughing, dust {MAP} off, and trot back to {ENTRANCE} for {COMFORT_TREAT} before trying another trail'>>",
       "is_ending": true,
       "ending": {
         "id": "end_set_shed",
@@ -388,142 +388,142 @@
     },
     {
       "id": "r_shed_3",
-      "body": "<<FILL role=rising words=66 beats='the crate ladder wobbles just a little but holds, and the friends climb toward the warm glowing gap; Theo goes first and gasps softly at what he sees; Nina scrambles up right behind him'>>",
+      "body": "<<FILL role=rising words=66 beats='{B1_ONWARD_PATH} wobbles just a little but holds, and the friends climb toward {B1_ZONE_HINT}; {COMPANION} goes first and gasps softly at what he sees; {HERO} scrambles up right behind him'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_shed_3",
-          "label": "Climb toward the glowing gap.",
+          "label": "Climb toward {B1_ZONE_HINT}.",
           "target": "r_shed_4"
         }
       ]
     },
     {
       "id": "r_shed_4",
-      "body": "<<FILL role=rising words=68 beats='up in the loft of the shed someone has built a cozy little hideaway from old cushions, a milk-crate table, and a lantern that runs on batteries; a hand-painted sign hangs above the doorway; it feels warm and secret'>>",
+      "body": "<<FILL role=rising words=68 beats='up past {B1_ZONE_HINT} someone has built {B1_LOFT} from {B1_FURNISHINGS} and a lantern that runs on batteries; {B1_SIGN_BOARD} hangs above the doorway; it feels warm and secret'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_shed_4",
-          "label": "Peek into the little loft.",
+          "label": "Peek into {B1_LOFT}.",
           "target": "r_shed_5"
         }
       ]
     },
     {
       "id": "r_shed_5",
-      "body": "<<FILL role=rising words=64 beats='inside the little hideaway are two comfy seats, a shelf of adventure books, and a jar of shiny paper stars; a blanket is folded neatly in the corner as if it is waiting for visitors; the map's red X is right here'>>",
+      "body": "<<FILL role=rising words=64 beats='inside {B1_LOFT} are two comfy seats, a shelf of adventure books, and a jar of shiny paper stars; a blanket is folded neatly in the corner as if it is waiting for visitors; {TREASURE_MARK} is right here'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_shed_5",
-          "label": "Step into the cozy hideaway.",
+          "label": "Step into {B1_LOFT}.",
           "target": "r_shed_6"
         }
       ]
     },
     {
       "id": "r_shed_6",
-      "body": "<<FILL role=rising words=72 beats='the painted sign over the doorway reads Explorers Welcome in bright friendly letters; Nina and Theo realize this must be a secret fort built by kids long ago and left ready for whoever found the map next; they step inside like honored guests'>>",
+      "body": "<<FILL role=rising words=72 beats='{B1_SIGN_BOARD} over the doorway reads Explorers Welcome in bright friendly letters; {HERO} and {COMPANION} realize this must be a secret fort built by kids long ago and left ready for whoever found the map next; they step inside like honored guests'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_shed_6",
-          "label": "Read the painted sign.",
+          "label": "Read {B1_SIGN_BOARD}.",
           "target": "e_fort"
         }
       ]
     },
     {
       "id": "e_fort",
-      "body": "<<FILL role=completion words=78 beats='the friends have found a snug secret fort hidden in the top of the garden shed, all ready for new explorers; they write their own names in the little logbook on the shelf and promise to come back and take good care of it; this will be their headquarters from now on'>>",
+      "body": "<<FILL role=completion words=78 beats='the friends have found {B1_PRIZE}, snug and hidden in the top of {ROUTE_B_LURE}, all ready for new explorers; they write their own names in the little logbook on the shelf and promise to come back and take good care of it; this will be their headquarters from now on'>>",
       "is_ending": true,
       "ending": {
         "id": "end_fort",
         "valence": "positive",
         "kind": "success",
-        "title": "The Secret Fort"
+        "title": "{B1_PRIZE}"
       }
     },
     {
       "id": "r_rock_1",
-      "body": "<<FILL role=rising words=66 beats='the other line leads to the big grey rock pile stacked against the back fence, warm from the afternoon sun; a few marigolds grow in the cracks; the dotted line points to a low flat stone near the bottom'>>",
+      "body": "<<FILL role=rising words=66 beats='the other line leads to {B2_LANDMARK1}, warm from the afternoon sun; a few marigolds grow in the cracks; {MAP_LINE} points to {B2_STONE} near the bottom'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_rock_1",
-          "label": "Look at the low flat stone.",
+          "label": "Look at {B2_STONE}.",
           "target": "r_rock_2"
         }
       ]
     },
     {
       "id": "r_rock_2",
-      "body": "<<FILL role=rising words=70 beats='Theo taps the flat stone and it sounds hollow, like there is a space underneath; Nina checks the map, where the red X sits just below the rocks; a little ring of pebbles seems to mark the very spot'>>",
+      "body": "<<FILL role=rising words=70 beats='{COMPANION} taps {B2_STONE} and it sounds hollow, like there is a space underneath; {HERO} checks {MAP}, where {TREASURE_MARK} sits just below the rocks; {B2_ZONE_HINT} seems to mark the very spot'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_rock_2",
-          "label": "Tap the hollow-sounding stone.",
+          "label": "Tap {B2_STONE}.",
           "target": "r_rock_app"
         }
       ]
     },
     {
       "id": "r_rock_app",
-      "body": "<<FILL role=choice words=78 beats='two small arrows are scratched faintly on the flat stone; one arrow points left toward a gap between two mossy boulders, the other points down at the loose sandy soil right beneath the flat stone; the friends choose where to look'>>",
+      "body": "<<FILL role=choice words=78 beats='two small arrows are scratched faintly on {B2_STONE}; one arrow points toward {B2_DEADEND_PATH}, the other points down at {B2_ONWARD_PATH} right beneath the stone; the friends choose where to look'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rock_left",
-          "label": "Check the gap between boulders.",
+          "label": "Check {B2_DEADEND_PATH}.",
           "target": "e_set_rock"
         },
         {
           "id": "c_rock_dig",
-          "label": "Dig under the flat stone.",
+          "label": "Dig into {B2_ONWARD_PATH}.",
           "target": "r_rock_3"
         }
       ]
     },
     {
       "id": "e_set_rock",
-      "body": "<<FILL role=ending words=68 beats='the gap between the mossy boulders is just a snug home for a busy line of ants marching to and fro, with no treasure to be seen; the friends say a polite hello to the ants, roll up the map, and wander back to the porch for a lemonade break'>>",
+      "body": "<<FILL role=ending words=68 beats='{B2_DEADEND_PATH} is just a snug home for a line of busy {B2_DEADEND_FIND} marching to and fro, with no treasure to be seen; the friends say a polite hello to the {B2_DEADEND_FIND}, roll up {MAP}, and wander back to {ENTRANCE} for {COMFORT_TREAT}'>>",
       "is_ending": true,
       "ending": {
         "id": "end_set_rock",
         "valence": "negative",
         "kind": "setback",
-        "title": "Only a Line of Ants"
+        "title": "Only a Line of {B2_DEADEND_FIND}"
       }
     },
     {
       "id": "r_rock_3",
-      "body": "<<FILL role=rising words=64 beats='they gently lift the loose flat stone and set it aside, and underneath the sandy soil is soft and easy to brush away; Theo digs with a garden trowel while Nina cups her hands; something smooth and round soon appears'>>",
+      "body": "<<FILL role=rising words=64 beats='they gently lift {B2_STONE} aside, and underneath {B2_ONWARD_PATH} is soft and easy to brush away; {COMPANION} digs with a garden trowel while {HERO} cups her hands; something smooth and round soon appears'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_rock_3",
-          "label": "Brush away the sandy soil.",
+          "label": "Brush away {B2_ONWARD_PATH}.",
           "target": "r_rock_4"
         }
       ]
     },
     {
       "id": "r_rock_4",
-      "body": "<<FILL role=rising words=68 beats='a little tin box with a rusty latch sits nestled in the sand, just where the X promised; it is exactly the size for two hands to lift; the friends carefully wiggle it free and blow the dust off the lid'>>",
+      "body": "<<FILL role=rising words=68 beats='{B2_BOX} with a rusty latch sits nestled in the sand, just where {TREASURE_MARK} promised; it is exactly the size for two hands to lift; the friends carefully wiggle it free and blow the dust off the lid'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_rock_4",
-          "label": "Wiggle the little box free.",
+          "label": "Wiggle {B2_BOX} free.",
           "target": "r_rock_5"
         }
       ]
     },
     {
       "id": "r_rock_5",
-      "body": "<<FILL role=rising words=66 beats='the latch pops open with a happy click and inside, wrapped in an old checkered cloth, is a whole collection of glass marbles; they catch the sunlight in swirls of blue, green, and gold; Nina gasps with delight'>>",
+      "body": "<<FILL role=rising words=66 beats='the latch pops open with a happy click and inside, wrapped in {B2_NOTE}, is {B2_TREASURE}; they catch the sunlight in swirls of blue, green, and gold; {HERO} gasps with delight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -535,71 +535,71 @@
     },
     {
       "id": "r_rock_6",
-      "body": "<<FILL role=rising words=72 beats='there are cats-eyes, swirlies, and one big shooter as clear as a raindrop, dozens of marbles saved by some other kid years and years ago; a tiny note in the box simply says share and enjoy; the friends read it twice'>>",
+      "body": "<<FILL role=rising words=72 beats='there are cats-eyes, swirlies, and one big shooter as clear as a raindrop, dozens of marbles saved by some other kid years and years ago; {B2_NOTE} simply says share and enjoy; the friends read it twice'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_rock_6",
-          "label": "Look closely at the marbles.",
+          "label": "Look closely at {B2_TREASURE}.",
           "target": "e_marbles"
         }
       ]
     },
     {
       "id": "e_marbles",
-      "body": "<<FILL role=completion words=76 beats='the friends have dug up a hidden box of beautiful glass marbles left as treasure by a kid from long ago; they choose two favorites to keep and leave the rest tucked back with a note of their own for the next lucky finder; they walk home clinking a marble in each pocket'>>",
+      "body": "<<FILL role=completion words=76 beats='the friends have dug up {B2_PRIZE}, left as treasure by a kid from long ago; they choose two favorites to keep and leave the rest tucked back with a note of their own for the next lucky finder; they walk home clinking a marble in each pocket'>>",
       "is_ending": true,
       "ending": {
         "id": "end_marbles",
         "valence": "positive",
         "kind": "success",
-        "title": "The Box of Marbles"
+        "title": "{B2_PRIZE}"
       }
     },
     {
       "id": "s_intro",
-      "body": "<<FILL role=rising words=68 beats='the last part of the dotted line runs down the sloping lawn to the little stream at the bottom of the garden where it meets the park; the water chatters over smooth stones; Theo holds the map high so it will not get wet'>>",
+      "body": "<<FILL role=rising words=68 beats='the last part of {MAP_LINE} runs down the sloping lawn to {ROUTE_C_LURE} at the bottom of {THRESHOLD} where it meets the park; the water chatters over smooth stones; {COMPANION} holds {MAP} high so it will not get wet'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_go",
-          "label": "Head down to the little stream.",
+          "label": "Head down to {ROUTE_C_LURE}.",
           "target": "s_fork"
         }
       ]
     },
     {
       "id": "s_fork",
-      "body": "<<FILL role=choice words=78 beats='down by the water the map's line splits one final time; one branch curves into the tall blackberry bushes along the bank, the other hops out across a row of flat stepping stones to the far side of the stream; the friends decide which way the treasure lies'>>",
+      "body": "<<FILL role=choice words=78 beats='down by the water {MAP_LINE} splits one final time; one branch curves into {C1_LANDMARK1} along the bank, the other hops out across {C2_LANDMARK1} to the far side of the stream; the friends decide which way the treasure lies'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bramble",
-          "label": "Follow the line into the brambles.",
+          "label": "Follow the line into {C1_LANDMARK1}.",
           "target": "s_bramble_1"
         },
         {
           "id": "c_s_bank",
-          "label": "Cross the stepping stones.",
+          "label": "Cross {C2_LANDMARK1}.",
           "target": "s_bank_1"
         }
       ]
     },
     {
       "id": "s_bramble_1",
-      "body": "<<FILL role=rising words=64 beats='they follow the line into the shade of the tall blackberry bushes, heavy with ripe purple berries; the leaves make a cool green tunnel; from somewhere deeper inside comes a soft, friendly meow'>>",
+      "body": "<<FILL role=rising words=64 beats='they follow the line into the shade of {C1_LANDMARK1}, heavy with ripe purple berries; the leaves make a cool green tunnel; from somewhere deeper inside comes {C1_SIGN}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bramble_1",
-          "label": "Follow the meow into the bushes.",
+          "label": "Follow {C1_SIGN} into the bushes.",
           "target": "s_bramble_2"
         }
       ]
     },
     {
       "id": "s_bramble_2",
-      "body": "<<FILL role=rising words=70 beats='Nina holds a branch aside so no thorns catch their sleeves, and the meowing comes again, closer this time; Theo checks the map, where the dotted line winds right into the middle of the bramble patch; they step in gently'>>",
+      "body": "<<FILL role=rising words=70 beats='{HERO} holds a branch aside so no thorns catch their sleeves, and {C1_SIGN} comes again, closer this time; {COMPANION} checks {MAP}, where {MAP_LINE} winds right into the middle of the bramble patch; they step in gently'>>",
       "is_ending": false,
       "choices": [
         {
@@ -611,94 +611,94 @@
     },
     {
       "id": "s_bramble_app",
-      "body": "<<FILL role=choice words=80 beats='inside the bushes the trail on the map is faded and two little tunnels lead on through the leaves; one tunnel goes low toward a dark thorny thicket, the other goes toward a patch of warm sunlight where the meowing sounds happiest; they pick a way'>>",
+      "body": "<<FILL role=choice words=80 beats='inside the bushes the trail on {MAP} is faded and two little tunnels lead on through the leaves; one tunnel goes low toward {C1_DEADEND_PATH}, the other goes toward {C1_ONWARD_PATH} where {C1_SIGN} sounds happiest; they pick a way'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_bramble_back",
-          "label": "Take the low thorny tunnel.",
+          "label": "Take {C1_DEADEND_PATH}.",
           "target": "e_set_bramble"
         },
         {
           "id": "c_bramble_push",
-          "label": "Take the sunny tunnel.",
+          "label": "Take {C1_ONWARD_PATH}.",
           "target": "s_bramble_3"
         }
       ]
     },
     {
       "id": "e_set_bramble",
-      "body": "<<FILL role=ending words=70 beats='the low tunnel just ends in a thick tangle of thorns too prickly to pass, with only a lost sock caught on a branch; the friends carefully back out without a single scratch, laugh at the silly sock, and head up to the porch for a cool glass of lemonade'>>",
+      "body": "<<FILL role=ending words=70 beats='{C1_DEADEND_PATH} just ends in a thick tangle of thorns too prickly to pass, with only a lost {C1_DEADEND_FIND} caught on a branch; the friends carefully back out without a single scratch, laugh at the silly {C1_DEADEND_FIND}, and head up to {ENTRANCE} for {COMFORT_TREAT}'>>",
       "is_ending": true,
       "ending": {
         "id": "end_set_bramble",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Lost Sock"
+        "title": "The Lost {C1_DEADEND_FIND}"
       }
     },
     {
       "id": "s_bramble_3",
-      "body": "<<FILL role=rising words=66 beats='the sunny tunnel opens into a cozy little clearing right in the heart of the brambles, floored with soft dry leaves; the meowing turns into a rumbly purr; two green eyes blink at them from a warm nest of grass'>>",
+      "body": "<<FILL role=rising words=66 beats='{C1_ONWARD_PATH} opens into {C1_ZONE_HINT} right in the heart of the brambles, floored with soft dry leaves; {C1_SIGN} turns into a rumbly purr; two green eyes blink at them from a warm nest of grass'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bramble_3",
-          "label": "Step into the sunny clearing.",
+          "label": "Step into {C1_ZONE_HINT}.",
           "target": "s_bramble_4"
         }
       ]
     },
     {
       "id": "s_bramble_4",
-      "body": "<<FILL role=rising words=68 beats='a fluffy grey cat with white paws is curled up in the sunny clearing, and it does not run away at all; instead it stretches, yawns, and pads right over to say hello; it wears a little collar with a bell'>>",
+      "body": "<<FILL role=rising words=68 beats='{C1_CAT} with white paws is curled up in {C1_ZONE_HINT}, and it does not run away at all; instead it stretches, yawns, and pads right over to say hello; it wears {C1_COLLAR}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bramble_4",
-          "label": "Say hello to the fluffy cat.",
+          "label": "Say hello to {C1_CAT}.",
           "target": "s_bramble_5"
         }
       ]
     },
     {
       "id": "s_bramble_5",
-      "body": "<<FILL role=rising words=64 beats='the cat winds around their ankles, purring like a tiny engine, and flops over for a belly rub; the friends laugh and stroke its soft fur; the map's red X is drawn right where the cat has made its cozy hideaway'>>",
+      "body": "<<FILL role=rising words=64 beats='{C1_CAT} winds around their ankles, purring like a tiny engine, and flops over for a belly rub; the friends laugh and stroke its soft fur; {TREASURE_MARK} is drawn right where the cat has made its cozy hideaway'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bramble_5",
-          "label": "Give the cat a belly rub.",
+          "label": "Give {C1_CAT} a belly rub.",
           "target": "s_bramble_6"
         }
       ]
     },
     {
       "id": "s_bramble_6",
-      "body": "<<FILL role=rising words=72 beats='the collar has a small tag that reads Pepper, please be my friend, but no address at all; the cat clearly knows this bramble clearing well and treats the friends like old pals; Nina and Theo wonder if Pepper has been waiting for the map to be found'>>",
+      "body": "<<FILL role=rising words=72 beats='{C1_COLLAR} has {C1_TAG} that reads Pepper, please be my friend, but no address at all; the cat clearly knows {C1_ZONE_HINT} well and treats the friends like old pals; {HERO} and {COMPANION} wonder if it has been waiting for the map to be found'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bramble_6",
-          "label": "Read the little collar tag.",
+          "label": "Read {C1_TAG}.",
           "target": "e_cat"
         }
       ]
     },
     {
       "id": "e_cat",
-      "body": "<<FILL role=completion words=78 beats='the friends have found a friendly lost cat named Pepper living happily in a secret bramble clearing; they share their afternoon snack with their new pal and promise to visit every single day and help find where he belongs; Pepper walks them halfway home with his tail held high'>>",
+      "body": "<<FILL role=completion words=78 beats='the friends have found {C1_PRIZE} living happily in {C1_ZONE_HINT}; they share their afternoon snack with their new pal and promise to visit every single day and help find where he belongs; he walks them halfway home with his tail held high'>>",
       "is_ending": true,
       "ending": {
         "id": "end_cat",
         "valence": "positive",
         "kind": "completion",
-        "title": "Pepper the Bramble Cat"
+        "title": "{C1_PRIZE}"
       }
     },
     {
       "id": "s_bank_1",
-      "body": "<<FILL role=rising words=66 beats='the stepping stones cross the chattering stream in a neat flat row, dry on top and easy to hop; the friends cross one careful stone at a time to the mossy far bank; the dotted line points to the roots of a leaning willow tree'>>",
+      "body": "<<FILL role=rising words=66 beats='{C2_LANDMARK1} cross the chattering stream in a neat flat row, dry on top and easy to hop; the friends cross one careful stone at a time to the mossy far bank; {MAP_LINE} points to the roots of {C2_TREE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -710,47 +710,47 @@
     },
     {
       "id": "s_bank_2",
-      "body": "<<FILL role=rising words=70 beats='on the far bank the willow trails its long green fingers in the water, and the ground beneath its roots is soft and cool; Theo studies the map, where the red X sits tucked among the tangled roots; something glints faintly in the shade'>>",
+      "body": "<<FILL role=rising words=70 beats='on the far bank {C2_TREE} trails its long green fingers in the water, and the ground beneath its roots is soft and cool; {COMPANION} studies {MAP}, where {TREASURE_MARK} sits tucked among the tangled roots; {C2_ZONE_HINT} shows in the shade'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bank_2",
-          "label": "Look among the willow roots.",
+          "label": "Look among the roots of {C2_TREE}.",
           "target": "s_bank_app"
         }
       ]
     },
     {
       "id": "s_bank_app",
-      "body": "<<FILL role=choice words=78 beats='two hollows show among the willow roots; one is a wet muddy dip right at the water's edge, the other is a dry sheltered nook a little higher up where the glinting seems to come from; the friends choose where the X is pointing'>>",
+      "body": "<<FILL role=choice words=78 beats='two hollows show among the roots of {C2_TREE}; one is {C2_DEADEND_PATH} right at the water's edge, the other is {C2_ONWARD_PATH} a little higher up where {C2_ZONE_HINT} comes from; the friends choose where {TREASURE_MARK} is pointing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_bank_back",
-          "label": "Search the muddy dip.",
+          "label": "Search {C2_DEADEND_PATH}.",
           "target": "e_set_bank"
         },
         {
           "id": "c_bank_cross",
-          "label": "Search the dry sheltered nook.",
+          "label": "Search {C2_ONWARD_PATH}.",
           "target": "s_bank_3"
         }
       ]
     },
     {
       "id": "e_set_bank",
-      "body": "<<FILL role=ending words=68 beats='the muddy dip at the water's edge holds nothing but a shiny wet pebble and one very surprised water beetle; the friends grin at their muddy sneakers, wave to the beetle, and hop back across the stones for a well-earned glass of lemonade'>>",
+      "body": "<<FILL role=ending words=68 beats='{C2_DEADEND_PATH} at the water's edge holds nothing but a shiny wet pebble and one very surprised {C2_DEADEND_FIND}; the friends grin at their muddy sneakers, wave hello, and hop back across the stones for {COMFORT_TREAT}'>>",
       "is_ending": true,
       "ending": {
         "id": "end_set_bank",
         "valence": "negative",
         "kind": "setback",
-        "title": "A Surprised Water Beetle"
+        "title": "A Surprised {C2_DEADEND_FIND}"
       }
     },
     {
       "id": "s_bank_3",
-      "body": "<<FILL role=rising words=64 beats='the dry sheltered nook is just the right size to kneel in, and the glinting comes from something half-buried in the cool soil; Nina brushes the earth away gently while Theo holds the willow branches back; a corner of metal appears'>>",
+      "body": "<<FILL role=rising words=64 beats='{C2_ONWARD_PATH} is just the right size to kneel in, and {C2_ZONE_HINT} comes from something half-buried in the cool soil; {HERO} brushes the earth away gently while {COMPANION} holds the willow branches back; a corner of metal appears'>>",
       "is_ending": false,
       "choices": [
         {
@@ -762,49 +762,49 @@
     },
     {
       "id": "s_bank_4",
-      "body": "<<FILL role=rising words=68 beats='it is a small brass tin, green at the edges but still shut tight, exactly where the map's X promised; the friends work the stiff lid with careful fingers; at last it opens with a soft puff of old air'>>",
+      "body": "<<FILL role=rising words=68 beats='it is {C2_TIN}, green at the edges but still shut tight, exactly where {TREASURE_MARK} promised; the friends work the stiff lid with careful fingers; at last it opens with a soft puff of old air'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bank_4",
-          "label": "Open the little brass tin.",
+          "label": "Open {C2_TIN}.",
           "target": "s_bank_5"
         }
       ]
     },
     {
       "id": "s_bank_5",
-      "body": "<<FILL role=rising words=66 beats='inside the tin, gleaming on a bed of faded velvet, is a heap of shiny buttons of every kind; brass buttons, glass buttons, and pearly ones shaped like little flowers; they sparkle like real jewels in the dappled light'>>",
+      "body": "<<FILL role=rising words=66 beats='inside {C2_TIN}, gleaming on a bed of faded velvet, is a heap of {C2_BUTTONS}; brass buttons, glass buttons, and pearly ones shaped like little flowers; they sparkle like real jewels in the dappled light'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bank_5",
-          "label": "Look at the shiny buttons.",
+          "label": "Look at {C2_BUTTONS}.",
           "target": "s_bank_6"
         }
       ]
     },
     {
       "id": "s_bank_6",
-      "body": "<<FILL role=rising words=72 beats='someone has kept these special buttons safe here for years, each one different and lovely, a true backyard treasure; a folded slip of paper inside reads for the finder, with love; the friends feel like they have opened a chest of pirate gold'>>",
+      "body": "<<FILL role=rising words=72 beats='someone has kept {C2_BUTTONS} safe here for years, each one different and lovely, a true backyard treasure; {C2_NOTE} inside reads for the finder, with love; the friends feel like they have opened a chest of pirate gold'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_s_bank_6",
-          "label": "Read the folded paper.",
+          "label": "Read {C2_NOTE}.",
           "target": "e_buttons"
         }
       ]
     },
     {
       "id": "e_buttons",
-      "body": "<<FILL role=completion words=76 beats='the friends have unearthed a hidden tin of dazzling shiny buttons, the real treasure at the end of the map; they pick one gleaming button each to keep as a memory and rebury the tin with a new note for the next explorer; they cross the stepping stones home feeling rich as kings'>>",
+      "body": "<<FILL role=completion words=76 beats='the friends have unearthed {C2_PRIZE}, the real treasure at the end of the map; they pick one gleaming button each to keep as a memory and rebury the tin with a new note for the next explorer; they cross the stepping stones home feeling rich as kings'>>",
       "is_ending": true,
       "ending": {
         "id": "end_buttons",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Tin of Shiny Buttons"
+        "title": "{C2_PRIZE}"
       }
     }
   ]

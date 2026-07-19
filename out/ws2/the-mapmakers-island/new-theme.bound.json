@@ -1,0 +1,3392 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_mapmakers_island",
+  "version": 1,
+  "title": "The Mapmaker's Island",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "exploration",
+      "perseverance",
+      "the sea",
+      "legacy"
+    ],
+    "estimated_minutes": 22,
+    "ending_count": 72,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=135 beats='Kesh, the youngest apprentice at the Cartographer Guild, is rowed to a nameless mesa at first light and given one task, fill the blank survey before the caravan leaves at sundown or lose the apprenticeship; the trailhead opens onto five ways inland, the dune canyon, the mesa cliffs, the dry caverns, the crashed airship tower, and the salt flats'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Wade into the dune canyon.",
+          "target": "mg_enter"
+        },
+        {
+          "id": "c_n_start_2",
+          "label": "Climb toward the mesa cliffs.",
+          "target": "cf_enter"
+        },
+        {
+          "id": "c_n_start_3",
+          "label": "Descend into the dry caverns.",
+          "target": "cv_enter"
+        },
+        {
+          "id": "c_n_start_4",
+          "label": "Cross to the crashed airship tower.",
+          "target": "tw_enter"
+        },
+        {
+          "id": "c_n_start_5",
+          "label": "Walk out onto the salt flats.",
+          "target": "tf_enter"
+        }
+      ]
+    },
+    {
+      "id": "mg_enter",
+      "body": "<<FILL role=rising words=110 beats='the dune canyon is a maze of roots and brown water where hawks stand still as sticks; Kesh must pick a bearing before the mud swallows the morning, upcoast toward a fallen log bridge, downcoast toward a cluster of oyster rocks, or straight inland along a hidden wash'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_enter_1",
+          "label": "Follow a fallen log bridge upcoast.",
+          "target": "mg_bridge"
+        },
+        {
+          "id": "c_mg_enter_2",
+          "label": "Pick along a cluster of oyster rocks downcoast.",
+          "target": "mg_oyster"
+        },
+        {
+          "id": "c_mg_enter_3",
+          "label": "Push inland up a hidden wash.",
+          "target": "mg_creek"
+        },
+        {
+          "id": "c_mg_enter_4",
+          "label": "Wade toward a still green basin.",
+          "target": "mg_lagoon"
+        }
+      ]
+    },
+    {
+      "id": "mg_bridge",
+      "body": "<<FILL role=rising words=100 beats='a fallen log bridge is slick and green, crossing a channel where the tide is already turning; halfway over Kesh spots carved deadwood and a hawk rookery loud in the branches on the far bank'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_bridge_1",
+          "label": "Stop to copy carved deadwood.",
+          "target": "mg_carve"
+        },
+        {
+          "id": "c_mg_bridge_2",
+          "label": "Hurry across before the tide.",
+          "target": "mg_farbank"
+        }
+      ]
+    },
+    {
+      "id": "mg_carve",
+      "body": "<<FILL role=choice words=95 beats='the driftwood carries a mapmaker's shorthand message, arrows and a little compass rose scratched by someone long ago; the marks point two ways, back toward the dry caverns and up toward high ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_carve_1",
+          "label": "Trust the arrow toward high ground.",
+          "target": "mg_highground"
+        },
+        {
+          "id": "c_mg_carve_2",
+          "label": "Read the marks slowly for a message.",
+          "target": "mg_readmarks"
+        }
+      ]
+    },
+    {
+      "id": "mg_readmarks",
+      "body": "<<FILL role=discovery words=100 beats='read slowly, the shorthand is a message, the last mapmaker signing a name, Tamsin, and a promise to leave Tamsin's half-finished survey at Tamsin's canyon outpost; the arrow up the hill is clear and sure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_readmarks_1",
+          "label": "Head for high ground as Tamsin marked.",
+          "target": "mg_highground"
+        }
+      ]
+    },
+    {
+      "id": "mg_farbank",
+      "body": "<<FILL role=rising words=95 beats='on the far bank a hawk rookery erupts, hundreds of hawks lifting at once, and in the racket Kesh nearly misses a narrow path splitting left toward a sand slick and right toward a stand of firm palms'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_farbank_1",
+          "label": "Cross a sand slick quickly.",
+          "target": "e_mg_mud_trap"
+        },
+        {
+          "id": "c_mg_farbank_2",
+          "label": "Keep to a stand of firm palms.",
+          "target": "mg_highground"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_mud_trap",
+      "body": "<<FILL role=failure words=90 beats='a sand slick is deeper than it looks and grips like glue up to the knee; by the time Kesh wriggles free the tide has closed a fallen log bridge behind, so this whole finger of coast is cut off and stays a blank corner on the paper, and Kesh backs out to firmer ground for the day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tide_cut_coast",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The wind Closes In"
+      }
+    },
+    {
+      "id": "mg_highground",
+      "body": "<<FILL role=rising words=100 beats='the ground lifts out of the swamp into firm palms, and from a low rise Kesh can see the whole northern shape of a nameless mesa, a curl of reef and a bright notch that must be the hidden hollow; a goat track leads on toward it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_highground_1",
+          "label": "Take the goat track down to the hidden hollow.",
+          "target": "L_cove"
+        },
+        {
+          "id": "c_mg_highground_2",
+          "label": "Angle inland toward a shaded oasis gully.",
+          "target": "mg_seep"
+        }
+      ]
+    },
+    {
+      "id": "mg_oyster",
+      "body": "<<FILL role=rising words=100 beats='a cluster of oyster rocks are sharp and busy with crabs, and among them Kesh finds a shape that does not belong, a stranded desert tortoise, flippers waving, stranded by the falling water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_oyster_1",
+          "label": "Study a stranded desert tortoise and read the tide pools.",
+          "target": "mg_turtle_note"
+        },
+        {
+          "id": "c_mg_oyster_2",
+          "label": "Search the rocks for a way inland.",
+          "target": "mg_rockpath"
+        }
+      ]
+    },
+    {
+      "id": "mg_turtle_note",
+      "body": "<<FILL role=choice words=100 beats='a stranded desert tortoise is stuck but not hurt; Kesh could right it now and lose precious time, or mark its exact spot and the reef channel on the map and send help back for it once a high vantage is found'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_turtle_note_1",
+          "label": "Mark a stranded desert tortoise and press on inland.",
+          "target": "mg_rockpath"
+        },
+        {
+          "id": "c_mg_turtle_note_2",
+          "label": "Stop and right a stranded desert tortoise now.",
+          "target": "e_mg_turtle_seen"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_turtle_seen",
+      "body": "<<FILL role=resolution words=95 beats='Kesh tips a stranded desert tortoise upright and it scuttles to the water, but the delay lets the tide flood the rocks, and with wet paper and slipping light Kesh maps only this one corner, a kind deed done and an honest sketch of the reef, while the rest of a nameless mesa stays blank'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_kind_but_blank",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "One Good Turn"
+      }
+    },
+    {
+      "id": "mg_rockpath",
+      "body": "<<FILL role=rising words=95 beats='past the rocks a seep of clear water threads inland through the salt marsh, colder and sweeter the higher it climbs, the sure sign of the mesa's oasis somewhere above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_rockpath_1",
+          "label": "Follow the clear seep upward.",
+          "target": "mg_seep"
+        }
+      ]
+    },
+    {
+      "id": "mg_seep",
+      "body": "<<FILL role=rising words=100 beats='a shaded oasis gully climbs out of the marsh into a shaded gully of ferns; the water is properly cold now and the gully forks, one arm toward a bright pool that must be the mesa's oasis, one arm toward a mossy overhang hung with vines'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_seep_1",
+          "label": "Climb to the mesa's oasis.",
+          "target": "L_fresh"
+        },
+        {
+          "id": "c_mg_seep_2",
+          "label": "Duck under a mossy overhang hung with vines.",
+          "target": "mg_overhang"
+        }
+      ]
+    },
+    {
+      "id": "mg_overhang",
+      "body": "<<FILL role=discovery words=100 beats='under a mossy overhang hung with vines the rock is dry and someone has sheltered here, an old firepit and a dented tin cup, and scratched on the stone a single word, Tamsin, with an arrow pointing uphill toward Tamsin's canyon outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_overhang_1",
+          "label": "Follow Tamsin's arrow toward Tamsin's canyon outpost.",
+          "target": "cove_rise"
+        },
+        {
+          "id": "c_mg_overhang_2",
+          "label": "Copy an old firepit and a dented tin cup and rest a while.",
+          "target": "e_mg_shelter"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_shelter",
+      "body": "<<FILL role=failure words=90 beats='the dry shelter is so welcome after the swamp that Kesh sits to sketch it and the morning slides by unfelt; when the light shifts Kesh jumps up with only this one snug corner drawn, and hurries out knowing far too much of a nameless mesa is still bare paper'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_cozy_shelter",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Dry Shelter"
+      }
+    },
+    {
+      "id": "mg_creek",
+      "body": "<<FILL role=rising words=100 beats='a hidden wash runs inland straight and slow under a green roof, so quiet Kesh can hear paddling, and around a bend a family of foxes watch from a half sunk log before slipping away upstream'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_creek_1",
+          "label": "Follow the foxes.",
+          "target": "mg_otter"
+        },
+        {
+          "id": "c_mg_creek_2",
+          "label": "Cut away from the water into the trees.",
+          "target": "mg_trees"
+        },
+        {
+          "id": "c_mg_creek_3",
+          "label": "Pole across to the loud hawk mesa.",
+          "target": "mg_heron"
+        }
+      ]
+    },
+    {
+      "id": "mg_otter",
+      "body": "<<FILL role=rising words=95 beats='the foxes lead to a clean gravel bar where a hidden wash shallows, and beyond it the ground rises firm and dry; the water here is sweet, fed from somewhere higher up a nameless mesa'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_otter_1",
+          "label": "Climb along the sweet water.",
+          "target": "mg_seep"
+        }
+      ]
+    },
+    {
+      "id": "mg_trees",
+      "body": "<<FILL role=choice words=95 beats='away from the creek the trees close in and the light goes green and dim; without the water to follow Kesh must pick a direction by instinct, uphill toward a hint of brightness or along a level game trail'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_trees_1",
+          "label": "Climb toward the brightness.",
+          "target": "mg_highground"
+        },
+        {
+          "id": "c_mg_trees_2",
+          "label": "Take a level game trail.",
+          "target": "mg_gametrail"
+        }
+      ]
+    },
+    {
+      "id": "mg_gametrail",
+      "body": "<<FILL role=rising words=95 beats='a level game trail runs level and easy but keeps curling back on itself, and Kesh realises with a jolt that the dune canyon has no true landmark here, only more of itself in every direction'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_gametrail_1",
+          "label": "Backtrack toward the bright rise.",
+          "target": "mg_highground"
+        },
+        {
+          "id": "c_mg_gametrail_2",
+          "label": "Gamble on one more bend.",
+          "target": "e_mg_lost"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_lost",
+      "body": "<<FILL role=failure words=90 beats='the last bend gives onto the same fallen tree Kesh passed an hour ago; the dune canyon has been walking Kesh in a slow circle, and with the sun already high the coast is drawn as a rough guess, honest but unfinished, and Kesh turns back to try firmer ground'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_mangrove_maze",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The canyon's Maze"
+      }
+    },
+    {
+      "id": "cf_enter",
+      "body": "<<FILL role=rising words=110 beats='the mesa cliffs climbs straight off the beach into cool mist, dripping moss and birdsong; a steep switchback goes up sharply, a gentle traverse angles across the slope, and a side path drops to a mossy hollow where something pale gleams'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_enter_1",
+          "label": "Take a steep switchback up.",
+          "target": "cf_switch"
+        },
+        {
+          "id": "c_cf_enter_2",
+          "label": "Angle across a gentle traverse.",
+          "target": "cf_traverse"
+        },
+        {
+          "id": "c_cf_enter_3",
+          "label": "Drop to the pale gleam in a mossy hollow.",
+          "target": "cf_hollow"
+        },
+        {
+          "id": "c_cf_enter_4",
+          "label": "Follow the roar toward a hidden dust fall.",
+          "target": "cf_falls"
+        }
+      ]
+    },
+    {
+      "id": "cf_switch",
+      "body": "<<FILL role=rising words=100 beats='a steep switchback is steep but honest, each turn opening a wider view of a nameless mesa below; Kesh pauses on a flat ledge where two ways continue, a bare rock rib straight up and a green shelf that traces toward a break in the trees'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_switch_1",
+          "label": "Climb a bare rock rib.",
+          "target": "cf_ledge"
+        },
+        {
+          "id": "c_cf_switch_2",
+          "label": "Follow a green shelf.",
+          "target": "cf_shelf"
+        }
+      ]
+    },
+    {
+      "id": "cf_ledge",
+      "body": "<<FILL role=rising words=100 beats='a bare rock rib is airy and exposed, cloud streaming past, but it gains height fast and delivers Kesh onto the grassy bench where the ridge proper begins and a worn path runs on toward higher ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_ledge_1",
+          "label": "Follow the ridge path higher.",
+          "target": "cf_bench"
+        }
+      ]
+    },
+    {
+      "id": "cf_shelf",
+      "body": "<<FILL role=rising words=95 beats='a green shelf traces a contour line, exactly the sort of level path a surveyor would cut, and it curves patiently around the slope to the grassy bench where the true ridge path begins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_shelf_1",
+          "label": "Join the ridge path.",
+          "target": "cf_bench"
+        }
+      ]
+    },
+    {
+      "id": "cf_bench",
+      "body": "<<FILL role=rising words=100 beats='the grassy bench is the ridge's shoulder, wind combing the tussocks; from here a stony trail climbs toward Tamsin's canyon outpost Kesh keeps hearing about, while off to the side a hush of a grove of ancient mossy trees marks an ancient grove'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_bench_1",
+          "label": "Climb the stony trail toward the camp.",
+          "target": "cf_campapproach"
+        },
+        {
+          "id": "c_cf_bench_2",
+          "label": "Detour into a grove of ancient mossy trees.",
+          "target": "cf_grove"
+        }
+      ]
+    },
+    {
+      "id": "cf_campapproach",
+      "body": "<<FILL role=rising words=95 beats='the last stretch toward Tamsin's canyon outpost is a scramble over broken rock where the path almost disappears, but a line of small cairns points the safe way up onto the high ridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_campapproach_1",
+          "label": "Follow a line of small cairns onto the high ridge.",
+          "target": "camp_ascent1"
+        }
+      ]
+    },
+    {
+      "id": "camp_ascent1",
+      "body": "<<FILL role=rising words=100 beats='up on the open ridge the wind is a live thing and the world falls away on both sides; a line of small cairns march on ahead toward the far grey speck of Tamsin's canyon outpost, over ground that rises in long tired steps of rock and heather'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_ascent1_1",
+          "label": "Push on along the cairned ridge.",
+          "target": "camp_ascent2"
+        }
+      ]
+    },
+    {
+      "id": "camp_ascent2",
+      "body": "<<FILL role=choice words=100 beats='the open ridge splits around a shoulder of rock, a line of small cairns going left along a sheltered ledge, out of the wind, while a bolder line goes right straight over the airy crest with the whole island below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_ascent2_1",
+          "label": "Take a sheltered ledge.",
+          "target": "camp_ascent3a"
+        },
+        {
+          "id": "c_camp_ascent2_2",
+          "label": "Brave the airy crest.",
+          "target": "camp_ascent3b"
+        },
+        {
+          "id": "c_camp_ascent2_3",
+          "label": "Stop here, daunted by the height.",
+          "target": "e_ascent_daunted"
+        }
+      ]
+    },
+    {
+      "id": "e_ascent_daunted",
+      "body": "<<FILL role=failure words=90 beats='the drop on both sides makes Kesh's head swim, and after a long frozen minute the only honest thing is to sit down and edge back the way that felt safe; Tamsin's canyon outpost stays a grey speck out of reach, and Kesh maps the ridge from below, the high chart left for a braver day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ridge_vertigo",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Airy Ridge"
+      }
+    },
+    {
+      "id": "camp_ascent3a",
+      "body": "<<FILL role=rising words=95 beats='a sheltered ledge is slow but sure, out of the worst of the wind, threading below the crest past cushions of tiny alpine flowers until it climbs back to the ridgeline where the paths rejoin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_ascent3a_1",
+          "label": "Rejoin the ridgeline.",
+          "target": "camp_ascent4"
+        }
+      ]
+    },
+    {
+      "id": "camp_ascent3b",
+      "body": "<<FILL role=rising words=95 beats='the airy crest is pure exhilaration, a walk along the very spine of a nameless mesa with cloud pouring over from the far side, and it delivers Kesh, breathless and grinning, back to where a line of small cairns gather at a level shelf'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_ascent3b_1",
+          "label": "Come down to the level shelf.",
+          "target": "camp_ascent4"
+        }
+      ]
+    },
+    {
+      "id": "camp_ascent4",
+      "body": "<<FILL role=rising words=95 beats='the two ways rejoin at a broad level shelf where the last a line of small cairns cluster thick, and a final short pull over grass and rock leads up toward the cliff where Tamsin's canyon outpost must stand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_ascent4_1",
+          "label": "Make the final pull to the camp.",
+          "target": "camp_ascent5"
+        }
+      ]
+    },
+    {
+      "id": "camp_ascent5",
+      "body": "<<FILL role=rising words=90 beats='and there it is, tucked at last against the cliff, the grey canvas roof and low stone walls of Tamsin's canyon outpost, exactly where every clue on a nameless mesa has been pointing all day long'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_ascent5_1",
+          "label": "Step into Tamsin's canyon outpost.",
+          "target": "L_camp"
+        }
+      ]
+    },
+    {
+      "id": "cf_traverse",
+      "body": "<<FILL role=rising words=100 beats='a gentle traverse is gentle but long, crossing streams that all run the same way downhill; following one upstream Kesh reaches the mesa's oasis, plainly the island's spring'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_traverse_1",
+          "label": "Rest at the spring.",
+          "target": "L_fresh"
+        },
+        {
+          "id": "c_cf_traverse_2",
+          "label": "Keep traversing along the slope.",
+          "target": "cf_upper"
+        },
+        {
+          "id": "c_cf_traverse_3",
+          "label": "Follow a deer path to a hidden dell ringed with ferns.",
+          "target": "cf_dell"
+        }
+      ]
+    },
+    {
+      "id": "cf_upper",
+      "body": "<<FILL role=rising words=100 beats='higher along a gentle traverse the mist thins and a stand of wind bent trees gives way to open ground; a faint path climbs on, and below it a mossy hollow shows the same pale gleam Kesh glimpsed from the beach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_upper_1",
+          "label": "Climb the faint path on.",
+          "target": "cf_bench"
+        },
+        {
+          "id": "c_cf_upper_2",
+          "label": "Drop to the pale gleam.",
+          "target": "cf_hollow"
+        }
+      ]
+    },
+    {
+      "id": "cf_hollow",
+      "body": "<<FILL role=discovery words=100 beats='the pale gleam is a curtain of white orchids over a rock face, and behind them a dry cleft where a tin box has been wedged, green with age and marked with a compass rose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_hollow_1",
+          "label": "Open a tin box.",
+          "target": "cf_box"
+        },
+        {
+          "id": "c_cf_hollow_2",
+          "label": "Leave the box and climb back up.",
+          "target": "cf_switch"
+        }
+      ]
+    },
+    {
+      "id": "cf_box",
+      "body": "<<FILL role=choice words=95 beats='inside a tin box are folded papers and a brass pendant; the papers are field notes in a careful hand, and the locket holds a faded picture of a girl who looks a little like Kesh'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_box_1",
+          "label": "Read the field notes.",
+          "target": "cf_notes"
+        },
+        {
+          "id": "c_cf_box_2",
+          "label": "Pocket the locket and hurry on.",
+          "target": "e_cf_locket"
+        }
+      ]
+    },
+    {
+      "id": "e_cf_locket",
+      "body": "<<FILL role=resolution words=95 beats='Kesh keeps the locket and climbs on, but spends the rest of the morning wondering about the girl in the picture instead of watching the land, and the ridge is mapped in a distracted scrawl, a small mystery carried home in place of a finished chart'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_locket_mystery",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Brass pendant"
+      }
+    },
+    {
+      "id": "cf_notes",
+      "body": "<<FILL role=discovery words=100 beats='the notes are Tamsin's, the mapmaker who came before, describing Tamsin's half-finished survey hidden at Tamsin's canyon outpost and a warning that the dry caverns floods at high tide; the last line points uphill to the camp'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_notes_1",
+          "label": "Follow Alder's notes toward the camp.",
+          "target": "cf_bench"
+        }
+      ]
+    },
+    {
+      "id": "cv_enter",
+      "body": "<<FILL role=rising words=115 beats='a cool breath of air rises from a sink-hole ringed with ferns, and a knotted rope left by someone earlier dangles into the dark; below, the shaft opens into a cavern with three passages, one echoing with dripping water, one lit by a faint glitter, and one warm with breathing air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_enter_1",
+          "label": "Follow the dripping water.",
+          "target": "cv_water"
+        },
+        {
+          "id": "c_cv_enter_2",
+          "label": "Head toward the a faint glitter.",
+          "target": "cv_glitter"
+        },
+        {
+          "id": "c_cv_enter_3",
+          "label": "Trace the breathing air.",
+          "target": "cv_warm"
+        },
+        {
+          "id": "c_cv_enter_4",
+          "label": "Climb toward a high hole of daylight.",
+          "target": "cv_skylight"
+        }
+      ]
+    },
+    {
+      "id": "cv_water",
+      "body": "<<FILL role=rising words=100 beats='the dripping water passage slopes down to an underground stream, clear and cold, running fast toward a low arch; a line scratched high on the wall warns exactly where the water rises at the turn of the tide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_water_1",
+          "label": "Wade the stream toward a low arch.",
+          "target": "cv_arch"
+        },
+        {
+          "id": "c_cv_water_2",
+          "label": "Climb the stream upward against the flow.",
+          "target": "cv_upflow"
+        },
+        {
+          "id": "c_cv_water_3",
+          "label": "Explore a side rift lit with glowworms.",
+          "target": "cv_rift"
+        }
+      ]
+    },
+    {
+      "id": "cv_arch",
+      "body": "<<FILL role=choice words=95 beats='a low arch is low and the water is rising; a dry ledge runs beside it toward a paler light, but pressing under a low arch itself would be a shortcut into the dark heart of the caves'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_arch_1",
+          "label": "Edge along the dry ledge to the light.",
+          "target": "cv_deepglow"
+        },
+        {
+          "id": "c_cv_arch_2",
+          "label": "Duck under a low arch.",
+          "target": "e_cv_flood"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_flood",
+      "body": "<<FILL role=failure words=90 beats='past a low arch the roof drops to a hand's width above the water, and as Kesh hesitates the tide pushes in and the passage begins to fill; there is just time to scramble back, soaked and shaking, the caverns left as a single dark question mark on the map'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_cavern_flood",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "When the Cave Breathes Water"
+      }
+    },
+    {
+      "id": "cv_upflow",
+      "body": "<<FILL role=rising words=100 beats='climbing against the current, the stream grows sweeter and the roof lifts into a bright chamber where a shaft of daylight falls on a pool, the underground face of the mesa's oasis'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_upflow_1",
+          "label": "Climb the daylight shaft to the spring.",
+          "target": "L_fresh"
+        }
+      ]
+    },
+    {
+      "id": "cv_glitter",
+      "body": "<<FILL role=discovery words=105 beats='the a faint glitter is not treasure but crystal, veins of quartz webbing the walls, and pressed among them handprints in red ochre, older than any chart, someone marking this place long before mapmakers came'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_glitter_1",
+          "label": "Copy handprints in red ochre carefully.",
+          "target": "cv_ochre"
+        },
+        {
+          "id": "c_cv_glitter_2",
+          "label": "Push past toward a further glow.",
+          "target": "cv_deepglow"
+        }
+      ]
+    },
+    {
+      "id": "cv_ochre",
+      "body": "<<FILL role=discovery words=95 beats='copying handprints in red ochre, Kesh sees they make a rough shape, a nameless mesa itself, with a mark where the mesa's oasis is and a mark at the high peak, a map drawn by the first people to find this place'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_ochre_1",
+          "label": "Follow the ochre mark toward the spring.",
+          "target": "cv_upflow"
+        },
+        {
+          "id": "c_cv_ochre_2",
+          "label": "Fill a whole page with the old painting.",
+          "target": "e_cv_paintings"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_paintings",
+      "body": "<<FILL role=resolution words=95 beats='Kesh fills a whole page with handprints in red ochre and the island shape around them, a record no chart ever held; it costs the afternoon, and the land above stays half drawn, but the Cartographer Guild has never seen such proof that people lived here long before any surveyor'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_cave_art",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Oldest Map"
+      }
+    },
+    {
+      "id": "cv_deepglow",
+      "body": "<<FILL role=rising words=100 beats='the further glow is daylight leaking through a crack, and squeezing toward it Kesh tumbles out blinking onto a hidden shelf of beach inside a ring of cliffs, the hidden hollow seen from below; back the way came, a side passage murmurs with lapping water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_deepglow_1",
+          "label": "Climb up into the hidden hollow.",
+          "target": "L_cove"
+        },
+        {
+          "id": "c_cv_deepglow_2",
+          "label": "Follow the passage toward the lapping water.",
+          "target": "cv_lake"
+        }
+      ]
+    },
+    {
+      "id": "cv_warm",
+      "body": "<<FILL role=rising words=100 beats='the breathing air breathes like a sleeping animal, and around a corner Kesh finds why, a colony of little bats and, curled on a ledge below them, a stranded lizard that has wriggled in through a sea tube and cannot climb back out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_warm_1",
+          "label": "Study how a stranded lizard got in.",
+          "target": "cv_pup"
+        },
+        {
+          "id": "c_cv_warm_2",
+          "label": "Back away and leave the warm dark.",
+          "target": "cv_backout"
+        }
+      ]
+    },
+    {
+      "id": "cv_pup",
+      "body": "<<FILL role=choice words=100 beats='a stranded lizard came through a flooded tube from the sea and is stranded by the low tide; Kesh cannot lift it alone, but marking its spot and finding a high place to signal the ship might bring help before dusk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_pup_1",
+          "label": "Mark a stranded lizard and climb toward the light.",
+          "target": "cv_tohigh"
+        },
+        {
+          "id": "c_cv_pup_2",
+          "label": "Try to coax a stranded lizard out alone now.",
+          "target": "e_cv_pup_fail"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_pup_fail",
+      "body": "<<FILL role=failure words=90 beats='a stranded lizard is heavier than it looks and frightened, and after a long slippery struggle Kesh has to admit it needs more than one pair of hands; Kesh marks the sea tube on the map and backs out, the rescue left for the tide and better luck'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pup_too_heavy",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Heavy Alone"
+      }
+    },
+    {
+      "id": "cv_backout",
+      "body": "<<FILL role=rising words=90 beats='backing out of the warm dark, Kesh finds a side vent choked with roots and, beyond it, a slot of daylight opening onto firm ground high on the slope'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_backout_1",
+          "label": "Squeeze out toward the daylight.",
+          "target": "cv_tohigh"
+        }
+      ]
+    },
+    {
+      "id": "cv_tohigh",
+      "body": "<<FILL role=rising words=100 beats='Kesh climbs toward the light and air, following the bats as they stream out at a crack, and comes up onto the open flank of the ridge with the whole island tilting away below and Tamsin's canyon outpost's grey canvas not far above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_tohigh_1",
+          "label": "Make for the ridge camp.",
+          "target": "cf_campapproach"
+        }
+      ]
+    },
+    {
+      "id": "tw_enter",
+      "body": "<<FILL role=rising words=110 beats='the crashed airship tower leans on a headland, half its stone stair fallen, a place built by mapmakers before Kesh was born; the door hangs open on a ground room, the outside stair spirals up toward the broken top, and a cellar hatch is set in the floor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_enter_1",
+          "label": "Search a ground room.",
+          "target": "tw_ground"
+        },
+        {
+          "id": "c_tw_enter_2",
+          "label": "Climb the outside stair.",
+          "target": "tw_stair"
+        },
+        {
+          "id": "c_tw_enter_3",
+          "label": "Lift a cellar hatch.",
+          "target": "tw_cellar"
+        },
+        {
+          "id": "c_tw_enter_4",
+          "label": "Explore the keeper's side quarters.",
+          "target": "tw_quarters"
+        }
+      ]
+    },
+    {
+      "id": "tw_ground",
+      "body": "<<FILL role=discovery words=100 beats='a ground room is full of ruined instruments, a rusted theodolite, rotten ropes, and a slate desk where a logbook lies swollen with damp, its last pages still just readable'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_ground_1",
+          "label": "Read a logbook.",
+          "target": "e_tw_log"
+        },
+        {
+          "id": "c_tw_ground_2",
+          "label": "Salvage a working instrument.",
+          "target": "tw_salvage"
+        },
+        {
+          "id": "c_tw_ground_3",
+          "label": "Pry up a loose slab in the floor.",
+          "target": "tw_slab"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_log",
+      "body": "<<FILL role=resolution words=95 beats='a logbook is Tamsin's, and its last entry says Tamsin's half-finished survey was carried to Tamsin's canyon outpost for safekeeping before a storm; Kesh copies the words but the light is going, and carries home a story of the lost mapmaker instead of a finished map'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tower_log",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Tamsin's Last Entry"
+      }
+    },
+    {
+      "id": "tw_salvage",
+      "body": "<<FILL role=choice words=100 beats='one instrument still turns, a battered alidade, for sighting distant points; with it Kesh could fix a nameless mesa's shape fast from a high place, if a high place can be reached in time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_salvage_1",
+          "label": "Take a battered alidade toward the ridge camp.",
+          "target": "tw_toridge"
+        },
+        {
+          "id": "c_tw_salvage_2",
+          "label": "Take it up the outside stair first.",
+          "target": "tw_stair"
+        }
+      ]
+    },
+    {
+      "id": "tw_toridge",
+      "body": "<<FILL role=rising words=95 beats='carrying a battered alidade like a treasure, Kesh follows the headland path to the ridge where it climbs to meet the main ridge, Tamsin's canyon outpost's grey canvas showing far ahead against the cliff'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_toridge_1",
+          "label": "Follow the headland path to the ridge.",
+          "target": "cf_campapproach"
+        }
+      ]
+    },
+    {
+      "id": "tw_stair",
+      "body": "<<FILL role=rising words=100 beats='the outside stair is missing steps and open to a long drop to the rocks; two thirds up, a gap in the steps forces a choice, a bold stride across to the next slab or a slow clamber along a crumbling ledge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_stair_1",
+          "label": "Stride boldly across a gap in the steps.",
+          "target": "tw_top"
+        },
+        {
+          "id": "c_tw_stair_2",
+          "label": "Clamber the crumbling ledge.",
+          "target": "e_tw_stair_fail"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_stair_fail",
+      "body": "<<FILL role=failure words=90 beats='the crumbling ledge sheds stones under Kesh's boots and there is nothing to do but retreat, heart pounding, back to solid ground; the tower keeps its high view to itself, and that corner of a nameless mesa is drawn from guesswork below'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tower_retreat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Stair"
+      }
+    },
+    {
+      "id": "tw_top",
+      "body": "<<FILL role=rising words=105 beats='from the tower top a nameless mesa shows its bones, the ridge, the reef, the pale flats, and a bright ring of cliffs hiding the hidden hollow; a surveyor could take rough bearings here, but the mesa top stands higher still, reached only across the ridge by way of the camp'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_top_1",
+          "label": "Cross the ridge toward the camp.",
+          "target": "tw_ridgeway"
+        },
+        {
+          "id": "c_tw_top_2",
+          "label": "Climb down toward the hidden hollow.",
+          "target": "L_cove"
+        },
+        {
+          "id": "c_tw_top_3",
+          "label": "Examine the old beacon brazier.",
+          "target": "tw_beacon"
+        }
+      ]
+    },
+    {
+      "id": "tw_ridgeway",
+      "body": "<<FILL role=rising words=95 beats='the ridge walk runs along a knife of rock with the sea on both sides, thrilling and slow, until it joins the grassy bench where the camp trail begins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_ridgeway_1",
+          "label": "Join the camp trail.",
+          "target": "cf_campapproach"
+        }
+      ]
+    },
+    {
+      "id": "tw_cellar",
+      "body": "<<FILL role=discovery words=100 beats='a cellar hatch is dry and cool and stacked with the surveyors' stores, rope, lamp oil, tins, and rolled against the wall a leather tube that might hold a chart'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_cellar_1",
+          "label": "Open a leather tube that might hold a chart.",
+          "target": "tw_tube"
+        },
+        {
+          "id": "c_tw_cellar_2",
+          "label": "Take rope and oil and climb back out.",
+          "target": "tw_supplies"
+        }
+      ]
+    },
+    {
+      "id": "tw_tube",
+      "body": "<<FILL role=choice words=95 beats='a leather tube that might hold a chart holds a ruined chart, half finished and water stained, Tamsin's abandoned draft, with a note that the good copy went to Tamsin's canyon outpost; it shows enough to guess the safe path up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_tube_1",
+          "label": "Follow the draft toward the ridge camp.",
+          "target": "tw_toridge"
+        },
+        {
+          "id": "c_tw_tube_2",
+          "label": "Sit and copy a ruined chart in full.",
+          "target": "e_tw_draft"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_draft",
+      "body": "<<FILL role=resolution words=90 beats='Kesh spends the morning reading Tamsin's a ruined chart and copying what survives, and it is real work, but it is Tamsin's map, not Kesh's; the day ends with a faithful copy of someone else's unfinished island and no new ground of Kesh's own'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_old_draft",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Someone Else's Map"
+      }
+    },
+    {
+      "id": "tw_supplies",
+      "body": "<<FILL role=rising words=95 beats='with rope and oil coiled over a shoulder Kesh is ready for cliff or cave, and a surveyor's chalk line points from a cellar hatch's door straight along a marked path toward the high ground of the ridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_supplies_1",
+          "label": "Follow the chalk line to the ridge.",
+          "target": "cf_campapproach"
+        }
+      ]
+    },
+    {
+      "id": "tf_enter",
+      "body": "<<FILL role=rising words=110 beats='the salt flats stretch wide and mirror bright, firm sand near shore turning to soft ooze far out where the sea has drawn back; the flats hide channels and a distant sandbar where birds crowd, and the water will return, everyone knows, faster than a person can run'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_enter_1",
+          "label": "Wade toward a distant sandbar.",
+          "target": "tf_sandbar"
+        },
+        {
+          "id": "c_tf_enter_2",
+          "label": "Trace the firm channels.",
+          "target": "tf_channel"
+        },
+        {
+          "id": "c_tf_enter_3",
+          "label": "Search the strand line near shore.",
+          "target": "tf_strand"
+        },
+        {
+          "id": "c_tf_enter_4",
+          "label": "Pick across the dark mussel beds.",
+          "target": "tf_mussel"
+        }
+      ]
+    },
+    {
+      "id": "tf_sandbar",
+      "body": "<<FILL role=choice words=100 beats='a distant sandbar is a treasure of wreck timber and a whole wagon's ribs, and it would map beautifully, but the sand underfoot is already darkening as the tide turns far out; Kesh has minutes, not hours'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_sandbar_1",
+          "label": "Sketch fast, then run for shore.",
+          "target": "tf_sketchrun"
+        },
+        {
+          "id": "c_tf_sandbar_2",
+          "label": "Linger over the wreck too long.",
+          "target": "e_tf_stranded"
+        }
+      ]
+    },
+    {
+      "id": "e_tf_stranded",
+      "body": "<<FILL role=failure words=90 beats='the sketch is good and the run is not fast enough; the tide fills the low channels first and Kesh wades back chest deep, chart safe overhead but soaked, and spends what is left of the day drying out on shore, the salt flats a bright blank on the paper'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_flats_cutoff",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The wind Comes Back"
+      }
+    },
+    {
+      "id": "tf_sketchrun",
+      "body": "<<FILL role=rising words=100 beats='Kesh sketches the wreck in furious strokes and runs, reaching firm sand as the first sheet of water slides across behind; heart hammering, but the flats are drawn and a dry way inland opens toward the green gap'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_sketchrun_1",
+          "label": "Follow the green gap inland.",
+          "target": "tf_gap"
+        }
+      ]
+    },
+    {
+      "id": "tf_gap",
+      "body": "<<FILL role=rising words=95 beats='the green gap is the mouth of a valley where a stream comes down to meet the sea, and following it up on firm banks Kesh climbs toward the sound of falling water and cool air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_gap_1",
+          "label": "Climb the stream toward the falls.",
+          "target": "L_fresh"
+        }
+      ]
+    },
+    {
+      "id": "tf_channel",
+      "body": "<<FILL role=rising words=100 beats='the firm channels make a natural road across the flats, and Kesh follows them safely toward shore where they gather at the foot of the ring of cliffs, the cliff gap leading in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_channel_1",
+          "label": "Follow the channels to the cliff gap.",
+          "target": "tf_cliffgap"
+        },
+        {
+          "id": "c_tf_channel_2",
+          "label": "Cut inland toward the green gap.",
+          "target": "tf_gap"
+        },
+        {
+          "id": "c_tf_channel_3",
+          "label": "Detour to the great wreck on the bar.",
+          "target": "tf_wreck"
+        }
+      ]
+    },
+    {
+      "id": "tf_cliffgap",
+      "body": "<<FILL role=rising words=95 beats='the cliff gap is a slot of wet sand that the sea only leaves bare at low water, and through it Kesh steps into a hidden pocket of beach ringed by rock, the hidden hollow opening quiet and calm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_cliffgap_1",
+          "label": "Explore the hidden hollow.",
+          "target": "L_cove"
+        }
+      ]
+    },
+    {
+      "id": "tf_strand",
+      "body": "<<FILL role=discovery words=100 beats='the strand line is a museum of the sea, shells, rope, a glass net float, and half buried in the wrack a corked bottle with a curl of paper inside'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_strand_1",
+          "label": "Open a corked bottle.",
+          "target": "tf_bottle"
+        },
+        {
+          "id": "c_tf_strand_2",
+          "label": "Leave it and read the shoreline.",
+          "target": "tf_channel"
+        },
+        {
+          "id": "c_tf_strand_3",
+          "label": "Climb the grassy dunes behind the trailhead.",
+          "target": "tf_dune"
+        }
+      ]
+    },
+    {
+      "id": "tf_bottle",
+      "body": "<<FILL role=choice words=95 beats='the paper is a message, a mapmaker named Tamsin writing that a nameless mesa is real and worth the naming, and that Tamsin's half-finished survey waits at Tamsin's canyon outpost for whoever finishes the work'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_bottle_1",
+          "label": "Set out inland for the ridge camp.",
+          "target": "tf_gap"
+        },
+        {
+          "id": "c_tf_bottle_2",
+          "label": "Keep the note as a find and stop here.",
+          "target": "e_tf_bottle"
+        }
+      ]
+    },
+    {
+      "id": "e_tf_bottle",
+      "body": "<<FILL role=resolution words=90 beats='Kesh tucks Tamsin's message away and heads back to wait for the ship, carrying a mystery home in place of a map; it is a good story, but a blank chart is still a blank chart, and the apprenticeship will have to wait for another island'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_message_bottle",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Note From the desert"
+      }
+    },
+    {
+      "id": "L_cove",
+      "body": "<<FILL role=rising words=115 beats='the hidden hollow is a perfect pocket of calm inside the reef, and Kesh sees at once why Tamsin loved it, a place no chart has ever shown; a freshwater rill trickles down one wall, a hand cut path climbs toward the ridge, and drawn on a flat rock is an old compass rose pointing up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_L_cove_1",
+          "label": "Map the hidden hollow, then climb a freshwater rill toward the spring.",
+          "target": "L_fresh"
+        },
+        {
+          "id": "c_L_cove_2",
+          "label": "Follow an old compass rose pointing up up toward the ridge.",
+          "target": "cove_rise"
+        },
+        {
+          "id": "c_L_cove_3",
+          "label": "Search the cove's tide pools and sea cave.",
+          "target": "cove_pools"
+        },
+        {
+          "id": "c_L_cove_4",
+          "label": "Rest too long in the calm cove.",
+          "target": "e_cove_rest"
+        }
+      ]
+    },
+    {
+      "id": "e_cove_rest",
+      "body": "<<FILL role=failure words=90 beats='the hidden hollow is so calm that Kesh sits to sketch and the morning slips away unnoticed; when the shadows shift Kesh startles up with only the hidden hollow drawn, one lovely finished corner and a whole blank island around it, and hurries off knowing sundown is closer than it should be'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_cove_daydream",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Calm"
+      }
+    },
+    {
+      "id": "cove_rise",
+      "body": "<<FILL role=rising words=100 beats='a hand cut path up from the hidden hollow is steep and switchbacked, cut long ago by hand, and it climbs past the reach of the sea; halfway up a tilted slab tilts to the sky, pecked all over with dots that are not random'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cove_rise_1",
+          "label": "Study a tilted slab.",
+          "target": "cove_starrock"
+        },
+        {
+          "id": "c_cove_rise_2",
+          "label": "Press straight on up to the ridge.",
+          "target": "cove_ridge"
+        }
+      ]
+    },
+    {
+      "id": "cove_starrock",
+      "body": "<<FILL role=discovery words=95 beats='a tilted slab is a star map, the way the first people found a nameless mesa by night, dots for the guiding stars and a scratch for the peak beneath them; it is a wonder worth a whole page'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cove_starrock_1",
+          "label": "Copy it quickly and climb on.",
+          "target": "cove_ridge"
+        },
+        {
+          "id": "c_cove_starrock_2",
+          "label": "Copy it in full and go no further.",
+          "target": "e_star_map"
+        }
+      ]
+    },
+    {
+      "id": "e_star_map",
+      "body": "<<FILL role=resolution words=100 beats='Kesh fills a page with a tilted slab and the island shape beneath it, then finds the light has turned and the climb to the ridge is too far now; the chart stays unfinished, but Kesh carries home the oldest map of all, the one drawn in stars, and the Cartographer Guild keepers gather round it in wonder'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_star_slab",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Map of Stars"
+      }
+    },
+    {
+      "id": "cove_ridge",
+      "body": "<<FILL role=rising words=95 beats='a hand cut path tops out on the grassy bench, wind and cloud after the still cove, and the stony camp trail lifts away toward the grey canvas shelter above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cove_ridge_1",
+          "label": "Climb the camp trail.",
+          "target": "cf_campapproach"
+        }
+      ]
+    },
+    {
+      "id": "L_fresh",
+      "body": "<<FILL role=rising words=120 beats='the mesa's oasis is a nameless mesa's heart, a cold clear pool welling up under ferns where every stream begins; whoever drew the first ochre map marked this place, and from here Kesh can finally see how the land fits, water running five ways to five shores, and a clear path climbing on toward the ridge and Tamsin's canyon outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_L_fresh_1",
+          "label": "Fill the flask and climb toward the ridge camp.",
+          "target": "fresh_climb"
+        },
+        {
+          "id": "c_L_fresh_2",
+          "label": "Trace the streams to understand the whole island.",
+          "target": "fresh_study"
+        },
+        {
+          "id": "c_L_fresh_3",
+          "label": "Linger mapping every single stream.",
+          "target": "e_fresh_linger"
+        }
+      ]
+    },
+    {
+      "id": "e_fresh_linger",
+      "body": "<<FILL role=failure words=90 beats='Kesh tries to trace every stream from the mesa's oasis and the task is endless, each rill splitting into more; by the time Kesh looks up the sun has swung past noon, and the map is a beautiful tangle of blue lines with no coast to hold them, so Kesh heads down with the middle done and the edges bare'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_too_many_streams",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Every Stream at Once"
+      }
+    },
+    {
+      "id": "fresh_study",
+      "body": "<<FILL role=discovery words=100 beats='sitting with the streams, Kesh works out a nameless mesa's whole drainage, every valley and shore linked to this one pool, and pencils it into a clean web that will anchor the finished chart; then the climb to Tamsin's canyon outpost calls'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fresh_study_1",
+          "label": "Climb to the ridge camp with the water mapped.",
+          "target": "fresh_climb"
+        }
+      ]
+    },
+    {
+      "id": "fresh_climb",
+      "body": "<<FILL role=rising words=100 beats='the path from the mesa's oasis climbs out of the ferns onto open ridge where the grass lies flat under the wind, then levels through a high meadow bright with flowers and grazed by a few wild goats'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fresh_climb_1",
+          "label": "Cross a high meadow toward the camp.",
+          "target": "fresh_meadow"
+        }
+      ]
+    },
+    {
+      "id": "fresh_meadow",
+      "body": "<<FILL role=choice words=95 beats='a high meadow is the gentlest ground all day, ringed by an old tumbled boundary cairn, a surveyor must have raised; the camp trail lifts away on the far side, but the strange old cairn tugs at Kesh's curiosity'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fresh_meadow_1",
+          "label": "Cross the meadow to the camp trail.",
+          "target": "cf_campapproach"
+        },
+        {
+          "id": "c_fresh_meadow_2",
+          "label": "Investigate an old tumbled boundary cairn.",
+          "target": "fresh_cairn"
+        }
+      ]
+    },
+    {
+      "id": "fresh_cairn",
+      "body": "<<FILL role=discovery words=95 beats='an old tumbled boundary cairn holds a flat capstone scratched with a survey mark and an arrow, one of Tamsin's boundary points fixing the very middle of a nameless mesa, a small triumph to add to the chart'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fresh_cairn_1",
+          "label": "Note the boundary mark and climb to the camp.",
+          "target": "cf_campapproach"
+        },
+        {
+          "id": "c_fresh_cairn_2",
+          "label": "Copy the boundary survey in full and rest here.",
+          "target": "e_fresh_cairn"
+        }
+      ]
+    },
+    {
+      "id": "e_fresh_cairn",
+      "body": "<<FILL role=resolution words=95 beats='Kesh copies Tamsin's boundary mark and the way it ties a nameless mesa together, careful proper work, and then a high meadow is so soft and the sun so warm that resting turns to dozing; Kesh wakes with a start to a lower sun, the middle of the island mapped and the edges bare, and hurries down with only half a chart'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_meadow_nap",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warm Meadow"
+      }
+    },
+    {
+      "id": "L_camp",
+      "body": "<<FILL role=rising words=125 beats='Tamsin's canyon outpost is a low stone shelter under grey canvas, and stepping in feels like stepping into a story, a cot, a cold stove, and a table where Tamsin's half-finished survey lies weighted with stones, half a nameless mesa drawn in a fine sure hand and the rest left for someone to finish; a tin trunk sits closed beneath the cot, and beyond the door the path climbs on toward the mesa top'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_L_camp_1",
+          "label": "Study Tamsin's half-finished survey at the table.",
+          "target": "camp_chart"
+        },
+        {
+          "id": "c_L_camp_2",
+          "label": "Open a tin trunk under the cot.",
+          "target": "camp_trunk"
+        },
+        {
+          "id": "c_L_camp_3",
+          "label": "Take Tamsin's half-finished survey and start for the mesa top.",
+          "target": "camp_summitpath"
+        }
+      ]
+    },
+    {
+      "id": "camp_chart",
+      "body": "<<FILL role=choice words=105 beats='Tamsin's half-finished survey is honest and unfinished, the coast and caves drawn true, the high ground and the far shore left blank with a note, finish this and it is yours, mapmaker to mapmaker; the tools to do it lie ready on the table'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_chart_1",
+          "label": "Take up the tools and ready to finish it.",
+          "target": "camp_ready"
+        },
+        {
+          "id": "c_camp_chart_2",
+          "label": "Simply copy Tamsin's half-finished survey and call it done.",
+          "target": "e_camp_copy"
+        }
+      ]
+    },
+    {
+      "id": "e_camp_copy",
+      "body": "<<FILL role=resolution words=95 beats='Kesh copies Tamsin's half-finished survey neatly and carries it down to the beach, and it is a fine map, but the blank half is still blank and the hand is still Tamsin's; the guildmaster frowns at the empty summit and says a copied map is a story, not a survey, so Kesh goes home with a tale of the lost mapmaker and no apprenticeship yet'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_alder_story",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Lost Mapmaker's Story"
+      }
+    },
+    {
+      "id": "camp_trunk",
+      "body": "<<FILL role=discovery words=105 beats='a tin trunk holds Tamsin's whole island life, fine pens, a spyglass, a signal heliograph, and a journal that ends mid sentence the day a storm took the boat; the spyglass and mirror could reach the ship, and the pens could finish any chart'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_trunk_1",
+          "label": "Gather the tools and ready to climb on.",
+          "target": "camp_ready"
+        },
+        {
+          "id": "c_camp_trunk_2",
+          "label": "Read a journal to its last page.",
+          "target": "camp_journal"
+        }
+      ]
+    },
+    {
+      "id": "camp_journal",
+      "body": "<<FILL role=discovery words=100 beats='a journal tells it all, Tamsin mapping alone, loving a nameless mesa, naming the hidden hollow, and at the end waiting for a ship that came too late; the last line asks whoever finds this to finish the chart and give the island its name'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_journal_1",
+          "label": "Carry Tamsin's wish on toward the mesa top.",
+          "target": "camp_ready"
+        },
+        {
+          "id": "c_camp_journal_2",
+          "label": "Close a journal, moved, and simply keep it.",
+          "target": "e_camp_journal"
+        }
+      ]
+    },
+    {
+      "id": "e_camp_journal",
+      "body": "<<FILL role=resolution words=95 beats='Kesh closes Tamsin's a journal with a lump in the throat and decides some things matter more than a test; the afternoon goes to reading every page, and Kesh rows out at sundown with a blank chart and a full heart, carrying Tamsin's story home so the lost mapmaker will not be forgotten'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_alder_journal",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What Tamsin Left Behind"
+      }
+    },
+    {
+      "id": "camp_ready",
+      "body": "<<FILL role=rising words=100 beats='tools in hand and Tamsin's half-finished survey rolled safe, Kesh steps back out of Tamsin's canyon outpost with everything needed to finish the work; only the mesa top remains, the one place high enough to see and draw the whole island at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_ready_1",
+          "label": "Set out for the mesa top.",
+          "target": "camp_summitpath"
+        }
+      ]
+    },
+    {
+      "id": "camp_summitpath",
+      "body": "<<FILL role=rising words=105 beats='the path above Tamsin's canyon outpost narrows to a thread of worn grass between two long drops, the mesa top's cairn dark against the racing cloud; a line of cairns marks the safe way, though a bare scree slope offers a tempting shortcut straight up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_camp_summitpath_1",
+          "label": "Follow the cairns the safe way.",
+          "target": "ridge_notch"
+        },
+        {
+          "id": "c_camp_summitpath_2",
+          "label": "Try a bare scree slope shortcut straight up.",
+          "target": "e_camp_scree"
+        }
+      ]
+    },
+    {
+      "id": "e_camp_scree",
+      "body": "<<FILL role=failure words=90 beats='a bare scree slope shortcut slides away the moment Kesh's weight goes on it, a slow hissing river of stones, and Kesh has to crab sideways off it, breathless, back toward the safe path but shaken and low on time, deciding the mesa top is a bridge too far today and the high chart stays unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_scree_slide",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sliding Scree"
+      }
+    },
+    {
+      "id": "ridge_notch",
+      "body": "<<FILL role=rising words=95 beats='the cairns lead through a notch in the ridge where the wind funnels hard enough to lean on, and beyond it the ground opens to the final rise, the mesa top close now above a last field of tumbled boulders'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ridge_notch_1",
+          "label": "Cross the boulder field to the rise.",
+          "target": "wind_gap"
+        }
+      ]
+    },
+    {
+      "id": "wind_gap",
+      "body": "<<FILL role=rising words=95 beats='the boulder field is slow careful work, hand and foot from block to block, cloud tearing past, until Kesh pulls up over the last of it onto the bare crown of a nameless mesa with nothing higher left to climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wind_gap_1",
+          "label": "Stand up onto the mesa top.",
+          "target": "L_summit"
+        }
+      ]
+    },
+    {
+      "id": "L_summit",
+      "body": "<<FILL role=rising words=125 beats='the mesa top is a bare cairn of stacked stones in a river of cloud, and standing on it Kesh can see the whole island at last, every shore and reef and secret laid out like a chart already half drawn in the mind; this is the place to finish the work, but the wind is fierce and the light already leans toward afternoon, so every choice from here must count'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_L_summit_1",
+          "label": "Set up to survey the whole island now.",
+          "target": "summit_survey"
+        },
+        {
+          "id": "c_L_summit_2",
+          "label": "Signal the far ship first with Tamsin's a signal heliograph.",
+          "target": "summit_signal"
+        },
+        {
+          "id": "c_L_summit_3",
+          "label": "Just stand and take it all in.",
+          "target": "e_summit_gaze"
+        }
+      ]
+    },
+    {
+      "id": "e_summit_gaze",
+      "body": "<<FILL role=failure words=90 beats='the view is so vast that Kesh simply stares, turning slowly, drinking it in, until a cold gust and a slant of gold light break the spell; there is no time now to draw it properly, only to scramble down, and Kesh reaches the beach at sundown with a head full of island and a chart still mostly bare'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_summit_awe",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Big to Draw"
+      }
+    },
+    {
+      "id": "summit_survey",
+      "body": "<<FILL role=choice words=110 beats='from the cairn Kesh lays Tamsin's half-finished survey on a flat stone and begins, sighting the ridge, the reef, the cove, the flats, the shape coming true under the pencil faster than seems possible; but there is more to fix than time allows, so Kesh must choose what to nail down first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_summit_survey_1",
+          "label": "Take careful sightings of every coast.",
+          "target": "ch_sightings"
+        },
+        {
+          "id": "c_summit_survey_2",
+          "label": "Fix the reef and cove for safe landings first.",
+          "target": "ch_reef"
+        },
+        {
+          "id": "c_summit_survey_3",
+          "label": "Turn the glass on the wild far shore.",
+          "target": "ch_farshore"
+        },
+        {
+          "id": "c_summit_survey_4",
+          "label": "Rush every detail at once.",
+          "target": "e_ch_rush"
+        }
+      ]
+    },
+    {
+      "id": "e_ch_rush",
+      "body": "<<FILL role=failure words=90 beats='trying to draw everything at once, Kesh smudges lines together and loses track of which bearing is which, and the page becomes a crowded muddle; there is no time to redraw it, so Kesh carries down a chart that is full but wrong in places, honest effort spoiled by hurry, and the guildmaster marks it a near miss'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rushed_muddle",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "All at Once, and None of It"
+      }
+    },
+    {
+      "id": "ch_sightings",
+      "body": "<<FILL role=rising words=100 beats='Kesh works around the cairn taking clean sightings with the salvaged alidade, each far point fixed and noted, a nameless mesa tightening into true shape; with the bearings gathered it is time to draw the finished chart properly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_sightings_1",
+          "label": "Gather the sketches to draw the final chart.",
+          "target": "ch_gather"
+        }
+      ]
+    },
+    {
+      "id": "ch_reef",
+      "body": "<<FILL role=rising words=105 beats='Kesh fixes the reef and the hidden hollow first, the safe water where a ship can come and go, drawing the channels Tamsin never lived to finish; it is the most useful map on a nameless mesa, and with it done there is still a sliver of light to push the whole chart further'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_reef_1",
+          "label": "Push on toward the full masterwork.",
+          "target": "ch_gather"
+        },
+        {
+          "id": "c_ch_reef_2",
+          "label": "Stop with the safe-landing chart done.",
+          "target": "e_ch_reef"
+        }
+      ]
+    },
+    {
+      "id": "e_ch_reef",
+      "body": "<<FILL role=resolution words=105 beats='Kesh rows out with a chart that shows exactly how to enter a nameless mesa safely, the reef, the cove, the tides, all true; it is not the whole island, but the guildmaster runs a thumb along the clean channels and says this is the map that keeps sailors alive, and takes Kesh on with a nod, the masterwork left for next season'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_safe_harbor",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Chart That Brings caravans Home"
+      }
+    },
+    {
+      "id": "ch_gather",
+      "body": "<<FILL role=rising words=100 beats='sheltered from the wind below the cairn, Kesh spreads Tamsin's half-finished survey and the whole day's sketches together, and a nameless mesa comes whole, coast and cave and ridge and reef fitting like a puzzle; only the drawing itself remains now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_gather_1",
+          "label": "Draw the final chart.",
+          "target": "ch_table"
+        }
+      ]
+    },
+    {
+      "id": "ch_table",
+      "body": "<<FILL role=choice words=105 beats='everything is ready, and the way the masterwork is drawn will decide everything; Kesh can ink it bold and clean, pencil it soft with every small detail, or copy it twice the way a careful surveyor keeps a spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_table_1",
+          "label": "Ink the final chart in bold clean lines.",
+          "target": "ch_ink"
+        },
+        {
+          "id": "c_ch_table_2",
+          "label": "Pencil it soft and add every small detail.",
+          "target": "ch_pencil"
+        },
+        {
+          "id": "c_ch_table_3",
+          "label": "Copy it twice, one to keep and one to give.",
+          "target": "ch_double"
+        }
+      ]
+    },
+    {
+      "id": "ch_ink",
+      "body": "<<FILL role=rising words=105 beats='Kesh inks the masterwork with Tamsin's good pen, every coastline sure and dark, the compass rose crisp, the hidden hollow and the reef named at last; it is bold and true and unmistakably Kesh's own hand finishing Tamsin's island'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_ink_1",
+          "label": "Sign the finished masterwork.",
+          "target": "ch_sign"
+        }
+      ]
+    },
+    {
+      "id": "ch_pencil",
+      "body": "<<FILL role=rising words=105 beats='Kesh pencils the masterwork soft and fine, every tide pool and orchid and handprint cave marked, a map so full it is almost a portrait of a nameless mesa; it takes longer, and the light is nearly gone, but nothing is left out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_pencil_1",
+          "label": "Sign the detailed masterwork.",
+          "target": "ch_sign"
+        },
+        {
+          "id": "c_ch_pencil_2",
+          "label": "Fuss over one last detail as the sun sinks.",
+          "target": "e_ch_dusk"
+        }
+      ]
+    },
+    {
+      "id": "e_ch_dusk",
+      "body": "<<FILL role=failure words=90 beats='Kesh cannot stop adding to the soft pencil map, one more cove, one more current, until the sun is a red rim on the sea and the ship is sounding its horn; Kesh runs for the beach with a wonderful unfinished thing, too detailed to call done, and the guildmaster sighs that a map you never finish is no map at all'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_never_finished",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "One More Detail"
+      }
+    },
+    {
+      "id": "ch_double",
+      "body": "<<FILL role=rising words=105 beats='Kesh copies the masterwork twice by the failing light, one clean master to give the Cartographer Guild and one working copy to keep, the way real surveyors do; it is quick sure work, Tamsin's island doubled and safe from any single storm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_double_1",
+          "label": "Sign both charts.",
+          "target": "ch_sign_double"
+        }
+      ]
+    },
+    {
+      "id": "ch_sign",
+      "body": "<<FILL role=choice words=105 beats='the masterwork is done, and there is one thing left, the name; Tamsin's journal asked that whoever finished the chart should name a nameless mesa, and the blank banner across the top waits for a word'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_sign_1",
+          "label": "Name it for Tamsin who came before.",
+          "target": "e_ch_alder_name"
+        },
+        {
+          "id": "c_ch_sign_2",
+          "label": "Name it for both mapmakers together.",
+          "target": "e_ch_both_name"
+        },
+        {
+          "id": "c_ch_sign_3",
+          "label": "Ring the margins with the island's living things.",
+          "target": "ch_seal_final"
+        },
+        {
+          "id": "c_ch_sign_4",
+          "label": "Leave the banner blank and sign the survey.",
+          "target": "e_ch_survey"
+        }
+      ]
+    },
+    {
+      "id": "e_ch_alder_name",
+      "body": "<<FILL role=resolution words=115 beats='Kesh writes Tamsin's Island across the top in careful letters and rows out as the first stars come, laying the masterwork in the guildmaster's hands; the guildmaster reads the name, understands the whole story in it, and says the Cartographer Guild has its new apprentice, and that Tamsin would be proud a nameless mesa finally has a map and a name'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_masterwork_alder",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Tamsin's mesa"
+      }
+    },
+    {
+      "id": "e_ch_both_name",
+      "body": "<<FILL role=resolution words=115 beats='Kesh writes the names of both mapmakers along the banner, the one who began and the one who finished, and hands the masterwork across as the light fails; the guildmaster studies the perfect chart and the two names and says this is the finest first survey the Cartographer Guild has seen in years, and Kesh is an apprentice no longer but a mapmaker, name earned and island named'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_masterwork_both",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Two Hands, One mesa"
+      }
+    },
+    {
+      "id": "e_ch_survey",
+      "body": "<<FILL role=resolution words=110 beats='Kesh leaves the banner blank, signs the survey in the corner as Tamsin always did, and delivers a chart so complete and true that the guildmaster cannot find a single fault; the name can wait for the Cartographer Guild to choose, the guildmaster says, but the place at the Cartographer Guild cannot, and offers it to Kesh on the spot for the best survey a first islander has ever brought back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_masterwork_survey",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Flawless Survey"
+      }
+    },
+    {
+      "id": "ch_sign_double",
+      "body": "<<FILL role=choice words=100 beats='with two finished charts in hand Kesh must decide how to present them to the guildmaster waiting at the boat, both together as proof of a careful surveyor, or one given and one kept as a quiet spare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_sign_double_1",
+          "label": "Present both to show a surveyor's care.",
+          "target": "e_ch_double_win"
+        },
+        {
+          "id": "c_ch_sign_double_2",
+          "label": "Give one and keep the spare quietly.",
+          "target": "e_ch_spare"
+        }
+      ]
+    },
+    {
+      "id": "e_ch_double_win",
+      "body": "<<FILL role=resolution words=115 beats='Kesh hands the guildmaster both charts, master and working copy, exactly as a seasoned surveyor would, and explains that a map is too precious to trust to one sheet; the guildmaster turns them over, plainly impressed that a first islander thought like a professional, and gives Kesh the apprenticeship for judgement as much as skill, Tamsin's island saved twice over'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_double_chart",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Never Just One Copy"
+      }
+    },
+    {
+      "id": "e_ch_spare",
+      "body": "<<FILL role=resolution words=105 beats='Kesh gives the guildmaster one clean chart and keeps the spare tucked away, and the given map is fine enough to earn a place at the Cartographer Guild; the kept copy stays Kesh's own, the first of a mapmaker's private library, Tamsin's island doubled and one half quietly, proudly Kesh's'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_secret_spare",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Kept Copy"
+      }
+    },
+    {
+      "id": "summit_signal",
+      "body": "<<FILL role=choice words=105 beats='the ship is a far white speck standing off the reef, and with Tamsin's a signal heliograph Kesh can throw the sun straight at it; a flash could call the boat in early to the hidden hollow, in time to help the stranded creatures Kesh marked in the caves and the flats'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_summit_signal_1",
+          "label": "Aim the mirror and flash the ship.",
+          "target": "signal_aim"
+        },
+        {
+          "id": "c_summit_signal_2",
+          "label": "Signal, then turn back to finish the chart.",
+          "target": "ch_gather"
+        }
+      ]
+    },
+    {
+      "id": "signal_aim",
+      "body": "<<FILL role=rising words=100 beats='Kesh steadies a signal heliograph against the wind and finds the angle, catching the low sun and throwing a bright blade of light out across the water toward the distant sail'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_signal_aim_1",
+          "label": "Hold the flash steady and wait.",
+          "target": "signal_flash"
+        }
+      ]
+    },
+    {
+      "id": "signal_flash",
+      "body": "<<FILL role=rising words=100 beats='flash, pause, flash, the old distress rhythm from the Cartographer Guild drills, and for a long while nothing, only the wind and the far white sail, until Kesh's arm aches and doubt creeps in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_signal_flash_1",
+          "label": "Keep signalling.",
+          "target": "ship_turns"
+        }
+      ]
+    },
+    {
+      "id": "ship_turns",
+      "body": "<<FILL role=rising words=100 beats='at last the sail shifts, swinging square, then heeling as the ship comes about and turns its bow toward a nameless mesa, answering, steering for the hidden hollow; now Kesh must get down to meet it in time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ship_turns_1",
+          "label": "Race down toward the cove to meet the boat.",
+          "target": "race_down"
+        }
+      ]
+    },
+    {
+      "id": "race_down",
+      "body": "<<FILL role=rising words=100 beats='Kesh pockets a signal heliograph and goes down the ridge at a controlled run, cairn to cairn, past Tamsin's canyon outpost, down the cut cove path, lungs burning, as the ship's little boat pulls in through the reef below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_race_down_1",
+          "label": "Meet the boat at the cove.",
+          "target": "meet_boat"
+        }
+      ]
+    },
+    {
+      "id": "meet_boat",
+      "body": "<<FILL role=choice words=100 beats='the boat grounds on the hidden hollow's sand and two strong sailors jump out, sent by the guildmaster who saw the signal; there is just time before the tide to help one of the stranded creatures Kesh mapped, a stranded lizard in the warm cave or a stranded desert tortoise out on the reef'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meet_boat_1",
+          "label": "Lead them to a stranded lizard in the cave.",
+          "target": "e_rescue_pup"
+        },
+        {
+          "id": "c_meet_boat_2",
+          "label": "Lead them to a stranded desert tortoise on the reef.",
+          "target": "e_rescue_turtle"
+        }
+      ]
+    },
+    {
+      "id": "e_rescue_pup",
+      "body": "<<FILL role=resolution words=115 beats='Kesh guides the two sailors to the warm cave and together they lift a stranded lizard out through the sea tube on the rising tide, and it slips away whole into the green water; the guildmaster watches Kesh work and says any mapmaker who reads a coast well enough to save a life is worth keeping, and Kesh rows home an apprentice at last, with a good chart and a better story'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_saved_pup",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The kid goat and the Rising wind"
+      }
+    },
+    {
+      "id": "e_rescue_turtle",
+      "body": "<<FILL role=resolution words=115 beats='Kesh leads the sailors across the salt flats to the reef and they carry a stranded desert tortoise to deep water, where it kicks once and is gone; the sailors cheer, the guildmaster nods slowly, and though the chart is only half finished the guildmaster says a person who uses a map to help rather than only to win has the makings of a true mapmaker, and offers Kesh the place'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_saved_turtle",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Back to the Deep Water"
+      }
+    },
+    {
+      "id": "mg_lagoon",
+      "body": "<<FILL role=rising words=105 beats='a still green basin is a mirror roofed by mangroves, so quiet the plop of a fish sounds loud; a half sunk dugout canoe lies against the roots, a tunnel of arching rocks leads deeper, and a great heap of deadwood dams the far end'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_lagoon_1",
+          "label": "Bail out a half sunk dugout canoe.",
+          "target": "mg_canoe"
+        },
+        {
+          "id": "c_mg_lagoon_2",
+          "label": "Take a tunnel of arching rocks.",
+          "target": "mg_lagtunnel"
+        },
+        {
+          "id": "c_mg_lagoon_3",
+          "label": "Wade to a great heap of deadwood.",
+          "target": "mg_dam"
+        }
+      ]
+    },
+    {
+      "id": "mg_canoe",
+      "body": "<<FILL role=choice words=95 beats='a half sunk dugout canoe is old but sound, carved by hand long ago, and half full of leaves and rain; bailed out it might carry Kesh fast across the lagoon, or it might just as easily fold and sink under a first stroke'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_canoe_1",
+          "label": "Bail it and paddle across.",
+          "target": "mg_paddle"
+        },
+        {
+          "id": "c_mg_canoe_2",
+          "label": "Trust it too far, too fast.",
+          "target": "e_mg_canoe"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_canoe",
+      "body": "<<FILL role=failure words=90 beats='a half sunk dugout canoe takes water the moment Kesh digs in a paddle, and with a slow gurgle it settles until Kesh is sitting waist deep in the warm lagoon, sketchbook rescued but the morning wasted wading back to shore, that corner of the coast left a wet blank'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_sunk_canoe",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Leaky Dugout"
+      }
+    },
+    {
+      "id": "mg_paddle",
+      "body": "<<FILL role=rising words=95 beats='bailed and balanced, a half sunk dugout canoe glides sweetly across a still green basin, and from the water Kesh can trace the true shape of the shore far better than from the tangled bank; the far side shows a strip of old cleared ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_paddle_1",
+          "label": "Land and explore a strip of old cleared ground.",
+          "target": "mg_lagfar"
+        }
+      ]
+    },
+    {
+      "id": "mg_lagfar",
+      "body": "<<FILL role=choice words=95 beats='a strip of old cleared ground on the far bank is too neat to be wild, someone shaped it once; a low mound of stones and posts stands among the trees, and beyond it a firm path leads back up toward the creek and high ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_lagfar_1",
+          "label": "Examine a low mound of stones and posts.",
+          "target": "mg_ruin"
+        },
+        {
+          "id": "c_mg_lagfar_2",
+          "label": "Take the firm path up toward the creek.",
+          "target": "mg_otter"
+        }
+      ]
+    },
+    {
+      "id": "mg_ruin",
+      "body": "<<FILL role=discovery words=100 beats='a low mound of stones and posts is a fish drying rack and the posts a house frame, a whole vanished fishing outpost, older than Tamsin, older than any chart; people lived on a nameless mesa once and left only this quiet clearing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_ruin_1",
+          "label": "Record a whole vanished fishing outpost and climb on.",
+          "target": "mg_highground"
+        },
+        {
+          "id": "c_mg_ruin_2",
+          "label": "Sit and map a whole vanished fishing outpost in loving detail.",
+          "target": "e_mg_village"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_village",
+      "body": "<<FILL role=resolution words=100 beats='Kesh maps a whole vanished fishing outpost post by post, imagining the people who dried their catch here, and it fills page after page; it is careful true work, but it is one small clearing, and by the time Kesh looks up a nameless mesa as a whole is still barely begun, so home goes a village and not a chart'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lost_village",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Vanished Village"
+      }
+    },
+    {
+      "id": "mg_lagtunnel",
+      "body": "<<FILL role=rising words=95 beats='a tunnel of arching rocks is a green throat that Kesh must duck and wade through, cool and dim, loud with dripping; it bends and forks, one way brightening toward open sky, one way boring deeper into the dark under a nameless mesa's edge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_lagtunnel_1",
+          "label": "Head for the brightening sky.",
+          "target": "mg_seep"
+        },
+        {
+          "id": "c_mg_lagtunnel_2",
+          "label": "Push deeper into the dark.",
+          "target": "e_mg_tunnellost"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_tunnellost",
+      "body": "<<FILL role=failure words=90 beats='the deeper a tunnel of arching rocks goes the more it branches, root passage into root passage, until Kesh cannot say which way is out and has to backtrack by feel, heart thudding, to the last patch of light; the lagoon is left a scribble, and Kesh climbs out shaken to try open ground'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_root_maze",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Under the rocks"
+      }
+    },
+    {
+      "id": "mg_dam",
+      "body": "<<FILL role=discovery words=100 beats='a great heap of deadwood is otter work, years of it, and jammed among the branches is a weathered survey stake with a faded number, one of Tamsin's marks, still standing where the map said it would be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_dam_1",
+          "label": "Note Tamsin's stake and follow the creek.",
+          "target": "mg_creek"
+        },
+        {
+          "id": "c_mg_dam_2",
+          "label": "Prise a weathered survey stake with a faded number free as a keepsake.",
+          "target": "e_mg_stake"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_stake",
+      "body": "<<FILL role=resolution words=95 beats='Kesh works a weathered survey stake with a faded number loose and turns it over, reading the faded number, and something about holding the real thing makes the whole day feel like Tamsin's more than Kesh's; Kesh carries the stake home like a relic, the map itself barely started, a token of the mapmaker who came first'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_survey_stake",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Tamsin's Survey Stake"
+      }
+    },
+    {
+      "id": "cf_falls",
+      "body": "<<FILL role=rising words=105 beats='the roar leads Kesh to a hidden dust fall pouring white off a mossy lip into a green pool loud with kingfishers; a wet rock scramble climbs beside it, a mossy log crosses above the lip, and the pool below hides pale shapes under the churn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_falls_1",
+          "label": "Climb the wet rocks beside the falls.",
+          "target": "cf_fallclimb"
+        },
+        {
+          "id": "c_cf_falls_2",
+          "label": "Cross the mossy log above the lip.",
+          "target": "cf_fallcross"
+        },
+        {
+          "id": "c_cf_falls_3",
+          "label": "Wade into a green pool loud with kingfishers.",
+          "target": "cf_fallpool"
+        }
+      ]
+    },
+    {
+      "id": "cf_fallclimb",
+      "body": "<<FILL role=choice words=95 beats='the rocks beside a hidden dust fall are slick with spray and furred with moss, good holds under the green if Kesh is careful, a fast way up to the traverse if Kesh is bold, and a long wet slide down if Kesh is neither'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_fallclimb_1",
+          "label": "Climb carefully, testing each hold.",
+          "target": "cf_traverse"
+        },
+        {
+          "id": "c_cf_fallclimb_2",
+          "label": "Scramble up fast and reckless.",
+          "target": "e_cf_slip"
+        }
+      ]
+    },
+    {
+      "id": "e_cf_slip",
+      "body": "<<FILL role=failure words=90 beats='a mossy hold peels away and Kesh slithers down the wet rock into a green pool loud with kingfishers in a rush of cold and bubbles, unhurt but soaked to the bone and shivering; the sketchbook is saved held high, but the climbing is over for now, and the high ridge stays unmapped above'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_falls_slip",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Slippery Falls"
+      }
+    },
+    {
+      "id": "cf_fallcross",
+      "body": "<<FILL role=rising words=95 beats='the mossy log above the lip is broad and, tested, surprisingly firm, and edging across it Kesh looks straight down the falling water to a green pool loud with kingfishers far below, then up to where a gentle traverse contours away toward the upper ridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_fallcross_1",
+          "label": "Step off onto the upper traverse.",
+          "target": "cf_upper"
+        }
+      ]
+    },
+    {
+      "id": "cf_fallpool",
+      "body": "<<FILL role=discovery words=100 beats='the pale shapes in a green pool loud with kingfishers are a stone gauge pecked with notches, a water gauge someone set to measure the falls through the seasons, Tamsin's careful hand at work again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_fallpool_1",
+          "label": "Note the gauge and climb the falls.",
+          "target": "cf_fallclimb"
+        },
+        {
+          "id": "c_cf_fallpool_2",
+          "label": "Copy a stone gauge pecked with notches in full detail.",
+          "target": "e_cf_gauge"
+        }
+      ]
+    },
+    {
+      "id": "e_cf_gauge",
+      "body": "<<FILL role=resolution words=95 beats='Kesh copies Tamsin's a stone gauge pecked with notches notch by notch, working out how the falls rise and fall across a year, and it is real science, the kind that makes a place understood; but it eats the hours, and Kesh climbs out with a page on the falls and a nameless mesa still mostly blank, carrying home a piece of Tamsin's patient study'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_water_gauge",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Tamsin's Water Gauge"
+      }
+    },
+    {
+      "id": "cv_skylight",
+      "body": "<<FILL role=rising words=105 beats='a high hole of daylight hangs high in the cavern roof where a shaft has broken through, and beneath it a slope of fallen rock climbs toward the light; off to one side a gallery of stone formations glows softly, hung with drapes and columns of pale rock'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_skylight_1",
+          "label": "Climb the rock slope toward the light.",
+          "target": "cv_chimney"
+        },
+        {
+          "id": "c_cv_skylight_2",
+          "label": "Explore a gallery of stone formations.",
+          "target": "cv_gallery"
+        }
+      ]
+    },
+    {
+      "id": "cv_chimney",
+      "body": "<<FILL role=choice words=95 beats='the last stretch to the daylight is a narrow chimney of rock, a hard bright squeeze that would pop Kesh out onto the open hillside, high and quick, if the arms hold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_chimney_1",
+          "label": "Chimney up steadily to the surface.",
+          "target": "cv_tohigh"
+        },
+        {
+          "id": "c_cv_chimney_2",
+          "label": "Rush the chimney and tire too soon.",
+          "target": "e_cv_chimney"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_chimney",
+      "body": "<<FILL role=failure words=90 beats='halfway up a narrow chimney of rock Kesh's arms begin to shake and the sensible thing, the only thing, is to slide carefully back down to the cavern floor before a slip becomes a fall; the surface stays out of reach by this route, and Kesh must find another way up, time bleeding away'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_stuck_chimney",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Narrow Chimney"
+      }
+    },
+    {
+      "id": "cv_gallery",
+      "body": "<<FILL role=discovery words=100 beats='a gallery of stone formations is a frozen forest of stone, columns where drips have met over ages, and among them the small bones of a goat that fell long ago and, beside it, a rusted lamp, proof that someone came searching here before'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_gallery_1",
+          "label": "Follow where the searcher went, toward the glitter.",
+          "target": "cv_glitter"
+        },
+        {
+          "id": "c_cv_gallery_2",
+          "label": "Sketch the whole stone gallery.",
+          "target": "e_cv_lantern"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_lantern",
+      "body": "<<FILL role=resolution words=95 beats='Kesh draws a gallery of stone formations until the page glows with columns and drapes, and sets a rusted lamp in the corner of the sketch like a signature from the past; it is beautiful, and it is one dark room, and the sunlit island above stays a rumour, so Kesh carries home a cave and not a coast'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_stone_gallery",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Frozen Forest"
+      }
+    },
+    {
+      "id": "tw_quarters",
+      "body": "<<FILL role=rising words=105 beats='the keeper's side quarters are small and sad and human, a narrow bunk, a cold hearth, a desert chest at the foot of the bed, and a whole wall pinned with charts gone soft and curling at the edges'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_quarters_1",
+          "label": "Read the wall of pinned charts.",
+          "target": "tw_wallcharts"
+        },
+        {
+          "id": "c_tw_quarters_2",
+          "label": "Open a desert chest.",
+          "target": "tw_seachest"
+        }
+      ]
+    },
+    {
+      "id": "tw_wallcharts",
+      "body": "<<FILL role=discovery words=100 beats='the pinned charts are not a nameless mesa at all but a dozen others, coasts and reefs and bays from all across the sea, a whole life of mapmaking, Tamsin's life, each one signed in the same small hand in the corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_wallcharts_1",
+          "label": "Take heart from Tamsin's life and climb the outside stair.",
+          "target": "tw_stair"
+        },
+        {
+          "id": "c_tw_wallcharts_2",
+          "label": "Study the wall of a mapmaker's whole life.",
+          "target": "e_tw_charts"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_charts",
+      "body": "<<FILL role=resolution words=100 beats='Kesh stands a long time before Tamsin's wall of charts, reading a lifetime of islands, and copies a few of the finest into the sketchbook to carry home; it is an education worth more than any test, but the sun does not wait for wonder, and Kesh rows out with Tamsin's story and this one island still blank'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_chart_wall",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Life of mesas"
+      }
+    },
+    {
+      "id": "tw_seachest",
+      "body": "<<FILL role=choice words=95 beats='a desert chest holds a folded oilskin coat, a brass pocket compass that still swings true, and a child's crayon drawing of a house and three small figures, the family Tamsin left ashore to come and map the world'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_seachest_1",
+          "label": "Take a brass pocket compass that still swings true and climb on.",
+          "target": "tw_stair"
+        },
+        {
+          "id": "c_tw_seachest_2",
+          "label": "Sit with a child's crayon drawing, undone.",
+          "target": "e_tw_drawing"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_drawing",
+      "body": "<<FILL role=resolution words=95 beats='a child's crayon drawing, a house and three little people waiting, undoes Kesh completely, and the morning goes to imagining the family who never saw Tamsin come home; Kesh tucks the drawing carefully away to return it one day, and rows out at sundown with a heart full of Tamsin's story and a chart still bare'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_family_drawing",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Family Ashore"
+      }
+    },
+    {
+      "id": "tf_mussel",
+      "body": "<<FILL role=rising words=105 beats='the mussel beds are a black glistening field that crunches underfoot, sharp enough to mind your step, and busy with oystercatchers; beyond them a colony of goats hauls out on a low rock, and a deep gully cuts a dark line straight through toward the cliffs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_mussel_1",
+          "label": "Approach the basking goats.",
+          "target": "tf_seals"
+        },
+        {
+          "id": "c_tf_mussel_2",
+          "label": "Follow a deep gully toward the cliffs.",
+          "target": "tf_gully"
+        }
+      ]
+    },
+    {
+      "id": "tf_seals",
+      "body": "<<FILL role=discovery words=100 beats='the goats watch Kesh with huge dark eyes and do not flee, a whole colony, mothers and pups, hauled up to rest on the warm rock; among them one small kid goat lies apart, tangled in a loop of old net and struggling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_seals_1",
+          "label": "Mark the tangled pup to send help later.",
+          "target": "tf_channel"
+        },
+        {
+          "id": "c_tf_seals_2",
+          "label": "Try to free one small kid goat yourself now.",
+          "target": "e_tf_seals"
+        }
+      ]
+    },
+    {
+      "id": "e_tf_seals",
+      "body": "<<FILL role=resolution words=100 beats='Kesh creeps close and works the old net gently off one small kid goat's flipper until it wriggles free and humps away to its mother, but the colony spooks and floods off the rock, and the fright and the fuss have eaten the tide's low window; a good deed done, the flats left half drawn, Kesh wades back proud and behind'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_freed_pup",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Tangled Net"
+      }
+    },
+    {
+      "id": "tf_gully",
+      "body": "<<FILL role=choice words=95 beats='a deep gully is a shortcut straight to the cliffs, its floor still just dry, but the walls are streaked with weed to well above Kesh's head, a plain warning of how deep and how fast it floods when the sea turns'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_gully_1",
+          "label": "Hurry through the gully to the cliff gap.",
+          "target": "tf_cliffgap"
+        },
+        {
+          "id": "c_tf_gully_2",
+          "label": "Dawdle reading the weed lines too long.",
+          "target": "e_tf_gully"
+        }
+      ]
+    },
+    {
+      "id": "e_tf_gully",
+      "body": "<<FILL role=failure words=90 beats='Kesh lingers too long puzzling over the weed lines, and the first cold tongue of returning water slides up a deep gully's floor; there is nothing to do but splash back the way in, fast, and take the long safe road, the shortcut lost and a good stretch of the flats left unmapped with the day slipping on'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_gully_flood",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Flooding Gully"
+      }
+    },
+    {
+      "id": "ch_farshore",
+      "body": "<<FILL role=rising words=100 beats='Kesh turns the salvaged alidade on the wild far shore last of all, the wild windward coast no boat ever lands on, and sketches its cliffs and stacks and the white line of its reef, ground that has never been on any chart at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_farshore_1",
+          "label": "Add the far shore and gather the whole survey.",
+          "target": "ch_gather"
+        },
+        {
+          "id": "c_ch_farshore_2",
+          "label": "Stop, thrilled, having charted the unknown coast.",
+          "target": "e_ch_farshore"
+        }
+      ]
+    },
+    {
+      "id": "e_ch_farshore",
+      "body": "<<FILL role=resolution words=105 beats='Kesh carries down a chart of the wild far shore alone, the one coast no mapmaker ever reached, and though the rest of a nameless mesa is only sketched the guildmaster whistles at the sight of that unknown coast drawn true; it is not the masterwork, but it is real new ground, and the guildmaster says a surveyor who finds the unfindable is worth training, and keeps Kesh on'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_wild_coast",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Coast No One Had Mapped"
+      }
+    },
+    {
+      "id": "ch_seal_final",
+      "body": "<<FILL role=choice words=100 beats='with the masterwork inked and signed, the little boat waiting, Kesh has one last choice as the light goes gold, hand the chart over now and be sure of it, or add the two rescued creatures and the vanished village to the margin as living proof a nameless mesa is more than lines'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ch_seal_final_1",
+          "label": "Add the living island to the margins.",
+          "target": "e_ch_living"
+        },
+        {
+          "id": "c_ch_seal_final_2",
+          "label": "Hand over the clean masterwork as it is.",
+          "target": "e_ch_clean"
+        }
+      ]
+    },
+    {
+      "id": "e_ch_living",
+      "body": "<<FILL role=resolution words=115 beats='Kesh rings the masterwork with tiny true drawings, the seal pup, the turtle, the vanished fishing camp, the star slab, so the map holds not just the shape of a nameless mesa but its life; the guildmaster turns it in the last light and says this is more than a survey, it is the island itself on paper, and gives Kesh the apprenticeship and the honour of naming the next island too'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_living_chart",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Living Chart"
+      }
+    },
+    {
+      "id": "e_ch_clean",
+      "body": "<<FILL role=resolution words=110 beats='Kesh hands over the masterwork exactly as drawn, coast and reef and ridge all true, no flourish, no fuss, and the guildmaster checks it corner to corner and finds it faultless; a clean honest survey, the guildmaster says, is what the Cartographer Guild lives on, and Kesh is taken on as the newest apprentice mapmaker on the strength of a perfect first island'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_clean_master",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Clean, True Chart"
+      }
+    },
+    {
+      "id": "mg_heron",
+      "body": "<<FILL role=rising words=105 beats='Kesh poles a raft of lashed reeds across to the loud hawk mesa, a low green mound white with nesting hawks, loud as a market; a weathered watching blind stands on stilts, a wide sand bank shelves off one side, and the treetops seethe with a whole rookery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_heron_1",
+          "label": "Climb into a weathered watching blind.",
+          "target": "mg_blind"
+        },
+        {
+          "id": "c_mg_heron_2",
+          "label": "Wade out onto a wide sand bank.",
+          "target": "mg_mudbank"
+        },
+        {
+          "id": "c_mg_heron_3",
+          "label": "Count the nests in the rookery.",
+          "target": "mg_rookery"
+        }
+      ]
+    },
+    {
+      "id": "mg_blind",
+      "body": "<<FILL role=discovery words=100 beats='a weathered watching blind is a surveyor's hide, and Tamsin used it well, the rails scratched with a whole tide table and the compass bearings of every headland in sight, a place to sit still and let a nameless mesa give up its shape'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_blind_1",
+          "label": "Copy the bearings and take the plank walk inland.",
+          "target": "mg_seep"
+        },
+        {
+          "id": "c_mg_blind_2",
+          "label": "Copy the entire carved tide table in full.",
+          "target": "e_mg_tidetable"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_tidetable",
+      "body": "<<FILL role=resolution words=95 beats='Kesh copies Tamsin's whole carved tide table, hour by hour, a treasure of exactly when each flat floods, and it fills the morning; it will make some future chart wonderful, but today it is one rail of scratched numbers, and a nameless mesa stays mostly unmapped as Kesh poles reluctantly back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tide_table",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Tamsin's wind Table"
+      }
+    },
+    {
+      "id": "mg_mudbank",
+      "body": "<<FILL role=choice words=95 beats='a wide sand bank is soft and shining and crowded with wading hawks, and a firm ribbon of sand threads across it toward a far channel and higher ground, but step wrong off the ribbon and the mud is knee deep and grasping'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_mudbank_1",
+          "label": "Follow the firm ribbon to the far channel.",
+          "target": "mg_farchannel"
+        },
+        {
+          "id": "c_mg_mudbank_2",
+          "label": "Cut straight across and startle the flock.",
+          "target": "e_mg_birdstorm"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_birdstorm",
+      "body": "<<FILL role=failure words=90 beats='Kesh cuts across the soft mud and a thousand hawks explode up at once in a storm of wings and noise that sends Kesh stumbling and floundering knee deep; by the time the flock settles and Kesh struggles clear, plastered and laughing and shaken, the tide is turning and the loud hawk mesa is left a hasty smudge'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bird_storm",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Storm of Wings"
+      }
+    },
+    {
+      "id": "mg_farchannel",
+      "body": "<<FILL role=rising words=95 beats='the firm ribbon delivers Kesh dry shod to the far channel, where the water runs clear toward the mainland shore and the ground beyond lifts, green and solid, toward high ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_farchannel_1",
+          "label": "Cross to high ground.",
+          "target": "mg_highground"
+        }
+      ]
+    },
+    {
+      "id": "mg_rookery",
+      "body": "<<FILL role=discovery words=95 beats='counting the nests, Kesh finds one fallen chick cheeping in the grass and lifts it gently back to a low branch under its parents' cross eyed glare, then sketches the whole seething rookery for the map's margin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_rookery_1",
+          "label": "Sketch the rookery and cross to the mud bank.",
+          "target": "mg_mudbank"
+        },
+        {
+          "id": "c_mg_rookery_2",
+          "label": "Stay to watch the whole colony too long.",
+          "target": "e_mg_chick"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_chick",
+      "body": "<<FILL role=resolution words=95 beats='Kesh cannot stop watching the hawks, the fishing, the squabbles, one fallen chick settling safe, and the sketchbook fills with birds instead of coastline; it is a lovely living page, but the sun climbs on unmapped, and Kesh poles back with a rookery drawn and a nameless mesa still waiting'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rookery_watch",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The hawk Rookery"
+      }
+    },
+    {
+      "id": "cf_grove",
+      "body": "<<FILL role=rising words=105 beats='a grove of ancient mossy trees is a cathedral of giant moss hung trees, the light green and holy, the air still after the ridge wind; a frayed rope ladder climbs into the high canopy, and deep among the roots stands a small cairn shrine dressed with stones'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_grove_1",
+          "label": "Climb a frayed rope ladder.",
+          "target": "cf_canopy"
+        },
+        {
+          "id": "c_cf_grove_2",
+          "label": "Kneel to a small cairn shrine dressed with stones.",
+          "target": "cf_shrine"
+        }
+      ]
+    },
+    {
+      "id": "cf_canopy",
+      "body": "<<FILL role=choice words=95 beats='a frayed rope ladder is grey and frayed but each rung holds when Kesh tests it, and above the leaves must lie a view over the whole ridge; still, the higher rungs look thinner, and trusting them fully is a gamble'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_canopy_1",
+          "label": "Climb steadily, testing every rung.",
+          "target": "cf_treetop"
+        },
+        {
+          "id": "c_cf_canopy_2",
+          "label": "Trust the frayed upper rungs and hurry.",
+          "target": "e_cf_ladder"
+        }
+      ]
+    },
+    {
+      "id": "e_cf_ladder",
+      "body": "<<FILL role=failure words=90 beats='a high rung parts with a soft rotten crack and Kesh drops a heart stopping foot before the next rung catches, and that is enough, down is the only sensible way now, careful hand under careful hand; the canopy view is lost, and the grove goes on the map as a green guess from the ground'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rotten_ladder",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Frayed Ladder"
+      }
+    },
+    {
+      "id": "cf_treetop",
+      "body": "<<FILL role=discovery words=100 beats='a frayed rope ladder tops out on a plank platform lashed high in the crown, Tamsin's treetop survey point, a fixed brass sighting ring still bolted to the trunk, and through the leaves the whole green ridge rolls away to the sea'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_treetop_1",
+          "label": "Take bearings from the platform and climb down to the trail.",
+          "target": "cf_campapproach"
+        },
+        {
+          "id": "c_cf_treetop_2",
+          "label": "Linger in the swaying green crown too long.",
+          "target": "e_cf_canopy"
+        }
+      ]
+    },
+    {
+      "id": "e_cf_canopy",
+      "body": "<<FILL role=resolution words=95 beats='the swaying green world of the canopy is so wonderful that Kesh stays and stays, sketching the ridge through gaps in the leaves, until the light tells the truth about the hour; it is a rare view few ever see, but it is one treetop, and Kesh climbs down with a beautiful fragment and no finished chart'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_treetop_view",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Treetop Survey"
+      }
+    },
+    {
+      "id": "cf_shrine",
+      "body": "<<FILL role=discovery words=95 beats='a small cairn shrine dressed with stones is a knee high cairn dressed with shells and a single carved wooden bird, weathered soft, older than Tamsin, a quiet marker left by the island's first people to bless the high forest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_shrine_1",
+          "label": "Record the shrine and climb on toward the camp.",
+          "target": "cf_campapproach"
+        },
+        {
+          "id": "c_cf_shrine_2",
+          "label": "Sit long in the green hush before the shrine.",
+          "target": "e_cf_shrine"
+        }
+      ]
+    },
+    {
+      "id": "e_cf_shrine",
+      "body": "<<FILL role=resolution words=95 beats='Kesh sits a long peaceful while before a small cairn shrine dressed with stones, drawing the shell dressed cairn and the carved bird, feeling the weight of all the people who loved a nameless mesa before; the grove empties Kesh of hurry, which is lovely and costly both, and the day slips by with only the shrine set down'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_forest_shrine",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Grove Shrine"
+      }
+    },
+    {
+      "id": "cv_lake",
+      "body": "<<FILL role=rising words=105 beats='the passage opens on an underground lake, black and perfectly still, its far shore lost in dark; a raft of old lashed planks is drawn up on a beach of pale sand, and the ceiling glitters faintly where water has carried the crystal down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_lake_1",
+          "label": "Pole a raft of old lashed planks across the black lake.",
+          "target": "cv_raft"
+        },
+        {
+          "id": "c_cv_lake_2",
+          "label": "Search the pale sand beach.",
+          "target": "cv_lakebeach"
+        }
+      ]
+    },
+    {
+      "id": "cv_raft",
+      "body": "<<FILL role=choice words=95 beats='a raft of old lashed planks floats when Kesh eases it out, and a long pole finds the bottom, so crossing is possible, slow and eerie over the black glass water; but the lashings are old, and to hurry or lean is to risk a cold dark swim'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_raft_1",
+          "label": "Pole across slow and steady.",
+          "target": "cv_farcave"
+        },
+        {
+          "id": "c_cv_raft_2",
+          "label": "Push off hard and pole in haste.",
+          "target": "e_cv_raft"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_raft",
+      "body": "<<FILL role=failure words=90 beats='a lashing gives with a wet snap and a raft of old lashed planks tips, and Kesh is suddenly waist deep in the cold black lake, gasping, hauling the raft and the precious dry sketchbook back to the pale beach by feel; there is no crossing now, and the far dark of the cave keeps its secrets while Kesh wrings out and retreats'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lake_dunk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Black cistern"
+      }
+    },
+    {
+      "id": "cv_farcave",
+      "body": "<<FILL role=discovery words=100 beats='the far shore is a wonder, blind white fish hanging in the shallows and a natural stair of flowstone climbing toward a distant seam of grey daylight high in the rock'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_farcave_1",
+          "label": "Climb the flowstone stair toward the daylight.",
+          "target": "cv_tohigh"
+        },
+        {
+          "id": "c_cv_farcave_2",
+          "label": "Stay to study blind white fish.",
+          "target": "e_cv_fish"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_fish",
+      "body": "<<FILL role=resolution words=95 beats='Kesh watches blind white fish drift in water that has never seen the sun and fills a page with creatures no chart ever showed, patient wondering work; it is a discovery to make the Cartographer Guild gasp, but it is a single dark pool, and the sunlit island above waits unmapped as the hours drain away'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_blind_fish",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Fish With No Eyes"
+      }
+    },
+    {
+      "id": "cv_lakebeach",
+      "body": "<<FILL role=discovery words=95 beats='the pale sand holds footprints turned to stone, and stooping close Kesh sees they are turned to stone, the bare footprints of children who walked this hidden beach an age ago and left their steps behind them in the deep'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_lakebeach_1",
+          "label": "Record the stone footprints and climb out to the ridge.",
+          "target": "cv_tohigh"
+        },
+        {
+          "id": "c_cv_lakebeach_2",
+          "label": "Map every ancient footprint on the beach.",
+          "target": "e_cv_prints"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_prints",
+      "body": "<<FILL role=resolution words=95 beats='Kesh maps every stone footprint on the hidden beach, imagining the children who made them in the dark long ago, and the wonder of it holds Kesh fast; page after page fills with little vanished steps, and when Kesh finally looks up the day is old and a nameless mesa above is still nearly blank'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_stone_prints",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Footprints in the Deep"
+      }
+    },
+    {
+      "id": "tw_beacon",
+      "body": "<<FILL role=rising words=105 beats='on a jut of the headland stands the old beacon brazier, a great rusted iron brazier on a stone base with a coil of chain and, set into the rock beside it, a carved stone dial marking bearings'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_beacon_1",
+          "label": "Inspect the old beacon brazier.",
+          "target": "tw_brazier"
+        },
+        {
+          "id": "c_tw_beacon_2",
+          "label": "Read a carved stone dial marking bearings.",
+          "target": "tw_viewdial"
+        }
+      ]
+    },
+    {
+      "id": "tw_brazier",
+      "body": "<<FILL role=choice words=95 beats='the old beacon brazier is cold and empty, its last fire long dead, but Kesh sees how it worked, how a blaze here would warn ships off the reef; there must have been a fuel store nearby, and finding it would be a fine thing to mark, though it will cost time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_brazier_1",
+          "label": "Search along the headland for a fuel store.",
+          "target": "tw_fuelstore"
+        },
+        {
+          "id": "c_tw_brazier_2",
+          "label": "Give up on the dead beacon and turn back.",
+          "target": "e_tw_nofuel"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_nofuel",
+      "body": "<<FILL role=failure words=90 beats='Kesh pokes about the old beacon brazier and finds nothing but rust and old ash, no way to light it and precious little to map, and the search has swallowed a good hour for a dead end; a little cross with the wasted time, Kesh turns back to the ridge with the beacon barely worth a dot on the paper'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dead_beacon",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Beacon"
+      }
+    },
+    {
+      "id": "tw_fuelstore",
+      "body": "<<FILL role=discovery words=100 beats='tucked under a stone lintel Kesh finds a fuel store, empty now, its door scrawled inside with a keeper's tally and a last line in Tamsin's hand, gone to finish the ridge chart, back by the storm, a message left for a ship that never came'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_fuelstore_1",
+          "label": "Copy Alder's last message and cross to the ridge.",
+          "target": "tw_ridgeway"
+        },
+        {
+          "id": "c_tw_fuelstore_2",
+          "label": "Sit with Alder's unanswered message.",
+          "target": "e_tw_note"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_note",
+      "body": "<<FILL role=resolution words=95 beats='Tamsin's scrawled line, back by the storm, undoes Kesh a little, and the morning goes to sitting with it, copying it, wondering about the storm that changed everything; it is a piece of the lost mapmaker's story worth carrying home, but a story is not a survey, and the chart stays as empty as a fuel store'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_keeper_note",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Back by the Storm"
+      }
+    },
+    {
+      "id": "tw_viewdial",
+      "body": "<<FILL role=discovery words=95 beats='a carved stone dial marking bearings is a gift, a stone compass rose with a groove and a name cut for every headland, reef, and peak in sight, Tamsin fixing the whole coast in stone so no fog could ever wholly hide it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_viewdial_1",
+          "label": "Copy the dial's bearings and cross to the ridge.",
+          "target": "tw_ridgeway"
+        },
+        {
+          "id": "c_tw_viewdial_2",
+          "label": "Copy every single bearing on the great dial.",
+          "target": "e_tw_dial"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_dial",
+      "body": "<<FILL role=resolution words=95 beats='Kesh copies every bearing cut into Tamsin's a carved stone dial marking bearings, a perfect skeleton for any chart, and it is genuinely useful work, the bones of a survey handed down; but copying it all eats the light, and Kesh carries home Tamsin's bearings with no coastline drawn between them, a frame around an empty island'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_stone_dial",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Stone Compass"
+      }
+    },
+    {
+      "id": "tf_wreck",
+      "body": "<<FILL role=rising words=105 beats='the great wreck on the bar lies keeled over on the bar, a great old ship gone to ribs like the bones of a whale, timbers black with age; the flooded hold gapes below, the tilted deck climbs above, and at the bow a carved figurehead still leans out over the sand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_wreck_1",
+          "label": "Reach down into the flooded hold.",
+          "target": "tf_hold"
+        },
+        {
+          "id": "c_tf_wreck_2",
+          "label": "Climb the tilted deck to the bow.",
+          "target": "tf_deck"
+        }
+      ]
+    },
+    {
+      "id": "tf_hold",
+      "body": "<<FILL role=choice words=95 beats='the flooded hold is half full of green water and dim shapes of old cargo, reachable if Kesh wades in now, but the light is turning silver out on the salt flats, the tide's first warning, and a person caught in a wreck by the sea is a person in real trouble'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_hold_1",
+          "label": "Wade in quickly for a look at the cargo.",
+          "target": "tf_cargo"
+        },
+        {
+          "id": "c_tf_hold_2",
+          "label": "Push your luck deep in the flooding hold.",
+          "target": "e_tf_hold"
+        }
+      ]
+    },
+    {
+      "id": "e_tf_hold",
+      "body": "<<FILL role=failure words=90 beats='Kesh wades too deep into the flooded hold just as the tide slides back across the bar, and for one cold heart lurching moment the way out is a narrowing gap of grey water; Kesh scrambles free soaked and scared, the lesson learned hard, and splashes to shore with the great wreck on the bar half seen and the flats left dangerously unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_wreck_trap",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Caught in the Wreck"
+      }
+    },
+    {
+      "id": "tf_cargo",
+      "body": "<<FILL role=discovery words=100 beats='in the flooded hold Kesh finds barrels furred with weed and, wedged in the ribs, a great brass bell named the Dustrunner, the very ship that carried the island's first settlers and never sailed home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_cargo_1",
+          "label": "Note the settler ship and wade on to the cliff gap.",
+          "target": "tf_cliffgap"
+        },
+        {
+          "id": "c_tf_cargo_2",
+          "label": "Stay to read the whole story of the wreck.",
+          "target": "e_tf_bell"
+        }
+      ]
+    },
+    {
+      "id": "e_tf_bell",
+      "body": "<<FILL role=resolution words=95 beats='Kesh pieces together the great wreck on the bar's whole story from a great brass bell named the Dustrunner and the barrels and the ribs, the ship that brought the first families and foundered on the bar, and it is a tale to make the Cartographer Guild hush; but the telling costs the tide, and Kesh wades back with a settler ship remembered and the flats left a soaking blur'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_settler_wreck",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Wreck of the Dustrunner"
+      }
+    },
+    {
+      "id": "tf_deck",
+      "body": "<<FILL role=discovery words=95 beats='the tilted deck climbs to the bow where a carved figurehead leans, a carved woman with a name board beneath, and from the high stern rail Kesh can see the whole pattern of the flats and channels laid out clear as a drawn map below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_deck_1",
+          "label": "Sketch the flats from the high stern and climb down to the cliff gap.",
+          "target": "tf_cliffgap"
+        },
+        {
+          "id": "c_tf_deck_2",
+          "label": "Stay on the bow to draw a carved figurehead in loving detail.",
+          "target": "e_tf_figurehead"
+        }
+      ]
+    },
+    {
+      "id": "e_tf_figurehead",
+      "body": "<<FILL role=resolution words=95 beats='Kesh perches at the bow and draws a carved figurehead until she seems almost to breathe, the carved guardian of a ship that never came home, and it is a haunting lovely page; but the flats do not care for art, and the returning tide chases Kesh down with the figurehead finished and the coast still bare'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_figurehead",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The caravan's Guardian"
+      }
+    },
+    {
+      "id": "cove_pools",
+      "body": "<<FILL role=rising words=105 beats='the hidden hollow's rim is a garden of tide pools, each a jewelled world of anemone and darting fish, and low in the cliff a small rock alcove breathes with the swell; the pools would map the reef edge beautifully, and the cave murmurs of something further in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cove_pools_1",
+          "label": "Explore a small rock alcove.",
+          "target": "cove_seacave"
+        },
+        {
+          "id": "c_cove_pools_2",
+          "label": "Study the jewelled tide pools.",
+          "target": "cove_rockpool"
+        }
+      ]
+    },
+    {
+      "id": "cove_seacave",
+      "body": "<<FILL role=discovery words=100 beats='a small rock alcove is shallow and dry at its back, and there, cut into the rock, are Tamsin's initials and a date, and wedged in a cleft a waterproof tin with a spare pencil'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cove_seacave_1",
+          "label": "Take Tamsin's pencil and climb a hand cut path.",
+          "target": "cove_rise"
+        },
+        {
+          "id": "c_cove_seacave_2",
+          "label": "Sit with Alder's kind hidden note.",
+          "target": "e_cove_tin"
+        }
+      ]
+    },
+    {
+      "id": "e_cove_tin",
+      "body": "<<FILL role=resolution words=95 beats='the little note, the way up is behind you, friend, feels like Tamsin reaching a hand across the years, and Kesh sits with it a long grateful while in a small rock alcove; it is a moment worth more than any chart, but the moment stretches, and Kesh climbs out at last with Tamsin's pencil, a full heart, and an empty page'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_cove_tin_note",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Friend Across the Years"
+      }
+    },
+    {
+      "id": "cove_rockpool",
+      "body": "<<FILL role=discovery words=95 beats='the tide pools are the reef's edge in miniature, and mapping them Kesh works out the whole run of the hidden hollow's channel, the safe deep line a boat could follow in, drawing what Tamsin began; then a hand cut path calls upward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cove_rockpool_1",
+          "label": "Add the reef edge and climb toward the ridge.",
+          "target": "cove_rise"
+        },
+        {
+          "id": "c_cove_rockpool_2",
+          "label": "Map every last pool in jewelled detail.",
+          "target": "e_cove_reefmap"
+        }
+      ]
+    },
+    {
+      "id": "e_cove_reefmap",
+      "body": "<<FILL role=resolution words=95 beats='Kesh maps every tide pool in loving jewelled detail, anemone by anemone, and the hidden hollow's reef edge comes out perfect on the page, genuinely useful for any boat; but the perfect corner costs the day, and Kesh climbs away at last with one flawless reef and a whole blank island above it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_reef_pools",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Jewelled Reef"
+      }
+    },
+    {
+      "id": "cv_rift",
+      "body": "<<FILL role=rising words=100 beats='the side rift is hung with glowworms, thousands of tiny blue green lights in the black; the rift narrows to a squeeze at one end, and at the other a still pool catches the glow and doubles it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_rift_1",
+          "label": "Photograph the glowworms in memory and squeeze through.",
+          "target": "cv_squeeze"
+        },
+        {
+          "id": "c_cv_rift_2",
+          "label": "Sit beneath the glowing ceiling.",
+          "target": "cv_glowworm"
+        }
+      ]
+    },
+    {
+      "id": "cv_squeeze",
+      "body": "<<FILL role=choice words=90 beats='a narrow squeeze is a hand's breadth too narrow to be comfortable, cold rock pressing close, but a wriggle of daring would pop Kesh out into the wider cave beyond, or wedge Kesh fast for a frightening minute'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_squeeze_1",
+          "label": "Wriggle carefully through the squeeze.",
+          "target": "cv_deepglow"
+        },
+        {
+          "id": "c_cv_squeeze_2",
+          "label": "Force it in a panicky rush.",
+          "target": "e_cv_squeeze"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_squeeze",
+      "body": "<<FILL role=failure words=90 beats='Kesh pushes too hard too fast and sticks fast in a narrow squeeze for one long horrible minute, breathing slow, before wriggling backward free; that is quite enough of narrow places, and Kesh retreats the way in with the rift left as a shaky note and a firm resolve to keep to wider caves'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_stuck_squeeze",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Tight Squeeze"
+      }
+    },
+    {
+      "id": "cv_glowworm",
+      "body": "<<FILL role=discovery words=95 beats='under the glowing ceiling Kesh draws the rift by its own blue light, the glowworms, the doubled pool, a page like a piece of night sky brought underground, and finds an easy way on toward the sound of the mesa's oasis'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_glowworm_1",
+          "label": "Follow the easy way to the spring.",
+          "target": "cv_upflow"
+        },
+        {
+          "id": "c_cv_glowworm_2",
+          "label": "Stay lost in the glowing dark too long.",
+          "target": "e_cv_glow"
+        }
+      ]
+    },
+    {
+      "id": "e_cv_glow",
+      "body": "<<FILL role=resolution words=95 beats='the glowworms rift is so beautiful that Kesh lies back and simply watches the living stars, and time comes unstuck the way it does under the ground; when Kesh finally stirs the day above has moved on, and home goes a page of underground sky and a nameless mesa still waiting for its map'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_glowworm_sky",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Underground Sky"
+      }
+    },
+    {
+      "id": "cf_dell",
+      "body": "<<FILL role=rising words=100 beats='the deer path opens on a hidden dell ringed with ferns, soft grass and a ring of ferns around a trickling spring, so sheltered and green it feels like a secret room; a mossy carved bench sits by the water, and a faint way climbs on toward the upper ridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_dell_1",
+          "label": "Follow the dell spring downhill.",
+          "target": "cf_dellspring"
+        },
+        {
+          "id": "c_cf_dell_2",
+          "label": "Examine a mossy carved bench.",
+          "target": "cf_dellcarve"
+        },
+        {
+          "id": "c_cf_dell_3",
+          "label": "Doze in the secret green room.",
+          "target": "e_cf_dell_lost"
+        }
+      ]
+    },
+    {
+      "id": "e_cf_dell_lost",
+      "body": "<<FILL role=failure words=90 beats='a hidden dell ringed with ferns is so peaceful that Kesh means to rest a moment and instead rests an hour, and wakes with a jolt to a higher sun and a colder shadow; the secret green room has quietly stolen the morning, and Kesh hurries out with the dell drawn and far too much of a nameless mesa still blank'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dell_doze",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Secret Green Room"
+      }
+    },
+    {
+      "id": "cf_dellspring",
+      "body": "<<FILL role=rising words=95 beats='the dell spring gathers into a proper stream and leads Kesh gently down through the ferns to the mesa's oasis, the whole watershed suddenly making sense'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_dellspring_1",
+          "label": "Come out at the spring.",
+          "target": "L_fresh"
+        }
+      ]
+    },
+    {
+      "id": "cf_dellcarve",
+      "body": "<<FILL role=discovery words=95 beats='a mossy carved bench is carved with initials and little maps by mapmakers who rested here across the years, Tamsin's among them, a guest book in wood; adding a mark of your own feels like joining a long quiet company'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cf_dellcarve_1",
+          "label": "Add your mark and climb to the upper ridge.",
+          "target": "cf_upper"
+        },
+        {
+          "id": "c_cf_dellcarve_2",
+          "label": "Read every name carved in the old bench.",
+          "target": "e_cf_carve"
+        }
+      ]
+    },
+    {
+      "id": "e_cf_carve",
+      "body": "<<FILL role=resolution words=95 beats='Kesh reads every name and little map carved into a mossy carved bench, a history of mapmakers resting here going back before Tamsin, and copies them all down, moved; it is a lovely record of the ones who came before, but it is not a chart, and the day slides on with the dell drawn and a nameless mesa bare'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_carved_bench",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Mapmakers' Bench"
+      }
+    },
+    {
+      "id": "tw_slab",
+      "body": "<<FILL role=choice words=95 beats='the loose slab lifts on a cavity in the floor, and in it sits a small iron strongbox, cold and heavy and locked; a rusted key hangs on a nail nearby, but the lock is seized, and forcing it might cost a bent tool or a barked knuckle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_slab_1",
+          "label": "Try the rusted key patiently.",
+          "target": "tw_cache"
+        },
+        {
+          "id": "c_tw_slab_2",
+          "label": "Lever the seized lock by main force.",
+          "target": "e_tw_slab"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_slab",
+      "body": "<<FILL role=failure words=90 beats='Kesh levers at the seized lock until the makeshift tool bends and slips and rakes a knuckle, and a small iron strongbox stays stubbornly shut; nursing the graze, Kesh gives it up as a bad job and a lost half hour, and leaves the tower's last secret locked for someone with the proper key'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_locked_box",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Seized Lock"
+      }
+    },
+    {
+      "id": "tw_cache",
+      "body": "<<FILL role=discovery words=100 beats='the rusted key turns at last, and a small iron strongbox opens on a mapmaker's treasure, a set of fine brass drawing tools, and a desertled letter addressed simply, to whoever finishes my work, in Tamsin's unmistakable hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tw_cache_1",
+          "label": "Take the tools and a desertled letter and climb the outside stair.",
+          "target": "tw_stair"
+        },
+        {
+          "id": "c_tw_cache_2",
+          "label": "Open and read a desertled letter now.",
+          "target": "e_tw_cache"
+        }
+      ]
+    },
+    {
+      "id": "e_tw_cache",
+      "body": "<<FILL role=resolution words=100 beats='Kesh breaks the seal and reads Tamsin's a desertled letter to the one who would come after, a gentle charge to love a nameless mesa and finish the map and never mind the glory, and it lands like a hand on the shoulder; the reading takes what is left of the good light, and Kesh rows out with Tamsin's blessing, a set of fine brass drawing tools, and a chart still to draw'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_alder_letter",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Tamsin's Letter"
+      }
+    },
+    {
+      "id": "tf_dune",
+      "body": "<<FILL role=choice words=95 beats='the grassy dunes behind the trailhead roll behind the beach, whispering with marram grass, and from their crest Kesh could see the whole sweep of the salt flats laid out clear; a weathered marker post leans on the highest dune, but the soft sand is exhausting to climb and the tide waits for no one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_dune_1",
+          "label": "Climb to a weathered marker post for the view.",
+          "target": "tf_marker"
+        },
+        {
+          "id": "c_tf_dune_2",
+          "label": "Wallow too long in the soft dunes.",
+          "target": "e_tf_dune"
+        }
+      ]
+    },
+    {
+      "id": "e_tf_dune",
+      "body": "<<FILL role=failure words=90 beats='the soft sand slides away under every step and the climb turns into a floundering slog that leaves Kesh sweating and no higher, and the tide is already whispering back across the flats below; Kesh gives up the dune and trudges down, the great view unwon and the flats left a hurried scribble'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_soft_dunes",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sliding Dunes"
+      }
+    },
+    {
+      "id": "tf_marker",
+      "body": "<<FILL role=discovery words=100 beats='a weathered marker post is a surveyor's, notched and painted long ago, and from its dune Kesh can see the entire pattern of the flats, the channels, the bars, the safe firm roads across, and sketches it all in one clear commanding view'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tf_marker_1",
+          "label": "Take the whole flats in one view and follow the channels in.",
+          "target": "tf_channel"
+        },
+        {
+          "id": "c_tf_marker_2",
+          "label": "Stay on the breezy dune drawing every channel.",
+          "target": "e_tf_marker"
+        }
+      ]
+    },
+    {
+      "id": "e_tf_marker",
+      "body": "<<FILL role=resolution words=95 beats='from a weathered marker post Kesh draws the salt flats entire, every channel and bar and safe crossing, a genuinely fine map of the shore; but the commanding view is so satisfying that Kesh stays too long perfecting it, and climbs down at last with the flats beautifully done and the rest of a nameless mesa untouched'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_flats_map",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The View From the Dunes"
+      }
+    }
+  ]
+}

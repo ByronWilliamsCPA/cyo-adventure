@@ -1,0 +1,13 @@
+Command: uv run python scripts/run_story_gate.py out/ws2/the-mapmakers-island/new-theme.bound.json
+
+Result: findings=224 blocked=False safety_flagged=False
+
+All 224 findings are advisory-only RL-13 (reading-level) warnings against the
+raw <<FILL beats='...'>> outline text (e.g. "node 'n_start' FK grade 27.1
+outside target 5.5 +/- 1.5 (advisory only)"). These are expected: beats are a
+dense authoring outline, not final child-facing prose, and the count/pattern
+is identical on the pristine pre-migration skeleton, the parameterized
+skeleton, and this new-theme bound skeleton (all three report
+findings=224 blocked=False safety_flagged=False) -- confirming the migration
+introduced no new gate findings, and the acceptance criterion (blocked=False)
+holds under the new (desert-mesa) theme binding, not just the default one.

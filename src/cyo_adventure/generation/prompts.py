@@ -40,10 +40,16 @@ from cyo_adventure.validator.band_profile import (
 from cyo_adventure.validator.layer1 import Scale, ScalePlacement, resolve_node_budget
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from cyo_adventure.generation.concept import ConceptBrief
+    from cyo_adventure.storybook.theme_contract import SlotSpec, ThemeContract
+    from cyo_adventure.validator.slots import SlotViolation
 
 __all__ = [
     "StagePrompt",
+    "build_bind_prompt",
+    "build_bound_fill_prompt",
     "build_fidelity_repair_prompt",
     "build_fill_prompt",
     "build_prose_prompt",
@@ -379,6 +385,180 @@ def build_fill_prompt(skeleton_json: str, theme_brief: str) -> StagePrompt:
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", skeleton_json)
+        .replace("{theme_brief}", theme_brief)
+    )
+    return _split_stage_prompt(text)
+
+
+def _slot_constraint_text(slot: SlotSpec) -> str:
+    """Render one slot's deterministic constraints as a plain-English clause.
+
+    Args:
+        slot: The declared slot spec.
+
+    Returns:
+        A single semicolon-joined clause restating ``max_words``, ``forbid``,
+        ``distinct_from``, and ``pattern`` (whichever are set) in plain words,
+        for the bind prompt's slot table.
+    """
+    clauses = [f"at most {slot.constraints.max_words} word(s)"]
+    if slot.constraints.forbid:
+        bundles = ", ".join(sorted(slot.constraints.forbid))
+        clauses.append(f"must not evoke: {bundles}")
+    if slot.constraints.distinct_from:
+        siblings = ", ".join(slot.constraints.distinct_from)
+        clauses.append(f"must read as clearly distinct from: {siblings}")
+    if slot.constraints.pattern is not None:
+        clauses.append(f"must match the pattern: {slot.constraints.pattern}")
+    return "; ".join(clauses)
+
+
+def _slot_table(contract: ThemeContract) -> str:
+    """Render a contract's slots as a markdown list for the bind prompt.
+
+    Args:
+        contract: The theme contract to bind against.
+
+    Returns:
+        A markdown list, one entry per declared slot, stating its id, scope,
+        meaning, advisory guidance (when present), and deterministic
+        constraints restated in plain words.
+    """
+    lines: list[str] = []
+    for slot in contract.slots:
+        lines.append(f"- `{slot.id}` (scope: {slot.scope.value})")
+        lines.append(f"  - meaning: {slot.meaning}")
+        if slot.guidance:
+            lines.append(f"  - guidance: {slot.guidance}")
+        lines.append(f"  - constraints: {_slot_constraint_text(slot)}")
+    return "\n".join(lines)
+
+
+def _violations_block(violations: list[SlotViolation] | None) -> str:
+    """Render a retry's violation feedback as a markdown block, or ``""``.
+
+    Args:
+        violations: The exact violations from the previous bind attempt, or
+            ``None``/empty on a first attempt.
+
+    Returns:
+        ``""`` when there is nothing to report (first attempt); otherwise a
+        markdown block listing each violation's slot id, rule, and message
+        verbatim, so the binder can correct without re-deriving the failure.
+    """
+    if not violations:
+        return ""
+    lines = [
+        "\n## Previous Attempt Violations",
+        "",
+        "Your previous binding failed these deterministic checks. Correct "
+        "ONLY the flagged slot(s); keep every other value the same unless it "
+        "shares the same violation.",
+        "",
+    ]
+    for violation in violations:
+        slot_label = violation.slot_id or "(binding)"
+        lines.append(
+            f"- slot: `{slot_label}` | rule: {violation.rule} | {violation.message}"
+        )
+    return "\n".join(lines)
+
+
+def build_bind_prompt(
+    contract: ThemeContract,
+    theme_brief: Mapping[str, object],
+    *,
+    violations: list[SlotViolation] | None = None,
+) -> StagePrompt:
+    """Build the WS-2 bind-step prompt (theme brief -> validated slot values).
+
+    Loads ``bind.md`` from the bundled templates package, substitutes all
+    placeholders, and splits the result into a :class:`StagePrompt`:
+
+    - ``{slot_table}`` with the contract's slots (id, scope, meaning,
+      guidance, and constraints restated in plain words) (system).
+    - ``{theme_brief}`` with the JSON-serialised theme brief, fenced as
+      untrusted input (user).
+    - ``{violations_block}`` with the previous attempt's exact
+      :class:`~cyo_adventure.validator.slots.SlotViolation` list when
+      ``violations`` is supplied (a bounded retry), else ``""`` (user).
+
+    Args:
+        contract: The theme contract to bind against.
+        theme_brief: The free-text (UNTRUSTED) child/guardian story request.
+        violations: The exact violations from the previous attempt, to carry
+            into a bounded retry prompt. ``None`` (default) for the first
+            attempt.
+
+    Returns:
+        The bind-step :class:`StagePrompt` (no unfilled tokens).
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->`` marker.
+    """
+    # #ASSUME: data-integrity: theme_brief may contain literal `{` / `}`
+    # characters once serialised; .replace() handles this safely (never
+    # str.format).
+    # #VERIFY: test_prompts_bound.py asserts no unfilled `{SLOT}`-shaped or
+    # named placeholder token remains in the built prompt.
+    text = (
+        _load_template("bind.md")
+        .replace("{slot_table}", _slot_table(contract))
+        .replace("{theme_brief}", json.dumps(dict(theme_brief), indent=2))
+        .replace("{violations_block}", _violations_block(violations))
+    )
+    return _split_stage_prompt(text)
+
+
+def build_bound_fill_prompt(
+    skeleton_json: str,
+    slot_bindings_json: str,
+    theme_brief: str,
+) -> StagePrompt:
+    """Build the WS-2 bound-fill prompt for a parameterized skeleton fill.
+
+    Loads ``fill_bound.md`` (``fill.md`` plus the ending-title freeze line and
+    the bound-values data block; ``fill.md`` itself is never modified) from
+    the bundled templates package, substitutes all placeholders, and splits
+    the result into a :class:`StagePrompt`:
+
+    - ``{drafting_guide}`` with the full text of the bundled drafting guide
+      (system).
+    - ``{schema_rules}`` with the pretty-printed Storybook JSON Schema
+      (system).
+    - ``{skeleton_with_fill_directives}`` with the BOUND skeleton's JSON,
+      FILL directives intact, beats/titles/labels already rendered with
+      validated slot values (user).
+    - ``{slot_bindings}`` with the JSON-serialised slot-value map, labeled as
+      validated data (user).
+    - ``{theme_brief}`` with the JSON-serialised theme brief, fenced as
+      untrusted input, byte-identical to ``fill.md``'s fence (user).
+
+    Args:
+        skeleton_json: The full JSON string of the bound skeleton (the output
+            of :func:`~cyo_adventure.generation.binding.render_bound_skeleton`).
+        slot_bindings_json: JSON-serialised ``{slot_id: value}`` map that
+            produced the bound skeleton.
+        theme_brief: JSON-serialised concept brief (the child's request) used
+            to adapt the skeleton's world/characters/theme.
+
+    Returns:
+        The bound-fill :class:`StagePrompt` (no unfilled tokens).
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->`` marker.
+    """
+    # #ASSUME: data-integrity: skeleton_json, slot_bindings_json, and
+    # theme_brief are valid JSON and may contain literal `{` / `}`
+    # characters. .replace() handles this safely.
+    # #VERIFY: caller must pass a bound skeleton that already passed
+    # render_bound_skeleton's post-conditions.
+    text = (
+        _load_template("fill_bound.md")
+        .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
+        .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
+        .replace("{skeleton_with_fill_directives}", skeleton_json)
+        .replace("{slot_bindings}", slot_bindings_json)
         .replace("{theme_brief}", theme_brief)
     )
     return _split_stage_prompt(text)

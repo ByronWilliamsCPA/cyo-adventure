@@ -1,0 +1,431 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "baking-day-with-grandma-vole",
+  "age_band": "3-5",
+  "legacy_lexicon": [
+    "Pip",
+    "Pip Vole",
+    "Vole",
+    "Grandma Vole",
+    "burrow",
+    "root tunnel",
+    "root cellar",
+    "pantry",
+    "seed-honey buns",
+    "seed-honey bun",
+    "mouse twins",
+    "Mister Mole"
+  ],
+  "default_binding": {
+    "HERO": "Pip",
+    "MENTOR": "Grandma Vole",
+    "THRESHOLD": "the cozy burrow",
+    "ENTRANCE": "the root tunnel",
+    "WORKSHOP": "the kitchen",
+    "GOAL": "seed-honey buns",
+    "RECIPE_CARD": "the old recipe card",
+    "TOKEN": "the shiny acorn",
+    "OVEN": "the warm oven",
+    "BELL": "the little bell",
+    "HALLWAY": "the burrow hall",
+    "NEIGHBOR1": "the mouse twins",
+    "NEIGHBOR2": "old Mister Mole",
+    "DRINK": "mint tea",
+    "HONEY": "the golden honey pot",
+    "MIX_TOOL": "the wooden spoon",
+    "MENTOR_HAT": "her sun hat",
+    "STEP1_ITEM": "the big brown mixing bowl",
+    "STEP1_STACK": "a tall wobbly stack",
+    "STEP1_MISHAP_DETAIL": "landing on his head like a silly hat",
+    "STEP2_ITEM": "the flour crock",
+    "STEP2_MATERIAL": "soft pale flour",
+    "STEP2_TOOL": "the little wooden scoop",
+    "STEP2_MISHAP_DETAIL": "a flour mustache and flour eyebrows",
+    "STEP3_ITEM": "the seed jar",
+    "STEP3_MATERIAL": "stripy sunflower seeds",
+    "STEP3_CHASE_PATH": "past the pantry and around the root cellar",
+    "ROUTE_B_SHAPES": "wiggly stars and curly snails",
+    "A_PRIZE1": "A Teatime Picnic for Two",
+    "A_PRIZE2": "Warm Buns for the Whole Burrow",
+    "A_PRIZE3": "The Perfect Golden Batch",
+    "B_PRIZE1": "Funny Shapes, Yummy Buns",
+    "B_PRIZE2": "A Brand-New Family Recipe",
+    "B_PRIZE3": "Silly Buns Make Everyone Smile"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist who bakes alongside the mentor.",
+      "guidance": "A single kid-relatable helper (name or role); eager, capable, learns by trying.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["MENTOR"]
+      }
+    },
+    {
+      "id": "MENTOR",
+      "scope": "global",
+      "meaning": "The trusted elder who guides the hero through the whole activity, this skeleton's companion-equivalent role.",
+      "guidance": "Warm, patient, never a source of peril; corrects mistakes gently and celebrates every attempt.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole cozy home/community world the day takes place in.",
+      "guidance": "A small, warm, bounded home world; wonder over dread; nothing frightening lives here.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The short path the hero takes from waking up to the workshop.",
+      "guidance": "A safe, familiar passage the hero knows well.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WORKSHOP",
+      "scope": "global",
+      "meaning": "The specific room where the whole activity happens.",
+      "guidance": "Warm, homely, fully safe; the heart of the story's setting.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The finished creation the whole recipe builds toward.",
+      "guidance": "A wholesome, shareable result of the day's activity, named as a plural/collective noun.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RECIPE_CARD",
+      "scope": "global",
+      "meaning": "The guiding instructions the mentor consults at each step.",
+      "guidance": "An old, well-loved keepsake prop; readable and simple.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TOKEN",
+      "scope": "global",
+      "meaning": "The small special item that ends up decorating the best result.",
+      "guidance": "A tiny natural or found keepsake, harmless to carry and handle.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OVEN",
+      "scope": "global",
+      "meaning": "The heat source used to finish the creation.",
+      "guidance": "A safely supervised, homely heat source; never touched without the mentor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BELL",
+      "scope": "global",
+      "meaning": "The signal that tells the hero the wait is over.",
+      "guidance": "A small, cheerful sound cue.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HALLWAY",
+      "scope": "global",
+      "meaning": "The corridor connecting the home to the neighbors' doors.",
+      "guidance": "A safe, familiar shared passage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "NEIGHBOR1",
+      "scope": "global",
+      "meaning": "The first neighbor(s) who receive or admire the finished creation.",
+      "guidance": "A friendly, harmless neighboring character or pair.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["NEIGHBOR2"]
+      }
+    },
+    {
+      "id": "NEIGHBOR2",
+      "scope": "global",
+      "meaning": "The second neighbor who receives or admires the finished creation.",
+      "guidance": "A friendly, harmless neighboring character, distinct from NEIGHBOR1.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["NEIGHBOR1"]
+      }
+    },
+    {
+      "id": "DRINK",
+      "scope": "global",
+      "meaning": "The comforting drink shared during the dough's resting break and at the teatime ending.",
+      "guidance": "A warm, wholesome, kid-appropriate drink.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HONEY",
+      "scope": "global",
+      "meaning": "The sweet ingredient container used partway through the recipe.",
+      "guidance": "A wholesome sweet ingredient in its own container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MIX_TOOL",
+      "scope": "global",
+      "meaning": "The tool used to stir the ingredients together.",
+      "guidance": "A simple, safe hand tool a child can help hold.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MENTOR_HAT",
+      "scope": "global",
+      "meaning": "The mentor's signature accessory, echoed as one of the playful shapes.",
+      "guidance": "A distinctive, wearable accessory belonging to the mentor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP1_ITEM",
+      "scope": "track",
+      "meaning": "The first tool/container the hero must fetch, at the bottom of a precarious stack.",
+      "guidance": "A sturdy, harmless container or tool.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP1_STACK",
+      "scope": "track",
+      "meaning": "The precarious pile the first item is buried at the bottom of.",
+      "guidance": "A wobbly but harmless stack; falling is silly, never dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP1_MISHAP_DETAIL",
+      "scope": "track",
+      "meaning": "The silly, harmless detail of the first mishap.",
+      "guidance": "Comedic and gentle; nothing is broken and nobody is hurt.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP2_ITEM",
+      "scope": "track",
+      "meaning": "The container holding the second, fine loose ingredient.",
+      "guidance": "An open, easy-to-reach container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP2_MATERIAL",
+      "scope": "track",
+      "meaning": "The fine loose ingredient measured into the mix at this step.",
+      "guidance": "A soft, wholesome, edible dry ingredient.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP2_TOOL",
+      "scope": "track",
+      "meaning": "The small tool used to measure the second ingredient.",
+      "guidance": "A simple, safe measuring tool sized for a child's hands.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP2_MISHAP_DETAIL",
+      "scope": "track",
+      "meaning": "The silly, harmless detail of the second mishap.",
+      "guidance": "Comedic and gentle; a messy but harmless little accident.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP3_ITEM",
+      "scope": "track",
+      "meaning": "The container holding the third ingredient and the special token.",
+      "guidance": "A charming container that also safekeeps the token.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP3_MATERIAL",
+      "scope": "track",
+      "meaning": "The small loose ingredient poured in at this step.",
+      "guidance": "A wholesome, edible, pourable ingredient.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STEP3_CHASE_PATH",
+      "scope": "track",
+      "meaning": "The short indoor route the hero runs to retrieve the token after the third mishap.",
+      "guidance": "A safe, familiar indoor route past known landmarks of the home.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_SHAPES",
+      "scope": "route",
+      "meaning": "The playful, non-round shapes offered as the alternative to neat shaping.",
+      "guidance": "A short, whimsical list of fun shapes a child could make.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: a quiet shared celebration with the mentor alone (completion).",
+      "guidance": "Warm, cozy, positive; names ending e_teatime.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A_PRIZE2", "A_PRIZE3", "B_PRIZE1", "B_PRIZE2", "B_PRIZE3"]
+      }
+    },
+    {
+      "id": "A_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: sharing the finished creation with the whole community (success).",
+      "guidance": "Generous, celebratory, positive; names ending e_neighbors.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A_PRIZE1", "A_PRIZE3", "B_PRIZE1", "B_PRIZE2", "B_PRIZE3"]
+      }
+    },
+    {
+      "id": "A_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: a proud, perfect result achieved through patience (success).",
+      "guidance": "Proud, tidy, positive; names ending e_perfect.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A_PRIZE1", "A_PRIZE2", "B_PRIZE1", "B_PRIZE2", "B_PRIZE3"]
+      }
+    },
+    {
+      "id": "B_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: the playful, funny-shaped result turns out delicious (completion).",
+      "guidance": "Funny, delighted, positive; names ending e_funny.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A_PRIZE1", "A_PRIZE2", "A_PRIZE3", "B_PRIZE2", "B_PRIZE3"]
+      }
+    },
+    {
+      "id": "B_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: the playful shapes become a new keepsake tradition (discovery).",
+      "guidance": "Warm, inventive, positive; names ending e_recipe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A_PRIZE1", "A_PRIZE2", "A_PRIZE3", "B_PRIZE1", "B_PRIZE3"]
+      }
+    },
+    {
+      "id": "B_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: the playful shapes delight the whole community (success).",
+      "guidance": "Joyful, communal, positive; names ending e_silly.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["A_PRIZE1", "A_PRIZE2", "A_PRIZE3", "B_PRIZE1", "B_PRIZE2"]
+      }
+    }
+  ]
+}

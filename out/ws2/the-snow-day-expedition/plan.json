@@ -1,0 +1,100 @@
+{
+  "beats": {
+    "n_start": "{OPENING_MOMENT} closes school for the day; {HERO} presses her nose to the cold window while {COMPANION} drums on the glass beside her; overnight the yard vanishes under deep white and {THRESHOLD_DETAIL} wears a tall snow hat; {HERO} announces that this is not a backyard anymore, it is {THRESHOLD}, and they are {TEAM_NAME} who will map it; they race each other to {PREP_SITE}, thrilled",
+    "n_gear": "in {PREP_SITE} {TEAM_NAME} gear up; puffy coats become expedition parkas, mittens are rated for the coldest cold, and {SUPPLY_VEHICLE} becomes the supply carrier, loaded with {TREAT}, {DIG_TOOL}, {LOG_ITEM}, and {SNACK_ITEM}; {GUARDIAN} runs {HOME_BASE}, which looks exactly like the kitchen, zips {COMPANION} to the chin, and waves the team out the door",
+    "n_basecamp": "{ENTRANCE} is the staging point and the whole {THRESHOLD} spreads out below it; on one side a snowbank looms like {ROUTE_A_LANDMARK}, with {A2_SIGN} stitched along the fence beneath it; on the other side {ROUTE_B_LANDMARK} lie {ROUTE_B_CHAR}, with {B2_SIGN} poking up out of them like a lonely marker; {TEAM_NAME} must pick a direction to trek",
+    "n_east": "the eastward trek is squeaky boot work through knee-deep powder; {ROUTE_A_LANDMARK} rises huge ahead, really just a snowbank, but with eyes half shut it is a true peak with {ROUTE_A_CHAR}; right across the trail runs {A2_TRAIL} heading for the fence, and {COMPANION} gasps that a mysterious creature has passed this way; two expeditions call at once and {TEAM_NAME} can only pick one",
+    "n_west": "out on {ROUTE_B_LANDMARK} the snow is {ROUTE_B_CHAR}, exactly right for building a fort; farther on, {B2_SIGN} rises from the drifts, and frozen fast in its icy top stand {B2_TARGET} {COMPANION} left there before the big freeze, upright and waiting bravely for rescue; {TEAM_NAME} must choose today's mission",
+    "m_1": "at the foot of {ROUTE_A_LANDMARK} {TEAM_NAME} rope up with {A1_GEAR}; up close the mountain is a crusty snowbank taller than the car, but to the roped-up team it is all {A1_CLIMB}; {HERO} spots the first good foothold and the ascent begins",
+    "m_2": "at the halfway ledge, really a buried lawn chair making a fine flat shelf, {A1_GATE} whirls in; the wind kicks loose snow-dust off the crest and a distant machine adds a roaring white plume; sparkles sting their cheeks and {COMPANION}'s nose has gone pink; real {TEAM_NAME} must decide, brave the storm on to the top, or head back to {ENTRANCE} for {TREAT} and try again later",
+    "m_r1": "they climb down ledge by ledge, careful as real mountaineers, and {A1_GATE} dies away behind them just as {HOME_BASE}'s window glows gold ahead; {HERO} says this is not quitting, {TEAM_NAME} call it regrouping, and {COMPANION} agrees because his toes agree",
+    "e_m_retreat": "mittens steam on the radiator while {TEAM_NAME} sip {TREAT} with extra marshmallows at {HOME_BASE}; they draw tomorrow's route to {A1_PEAK} on a napkin map with arrows and a big X; {ROUTE_A_LANDMARK} is not going anywhere, and next time, they agree with a clink of mugs, {A1_PEAK} is theirs",
+    "m_3": "above the storm the wind quiets and the snow crust firms underfoot; they kick toe-steps the way real mountaineers do, {HERO} first and {COMPANION} counting every step out loud; {A1_PEAK} of {ROUTE_A_LANDMARK} is suddenly close against the bright blue sky",
+    "m_4": "{A1_PEAK}! from the top {TEAM_NAME} can see their whole {THRESHOLD} at once, the fence line, {ROUTE_B_LANDMARK}, {B2_SIGN}, even their own boot trail winding back to {ENTRANCE}; two glorious ways to finish the climb: plant {A1_MARKER}, or line up {SUPPLY_VEHICLE} for the first-ever ride down the smooth wind-packed far slope",
+    "m_f1": "they pack snow tight to plant {A1_MARKER}, where it flaps like a true expedition flag; {HERO} and {COMPANION} stand at attention beside it, puffed up with pride, and {HERO} declares that a brand-new mountain needs a name",
+    "e_m_flag": "they shout the mountain's new name across the yard, the first {TEAM_NAME} ever to stand on {A1_PEAK} of {ROUTE_A_LANDMARK}; {A1_MARKER} flaps proudly above them; {GUARDIAN} appears at the {HOME_BASE} window and waves both arms, and {TEAM_NAME} salute back, then stamp their initials into the summit crust so the whole {THRESHOLD} knows who climbed it first",
+    "m_s1": "they line {SUPPLY_VEHICLE} up at the top of the smooth far slope, {HERO} steering in front, {COMPANION} wrapped around her middle like a backpack; below them the run flattens out into a big soft drift, a perfect landing zone; {HERO} counts down from three in her best expedition voice",
+    "e_m_sled": "whoosh, {SUPPLY_VEHICLE} flies down the mountain trailing a rooster tail of snow, both {TEAM_NAME} whooping the whole way, and lands them in the deep soft drift at the bottom in a laughing tangle; the first-ever descent of {ROUTE_A_LANDMARK} is complete; they flop onto their backs and stamp two snow angels into the drift as official victory marks",
+    "t_1": "{HERO} kneels beside {A2_TRAIL} like a wildlife scientist and studies them closely; small, round, and neat, dotting away along the fence like a row of buttons; too big for a squirrel, too small for a big animal, so {COMPANION} decides it is a mystery creature; the tracking team moves out with eyes on the trail",
+    "t_2": "the trail runs straight to {A2_HIDEOUT} in the corner and dives underneath it into the shadows; the tracking team huddles up in the snow to plan; there are two ways to keep the trail: wriggle straight through the low snow tunnel under {A2_HIDEOUT}'s branches where the prints go, or hurry around behind the shed to cut the creature off on the far side",
+    "t_3": "under {A2_HIDEOUT} is a secret green cave with no snow at all, hushed and dim like a ranger's hideout; {A2_TRAIL} stitch straight through it and out the far side toward the woodpile; up ahead something rustles softly, and a flick of thick gray fur shows between two logs; the trackers hold their breath and creep closer",
+    "e_t_cat": "curled in a snug gap between the logs is {A2_CREATURE1}, blinking slow warm blinks at her visitors, and {TEAM_NAME} know a rare discovery in a secret den when they see one; they crouch like wildlife scientists, whisper their field notes into {LOG_ITEM}, and promise {A2_CREATURE1} her den will stay secret; she answers with a purr they can feel through the logs",
+    "t_4": "behind the shed the snow is a crisscross of prints, big ones and tiny ones circling everywhere, and every trail leads back to one dark little gap under the shed step; the trackers crouch low behind {SUPPLY_VEHICLE} to watch; {COMPANION} whispers that he can see whiskers, actual whiskers, twitching just inside the shadow",
+    "e_t_rabbits": "{A2_CREATURE2} hops halfway out of the gap, and behind her two round kits peek over her back, a whole secret expedition team living under the shed step; {TEAM_NAME} set one {SNACK_ITEM} from {SUPPLY_VEHICLE} at a polite distance and back away slow and quiet; {A2_CREATURE2} takes it, and {HERO} marks the hidden base on the expedition map with a big star",
+    "i_1": "{ROUTE_B_LANDMARK} snow squeaks and packs like magic; {HERO} stamps out a big circle for the floor of {B1_LANDMARK} while {COMPANION} hauls {SUPPLY_VEHICLE} alongside as the official hauling cart; {DIG_TOOL} becomes a snow saw, and the very first brick comes out crisp and square as a slice of cake",
+    "i_2": "row by row the spiral wall of {B1_LANDMARK} rises, each brick lifted off {SUPPLY_VEHICLE} and patted snug into place with mitten thumps; the wall climbs past {COMPANION}'s shoulders and leans inward the way real forts do; they leave a door gap just their size, and now only the tricky top of the dome is left",
+    "i_3": "the dome of {B1_LANDMARK} closes with one careful final brick and the builders cheer; inside, the light glows soft and blue like the inside of an ice palace, even though from {ENTRANCE} it is still a snow fort in the backyard; two dreams remain for finishing {B1_LANDMARK}: carve a round ice window and move the supplies in to make it a true base, or dig a grand entrance tunnel long enough to crawl through like real {TEAM_NAME}",
+    "i_f1": "{HERO} carves a round window with {DIG_TOOL} and cold sunshine pours through it; {COMPANION} ferries the supplies in from {SUPPLY_VEHICLE}, {TREAT}, {SNACK_ITEM}, and {LOG_ITEM} lined up neatly on a carved snow shelf; {B1_LANDMARK} begins to feel like a real base at the bottom of the world",
+    "e_i_base": "{TEAM_NAME} sit shoulder to shoulder inside {B1_LANDMARK}, sipping {TREAT} while their breath makes little clouds, watching their whole {THRESHOLD} through the round ice window; it is officially the finest base the backyard has ever had; they shout the good news toward {HOME_BASE}, and {GUARDIAN}'s laugh floats back to them across the snow",
+    "i_f2": "they dig from both ends at once, {HERO} from outside the wall and {COMPANION} from inside the glowing dome, until two mittens meet in the middle of the snow with a muffled high five; they pat the tunnel walls smooth and round, long enough to crawl through like true {TEAM_NAME}",
+    "e_i_tunnel": "{HERO} crawls the whole tunnel first and pops up inside the glowing dome with a shout, then {COMPANION}, then both of them again just because; {B1_LANDMARK} now has an official secret entrance, and from {ENTRANCE} {GUARDIAN} applauds the two snowy heads popping in and out; {TEAM_NAME} agree it is the greatest fort ever built in {THRESHOLD}",
+    "p_1": "{B2_SIGN} rises from the drifts like a lonely iceberg, and frozen fast in the ice on top stand {B2_TARGET}, upright and brave, exactly where {COMPANION} left them before the big freeze; {HERO} declares the rescue mission open and {SUPPLY_VEHICLE} becomes the official rescue ambulance; the team crunches closer to study the ice",
+    "p_2": "up close the ice sheet holds each of {B2_TARGET} tight by the feet, shiny and stubborn; the rescue team weighs two plans: tap and wiggle the ice loose bit by bit with mitten thumps and the ice scraper, slow but steady work, or pour warm {TREAT} over the ice to melt them free fast, even though {TREAT} is the expedition's emergency fuel",
+    "p_r1": "the last of the warm {TREAT} glugs out and causes {B2_GATE}, a shiny brown puddle that freezes again slicker than before; {B2_TARGET} have not budged a single feather and the emergency fuel is gone; {HERO} says real rescue teams know when to regroup",
+    "e_p_retreat": "back at {HOME_BASE} {TEAM_NAME} thaw their mittens while {GUARDIAN} refills the {TREAT} and does not even laugh at {B2_GATE}; they plan Rescue Mission Two on the back of a napkin, with a proper ice tool this time; out at {B2_SIGN} {B2_TARGET} hold their post bravely until after lunch",
+    "p_3": "tap, tap, tap, little cracks spider out around each of {B2_TARGET}'s feet while {COMPANION} holds his breath beside {SUPPLY_VEHICLE}; one by one they pop free into {HERO}'s mitten, first one, then two, then all three; the team wraps them snug in {HERO}'s spare scarf like tiny rescued {TEAM_NAME}",
+    "p_4": "{B2_TARGET} peek out of the scarf in {SUPPLY_VEHICLE}, safe but very cold, or so the rescue team solemnly agrees; now the mission needs a proper finish: rush them to {ENTRANCE} and set up a rescue hospital with snow-pillow beds and feather-by-feather checkups, or lead one triumphant rescue parade around the whole {THRESHOLD} first so every snowdrift can cheer",
+    "p_f1": "{ENTRANCE} becomes hospital row with three snow-pillow beds patted smooth; Doctor {HERO} checks each of {B2_TARGET} from beak to feet while Nurse {COMPANION} records everything in {LOG_ITEM} with very serious nods; all three patients are pronounced brave and perfectly healthy",
+    "e_p_hospital": "{B2_TARGET} lie tucked in their snow beds at {ENTRANCE}, each with a certificate of bravery scratched into the frost beside it; the rescue mission is complete and the doctors shake mittens over their sleeping patients; when {GUARDIAN} calls the team in for lunch, {B2_TARGET} come too, riding warm and proud in {HERO}'s coat pocket",
+    "p_f2": "{SUPPLY_VEHICLE} becomes a parade float with {B2_TARGET} riding high on the folded scarf; {HERO} pulls the rope out front while {COMPANION} marches behind, announcing the heroes to the whole {THRESHOLD} in his loudest voice; the parade sets off across {ROUTE_B_LANDMARK}",
+    "e_p_parade": "the parade rounds the whole {THRESHOLD}, past {ROUTE_A_LANDMARK}, along the fence line, and home to {ENTRANCE}, {TEAM_NAME} cheering for their heroes loud enough for every snowdrift to hear; {GUARDIAN} waves from the window like a whole crowd at once; {B2_TARGET} ride home tall and proud in the greatest rescue parade {THRESHOLD} has ever seen"
+  },
+  "titles": {
+    "e_m_retreat": "Turned Back at {A1_GATE}",
+    "e_m_flag": "{A1_PRIZE1}",
+    "e_m_sled": "{A1_PRIZE2}",
+    "e_t_cat": "{A2_PRIZE1}",
+    "e_t_rabbits": "{A2_PRIZE2}",
+    "e_i_base": "{B1_PRIZE1}",
+    "e_i_tunnel": "{B1_PRIZE2}",
+    "e_p_retreat": "Turned Back at {B2_GATE}",
+    "e_p_hospital": "{B2_PRIZE1}",
+    "e_p_parade": "{B2_PRIZE2}"
+  },
+  "labels": {
+    "n_gear": {
+      "c_gear_basecamp": "March out to {ENTRANCE}."
+    },
+    "n_basecamp": {
+      "c_base_east": "Trek toward {ROUTE_A_LANDMARK}.",
+      "c_base_west": "Trek across {ROUTE_B_LANDMARK}."
+    },
+    "n_east": {
+      "c_east_climb": "Climb {ROUTE_A_LANDMARK}.",
+      "c_east_tracks": "Follow {A2_SIGN}."
+    },
+    "n_west": {
+      "c_west_igloo": "Build {B1_LANDMARK}.",
+      "c_west_penguins": "Rescue {B2_TARGET}."
+    },
+    "m_2": {
+      "c_m2_push": "Push on through {A1_GATE}.",
+      "c_m2_cocoa": "Head back down for {TREAT}."
+    },
+    "m_4": {
+      "c_m4_flag": "Plant {A1_MARKER}.",
+      "c_m4_sled": "Ride {SUPPLY_VEHICLE} down the far slope."
+    },
+    "m_f1": {
+      "c_mf1_name": "Name {ROUTE_A_LANDMARK} out loud."
+    },
+    "t_1": {
+      "c_t1_track": "Track {A2_TRAIL} along the fence."
+    },
+    "t_2": {
+      "c_t2_tunnel": "Crawl through the tunnel under {A2_HIDEOUT}."
+    },
+    "p_2": {
+      "c_p2_cocoa": "Pour warm {TREAT} over the ice."
+    },
+    "p_r1": {
+      "c_pr1_retreat": "Call a retreat to {HOME_BASE}."
+    },
+    "p_3": {
+      "c_p3_load": "Load {B2_TARGET} for transport."
+    },
+    "p_4": {
+      "c_p4_hospital": "Set up the hospital for {B2_TARGET}."
+    }
+  }
+}

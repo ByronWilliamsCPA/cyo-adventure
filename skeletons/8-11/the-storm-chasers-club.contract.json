@@ -1,0 +1,1875 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-storm-chasers-club",
+  "age_band": "8-11",
+  "legacy_lexicon": [
+    "Maple County Storm Chasers Club",
+    "Maple County",
+    "Quarry Road",
+    "grange hall",
+    "Ms. Okafor",
+    "Okafor",
+    "Marisol",
+    "Dev",
+    "Ray",
+    "Priya",
+    "Jordan",
+    "Mrs. Andersen",
+    "Andersen",
+    "Butterscotch",
+    "Cedar Flats",
+    "Pine Hollow",
+    "Route 9",
+    "Dutchman's Corner",
+    "Bell Creek",
+    "Miller Ridge",
+    "Klein farm",
+    "Hutch place",
+    "Creek Road",
+    "Windmill Hill",
+    "county fairgrounds",
+    "RADIO team",
+    "MAPS team",
+    "FIELD KIT team",
+    "squall line"
+  ],
+  "default_binding": {
+    "ORG_NAME": "the Maple County Storm Chasers Club",
+    "REGION_NAME": "Maple County",
+    "STREET_NAME": "Quarry Road",
+    "THRESHOLD": "the grange hall",
+    "ENTRANCE": "the door",
+    "OPENING_MOMENT": "the day the big storm crosses the county",
+    "DEADLINE": "the squall line",
+    "DEADLINE_SIGN": "a sky the color of dishwater",
+    "TONE_MOTIF": "weather is to be respected, never feared",
+    "LEADER": "Ms. Okafor",
+    "LEADER_CRED": "the club leader and a retired weather-service forecaster",
+    "PLACE_CEDAR": "Cedar Flats",
+    "PLACE_PINE": "Pine Hollow",
+    "PLACE_ROUTE9": "Route 9",
+    "PLACE_DUTCHMAN": "Dutchman's Corner",
+    "PLACE_BELLCREEK": "Bell Creek",
+    "PLACE_FAIRGROUNDS": "the county fairgrounds",
+    "PLACE_QUARRY": "the quarry",
+    "PLACE_KLEIN": "the Klein farm",
+    "PLACE_MILLER": "Miller Ridge",
+    "HIKER_NAME": "Jordan",
+    "LANDMARK_BOULDER": "the split boulder",
+    "LANDMARK_TOWER": "the old fire tower",
+    "RANGER_STATION": "the ranger station",
+    "ROUTE_A_TEAM": "the RADIO team",
+    "ROUTE_A_POST": "the attic comms post",
+    "ROUTE_A_WINDOW": "the round window",
+    "ROUTE_A_MENTOR": "Marisol",
+    "ROUTE_A_MENTOR_CRED": "the club's licensed operator",
+    "ROUTE_B_TEAM": "the MAPS team",
+    "ROUTE_B_POST": "the ops table",
+    "ROUTE_B_SIDEKICK": "Dev",
+    "ROUTE_B_SIDEKICK_CRED": "a high schooler with radar on his laptop",
+    "ROUTE_C_TEAM": "the FIELD KIT team",
+    "ROUTE_C_POST": "the club van",
+    "ROUTE_C_MENTOR": "Ray",
+    "ROUTE_C_MENTOR_CRED": "big laugh, laminated checklist",
+    "ROUTE_C_SIDEKICK": "Priya",
+    "ROUTE_C_SIDEKICK_CRED": "quick and precise",
+    "C1_ROAD": "Creek Road",
+    "C1_HUTCH": "the Hutch place",
+    "C1_FARM": "the Andersen farm",
+    "C1_FARMER": "Mrs. Andersen",
+    "C1_GOAT": "Butterscotch",
+    "C2_LANDMARK": "Windmill Hill",
+    "C2_WINDMILL": "the windmill",
+    "A11_PRIZE1": "Loud and Clear",
+    "A11_PRIZE2": "The Crackle Comes Back",
+    "A12_PRIZE1": "The Long Way Around",
+    "A12_PRIZE2": "Too Quiet Out There",
+    "A21_PRIZE1": "Relay Received",
+    "A21_PRIZE2": "The Voice in the Storm",
+    "A22_PRIZE1": "Bearing True",
+    "A22_PRIZE2": "The Complete Record",
+    "B11_PRIZE1": "Three Forty-Three",
+    "B11_PRIZE2": "Say It, Then Show It",
+    "B12_PRIZE1": "The Map and the Math Agree",
+    "B12_PRIZE2": "Fast but Fuzzy",
+    "B211_PRIZE1": "Called Before the Wind",
+    "B211_PRIZE2": "Rain Delay, Club Style",
+    "B212_PRIZE": "The Hand-Carried Warning",
+    "B22_PRIZE1": "The Question Mark Rule",
+    "B22_PRIZE2": "The Board Was Sure",
+    "C11_PRIZE1": "Every Goat Counted",
+    "C11_PRIZE2": "People First",
+    "C12_PRIZE1": "Wet Hay, Dry People",
+    "C12_PRIZE2": "Spent Margin",
+    "C21_PRIZE1": "Fifty-Eight and Counting",
+    "C21_PRIZE2": "The Peak That Got Away",
+    "C22_PRIZE1": "Nineteen Millimeters",
+    "C22_PRIZE2": "The Best Photo, the Lost Data"
+  },
+  "slots": [
+    {
+      "id": "ORG_NAME",
+      "scope": "global",
+      "meaning": "The full proper name of the storm-response club running this story.",
+      "guidance": "A junior weather-response organization's full name; introduced once at the opening, a distinct proper noun.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "REGION_NAME",
+      "scope": "global",
+      "meaning": "The county/region the storm crosses.",
+      "guidance": "A place name for the wider area at risk; used once as scene-setting.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STREET_NAME",
+      "scope": "global",
+      "meaning": "The street/road the club's headquarters sits on.",
+      "guidance": "A short road name; flavor detail for the opening line.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The club's home base / meeting hall, returned to throughout the story.",
+      "guidance": "A single, welcoming home-base building; safe, never itself in danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The specific entry point the hero hurries toward at the very start.",
+      "guidance": "A door or gate into the home base; always safe to reach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The recurring occasion that makes this whole story possible.",
+      "guidance": "A repeatable, non-lethal event/window (a scheduled duty day); should read as something that could happen again next season.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The survivable time-pressure event that structures the whole day.",
+      "guidance": "A hazard to prepare for and shelter from, never a lethal threat; everyone in the story is trained to handle it safely.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The visible sensory cue that the deadline event is approaching.",
+      "guidance": "A gradual, fair-warning visual cue (a changing sky); never itself dangerous, just a signal to get ready.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TONE_MOTIF",
+      "scope": "global",
+      "meaning": "The club's core safety-culture motto, stated once at the briefing.",
+      "guidance": "A short, reassuring one-line philosophy about respecting rather than fearing the hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LEADER",
+      "scope": "global",
+      "meaning": "The adult club leader who runs the briefing and mentors the MAPS team.",
+      "guidance": "A capable, calm adult authority figure; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_MENTOR",
+          "ROUTE_B_SIDEKICK",
+          "ROUTE_C_MENTOR",
+          "ROUTE_C_SIDEKICK",
+          "HIKER_NAME",
+          "C1_FARMER",
+          "C1_GOAT"
+        ]
+      }
+    },
+    {
+      "id": "LEADER_CRED",
+      "scope": "global",
+      "meaning": "The leader's credential/background, stated once at the briefing.",
+      "guidance": "A short professional background phrase establishing her expertise.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PLACE_CEDAR",
+      "scope": "global",
+      "meaning": "A named location within the county, referenced by one or more teams.",
+      "guidance": "A short, concrete place name; safe to visit or merely mentioned in reports.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "PLACE_PINE",
+          "PLACE_ROUTE9",
+          "PLACE_DUTCHMAN",
+          "PLACE_BELLCREEK",
+          "PLACE_FAIRGROUNDS",
+          "PLACE_QUARRY",
+          "PLACE_KLEIN",
+          "PLACE_MILLER"
+        ]
+      }
+    },
+    {
+      "id": "PLACE_PINE",
+      "scope": "global",
+      "meaning": "A named location within the county, referenced by one or more teams.",
+      "guidance": "A short, concrete place name; safe to visit or merely mentioned in reports.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "PLACE_CEDAR",
+          "PLACE_ROUTE9",
+          "PLACE_DUTCHMAN",
+          "PLACE_BELLCREEK",
+          "PLACE_FAIRGROUNDS",
+          "PLACE_QUARRY",
+          "PLACE_KLEIN",
+          "PLACE_MILLER"
+        ]
+      }
+    },
+    {
+      "id": "PLACE_ROUTE9",
+      "scope": "global",
+      "meaning": "A named location within the county, referenced by one or more teams.",
+      "guidance": "A short, concrete place name; safe to visit or merely mentioned in reports.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "PLACE_CEDAR",
+          "PLACE_PINE",
+          "PLACE_DUTCHMAN",
+          "PLACE_BELLCREEK",
+          "PLACE_FAIRGROUNDS",
+          "PLACE_QUARRY",
+          "PLACE_KLEIN",
+          "PLACE_MILLER"
+        ]
+      }
+    },
+    {
+      "id": "PLACE_DUTCHMAN",
+      "scope": "global",
+      "meaning": "A named location within the county, referenced by one or more teams.",
+      "guidance": "A short, concrete place name; safe to visit or merely mentioned in reports.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "PLACE_CEDAR",
+          "PLACE_PINE",
+          "PLACE_ROUTE9",
+          "PLACE_BELLCREEK",
+          "PLACE_FAIRGROUNDS",
+          "PLACE_QUARRY",
+          "PLACE_KLEIN",
+          "PLACE_MILLER"
+        ]
+      }
+    },
+    {
+      "id": "PLACE_BELLCREEK",
+      "scope": "global",
+      "meaning": "A named location within the county, referenced by one or more teams.",
+      "guidance": "A short, concrete place name; safe to visit or merely mentioned in reports.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "PLACE_CEDAR",
+          "PLACE_PINE",
+          "PLACE_ROUTE9",
+          "PLACE_DUTCHMAN",
+          "PLACE_FAIRGROUNDS",
+          "PLACE_QUARRY",
+          "PLACE_KLEIN",
+          "PLACE_MILLER"
+        ]
+      }
+    },
+    {
+      "id": "PLACE_FAIRGROUNDS",
+      "scope": "global",
+      "meaning": "A named location within the county, referenced by one or more teams.",
+      "guidance": "A short, concrete place name; safe to visit or merely mentioned in reports.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "PLACE_CEDAR",
+          "PLACE_PINE",
+          "PLACE_ROUTE9",
+          "PLACE_DUTCHMAN",
+          "PLACE_BELLCREEK",
+          "PLACE_QUARRY",
+          "PLACE_KLEIN",
+          "PLACE_MILLER"
+        ]
+      }
+    },
+    {
+      "id": "PLACE_QUARRY",
+      "scope": "global",
+      "meaning": "A named location within the county, referenced by one or more teams.",
+      "guidance": "A short, concrete place name; safe to visit or merely mentioned in reports.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "PLACE_CEDAR",
+          "PLACE_PINE",
+          "PLACE_ROUTE9",
+          "PLACE_DUTCHMAN",
+          "PLACE_BELLCREEK",
+          "PLACE_FAIRGROUNDS",
+          "PLACE_KLEIN",
+          "PLACE_MILLER"
+        ]
+      }
+    },
+    {
+      "id": "PLACE_KLEIN",
+      "scope": "global",
+      "meaning": "A named location within the county, referenced by one or more teams.",
+      "guidance": "A short, concrete place name; safe to visit or merely mentioned in reports.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "PLACE_CEDAR",
+          "PLACE_PINE",
+          "PLACE_ROUTE9",
+          "PLACE_DUTCHMAN",
+          "PLACE_BELLCREEK",
+          "PLACE_FAIRGROUNDS",
+          "PLACE_QUARRY",
+          "PLACE_MILLER"
+        ]
+      }
+    },
+    {
+      "id": "PLACE_MILLER",
+      "scope": "global",
+      "meaning": "A named location within the county, referenced by one or more teams.",
+      "guidance": "A short, concrete place name; safe to visit or merely mentioned in reports.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "PLACE_CEDAR",
+          "PLACE_PINE",
+          "PLACE_ROUTE9",
+          "PLACE_DUTCHMAN",
+          "PLACE_BELLCREEK",
+          "PLACE_FAIRGROUNDS",
+          "PLACE_QUARRY",
+          "PLACE_KLEIN"
+        ]
+      }
+    },
+    {
+      "id": "HIKER_NAME",
+      "scope": "global",
+      "meaning": "The stranded hiker the RADIO team helps rescue.",
+      "guidance": "A named teenage hiker in a survivable, resolvable predicament (a washed-out trail); never actually endangered by anything worse than weather, and always found safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "LEADER",
+          "ROUTE_A_MENTOR",
+          "ROUTE_B_SIDEKICK",
+          "ROUTE_C_MENTOR",
+          "ROUTE_C_SIDEKICK",
+          "C1_FARMER",
+          "C1_GOAT"
+        ]
+      }
+    },
+    {
+      "id": "LANDMARK_BOULDER",
+      "scope": "global",
+      "meaning": "A landmark on the hiker's route, used to plot a rescue bearing.",
+      "guidance": "A distinctive rock formation; safe to reference on a map.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LANDMARK_TOWER",
+      "scope": "global",
+      "meaning": "The shelter structure the hiker reaches at the end of the rescue.",
+      "guidance": "A lookout/shelter structure reachable on foot; a safe haven, never a place of confinement.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RANGER_STATION",
+      "scope": "global",
+      "meaning": "The outside agency contacted to help complete the rescue.",
+      "guidance": "A nearby official post that can dispatch help; a benign, cooperative resource, never a place of confinement.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_TEAM",
+      "scope": "route",
+      "meaning": "The name of the first team the hero can join.",
+      "guidance": "A short team name naming its function (communications-flavored).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_POST",
+      "scope": "route",
+      "meaning": "Route A's post/workspace for the whole shift.",
+      "guidance": "An indoor communications post; safe, enclosed, distinct from the other two teams' posts.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_B_POST",
+          "ROUTE_C_POST"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_WINDOW",
+      "scope": "route",
+      "meaning": "The post's window, used as a recurring sensory frame on the weather.",
+      "guidance": "A single window feature in the post; safe, just a viewpoint.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_MENTOR",
+      "scope": "route",
+      "meaning": "The adult who directly supervises the RADIO team.",
+      "guidance": "A capable, calm adult mentor; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "LEADER",
+          "ROUTE_B_SIDEKICK",
+          "ROUTE_C_MENTOR",
+          "ROUTE_C_SIDEKICK",
+          "HIKER_NAME",
+          "C1_FARMER",
+          "C1_GOAT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_MENTOR_CRED",
+      "scope": "route",
+      "meaning": "The RADIO mentor's credential, stated once at first meeting.",
+      "guidance": "A short professional background phrase.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_TEAM",
+      "scope": "route",
+      "meaning": "The name of the second team the hero can join.",
+      "guidance": "A short team name naming its function (tracking/plotting-flavored).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_POST",
+      "scope": "route",
+      "meaning": "Route B's post/workspace for the whole shift.",
+      "guidance": "An indoor plotting/tracking post; safe, enclosed, distinct from the other two teams' posts.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_POST",
+          "ROUTE_C_POST"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_SIDEKICK",
+      "scope": "route",
+      "meaning": "The teenage assistant who works alongside the hero on the MAPS team.",
+      "guidance": "A peer-aged or slightly older helper, tech-minded; never a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "LEADER",
+          "ROUTE_A_MENTOR",
+          "ROUTE_C_MENTOR",
+          "ROUTE_C_SIDEKICK",
+          "HIKER_NAME",
+          "C1_FARMER",
+          "C1_GOAT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_SIDEKICK_CRED",
+      "scope": "route",
+      "meaning": "The MAPS sidekick's short background, stated once at first meeting.",
+      "guidance": "A brief descriptive phrase about their tech/tracking skill.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_TEAM",
+      "scope": "route",
+      "meaning": "The name of the third team the hero can join.",
+      "guidance": "A short team name naming its function (field-instruments-flavored).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_POST",
+      "scope": "route",
+      "meaning": "Route C's mobile post: the vehicle the team rides and shelters in.",
+      "guidance": "A sturdy team vehicle; safe shelter, distinct from the other two teams' posts.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_POST",
+          "ROUTE_B_POST"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_MENTOR",
+      "scope": "route",
+      "meaning": "The adult who drives and supervises the FIELD KIT team.",
+      "guidance": "A capable, calm adult mentor; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "LEADER",
+          "ROUTE_A_MENTOR",
+          "ROUTE_B_SIDEKICK",
+          "ROUTE_C_SIDEKICK",
+          "HIKER_NAME",
+          "C1_FARMER",
+          "C1_GOAT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_MENTOR_CRED",
+      "scope": "route",
+      "meaning": "The FIELD KIT driver's short descriptive tag, stated once.",
+      "guidance": "A brief, warm personality/role descriptor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_SIDEKICK",
+      "scope": "route",
+      "meaning": "The second adult on the FIELD KIT team, who runs the instruments.",
+      "guidance": "A capable, calm adult mentor; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "LEADER",
+          "ROUTE_A_MENTOR",
+          "ROUTE_B_SIDEKICK",
+          "ROUTE_C_MENTOR",
+          "HIKER_NAME",
+          "C1_FARMER",
+          "C1_GOAT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_SIDEKICK_CRED",
+      "scope": "route",
+      "meaning": "The instruments specialist's short descriptive tag, stated once.",
+      "guidance": "A brief, competence-forward personality descriptor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_ROAD",
+      "scope": "track",
+      "meaning": "The road the gauge-run stops are along.",
+      "guidance": "A short rural road name.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_HUTCH",
+      "scope": "track",
+      "meaning": "A neighboring property passed on the gauge run, used as a wind cue.",
+      "guidance": "A short place name; safe, just a landmark.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_FARM",
+      "scope": "track",
+      "meaning": "The farm where the animal-safety subplot takes place.",
+      "guidance": "A working farm; safe, familiar, never itself hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_FARMER",
+      "scope": "track",
+      "meaning": "The farm's owner, who needs help securing animals before the storm.",
+      "guidance": "A capable adult who welcomes the team's help; never a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "LEADER",
+          "ROUTE_A_MENTOR",
+          "ROUTE_B_SIDEKICK",
+          "ROUTE_C_MENTOR",
+          "ROUTE_C_SIDEKICK",
+          "HIKER_NAME",
+          "C1_GOAT"
+        ]
+      }
+    },
+    {
+      "id": "C1_GOAT",
+      "scope": "track",
+      "meaning": "The one animal that goes missing and must be found before shelter.",
+      "guidance": "A named farm animal in a survivable predicament (tangled in brush); always found safe and unharmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "LEADER",
+          "ROUTE_A_MENTOR",
+          "ROUTE_B_SIDEKICK",
+          "ROUTE_C_MENTOR",
+          "ROUTE_C_SIDEKICK",
+          "HIKER_NAME",
+          "C1_FARMER"
+        ]
+      }
+    },
+    {
+      "id": "C2_LANDMARK",
+      "scope": "track",
+      "meaning": "The elevated overlook where the FIELD KIT team sets up instruments.",
+      "guidance": "A safe, open high point with a clear escape route; never itself hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_WINDMILL",
+      "scope": "track",
+      "meaning": "A fixed structure at the overlook used for photo scale.",
+      "guidance": "A benign landmark structure; decorative/reference only.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A11_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the tested antenna repair holds through the storm (success).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A11_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the untested antenna repair fails mid-storm (setback).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A12_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the boosted bypass line carries every report (success).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A12_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the unboosted bypass line loses a distant report (setback).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A21_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the hero relays the stranded hiker's position for a successful rescue (success).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A21_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the hero guides the stranded hiker to shelter by map (completion).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A22_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the hero's plotted bearing leads rescuers straight to the hiker (completion).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A22_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the hero's log is the only complete storm record (discovery).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B11_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the hero's careful evidence gets the warning out with minutes to spare (success).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B11_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the hero's bold headline call gets the warning out just in time (completion).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B12_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: combined radar and spotter evidence make the warning airtight (success).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B12_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the early radar-only call is shaky but recovered (setback).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B211_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the plain-evidence pitch gets the event cleared before the storm (success).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B211_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: the negotiated delay keeps everyone dry and happy (completion).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B212_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the hand-carried written warning reaches the crowd safely (completion).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B22_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: marking uncertainty honestly becomes the club's new rule (discovery).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B22_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: an overconfident call is caught and fixed in time (setback).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C11_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the lost farm animal is found and everyone shelters safely (success).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C11_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: people shelter first and the animal turns up fine after (completion).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C12_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: leaving the last task unfinished keeps everyone safe and dry (completion).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C12_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: finishing the last task costs a scary final dash to shelter (setback).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C21_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: chasing the peak reading all the way to the deadline pays off (success).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE2",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C21_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: playing it safe means a smaller reading and a lesson learned (discovery).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C22_PRIZE1",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C22_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: the measured hail sample becomes the official record (success).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "C22_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: a beautiful photo comes at the cost of the data (setback).",
+      "guidance": "Positive or bittersweet-but-safe outcome; names the ending title directly. Nobody is ever harmed in any ending; a setback costs data, time, or pride, never safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A11_PRIZE1",
+          "A11_PRIZE2",
+          "A12_PRIZE1",
+          "A12_PRIZE2",
+          "A21_PRIZE1",
+          "A21_PRIZE2",
+          "A22_PRIZE1",
+          "A22_PRIZE2",
+          "B11_PRIZE1",
+          "B11_PRIZE2",
+          "B12_PRIZE1",
+          "B12_PRIZE2",
+          "B211_PRIZE1",
+          "B211_PRIZE2",
+          "B212_PRIZE",
+          "B22_PRIZE1",
+          "B22_PRIZE2",
+          "C11_PRIZE1",
+          "C11_PRIZE2",
+          "C12_PRIZE1",
+          "C12_PRIZE2",
+          "C21_PRIZE1",
+          "C21_PRIZE2",
+          "C22_PRIZE1"
+        ]
+      }
+    }
+  ]
+}

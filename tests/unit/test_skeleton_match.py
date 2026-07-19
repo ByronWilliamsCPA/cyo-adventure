@@ -257,6 +257,41 @@ def test_load_metadata_logs_warning_on_missing_metadata_block(
     assert warnings_seen[0][0] == "skeleton.missing_metadata_block"
 
 
+def test_production_candidates_ignores_contract_json_sidecar(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A WS-2 `<slug>.contract.json` sidecar is skipped: no candidate, no warning.
+
+    Without the `.contract.json` skip in `_production_candidates`, the
+    `*.json` glob would treat this sidecar as a skeleton missing its
+    `metadata` block (it has none) and log one spurious
+    `skeleton.missing_metadata_block` warning per contract on every scan
+    (WS-2 design section 2.1). This sidecar is authoring-time data, never a
+    selectable skeleton.
+    """
+    warnings_seen: list[tuple[str, dict[str, object]]] = []
+
+    class _CapturingLogger:
+        def warning(self, event: str, **kwargs: object) -> None:
+            warnings_seen.append((event, kwargs))
+
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    # A contract sidecar carries no top-level "metadata" block of its own; if
+    # treated as a skeleton candidate it would log skeleton.missing_metadata_block.
+    (band_dir / "themed-slug.contract.json").write_text(
+        json.dumps({"contract_version": 1, "skeleton_slug": "themed-slug"}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+    monkeypatch.setattr(skeleton_match, "logger", _CapturingLogger())
+
+    candidates = skeleton_match._production_candidates("8-11")
+
+    assert candidates == []
+    assert warnings_seen == []
+
+
 def test_skeleton_matches_cell_true_for_exact_match() -> None:
     metadata = StoryMetadata.model_validate(
         {
