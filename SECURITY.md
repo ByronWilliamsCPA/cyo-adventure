@@ -44,12 +44,17 @@ production deployment or horizontal scaling:
   no longer capped in aggregate) until Redis recovers. Operators should alert
   on the `rate_limit_redis_unavailable` log event.
 
-- **Dev auth stub must be replaced before non-local deployment.** The bearer-token
-  extraction in `api/deps.py` treats any token as a verified OIDC subject (no
-  signature, issuer, or expiry validation). A module-level guard raises
-  `ConfigurationError` at startup if the environment is not `local`, preventing
-  accidental staging or production deployment. Real Authentik JWT validation
-  (RS256, issuer/audience check) must replace this stub in Phase 3.
+- **Dev auth stub is local-only; real OIDC verification is enforced everywhere
+  else.** The bearer-token extraction in `api/deps.py` has two paths: a dev/test
+  stub that treats any token as an already-verified OIDC subject (no signature,
+  issuer, or expiry validation), and real Supabase-issued JWT verification
+  (ADR-009: the project's auth provider, superseding an earlier Authentik plan)
+  against a cached JWKS, checking signature, issuer, audience, and expiry, with
+  an explicit algorithm allowlist (`RS256`/`ES256` by default) so PyJWT never
+  falls back to a caller-supplied algorithm. A module-level guard raises
+  `ConfigurationError` at import time if the environment is not `local` and no
+  OIDC verification is configured (`OIDC_ISSUER`/`OIDC_JWKS_URL`), so the
+  unverified stub cannot silently reach staging or production.
 
 ## Organization Policy
 
@@ -62,5 +67,5 @@ CYO Adventure is a choose-your-own-adventure reading app for kids, built on Fast
 - **Story-content injection**: User-generated or author-supplied story content could embed malicious scripts or links targeting child readers. Mitigations: strict output encoding, content-security-policy headers via security middleware, and input validation on all story payloads.
 - **Dependency supply-chain**: Third-party packages introduce transitive vulnerabilities. Mitigations: Bandit static analysis, OSV-Scanner and pip-audit in CI, Dependabot automated updates, and a 60-day remediation policy for unfixed CVEs.
 - **CI/CD secret exposure**: Workflow secrets (API tokens, signing keys) could be exfiltrated via malicious PR changes. Mitigations: secret scanning (GitHub native), trufflehog pre-commit hook, required-status-check rulesets on the default branch, and signed commits enforced by GPG.
-- **Child-safety data handling**: The app may process account data for minors. Mitigations: minimal data collection, no persistent PII without explicit parental consent, and encryption in transit (TLS) and at rest for any stored user data.
+- **Child-safety data handling**: The app processes account and reading data for minors. Mitigations: data minimization by design (a coarse age band and a nickname/display name only, no birthdate, exact age, photo, email, phone, or geolocation collected from a child), a PII egress guard blocking real-child identifiers and email/phone/address-shaped content before it reaches any external provider, and encryption in transit (TLS). **Not yet implemented**: verifiable parental consent gating child-profile creation or data collection, and a published data-retention policy. See [`docs/compliance/coppa-compliance-audit.md`](docs/compliance/coppa-compliance-audit.md) and [`docs/compliance/gdpr-compliance-review.md`](docs/compliance/gdpr-compliance-review.md) for the full assessment; do not rely on this bullet alone as a compliance claim.
 - **Authentication and authorization**: Unauthenticated access to story management or admin endpoints could allow content tampering. Mitigations: authentication middleware, OWASP-aligned security headers via `cyo_adventure.middleware.security`, and correlation-ID tracing for incident investigation.
