@@ -976,3 +976,85 @@ proof that the recipe and scripts hold before any fan-out. Phase C then runs
 waves C1-C5 per section 8.5, youngest-first, with the review depth ruled in
 OQ-2 and the series/Tier-2 exclusion gate ruled in OQ-4. CR-1 is the only
 change to the spec as written; all other sections are approved as-is.
+
+## 14. Wave C0 calibration outcomes and the locked Phase C manifest
+
+Wave C0 (the `the-cave-of-echoes` reference migration) is complete and green on
+all six `check_theme_contract` checks plus the pre-migration fingerprint
+compare. It reused the pilot's 73 slots verbatim (7 global, 6 route, 60
+track/ending) and newly slotted 52 of 62 choice labels across 39 nodes (10
+labels left verbatim as non-theme-specific). It surfaced one framework defect
+(now fixed) and three recipe clarifications that are BINDING on the Phase C
+fan-out.
+
+### 14.1 Framework fix: `legacy_lexicon` vs `default_binding` (CR-2, implemented)
+
+C0 exposed a real contradiction: `validate_slot_bindings` applied the
+`legacy_lexicon` leak check to every binding, including the contract's own
+`default_binding`. But `default_binding` must reproduce the original theme's
+identity words (hero "Maya", "lighthouse", "the tide turns"), which are exactly
+the terms `legacy_lexicon` must list to block a NEW theme from reintroducing
+them. So a genuinely useful lexicon made check 4 (`default_binding` passes its
+own contract) fail, and the C0 agent had to neuter the lexicon to pass, which
+defeated the feature on all 56 skeletons.
+
+Fix (shipped): `validate_slot_bindings(contract, bindings, *, is_default=False)`
+skips ONLY the `legacy_lexicon` check when `is_default=True`; every other
+constraint, including the band-mandatory denylist floor, still applies.
+`check_theme_contract.py` check 4 now passes `is_default=True`. Every runtime
+bind (a new theme, in `bind_theme_to_contract`) leaves it False, so a new
+binding is always fully leak-checked. Verified: a new binding reusing "Maya" is
+now rejected, while the default binding carrying "Maya" (with "Maya" in
+`legacy_lexicon`) passes. **Phase C rule:** `legacy_lexicon` MUST list the
+original theme's real identity terms (proper nouns, the distinctive setting and
+deadline nouns); the exemption makes that safe.
+
+### 14.2 Recipe clarifications binding on Phase C (amend section 8.3 in use)
+
+1. **Suffixes absent from the 8.3 table** (`_PATH`, `_PREP`, `_ACT`, `_INNER`,
+   and other compound descriptive tails) bucket as GENERIC descriptive slots:
+   `max_words: 8`, no extra `forbid` beyond the band floor, no `distinct_from`.
+2. **Longest / most-specific suffix wins.** `A1_PRIZE2_ZONE` derives from
+   `_ZONE`, not `_PRIZE*`, even though `PRIZE2` appears earlier in the id;
+   `A1_PRIZE2_PATH` is generic (`_PATH`), NOT the strict `_PRIZE*` ending
+   bucket. Match the final structural-role suffix, not any substring.
+3. **`_GATE` slots take `scope: ending`** (they are substituted into the
+   "Turned Back at {..._GATE}" setback title), satisfying the 8.2 rule that
+   every ending-title template reference an ending-scope slot. Scope is
+   descriptive only (it does not affect validation), but keep it consistent.
+
+### 14.3 The locked Phase C v1 manifest (from the catalog scan + OQ-4/OQ-5)
+
+Ground truth on disk: 59 skeletons (3-5: 7, 5-8: 6, 8-11: 9, 10-13: 11,
+13-16: 12, 16+: 14). No skeleton declares `series` or `carries_state`, so the
+OQ-4 series concern is moot. Exclusions:
+
+- **Skipped (OQ-5), 3 MVP seeds** (`production_eligible=false`, never selected
+  for a child): `3-5/the-lost-mitten`, `10-13/the-clocktower-cipher`,
+  `16+/the-sunken-signal`.
+- **Deferred (OQ-4), 11 stateful Tier-2 skeletons** (declare variables that
+  their beats reference, with live choice conditions/effects; theming them
+  safely means preserving a state machine through the reskin, which is the
+  named follow-up design, not v1): `10-13/the-flooded-quarter`,
+  `10-13/the-glass-comet`, `10-13/the-winter-of-the-wolf-queen`,
+  `13-16/the-hollow-sea`, `13-16/the-iron-spire-trial`,
+  `13-16/the-serpent-vaults`, `13-16/the-undertow-season`,
+  `16+/the-cinder-bazaar`, `16+/the-longwinter-station`,
+  `16+/the-quiet-harbor-protocol`, `16+/the-tenfold-siege`.
+
+**v1 Phase C = 45 skeletons** (59 - 3 seeds - 11 Tier-2). Revised waves:
+
+| Wave | Band(s) | v1 count | Excluded from that band |
+| --- | --- | --- | --- |
+| C0 (done) | 8-11 `the-cave-of-echoes` | 1 | reference migration |
+| C1 | 3-5 + 5-8 | 6 + 6 = 12 | 3-5 seed `the-lost-mitten` |
+| C2 | 8-11 (remaining) | 8 | none |
+| C3 | 10-13 | 7 | 1 seed + 3 Tier-2 |
+| C4 | 13-16 | 8 | 4 Tier-2 |
+| C5 | 16+ | 9 | 1 seed + 4 Tier-2 |
+
+Total across C0-C5: 1 + 12 + 8 + 7 + 8 + 9 = 45. Review depth per OQ-2: full
+contract review for every skeleton in C1 and C2 (youngest bands, strictest
+floors); sampled (two full contracts plus every acceptance log) for C3-C5,
+escalating to full on any defect. The 11 deferred Tier-2 skeletons plus the
+themed-series design are a post-v1 follow-up.
